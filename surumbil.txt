@@ -1,0 +1,427 @@
+*******************************************************************************
+  Sürüm: 0.3.7 - 00.00.0000 (R33) - Beta
+*******************************************************************************
+  +
+
+  + fiziksel disket sürücü kopyalama programý (kopyala.c) kodlandý
+  + daha önce programlar içerisinde tanýmlanan depolama API iþlevleri n_depolama olarak sýnýflaþtýrýldý
+  + 2. disket sürücü okuma problemi düzeltildi
+  + API iþlev deðerleri standartlaþtýrýldý
+  + tüm uygulama kodlarý ve derleme yapýlarý yeniden gözden geçirilerek düzenlendi
+  + etiket nesnesine renk deðiþtirme iþlevi eklendi
+  + masaüstü (muyntcs.c) programýna að durumunun ip adresi alýp almadýðýna dair gösterge eklendi
+  + Defter nesnesine sarmalama iþlevi eklendi
+  + Dijital Defter (defter.c) programýna sarmalama iþlevi eklendi
+  + görev sonlandýrma iþlemi sýrasýndaki kilitlenme problemi çözümlendi (idt iþlevleri tamamlanacak)
+  + ilk açýlýþ ip alma iþlemindeki problem düzeltildi
+  + 64 bitlik sayý görüntüleme iþlevi eklendi
+  + GorevBayrakDegeriniAl (iþlev: $C, altiþlev: $B) iþlevi tanýmlandý
+  + muyntcs.c programýnda görev çubuðundaki görevlerin gösterimi ve düðmelerin boyutlandýrýlmasý problemi giderildi
+  + çekirdek mesaj sistemi yeniden yapýlandýrýlarak, daha önce gerçekleþtirilen azami mesaj sayýsý aþýldýðýnda
+    sýfýrlama iþlemi iptal edilerek mesajlarýn yukarý kaydýrýlarak akýcýlýðý saðlandý
+  + çekirdek mesaj sistemine reklendirme eklendi
+  + smsjgor.c programýna durum çubuðu eklendi, çekirdeðin yeniden yapýlanmasý çerçevesinde mesajlarýn akýcýlýðý durumu
+    ve renklendirme iþlemleri uygulandý
+
+*******************************************************************************
+  Sürüm: 0.3.6 - 21.06.2020 (R32) - Beta
+*******************************************************************************
+  + sürüm gözden geçirilerek 30.08.2024 tarihinde yeniden yayýnlandý
+  + yeni çekirdek olayý: CO_SECIMDEGISTI (TKarmaListe) eklendi
+  + tüm görsel nesneler TPanel nesnesinden türetilecek þekilde yeniden yapýlandýrýldý
+  + görsel nesnelerin birbirleriyle etkileþim çalýþmasý (bileþen) tamamlandý
+  + tüm görsel nesnelere Olustur, YokEt, Goster, Gizle, Boyutlandir, Ciz, OlaylariIsle iþlevleri
+    standart olarak kodlandý
+  + görsel nesnelerin birbirleriyle etkileþim çalýþmalarý baþladý
+  + çizim ve olay koordinat sistemi 0 baþlangýç deðerine göre yeniden yapýlandýrýldý
+  + pencere nesnesinin geniþlik ve yükseklik deðerleri çizim alaný ile eþdeðerlendi
+  + TAracCubugu (TToolBar) görsel nesnesi projeye eklendi
+  + çaðrý ve grafik iþlemleri mevcut çekirdek görevinden ayrýlarak ayrý bir görev olarak
+    yeniden tasarlandý. böylece sistemi yöneten görev sayýsý 1'den 3'e çýkarýldý
+  + pencere nesnesine mac pencere görünümü (skin) uygulandý
+  + giysilerarasý geçiþ iþlemleri yapýlandýrýldý ve ayar olarak masaüstü duvar kaðýdý (mustudk.c) programýna eklendi
+  + pencere küçültme iþlevi uygulandý
+  + nesnelere yatay / dikey yazý hizalama iþlevi eklendi
+  + TIzgara (TStringGrid) görsel nesnesi projeye eklendi
+  + TSayfaKontrol (TPageControl) görsel nesnesi projeye eklendi
+  + TAcilirMenu (popupmenu) görsel nesnesi projeye eklendi
+  + TKarmaListe (combobox) görsel nesnesi projeye eklendi
+  + TDegerListesi (TValueListEditor) görsel nesnesi projeye eklendi
+  + programýn tüm yazmaç içeriklerini görüntüleyen yazmaç içerik görüntüleyici (yzmcgor2) kodlandý
+  + tasarýmsal olarak her bir göreve tek bir ana pencere atamasý gerçekleþtirildi
+  + hafýza programý kodlandý
+  + sistem yönetimine 2. görev eklendi
+  + daha önce kodlanan dns taslak çalýþmasý geliþtirilerek; birden fazla dns baðlantýsý,
+    çekirdek / program api iþlevleri ve bu yapýlarýn üzerinde çalýþan dnssorgu programý kodlandý
+  + türkçe büyük karakter tablosu tanýmlandý
+  + çekirdek seviyesinde görsel nesnelerin kullanýmý desteði eklendi
+  + http protokol çalýþmalarýna baþlandý
+  + internet tarayýcý (tarayici.c) programý kodlanmaya baþlandý
+  + UDP protokünden sonra, TCP altyapý sistem / program API iþlevleri tamamlanarak TCP/IP protokolü tamamlanmýþ oldu
+  + udptest programýnýn adý iletisim olarak deðiþtirildi, tcp iletiþim altyapýsý eklendi
+  + masaüstü yöneticisi (muyntcs.c) programýna açýlýr menü ile 4 programa kýsa yoldan eriþim saðlanmasý seçeneði eklendi
+  + masaüstü programý / görev çubuðu için pencereye sahip nesneler ile ilgili iþlevler / kesmeler kodlandý
+  + masaüstü yönetim programý (muyntcs) yeniden yapýlandýrýlarak, görev çubuðuna, çalýþan programlarýn eklenmesi saðlandý
+  + masaüstü yönetim programýna program çalýþtýrma menüsü eklendi
+  + görev çubuðu üzerinden pencerenin normal ve küçültme iþlevlerinin denetimi saðlandý
+  + program çalýþtýrma (calistir.c) programý kodlandý (kýsayol tuþu olara ctrl+c atandý)
+  + takvim programý kodlandý. masaüstü programý tarih deðeri týklama iþlevine takvimin açýlmasý iþlevi eklendi
+  + programa ait her yeni açýlan pencerenin masaüstünde ortalanmasý saðlandý
+  + yatay / dikey düz çizgi tipine noktalý çizgi tipi eklendi
+  + 16 renkli renk seçim görsel nesnesi (TRenkSecim) projeye eklendi
+  + API iþlevleri standart çalýþmalarý gerçekleþtirildi
+  + tüm programlara daha önce eklenen ProgramAdi deðiþkeni görev / program adý olarak
+    belirlendi ve gerekli iþlevler yazýldý
+
+*******************************************************************************
+  Sürüm: 0.3.5 - 08.04.2020 (R31) - Beta
+*******************************************************************************
+  + program baþlatma ve sonlandýrma gibi paylaþtýrýlan kritik iþlevlere iþlev görev kilidi (critical section - mutex) eklendi
+  + hata veren programlarýn yazmaç içeriklerinin görüntülenmesi yeniden yapýlandýrýldý
+  + sistem mesajlarýna çoklu deðiþken desteði eklendi
+  + 3. seviye (DPL3) görevlerin (program) giriþ / çýkýþ port izin haritasý TSS'de tanýmlandý
+  + görev yöneticisine, istenilen programýn kapatýlmasý iþlevi eklendi
+  + kaydýrma çubuðu (TKaydirmaCubugu) nesnesi ve tasarým / test programý (kaydirma.c) oluþturuldu
+  + assembler ve yazý çekirdeði projeden çýkarýldý (03042020)
+  + acpi taným iþlevleri eklendi
+  + tcp istemci temel alt yapýsý tamamlandý
+  + bir görsel nesneye fare ile sað / sol tuþ ile basýldýðýnda bir önceki nesnenin
+    açýk durumunun (TGucDugme gibi) kapatýlmasý amacýyla CO_NORMALDURUMAGEC olayý tanýmlandý
+  + TMenu uygulama arabirimine (API) eleman yükseklik ve resim sýra no deðeri eklendi
+  + hem resim hem renk gösterebilen TResimDugme nesnesi oluþturuldu
+  + bmp dosyasý iþleme hatasý düzeltildi
+  + ana menü resimleri deðiþtirildi
+  + TResimDugme görsel nesnesini test etmek için düðmeler programý kodlandý
+  + panel nesnesi eklendi
+  + hizalama iþlevi geniþletilerek hzTum (alClient) iþlevi eklendi
+  + dsyyntcs, resimgor ve defter programlarý hizalamaya göre yeniden yapýlandýrýldý
+  + TResim nesnesine resmin tuvale sýðdýrýlma iþlevi (stretch) eklendi
+  + panel nesnesini test etmek için "paneller" test programý kodlandý
+  + gdt, tss deðerleri yeniden yapýlandýrýldý
+  + sistem denetimi amacýyla çekirdek içerisinde yeni iþlem (process) tasarýmýna baþlandý
+
+*******************************************************************************
+  Sürüm: 0.3.4 - 27.10.2019 (R30) - Beta
+*******************************************************************************
+  + ingilizce olarak kodlanan kodlar türkçeye çevrildi
+  + eðimli doldurma iþlevi eklendi, iþlev düðme ve baþlýksýz pencere nesnelerine uygulandý
+  + masaüstü grafiksel arabirim çalýþmasý deðiþtirilerek pencere kontrollü çizimden (belleðe alýnan pencerelerin ekrana hýzlý çizimine olanak veren) belleksel çizime geçildi
+  + her bir pencere nesnesine tuval (canvas) nesnesi eklendi. (grafiksel çizimlerin ve serbest yazýmlarýn gerçekleþtirilmesi için)
+  + defter nesnesine arkaplan rengi ve yazý rengi eklendi
+  + pencere nesnesine arka plan rengi eklendi
+  + netbios ana iskelet çalýþmasý tamamlandý
+  + fat32 dosya ad widechar çalýþmasý tamamlandý
+  + utf-16 türkçe kodlama (cp1254) çalýþmasý tamamlandý
+  + temel aygýt sürücü (.s sürücü dosyasý) modeli oluþturuldu.
+  + MSG_SI makro iþlevi eklendi
+  + TCP, SYN + ACK (baðlantý), PSH (veri gönderme), FIN (baðlantý kesme) ana prototip iþlevleri tamamlanarak temel iletiþim iþlevleri gerçekleþtirildi
+  + arp protokolünde iyileþtirmeler gerçekleþtirildi
+  + tüm görsel nesnelere nesne adý özelliði eklendi
+  + sistem toplam RAM ihtiyacý 32MB'den 64MB'a çýkarýldý
+  + görsel nesne yapý uzunluðunun dinamik hesaplanarak bellek tahsis edilmesi saðlandý
+  + giriþ kutusu nesnesine sadece sayýsal deðer girilmesine olanak veren FSadeceRakam özelliði eklendi
+  + 10lu sayý sisteminden 16lý ve 2li sayý sistemine çevrim amacýyla donusum programý kodlandý
+  + çekirdek ip ve esp adresi masaüstüne eklendi (problemlerin tespiti amacýyla (geçici olarak))
+  + sistem kilitlenmelerine sebebiyet veren programlarýn istisna (exception - 10, 13, 14) anýndaki
+    problemler giderilerek sistemin akýþý saðlandý
+  + vmware ekran kartýndaki 16 bitlik renk problemi düzeltildi
+  + çekirdek içerisindeki tüm mesajlar çekirdek içerisine yönlendirildi
+  + masaüstü programýnýn saat bilgisine saniye deðeri eklendi
+  + masaüstü programýna tarih deðeri eklendi
+  + vmware disk görüntüsü güncellendi
+  + dosya yöneticisi (dsyyntcs) programýna dosya deðiþtirme tarih / saat ve dosya uzunluk
+    bilgisi eklendi. (gerekli sistem ve api iþlevlerinin alt yapýlarý geliþtirildi)
+  + liste görünüm (TListeGorunum) nesnesi oluþturuldu
+  + yazilistesi (karakter liste nesnesi) ve sayilistesi (sayý liste nesnesi) nesneleri oluþturuldu
+  + pencere nesnesine giydirme (skin) iþlemi tamamlandý
+
+*******************************************************************************
+  Sürüm: 0.3.3 - 22.12.2018 (R29) - Beta
+*******************************************************************************
+  + Çekirdek (kernel) yazýlýmýna DHCP Discover + Offer + Request dizilim kod yapýsý
+    yerleþtirilerek DHCP sunucusundan otomatik IP alma iþlevi eklendi
+  + DHCP sunucusundan otomatik IP adresi almak için sistem Ctrl + 2 kýsayol tuþu eklendi
+  + Programýn að bilgilerine eriþmesi için $0E (FUNCTION_NETWORK), $01 (NetFuncGeneral),
+    $01 (GetNetWorkInfo) = GET_NETWORK_INFO API iþlev çaðrýsý eklendi
+  + Að ayarlarý programý (ag.c) kodlandý
+  + Masaüstü yazýlým programýna (muyntcs.c) að seçeneði eklenerek að ayar programýný
+    (ag.c) kýsayoldan çalýþtýrmasý saðlandý
+  + icmp protokol çalýþmalarý tamamlandý, protokolün ping sorgularýna yanýt vermesi saðlandý
+  + DNS veri gönderme / alma / iþleme çalýþmasý tamamlandý
+  + FAT32 / FAT32-LBA 8.3 dosya sistem çalýþmalarý tamamlandý
+  + FAT32 / FAT32-LBA uzun dosya ad (long name) çalýþmalarý çekirdek + API + program seviyesinde
+    tamamlandý
+  + dsyyntcs programý FAT32 + uzun dosya adýna çalýþmasýna göre yeniden yapýlandýrýldý
+  + listbox nesnesine GetSelText (LISTBOX_GET_SELTEXT = 4) API iþlevi eklendi
+
+*******************************************************************************
+  Sürüm: 0.3.2 - 12.11.2017 (R28a) - Beta
+*******************************************************************************
+  + 16M sistem bellek ihtiyacý 32M olarak yeniden tanýmlandý
+  + pencerelerin pasif olmasý durumunda farklý renklendirilmesi gerçekleþtirildi
+  + dijital deftere dosya açma iþlevi eklendi
+  + klavye sürücüsüne ctrl, alt, shift tuþlarý ve durumlarý; diðer tuþlarýn durum
+    desteði (basýlý, býrakýldý) ve türkçe küçük karakter seti eklendi
+  + Ctrl + D = dosya yöneticisi, Ctrl + M = mesaj görüntüleyicisi,
+    Ctrl + G = görev yöneticisi kýsayol desteði eklendi
+  + resimgor programýna dosya listesi desteði ve dosya seçimi eklendi
+
+  + yazý mod çekirdeðe (text mode kernel) sayfalama özelliði eklendi
+
+*******************************************************************************
+  Sürüm: 0.3.2 - 29.10.2017 (R28) - Beta
+*******************************************************************************
+  + iþlem gösterge (TProgressBar) nesnesi eklendi
+  + onay kutusu (TCheckBox) nesnesi eklendi
+  + düzenleme kutusu (TEdit) nesnesi eklendi
+  + bellkbil programý güncellendi.
+  + tüm kodlar fpc 3.0.4 ile yeniden derlendi
+  + udptest programý yazýldý
+  + grafik3 programý yazýldý
+  + artýrma / eksiltme (TUpDown) düðme nesnesi eklendi
+  + etiket (TLabel) nesnesi eklendi
+  + muyntcs programý sað alt köþeye saat verisi eklendi
+  + durum göstergesi (TStatusBar) nesnesi eklendi.
+  + nesne alt yapýsýna align desteði eklendi
+  + tasarým programý yazýldý
+  + mustudk (masaüstü duvar kaðýdý) programý yazýldý
+  + radyo düðme (TRadioButton) nesnesi eklendi
+  + vo_nesne.txt (görsel nesne oluþturma adýmlarý) belgesi eklendi
+  + baðlantý (THyperLink) nesnesi eklendi
+  + resim (TImage) nesnesi oluþturuldu
+  + resimgor programý yazýldý
+  + fiziksel depolama alaný (fda) katmaný oluþturuldu
+  + dns, dhcp, tcp, socket, network, ip, icmp, udp, arp að protokol çalýþma
+    ilk baþlangýç / geliþtirme çalýþmalarý baþlatýldý
+  + udp protokolü veri alým / gönderim iþlemi tamamlandý
+
+*******************************************************************************
+  Sürüm: 0.3.1 - 11.08.2017 (R27) - Beta
+*******************************************************************************
+  + tüm çekirdek / program / rtl kodlarý yeniden gözden geçirildi, açýklamalar yapýldý, dökümanlar güncellendi.
+
+*******************************************************************************
+  Sürüm: 0.3.0 - 07.08.2017 (R26) - Beta
+*******************************************************************************
+  + tüm grafiksel ve rtl kodlarý en güncel FPC 3.0.2, Virtualbox 5.1.26'ya göre yeniden yapýlandýrýldý.
+  + tüm grafiksel / rtl kod veri tipleri yeniden gözden geçirildi.
+
+*******************************************************************************
+  Sürüm: 0.2.9 - 15.05.2013 (BETA)
+*******************************************************************************
+  + çekirdek kodlarýnýn %80'i nesnesel (object) olarak yeniden tasarlandý
+  + çoklu masaüstü desteði tamamlandý
+  + sistemde mevcut sound blaster ses kartý tesbit iþlemi tamamlandý
+  + dsybil programý yazýldý
+  + programlar için ParamStr, ParamCount, Terminate iþlevleri yazýldý
+  + tüm pencereler için pencere kapatma iþlevi etkinleþtirildi
+  + bazý hatalarý oluþturan programlarýn sonlandýrýlmasý ve sonlandýrma hakkýnda sisteme 
+    bilgi verilmesi saðlandý
+  + ONMOUSE_LOSTFOCUS, ONMOUSE_GOTFOCUS, ONMOUSE_SCROLL olaylarý ilgili nesnelere eklendi
+  + programlar için dosya iþlevleri eklendi. AssignFile, Reset, ReadFile, CloseFile gibi
+  + geliþtirilmiþ fare iþlevleri (4 ve 5. düðme, kaydýrma) eklendi
+  + tüm nesneler yeniden görsel olarak tasarlandý
+  + sýk kullanýlan programlar ana çubuða eklendi
+  + pencere ekran limitlerinin dýþýna çýkartýldý
+  + liste kutusuna kaydýrma iþlevi eklendi
+  + defter uygulamasýnýn text türü dosyalarý açmasý saðlandý
+
+*******************************************************************************
+  Sürüm: 0.2.8 - 09.03.2013 (BETA)
+*******************************************************************************
+  + sürücü + dosya yol belirleme standardý belirlendi. disket1:\dosya.c gibi
+  + sisteme fiziksel ve mantýksal sürücü yapýlarý yerleþtirildi
+  + virtualbox sanal ide disk desteði eklendi
+  + disket FAT12, disk FAT16 dosya sistemleri otomatikleþtirildi
+  + depolama sürücüleri çoklu kullanýma göre yeniden kodlandý ve hatalar giderildi
+  + ProcessPath, FindFirst, FindNext, FindClose, AssignFile, Reset, Eof, FileSize, 
+    Read, CloseFile RTL iþlevleri eklendi
+  + disket sürücü motor kapatma iþlevi otomatikleþtirildi
+  + font hata düzenlemesi
+  + delay iþlevi düzeltildi
+
+*******************************************************************************
+  Sürüm: 0.2.7 - 14.11.2012 (BETA)
+*******************************************************************************
+  + ip, udp protokolleri sisteme eklendi ve çalýþmasý saðlandý
+  + EthernetHandler geliþtirilmek amacýyla ilk yazýmý gerçekleþtirildi
+  + fare gösterge problemi çözüldü
+  + WriteInt iþlevi yazýldý
+
+*******************************************************************************
+  Sürüm: 0.2.6 - 17.10.2012 (BETA)
+*******************************************************************************
+  + elera iþletim sisteminin gerçek makine ve virtualbox'ta  çalýþmasý saðlandýðý
+    gibi, ayný zamanda vmware workstation ve qemu'da çalýþmasý saðlandý
+  + tüm kodlar baþtan sona yeniden gözden geçirildi. sistemin stabil çalýþmasý
+    için birçok düzenleme yapýldý
+  + bilden programý tarafýndan grafiksel ekrana otomatik geçiþ saðlandý
+
+*******************************************************************************
+  Sürüm: 0.2.5 - 02.05.2012 (BETA)
+*******************************************************************************
+  + elera iþletim sisteminin tüm sistem/program kodlarý tamamen free pascal'a
+    adapte edilerek yapýlan tüm çalýþmalar ilk kez yayýmlandý. Böylece sistemin
+    tüm çalýþmalarý ilk kez resmi olarak yayýmlanmýþ oldu
+
+*******************************************************************************
+  Sürüm: 0.2.5b - 25.04.2012 (BETA)
+*******************************************************************************
+  + elera iþletim sisteminin tüm kodlarý free pascal'da kodlanarak disket
+    imaj dosyasý yayýmlandý.
+
+*******************************************************************************
+  Sürüm: 0.2.5a - 05.04.2012 (BETA)
+*******************************************************************************
+  + assemblerde yazýlan elera iþletim sisteminin birçok kodlarý free
+    pascal'da kodlanarak disket imaj dosyasý yayýmlandý
+
+*******************************************************************************
+  Sürüm: 0.2.4 - 04.03.2012 (ALFA)
+*******************************************************************************
+  + linux ELF dosya formatý tüm çalýþtýrýlabilir programlarýn ana
+    formatý olarak tanýmlandý ve sistem tarafýndan desteklenecek gerekli
+    tüm deðiþiklikler yapýldý
+  + ELERA iþletim sisteminin tüm programlarý Free Pascal'da derlenecek
+    þekilde yapýlandýrýldý, gerekli sistem rutinleri yazýldý
+
+*******************************************************************************
+  Sürüm: 0.2.3 - 17.08.2011 (ALFA)
+*******************************************************************************
+  + memo nesnesi tanýmlandý
+  + defter (metin düzenleme programý) programý yazýldý
+  + bazý küçük düzenlemeler yapýldý
+
+*******************************************************************************
+  Sürüm: 0.2.2 - 09.08.2011 (ALFA)
+*******************************************************************************
+  + program kaynak/ikili kodlar çekirdekten çýkartýldý
+  + bazý hatalar giderildi
+
+*******************************************************************************
+  Sürüm: 0.2.1 - 15.06.2011 (BETA)
+*******************************************************************************
+  + floppy sürücüsü virtual box'ta çalýþacak þekilde yeniden gözden geçirildi
+  + floppy fat12 dosya sistemi desteði
+  + çekirdek (kernel)'le alakalý olmayan tüm dosyalar çekirdek dýþýna alýndý.
+    böylece çekirdek saflaþtýrýlarak gerçek özelliðine kavuþmuþ oldu.
+  + tüm programlar kernel içerisinden çýkarýlarak FAT12 dosya sistemine eklendi.
+  + program isimlerinin tümü türkçe isimle ismlendirildi (türkçe karakterler hariç)
+  + çekirdek ve program içerikleri türkçeleþtirildi.
+    (pcibil programýnýn bazý kýsýmlarý ileride test amacýyla orijinal harinde býrakýldý)
+  + tüm çalýþtýrýlabilir dosyalarýn uzantýsý .ç olarak belirlendi (þu anda .c)
+
+*******************************************************************************
+  Sürüm: 0.2.0 - 04.06.2011 (BETA)
+*******************************************************************************
+  + kullanýcý arabirimi yeni menüyle birlikte türkçe olarak belirlendi
+  + power_button ve popup_menu görsel nesneleri kodlandý
+  + kodlanan yeni nesneler deskman programýna eklendi
+
+*******************************************************************************
+  Sürüm: 0.1.9 - 18.01.2011 (ALFA)
+*******************************************************************************
+  + ide sürücü arama/tanýmlama/sektör okuma/kesme iþlevleri yazýldý
+  + ideinfo, partview programlarý yazýldý
+
+*******************************************************************************
+  Sürüm: 0.1.8 - 06.01.2011 (ALFA)
+*******************************************************************************
+  + r3test programý yazýldý
+  + mevcut hatalar düzeltildi, bazý iþlevler yenilendi
+
+*******************************************************************************
+  Sürüm: 0.1.7 - 02.01.2011 (ALFA)
+*******************************************************************************
+  + program kod/data selektörleri sayfa çözünürlüðüne geçirildi
+  + tüm programlar ring3 çalýþma alanýna geçirildi. (tüm kýsýtlamalar aktif)
+  + programlar için bellek miktarý ve yýðýn alaný (esp) oluþturuldu
+  + taskregs programý yazýldý
+  + sistem için gerekli bellek miktarý 16M olarak artýrýldý
+
+*******************************************************************************
+  Sürüm: 0.1.6 - 27.12.2010 (ALFA)
+*******************************************************************************
+  + fat12 boot sektör kaynak kodlarýn içerisine eklendi
+  + 16 bitlik 2 yeni vesa modu eklendi
+
+*******************************************************************************
+  Sürüm: 0.1.5 - 07.12.2010 (BETA)
+*******************************************************************************
+  + floppy sürücüsü yazýldý ve test edildi
+  + cpu.inc dosyasý eklendi
+
+*******************************************************************************
+  Sürüm: 0.1.4 - 27.07.2010 (BETA)
+*******************************************************************************
+  + iletiþim (com port) sürücüsü yazýldý
+  + fps programý yazýldý
+  + sistem sabit/iþlevlerinde birçok düzenleme yapýldý
+
+*******************************************************************************
+  Sürüm: 0.1.3 - 26.06.2010 (BETA)
+*******************************************************************************
+  + listbox nesnesi eklendi
+  + nesneler için yeni/deðiþtirilebilen çizim renkleri (skin) belirlendi
+  + tüm nesneler için CLICK olayý tanýmlandý
+
+*******************************************************************************
+  Sürüm: 0.1.2 - 09.06.2010 (BETA)
+*******************************************************************************
+  + pci aygýt yükleyici yazýldý (devman)
+  + pcnet32 að kartý sürücüsü yazýldý
+  + arp protokolü yazýldý
+  + yeni dönüþüm iþlevleri yazýldý (convert)
+  + msg.inc'e yeni makrolar eklendi
+  + yeni birçok eklenti/güncelleme/iptal gerçekleþtirildi
+
+*******************************************************************************
+  Sürüm: 0.1.1 - 25.05.2010 (ALFA)
+*******************************************************************************
+  + 4K'dan büyük programlarýn çalýþtýrýlabilmesi için process.asm, memory.asm,
+    file.asm yeniden düzenlendi.
+  + pci.asm programý ve ek bileþenleri (kesme, donaným çaðrýlarý) yazýldý.
+  + wait_event kesme iþlevi yazýldý ve tüm programlarýn bu iþlevi çaðýrmasý
+    saðlanarak sistemin hýzlandýrýlmasý saðlandý.
+
+*******************************************************************************
+  Sürüm: 0.1.0 - 02.04.2009 (ALFA)
+*******************************************************************************
+  + ilk alfa sürüm yayýmlandý
+  + desktop/window/button nesneleri tanýmlandý/uygulandý
+  + int 0x34'e 12 ana kesme ve birçok alt kesme eklendi
+  + ps/2 fare sürücüsü eklendi
+  + sistem için 7 adet program yazýldý
+
+*******************************************************************************
+  Sürüm: 0.0.6 - 06.04.2007 (BETA)
+*******************************************************************************
+  + çok görevlilik sistem tasarýmý bitti.
+  + int 0x34 ana kesme olarak belirlendi
+  + çok görevlilik için geçici program yazýldý
+
+*******************************************************************************
+  Sürüm: 0.0.5 - 30.12.2006 (BETA)
+*******************************************************************************
+  + kesme tablosu ana prototipi tanýmlandý
+
+*******************************************************************************
+  Sürüm: 0.0.4 - 26.06.2006 (BETA)
+*******************************************************************************
+  + grafiksel ekrana yazým iþlevleri gerçekleþtirildi.
+  + Courier New font'u yapýlandýrýldý
+
+*******************************************************************************
+  Sürüm: 0.0.3 - 25.02.2006 (BETA)
+*******************************************************************************
+  + vesa 2.0 grafik ekran sürücüsü yazýlmaya baþlandý
+
+*******************************************************************************
+  Sürüm: 0.0.2 - 30.12.2005 (BETA)
+*******************************************************************************
+  + korumalý modda 640x480*256 (mod 0x111) grafik çizim iþlemi yapýldý
+
+*******************************************************************************
+  Sürüm: 0.0.1 - 14.08.2005 (BETA)
+*******************************************************************************
+  + korumalý moda geçilerek text ekran test iþlemi yapýldý

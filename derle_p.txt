@@ -1,0 +1,24 @@
+Güncelleme Tarihi: belge güncel deðil, güncellenecek
+
+Derleme Ortamý:
+---------------
+  Sistem: Windows 7 - (32 bit)
+  Derleyici: Lazarus 1.8.0RC3, FPC 3.0.2
+  Sanal Makine: Virtualbox 5.1.26
+
+RTL Derleme
+-----------
+  + eleraos\araclar\binutils dizininin altýndaki sýkýþtýrýlmýþ binutils.7z dosya içeriðindeki .exe dosyalarýný c:\lazarus\fpc\3.0.2\bin\i386-win32 dizinine kopyalayýnýz.
+  + eleraos\rtl_prog dizininin altýndaki derle.bat dosyasýný çalýþtýrarak RTL'yi derleyiniz.
+
+Program (Kernel) Derleme
+-------------------------
+  + eleraos\progs dizini altýndaki gmode (grafik mod programlar) veya tmode (yazý mod programlar) uygulamalarýný, ilgili proje klasörlerinin içeriðine girerek; ister .lpr proje dosyasýný lazarus'ta Ctrl+F9 ile, isterseniz ilgili klasörün altýndaki derle.bat dosyasýný çalýþtýrarak derleyiniz.
+
+Diðer Bilgiler
+--------------
+  + eleraos\progs\gmode ve eleraos\progs\tmode dizini altýndaki derle.bat dosyasýný çalýþtýrarak ilgili dizinin altýndaki tüm projeleri derleyebilir,
+  + eleraos\progs\gmode ve eleraos\progs\tmode dizini altýndaki temizle.bat dosyasýný çalýþtýrarak ilgili dizinin altýndaki tüm projelerin ürettiði gereksiz dosyalarý silebilirsiniz.
+  + eleraos\progs\_g dizini, pascal'da derlenerek oluþturulan grafiksel çalýþtýrýlabilir dosyalarý,
+  + eleraos\progs\_t dizini, pascal'da derlenerek oluþturulan yazý (text) çalýþtýrýlabilir dosyalarý,
+  + eleraos\progs\_a dizini assemblerde derlenerek oluþturulan çalýþtýrýlabilir dosyalarý içerir.

@@ -1,0 +1,5 @@
+Sanal Disk Ýþlemleri (.vhd): (Windows 7)
+
++ Baþlat düðmesine týklayarak arama alanýna shell:sendto komutu giriniz.
++ Açýlan pencereye .bat dosyalarýný (Sanal Disk Baðla / Sanal Disk Baðlantýyý Kes) kopyalayýnýz.
++ Gönder alanýna eklenen 2 menü ile sanal (.vhd) diskinizi sisteme baðlayabilir veya sistemden ayýrabilirsiniz.

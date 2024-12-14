@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="60">
+      <Unit0>
+        <Filename Value="dsyyntcs.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <UsageCount Value="44"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../rtl/linux/elerah.inc"/>
+        <UsageCount Value="11"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/inc/fileh.inc"/>
+        <UsageCount Value="11"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/inc/file.inc"/>
+        <UsageCount Value="11"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../rtl/linux/elera.inc"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../rtl/linux/inc/consts.inc"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../rtl/inc/dos.inc"/>
+        <UsageCount Value="11"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../rtl/inc/dosh.inc"/>
+        <UsageCount Value="11"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../rtl/unix/dos.pp"/>
+        <UnitName Value="Dos"/>
+        <UsageCount Value="11"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../lazarus/fpc/2.6.0/source/rtl/inc/fpintres.pp"/>
+        <CursorPos X="6" Y="15"/>
+        <UsageCount Value="10"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../rtl/linux/inc/message.inc"/>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../rtl/linux/inc/messageh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../rtl/linux/inc/listboxh.inc"/>
+        <UsageCount Value="11"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../rtl/linux/inc/listbox.inc"/>
+        <UsageCount Value="11"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/inc/fpintres.pp"/>
+        <CursorPos X="6" Y="15"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../rtl/linux/forms.pp"/>
+        <UsageCount Value="11"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../rtl/linux/listboxs.pp"/>
+        <UsageCount Value="21"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../rtl/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../rtl/linux/desktops.pp"/>
+        <UsageCount Value="10"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../rtl/linux/buttons.pp"/>
+        <UsageCount Value="10"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../rtl/linux/inc/buttonh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../rtl/linux/inc/button.inc"/>
+        <UsageCount Value="10"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../rtl/linux/inc/power_buttonh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../rtl/linux/inc/power_button.inc"/>
+        <UsageCount Value="10"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../../../rtl_prog/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="13"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="../../../rtl_prog/linux/vo_listbox.pp"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="30"/>
+        <UsageCount Value="11"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="../../../rtl_prog/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="80"/>
+        <CursorPos X="18" Y="91"/>
+        <UsageCount Value="12"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="../../../rtl_prog/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../../../rtl_prog/linux/elera.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="../../../rtl_prog/linux/gn_listview.pp"/>
+        <UnitName Value="vo_listview"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="21" Y="13"/>
+        <UsageCount Value="10"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="../../../rtl_prog/linux/gn_listegorunum.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../../../rtl_prog/linux/inc/listegorunum.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../../../rtl_prog/linux/inc/listegorunumh.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="27" Y="8"/>
+        <UsageCount Value="11"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../../../rtl_prog/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="145"/>
+        <CursorPos X="14" Y="162"/>
+        <UsageCount Value="11"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../../../rtl_prog/linux/inc/draw.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../../../rtl_prog/linux/inc/dosya.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../../../rtl_prog/linux/vo_statusbar.pp"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="14" Y="23"/>
+        <UsageCount Value="10"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="../../../rtl_prog/linux/inc/dosyab.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="temizle.bat"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="23"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="derle.bat"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="23"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="dsyyntcs.ld"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="23"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="../../../rtl_uygulama/linux/gn_listegorunum.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="46"/>
+        <CursorPos Y="46"/>
+        <UsageCount Value="11"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="../../../rtl_uygulama/linux/inc/listegorunumh.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="../../../rtl_uygulama/linux/inc/listegorunum.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="23"/>
+        <UsageCount Value="11"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_panel.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="18"/>
+        <CursorPos Y="39"/>
+        <UsageCount Value="11"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="../../../rtl_uygulama/linux/gn_panel.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="34" Y="27"/>
+        <UsageCount Value="11"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="../../../rtl_uygulama/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="129"/>
+        <CursorPos X="40" Y="144"/>
+        <UsageCount Value="11"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="../../rtl_uygulama/linux/gn_karmaliste.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="29" Y="99"/>
+        <UsageCount Value="10"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="321"/>
+        <CursorPos X="29" Y="343"/>
+        <UsageCount Value="10"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="../../rtl_uygulama/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="5" Y="250"/>
+        <UsageCount Value="10"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="../../rtl_uygulama/linux/n_sistemmesaj.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="../../rtl_uygulama/linux/n_zamanlayici.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="../../rtl_uygulama/linux/n_depolama.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="../../rtl_uygulama/linux/n_ekran.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="../../rtl_uygulama/linux/n_dns.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="../../rtl_uygulama/linux/n_genel.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="../../rtl_uygulama/linux/n_giysi.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="../../rtl_uygulama/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="20" Y="19"/>
+        <UsageCount Value="10"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="../../rtl_uygulama/linux/elera.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="185"/>
+        <CursorPos X="29" Y="209"/>
+        <UsageCount Value="10"/>
+      </Unit59>
+    </Units>
+    <JumpHistory Count="9" HistoryIndex="8">
+      <Position1>
+        <Filename Value="dsyyntcs.lpr"/>
+        <Caret Line="36" Column="41" TopLine="21"/>
+      </Position1>
+      <Position2>
+        <Filename Value="dsyyntcs.lpr"/>
+        <Caret Line="129" Column="41" TopLine="99"/>
+      </Position2>
+      <Position3>
+        <Filename Value="dsyyntcs.lpr"/>
+      </Position3>
+      <Position4>
+        <Filename Value="dsyyntcs.lpr"/>
+        <Caret Line="36" TopLine="15"/>
+      </Position4>
+      <Position5>
+        <Filename Value="dsyyntcs.lpr"/>
+        <Caret Line="161" Column="86" TopLine="133"/>
+      </Position5>
+      <Position6>
+        <Filename Value="dsyyntcs.lpr"/>
+        <Caret Line="10" Column="33"/>
+      </Position6>
+      <Position7>
+        <Filename Value="dsyyntcs.lpr"/>
+        <Caret Line="123" Column="66" TopLine="105"/>
+      </Position7>
+      <Position8>
+        <Filename Value="dsyyntcs.lpr"/>
+        <Caret Line="22" Column="56"/>
+      </Position8>
+      <Position9>
+        <Filename Value="dsyyntcs.lpr"/>
+        <Caret Line="140" Column="27" TopLine="122"/>
+      </Position9>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../_/dsyyntcs.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../rtl_uygulama/linux/units/i386-linux"/>
+      <UnitOutputDirectory Value="../_/_"/>
+      <SrcPath Value="../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Tdsyyntcs.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

@@ -1,0 +1,11 @@
+Çözümlenen Hatalar:
+
+1. Hata: -Os anahtarý aþaðýdaki 2 satýrý ekliyor
+**********************************************************************
+00033f50 <TIMER_SCHEDULE>:
+   33f50:       89 75 f8                mov    %esi,0xfffffff8(%ebp)
+   33f53:       89 7d fc                mov    %edi,0xfffffffc(%ebp)
+
+Çözüm: -Os anahtarý iptal edilerek bu 2 satýrýn iptali saðlandý
+**********************************************************************
+

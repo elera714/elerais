@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="12">
+      <Unit0>
+        <Filename Value="yzmcgor.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../../lazarus/packager/registration/fcllaz.pas"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/inc/processh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/inc/process.inc"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../rtl/linux/system.pp"/>
+        <UnitName Value="System"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="34"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../rtl/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="16"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../rtl/linux/canvas.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11"/>
+        <CursorPos X="5" Y="26"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../../rtl_prog/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../../rtl_prog/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="128"/>
+        <CursorPos X="18" Y="125"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="yzmcgor.ld"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="derle.bat"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="temizle.bat"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit11>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="33" Column="38" TopLine="10"/>
+      </Position1>
+      <Position2>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="42" Column="11" TopLine="19"/>
+      </Position2>
+      <Position3>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="51" Column="13" TopLine="28"/>
+      </Position3>
+      <Position4>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="60" Column="18" TopLine="37"/>
+      </Position4>
+      <Position5>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="33" Column="48" TopLine="19"/>
+      </Position5>
+      <Position6>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="51" Column="14" TopLine="37"/>
+      </Position6>
+      <Position7>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="28" Column="3" TopLine="14"/>
+      </Position7>
+      <Position8>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="51" Column="56" TopLine="37"/>
+      </Position8>
+      <Position9>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="28" Column="35" TopLine="14"/>
+      </Position9>
+      <Position10>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="60" Column="44" TopLine="46"/>
+      </Position10>
+      <Position11>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="18" Column="10"/>
+      </Position11>
+      <Position12>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="19" Column="10"/>
+      </Position12>
+      <Position13>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="28" Column="22" TopLine="14"/>
+      </Position13>
+      <Position14>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="51" Column="51" TopLine="28"/>
+      </Position14>
+      <Position15>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="28" Column="42" TopLine="14"/>
+      </Position15>
+      <Position16>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="16" Column="49"/>
+      </Position16>
+      <Position17>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="19" Column="44"/>
+      </Position17>
+      <Position18>
+        <Filename Value="yzmcgor.lpr"/>
+      </Position18>
+      <Position19>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="39" Column="32" TopLine="19"/>
+      </Position19>
+      <Position20>
+        <Filename Value="yzmcgor.lpr"/>
+      </Position20>
+      <Position21>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="14" Column="8"/>
+      </Position21>
+      <Position22>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="22" Column="8"/>
+      </Position22>
+      <Position23>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="23" Column="10"/>
+      </Position23>
+      <Position24>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="24" Column="14"/>
+      </Position24>
+      <Position25>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="26" Column="6"/>
+      </Position25>
+      <Position26>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="51" Column="38" TopLine="39"/>
+      </Position26>
+      <Position27>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="8"/>
+      </Position27>
+      <Position28>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="25" Column="7" TopLine="7"/>
+      </Position28>
+      <Position29>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="10" Column="33"/>
+      </Position29>
+      <Position30>
+        <Filename Value="yzmcgor.lpr"/>
+        <Caret Line="39" Column="27" TopLine="21"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../_/yzmcgor.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../rtl_uygulama/linux/units/i386-linux"/>
+      <UnitOutputDirectory Value="../_/_"/>
+      <SrcPath Value="../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Tyzmcgor.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

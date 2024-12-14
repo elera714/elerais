@@ -1,0 +1,47 @@
+Güncelleme Tarihi: 29.08.2024
+
+Bu belge, Elera Ýþletim Sistemi çekirdeðinin derlenmesi için gerekli yönergeleri içerir.
+
+Derleme Ortamý:
+---------------
+  Sistem: Windows 7 - (64 / 32 bit)
+  Derleyici: Lazarus 2.0.8, FPC 3.0.4
+  Sanal Makine: Virtualbox 7.0.20
+
+Ön kurulum:
+---------------
+32 bit windows:
+
+  + lazarus-2.0.8-fpc-3.0.4-win32.exe programýný c:\lazarus klasörüne kurunuz
+  
+64 bit windows ortamýnda:
+
+  + lazarus-2.0.8-fpc-3.0.4-win64 programýný c:\lazarus klasörüne kurunuz
+  + lazarus-2.0.8-fpc-3.0.4-cross-i386-win32-win64 programýný c:\lazarus klasörüne kurunuz
+  
+
+RTL Derleme - 32 bit windows
+-----------
+  + elerais\araclar\binutils dizininin altýndaki sýkýþtýrýlmýþ binutils.7z dosya içeriðindeki *.exe dosyalarýný c:\lazarus\fpc\3.0.4\bin\i386-win32 dizinine kopyalayýnýz.
+  + elerais\rtl_cekirdek dizininin altýndaki derle_x86.bat dosyasýný çalýþtýrarak RTL'yi derleyiniz.
+
+RTL Derleme - 64 bit windows
+-----------
+  + elerais\araclar\binutils dizininin altýndaki sýkýþtýrýlmýþ binutils.7z dosya içeriðindeki *.exe dosyalarýný C:\lazarus\fpc\3.0.4\bin\x86_64-win64 dizinine kopyalayýnýz.
+  + elerais\rtl_kernel dizininin altýndaki derle_x64.bat dosyasýný çalýþtýrarak RTL'yi derleyiniz.
+
+Çekirdek (Kernel) Derleme - 32 bit windows
+-------------------------
+  + elerais\cekirdek\cekirdek.lpr dosyasýný isterseniz lazarus'ta Ctrl+F9 ile, isterseniz ilgili klasörün altýndaki derle_x86.bat dosyasýný çalýþtýrarak derleyiniz.
+
+Çekirdek (Kernel) Derleme - 64 bit windows
+-------------------------
+  + elerais\cekirdek\cekirdek.lpr dosyasýný isterseniz lazarus'ta Ctrl+F9 ile, isterseniz ilgili klasörün altýndaki derle_x64.bat dosyasýný çalýþtýrarak derleyiniz.
+
+Diðer Bilgiler
+--------------
+  + adresler.bat dosyasýný, derleyicinin cekirdek.bin dosyasýna atadýðý adres deðerlerini görmek için,
+  + asm_kod.bat dosyasýný, cekirdek.bin dosya içeriðinin assembler kodlarýný görmek için,
+  + derle_x86.bat/derle_x64.bat dosyasýný, cekirdek.lpr çekirdek kodlarýný derlemek için,
+  + kopyala.bat dosyasýný, cekirdek.bin dosyasýný floppy (a: sürücüsü) aygýtýna kopyalamak için,
+  + temizle.bat dosyasýný gereksiz dosyalarý silmek için kullanabilirsiniz.

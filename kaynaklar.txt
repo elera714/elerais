@@ -1,0 +1,11 @@
+http://wiki.osdev.org/Bare_Bones
+http://www.tutorialspoint.com/operating_system/
+http://web.archive.org/web/20160927181920/http://www.getlazarus.org/setup/making/
+http://forum.osdev.org/viewtopic.php?f=1&t=18333
+
+
+https://www.google.com.tr/search?q=intel+opcode++encode&client=opera&oq=intel+opcode++encode&gs_l=heirloom-serp.3...11145.12192.0.13252.7.6.0.1.0.0.129.594.2j4.6.0....0...1ac.1.34.heirloom-serp..5.2.159.mbVmW9h6ivg
+
+http://www.c-jump.com/CIS77/CPU/x86/lecture.html
+http://wiki.osdev.org/X86-64_Instruction_Encoding
+http://www.mathemainzel.info/files/x86asmref.html

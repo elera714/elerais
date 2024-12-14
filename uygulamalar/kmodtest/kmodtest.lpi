@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="18">
+      <Unit0>
+        <Filename Value="kmodtest.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../rtl/linux/inc/writeh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/canvas.pp"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/inc/write.inc"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../../../../../lazarus/fpc/3.0.2/source/packages/fcl-process/src/process.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../../rtl_prog/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="113"/>
+        <CursorPos X="18" Y="131"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../../rtl_prog/linux/gn_baglanti.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../../rtl_prog/linux/inc/gn_baglantib.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../../rtl_prog/linux/inc/gn_baglanti.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../../rtl_prog/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="30" Y="30"/>
+        <UsageCount Value="10"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../../rtl_prog/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../../rtl_prog/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../../rtl_prog/linux/gn_pencere.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../../rtl_prog/linux/inc/gn_pencere.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../../rtl_prog/linux/inc/gn_pencereb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="temizle.bat"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="derle.bat"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="kmodtest.ld"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit17>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="21" Column="23" TopLine="10"/>
+      </Position1>
+      <Position2>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="30" Column="39" TopLine="10"/>
+      </Position2>
+      <Position3>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="45" Column="14" TopLine="22"/>
+      </Position3>
+      <Position4>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="22" Column="3" TopLine="7"/>
+      </Position4>
+      <Position5>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="29" Column="11" TopLine="7"/>
+      </Position5>
+      <Position6>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="30" Column="14" TopLine="7"/>
+      </Position6>
+      <Position7>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="32" Column="30" TopLine="9"/>
+      </Position7>
+      <Position8>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="34" Column="31" TopLine="11"/>
+      </Position8>
+      <Position9>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="36" Column="31" TopLine="13"/>
+      </Position9>
+      <Position10>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="38" Column="31" TopLine="15"/>
+      </Position10>
+      <Position11>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="34" Column="43" TopLine="18"/>
+      </Position11>
+      <Position12>
+        <Filename Value="kmodtest.lpr"/>
+      </Position12>
+      <Position13>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="15" Column="11"/>
+      </Position13>
+      <Position14>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="21" Column="3" TopLine="7"/>
+      </Position14>
+      <Position15>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="30" Column="38" TopLine="7"/>
+      </Position15>
+      <Position16>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="45" Column="11" TopLine="22"/>
+      </Position16>
+      <Position17>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="77" Column="5" TopLine="51"/>
+      </Position17>
+      <Position18>
+        <Filename Value="kmodtest.lpr"/>
+      </Position18>
+      <Position19>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="34" Column="36" TopLine="16"/>
+      </Position19>
+      <Position20>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="10" Column="25"/>
+      </Position20>
+      <Position21>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="21" Column="8"/>
+      </Position21>
+      <Position22>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="22" Column="10"/>
+      </Position22>
+      <Position23>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="44" Column="8" TopLine="23"/>
+      </Position23>
+      <Position24>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="77" Column="9" TopLine="41"/>
+      </Position24>
+      <Position25>
+        <Filename Value="kmodtest.lpr"/>
+      </Position25>
+      <Position26>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="25" Column="7" TopLine="7"/>
+      </Position26>
+      <Position27>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="30" TopLine="22"/>
+      </Position27>
+      <Position28>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="83" Column="32" TopLine="66"/>
+      </Position28>
+      <Position29>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="10" Column="33"/>
+      </Position29>
+      <Position30>
+        <Filename Value="kmodtest.lpr"/>
+        <Caret Line="44" Column="27" TopLine="26"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../_/kmodtest.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../rtl_uygulama/linux/units/i386-linux"/>
+      <UnitOutputDirectory Value="../_/_"/>
+      <SrcPath Value="../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Tkmodtest.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <Title Value="grafik1"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="22">
+      <Unit0>
+        <Filename Value="grafik1.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <UsageCount Value="73"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../rtl/linux/inc/screenh.inc"/>
+        <UsageCount Value="5"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/inc/screen.inc"/>
+        <UsageCount Value="5"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/inc/consts.inc"/>
+        <UsageCount Value="34"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../rtl/linux/screens.pp"/>
+        <UsageCount Value="21"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../rtl/linux/forms.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="16"/>
+        <CursorPos X="14" Y="30"/>
+        <UsageCount Value="36"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../rtl/linux/canvas.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="96"/>
+        <CursorPos Y="121"/>
+        <UsageCount Value="36"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../rtl/linux/inc/drawh.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="40" Y="5"/>
+        <UsageCount Value="11"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../rtl/linux/inc/draw.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="35"/>
+        <CursorPos X="10" Y="57"/>
+        <UsageCount Value="11"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../rtl/inc/systemh.inc"/>
+        <UsageCount Value="34"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../rtl/linux/inc/timerh.inc"/>
+        <UsageCount Value="33"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../rtl/linux/inc/timer.inc"/>
+        <UsageCount Value="33"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../rtl/linux/timers.pp"/>
+        <UsageCount Value="44"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../rtl/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <CursorPos Y="26"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../rtl/linux/desktops.pp"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../rtl/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="13"/>
+        <CursorPos X="3" Y="27"/>
+        <UsageCount Value="11"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../../../../../lazarus/fpc/2.6.0/source/rtl/inc/fpintres.pp"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="5" Y="14"/>
+        <UsageCount Value="11"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../../../rtl_prog/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="17" Y="33"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../../rtl_prog/linux/gn_pencere.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="derle.bat"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="grafik1.ld"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="temizle.bat"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit21>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="43" Column="15" TopLine="20"/>
+      </Position1>
+      <Position2>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="44" Column="15" TopLine="21"/>
+      </Position2>
+      <Position3>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="33" Column="47" TopLine="19"/>
+      </Position3>
+      <Position4>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="44" Column="22" TopLine="29"/>
+      </Position4>
+      <Position5>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="21" Column="21" TopLine="7"/>
+      </Position5>
+      <Position6>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="31" Column="11" TopLine="8"/>
+      </Position6>
+      <Position7>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="33" Column="14" TopLine="10"/>
+      </Position7>
+      <Position8>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="35" Column="11" TopLine="12"/>
+      </Position8>
+      <Position9>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="61" Column="15" TopLine="38"/>
+      </Position9>
+      <Position10>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="63" Column="68" TopLine="46"/>
+      </Position10>
+      <Position11>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="26" Column="7" TopLine="12"/>
+      </Position11>
+      <Position12>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="64" Column="58" TopLine="47"/>
+      </Position12>
+      <Position13>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="18" Column="30"/>
+      </Position13>
+      <Position14>
+        <Filename Value="grafik1.lpr"/>
+      </Position14>
+      <Position15>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="38" Column="40" TopLine="19"/>
+      </Position15>
+      <Position16>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="48" Column="26" TopLine="35"/>
+      </Position16>
+      <Position17>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="15" Column="24"/>
+      </Position17>
+      <Position18>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="14" Column="8"/>
+      </Position18>
+      <Position19>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="20" Column="8"/>
+      </Position19>
+      <Position20>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="21" Column="10"/>
+      </Position20>
+      <Position21>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="22" Column="14"/>
+      </Position21>
+      <Position22>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="10" Column="25"/>
+      </Position22>
+      <Position23>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="25" Column="7" TopLine="7"/>
+      </Position23>
+      <Position24>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="33" Column="3" TopLine="22"/>
+      </Position24>
+      <Position25>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="10" Column="24" TopLine="4"/>
+      </Position25>
+      <Position26>
+        <Filename Value="grafik1.lpr"/>
+      </Position26>
+      <Position27>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="73" Column="11" TopLine="50"/>
+      </Position27>
+      <Position28>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="10" Column="33"/>
+      </Position28>
+      <Position29>
+        <Filename Value="grafik1.lpr"/>
+      </Position29>
+      <Position30>
+        <Filename Value="grafik1.lpr"/>
+        <Caret Line="37" Column="27" TopLine="19"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../_/grafik1.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../rtl_uygulama/linux/units/i386-linux"/>
+      <UnitOutputDirectory Value="../_/_"/>
+      <SrcPath Value="../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Tgrafik1.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

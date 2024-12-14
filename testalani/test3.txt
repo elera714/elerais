@@ -1,0 +1,71 @@
+
+test3.o:     file format pe-i386
+
+
+Disassembly of section .text.n_test3$_$ttest_$__$$_create$$longbool:
+
+00000000 <TEST3$_$TTEST_$__$$_CREATE$$LONGBOOL>:
+   0:	55                   	push   ebp
+   1:	89 e5                	mov    ebp,esp
+   3:	8d 64 24 f8          	lea    esp,[esp-0x8]
+   7:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+   a:	89 55 fc             	mov    DWORD PTR [ebp-0x4],edx
+   d:	8d 55 fc             	lea    edx,[ebp-0x4]
+  10:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+  13:	b9 00 00 00 00       	mov    ecx,0x0
+  18:	e8 00 00 00 00       	call   1d <TEST3$_$TTEST_$__$$_CREATE$$LONGBOOL+0x1d>
+  1d:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+  20:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
+  24:	74 02                	je     28 <TEST3$_$TTEST_$__$$_CREATE$$LONGBOOL+0x28>
+  26:	eb 02                	jmp    2a <TEST3$_$TTEST_$__$$_CREATE$$LONGBOOL+0x2a>
+  28:	eb 00                	jmp    2a <TEST3$_$TTEST_$__$$_CREATE$$LONGBOOL+0x2a>
+  2a:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+  2d:	c9                   	leave  
+  2e:	c3                   	ret    
+	...
+
+Disassembly of section .text.n_test3$_$ttest_$__$$_destroy:
+
+00000000 <TEST3$_$TTEST_$__$$_DESTROY>:
+   0:	55                   	push   ebp
+   1:	89 e5                	mov    ebp,esp
+   3:	8d 64 24 f8          	lea    esp,[esp-0x8]
+   7:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+   a:	89 55 fc             	mov    DWORD PTR [ebp-0x4],edx
+   d:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
+  10:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+  13:	b9 00 00 00 00       	mov    ecx,0x0
+  18:	e8 00 00 00 00       	call   1d <TEST3$_$TTEST_$__$$_DESTROY+0x1d>
+  1d:	c9                   	leave  
+  1e:	c3                   	ret    
+	...
+
+Disassembly of section .rdata.n_VMT_$TEST3_$$_TTEST:
+
+00000000 <VMT_$TEST3_$$_TTEST>:
+   0:	04 00                	add    al,0x0
+   2:	00 00                	add    BYTE PTR [eax],al
+   4:	fc                   	cld    
+   5:	ff                   	(bad)  
+   6:	ff                   	(bad)  
+   7:	ff 00                	inc    DWORD PTR [eax]
+   9:	00 00                	add    BYTE PTR [eax],al
+   b:	00 00                	add    BYTE PTR [eax],al
+   d:	00 00                	add    BYTE PTR [eax],al
+	...
+
+Disassembly of section .rdata.n_INIT_$TEST3_$$_TTEST:
+
+00000000 <INIT_$TEST3_$$_TTEST>:
+   0:	10 05 54 54 65 73    	adc    BYTE PTR ds:0x73655454,al
+   6:	74 04                	je     c <INIT_$TEST3_$$_TTEST+0xc>
+	...
+
+Disassembly of section .rdata.n_RTTI_$TEST3_$$_TTEST:
+
+00000000 <RTTI_$TEST3_$$_TTEST>:
+   0:	10 05 54 54 65 73    	adc    BYTE PTR ds:0x73655454,al
+   6:	74 04                	je     c <RTTI_$TEST3_$$_TTEST+0xc>
+   8:	00 00                	add    BYTE PTR [eax],al
+   a:	00 01                	add    BYTE PTR [ecx],al
+	...

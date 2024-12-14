@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <Title Value="bharita"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="17">
+      <Unit0>
+        <Filename Value="bharita.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <UsageCount Value="29"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../rtl/linux/inc/writeh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/inc/write.inc"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/forms.pp"/>
+        <CursorPos X="14" Y="30"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../rtl/linux/canvas.pp"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../rtl/linux/buttons.pp"/>
+        <TopLine Value="20"/>
+        <CursorPos X="30" Y="18"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../rtl/linux/screens.pp"/>
+        <TopLine Value="24"/>
+        <CursorPos X="33" Y="40"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../../rtl_prog/linux/inc/edith.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../../rtl_prog/linux/inc/edit.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../../rtl_prog/linux/edit.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../../rtl_prog/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="14"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../../rtl_prog/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="69" Y="29"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../../rtl_prog/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="bharita.ld"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="derle.bat"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="temizle.bat"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../../rtl_uygulama/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="20"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="10"/>
+      </Unit16>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="5" Column="18"/>
+      </Position1>
+      <Position2>
+        <Filename Value="bharita.lpr"/>
+      </Position2>
+      <Position3>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="59" Column="52" TopLine="45"/>
+      </Position3>
+      <Position4>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="84" Column="45" TopLine="70"/>
+      </Position4>
+      <Position5>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="31" Column="33" TopLine="16"/>
+      </Position5>
+      <Position6>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="32" Column="20" TopLine="16"/>
+      </Position6>
+      <Position7>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="33" Column="14" TopLine="16"/>
+      </Position7>
+      <Position8>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="40" Column="11" TopLine="27"/>
+      </Position8>
+      <Position9>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="38" Column="35" TopLine="25"/>
+      </Position9>
+      <Position10>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="54" Column="10" TopLine="40"/>
+      </Position10>
+      <Position11>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="129" Column="9" TopLine="102"/>
+      </Position11>
+      <Position12>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="35" Column="11" TopLine="22"/>
+      </Position12>
+      <Position13>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="58" Column="53" TopLine="45"/>
+      </Position13>
+      <Position14>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="17" Column="24"/>
+      </Position14>
+      <Position15>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="18" Column="8"/>
+      </Position15>
+      <Position16>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="26" Column="8"/>
+      </Position16>
+      <Position17>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="27" Column="10"/>
+      </Position17>
+      <Position18>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="28" Column="14"/>
+      </Position18>
+      <Position19>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="30" Column="14"/>
+      </Position19>
+      <Position20>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="32" Column="32"/>
+      </Position20>
+      <Position21>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="10" Column="25"/>
+      </Position21>
+      <Position22>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="20" Column="52"/>
+      </Position22>
+      <Position23>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="26" Column="17"/>
+      </Position23>
+      <Position24>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="95" Column="13" TopLine="66"/>
+      </Position24>
+      <Position25>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="114" Column="13" TopLine="96"/>
+      </Position25>
+      <Position26>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="30" Column="7" TopLine="12"/>
+      </Position26>
+      <Position27>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="61" Column="3" TopLine="51"/>
+      </Position27>
+      <Position28>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="21" Column="3" TopLine="8"/>
+      </Position28>
+      <Position29>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="10" Column="33"/>
+      </Position29>
+      <Position30>
+        <Filename Value="bharita.lpr"/>
+        <Caret Line="69" Column="27" TopLine="51"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../_/bharita.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../rtl_uygulama/linux/units/i386-linux"/>
+      <UnitOutputDirectory Value="../_/_"/>
+      <SrcPath Value="../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Tbharita.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

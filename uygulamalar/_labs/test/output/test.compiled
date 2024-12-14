@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="C:\lazarus\fpc\3.0.4\bin\x86_64-win64\fpc.exe" Date="1325662982"/>
+  <Params Value=" -Tlinux -Pi386 -MObjFPC -Scghi -CX -Os -g -gl -Xs -XX -k-Ttest.ld -l -vewnhibq -FiC:\Users\fatih\Documents\bitbucket\eleraos\uygulamalar\gmode\_labs\test\output -FuC:\Users\fatih\Documents\bitbucket\eleraos\uygulamalar\gmode\_labs\rtl\units\i386-linux -FuC:\Users\fatih\Documents\bitbucket\eleraos\uygulamalar\gmode\_labs\test\ -FUC:\Users\fatih\Documents\bitbucket\eleraos\uygulamalar\gmode\_labs\test\output\ -FEC:\Users\fatih\Documents\bitbucket\eleraos\uygulamalar\gmode\_labs\test\ -oC:\Users\fatih\Documents\bitbucket\eleraos\uygulamalar\gmode\_labs\test\test.c test.lpr"/>
+  <Complete Value="False"/>
+</CONFIG>

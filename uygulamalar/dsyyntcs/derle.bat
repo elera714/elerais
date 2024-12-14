@@ -1,0 +1,1 @@
+fpc -Tlinux -Pi386 -FU..\_\_ -Fu..\..\rtl_uygulama\linux\units\i386-linux -Sc -Sg -Si -Sh -CX -Os -Xs -XX -k-Tdsyyntcs.ld -o..\_\dsyyntcs.c dsyyntcs.lpr

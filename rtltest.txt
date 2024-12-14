@@ -1,0 +1,21 @@
+Sistem Rtl İlişkileri:
+********************************************************************************
+
+Aşağıdaki rtl komutların tümü sistem içerisinde kullanılarak test edilmiştir
+
+  + CompareByte
+  + CompareChar ve diğerleri
+  + Exit
+  + FillByte
+  + FillChar
+  + FillDWord
+  + FillWord
+  + Hi
+  + Lo
+  + Copy - string değerlerle çalışır (ilk index = 1)
+  + Move - işaretçiler ile çalışır (ilk index = 0)
+  + SizeOf
+  + StrLen
+  + Chr
+  + Ord
+  + Pos

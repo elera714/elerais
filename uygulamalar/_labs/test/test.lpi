@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <Title Value="test"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="61">
+      <Unit0>
+        <Filename Value="test.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="19"/>
+        <CursorPos X="25" Y="32"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../rtl/linux/sysos.inc"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/i386/sysnr.inc"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/i386/syscallh.inc"/>
+        <TopLine Value="6"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../rtl/linux/ossysc.inc"/>
+        <TopLine Value="17"/>
+        <CursorPos X="10" Y="61"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../rtl/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <TopLine Value="491"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../rtl/linux/system.pp"/>
+        <UnitName Value="System"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="361"/>
+        <UsageCount Value="12"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../rtl/inc/system.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="310"/>
+        <UsageCount Value="12"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../rtl/linux/osdefs.inc"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../rtl/i386/i386.inc"/>
+        <UsageCount Value="10"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../rtl/inc/objc.pp"/>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../rtl/inc/objc1.inc"/>
+        <TopLine Value="265"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../rtl/inc/objcbase.pp"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../rtl/inc/objcnf.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="274"/>
+        <UsageCount Value="12"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../rtl/inc/objects.pp"/>
+        <UnitName Value="Objects"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2881"/>
+        <CursorPos X="39" Y="2911"/>
+        <UsageCount Value="12"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../rtl/inc/objpas.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1048"/>
+        <CursorPos Y="109"/>
+        <UsageCount Value="11"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../rtl/inc/objpash.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="20" Y="413"/>
+        <UsageCount Value="10"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../rtl/linux/elera.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="12"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../rtl/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="12"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../rtl/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="73"/>
+        <CursorPos X="40" Y="94"/>
+        <UsageCount Value="12"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../rtl/linux/inc/fileh.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="15" Y="7"/>
+        <UsageCount Value="12"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../rtl/linux/inc/file.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="60"/>
+        <CursorPos X="56" Y="54"/>
+        <UsageCount Value="12"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../rtl/inc/dos.inc"/>
+        <TopLine Value="53"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../rtl/inc/file.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../rtl/inc/text.inc"/>
+        <TopLine Value="1828"/>
+        <CursorPos X="12" Y="1831"/>
+        <UsageCount Value="10"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="../rtl/inc/textrec.inc"/>
+        <TopLine Value="10"/>
+        <UsageCount Value="10"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="../rtl/inc/systemh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="552"/>
+        <CursorPos Y="977"/>
+        <UsageCount Value="11"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="../rtl/i386/strpas.inc"/>
+        <TopLine Value="54"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../rtl/inc/filerec.inc"/>
+        <CursorPos Y="19"/>
+        <UsageCount Value="10"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="../rtl/unix/sysunixh.inc"/>
+        <TopLine Value="30"/>
+        <UsageCount Value="10"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="../rtl/unix/crt.pp"/>
+        <UnitName Value="Crt"/>
+        <TopLine Value="1368"/>
+        <CursorPos X="5" Y="1386"/>
+        <UsageCount Value="10"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../rtl/unix/dos.pp"/>
+        <UnitName Value="Dos"/>
+        <TopLine Value="249"/>
+        <UsageCount Value="10"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../rtl/unix/sysfile.inc"/>
+        <TopLine Value="142"/>
+        <CursorPos X="35" Y="172"/>
+        <UsageCount Value="10"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../rtl/unix/unix.pp"/>
+        <UnitName Value="Unix"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1314"/>
+        <UsageCount Value="11"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../rtl/unix/x86.pp"/>
+        <TopLine Value="76"/>
+        <UsageCount Value="10"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../rtl/unix/sysutils.pp"/>
+        <UsageCount Value="10"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../rtl/inc/cgeneric.inc"/>
+        <TopLine Value="7"/>
+        <UsageCount Value="10"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="../rtl/inc/exeinfo.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="986"/>
+        <UsageCount Value="11"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="../rtl/inc/typefile.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/objpas/objpas.pp"/>
+        <CursorPos X="30" Y="19"/>
+        <UsageCount Value="10"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/objpas/strutils.pp"/>
+        <UsageCount Value="10"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/objpas/sysutils/filutilh.inc"/>
+        <TopLine Value="48"/>
+        <UsageCount Value="10"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/objpas/sysutils/sysutilh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/objpas/sysutils/sysutils.inc"/>
+        <TopLine Value="678"/>
+        <UsageCount Value="10"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/objpas/sysutils/osutil.inc"/>
+        <TopLine Value="212"/>
+        <CursorPos X="40" Y="229"/>
+        <UsageCount Value="10"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/inc/systemh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/objpas/classes/filer.inc"/>
+        <UsageCount Value="10"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/inc/system.inc"/>
+        <UsageCount Value="10"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="../rtl/objpas/objpas.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="411"/>
+        <UsageCount Value="11"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="../rtl/inc/heaptrc.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1144"/>
+        <UsageCount Value="11"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="../rtl/win/crt.pp"/>
+        <TopLine Value="870"/>
+        <CursorPos Y="906"/>
+        <UsageCount Value="10"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="../rtl/inc/printer.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="../rtl/unix/printer.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4"/>
+        <UsageCount Value="11"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="../rtl/inc/charset.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="../rtl/inc/sockets.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="../rtl/inc/iso7185.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="../rtl/linux/linuxvcs.pp"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="26"/>
+        <UsageCount Value="11"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="../rtl/inc/threadvr.inc"/>
+        <UsageCount Value="10"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="../rtl/inc/compproc.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="30" Y="682"/>
+        <UsageCount Value="11"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="../rtl/inc/variants.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit59>
+      <Unit60>
+        <Filename Value="../../../../widgets/eleram.pas"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit60>
+    </Units>
+    <JumpHistory Count="4" HistoryIndex="3">
+      <Position1>
+        <Filename Value="test.lpr"/>
+        <Caret Line="55" Column="25" TopLine="21"/>
+      </Position1>
+      <Position2>
+        <Filename Value="test.lpr"/>
+        <Caret Line="25" Column="21" TopLine="8"/>
+      </Position2>
+      <Position3>
+        <Filename Value="test.lpr"/>
+        <Caret Line="59" Column="10" TopLine="30"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../../../../widgets/eleram.pas"/>
+        <Caret Line="381" Column="41" TopLine="363"/>
+      </Position4>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="test.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../rtl/units/i386-linux"/>
+      <UnitOutputDirectory Value="output"/>
+      <SrcPath Value="../../../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Ttest.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

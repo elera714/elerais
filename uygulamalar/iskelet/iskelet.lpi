@@ -1,0 +1,962 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+        <AlwaysBuild Value="True"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="129">
+      <Unit0>
+        <Filename Value="iskelet.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="32" Y="9"/>
+        <UsageCount Value="37"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../rtl/linux/canvas.pp"/>
+        <UsageCount Value="11"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/inc/writeh.inc"/>
+        <UsageCount Value="11"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/inc/write.inc"/>
+        <UsageCount Value="11"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../rtl/linux/forms.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../rtl/linux/elerah.inc"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../rtl/linux/inc/formh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../rtl/linux/inc/form.inc"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../rtl/linux/inc/consts.inc"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../../../../lazarus/fpc/2.6.2/source/rtl/inc/fpintres.pp"/>
+        <CursorPos X="5" Y="14"/>
+        <UsageCount Value="10"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="anabirim.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="32" Y="9"/>
+        <UsageCount Value="32"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../rtl/linux/process.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../rtl/linux/system.pp"/>
+        <UnitName Value="System"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="27"/>
+        <CursorPos X="13" Y="34"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../rtl/inc/intres.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="25"/>
+        <CursorPos X="24" Y="34"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../prog_rtl/inc/intres.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="25"/>
+        <CursorPos X="24" Y="34"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../prog_rtl/linux/forms.pp"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="17"/>
+        <UsageCount Value="10"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../prog_rtl/linux/inc/form.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="6"/>
+        <CursorPos X="30" Y="20"/>
+        <UsageCount Value="10"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../prog_rtl/linux/inc/formh.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="36" Y="4"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../prog_rtl/linux/inc/_objecth.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../prog_rtl/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="54" Y="22"/>
+        <UsageCount Value="10"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../prog_rtl/linux/inc/draw.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../../prog_rtl/linux/forms.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="13"/>
+        <CursorPos X="14" Y="30"/>
+        <UsageCount Value="10"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../../prog_rtl/linux/canvas.pp"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="23" Y="17"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../../prog_rtl/linux/system.pp"/>
+        <UnitName Value="System"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="17"/>
+        <CursorPos X="5" Y="34"/>
+        <UsageCount Value="10"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../../../rtl_prog/linux/tuval.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="32" Y="31"/>
+        <UsageCount Value="10"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="../../../rtl_prog/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="11"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="../../../rtl_prog/linux/vo_form.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="16"/>
+        <CursorPos X="44" Y="28"/>
+        <UsageCount Value="10"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="../../../rtl_prog/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="15"/>
+        <CursorPos X="37" Y="12"/>
+        <UsageCount Value="11"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../../../rtl_prog/linux/gn_pencere.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="../../../rtl_prog/inc/objpas.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="../../../rtl_prog/inc/system.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../../../rtl_prog/linux/_object.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2"/>
+        <UsageCount Value="10"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../../../rtl_prog/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="96"/>
+        <CursorPos X="13" Y="114"/>
+        <UsageCount Value="11"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../../../rtl_prog/objpas/objpas.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../../../rtl_prog/linux/inc/pencereb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../../../rtl_prog/linux/inc/pencere.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../../../rtl_prog/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="235"/>
+        <CursorPos X="18" Y="243"/>
+        <UsageCount Value="10"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="../../../rtl_prog/linux/process.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="43" Y="19"/>
+        <UsageCount Value="10"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="../../../rtl_prog/linux/inc/olay.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="../../../rtl_prog/linux/inc/olayb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="temizle.bat"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="28"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="derle.bat"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="2"/>
+        <UsageCount Value="28"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="iskelet.ld"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="28"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="../../../rtl_uygulama/linux/tuval.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="../../../rtl_uygulama/linux/gn_degerdugmesi.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_degerdugmesi.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="14" Y="8"/>
+        <UsageCount Value="10"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_degerdugmesib.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="../../../rtl_uygulama/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="25" Y="31"/>
+        <UsageCount Value="11"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="../../../rtl_uygulama/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="377"/>
+        <CursorPos X="25" Y="377"/>
+        <UsageCount Value="11"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="../../../rtl_uygulama/linux/inc/paylasim.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="42" Y="20"/>
+        <UsageCount Value="10"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="../../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="8"/>
+        <UsageCount Value="10"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="../../../rtl_uygulama/linux/gn_resimdugme.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="../../../rtl_uygulama/linux/gn_kaydirmacubugu.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="29"/>
+        <CursorPos X="102" Y="35"/>
+        <UsageCount Value="10"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="../../../rtl_uygulama/linux/gn_gucdugme.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="../../../rtl_uygulama/linux/gn_giriskutusu.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="13"/>
+        <UsageCount Value="10"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_giriskutusub.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_giriskutusu.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="../../../rtl_uygulama/linux/gn_resimdugmesi.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_resimdugmeb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_resimdugme.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit59>
+      <Unit60>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_islemgostergesi.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit60>
+      <Unit61>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_islemgostergesib.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit61>
+      <Unit62>
+        <Filename Value="../../../rtl_uygulama/linux/gn_islemgostergesi.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="13"/>
+        <UsageCount Value="10"/>
+      </Unit62>
+      <Unit63>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_pencereb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit63>
+      <Unit64>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_pencere.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit64>
+      <Unit65>
+        <Filename Value="../../../rtl_uygulama/linux/gn_pencere.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="8" Y="18"/>
+        <UsageCount Value="11"/>
+      </Unit65>
+      <Unit66>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_kaydirmacubugub.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit66>
+      <Unit67>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_kaydirmacubugu.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit67>
+      <Unit68>
+        <Filename Value="../../../rtl_uygulama/linux/gn_defter.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="13"/>
+        <UsageCount Value="10"/>
+      </Unit68>
+      <Unit69>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_defterb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit69>
+      <Unit70>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_defter.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit70>
+      <Unit71>
+        <Filename Value="../../../rtl_uygulama/linux/gn_etiket.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit71>
+      <Unit72>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_etiketb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit72>
+      <Unit73>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_etiket.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit73>
+      <Unit74>
+        <Filename Value="../../../rtl_uygulama/linux/gn_listegorunum.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit74>
+      <Unit75>
+        <Filename Value="../../../rtl_uygulama/linux/inc/listegorunumh.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit75>
+      <Unit76>
+        <Filename Value="../../../rtl_uygulama/linux/inc/listegorunum.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit76>
+      <Unit77>
+        <Filename Value="../../../rtl_uygulama/linux/gn_baglanti.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit77>
+      <Unit78>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_baglantib.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit78>
+      <Unit79>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_baglanti.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit79>
+      <Unit80>
+        <Filename Value="../../../rtl_uygulama/linux/gn_masaustu.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit80>
+      <Unit81>
+        <Filename Value="../../../rtl_uygulama/linux/inc/masaustub.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit81>
+      <Unit82>
+        <Filename Value="../../../rtl_uygulama/linux/inc/masaustu.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit82>
+      <Unit83>
+        <Filename Value="../../../rtl_uygulama/linux/gn_durumcubugu.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit83>
+      <Unit84>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_durumcubugub.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit84>
+      <Unit85>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_durumcubugu.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit85>
+      <Unit86>
+        <Filename Value="../../../rtl_uygulama/linux/gn_karmaliste.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="89"/>
+        <CursorPos Y="124"/>
+        <UsageCount Value="10"/>
+      </Unit86>
+      <Unit87>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_karmalisteb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit87>
+      <Unit88>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_karmaliste.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit88>
+      <Unit89>
+        <Filename Value="../../../rtl_uygulama/linux/gn_menu.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_menub.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit90>
+      <Unit91>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_menu.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit91>
+      <Unit92>
+        <Filename Value="../../../rtl_uygulama/linux/gn_acilirmenu.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit92>
+      <Unit93>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_acilirmenub.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit93>
+      <Unit94>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_acilirmenu.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit94>
+      <Unit95>
+        <Filename Value="../../../rtl_uygulama/linux/gn_panel.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit95>
+      <Unit96>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_panelb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit96>
+      <Unit97>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gn_panel.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit97>
+      <Unit98>
+        <Filename Value="../../../rtl_uygulama/linux/gorev.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="110"/>
+        <CursorPos X="54" Y="135"/>
+        <UsageCount Value="10"/>
+      </Unit98>
+      <Unit99>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gorevb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit99>
+      <Unit100>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gorev.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit100>
+      <Unit101>
+        <Filename Value="../../../rtl_uygulama/linux/ekran.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="18"/>
+        <UsageCount Value="10"/>
+      </Unit101>
+      <Unit102>
+        <Filename Value="../../../rtl_uygulama/linux/n_ekran.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="13"/>
+        <UsageCount Value="10"/>
+      </Unit102>
+      <Unit103>
+        <Filename Value="../../../rtl_uygulama/linux/inc/ekranb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit103>
+      <Unit104>
+        <Filename Value="../../../rtl_uygulama/linux/inc/ekran.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit104>
+      <Unit105>
+        <Filename Value="../../../rtl_uygulama/linux/n_gorev.pas"/>
+        <UnitName Value="gorev"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="16" Y="6"/>
+        <UsageCount Value="10"/>
+      </Unit105>
+      <Unit106>
+        <Filename Value="../../../rtl_uygulama/linux/inc/sistemmesajb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit106>
+      <Unit107>
+        <Filename Value="../../../rtl_uygulama/linux/inc/sistemmesaj.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit107>
+      <Unit108>
+        <Filename Value="../../../rtl_uygulama/linux/sistemmesaj.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit108>
+      <Unit109>
+        <Filename Value="../../../rtl_uygulama/linux/n_sistemmesaj.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit109>
+      <Unit110>
+        <Filename Value="../../../rtl_uygulama/linux/paylasim.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit110>
+      <Unit111>
+        <Filename Value="../../../rtl_uygulama/linux/n_tuval.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="13"/>
+        <CursorPos Y="262"/>
+        <UsageCount Value="11"/>
+      </Unit111>
+      <Unit112>
+        <Filename Value="../../../rtl_uygulama/linux/inc/cizimb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit112>
+      <Unit113>
+        <Filename Value="../../../rtl_uygulama/linux/inc/cizim.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit113>
+      <Unit114>
+        <Filename Value="../../../rtl_uygulama/linux/inc/yazimb.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit114>
+      <Unit115>
+        <Filename Value="../../../rtl_uygulama/linux/inc/yazim.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit115>
+      <Unit116>
+        <Filename Value="../../../rtl_uygulama/linux/zamanlayici.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit116>
+      <Unit117>
+        <Filename Value="../../../rtl_uygulama/linux/zamanlayici.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="10"/>
+      </Unit117>
+      <Unit118>
+        <Filename Value="../../../rtl_uygulama/linux/n_zamanlayici.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="12" Y="50"/>
+        <UsageCount Value="11"/>
+      </Unit118>
+      <Unit119>
+        <Filename Value="../../rtl_uygulama/linux/system.pp"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="20"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit119>
+      <Unit120>
+        <Filename Value="birim2.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit120>
+      <Unit121>
+        <Filename Value="birim3.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+      </Unit121>
+      <Unit122>
+        <Filename Value="../../rtl_uygulama/linux/n_sistemmesaj.pas"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="47"/>
+        <CursorPos X="31" Y="76"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit122>
+      <Unit123>
+        <Filename Value="../../rtl_uygulama/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit123>
+      <Unit124>
+        <Filename Value="../../rtl_uygulama/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit124>
+      <Unit125>
+        <Filename Value="../../rtl_uygulama/linux/elera.inc"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="112"/>
+        <CursorPos Y="129"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit125>
+      <Unit126>
+        <Filename Value="../../rtl_uygulama/linux/n_genel.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit126>
+      <Unit127>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <EditorIndex Value="8"/>
+        <CursorPos X="33" Y="61"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit127>
+      <Unit128>
+        <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="284"/>
+        <CursorPos X="40" Y="302"/>
+        <UsageCount Value="10"/>
+      </Unit128>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="birim2.pas"/>
+        <Caret Line="59" Column="45" TopLine="34"/>
+      </Position1>
+      <Position2>
+        <Filename Value="birim3.pas"/>
+        <Caret Line="29" Column="11" TopLine="11"/>
+      </Position2>
+      <Position3>
+        <Filename Value="birim3.pas"/>
+        <Caret Line="33" Column="39" TopLine="15"/>
+      </Position3>
+      <Position4>
+        <Filename Value="birim3.pas"/>
+        <Caret Line="71" Column="45" TopLine="46"/>
+      </Position4>
+      <Position5>
+        <Filename Value="anabirim.pas"/>
+        <Caret Line="26" Column="9" TopLine="7"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="29" Column="21" TopLine="16"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="61" Column="3" TopLine="49"/>
+      </Position7>
+      <Position8>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="45" Column="39" TopLine="29"/>
+      </Position8>
+      <Position9>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="153" Column="10" TopLine="141"/>
+      </Position9>
+      <Position10>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="29" Column="40" TopLine="18"/>
+      </Position10>
+      <Position11>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="66" Column="4" TopLine="63"/>
+      </Position11>
+      <Position12>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="29" Column="15" TopLine="16"/>
+      </Position12>
+      <Position13>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="66" Column="20" TopLine="63"/>
+      </Position13>
+      <Position14>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="28" Column="20" TopLine="16"/>
+      </Position14>
+      <Position15>
+        <Filename Value="iskelet.lpr"/>
+        <Caret Line="23" Column="22" TopLine="5"/>
+      </Position15>
+      <Position16>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="69" Column="24" TopLine="66"/>
+      </Position16>
+      <Position17>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="26" Column="15" TopLine="15"/>
+      </Position17>
+      <Position18>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="63" Column="3" TopLine="60"/>
+      </Position18>
+      <Position19>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="57" Column="29" TopLine="42"/>
+      </Position19>
+      <Position20>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="236" Column="25" TopLine="216"/>
+      </Position20>
+      <Position21>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="26" Column="21" TopLine="17"/>
+      </Position21>
+      <Position22>
+        <Filename Value="iskelet.lpr"/>
+        <Caret Line="9" Column="33"/>
+      </Position22>
+      <Position23>
+        <Filename Value="birim3.pas"/>
+        <Caret Line="60" Column="27" TopLine="42"/>
+      </Position23>
+      <Position24>
+        <Filename Value="birim3.pas"/>
+        <Caret Line="68" Column="27" TopLine="46"/>
+      </Position24>
+      <Position25>
+        <Filename Value="birim3.pas"/>
+        <Caret Line="77" Column="29" TopLine="46"/>
+      </Position25>
+      <Position26>
+        <Filename Value="birim2.pas"/>
+        <Caret Line="56" Column="27" TopLine="34"/>
+      </Position26>
+      <Position27>
+        <Filename Value="birim3.pas"/>
+        <Caret Line="64" Column="48" TopLine="46"/>
+      </Position27>
+      <Position28>
+        <Filename Value="anabirim.pas"/>
+        <Caret Line="90" Column="62" TopLine="61"/>
+      </Position28>
+      <Position29>
+        <Filename Value="birim2.pas"/>
+        <Caret Line="54" Column="56" TopLine="34"/>
+      </Position29>
+      <Position30>
+        <Filename Value="birim3.pas"/>
+        <Caret Line="19" Column="5" TopLine="43"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../_/iskelet.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../rtl_uygulama/linux/units/i386-linux"/>
+      <UnitOutputDirectory Value="../_/_"/>
+      <SrcPath Value="../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Tiskelet.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

@@ -1,0 +1,29 @@
+Görsel Nesneler
+==================================
+TAcilirMenu		- açýlýr menü (TPopupMenu)
+TAracCubugu		- araç çubuðu (TToolBar)
+TBaglanti		- baðlantý nesnesi
+TDefter			- defter nesnesi (TMemo)
+TDegerDugmesi	- deðer artýrma / eksiltme düðmesi (TUpDown)
+TDegerListesi	- deðer listesi (TValueListeEditor)
+TDugme			- düðme nesnesi (TButton)
+TDurumCubugu	- pencere alt durum çubuðu (TStatusBar)
+TEtiket			- etiket nesnesi (TLabel)
+TGirisKutusu	- veri giriþ nesnesi (TEdit)
+TGucDugmesi		- açýk / kapalý güç düðmesi
+TIslemGostergesi- iþlem göstergesi (TProgressBar)
+TIzgara			- ýzgara nesnesi (TStringGrid)
+TKarmaListe		- açýlýr / kapanýr liste kutusu (TComboBox)
+TKaydirmaCubugu	- kaydýrma çubuðu (TScrollBar)
+TListeGorunum	- çok deðerli liste (TListView)
+TListeKutusu	- liste kutusu (TListBox)
+TMasaustu		- masaüstü nesnesi
+TMenu			- menü nesnesi (TMenu)
+TOnayKutusu		- onay kutusu (TCheckBox)
+TPanel			- panel nesnesi (TPanel)
+TPencere		- pencere nesnesi (TForm)
+TRenkSecici		- renk seçim nesnesi
+TResim			- resim görüntüleme nesnesi (TImage)
+TResimDugmesi	- resim gösterebilen düðme
+TSayfaKontrol	- sayfa kontrol (TPageControl)
+TSecimDugmesi	- seçim düðmesi (TRadioButton)

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="13">
+      <Unit0>
+        <Filename Value="dskbolum.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../../lazarus/fpc/2.6.0/source/rtl/inc/fpintres.pp"/>
+        <CursorPos X="5" Y="15"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/buttons.pp"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="19"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/canvas.pp"/>
+        <TopLine Value="88"/>
+        <CursorPos X="37" Y="100"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../rtl/linux/forms.pp"/>
+        <TopLine Value="13"/>
+        <CursorPos X="14" Y="30"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../rtl/linux/inc/writeh.inc"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../rtl/linux/inc/write.inc"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../rtl/linux/process.pp"/>
+        <TopLine Value="10"/>
+        <CursorPos X="14" Y="24"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../../rtl_prog/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="20"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="11"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../../rtl_prog/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="149"/>
+        <CursorPos X="15" Y="167"/>
+        <UsageCount Value="11"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="temizle.bat"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="derle.bat"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="dskbolum.ld"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit12>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="50" Column="33" TopLine="36"/>
+      </Position1>
+      <Position2>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="60" Column="54" TopLine="46"/>
+      </Position2>
+      <Position3>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="69" Column="61" TopLine="54"/>
+      </Position3>
+      <Position4>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="155" Column="25" TopLine="133"/>
+      </Position4>
+      <Position5>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="50" Column="11" TopLine="36"/>
+      </Position5>
+      <Position6>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="150" Column="61" TopLine="134"/>
+      </Position6>
+      <Position7>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="18" Column="43"/>
+      </Position7>
+      <Position8>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="26" Column="28" TopLine="7"/>
+      </Position8>
+      <Position9>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="34" Column="10" TopLine="19"/>
+      </Position9>
+      <Position10>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="86" Column="49" TopLine="67"/>
+      </Position10>
+      <Position11>
+        <Filename Value="dskbolum.lpr"/>
+      </Position11>
+      <Position12>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="52" Column="19" TopLine="33"/>
+      </Position12>
+      <Position13>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="108" Column="50" TopLine="78"/>
+      </Position13>
+      <Position14>
+        <Filename Value="dskbolum.lpr"/>
+      </Position14>
+      <Position15>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="117" Column="8" TopLine="97"/>
+      </Position15>
+      <Position16>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="78" Column="24" TopLine="64"/>
+      </Position16>
+      <Position17>
+        <Filename Value="dskbolum.lpr"/>
+      </Position17>
+      <Position18>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="18" Column="10"/>
+      </Position18>
+      <Position19>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="28" Column="8" TopLine="9"/>
+      </Position19>
+      <Position20>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="151" Column="56" TopLine="123"/>
+      </Position20>
+      <Position21>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="18" Column="33"/>
+      </Position21>
+      <Position22>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="29" Column="7" TopLine="11"/>
+      </Position22>
+      <Position23>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="89" Column="3" TopLine="80"/>
+      </Position23>
+      <Position24>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="10" Column="24"/>
+      </Position24>
+      <Position25>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="34" TopLine="16"/>
+      </Position25>
+      <Position26>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="29" Column="23"/>
+      </Position26>
+      <Position27>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="78" Column="17" TopLine="60"/>
+      </Position27>
+      <Position28>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="86" Column="19" TopLine="68"/>
+      </Position28>
+      <Position29>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="10" Column="33"/>
+      </Position29>
+      <Position30>
+        <Filename Value="dskbolum.lpr"/>
+        <Caret Line="98" Column="27" TopLine="80"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../_/dskbolum.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../rtl_uygulama/linux/units/i386-linux"/>
+      <UnitOutputDirectory Value="../_/_"/>
+      <SrcPath Value="../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Tdskbolum.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="24">
+      <Unit0>
+        <Filename Value="grvyntcs.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <UsageCount Value="27"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../rtl/linux/inc/processh.inc"/>
+        <UsageCount Value="11"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/inc/process.inc"/>
+        <UsageCount Value="11"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/elerah.inc"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../../rtl_prog/linux/vo_statusbar.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../../rtl_prog/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../../rtl_prog/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../../rtl_prog/linux/inc/vo_statusbar.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../../rtl_prog/linux/inc/vo_statusbarh.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../../rtl_prog/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../../rtl_prog/linux/inc/edit.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../../rtl_prog/linux/edit.pp"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../../rtl_prog/inc/systemh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1300"/>
+        <CursorPos X="20" Y="1323"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../../rtl_prog/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="61"/>
+        <CursorPos X="18" Y="66"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="grvyntcs.ld"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="22"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="temizle.bat"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="22"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="derle.bat"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="22"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../../../rtl_uygulama/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../../rtl_uygulama/linux/gorev.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gorev.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="38" Y="19"/>
+        <UsageCount Value="10"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../../../rtl_uygulama/linux/inc/gorevb.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="38" Y="2"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../../../rtl_uygulama/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="27"/>
+        <UsageCount Value="10"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="22"/>
+        <CursorPos X="3" Y="70"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../../rtl_uygulama/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="15"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="10"/>
+      </Unit23>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="14" Column="47" TopLine="8"/>
+      </Position1>
+      <Position2>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="23" Column="24" TopLine="12"/>
+      </Position2>
+      <Position3>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="32" Column="13" TopLine="9"/>
+      </Position3>
+      <Position4>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="71" Column="19" TopLine="66"/>
+      </Position4>
+      <Position5>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="31" Column="23" TopLine="8"/>
+      </Position5>
+      <Position6>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="91" Column="37" TopLine="77"/>
+      </Position6>
+      <Position7>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="81" Column="9" TopLine="71"/>
+      </Position7>
+      <Position8>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="83" Column="47" TopLine="65"/>
+      </Position8>
+      <Position9>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="11" Column="25"/>
+      </Position9>
+      <Position10>
+        <Filename Value="grvyntcs.lpr"/>
+      </Position10>
+      <Position11>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="123" Column="21" TopLine="103"/>
+      </Position11>
+      <Position12>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="127" Column="49" TopLine="108"/>
+      </Position12>
+      <Position13>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="119" Column="38" TopLine="97"/>
+      </Position13>
+      <Position14>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="10" Column="25"/>
+      </Position14>
+      <Position15>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="14" Column="8"/>
+      </Position15>
+      <Position16>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="21" Column="8"/>
+      </Position16>
+      <Position17>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="22" Column="10"/>
+      </Position17>
+      <Position18>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="23" Column="8"/>
+      </Position18>
+      <Position19>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="25" Column="14"/>
+      </Position19>
+      <Position20>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="27" Column="14"/>
+      </Position20>
+      <Position21>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="10" Column="25"/>
+      </Position21>
+      <Position22>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="28" Column="7" TopLine="10"/>
+      </Position22>
+      <Position23>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="39" Column="3" TopLine="19"/>
+      </Position23>
+      <Position24>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="25" Column="54" TopLine="11"/>
+      </Position24>
+      <Position25>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="123" Column="16" TopLine="99"/>
+      </Position25>
+      <Position26>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="117" Column="41" TopLine="99"/>
+      </Position26>
+      <Position27>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="10" Column="25"/>
+      </Position27>
+      <Position28>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="131" Column="93" TopLine="102"/>
+      </Position28>
+      <Position29>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="10" Column="33"/>
+      </Position29>
+      <Position30>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="67" Column="27" TopLine="49"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../_/grvyntcs.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../rtl_uygulama/linux/units/i386-linux"/>
+      <UnitOutputDirectory Value="../_/_"/>
+      <SrcPath Value="../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Tgrvyntcs.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

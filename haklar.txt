@@ -1,0 +1,18 @@
+Elera Ýþletim Sistemi Nedir?
+----------------------------
+
+Elera Ýþletim Sistemi; baþta assembler programcýlarý olmak üzere diðer tüm programcýlarýn katýlýmýný amaç edinerek ortak bir iþletim sistemi yazma amacýyla, hobi olarak kodlanmaya baþlanmýþtýr.
+
+Ülkemizde yaþayan programcýlarýmýzýn birçok kabiliyette olduðu göz önünde bulundurularak, alt seviye sistem programcýlýðýyla ilgilenen programcýlarý, sistem yazýlýmý konusunda ortak bir noktada buluþturarak yeni bir platform oluþturmayý hedeflemektedir.
+
+Elera Ýþletim Sistemi; deðiþik / gerçek kaynaklardan elde ettiði bilgileri, programcýlarýn kendi mantýðýyla ürettiði kodlarla büyüyen yeni bir sistem olarak doðmayý amaçlamaktadýr.
+
+Programcýlarýn bilgi birikimlerini ortak noktada birleþtirerek, insanlýða faydalý olmayý amaçlayan temel ilkeyi benimsemektedir.
+
+
+Telif Hakký Bilgisi
+-------------------
+Elera Ýþletim Sistemi'nin çalýþtýrýlabilir / kaynak kodlarý tüm programcýlarýn / kullanýcýlarýn kullanýmýna, yazar / yazarlarýn adý kaynak olarak gösterildiði takdirde tamamen açýktýr.
+
+
+ELERA - Fatih KILIÇ - hs.fatih.kilic at gmail.com

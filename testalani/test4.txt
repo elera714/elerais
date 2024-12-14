@@ -1,0 +1,154 @@
+
+test4.o:     file format pe-i386
+
+
+Disassembly of section .text.n_test4$_$ttest2_$__$$_test1$longint:
+
+00000000 <TEST4$_$TTEST2_$__$$_TEST1$LONGINT>:
+   0:	55                   	push   ebp
+   1:	89 e5                	mov    ebp,esp
+   3:	8d 64 24 f8          	lea    esp,[esp-0x8]
+   7:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+   a:	89 55 fc             	mov    DWORD PTR [ebp-0x4],edx
+   d:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
+  10:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+  13:	89 42 04             	mov    DWORD PTR [edx+0x4],eax
+  16:	c9                   	leave  
+  17:	c3                   	ret    
+	...
+
+Disassembly of section .text.n_test4$_$ttest1_$__$$_test1$longint:
+
+00000000 <TEST4$_$TTEST1_$__$$_TEST1$LONGINT>:
+   0:	e9 00 00 00 00       	jmp    5 <TEST4$_$TTEST1_$__$$_TEST1$LONGINT+0x5>
+	...
+
+Disassembly of section .rdata.n_VMT_$TEST4_$$_TTEST1:
+
+00000000 <VMT_$TEST4_$$_TTEST1>:
+   0:	08 00                	or     BYTE PTR [eax],al
+   2:	00 00                	add    BYTE PTR [eax],al
+   4:	f8                   	clc    
+   5:	ff                   	(bad)  
+   6:	ff                   	(bad)  
+   7:	ff 00                	inc    DWORD PTR [eax]
+   9:	00 00                	add    BYTE PTR [eax],al
+   b:	00 6c 00 00          	add    BYTE PTR [eax+eax*1+0x0],ch
+	...
+  6b:	00 06                	add    BYTE PTR [esi],al
+  6d:	54                   	push   esp
+  6e:	54                   	push   esp
+  6f:	65                   	gs
+  70:	73 74                	jae    e6 <VMT_$TEST4_$$_TTEST1+0xe6>
+  72:	31 00                	xor    DWORD PTR [eax],eax
+
+Disassembly of section .rdata.n_VMT_$TEST4_$$_TTEST2:
+
+00000000 <VMT_$TEST4_$$_TTEST2>:
+   0:	08 00                	or     BYTE PTR [eax],al
+   2:	00 00                	add    BYTE PTR [eax],al
+   4:	f8                   	clc    
+   5:	ff                   	(bad)  
+   6:	ff                   	(bad)  
+   7:	ff 00                	inc    DWORD PTR [eax]
+   9:	00 00                	add    BYTE PTR [eax],al
+   b:	00 6c 00 00          	add    BYTE PTR [eax+eax*1+0x0],ch
+	...
+  6b:	00 06                	add    BYTE PTR [esi],al
+  6d:	54                   	push   esp
+  6e:	54                   	push   esp
+  6f:	65                   	gs
+  70:	73 74                	jae    e6 <VMT_$TEST4_$$_TTEST2+0xe6>
+  72:	32 00                	xor    al,BYTE PTR [eax]
+
+Disassembly of section .rdata.n_RTTI_$TEST4_$$_TTEST1:
+
+00000000 <RTTI_$TEST4_$$_TTEST1>:
+   0:	0f 06                	clts   
+   2:	54                   	push   esp
+   3:	54                   	push   esp
+   4:	65                   	gs
+   5:	73 74                	jae    7b <RTTI_$TEST4_$$_TTEST1+0x7b>
+   7:	31 00                	xor    DWORD PTR [eax],eax
+   9:	00 00                	add    BYTE PTR [eax],al
+   b:	00 00                	add    BYTE PTR [eax],al
+   d:	00 00                	add    BYTE PTR [eax],al
+   f:	00 01                	add    BYTE PTR [ecx],al
+  11:	00 05 74 65 73 74    	add    BYTE PTR ds:0x74736574,al
+  17:	34 01                	xor    al,0x1
+  19:	00 00                	add    BYTE PTR [eax],al
+  1b:	00 00                	add    BYTE PTR [eax],al
+  1d:	00 04 00             	add    BYTE PTR [eax+eax*1],al
+  20:	00 00                	add    BYTE PTR [eax],al
+  22:	00 00                	add    BYTE PTR [eax],al
+  24:	00 00                	add    BYTE PTR [eax],al
+  26:	01 00                	add    DWORD PTR [eax],eax
+	...
+  30:	00 80 00 00 3c 04    	add    BYTE PTR [eax+0x43c0000],al
+  36:	56                   	push   esi
+  37:	61                   	popa   
+  38:	6c                   	ins    BYTE PTR es:[edi],dx
+  39:	31 00                	xor    DWORD PTR [eax],eax
+	...
+
+Disassembly of section .rdata.n_RTTI_$TEST4_$$_PTEST1:
+
+00000000 <RTTI_$TEST4_$$_PTEST1>:
+   0:	1d 06 50 54 65       	sbb    eax,0x65545006
+   5:	73 74                	jae    7b <RTTI_$TEST4_$$_PTEST1+0x7b>
+   7:	31 00                	xor    DWORD PTR [eax],eax
+   9:	00 00                	add    BYTE PTR [eax],al
+	...
+
+Disassembly of section .rdata.n_INIT_$TEST4_$$_TTEST1:
+
+00000000 <INIT_$TEST4_$$_TTEST1>:
+   0:	0f 06                	clts   
+   2:	54                   	push   esp
+   3:	54                   	push   esp
+   4:	65                   	gs
+   5:	73 74                	jae    7b <INIT_$TEST4_$$_TTEST1+0x7b>
+   7:	31 04 00             	xor    DWORD PTR [eax+eax*1],eax
+   a:	00 00                	add    BYTE PTR [eax],al
+   c:	00 00                	add    BYTE PTR [eax],al
+	...
+
+Disassembly of section .rdata.n_RTTI_$TEST4_$$_TTEST2:
+
+00000000 <RTTI_$TEST4_$$_TTEST2>:
+   0:	0f 06                	clts   
+   2:	54                   	push   esp
+   3:	54                   	push   esp
+   4:	65                   	gs
+   5:	73 74                	jae    7b <RTTI_$TEST4_$$_TTEST2+0x7b>
+   7:	32 00                	xor    al,BYTE PTR [eax]
+   9:	00 00                	add    BYTE PTR [eax],al
+   b:	00 00                	add    BYTE PTR [eax],al
+   d:	00 00                	add    BYTE PTR [eax],al
+   f:	00 01                	add    BYTE PTR [ecx],al
+  11:	00 05 74 65 73 74    	add    BYTE PTR ds:0x74736574,al
+  17:	34 00                	xor    al,0x0
+  19:	00 00                	add    BYTE PTR [eax],al
+	...
+
+Disassembly of section .rdata.n_RTTI_$TEST4_$$_PTEST2:
+
+00000000 <RTTI_$TEST4_$$_PTEST2>:
+   0:	1d 06 50 54 65       	sbb    eax,0x65545006
+   5:	73 74                	jae    7b <RTTI_$TEST4_$$_PTEST2+0x7b>
+   7:	32 00                	xor    al,BYTE PTR [eax]
+   9:	00 00                	add    BYTE PTR [eax],al
+	...
+
+Disassembly of section .rdata.n_INIT_$TEST4_$$_TTEST2:
+
+00000000 <INIT_$TEST4_$$_TTEST2>:
+   0:	0f 06                	clts   
+   2:	54                   	push   esp
+   3:	54                   	push   esp
+   4:	65                   	gs
+   5:	73 74                	jae    7b <INIT_$TEST4_$$_TTEST2+0x7b>
+   7:	32 04 00             	xor    al,BYTE PTR [eax+eax*1]
+   a:	00 00                	add    BYTE PTR [eax],al
+   c:	00 00                	add    BYTE PTR [eax],al
+	...

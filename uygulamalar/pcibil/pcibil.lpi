@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <General>
+      <Flags>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <BuildModes Count="1" Active="Default">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+          </local>
+        </Mode0>
+      </Modes>
+    </RunParams>
+    <Units Count="19">
+      <Unit0>
+        <Filename Value="pcibil.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <UsageCount Value="28"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../rtl/linux/inc/pcih.inc"/>
+        <CursorPos X="11" Y="2"/>
+        <UsageCount Value="10"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../rtl/linux/inc/pci.inc"/>
+        <CursorPos X="14" Y="20"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../rtl/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="164"/>
+        <CursorPos X="23" Y="182"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../../rtl_prog/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="13"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../../rtl_prog/linux/gn_degerdugmesi.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="12"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../../rtl_prog/linux/elerah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="239"/>
+        <CursorPos X="6" Y="256"/>
+        <UsageCount Value="12"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../../rtl_prog/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="16"/>
+        <CursorPos X="17" Y="31"/>
+        <UsageCount Value="12"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../../rtl_prog/linux/gn_etiket.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../../rtl_prog/linux/gn_gucdugme.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="81" Y="23"/>
+        <UsageCount Value="12"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../../rtl_prog/linux/inc/gn_degerdugmesib.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="12"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../../rtl_prog/linux/inc/gn_degerdugmesi.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="12"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../../rtl_prog/linux/inc/consts.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="185"/>
+        <CursorPos X="31" Y="209"/>
+        <UsageCount Value="12"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../../rtl_prog/linux/inc/pci.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="12"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../../rtl_prog/linux/inc/pcib.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="49" Y="8"/>
+        <UsageCount Value="12"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="temizle.bat"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="derle.bat"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="Bat"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="pcibil.ld"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../../rtl_uygulama/linux/system.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="14"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="10"/>
+      </Unit18>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="188" Column="23" TopLine="157"/>
+      </Position1>
+      <Position2>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="309" Column="37" TopLine="287"/>
+      </Position2>
+      <Position3>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="267" Column="8" TopLine="248"/>
+      </Position3>
+      <Position4>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="268" Column="10" TopLine="248"/>
+      </Position4>
+      <Position5>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="269" Column="15" TopLine="248"/>
+      </Position5>
+      <Position6>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="271" Column="13" TopLine="248"/>
+      </Position6>
+      <Position7>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="275" Column="35" TopLine="248"/>
+      </Position7>
+      <Position8>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="279" Column="11" TopLine="259"/>
+      </Position8>
+      <Position9>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="578" Column="9" TopLine="542"/>
+      </Position9>
+      <Position10>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="14" Column="61"/>
+      </Position10>
+      <Position11>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="332" Column="27" TopLine="314"/>
+      </Position11>
+      <Position12>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="20" Column="3" TopLine="19"/>
+      </Position12>
+      <Position13>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="267" Column="8" TopLine="253"/>
+      </Position13>
+      <Position14>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="334" Column="43" TopLine="315"/>
+      </Position14>
+      <Position15>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="368" Column="19" TopLine="350"/>
+      </Position15>
+      <Position16>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="379" Column="19" TopLine="361"/>
+      </Position16>
+      <Position17>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="414" Column="24" TopLine="396"/>
+      </Position17>
+      <Position18>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="418" Column="23" TopLine="400"/>
+      </Position18>
+      <Position19>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="460" Column="24" TopLine="442"/>
+      </Position19>
+      <Position20>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="483" Column="24" TopLine="465"/>
+      </Position20>
+      <Position21>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="496" Column="24" TopLine="478"/>
+      </Position21>
+      <Position22>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="519" Column="24" TopLine="501"/>
+      </Position22>
+      <Position23>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="521" Column="24" TopLine="503"/>
+      </Position23>
+      <Position24>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="533" Column="24" TopLine="515"/>
+      </Position24>
+      <Position25>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="535" Column="18" TopLine="517"/>
+      </Position25>
+      <Position26>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="543" Column="24" TopLine="517"/>
+      </Position26>
+      <Position27>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="274" Column="3" TopLine="256"/>
+      </Position27>
+      <Position28>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="330" Column="3" TopLine="312"/>
+      </Position28>
+      <Position29>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="10" Column="33"/>
+      </Position29>
+      <Position30>
+        <Filename Value="pcibil.lpr"/>
+        <Caret Line="352" Column="27" TopLine="334"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../_/pcibil.c"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../../rtl_uygulama/linux/units/i386-linux"/>
+      <UnitOutputDirectory Value="../_/_"/>
+      <SrcPath Value="../../rtl_uygulama/linux"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="linux"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+      <SmallerCode Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-Tpcibil.ld"/>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

@@ -1,0 +1,34 @@
+-----------------------------------------------------------------------------------
+1. assembly dilinden pascal diline parametre ile çağrı örneği:
+-----------------------------------------------------------------------------------
+
+begin
+	asm
+	mov eax,1   // soldan 1. parametre
+	mov edx,2   // soldan 2. parametre
+	mov ecx,3   // soldan 3. parametre
+	call ParametreKontrol
+end;
+
+function ParametreKontrol(ADeger1, ADeger2, ADeger3: TKimlik): TISayi4;
+begin
+
+  SISTEM_MESAJ(RENK_SIYAH, '1. Parametre = %d', [ADeger1]);
+  SISTEM_MESAJ(RENK_SIYAH, '2. Parametre = %d', [ADeger2]);
+  SISTEM_MESAJ(RENK_SIYAH, '3. Parametre = %d', [ADeger3]);
+end;
+
+-----------------------------------------------------------------------------------
+2. yerel değişkene assembler ile değer atamak
+-----------------------------------------------------------------------------------
+var
+  Deger8: TSayi8;
+  
+asm
+	rdtsc
+	lea edi,Deger8
+	mov [edi+00],eax
+	mov [edi+04],edx
+end;
+
+SISTEM_MESAJ2_S16(RENK_KIRMIZI, '64 bitlik değer: ', Deger8, 16);

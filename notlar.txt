@@ -1,0 +1,6 @@
+gözden geçirilecekler:
+
+baðlantýdaki (TBaglanti) CO_ODAKKAYBEDILDI olayý problemli, nesne dýþýna çýkýldýðýnda olay alýnamýyor
+
+resim ve liste kutusu iþlevi (oluþturma) içerisinde çizim alaný manuel olarak belirlendi.
+  kontrol edilsin ve gerekirse iþlevselleþtirilsin
