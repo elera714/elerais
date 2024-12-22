@@ -10,7 +10,7 @@
 
  ==============================================================================}
 {$mode objfpc}
-{$DEFINE UDP_BILGI}
+//{$DEFINE UDP_BILGI}
 unit udp;
 
 interface

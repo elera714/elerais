@@ -6,12 +6,12 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2024-12-08T18:13:21Z">
+  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2024-12-22T18:05:15Z">
     <Description>ELERA &#x130;&#x15F;letim Sistemi (32 Bit)</Description>
     <MediaRegistry>
       <HardDisks>
-        <HardDisk uuid="{52d14bec-1e52-417e-a356-bd4401a3b7ec}" location="E:/&#xF6;zel/calismalar/elerais/araclar/elerais-araclar/resimler.vhd" format="VHD" type="Normal"/>
         <HardDisk uuid="{1e27e64c-a296-4134-8007-e857d0218c69}" location="disk32MB.vhd" format="VHD" type="Normal"/>
+        <HardDisk uuid="{ee78d56a-85e5-4166-b964-9a569ef45bb4}" location="disk32MB_2.vhd" format="VHD" type="Normal"/>
       </HardDisks>
       <FloppyImages>
         <Image uuid="{cefa122d-813d-44b5-9fba-613b866e45cb}" location="disket144.img"/>
@@ -21,7 +21,7 @@
       <ExtraDataItem name="GUI/InformationWindowGeometry" value="507,249,598,332"/>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
       <ExtraDataItem name="GUI/LastGuestSizeHint" value="800,600"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="508,144,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="877,234,800,640"/>
       <ExtraDataItem name="GUI/LastScaleWindowPosition" value="189,230,1096,595"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeDevicesMenuActions" value="HardDrives"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeMachineMenuActions" value="SaveState,PowerOff"/>
@@ -58,13 +58,14 @@
         </Controllers>
       </USB>
       <Network>
-        <Adapter slot="0" enabled="true" MACAddress="080011223344">
+        <Adapter slot="0" enabled="true" MACAddress="080011223344" type="Am79C970A">
           <DisabledModes>
-            <BridgedInterface name="Realtek PCIe GBE Ailesi Denetleyici"/>
+            <NAT localhost-reachable="true"/>
             <InternalNetwork name="intnet"/>
+            <HostOnlyInterface name="VirtualBox Host-Only Ethernet Adapter"/>
             <NATNetwork name="NatNetwork"/>
           </DisabledModes>
-          <NAT localhost-reachable="true"/>
+          <BridgedInterface name="Realtek PCIe GBE Ailesi Denetleyici"/>
         </Adapter>
         <Adapter slot="1" MACAddress="0800278B3645">
           <DisabledModes>
@@ -251,7 +252,7 @@
       <AudioAdapter driver="DirectSound" enabled="true" enabledIn="true" enabledOut="true"/>
       <Clipboard mode="Bidirectional"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1733681558466081800" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1734890708729110900" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="Floppy Controller" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">
@@ -267,7 +268,7 @@
             <Image uuid="{1e27e64c-a296-4134-8007-e857d0218c69}"/>
           </AttachedDevice>
           <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="1">
-            <Image uuid="{52d14bec-1e52-417e-a356-bd4401a3b7ec}"/>
+            <Image uuid="{ee78d56a-85e5-4166-b964-9a569ef45bb4}"/>
           </AttachedDevice>
         </StorageController>
       </StorageControllers>

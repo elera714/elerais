@@ -38,7 +38,7 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTip: TProtokolTip;
 
 implementation
 
-uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj;
+uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
@@ -116,11 +116,14 @@ var
   _EthernetPaket: PEthernetPaket;
   _Bellek: array[0..$FFF] of TSayi1;
   _VeriUzunluk, _Protokol: TSayi2;
+  _ARPPaket: PARPPaket;
 begin
 
   // að yüklendi ise ...
   if(AgYuklendi) then
   begin
+
+    FillByte(_Bellek, $1000, 0);
 
     // að kartýna gelen ham bilgiyi al
     _VeriUzunluk := AgKartindanVeriAl(@_Bellek);
@@ -129,15 +132,20 @@ begin
 
       _EthernetPaket := @_Bellek[0];
 
-      _Protokol := _EthernetPaket^.PaketTip;
-      //MSG_SH('Protokol: ', _Protokol, 4);
+      { TODO - _Protokol deðeri ntohs ile çevrilerek deðer network sýralý sorgulanacak }
+      _Protokol := _EthernetPaket^.PaketTipi;
+      //SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', _Protokol, 4);
 
       // ******* protokollerin iþlenmesi *******
 
       // ARP protokolü
-      if(_Protokol = PROTOKOL_ARP) then
+      if(htons(_Protokol) = PROTOKOL_ARP) then
+      begin
 
-        ARPPaketleriniIsle(_EthernetPaket)
+        _ARPPaket := @_EthernetPaket^.Veri;
+        if(IPKarsilastir(_ARPPaket^.HedefIPAdres, AgBilgisi.IP4Adres)) then
+          ARPPaketleriniIsle(_EthernetPaket)
+      end
 
       // IP protokolü
       else if(_Protokol = PROTOKOL_IP) then
@@ -175,9 +183,9 @@ begin
       Tasi2(@_Bellek[0], AHedefBellekAdresi, _VeriUzunluk);
       AlinanByte += _VeriUzunluk;
     end;
-  end;
 
-  Result := _VeriUzunluk;
+    Result := _VeriUzunluk;
+  end else Result := 0;
 end;
 
 {==============================================================================
@@ -202,11 +210,11 @@ begin
 
     // paketin protokol tipi
     case AProtokolTip of
-      ptIP  : _EthernetPaket^.PaketTip := PROTOKOL_IP;
-      ptTCP : _EthernetPaket^.PaketTip := PROTOKOL_TCP;
-      ptUDP : _EthernetPaket^.PaketTip := PROTOKOL_UDP;
-      ptARP : _EthernetPaket^.PaketTip := PROTOKOL_ARP;
-      ptICMP: _EthernetPaket^.PaketTip := PROTOKOL_ICMP;
+      ptIP  : _EthernetPaket^.PaketTipi := PROTOKOL_IP;
+      ptTCP : _EthernetPaket^.PaketTipi := PROTOKOL_TCP;
+      ptUDP : _EthernetPaket^.PaketTipi := PROTOKOL_UDP;
+      ptARP : _EthernetPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
+      ptICMP: _EthernetPaket^.PaketTipi := PROTOKOL_ICMP;
     end;
 
     _IPPaket := _EthernetPaket^.Veri;
@@ -214,7 +222,7 @@ begin
     {SISTEM_MESAJ(RENK_MOR, 'ETH', []);
     SISTEM_MESAJ_MAC(RENK_LACIVERT, 'ETH: Kaynak MAC: ', _EthernetPaket^.KaynakMACAdres);
     SISTEM_MESAJ_MAC(RENK_LACIVERT, 'ETH: Hedef MAC: ', _EthernetPaket^.HedefMACAdres);
-    SISTEM_MESAJ_S16(RENK_LACIVERT, 'ETH: PaketTip: ', _EthernetPaket^.PaketTip, 4);}
+    SISTEM_MESAJ_S16(RENK_LACIVERT, 'ETH: PaketTip: ', _EthernetPaket^.PaketTipi, 4);}
 
     _VeriBellekAdresi := @_EthernetPaket^.Veri;
     Tasi2(AVeri, _VeriBellekAdresi, AVeriUzunlugu);

@@ -35,8 +35,11 @@ var
 procedure IPPaketleriniIsle(AIPPaket: PIPPaket; AIPPaketUzunluk: TISayi4);
 begin
 
+  SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP1: ', AIPPaket^.HedefIP);
+  SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP2: ', AgBilgisi.IP4Adres);
+
   // sistemin ip adresi yok ve ip adres talebinde bulunulmuş ise
-  if(IPKarsilastir(AgBilgisi.IP4Adres, IPAdres0)) and IPAdresTalebiBekleniyor then
+  if(IPKarsilastir(AgBilgisi.IP4Adres, IPAdres0)) {and IPAdresTalebiBekleniyor} then
   begin
 
     // udp protokolü
@@ -52,6 +55,8 @@ begin
     (IPKarsilastir2(AIPPaket^.HedefIP, AgBilgisi.IP4Adres)) or
     (IPKarsilastir(AIPPaket^.HedefIP, IPAdres255))) then
   begin
+
+    //SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', AIPPaket^.Protokol, 4);
 
     // icmp protokolü
     if(AIPPaket^.Protokol = PROTOKOL_ICMP) then
@@ -123,6 +128,8 @@ begin
 
   Veri := @IPPaket^.Veri;
   Tasi2(AVeri, Veri, AVeriUzunlugu);
+
+  SISTEM_MESAJ(RENK_KIRMIZI, 'IPPaketGonder!', []);
 
   // paketi donanıma (ethernet) gönder
   AgKartinaVeriGonder(AHedefMACAdres, ptIP, IPPaket, AVeriUzunlugu + IP_BASLIK_U);

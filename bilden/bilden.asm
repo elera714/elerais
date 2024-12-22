@@ -31,7 +31,7 @@
         KERNEL_TEMP_ADDR        equ     0x13000
         KERNEL_LOAD_ADDR        equ     0x100000
 
-        VModeIndex              equ     0               ; video mod index deðeri
+        VModeIndex              equ     1               ; video mod index deðeri
 
         ;gerçek mod kod baþlangýç alanýna dallan
         ;----------------------------------------------------------------

@@ -461,7 +461,7 @@ begin
       DonusHalka[BirSonrakiDonusSiraNo].Uzunluk := -(ETH_CERCEVE_U);
       DonusHalka[BirSonrakiDonusSiraNo].Durum := RMD_OWN;
       BirSonrakiDonusSiraNo := (BirSonrakiDonusSiraNo + 1) and DONUS_HALKA_MOD_MASKE;
-    end;
+    end else AVeriUzunlugu := 0;
   end else AVeriUzunlugu := 0;
 end;
 

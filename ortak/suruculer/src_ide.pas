@@ -44,64 +44,64 @@ const
 type
   PTATA4 = ^TATA4;
   TATA4 = packed record
-    Ayar: TSayi2;                           // 0
-    SilindirSayisi: TSayi2;                 // 1
-    Ayrildi1: TSayi2;                       // 2
-    KafaSayisi: TSayi2;                     // 3
-    Eskidi1: array[0..1] of TSayi2;         // 4-5
-    IzBasinaSektor: TSayi2;                 // 6
-    Eskidi2: array[0..2] of TSayi2;         // 7-9
+    Ayar: Word;                             // 0
+    SilindirSayisi: Word;                   // 1
+    Ayrildi1: Word;                         // 2
+    KafaSayisi: Word;                       // 3
+    Eskidi1: array[0..1] of Word;           // 4-5
+    IzBasinaSektor: Word;                   // 6
+    Eskidi2: array[0..2] of Word;           // 7-9
     SeriNo: array[0..19] of Char;           // 10-19
-    Eskidi3: array[0..1] of TSayi2;         // 20-21
-    Eskidi4: TSayi2;                        // 22
+    Eskidi3: array[0..1] of Word;           // 20-21
+    Eskidi4: Word;                          // 22
     FirmaYazilimSurum: array[0..7] of Char; // 23-26
     ModelNo: array[0..39] of Char;          // 27-46
-    IslemAzamiSektorSayisi: TSayi2;         // 47
-    Ayrildi2: TSayi2;                       // 48
-    Yetenek1: TSayi2;                       // 49
-    Yetenek2: TSayi2;                       // 50
-    PIOModu: TSayi2;                        // 51
-    Eskidi5: TSayi2;                        // 52
-    AlanDogrulugu1: TSayi2;                 // 53
-    SilindirSayisi2: TSayi2;                // 54
-    KafaSayisi2: TSayi2;                    // 55
-    IzBasinaSektor2: TSayi2;                // 56
-    SektorOlarakKapasite: TSayi4;           // 57-58
-    CokluSektor: TSayi2;                    // 59
-    ToplamSektor: TSayi4;                   // 60-61
-    Diger1: array[0..17] of TSayi2;         // 62-79
-    SurumNo: TSayi2;                        // 80
-    Diger2: array[81..255] of TSayi2;       // diðer veri alanlarý
+    IslemAzamiSektorSayisi: Word;           // 47
+    Ayrildi2: Word;                         // 48
+    Yetenek1: Word;                         // 49
+    Yetenek2: Word;                         // 50
+    PIOModu: Word;                          // 51
+    Eskidi5: Word;                          // 52
+    AlanDogrulugu1: Word;                   // 53
+    SilindirSayisi2: Word;                  // 54
+    KafaSayisi2: Word;                      // 55
+    IzBasinaSektor2: Word;                  // 56
+    SektorOlarakKapasite: LongWord;         // 57-58
+    CokluSektor: Word;                      // 59
+    ToplamSektor: LongWord;                 // 60-61
+    Diger1: array[0..17] of Word;           // 62-79
+    SurumNo: Word;                          // 80
+    Diger2: array[81..255] of Word;         // diðer veri alanlarý
   end;
 
 type
   PTATA6 = ^TATA6;
   TATA6 = packed record
-    Ayar: TSayi2;                           // 0
-    Eskidi1: TSayi2;                        // 1
-    OzelAyar: TSayi2;                       // 2
-    Eskidi2: TSayi2;                        // 3
-    Eskidi3: array[0..1] of TSayi2;         // 4-5
-    Eskidi4: TSayi2;                        // 6
-    Ayrildi1: array[0..1] of TSayi2;        // 7-8
-    Eskidi5: TSayi2;                        // 9
+    Ayar: Word;                             // 0
+    Eskidi1: Word;                          // 1
+    OzelAyar: Word;                         // 2
+    Eskidi2: Word;                          // 3
+    Eskidi3: array[0..1] of Word;           // 4-5
+    Eskidi4: Word;                          // 6
+    Ayrildi1: array[0..1] of Word;          // 7-8
+    Eskidi5: Word;                          // 9
     SeriNo: array[0..19] of Char;           // 10-19
-    Eskidi6: array[0..1] of TSayi2;         // 20-21
-    Eskidi7: TSayi2;                        // 22
+    Eskidi6: array[0..1] of Word;           // 20-21
+    Eskidi7: Word;                          // 22
     FirmaYazilimSurum: array[0..7] of Char; // 23-26
     ModelNo: array[0..39] of Char;          // 27-46
-    IslemAzamiSektorSayisi: TSayi2;         // 47
-    Ayrildi2: TSayi2;                       // 48
-    Yetenek1: TSayi2;                       // 49
-    Yetenek2: TSayi2;                       // 50
-    Eskidi8: array[0..1] of TSayi2;         // 51-52
-    AlanDogrulugu1: TSayi2;                 // 53
-    Eskidi9: array[0..4] of TSayi2;         // 54-58
-    AlanDogrulugu2: TSayi2;                 // 59
-    ToplamSektor: TSayi4;                   // 60-61
-    Eskidi10: array[0..17] of TSayi2;       // 62-79
-    SurumNo: TSayi2;                        // 80
-    Diger: array[81..255] of TSayi2;        // diðer data alanlarý
+    IslemAzamiSektorSayisi: Word;           // 47
+    Ayrildi2: Word;                         // 48
+    Yetenek1: Word;                         // 49
+    Yetenek2: Word;                         // 50
+    Eskidi8: array[0..1] of Word;           // 51-52
+    AlanDogrulugu1: Word;                   // 53
+    Eskidi9: array[0..4] of Word;           // 54-58
+    AlanDogrulugu2: Word;                   // 59
+    ToplamSektor: LongWord;                 // 60-61
+    Eskidi10: array[0..17] of Word;         // 62-79
+    SurumNo: Word;                          // 80
+    Diger: array[81..255] of Word;          // diðer data alanlarý
   end;
 
 procedure Yukle;
@@ -111,7 +111,7 @@ function SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
 function IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
 function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
 function IDEAygitindaVeriMevcutMu(AIDEDisk: PIDEDisk): Boolean;
-function ReadSector28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+function ReadSector28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: LongWord;
   AHedefBellek: Isaretci): Boolean;
 
 implementation
@@ -130,7 +130,7 @@ procedure Yukle;
 var
   _FizikselSurucu: PFizikselSurucu;
   _Bellek: TATA4;
-  i: TSayi4;
+  i: LongWord;
 begin
 
   {$IFDEF IDE_BILGI}
@@ -206,7 +206,7 @@ end;
  ==============================================================================}
 function SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
 var
-  i: TSayi1;
+  i: Byte;
 begin
 
   // öndeðer geri dönüþ deðeri
@@ -240,8 +240,8 @@ end;
  ==============================================================================}
 function IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
 var
-  _PortNo: TSayi2;
-  i: TSayi1;
+  _PortNo: Word;
+  i: Byte;
 begin
 
   Result := False;
@@ -276,8 +276,8 @@ end;
  ==============================================================================}
 function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
 var
-  i: TSayi4;
-  _Deger: TSayi1;
+  i: LongWord;
+  _Deger: Byte;
 begin
 
   Result := True;
@@ -300,8 +300,8 @@ end;
  ==============================================================================}
 function IDEAygitindaVeriMevcutMu(AIDEDisk: PIDEDisk): Boolean;
 var
-  i: TSayi4;
-  _Deger: TSayi1;
+  i: LongWord;
+  _Deger: Byte;
 begin
 
   Result := False;
@@ -327,14 +327,14 @@ end;
   LBA modunda 28 bitlik sektör okuma iþlemi yapar
  ==============================================================================}
 var
-  ReadSector28GorevNo: TSayi4 = 0;
+  ReadSector28GorevNo: LongWord = 0;
 
-function ReadSector28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+function ReadSector28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: LongWord;
   AHedefBellek: Isaretci): Boolean;
 var
   _FizikselSurucu: PFizikselSurucu;
-  _PortNo: TSayi2;
-  _Deger: TSayi1;
+  _PortNo: Word;
+  _Deger: Byte;
 begin
 
   if(ReadSector28GorevNo <> 0) then
@@ -345,9 +345,6 @@ begin
 
   ReadSector28GorevNo := CalisanGorev;
 
-  // öndeðer çýkýþ deðeri
-  Result := True;
-
   // sürücü bilgisine konumlan
   _FizikselSurucu := AFizikselSurucu;
 
@@ -356,7 +353,7 @@ begin
   begin
 
     ReadSector28GorevNo := 0;
-    Exit;
+    Exit(False);
   end;
 
   asm cli end;
@@ -412,6 +409,8 @@ begin
   until (ASektorSayisi = 0) or (Result = False);
 
   ReadSector28GorevNo := 0;
+
+  Result := True;
 end;
 
 end.

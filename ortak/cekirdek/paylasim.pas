@@ -185,7 +185,9 @@ var
 
 const
   // að protokolleri
-  PROTOKOL_ARP  = TSayi2($0608);
+  PROTOKOL_ARP  = Word($0806);        // network sýralý kodlandý
+
+  { TODO - yukarýdaki gibi network sýralý kodlanacak }
   PROTOKOL_IP   = TSayi2($0008);
   PROTOKOL_TCP  = TSayi1($6);
   PROTOKOL_UDP  = TSayi1($11);
@@ -287,22 +289,22 @@ type
   TEthernetPaket = packed record
     HedefMACAdres,
     KaynakMACAdres: TMACAdres;
-    PaketTip: TSayi2;
-    Veri: Isaretci;
+    PaketTipi: Word;
+    Veri: Pointer;
   end;
 
 type
   PARPPaket = ^TARPPaket;
   TARPPaket = packed record
-    DonanimTip: TSayi2;           // hardware type
-    ProtokolTip: TSayi2;          // protocol type
-    DonanimAdresU: TSayi1;        // hardware address length
-    ProtokolAdresU: TSayi1;       // protocol address length
-    Islem: TSayi2;                // operation
-    GonderenMACAdres: TMACAdres;  // sender hardware address
-    GonderenIPAdres: TIPAdres;    // sender protocol address
-    HedefMACAdres: TMACAdres;     // target hardware address
-    HedefIPAdres: TIPAdres;       // target protocol address
+    DonanimTip: Word;             // donaným tipi
+    ProtokolTip: Word;            // protokol tipi
+    DonanimAdresU: Byte;          // donaným adres uzunluðu
+    ProtokolAdresU: Byte;         // protokol adres uzunluðu
+    Islem: Word;                  // iþlem
+    GonderenMACAdres: TMACAdres;  // paketi gönderen donaným adresi
+    GonderenIPAdres: TIPAdres;    // paketi gönderen ip adresi
+    HedefMACAdres: TMACAdres;     // paketin gönderildiði donaným adresi
+    HedefIPAdres: TIPAdres;       // paketin gönderildiði ip adresi
   end;
 
 {Not1: [0..3] bit = versiyon Ipv4 = 4
@@ -484,8 +486,8 @@ type
 type
   PIDEDisk = ^TIDEDisk;
   TIDEDisk = record
-    PortNo: TSayi2;
-    Kanal: TSayi1;
+    PortNo: Word;
+    Kanal: Byte;
   end;
 
 type
@@ -1015,7 +1017,6 @@ type
 
 var
   AgBilgisi: TAgBilgisi;
-
   MakineAdi: string = 'elera-bil';
   IPAdres0: TIPAdres = (0, 0, 0, 0);
   IPAdres255: TIPAdres = (255, 255, 255, 255);

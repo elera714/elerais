@@ -30,7 +30,9 @@ function StrToIP(AIPAdres: string): TIPAdres;
 function LowerCase(AKarakter: Char): Char;
 function UpperCase(AKarakter: Char): Char;
 function UpperCase(ADeger: string): string;
-function Takas2(ADeger: TSayi2): TSayi2;
+function Takas2(ADeger: Word): Word;
+function ntohs(ADeger: Word): Word;
+function htons(ADeger: Word): Word;
 function Takas4(ADeger: TSayi4): TSayi4;
 function UTF16Ascii(ABellek: PWideChar): string;
 function WideChar2String(ABellek: PWideChar): string;
@@ -371,7 +373,23 @@ end;
 function Takas2(ADeger: TSayi2): TSayi2;
 begin
 
-  Result := ((ADeger shl 8) and $FF00) or ((ADeger shr 8) and $00FF);
+  Result := SwapEndian(ADeger);
+end;
+
+// üstteki işlev ile aynı (üstteki işlev zamanı geldiğinde iptal edilecek)
+// network sıralı değeri host sıralı değere çevirir (örnek: $1234 -> $3412)
+function ntohs(ADeger: Word): Word;
+begin
+
+  Result := Takas2(ADeger);
+end;
+
+// üstteki işlev ile aynı
+// host sıralı değeri network sıralı değere çevirir (örnek: $1234 -> $3412)
+function htons(ADeger: Word): Word;
+begin
+
+  Result := Takas2(ADeger);
 end;
 
 // network sıralı dword değeri host sıralı değere dönüştürür

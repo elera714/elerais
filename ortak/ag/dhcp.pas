@@ -6,7 +6,7 @@
   Dosya Adý: dhcp.pas
   Dosya Ýþlevi: DHCP protokol istemci iþlevlerini yönetir
 
-  Güncelleme Tarihi: 08/12/2024
+  Güncelleme Tarihi: 10/12/2024
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -44,7 +44,7 @@ const
   // seçenek tipleri
   DHCP_OPTION_PAD                         = Byte(0);
   DHCP_SECIM_ALTAG_MASKESI                = Byte(1);
-  DHCP_OPTION_TIME_OFFSET                 = Byte(2);      // kullanýlmýyor
+  DHCP_SECIM_ZAMAN_OFFSET                 = Byte(2);      // kullanýlmýyor
   DHCP_SECIM_YONLENDIRICI                 = Byte(3);
   DHCP_OPTION_TIME_SERVER                 = Byte(4);
   DHCP_OPTION_NAME_SERVER                 = Byte(5);
@@ -99,7 +99,7 @@ const
   DHCP_SECIM_SUNUCU_TANIMLAYICI           = Byte(54);
   DHCP_SECIM_DEGISKEN_ISTEK_LISTESI       = Byte(55);
   DHCP_OPTION_MESSAGE                     = Byte(56);
-  DHCP_OPTION_MAX_DHCP_MSG_SIZE           = Byte(57);
+  DHCP_SECIM_AZAMI_DHCP_MESAJ_UZUNLUK     = Byte(57);
   DHCP_OPTION_RENEW_TIME_VALUE            = Byte(58);
   DHCP_OPTION_REBIND_TIME_VALUE           = Byte(59);
   DHCP_OPTION_CLASS_ID                    = Byte(60);
@@ -201,7 +201,9 @@ const
   // ignoring options 214 - 219 (removed / unassigned)
   DHCP_OPTION_SUBNET_ALLOCATION           = Byte(220);
   DHCP_OPTION_VSS                         = Byte(221);
-  // ignoring options 222 - 254 (removed / unassigned)
+  // ignoring options 222 - 254 (removed / unassigned) ???
+  DHCP_SECIM_OZEL_SINIFSIZ_YONLENDIRME    = Byte(249);
+  DHCP_SECIM_OZEL_PROXY_OTOKESIF          = Byte(252);
   DHCP_SECIM_SON                          = Byte(255);
 
   DHCP_SIHIRLI_CEREZ    = TSayi4($63538263);
@@ -257,7 +259,7 @@ begin
 	DHCPKayit^.DonanimUz := 6;		    // mac uzunluðu
 	DHCPKayit^.RelayIcin := 0;
 	DHCPKayit^.GonderenKimlik := DHCP_GONDEREN_KIMLIK;
-	DHCPKayit^.Sure := 0;
+	DHCPKayit^.Sure := 1;
 	DHCPKayit^.Bayraklar := 0;
 	DHCPKayit^.IstemciIPAdres := IPAdres0;
 	DHCPKayit^.BenimIPAdresim := IPAdres0;
@@ -305,17 +307,59 @@ begin
 
   Inc(p1, 6);
 
-  // bilgisayar adý tanýmý - 2 + MakineAdi byte
-  i := Length(MakineAdi);
+  // parametre istek listesi - 14 byte
+  p1^ := DHCP_SECIM_DEGISKEN_ISTEK_LISTESI;
+  Inc(p1);
+  p1^ := 17;                              // uzunluk
+  Inc(p1);
+  p1^ := DHCP_SECIM_ALTAG_MASKESI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_ZAMAN_OFFSET;
+  Inc(p1);
+  p1^ := DHCP_SECIM_DNS;
+  Inc(p1);
   p1^ := DHCP_SECIM_YEREL_AD;
   Inc(p1);
-  PByte(p1)^ := i;
+  p1^ := DHCP_SECIM_ALAN_ADI;
   Inc(p1);
-  pc := Pointer(p1);
-  Tasi2(@MakineAdi[1], pc, i);
-  Inc(pc, i);
-  p1 := Pointer(pc);
-  DHCPKayitUzunlugu += 2 + i;
+  p1^ := DHCP_SECIM_ARABIRIM_MTU;
+  Inc(p1);
+  p1^ := DHCP_SECIM_YAYIN_ADRESI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SINIFDISI_YONLENDIRME;
+  Inc(p1);
+  p1^ := DHCP_SECIM_YONLENDIRICI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SABIT_YONLENDIRME_TABLOSU;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NIS_ALANADI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NIS_SUNUCULAR;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NTP_SUNUCULAR;
+  Inc(p1);
+  p1^ := DHCP_SECIM_DNS_ALANADI_ARAMA_LISTESI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_OZEL_SINIFSIZ_YONLENDIRME;
+  Inc(p1);
+  p1^ := DHCP_SECIM_OZEL_PROXY_OTOKESIF;
+  Inc(p1);
+  p1^ := DHCP_SECIM_KOK_YOL;
+  DHCPKayitUzunlugu += 2 + 17;
+
+  Inc(p1);
+
+  // dhcp mesaj tipi
+  p1^ := DHCP_SECIM_AZAMI_DHCP_MESAJ_UZUNLUK;
+  Inc(p1);
+  p1^ := 2;
+  Inc(p1);
+  p1^ := $02;
+  Inc(p1);
+  p1^ := $40;
+  DHCPKayitUzunlugu += 4;
+
+  Inc(p1);
 
   // mesajýn bir istek mesajý olmasý durumunda...
   if(AMesajTipi = DHCP_MTIP_ISTEK) then
@@ -344,41 +388,20 @@ begin
     DHCPKayitUzunlugu += 2 + 4;
   end;
 
-  // parametre istek listesi - 14 byte
-  p1^ := DHCP_SECIM_DEGISKEN_ISTEK_LISTESI;
-  Inc(p1);
-  p1^ := 14;                              // uzunluk
-  Inc(p1);
-  p1^ := DHCP_SECIM_ALTAG_MASKESI;
-  Inc(p1);
-  p1^ := DHCP_SECIM_DNS;
-  Inc(p1);
+  // bilgisayar adý tanýmý - 2 + MakineAdi byte
+  i := Length(MakineAdi);
   p1^ := DHCP_SECIM_YEREL_AD;
   Inc(p1);
-  p1^ := DHCP_SECIM_ALAN_ADI;
+  PByte(p1)^ := i;
   Inc(p1);
-  p1^ := DHCP_SECIM_ARABIRIM_MTU;
-  Inc(p1);
-  p1^ := DHCP_SECIM_YAYIN_ADRESI;
-  Inc(p1);
-  p1^ := DHCP_SECIM_SINIFDISI_YONLENDIRME;
-  Inc(pc);
-  p1^ := DHCP_SECIM_YONLENDIRICI;
-  Inc(p1);
-  p1^ := DHCP_SECIM_SABIT_YONLENDIRME_TABLOSU;
-  Inc(p1);
-  p1^ := DHCP_SECIM_NIS_ALANADI;
-  Inc(p1);
-  p1^ := DHCP_SECIM_NIS_SUNUCULAR;
-  Inc(p1);
-  p1^ := DHCP_SECIM_NTP_SUNUCULAR;
-  Inc(p1);
-  p1^ := DHCP_SECIM_DNS_ALANADI_ARAMA_LISTESI;
-  Inc(p1);
-  p1^ := DHCP_SECIM_KOK_YOL;
-  DHCPKayitUzunlugu += 2 + 14;
+  pc := Pointer(p1);
+  Tasi2(@MakineAdi[1], pc, i);
+  Inc(pc, i);
+  p1 := Pointer(pc);
+  DHCPKayitUzunlugu += 2 + i;
 
   Inc(p1);
+
   p1^ := DHCP_SECIM_SON;
   DHCPKayitUzunlugu += 1;
 

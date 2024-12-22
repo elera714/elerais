@@ -362,7 +362,7 @@ begin
 
           // aþaðýdaki programlar üzerinden fdc iþlemleri tamamlanacak
           //Gorev^.Calistir('disket1:\kopyala.c');
-          Gorev^.Calistir('disket1:\dskgor.c');
+          //Gorev^.Calistir('disket1:\dskgor.c');
           //Gorev^.Calistir('disket1:\dskbolum.c');
         end
         // test iþlev tuþu-2
@@ -395,8 +395,8 @@ begin
         // program çalýþtýrma programýný çalýþtýr
         else if(Tus = 'c') then
 
-          ohci.Kontrol1
-          //Gorev^.Calistir('disk1:\calistir.c')
+          //ohci.Kontrol1
+          Gorev^.Calistir('disk1:\calistir.c')
 
         // dosya yöneticisi programýný çalýþtýr
         else if(Tus = 'd') then
