@@ -72,7 +72,7 @@ begin
         _Baglanti^.FPencereU := $100;
 
         // baðlantýnýn gerçekleþtiðine dair onay deðerini gönder
-        TCPPaketGonder(AgBilgisi.IP4Adres, _Baglanti, TCP_BAYRAK_KABUL, nil, 0);
+        TCPPaketGonder(GAgBilgisi.IP4Adres, _Baglanti, TCP_BAYRAK_KABUL, nil, 0);
 
         _Baglanti^.FBaglantiDurum := bdBaglandi;
       end;
@@ -109,7 +109,7 @@ begin
         //SISTEM_MESAJ(RENK_LACIVERT, 'Uzunluk: %d', [j]);
         //SISTEM_MESAJ_YAZI(RENK_LACIVERT, PChar(_Baglanti^.FBellek), _Baglanti^.FBellekUzunlugu);
 
-        TCPPaketGonder(AgBilgisi.IP4Adres, _Baglanti, TCP_BAYRAK_KABUL, nil, 0);
+        TCPPaketGonder(GAgBilgisi.IP4Adres, _Baglanti, TCP_BAYRAK_KABUL, nil, 0);
       end;
     end
     else if(_Baglanti^.FBaglantiDurum = bdKapaniyor1) then
@@ -124,7 +124,7 @@ begin
         i := Takas4(ATCPPaket^.SiraNo);
         _Baglanti^.FOnayNo := i;
 
-        TCPPaketGonder(AgBilgisi.IP4Adres, _Baglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL,
+        TCPPaketGonder(GAgBilgisi.IP4Adres, _Baglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL,
           nil, 0);
 
         _Baglanti^.FBaglantiDurum := bdKapaniyor2;
@@ -144,7 +144,7 @@ begin
         i := Takas4(ATCPPaket^.SiraNo);
         _Baglanti^.FOnayNo := i + 1;
 
-        TCPPaketGonder(AgBilgisi.IP4Adres, _Baglanti, TCP_BAYRAK_KABUL, nil, 0);
+        TCPPaketGonder(GAgBilgisi.IP4Adres, _Baglanti, TCP_BAYRAK_KABUL, nil, 0);
 
         _Baglanti^.FProtokol := ptBilinmiyor;
         _Baglanti^.FHedefIPAdres := IPAdres0;

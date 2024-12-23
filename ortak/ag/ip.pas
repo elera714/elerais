@@ -35,11 +35,12 @@ var
 procedure IPPaketleriniIsle(AIPPaket: PIPPaket; AIPPaketUzunluk: TISayi4);
 begin
 
-  SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP1: ', AIPPaket^.HedefIP);
-  SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP2: ', AgBilgisi.IP4Adres);
+//  SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP1: ', AIPPaket^.HedefIP);
+//  SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP2: ', GAgBilgisi.IP4Adres);
 
-  // sistemin ip adresi yok ve ip adres talebinde bulunulmuş ise
-  if(IPKarsilastir(AgBilgisi.IP4Adres, IPAdres0)) {and IPAdresTalebiBekleniyor} then
+  // 1. sistemin ip adresi yok ise...
+  // ve udp protokolünden ip adresi talebi mevcut ise
+  if(GAgBilgisi.IPAdresiAlindi = False) then
   begin
 
     // udp protokolü
@@ -50,43 +51,48 @@ begin
       UDPPaketleriniIsle(PUDPPaket(@AIPPaket^.Veri));
     end;
   end
+  // 2. sistemin ip adresi var ise...
   // sadece aygıta gelen ve yayın olarak gelen ip adreslerini işle
-  else if((IPKarsilastir(AIPPaket^.HedefIP, AgBilgisi.IP4Adres)) or
-    (IPKarsilastir2(AIPPaket^.HedefIP, AgBilgisi.IP4Adres)) or
-    (IPKarsilastir(AIPPaket^.HedefIP, IPAdres255))) then
+  else if(GAgBilgisi.IPAdresiAlindi) then
   begin
 
-    //SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', AIPPaket^.Protokol, 4);
-
-    // icmp protokolü
-    if(AIPPaket^.Protokol = PROTOKOL_ICMP) then
+    if((IPKarsilastir(AIPPaket^.HedefIP, GAgBilgisi.IP4Adres)) or
+      (IPKarsilastir2(AIPPaket^.HedefIP, GAgBilgisi.IP4Adres)) or
+      (IPKarsilastir(AIPPaket^.HedefIP, IPAdres255))) then
     begin
 
-      Inc(ICMPPaketSayisi);
-      ICMPPaketleriniIsle(@AIPPaket^.Veri, AIPPaketUzunluk - IP_BASLIK_U, AIPPaket^.KaynakIP)
+      //SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', AIPPaket^.Protokol, 4);
+
+      // icmp protokolü
+      if(AIPPaket^.Protokol = PROTOKOL_ICMP) then
+      begin
+
+        Inc(ICMPPaketSayisi);
+        ICMPPaketleriniIsle(@AIPPaket^.Veri, AIPPaketUzunluk - IP_BASLIK_U, AIPPaket^.KaynakIP)
+      end
+      // tcp protokolü
+      else if(AIPPaket^.Protokol = PROTOKOL_TCP) then
+      begin
+
+        Inc(TCPPaketSayisi);
+        TCPPaketleriniIsle(AIPPaket)
+      end
+      // udp protokolü
+      else if(AIPPaket^.Protokol = PROTOKOL_UDP) then
+      begin
+
+        Inc(UDPPaketSayisi);
+        UDPPaketleriniIsle(PUDPPaket(@AIPPaket^.Veri));
+      end;
     end
-    // tcp protokolü
-    else if(AIPPaket^.Protokol = PROTOKOL_TCP) then
+    else
     begin
 
-      Inc(TCPPaketSayisi);
-      TCPPaketleriniIsle(AIPPaket)
-    end
-    // udp protokolü
-    else if(AIPPaket^.Protokol = PROTOKOL_UDP) then
-    begin
-
-      Inc(UDPPaketSayisi);
-      UDPPaketleriniIsle(PUDPPaket(@AIPPaket^.Veri));
+      Inc(GAEPaketSayisi);
+      SISTEM_MESAJ(RENK_KIRMIZI, 'IP.PAS: bilinmeyen IP paketi:', []);
+      SISTEM_MESAJ_IP(RENK_BORDO, '  -> Hedef IP adresi: ', AIPPaket^.HedefIP);
+      SISTEM_MESAJ(RENK_BORDO, '  -> Hedef protokol: %d', [AIPPaket^.Protokol]);
     end;
-  end
-  else
-  begin
-
-    Inc(GAEPaketSayisi);
-    SISTEM_MESAJ(RENK_KIRMIZI, 'IP.PAS: bilinmeyen IP paketi:', []);
-    SISTEM_MESAJ_IP(RENK_BORDO, '  -> Hedef IP adresi: ', AIPPaket^.HedefIP);
-    SISTEM_MESAJ(RENK_BORDO, '  -> Hedef protokol: %d', [AIPPaket^.Protokol]);
   end;
 end;
 

@@ -259,12 +259,7 @@ begin
   if not(TestAlani.FCalisanBirim = nil) then TestAlani.FCalisanBirim;
 
   // sistem için DHCP sunucusundan IP adresi al
-  if(AgYuklendi) and (IPAdresTalebiBekleniyor = False) then
-  begin
-
-    IPAdresTalebiBekleniyor := True;
-    DHCPIpAdresiAl;
-  end;
+  if(AgYuklendi) and (GAgBilgisi.IPAdresiAlindi = False) then DHCPIpAdresiAl;
 
   while True do
   begin
@@ -288,7 +283,9 @@ begin
           if(AgYuklendi) then
           begin
 
-            IPAdresTalebiBekleniyor := True;
+            // að bilgileri öndeðerlerle yükleniyor
+            IlkAdresDegerleriniYukle;
+
             DHCPIpAdresiAl;
           end
           else

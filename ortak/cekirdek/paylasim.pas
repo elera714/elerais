@@ -289,8 +289,8 @@ type
   TEthernetPaket = packed record
     HedefMACAdres,
     KaynakMACAdres: TMACAdres;
-    PaketTipi: Word;
-    Veri: Pointer;
+    PaketTipi: TSayi2;
+    Veri: Isaretci;
   end;
 
 type
@@ -902,7 +902,6 @@ type
 
 var
   AgYuklendi: Boolean = False;
-  IPAdresTalebiBekleniyor: Boolean = False;   // dhcp sunucusuna istek gönderildi, yanýt bekleniyor
 
   SistemSayaci, CagriSayaci, GrafikSayaci: TSayi4;
   ZamanlayiciSayaci: TSayi4 = 0;
@@ -1013,11 +1012,16 @@ type
     IP4Adres, AltAgMaskesi, AgGecitAdresi,
     DHCPSunucusu, DNSSunucusu: TIPAdres;
     IPKiraSuresi: TSayi4;     // saniye cinsinden
+
+    // yukarýdaki yapý için API iþlevi oluþturulmuþtur, sýralamanýn bozulmasý iþlevin bozulmasý demektir
+    IPAdresiAlindi: Boolean;
   end;
 
 var
-  AgBilgisi: TAgBilgisi;
-  MakineAdi: string = 'elera-bil';
+  // çekirdek genelinde kullanýlan ortak yapýlar / deðiþkenler
+  GMakineAdi: string = 'elera-bil';
+  GAgBilgisi: TAgBilgisi;             // içerik ag.IlkAdresDegerleriniYukle iþlevi tarafýndan doldurulmaktadýr
+
   IPAdres0: TIPAdres = (0, 0, 0, 0);
   IPAdres255: TIPAdres = (255, 255, 255, 255);
   MACAdres0: TMACAdres = (0, 0, 0, 0, 0, 0);

@@ -243,7 +243,7 @@ begin
         FHedefMACAdres := MACAdresiAl(FHedefIPAdres);
 
         // ilk paket olan SYN (ARZ) paketi gönderiliyor
-        TCPPaketGonder(AgBilgisi.IP4Adres, @Self, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);
+        TCPPaketGonder(GAgBilgisi.IP4Adres, @Self, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);
         FBaglantiDurum := bdBaglaniyor;
         Exit(FKimlik);
       end;
@@ -306,7 +306,7 @@ begin
       if(FBaglantiDurum = bdBaglandi) then
       begin
 
-        TCPPaketGonder(AgBilgisi.IP4Adres, @Self, TCP_BAYRAK_SON + TCP_BAYRAK_KABUL,
+        TCPPaketGonder(GAgBilgisi.IP4Adres, @Self, TCP_BAYRAK_SON + TCP_BAYRAK_KABUL,
           nil, 0);
 
         FBaglantiDurum := bdKapaniyor1;
@@ -438,14 +438,14 @@ begin
       begin
 
         FPencereU := $100;
-        TCPPaketGonder(AgBilgisi.IP4Adres, @Self, TCP_BAYRAK_KABUL or TCP_BAYRAK_GONDER,
+        TCPPaketGonder(GAgBilgisi.IP4Adres, @Self, TCP_BAYRAK_KABUL or TCP_BAYRAK_GONDER,
           ABellek, AUzunluk);
       end;
     end
     else if(FProtokol = ptUDP) then
     begin
 
-      UDPPaketGonder(FHedefMACAdres, AgBilgisi.IP4Adres, FHedefIPAdres,
+      UDPPaketGonder(FHedefMACAdres, GAgBilgisi.IP4Adres, FHedefIPAdres,
         FYerelPort, FUzakPort, ABellek, AUzunluk);
     end
   end;

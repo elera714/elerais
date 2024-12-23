@@ -30,7 +30,8 @@ var
   AlinanByte, GonderilenByte: TSayi4;
 
 procedure Yukle;
-function GenelAgCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
+procedure IlkAdresDegerleriniYukle;
+function GenelAgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 procedure AgKartiVeriAlmaIslevi;
 function AgKartindanVeriAl(AHedefBellekAdresi: Isaretci): Integer;
 procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTip: TProtokolTip;
@@ -47,13 +48,7 @@ procedure Yukle;
 begin
 
   // að bilgileri öndeðerlerle yükleniyor
-  AgBilgisi.MACAdres := MACAdres0;
-  AgBilgisi.IP4Adres := IPAdres0;
-  AgBilgisi.AltAgMaskesi := IPAdres0;
-  AgBilgisi.AgGecitAdresi := IPAdres0;
-  AgBilgisi.DHCPSunucusu := IPAdres0;
-  AgBilgisi.DNSSunucusu := IPAdres0;
-  AgBilgisi.IPKiraSuresi := 0;
+  IlkAdresDegerleriniYukle;
 
   SISTEM_MESAJ(RENK_LACIVERT, '+ Ethernet aygýtlarý yükleniyor...', []);
   AgAygitlariniYukle;
@@ -77,29 +72,45 @@ begin
 end;
 
 {==============================================================================
+  að iletiþim alanlarýný ilk deðerlerle yükler
+ ==============================================================================}
+procedure IlkAdresDegerleriniYukle;
+begin
+
+  GAgBilgisi.IPAdresiAlindi := False;
+  GAgBilgisi.MACAdres := MACAdres0;
+  GAgBilgisi.IP4Adres := IPAdres0;
+  GAgBilgisi.AltAgMaskesi := IPAdres0;
+  GAgBilgisi.AgGecitAdresi := IPAdres0;
+  GAgBilgisi.DHCPSunucusu := IPAdres0;
+  GAgBilgisi.DNSSunucusu := IPAdres0;
+  GAgBilgisi.IPKiraSuresi := 0;
+end;
+
+{==============================================================================
   að kesme çaðrýlarýný yönetir
  ==============================================================================}
-function GenelAgCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
+function GenelAgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  _Islev: TSayi4;
-  _AgBilgisi: PAgBilgisi;
+  IslevNo: TSayi4;
+  AgBilgisi: PAgBilgisi;
 begin
 
   // iþlev no
-  _Islev := (IslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
   // að ayarlarýný geri döndür
-  if(_Islev = 1) then
+  if(IslevNo = 1) then
   begin
 
-    _AgBilgisi := Isaretci(PSayi4(Degiskenler + 00)^ + CalisanGorevBellekAdresi);
-    _AgBilgisi^.MACAdres := AgBilgisi.MACAdres;
-    _AgBilgisi^.IP4Adres := AgBilgisi.IP4Adres;
-    _AgBilgisi^.AltAgMaskesi := AgBilgisi.AltAgMaskesi;
-    _AgBilgisi^.AgGecitAdresi := AgBilgisi.AgGecitAdresi;
-    _AgBilgisi^.DHCPSunucusu := AgBilgisi.DHCPSunucusu;
-    _AgBilgisi^.DNSSunucusu := AgBilgisi.DNSSunucusu;
-    _AgBilgisi^.IPKiraSuresi := AgBilgisi.IPKiraSuresi;
+    AgBilgisi := Isaretci(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
+    AgBilgisi^.MACAdres := GAgBilgisi.MACAdres;
+    AgBilgisi^.IP4Adres := GAgBilgisi.IP4Adres;
+    AgBilgisi^.AltAgMaskesi := GAgBilgisi.AltAgMaskesi;
+    AgBilgisi^.AgGecitAdresi := GAgBilgisi.AgGecitAdresi;
+    AgBilgisi^.DHCPSunucusu := GAgBilgisi.DHCPSunucusu;
+    AgBilgisi^.DNSSunucusu := GAgBilgisi.DNSSunucusu;
+    AgBilgisi^.IPKiraSuresi := GAgBilgisi.IPKiraSuresi;
 
     Result := 1;
   end
@@ -134,7 +145,7 @@ begin
 
       { TODO - _Protokol deðeri ntohs ile çevrilerek deðer network sýralý sorgulanacak }
       _Protokol := _EthernetPaket^.PaketTipi;
-      //SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', _Protokol, 4);
+      SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', _Protokol, 4);
 
       // ******* protokollerin iþlenmesi *******
 
@@ -143,14 +154,17 @@ begin
       begin
 
         _ARPPaket := @_EthernetPaket^.Veri;
-        if(IPKarsilastir(_ARPPaket^.HedefIPAdres, AgBilgisi.IP4Adres)) then
+        if(IPKarsilastir(_ARPPaket^.HedefIPAdres, GAgBilgisi.IP4Adres)) then
           ARPPaketleriniIsle(_EthernetPaket)
       end
 
       // IP protokolü
       else if(_Protokol = PROTOKOL_IP) then
+      begin
 
+        SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', _Protokol, 4);
         IPPaketleriniIsle(@_EthernetPaket^.Veri, _VeriUzunluk - ETHERNET_BASLIKU)
+      end
       else
 
       // bilinmeyen protokol
@@ -159,6 +173,8 @@ begin
         SISTEM_MESAJ_S16(RENK_KIRMIZI, 'AG.PP: Bilinmeyen Protokol: ', _Protokol, 4);
       end;
     end;
+
+    //SISTEM_MESAJ_S16(RENK_YESIL, 'VUzunluk: ', _VeriUzunluk, 8);
   end;
 end;
 
@@ -173,6 +189,8 @@ begin
 
   if(AgYuklendi) then
   begin
+
+    FillByte(_Bellek, $1000, 0);
 
     // að kartýna (ethernet) gelen ham bilgiyi al
     { TODO : VeriAl iþlevi katý (hard code) olarak kodlanmýþtýr. yapýsallaþtýrýlacak }
@@ -206,7 +224,7 @@ begin
     _EthernetPaket := GGercekBellek.Ayir(AVeriUzunlugu + ETHERNET_BASLIKU);
 
     _EthernetPaket^.HedefMACAdres := AHedefMAC;
-    _EthernetPaket^.KaynakMACAdres := AgBilgisi.MACAdres;
+    _EthernetPaket^.KaynakMACAdres := GAgBilgisi.MACAdres;
 
     // paketin protokol tipi
     case AProtokolTip of

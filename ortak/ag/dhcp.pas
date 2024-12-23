@@ -267,7 +267,7 @@ begin
 	DHCPKayit^.AgGecidiIPAdres := IPAdres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPKayit^.IstemciMACAdres := AgBilgisi.MACAdres;
+  DHCPKayit^.IstemciMACAdres := GAgBilgisi.MACAdres;
 	DHCPKayit^.AYRLDI1 := 0;
 	DHCPKayit^.AYRLDI2 := 0;
 	DHCPKayit^.AYRLDI3 := 0;
@@ -302,7 +302,7 @@ begin
   p1^ := 1;
   Inc(p1);                                // donaným tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
-  MACAdres^ := AgBilgisi.MACAdres;
+  MACAdres^ := GAgBilgisi.MACAdres;
   DHCPKayitUzunlugu += 3 + 6;
 
   Inc(p1, 6);
@@ -389,13 +389,13 @@ begin
   end;
 
   // bilgisayar adý tanýmý - 2 + MakineAdi byte
-  i := Length(MakineAdi);
+  i := Length(GMakineAdi);
   p1^ := DHCP_SECIM_YEREL_AD;
   Inc(p1);
   PByte(p1)^ := i;
   Inc(p1);
   pc := Pointer(p1);
-  Tasi2(@MakineAdi[1], pc, i);
+  Tasi2(@GMakineAdi[1], pc, i);
   Inc(pc, i);
   p1 := Pointer(pc);
   DHCPKayitUzunlugu += 2 + i;
@@ -496,12 +496,13 @@ begin
         else if(AnaMesajTipi = DHCP_MTIP_ONAY) then
         begin
 
-          AgBilgisi.IP4Adres := DHCPYanit.IP4Adres;
-          AgBilgisi.AltAgMaskesi := DHCPYanit.AltAgMaskesi;
-          AgBilgisi.AgGecitAdresi := DHCPYanit.AgGecitAdresi;
-          AgBilgisi.DNSSunucusu := DHCPYanit.DNSSunucusu;
-          AgBilgisi.DHCPSunucusu := DHCPYanit.DHCPSunucusu;
-          AgBilgisi.IPKiraSuresi := DHCPYanit.IPKiraSuresi;
+          GAgBilgisi.IP4Adres := DHCPYanit.IP4Adres;
+          GAgBilgisi.AltAgMaskesi := DHCPYanit.AltAgMaskesi;
+          GAgBilgisi.AgGecitAdresi := DHCPYanit.AgGecitAdresi;
+          GAgBilgisi.DNSSunucusu := DHCPYanit.DNSSunucusu;
+          GAgBilgisi.DHCPSunucusu := DHCPYanit.DHCPSunucusu;
+          GAgBilgisi.IPKiraSuresi := DHCPYanit.IPKiraSuresi;
+          GAgBilgisi.IPAdresiAlindi := True;
         end;
       end;
     end;

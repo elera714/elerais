@@ -10,7 +10,7 @@
 
  ==============================================================================}
 {$mode objfpc}
-//{$DEFINE ICMP_HATAAYIKLA}
+{$DEFINE ICMP_HATAAYIKLA}
 unit icmp;
 
 interface
@@ -97,7 +97,7 @@ begin
   _ICMPBaslik^.BaslikSaglamaToplami := Takas2(_SaglamaToplam);
 
   // sisteme gelen icmp isteðine icmp yanýtý (paket) gönder
-  IPPaketGonder(MACAdres255, AgBilgisi.IP4Adres, AHedefIPAdres, ptICMP, 0,
+  IPPaketGonder(MACAdres255, GAgBilgisi.IP4Adres, AHedefIPAdres, ptICMP, 0,
     _ICMPBaslik, ICMP_BASLIK_UZUNLUGU + _VeriUzunlugu);
 
   {$IFDEF ICMP_HATAAYIKLA}

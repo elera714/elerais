@@ -6,9 +6,7 @@
   Dosya Adý: src_pcnet32.pas
   Dosya Ýþlevi : PCNET32 að (network) sürücüsü
 
-  Güncelleme Tarihi: 16/09/2024
-
-  Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
+  Güncelleme Tarihi: 23/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -31,7 +29,7 @@ type
   end;
 
 var
-  AygitPCNET32: TAygit;
+  AygitPCNet32: TAygit;
 
 function Yukle(APCI: PPCI): TISayi4;
 procedure VeriAl(ABellek: Isaretci; var AVeriUzunlugu: TSayi2);
@@ -64,80 +62,80 @@ implementation
 uses pci, gercekbellek, irq, genel, sistemmesaj;
 
 const
-  PCNET32_WIO_RDP = $10;
-  PCNET32_WIO_RAP = $12;
-  PCNET32_WIO_RESET = $14;
-  PCNET32_WIO_BDP = $16;
+  PCNET32_WIO_RDP         = $10;
+  PCNET32_WIO_RAP         = $12;
+  PCNET32_WIO_RESET       = $14;
+  PCNET32_WIO_BDP         = $16;
 
-  PCNET32_DWIO_RDP = $10;
-  PCNET32_DWIO_RAP = $14;
-  PCNET32_DWIO_RESET = $18;
-  PCNET32_DWIO_BDP = $1C;
+  PCNET32_DWIO_RDP        = $10;
+  PCNET32_DWIO_RAP        = $14;
+  PCNET32_DWIO_RESET      = $18;
+  PCNET32_DWIO_BDP        = $1C;
 
-  CSR_ERR = $8000;
-  CSR_BABL = $4000;
-  CSR_CERR = $2000;
-  CSR_MISS = $1000;
-  CSR_MERR = $0800;
-  CSR_RINT = $0400;
-  CSR_TINT = $0200;
-  CSR_IDON = $0100;
-  CSR_INTR = $0080;
-  CSR_IENA = $0040;
-  CSR_RXON = $0020;
-  CSR_TXON = $0010;
-  CSR_TDMD = $0008;
-  CSR_STOP = $0004;
-  CSR_STRT = $0002;
-  CSR_INIT = $0001;
+  CSR_ERR                 = $8000;
+  CSR_BABL                = $4000;
+  CSR_CERR                = $2000;
+  CSR_MISS                = $1000;
+  CSR_MERR                = $0800;
+  CSR_RINT                = $0400;
+  CSR_TINT                = $0200;
+  CSR_IDON                = $0100;
+  CSR_INTR                = $0080;
+  CSR_IENA                = $0040;
+  CSR_RXON                = $0020;
+  CSR_TXON                = $0010;
+  CSR_TDMD                = $0008;
+  CSR_STOP                = $0004;
+  CSR_STRT                = $0002;
+  CSR_INIT                = $0001;
 
-  CSR = 0;
-  INIT_BLOCK_ADDRESS_LOW = 1;
+  CSR                     = 0;
+  INIT_BLOCK_ADDRESS_LOW  = 1;
   INIT_BLOCK_ADDRESS_HIGH = 2;
-  INTERRUPT_MASK = 3;
-  FEATURE_CONTROL = 4;
-  CIP_KIMLIK_ALT = 88;
-  CIP_KIMLIK_UST = 89;
+  INTERRUPT_MASK          = 3;
+  FEATURE_CONTROL         = 4;
+  CIP_KIMLIK_ALT          = 88;
+  CIP_KIMLIK_UST          = 89;
 
-  PCNET32_GIDIS_BELLEK = 4;
-  PCNET32_DONUS_BELLEK = 5;
+  PCNET32_GIDIS_BELLEK    = 4;
+  PCNET32_DONUS_BELLEK    = 5;
 
-  GIDIS_HALKA_U         = (1 shl PCNET32_GIDIS_BELLEK);
-  GIDIS_HALKA_MOD_MASKE = (GIDIS_HALKA_U - 1);
-  GIDIS_HALKA_UZ_BIT    = (PCNET32_GIDIS_BELLEK shl 12);
+  GIDIS_HALKA_U           = (1 shl PCNET32_GIDIS_BELLEK);
+  GIDIS_HALKA_MOD_MASKE   = (GIDIS_HALKA_U - 1);
+  GIDIS_HALKA_UZ_BIT      = (PCNET32_GIDIS_BELLEK shl 12);
 
-  DONUS_HALKA_U         = (1 shl PCNET32_DONUS_BELLEK);
-  DONUS_HALKA_MOD_MASKE = (DONUS_HALKA_U - 1);
-  DONUS_HALKA_UZ_BIT    = (PCNET32_DONUS_BELLEK shl 4);
+  DONUS_HALKA_U           = (1 shl PCNET32_DONUS_BELLEK);
+  DONUS_HALKA_MOD_MASKE   = (DONUS_HALKA_U - 1);
+  DONUS_HALKA_UZ_BIT      = (PCNET32_DONUS_BELLEK shl 4);
 
-  ETH_CERCEVE_U = 1544;
-  TX_TIMEOUT = 5000;
+  ETH_CERCEVE_U           = 1544;
+  TX_TIMEOUT              = 5000;
 
-  RMD_OWN = $8000;
-  RMD_ERR = $4000;
-  RMD_FRAM = $2000;
-  RMD_OFLO = $1000;
-  RMD_CRC = $0800;
-  RMD_BUFF = $0400;
-  RMD_STP = $0200;
-  RMD_ENP = $0100;
-  RMD_BPE = $0080;
-  RMD_PAM = $0040;
-  RMD_LAFM = $0020;
-  RMD_BAM = $0010;
+  RMD_OWN                 = $8000;
+  RMD_ERR                 = $4000;
+  RMD_FRAM                = $2000;
+  RMD_OFLO                = $1000;
+  RMD_CRC                 = $0800;
+  RMD_BUFF                = $0400;
+  RMD_STP                 = $0200;
+  RMD_ENP                 = $0100;
+  RMD_BPE                 = $0080;
+  RMD_PAM                 = $0040;
+  RMD_LAFM                = $0020;
+  RMD_BAM                 = $0010;
 
-  TMD_OWN = $8000;
-  TMD_ERR = $4000;
-  TMD_ADD_FCS = $2000;    //ADD_FCS and NO_FCS is controlled through the same bit
-  TMD_NO_FCS = $2000;
-  TMD_MORE = $1000;       //MORE and LTINT is controlled through the same bit
-  TMD_LTINT = $1000;
-  TMD_ONE = $0800;
-  TMD_DEF = $0400;
-  TMD_STP = $0200;
-  TMD_ENP = $0100;
-  TMD_BPE = $0080;
-  TMD_RES = $007F;
+  TMD_OWN                 = $8000;
+  TMD_ERR                 = $4000;
+  TMD_ADD_FCS             = $2000;        // ADD_FCS and NO_FCS is controlled through the same bit
+  TMD_NO_FCS              = $2000;
+  TMD_MORE                = $1000;        // MORE and LTINT is controlled through the same bit
+  TMD_LTINT               = $1000;
+  TMD_ONE                 = $0800;
+  TMD_DEF                 = $0400;
+  TMD_STP                 = $0200;
+  TMD_ENP                 = $0100;
+  TMD_BPE                 = $0080;
+  TMD_RES                 = $007F;
 
 type
   TBlokYukle = packed record
@@ -172,8 +170,8 @@ type
 var
   PCNET32Yuklendi: Boolean = False;
   BlokYukle: TBlokYukle;
-  DonusHalka: array[1..DONUS_HALKA_U] of TDonusHalka;
-  GidisHalka: array[1..GIDIS_HALKA_U] of TGidisHalka;
+  DonusHalka: array[0..DONUS_HALKA_U - 1] of TDonusHalka;
+  GidisHalka: array[0..GIDIS_HALKA_U - 1] of TGidisHalka;
   DonusHalkaBellekAdresi: Isaretci;
   GidisHalkaBellekAdresi: Isaretci;
   BirSonrakiDonusSiraNo: TSayi4;
@@ -213,8 +211,8 @@ var
  ==============================================================================}
 function Yukle(APCI: PPCI): TISayi4;
 var
-  _i, _j: TSayi4;
-  _p: Isaretci;
+  i, j: TSayi4;
+  p: Isaretci;
 begin
 
   // çýkýþ öndeðeri
@@ -236,13 +234,13 @@ begin
   end;
 
   // çekirdeðin gönderdiði pci aygýt bilgilerini hedef bölgeye kopyala
-  AygitPCNET32.Yol := APCI^.Yol;
-  AygitPCNET32.Aygit := APCI^.Aygit;
-  AygitPCNET32.Islev := APCI^.Islev;
+  AygitPCNet32.Yol := APCI^.Yol;
+  AygitPCNet32.Aygit := APCI^.Aygit;
+  AygitPCNet32.Islev := APCI^.Islev;
 
   // aygýt temel port numarasýný al
-  AygitPCNET32.TemelAdres := IlkIOPortNumarasiniAl(APCI);
-  if(AygitPCNET32.TemelAdres = 0) then
+  AygitPCNet32.TemelAdres := IlkIOPortNumarasiniAl(APCI);
+  if(AygitPCNet32.TemelAdres = 0) then
   begin
 
     {$IFDEF PCNET32_BILGI}
@@ -252,7 +250,7 @@ begin
   end;
 
   // IRQ numarasýný al
-  AygitPCNET32.IRQNo := IRQNoAl(APCI);
+  AygitPCNet32.IRQNo := IRQNoAl(APCI);
 
   {$IFDEF PCNET32_BILGI}
   SISTEM_MESAJ_S16(RENK_LACIVERT, 'PCNET32 Yol: ', APCI^.Yol, 2);
@@ -318,10 +316,10 @@ begin
   end;
 
   // çip sürüm bilgisini al
-  AygitPCNET32.CipSurum := (CSROku(CIP_KIMLIK_UST) shl 16);
-  AygitPCNET32.CipSurum += CSROku(CIP_KIMLIK_ALT);
+  AygitPCNet32.CipSurum := (CSROku(CIP_KIMLIK_UST) shl 16);
+  AygitPCNet32.CipSurum += CSROku(CIP_KIMLIK_ALT);
 
-  if((AygitPCNET32.CipSurum and $3) = 0) then
+  if((AygitPCNet32.CipSurum and $3) = 0) then
   begin
 
     {$IFDEF PCNET32_BILGI}
@@ -330,31 +328,31 @@ begin
     Exit;
   end;
 
-  AygitPCNET32.CipSurum := (AygitPCNET32.CipSurum shr 12) and $FFFF;
+  AygitPCNet32.CipSurum := (AygitPCNet32.CipSurum shr 12) and $FFFF;
 
-  case AygitPCNET32.CipSurum of
+  case AygitPCNet32.CipSurum of
 
-    $2420:  AygitPCNET32.CipAdi := CipAdi2420;
-    $2430:  AygitPCNET32.CipAdi := CipAdi2430;
-    $2621:  AygitPCNET32.CipAdi := CipAdi2621;
-    $2623:  AygitPCNET32.CipAdi := CipAdi2623;
-    $2624:  AygitPCNET32.CipAdi := CipAdi2624;
-    $2625:  AygitPCNET32.CipAdi := CipAdi2625;
-    $2626:  AygitPCNET32.CipAdi := CipAdi2626;
-    $2627:  AygitPCNET32.CipAdi := CipAdi2627;
-    else    AygitPCNET32.CipAdi := CipAdiBilinmiyor;
+    $2420:  AygitPCNet32.CipAdi := CipAdi2420;
+    $2430:  AygitPCNet32.CipAdi := CipAdi2430;
+    $2621:  AygitPCNet32.CipAdi := CipAdi2621;
+    $2623:  AygitPCNet32.CipAdi := CipAdi2623;
+    $2624:  AygitPCNet32.CipAdi := CipAdi2624;
+    $2625:  AygitPCNet32.CipAdi := CipAdi2625;
+    $2626:  AygitPCNet32.CipAdi := CipAdi2626;
+    $2627:  AygitPCNet32.CipAdi := CipAdi2627;
+    else    AygitPCNet32.CipAdi := CipAdiBilinmiyor;
   end;
 
   {$IFDEF PCNET32_BILGI}
   SISTEM_MESAJ(RENK_MAVI, 'PCNET32 çip adý: ' + AygitPCNET32.CipAdi, []);
   {$ENDIF}
 
-  for _i := 0 to 5 do
+  for i := 0 to 5 do
   begin
 
-    AygitPCNET32.MACAdres[_i] := PortAl1(AygitPCNET32.TemelAdres + _i);
+    AygitPCNet32.MACAdres[i] := PortAl1(AygitPCNet32.TemelAdres + i);
   end;
-  AgBilgisi.MACAdres := AygitPCNET32.MACAdres;
+  GAgBilgisi.MACAdres := AygitPCNet32.MACAdres;
 
   {$IFDEF PCNET32_BILGI}
   SISTEM_MESAJ_MAC(RENK_MAVI, 'PCNET32 MAC Adres: ', AygitPCNET32.MACAdres);
@@ -364,40 +362,40 @@ begin
   BlokYukle._Mod := $80;
   BlokYukle.GDUzunluk := (GIDIS_HALKA_UZ_BIT or DONUS_HALKA_UZ_BIT);
 
-  BlokYukle.MACAdres := AygitPCNET32.MACAdres;
+  BlokYukle.MACAdres := AygitPCNet32.MACAdres;
 
   BlokYukle.Suzgec1 := 0;
   BlokYukle.Suzgec2 := 0;
 
-  BlokYukle.DonusHalka := @DonusHalka[1];
-  BlokYukle.GidisHalka := @GidisHalka[1];
+  BlokYukle.DonusHalka := @DonusHalka[0];
+  BlokYukle.GidisHalka := @GidisHalka[0];
 
   DonusHalkaBellekAdresi := GGercekBellek.Ayir(ETH_CERCEVE_U * DONUS_HALKA_U);
-  _p := DonusHalkaBellekAdresi;
-  for _i := 1 to DONUS_HALKA_U do
+  p := DonusHalkaBellekAdresi;
+  for i := 0 to DONUS_HALKA_U - 1 do
   begin
 
-    DonusHalka[_i].Bellek := _p;
-    DonusHalka[_i].Uzunluk := -(ETH_CERCEVE_U);
-    DonusHalka[_i].Durum := RMD_OWN;
-    _p += ETH_CERCEVE_U;
+    DonusHalka[i].Bellek := p;
+    DonusHalka[i].Uzunluk := -(ETH_CERCEVE_U);
+    DonusHalka[i].Durum := RMD_OWN;
+    p += ETH_CERCEVE_U;
   end;
-  BirSonrakiDonusSiraNo := 1;
+  BirSonrakiDonusSiraNo := 0;
 
   GidisHalkaBellekAdresi := GGercekBellek.Ayir(ETH_CERCEVE_U * GIDIS_HALKA_U);
-  _p := GidisHalkaBellekAdresi;
-  for _i := 1 to GIDIS_HALKA_U do
+  p := GidisHalkaBellekAdresi;
+  for i := 0 to GIDIS_HALKA_U - 1 do
   begin
 
-    GidisHalka[_i].Bellek := _p;
-    GidisHalka[_i].Uzunluk := 0;
-    GidisHalka[_i].Durum := 0;
-    _p += ETH_CERCEVE_U;
+    GidisHalka[i].Bellek := p;
+    GidisHalka[i].Uzunluk := 0;
+    GidisHalka[i].Durum := 0;
+    p += ETH_CERCEVE_U;
   end;
-  BirSonrakiGidisSiraNo := 1;
+  BirSonrakiGidisSiraNo := 0;
 
   // IRQ kanalýný aktifleþtir
-  IRQIsleviAta(AygitPCNET32.IRQNo, @PCNET32YukleniciIslev);
+  IRQIsleviAta(AygitPCNet32.IRQNo, @PCNET32YukleniciIslev);
 
   // aygýtý sýfýrla
   Sifirla;
@@ -406,9 +404,9 @@ begin
   BCRYaz(20, 2);
 
   // full duplex
-  _j := BCROku(9);
-  _j := (_j and (not 3)) or 1;
-  BCRYaz(9, _j);
+  j := BCROku(9);
+  j := (j and (not 3)) or 1;
+  BCRYaz(9, j);
 
   CSRYaz(INIT_BLOCK_ADDRESS_LOW, TSayi4(@BlokYukle) and $FFFF);
   CSRYaz(INIT_BLOCK_ADDRESS_HIGH, (TSayi4(@BlokYukle) shr 16) and $FFFF);
@@ -416,11 +414,11 @@ begin
   CSRYaz(4, $915);
   CSRYaz(0, CSR_INIT);
 
-  for _i := 0 to 100 do
+  for i := 0 to 100 do
   begin
 
-    _j := CSROku(0);
-    if((_j and CSR_IDON) <> 0) then Break;
+    j := CSROku(0);
+    if((j and CSR_IDON) <> 0) then Break;
   end;
 
   CSRYaz(0, CSR_IENA or CSR_STRT);
@@ -435,32 +433,35 @@ end;
 {==============================================================================
   PCNET32 að kartýna gelen bilgileri alýr
  ==============================================================================}
+{$CODEALIGN PROC=4}
 procedure VeriAl(ABellek: Isaretci; var AVeriUzunlugu: TSayi2);
 var
-  _Durum: TSayi2;
-  _Uzunluk: TSayi4;
+  Durum: TSayi2;
+  i: TSayi4;
 begin
 
   // belirtilen halkaya veri gelip gelmediðini kontrol et
-  _Durum := DonusHalka[BirSonrakiDonusSiraNo].Durum;
+  Durum := DonusHalka[BirSonrakiDonusSiraNo].Durum;
 
-  if((_Durum and RMD_OWN) = 0) then
+  if((Durum and RMD_OWN) = 0) then
   begin
 
-    if(((_Durum shr 8) and $FF) = 3) then
+    if(((Durum shr 8) and $FF) = 3) then
     begin
 
-      _Uzunluk := DonusHalka[BirSonrakiDonusSiraNo].MesajUz;
-      _Uzunluk := _Uzunluk and $FFF;
-      _Uzunluk -= 4;
+      i := DonusHalka[BirSonrakiDonusSiraNo].MesajUz;
+      i := i and $FFF;
+      i -= 4;
 
-      Tasi2(DonusHalka[BirSonrakiDonusSiraNo].Bellek, ABellek, _Uzunluk);
-      AVeriUzunlugu := _Uzunluk;
+      Tasi2(DonusHalka[BirSonrakiDonusSiraNo].Bellek, ABellek, i);
+      AVeriUzunlugu := i;
 
       // halkayý veri alacak þekilde yeniden ayarla
       DonusHalka[BirSonrakiDonusSiraNo].Uzunluk := -(ETH_CERCEVE_U);
       DonusHalka[BirSonrakiDonusSiraNo].Durum := RMD_OWN;
+
       BirSonrakiDonusSiraNo := (BirSonrakiDonusSiraNo + 1) and DONUS_HALKA_MOD_MASKE;
+
     end else AVeriUzunlugu := 0;
   end else AVeriUzunlugu := 0;
 end;
@@ -470,24 +471,24 @@ end;
  ==============================================================================}
 procedure PCNET32YukleniciIslev;
 var
-  _Deger: TSayi4;
+  i: TSayi4;
 begin
 
   repeat
 
-    _Deger := CSROku(0);
-    _Deger := (_Deger and (CSR_ERR or CSR_RINT or CSR_TINT));
-    if(_Deger = 0) then
+    i := CSROku(0);
+    i := (i and (CSR_ERR or CSR_RINT or CSR_TINT));
+    if(i = 0) then
     begin
 
       CSRYaz(0, (CSR_BABL or CSR_CERR or CSR_MISS or CSR_MERR or CSR_IDON or CSR_IENA));
       Exit;
     end;
 
-    _Deger := _Deger and (not (CSR_IENA or CSR_TDMD or CSR_STOP or CSR_STRT or CSR_INIT));
-    CSRYaz(0, _Deger);
+    i := i and (not (CSR_IENA or CSR_TDMD or CSR_STOP or CSR_STRT or CSR_INIT));
+    CSRYaz(0, i);
 
-    if((_Deger and CSR_RINT) = CSR_RINT) then
+    if((i and CSR_RINT) = CSR_RINT) then
     begin
 
       {$IFDEF PCNET32_BILGI}
@@ -495,7 +496,7 @@ begin
       {$ENDIF}
       //VeriAl;
     end
-    else if((_Deger and CSR_TINT) = CSR_TINT) then
+    else if((i and CSR_TINT) = CSR_TINT) then
     begin
 
     {$IFDEF PCNET32_BILGI}
@@ -510,14 +511,14 @@ end;
  ==============================================================================}
 procedure VeriGonder(AEthernetPaket: PEthernetPaket; AVeriUzunlugu: TSayi2);
 var
-  _Bellek: Isaretci;
+  p: Isaretci;
 begin
 
   // gönderilecek bilgi'nin yerleþtirileceði belleðe konumlan
-  _Bellek := GidisHalka[BirSonrakiGidisSiraNo].Bellek;
+  p := GidisHalka[BirSonrakiGidisSiraNo].Bellek;
 
   // ethernet paketini belleðe yerleþtir
-  Tasi2(AEthernetPaket, _Bellek, AVeriUzunlugu);
+  Tasi2(AEthernetPaket, p, AVeriUzunlugu);
 
   // gönderilecek bilgi'nin sahip olduðu ring deðerlerini belirle
   GidisHalka[BirSonrakiGidisSiraNo].Uzunluk := -(AVeriUzunlugu);
@@ -526,7 +527,6 @@ begin
 
   // bir sonraki gönderim ringini belirle
   BirSonrakiGidisSiraNo := (BirSonrakiGidisSiraNo + 1) and GIDIS_HALKA_MOD_MASKE;
-  if(BirSonrakiGidisSiraNo = 0) then Inc(BirSonrakiGidisSiraNo);
 
   CSRYaz(0, (CSR_IENA or CSR_TDMD));
 end;
@@ -536,18 +536,18 @@ end;
  ==============================================================================}
 function IlkIOPortNumarasiniAl(APCI: PPCI): TSayi2;
 var
-  _Adres, i: TSayi1;
-  _Deger: TSayi4;
+  Adres, i: TSayi1;
+  Deger: TSayi4;
 begin
 
-  _Adres := $10;
+  Adres := $10;
   for i := 1 to 6 do
   begin
 
-    _Deger := PCIOku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, _Adres);
-    if((_Deger and 1) = 1) then Exit(_Deger and (not 3));
+    Deger := PCIOku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
+    if((Deger and 1) = 1) then Exit(Deger and (not 3));
 
-    _Adres += 4;
+    Adres += 4;
   end;
 
   Result := 0;
@@ -558,12 +558,12 @@ end;
  ==============================================================================}
 procedure DMAErisiminiAktiflestir(APCI: PPCI);
 var
-  _Deger: TSayi2;
+  Deger: TSayi2;
 begin
 
-  _Deger := PCIOku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
-  if((_Deger and 4) = 4) then Exit;
-  PCIYaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (_Deger and 4));
+  Deger := PCIOku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
+  if((Deger and 4) = 4) then Exit;
+  PCIYaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger and 4));
 end;
 
 {==============================================================================
@@ -578,113 +578,113 @@ end;
 function WIOCSROku(ASiraNo: TSayi4): TSayi4;
 begin
 
-  PortYaz2(AygitPCNET32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
-  Result := PortAl2(AygitPCNET32.TemelAdres + PCNET32_WIO_RDP) and $FFFF;
+  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
+  Result := PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_RDP) and $FFFF;
 end;
 
 procedure WIOCSRYaz(ASiraNo, AVeri: TSayi4);
 begin
 
-  PortYaz2(AygitPCNET32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
-  PortYaz2(AygitPCNET32.TemelAdres + PCNET32_WIO_RDP, AVeri);
+  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
+  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RDP, AVeri);
 end;
 
 function WIOBCROku(ASiraNo: TSayi4): TSayi4;
 begin
 
-  PortYaz2(AygitPCNET32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
-  Result := PortAl2(AygitPCNET32.TemelAdres + PCNET32_WIO_BDP) and $FFFF;
+  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
+  Result := PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_BDP) and $FFFF;
 end;
 
 procedure WIOBCRYaz(ASiraNo, AVeri: TSayi4);
 begin
 
-  PortYaz2(AygitPCNET32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
-  PortYaz2(AygitPCNET32.TemelAdres + PCNET32_WIO_BDP, AVeri);
+  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
+  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_BDP, AVeri);
 end;
 
 function WIORAPOku: TSayi4;
 begin
 
-  Result := PortAl2(AygitPCNET32.TemelAdres + PCNET32_WIO_RAP) and $FFFF;
+  Result := PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP) and $FFFF;
 end;
 
 procedure WIORAPYaz(AVeri: TSayi4);
 begin
 
-  PortYaz2(AygitPCNET32.TemelAdres + PCNET32_WIO_RAP, AVeri);
+  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, AVeri);
 end;
 
 procedure WIOSifirla;
 begin
 
-  PortAl2(AygitPCNET32.TemelAdres + PCNET32_WIO_RESET);
+  PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_RESET);
 end;
 
 function WIOKontrol: Boolean;
 var
-  _Deger: TSayi2;
+  Deger: TSayi2;
 begin
 
-  PortYaz2(AygitPCNET32.TemelAdres + PCNET32_WIO_RAP, 88);
-  _Deger := PortAl2(AygitPCNET32.TemelAdres + PCNET32_WIO_RAP);
-  if(_Deger = 88) then Result := True else Result := False;
+  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, 88);
+  Deger := PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP);
+  if(Deger = 88) then Result := True else Result := False;
 end;
 
 function DWIOCSROku(ASiraNo: TSayi4): TSayi4;
 begin
 
-  PortYaz4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
-  Result := PortAl4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RDP) and $FFFF;
+  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
+  Result := PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RDP) and $FFFF;
 end;
 
 procedure DWIOCSRYaz(ASiraNo, AVeri: TSayi4);
 begin
 
-  PortYaz4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
-  PortYaz4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RDP, AVeri);
+  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
+  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RDP, AVeri);
 end;
 
 function DWIOBCROku(ASiraNo: TSayi4): TSayi4;
 begin
 
-  PortYaz4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
-  Result := PortAl4(AygitPCNET32.TemelAdres + PCNET32_DWIO_BDP) and $FFFF;
+  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
+  Result := PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_BDP) and $FFFF;
 end;
 
 procedure DWIOBCRYaz(ASiraNo, AVeri: TSayi4);
 begin
 
-  PortYaz4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
-  PortYaz4(AygitPCNET32.TemelAdres + PCNET32_DWIO_BDP, AVeri);
+  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
+  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_BDP, AVeri);
 end;
 
 function DWIORAPOku: TSayi4;
 begin
 
-  Result := PortAl4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RAP) and $FFFF;
+  Result := PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP) and $FFFF;
 end;
 
 procedure DWIORAPYaz(AVeri: TSayi4);
 begin
 
-  PortYaz4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RAP, AVeri);
+  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, AVeri);
 end;
 
 procedure DWIOSifirla;
 begin
 
-  PortAl4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RESET);
+  PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RESET);
 end;
 
 function DWIOKontrol: Boolean;
 var
-  Val: TSayi4;
+  Deger: TSayi4;
 begin
 
-  PortYaz4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RAP, 88);
-  Val := PortAl4(AygitPCNET32.TemelAdres + PCNET32_DWIO_RAP) and $FFFF;
-  if(Val = 88) then Result := True else Result := False;
+  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, 88);
+  Deger := PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP) and $FFFF;
+  if(Deger = 88) then Result := True else Result := False;
 end;
 
 end.
