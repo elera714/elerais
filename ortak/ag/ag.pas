@@ -163,7 +163,7 @@ begin
 
       // bilinmeyen protokol
 
-        SISTEM_MESAJ_S16(RENK_KIRMIZI, 'AG.PP: Bilinmeyen Protokol: ', Protokol, 4);
+        SISTEM_MESAJ_S16(RENK_KIRMIZI, 'AG.PAS: Bilinmeyen Protokol: ', Protokol, 4);
     end;
   end;
 end;

@@ -1,16 +1,16 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÃ‡
-  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
+  Kodlayan: Fatih KILIÇ
+  Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya AdÄ±: gn_defter.pas
-  Dosya Ä°ÅŸlevi: defter nesnesi (TMemo) yÃ¶netim iÅŸlevlerini iÃ§erir
+  Dosya Adı: gn_defter.pas
+  Dosya İşlevi: defter nesnesi (TMemo) yönetim işlevlerini içerir
 
-  GÃ¼ncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 24/12/2024
 
-  Bilgi: bu gÃ¶rsel nesne 13.05.2020 tarih itibariyle nesnenin program bÃ¶lÃ¼mÃ¼ne eklenen
-    40K ve Ã§ekirdek bÃ¶lÃ¼mÃ¼ne eklenen 40K bellek kullanmaktadÄ±r.
-    bu bellek miktarÄ± ÅŸu an iÃ§in gereklidir. ileride yapÄ±sallÄ±k baÄŸlamÄ±nda deÄŸiÅŸtirilebilir.
+  Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
+    40K ve çekirdek bölümüne eklenen 40K bellek kullanmaktadır.
+    bu bellek miktarı şu an için gereklidir. ileride yapısallık bağlamında değiştirilebilir.
 
  ==============================================================================}
 {$mode objfpc}
@@ -25,9 +25,9 @@ type
   TDefter = object(TPanel)
   private
     FYatayKCubugu, FDikeyKCubugu: PKaydirmaCubugu;
-    // yatay & dikey karakter sayÄ±sÄ±
+    // yatay & dikey karakter sayısı
     FYatayKarSay, FDikeyKarSay: TSayi4;
-    // yazÄ±lacak metni gÃ¶rÃ¼nÃ¼r ortamda gÃ¶rÃ¼ntÃ¼lenecek ÅŸekilde sarmala
+    // yazılacak metni görünür ortamda görüntülenecek şekilde sarmala
     FMetinSarmala: Boolean;
     FYaziBellekAdresi: Isaretci;
     FYaziUzunlugu: TSayi4;
@@ -57,7 +57,7 @@ implementation
 uses gn_pencere, genel, temelgorselnesne, sistemmesaj;
 
 {==============================================================================
-  defter kesme Ã§aÄŸrÄ±larÄ±nÄ± yÃ¶netir
+  defter kesme çağrılarını yönetir
  ==============================================================================}
 function DefterCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -100,7 +100,7 @@ begin
     $010F:
     begin
 
-      // nesnenin handle, tip deÄŸerlerini denetle.
+      // nesnenin handle, tip değerlerini denetle.
       Defter := PDefter(Defter^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
       if(Defter <> nil) then
       begin
@@ -114,7 +114,7 @@ begin
     $020F:
     begin
 
-      // nesnenin handle, tip deÄŸerlerini denetle.
+      // nesnenin handle, tip değerlerini denetle.
       Defter := PDefter(Defter^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
       if(Defter <> nil) then
       begin
@@ -124,11 +124,11 @@ begin
       end;
     end;
 
-    // defter nesnesinin iÃ§erisindeki verileri sil
+    // defter nesnesinin içerisindeki verileri sil
     $030F:
     begin
 
-      // nesnenin kimlik, tip deÄŸerlerini denetle.
+      // nesnenin kimlik, tip değerlerini denetle.
       Defter := PDefter(Defter^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
       if(Defter <> nil) then
       begin
@@ -137,11 +137,11 @@ begin
       end;
     end;
 
-    // metni sarmalama iÅŸlevi
+    // metni sarmalama işlevi
     $040F:
     begin
 
-      // nesnenin handle, tip deÄŸerlerini denetle.
+      // nesnenin handle, tip değerlerini denetle.
       Defter := PDefter(Defter^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
       if(Defter <> nil) then
       begin
@@ -156,7 +156,7 @@ begin
 end;
 
 {==============================================================================
-  defter nesnesini oluÅŸturur
+  defter nesnesini oluşturur
  ==============================================================================}
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   ADefterRenk, AYaziRenk: TRenk; AMetinSarmala: Boolean): TKimlik;
@@ -175,7 +175,7 @@ begin
 end;
 
 {==============================================================================
-  defter nesnesini oluÅŸturur
+  defter nesnesini oluşturur
  ==============================================================================}
 function TDefter.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
   ASol, AUst, AGenislik, AYukseklik: TISayi4; ADefterRenk, AYaziRenk: TRenk;
@@ -198,19 +198,19 @@ begin
 
   Defter^.FFareImlecTipi := fitGiris;
 
-  // yatay kaydÄ±rma Ã§ubuÄŸu
+  // yatay kaydırma çubuğu
   Defter^.FYatayKCubugu := Defter^.FYatayKCubugu^.Olustur(ktBilesen, Defter,
     0, AYukseklik - 16, AGenislik - 16, 16, yYatay);
   Defter^.FYatayKCubugu^.DegerleriBelirle(0, 10);
   Defter^.FYatayKCubugu^.OlayYonlendirmeAdresi := @KaydirmaCubuguOlaylariniIsle;
 
-  // dikey kaydÄ±rma Ã§ubuÄŸu
+  // dikey kaydırma çubuğu
   Defter^.FDikeyKCubugu := Defter^.FDikeyKCubugu^.Olustur(ktBilesen, Defter,
     AGenislik - 16, 0, 16, AYukseklik - 16, yDikey);
   Defter^.FDikeyKCubugu^.DegerleriBelirle(0, 10);
   Defter^.FDikeyKCubugu^.OlayYonlendirmeAdresi := @KaydirmaCubuguOlaylariniIsle;
 
-  // defter nesnesinin iÃ§eriÄŸi iÃ§in bellek ayÄ±r
+  // defter nesnesinin içeriği için bellek ayır
   YaziBellekAdresi := GGercekBellek.Ayir(4096 * 10);
   Defter^.FYaziBellekAdresi := YaziBellekAdresi;
 
@@ -221,7 +221,7 @@ begin
   Defter^.FMetinSarmala := AMetinSarmala;
   Defter^.FYaziRenk := AYaziRenk;
 
-  // kimlik adresini geri dÃ¶ndÃ¼r
+  // kimlik adresini geri döndür
   Result := Defter;
 end;
 
@@ -233,7 +233,7 @@ var
   Defter: PDefter;
 begin
 
-  // AtaNesne nesnesinin doÄŸruluÄŸunu kontrol et
+  // AtaNesne nesnesinin doğruluğunu kontrol et
   Defter := PDefter(Defter^.NesneAl(AKimlik));
   if(Defter = nil) then Exit;
 
@@ -244,7 +244,7 @@ begin
 end;
 
 {==============================================================================
-  defter nesnesini gÃ¶rÃ¼ntÃ¼ler
+  defter nesnesini görüntüler
  ==============================================================================}
 procedure TDefter.Goster;
 var
@@ -270,7 +270,7 @@ begin
 end;
 
 {==============================================================================
-  defter nesnesini boyulandÄ±rÄ±r
+  defter nesnesini boyulandırır
  ==============================================================================}
 procedure TDefter.Boyutlandir;
 var
@@ -282,7 +282,7 @@ begin
 
   Defter^.Hizala;
 
-  // yatay kaydÄ±rma Ã§ubuÄŸunu elle yeniden konumlandÄ±r
+  // yatay kaydırma çubuğunu elle yeniden konumlandır
   Defter^.FYatayKCubugu^.FKonum.Sol := 0;
   Defter^.FYatayKCubugu^.FKonum.Ust := Defter^.FBoyut.Yukseklik - 16;
   Defter^.FYatayKCubugu^.FBoyut.Genislik := Defter^.FBoyut.Genislik - 16;
@@ -297,7 +297,7 @@ begin
   Defter^.FYatayKCubugu^.FCizimBaslangic.Ust := Defter^.FCizimBaslangic.Ust + Defter^.FYatayKCubugu^.FKonum.Ust;
   Defter^.FYatayKCubugu^.Boyutlandir;
 
-  // dikey kaydÄ±rma Ã§ubuÄŸunu elle yeniden konumlandÄ±r
+  // dikey kaydırma çubuğunu elle yeniden konumlandır
   Defter^.FDikeyKCubugu^.FKonum.Sol := Defter^.FBoyut.Genislik - 16;
   Defter^.FDikeyKCubugu^.FKonum.Ust := 0;
   Defter^.FDikeyKCubugu^.FBoyut.Genislik := 16;
@@ -314,17 +314,17 @@ begin
 end;
 
 {==============================================================================
-  defter nesnesini Ã§izer
+  defter nesnesini çizer
  ==============================================================================}
 procedure TDefter.Ciz;
 var
   Defter: PDefter = nil;
   Alan: TAlan;
-  pxSol, pxUst: TISayi4;      // defter nesnesine yazÄ±lacak karakterin pixel olarak sol / Ã¼st deÄŸerleri
+  pxSol, pxUst: TISayi4;      // defter nesnesine yazılacak karakterin pixel olarak sol / üst değerleri
   YaziBellekAdresi: PChar;
-  SatirNo, pxDikeySinir: TISayi4;
-  SutunNo: Integer;
-  KarakterYaz, SutunArtir: Boolean;
+  SinirSutunIlk, SinirSutunSon,
+  SinirSatirIlk, SinirSatirSon,
+  AktifSutunNo, AktifSatirNo: TISayi4;
 begin
 
   Defter := PDefter(Defter^.NesneAl(Kimlik));
@@ -332,93 +332,83 @@ begin
 
   inherited Ciz;
 
-  // defter nesnesinin Ã§izim alan koordinatlarÄ±nÄ± al
+  // defter nesnesinin çizim alan koordinatlarını al
   Alan := Defter^.FCizimAlan;
 
-  // 16 - 16 = kaydÄ±rma Ã§ubuÄŸu ve karakter yÃ¼ksekliÄŸi
-  pxDikeySinir := Alan.Alt - 16 - 16;
-
-  // eÄŸer defter nesnesi iÃ§in bellek ayrÄ±ldÄ±ysa defter iÃ§eriÄŸini nesne iÃ§eriÄŸine
+  // eğer defter nesnesi için bellek ayrıldıysa defter içeriğini nesne içeriğine
   // eklenen bilgilerle doldur
   if(Defter^.FYaziBellekAdresi <> nil) and (Defter^.FYaziUzunlugu > 0) then
   begin
 
-    // defter iÃ§erik bellek bÃ¶lgesine konumlan
+    // sütun / satır ilk değerler
+    AktifSutunNo := -Defter^.FYatayKCubugu^.FMevcutDeger;
+    AktifSatirNo := -Defter^.FDikeyKCubugu^.FMevcutDeger;
+
+    // sınır değerleri
+    SinirSutunIlk := Alan.Sol;
+    SinirSutunSon := (Alan.Sag div 8) - 3;      // 2 boşluk yatay kaydırma çubuğu + 1 boşluk = 3 boşluk karakteri
+    SinirSatirIlk := Alan.Ust;
+    SinirSatirSon := (Alan.Alt div 16) - 2;     // 1 boşluk dikey kaydırma çubuğu + 1 boşluk = 2 boşluk karakteri
+
+    // defter içerik bellek bölgesine konumlan
     YaziBellekAdresi := PChar(Defter^.FYaziBellekAdresi);
 
-    SatirNo := 0;
-    SutunNo := 0;
-
-    // bellek iÃ§eriÄŸi sÄ±fÄ±r oluncaya kadar devam et
+    // bellek içeriği sıfır oluncaya kadar devam et
     while (YaziBellekAdresi^ <> #0) do
     begin
 
-      KarakterYaz := True;
-      SutunArtir := True;
+      // giriş (enter) karakteri olması durumunda herhangi birşey yapma
+      if(YaziBellekAdresi^ = #13) then begin end
 
-      // giriÅŸ (enter) karakteri olmasÄ± durumunda herhangi birÅŸey yapma
-      if(YaziBellekAdresi^ = #13) then
-      begin
-
-        KarakterYaz := False;
-        Inc(YaziBellekAdresi);
-      end
-
-      // satÄ±r baÅŸÄ± + bir alt satÄ±ra geÃ§
+      // satır başı + bir alt satıra geç
       else if(YaziBellekAdresi^ = #10) then
       begin
 
-        SutunNo := 0;
-        Inc(SatirNo);
-        KarakterYaz := False;
-        SutunArtir := False;
-      end;
-
-      pxSol := (SutunNo - Defter^.FYatayKCubugu^.FMevcutDeger) * 8;
-      pxSol += Alan.Sol + 4;
-
-      pxUst := (SatirNo - Defter^.FDikeyKCubugu^.FMevcutDeger) * 16;
-      pxUst += Alan.Ust + 4;
-
-      { TODO - metin sarmalandÄ±ÄŸÄ±nda SADECE dikey kaydÄ±rma gerÃ§ekleÅŸtirilecek,
-        yatay kaydÄ±rma Ã§ubuÄŸu pasifleÅŸtirilecek }
-      if(Defter^.FMetinSarmala) then
+        AktifSutunNo := -Defter^.FYatayKCubugu^.FMevcutDeger;
+        Inc(AktifSatirNo);
+      end
+      else
       begin
 
-        if(pxSol > Alan.Sag - 16 - 8) then
+        { TODO - metin sarmalandığında SADECE dikey kaydırma gerçekleştirilecek,
+          yatay kaydırma çubuğu pasifleştirilecek }
+        if(AktifSutunNo >= SinirSutunIlk) and (AktifSutunNo <= SinirSutunSon) and
+          (AktifSatirNo >= SinirSatirIlk) and (AktifSatirNo <= SinirSatirSon) then
         begin
 
-          SutunNo := 0;
-          Inc(SatirNo);
-
-          pxSol := (SutunNo - Defter^.FYatayKCubugu^.FMevcutDeger) * 8;
+          pxSol := AktifSutunNo * 8;
           pxSol += Alan.Sol + 4;
 
-          pxUst := (SatirNo - Defter^.FDikeyKCubugu^.FMevcutDeger) * 16;
+          pxUst := AktifSatirNo * 16;
           pxUst += Alan.Ust + 4;
+
+          HarfYaz(Defter, pxSol, pxUst, YaziBellekAdresi^, Defter^.FYaziRenk);
         end;
-      end else if(pxSol > Alan.Sag - 16 - 8) then KarakterYaz := False;
 
-      if(SatirNo < Defter^.FDikeyKCubugu^.FMevcutDeger) then KarakterYaz := False;
-      if(pxUst >= pxDikeySinir) then KarakterYaz := False;
+        Inc(AktifSutunNo);
+        if(AktifSutunNo > SinirSutunSon) and (Defter^.FMetinSarmala) then
+        begin
 
-      // karakterleri nesne iÃ§erisinde gÃ¶rÃ¼ntÃ¼le
-      if(KarakterYaz) then
-        HarfYaz(Defter, pxSol, pxUst, YaziBellekAdresi^, Defter^.FYaziRenk);
+          AktifSutunNo := -Defter^.FYatayKCubugu^.FMevcutDeger;
+          Inc(AktifSatirNo);
 
-      if(SutunArtir) then Inc(SutunNo);
+          // yazma işlemi alt sınırı aşması durumunda zaten yazım yapılamayacağından
+          // gereksiz işlem yapılmaması için işlevden çık
+          if(AktifSatirNo > SinirSatirSon) then Exit;
+        end;
+      end;
 
       Inc(YaziBellekAdresi);
     end;
   end;
 
-  // kaydÄ±rma Ã§ubuklarÄ±nÄ± en son Ã§iz
+  // kaydırma çubuklarını en son çiz
   //Defter^.FYatayKCubugu^.Ciz;
   //Defter^.FDikeyKCubugu^.Ciz;
 end;
 
 {==============================================================================
-  defter nesnesinin iÃ§eriÄŸindeki verileri siler
+  defter nesnesinin içeriğindeki verileri siler
  ==============================================================================}
 procedure TDefter.Temizle;
 begin
@@ -433,27 +423,27 @@ begin
 end;
 
 {==============================================================================
-  defter nesnesine karakter katarÄ± ekler - pchar
+  defter nesnesine karakter katarı ekler - pchar
  ==============================================================================}
 procedure TDefter.YaziEkle(AYaziBellekAdresi: Isaretci);
 var
   p: PSayi1;
-  Uzunluk: TSayi4;
+  i: TSayi4;
 begin
 
-  // karakter katarÄ± iÃ§in bellek ayrÄ±lmÄ±ÅŸ mÄ± ?
+  // karakter katarı için bellek ayrılmış mı ?
   if(Self.FYaziBellekAdresi = nil) then Exit;
 
-  // verinin uzunluÄŸunu al
-  Uzunluk := StrLen(AYaziBellekAdresi);
-  if(Uzunluk = 0) or (Uzunluk > (4096 * 10)) then Exit;
+  // verinin uzunluğunu al
+  i := StrLen(AYaziBellekAdresi);
+  if(i = 0) or (i > (4096 * 10)) then Exit;
 
-  // karakter katarÄ±nÄ± hedef bÃ¶lgeye kopyala
+  // karakter katarını hedef bölgeye kopyala
   p := PByte(Self.FYaziBellekAdresi + FYaziUzunlugu);
-  Tasi2(AYaziBellekAdresi, p, Uzunluk);
+  Tasi2(AYaziBellekAdresi, p, i);
 
-  // sÄ±fÄ±r sonlandÄ±rma iÅŸaretini ekle
-  FYaziUzunlugu += Uzunluk;
+  // sıfır sonlandırma işaretini ekle
+  FYaziUzunlugu += i;
   p := PByte(Self.FYaziBellekAdresi + FYaziUzunlugu);
   p^ := 0;
 
@@ -463,27 +453,27 @@ begin
 end;
 
 {==============================================================================
-  defter nesnesine karakter katarÄ± ekler - string
+  defter nesnesine karakter katarı ekler - string
  ==============================================================================}
 procedure TDefter.YaziEkle(ADeger: string);
 var
   p: PSayi1;
-  Uzunluk: TSayi4;
+  i: TSayi4;
 begin
 
-  // karakter katarÄ± iÃ§in bellek ayrÄ±lmÄ±ÅŸ mÄ± ?
+  // karakter katarı için bellek ayrılmış mı ?
   if(Self.FYaziBellekAdresi = nil) then Exit;
 
-  // verinin uzunluÄŸunu al
-  Uzunluk := Length(ADeger);
-  if(Uzunluk = 0) or (Uzunluk > (4096 * 10)) then Exit;
+  // verinin uzunluğunu al
+  i := Length(ADeger);
+  if(i = 0) or (i > (4096 * 10)) then Exit;
 
-  // karakter katarÄ±nÄ± hedef bÃ¶lgeye kopyala
+  // karakter katarını hedef bölgeye kopyala
   p := PByte(TSayi4(Self.FYaziBellekAdresi) + Self.FYaziUzunlugu);
-  Tasi2(@ADeger[1], p, Uzunluk);
+  Tasi2(@ADeger[1], p, i);
 
-  // sÄ±fÄ±r sonlandÄ±rma iÅŸaretini ekle
-  Self.FYaziUzunlugu += Uzunluk;
+  // sıfır sonlandırma işaretini ekle
+  Self.FYaziUzunlugu += i;
   p := PByte(TSayi4(Self.FYaziBellekAdresi) + Self.FYaziUzunlugu);
   p^ := 0;
 
@@ -524,7 +514,7 @@ begin
 end;
 
 {==============================================================================
-  defter nesne olaylarÄ±nÄ± iÅŸler
+  defter nesne olaylarını işler
  ==============================================================================}
 procedure TDefter.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -534,12 +524,12 @@ begin
   Defter := PDefter(AGonderici);
   if(Defter = nil) then Exit;
 
-  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
+  // geçerli fare göstergesini güncelle
   GecerliFareGostegeTipi := Defter^.FFareImlecTipi;
 end;
 
 {==============================================================================
-  defter nesnesine baÄŸlÄ± kaydÄ±rma Ã§ubuÄŸu olaylarÄ±nÄ± iÅŸler
+  defter nesnesine bağlı kaydırma çubuğu olaylarını işler
  ==============================================================================}
 procedure TDefter.KaydirmaCubuguOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -554,7 +544,7 @@ begin
 
   if(AOlay.Olay = FO_TIKLAMA) then Defter^.Ciz;
 
-  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
+  // geçerli fare göstergesini güncelle
   GecerliFareGostegeTipi := Defter^.FFareImlecTipi;
 end;
 

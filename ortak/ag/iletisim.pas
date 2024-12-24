@@ -152,7 +152,7 @@ begin
       FBellekUzunlugu := 0;
       FBellek := GGercekBellek.Ayir(4095);
 
-      {SISTEM_MESAJ(RENK_MOR, 'BAGLANTI.PP: Protokol -> UDP', []);
+      {SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Protokol -> UDP', []);
       SISTEM_MESAJ_IP(RENK_LACIVERT, 'Hedef IP: ', AUzakIPAdres);
       SISTEM_MESAJ(RENK_LACIVERT, 'Kaynak Port: %d', [AYerelPort]);
       SISTEM_MESAJ(RENK_LACIVERT, 'Hedef Port: %d', [AUzakPort]);}
@@ -165,7 +165,7 @@ begin
     if(_Baglanti <> nil) then
     begin
 
-      SISTEM_MESAJ(RENK_MAVI, 'BAGLANTI.PP: Protokol -> ?', []);
+      SISTEM_MESAJ(RENK_MAVI, 'ILETISIM.PAS: Protokol -> ?', []);
       SISTEM_MESAJ_IP(RENK_ACIKMAVI, '  -> Hedef IP: ', AUzakIPAdres);
       SISTEM_MESAJ_S16(RENK_ACIKMAVI, '  -> Hedef Port: ', AUzakPort, 4);
     end;

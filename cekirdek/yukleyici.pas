@@ -6,7 +6,7 @@
   Dosya Adý: yukleyici.pas
   Dosya Ýþlevi: sistem ilk açýlýþ yükleme iþlevleri gerçekleþtirir
 
-  Güncelleme Tarihi: 11/08/2020
+  Güncelleme Tarihi: 24/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -33,7 +33,7 @@ uses yonetim, gdt, idt, irq, pic, aygityonetimi, pci, src_klavye, genel, gorev,
  ==============================================================================}
 procedure Yukle;
 var
-  _Gorev: PGorev;
+  Gorev: PGorev;
 begin
 
   CokluGorevBasladi := 0;
@@ -74,7 +74,7 @@ begin
   GSistemMesaj.Yukle;
 
   // uygulama deðiþkenlerini ilk deðerlerle yükle
-  _Gorev^.Yukle;
+  Gorev^.Yukle;
 
   // çekirdek deðiþken / iþlevlerini ilk deðerlerle yükle
   yonetim.Yukle;

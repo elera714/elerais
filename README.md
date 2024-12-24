@@ -17,13 +17,13 @@ Kullanılan Yazılım Araçları:
 
 ![Görüntü3](elera3.png)
 
-![Görüntü4](elera4.png)
+![DNS](dns.png)
 
 ![Görüntü5](elera5.png)
 
 ![Defter](defter.png)
 
-![Görüntü7](elera7.png)
+![Takvim](takvim.png)
 
 ---
 Öğretici Videolar
