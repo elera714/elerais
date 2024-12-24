@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 16/09/2024
+  Güncelleme Tarihi: 24/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -26,7 +26,7 @@ const
   ETHERNET_BASLIKU = TSayi1(14);
 
 var
-  // paket baþlýklarý da dahil olmak üzere tüm veri sayýlarýný içerir.
+  // paket baþlýklarý da dahil olmak üzere tüm veri toplamlarýný içerir.
   AlinanByte, GonderilenByte: TSayi4;
 
 procedure Yukle;
@@ -77,7 +77,6 @@ end;
 procedure IlkAdresDegerleriniYukle;
 begin
 
-  GAgBilgisi.IPAdresiAlindi := False;
   GAgBilgisi.MACAdres := MACAdres0;
   GAgBilgisi.IP4Adres := IPAdres0;
   GAgBilgisi.AltAgMaskesi := IPAdres0;
@@ -85,6 +84,7 @@ begin
   GAgBilgisi.DHCPSunucusu := IPAdres0;
   GAgBilgisi.DNSSunucusu := IPAdres0;
   GAgBilgisi.IPKiraSuresi := 0;
+  GAgBilgisi.IPAdresiAlindi := False;
 end;
 
 {==============================================================================
@@ -113,9 +113,8 @@ begin
     AgBilgisi^.IPKiraSuresi := GAgBilgisi.IPKiraSuresi;
 
     Result := 1;
-  end
 
-  else Result := HATA_ISLEV;
+  end else Result := HATA_ISLEV;
 end;
 
 {==============================================================================
@@ -124,57 +123,48 @@ end;
  ==============================================================================}
 procedure AgKartiVeriAlmaIslevi;
 var
-  _EthernetPaket: PEthernetPaket;
-  _Bellek: array[0..$FFF] of TSayi1;
-  _VeriUzunluk, _Protokol: TSayi2;
-  _ARPPaket: PARPPaket;
+  EthernetPaket: PEthernetPaket;
+  ARPPaket: PARPPaket;
+  Bellek: array[0..$FFF] of TSayi1;
+  i, Protokol: TSayi2;
 begin
 
   // að yüklendi ise ...
   if(AgYuklendi) then
   begin
 
-    FillByte(_Bellek, $1000, 0);
-
     // að kartýna gelen ham bilgiyi al
-    _VeriUzunluk := AgKartindanVeriAl(@_Bellek);
-    if(_VeriUzunluk > 0) then
+    i := AgKartindanVeriAl(@Bellek);
+    if(i > 0) then
     begin
 
-      _EthernetPaket := @_Bellek[0];
+      EthernetPaket := @Bellek[0];
 
-      { TODO - _Protokol deðeri ntohs ile çevrilerek deðer network sýralý sorgulanacak }
-      _Protokol := _EthernetPaket^.PaketTipi;
-      SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', _Protokol, 4);
+      Protokol := htons(EthernetPaket^.PaketTipi);
+
+      //SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', Protokol, 4);
 
       // ******* protokollerin iþlenmesi *******
 
       // ARP protokolü
-      if(htons(_Protokol) = PROTOKOL_ARP) then
+      if(Protokol = PROTOKOL_ARP) then
       begin
 
-        _ARPPaket := @_EthernetPaket^.Veri;
-        if(IPKarsilastir(_ARPPaket^.HedefIPAdres, GAgBilgisi.IP4Adres)) then
-          ARPPaketleriniIsle(_EthernetPaket)
+        ARPPaket := @EthernetPaket^.Veri;
+        if(IPKarsilastir(ARPPaket^.HedefIPAdres, GAgBilgisi.IP4Adres)) then
+          ARPPaketleriniIsle(EthernetPaket)
       end
 
       // IP protokolü
-      else if(_Protokol = PROTOKOL_IP) then
-      begin
+      else if(Protokol = PROTOKOL_IP) then
 
-        SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', _Protokol, 4);
-        IPPaketleriniIsle(@_EthernetPaket^.Veri, _VeriUzunluk - ETHERNET_BASLIKU)
-      end
+        IPPaketleriniIsle(@EthernetPaket^.Veri, i - ETHERNET_BASLIKU)
       else
 
       // bilinmeyen protokol
-      begin
 
-        SISTEM_MESAJ_S16(RENK_KIRMIZI, 'AG.PP: Bilinmeyen Protokol: ', _Protokol, 4);
-      end;
+        SISTEM_MESAJ_S16(RENK_KIRMIZI, 'AG.PP: Bilinmeyen Protokol: ', Protokol, 4);
     end;
-
-    //SISTEM_MESAJ_S16(RENK_YESIL, 'VUzunluk: ', _VeriUzunluk, 8);
   end;
 end;
 
@@ -183,27 +173,21 @@ end;
  ==============================================================================}
 function AgKartindanVeriAl(AHedefBellekAdresi: Isaretci): TISayi4;
 var
-  _Bellek: array[0..$FFF] of TSayi1;
-  _VeriUzunluk: TSayi2;
+  Bellek: array[0..$FFF] of TSayi1;
+  i: TSayi2;
 begin
 
-  if(AgYuklendi) then
+  // að kartýna (ethernet) gelen ham bilgiyi al
+  { TODO : VeriAl iþlevi katý (hard code) olarak kodlanmýþtýr. yapýsallaþtýrýlacak }
+  VeriAl(@Bellek, i);
+  if(i > 0) then
   begin
 
-    FillByte(_Bellek, $1000, 0);
+    Tasi2(@Bellek[0], AHedefBellekAdresi, i);
+    AlinanByte += i;
+  end;
 
-    // að kartýna (ethernet) gelen ham bilgiyi al
-    { TODO : VeriAl iþlevi katý (hard code) olarak kodlanmýþtýr. yapýsallaþtýrýlacak }
-    VeriAl(@_Bellek, _VeriUzunluk);
-    if(_VeriUzunluk > 0) then
-    begin
-
-      Tasi2(@_Bellek[0], AHedefBellekAdresi, _VeriUzunluk);
-      AlinanByte += _VeriUzunluk;
-    end;
-
-    Result := _VeriUzunluk;
-  end else Result := 0;
+  Result := i;
 end;
 
 {==============================================================================
@@ -212,45 +196,45 @@ end;
 procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTip: TProtokolTip;
   AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 var
-  _EthernetPaket: PEthernetPaket;
-  _VeriBellekAdresi: Isaretci;
-  _IPPaket: PIPPaket;
+  EthernetPaket: PEthernetPaket;
+  IPPaket: PIPPaket;
+  Bellek: Isaretci;
 begin
 
   if(AgYuklendi) then
   begin
 
     // veri paketi için bellekte yer ayýr
-    _EthernetPaket := GGercekBellek.Ayir(AVeriUzunlugu + ETHERNET_BASLIKU);
+    EthernetPaket := GGercekBellek.Ayir(AVeriUzunlugu + ETHERNET_BASLIKU);
 
-    _EthernetPaket^.HedefMACAdres := AHedefMAC;
-    _EthernetPaket^.KaynakMACAdres := GAgBilgisi.MACAdres;
+    EthernetPaket^.HedefMACAdres := AHedefMAC;
+    EthernetPaket^.KaynakMACAdres := GAgBilgisi.MACAdres;
 
     // paketin protokol tipi
     case AProtokolTip of
-      ptIP  : _EthernetPaket^.PaketTipi := PROTOKOL_IP;
-      ptTCP : _EthernetPaket^.PaketTipi := PROTOKOL_TCP;
-      ptUDP : _EthernetPaket^.PaketTipi := PROTOKOL_UDP;
-      ptARP : _EthernetPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
-      ptICMP: _EthernetPaket^.PaketTipi := PROTOKOL_ICMP;
+      ptIP  : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_IP);
+      ptTCP : EthernetPaket^.PaketTipi := PROTOKOL_TCP;
+      ptUDP : EthernetPaket^.PaketTipi := PROTOKOL_UDP;
+      ptARP : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
+      ptICMP: EthernetPaket^.PaketTipi := PROTOKOL_ICMP;
     end;
 
-    _IPPaket := _EthernetPaket^.Veri;
+    IPPaket := EthernetPaket^.Veri;
 
     {SISTEM_MESAJ(RENK_MOR, 'ETH', []);
-    SISTEM_MESAJ_MAC(RENK_LACIVERT, 'ETH: Kaynak MAC: ', _EthernetPaket^.KaynakMACAdres);
-    SISTEM_MESAJ_MAC(RENK_LACIVERT, 'ETH: Hedef MAC: ', _EthernetPaket^.HedefMACAdres);
-    SISTEM_MESAJ_S16(RENK_LACIVERT, 'ETH: PaketTip: ', _EthernetPaket^.PaketTipi, 4);}
+    SISTEM_MESAJ_MAC(RENK_LACIVERT, 'ETH: Kaynak MAC: ', EthernetPaket^.KaynakMACAdres);
+    SISTEM_MESAJ_MAC(RENK_LACIVERT, 'ETH: Hedef MAC: ', EthernetPaket^.HedefMACAdres);
+    SISTEM_MESAJ_S16(RENK_LACIVERT, 'ETH: PaketTip: ', EthernetPaket^.PaketTipi, 4);}
 
-    _VeriBellekAdresi := @_EthernetPaket^.Veri;
-    Tasi2(AVeri, _VeriBellekAdresi, AVeriUzunlugu);
+    Bellek := @EthernetPaket^.Veri;
+    Tasi2(AVeri, Bellek, AVeriUzunlugu);
 
-    VeriGonder(_EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
+    VeriGonder(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
 
     GonderilenByte += AVeriUzunlugu + ETHERNET_BASLIKU;
 
     // ayrýlan belleði serbest býrak
-    GGercekBellek.YokEt(_EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
+    GGercekBellek.YokEt(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
   end;
 end;
 

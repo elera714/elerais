@@ -6,11 +6,11 @@
   Dosya Adý: icmp.pas
   Dosya Ýþlevi: ICMP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 16/09/2024
+  Güncelleme Tarihi: 24/12/2024
 
  ==============================================================================}
 {$mode objfpc}
-{$DEFINE ICMP_HATAAYIKLA}
+//{$DEFINE ICMP_HATAAYIKLA}
 unit icmp;
 
 interface
@@ -25,7 +25,7 @@ const
 type
   PICMPBaslik = ^TICMPBaslik;
   TICMPBaslik = packed record
-    MesajTip,
+    MesajTipi,
     Kod: TSayi1;
     BaslikSaglamaToplami,
     Tanimlayici, DiziSiraNo: TSayi2;
@@ -45,12 +45,12 @@ uses genel, saglama, donusum, ip, sistemmesaj;
 procedure ICMPPaketleriniIsle(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
   AHedefIPAdres: TIPAdres);
 var
-  _Veri: string;
-  _VeriUzunlugu: TSayi2;
+  s: string;
+  i: TSayi2;
 begin
 
-  _VeriUzunlugu := APaketUzunlugu - ICMP_BASLIK_UZUNLUGU;
-  _Veri := Copy(PChar(@AICMPBaslik^.Veri), 0, _VeriUzunlugu);
+  i := APaketUzunlugu - ICMP_BASLIK_UZUNLUGU;
+  s := Copy(PChar(@AICMPBaslik^.Veri), 0, i);
 
   {$IFDEF ICMP_HATAAYIKLA}
   SISTEM_MESAJ_IP(RENK_LACIVERT, 'ICMP kaynak IP: ', AHedefIPAdres);
@@ -59,53 +59,53 @@ begin
   {$ENDIF}
 
   // istek (request) mesajýna yanýt
-  if(AICMPBaslik^.MesajTip = ICMP_YANKI_ISTEK) then
+  if(AICMPBaslik^.MesajTipi = ICMP_YANKI_ISTEK) then
   begin
 
     // yanýt gönder
     ICMPPaketGonder(AICMPBaslik, APaketUzunlugu, AHedefIPAdres);
   end
-  else SISTEM_MESAJ_S16(RENK_KIRMIZI, 'ICMP.PAS: bilinmeyen mesaj tipi: ', AICMPBaslik^.MesajTip, 2);
+  else SISTEM_MESAJ_S16(RENK_KIRMIZI, 'ICMP.PAS: bilinmeyen mesaj tipi: ', AICMPBaslik^.MesajTipi, 2);
 end;
 
 // icmp protokol paketi hazýrlayýp gönderme iþlevini gerçekleþtirir
 procedure ICMPPaketGonder(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
   AHedefIPAdres: TIPAdres);
 var
-  _ICMPBaslik: PICMPBaslik;
-  _PVeri: PByte;
-  _Veri: string;
-  _VeriUzunlugu, _SaglamaToplam: TSayi2;
+  ICMPBaslik: PICMPBaslik;
+  p: PByte;
+  s: string;
+  i, SaglamaToplami: TSayi2;
 begin
 
-  _VeriUzunlugu := APaketUzunlugu - ICMP_BASLIK_UZUNLUGU;
-  _Veri := Copy(PChar(@AICMPBaslik^.Veri), 0, _VeriUzunlugu);
+  i := APaketUzunlugu - ICMP_BASLIK_UZUNLUGU;
+  s := Copy(PChar(@AICMPBaslik^.Veri), 0, i);
 
   // gönderilecek paket için bellek bölgesi oluþtur
-  _ICMPBaslik := GGercekBellek.Ayir(4095);
+  ICMPBaslik := GGercekBellek.Ayir(4095);
 
   //IcmpPacket := @IPPacket^.Data;
-  _ICMPBaslik^.MesajTip := ICMP_YANKI_YANIT;
-  _ICMPBaslik^.Kod := 0;
-  _ICMPBaslik^.Tanimlayici := AICMPBaslik^.Tanimlayici;
-  _ICMPBaslik^.DiziSiraNo := AICMPBaslik^.DiziSiraNo;
-  _PVeri := @_ICMPBaslik^.Veri;
-  Tasi2(@_Veri[1], _PVeri, _VeriUzunlugu);
+  ICMPBaslik^.MesajTipi := ICMP_YANKI_YANIT;
+  ICMPBaslik^.Kod := 0;
+  ICMPBaslik^.Tanimlayici := AICMPBaslik^.Tanimlayici;
+  ICMPBaslik^.DiziSiraNo := AICMPBaslik^.DiziSiraNo;
+  p := @ICMPBaslik^.Veri;
+  Tasi2(@s[1], p, i);
 
-  _ICMPBaslik^.BaslikSaglamaToplami := 0;
-  _SaglamaToplam := SaglamasiniYap(_ICMPBaslik, ICMP_BASLIK_UZUNLUGU + _VeriUzunlugu, nil, 0);
-  _ICMPBaslik^.BaslikSaglamaToplami := Takas2(_SaglamaToplam);
+  ICMPBaslik^.BaslikSaglamaToplami := 0;
+  SaglamaToplami := SaglamasiniYap(ICMPBaslik, ICMP_BASLIK_UZUNLUGU + i, nil, 0);
+  ICMPBaslik^.BaslikSaglamaToplami := Takas2(SaglamaToplami);
 
   // sisteme gelen icmp isteðine icmp yanýtý (paket) gönder
   IPPaketGonder(MACAdres255, GAgBilgisi.IP4Adres, AHedefIPAdres, ptICMP, 0,
-    _ICMPBaslik, ICMP_BASLIK_UZUNLUGU + _VeriUzunlugu);
+    ICMPBaslik, ICMP_BASLIK_UZUNLUGU + i);
 
   {$IFDEF ICMP_HATAAYIKLA}
   SISTEM_MESAJ_IP(RENK_KIRMIZI, 'ICMP yanýtý gönderilen IP: ', AHedefIPAdres);
   {$ENDIF}
 
   // belleði yok et
-  GGercekBellek.YokEt(_ICMPBaslik, 4095);
+  GGercekBellek.YokEt(ICMPBaslik, 4095);
 end;
 
 end.

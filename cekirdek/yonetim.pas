@@ -56,7 +56,6 @@ type
     P1Dugmeler: array[0..44] of PGucDugmesi;
   public
     TestSinif: TTestSinif;
-    Degerler: array[1..8] of TSayi4;
     GorevNo: TISayi4;
     Panel: PPanel;
     BulunanCiftSayisi, TiklamaSayisi,
@@ -423,7 +422,7 @@ begin
       end;
     end;
 
-    if(AgYuklendi) then AgKartiVeriAlmaIslevi;
+    AgKartiVeriAlmaIslevi;
 
     // fare olaylarýný iþle
     GOlayYonetim.FareOlaylariniIsle;

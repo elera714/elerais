@@ -180,8 +180,6 @@ end;
   DNS sunucusuna sorgu gönder
  ==============================================================================}
 procedure TDNS.Sorgula(ADNSKimlik: TKimlik; ADNSAdresi: string);
-const
-  DNSSnc: TIPAdres = (192, 168, 1, 51);
 var
   _DNSPaket: PDNSPaket;
   _B1, _ParcaUzunlukBellek: PSayi1;
@@ -251,7 +249,7 @@ begin
     Inc(_B2);
     _B2^ := Takas2(TSayi2($0001));
 
-    _DNS^.FBaglanti := _DNS^.FBaglanti^.Olustur(ptUDP, DNSSnc {AgBilgisi.DNSSunucusu}, _DNS^.FYerelPort,
+    _DNS^.FBaglanti := _DNS^.FBaglanti^.Olustur(ptUDP, GAgBilgisi.DNSSunucusu, _DNS^.FYerelPort,
       DNS_PORTNO);
 
     _DNS^.FBaglanti^.Baglan(btYayin);

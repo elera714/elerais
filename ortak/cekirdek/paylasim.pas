@@ -184,11 +184,11 @@ var
   KTDurum         : Boolean = False;                // kaydýrma tuþu (scrolllock)
 
 const
-  // að protokolleri
-  PROTOKOL_ARP  = Word($0806);        // network sýralý kodlandý
+  // að protokolleri - deðerler network sýralý
+  PROTOKOL_ARP  = TSayi2($0806);
+  PROTOKOL_IP   = TSayi2($0800);
 
   { TODO - yukarýdaki gibi network sýralý kodlanacak }
-  PROTOKOL_IP   = TSayi2($0008);
   PROTOKOL_TCP  = TSayi1($6);
   PROTOKOL_UDP  = TSayi1($11);
   PROTOKOL_ICMP = TSayi1($1);

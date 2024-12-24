@@ -4,3 +4,5 @@ baðlantýdaki (TBaglanti) CO_ODAKKAYBEDILDI olayý problemli, nesne dýþýna çýkýldý
 
 resim ve liste kutusu iþlevi (oluþturma) içerisinde çizim alaný manuel olarak belirlendi.
   kontrol edilsin ve gerekirse iþlevselleþtirilsin
+
+index deðeri 1'den baþlayan yapýlar / deðiþkenler 0'dan baþlayacak þekilde yeniden yapýlandýrýlacak
