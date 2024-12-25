@@ -6,7 +6,7 @@
   Dosya Adý: fat12.pas
   Dosya Ýþlevi: fat12 dosya sistem yönetim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 03/09/2024
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -80,7 +80,7 @@ var
 begin
 
   // iþlem yapýlan dosyayla ilgili bellek bölgesine konumlan
-  _DosyaKayit := @DosyaKayitListesi[ADosyaKimlik];
+  _DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   // üzerinde iþlem yapýlacak sürücü
   _MantiksalSurucu := _DosyaKayit^.MantiksalSurucu;
@@ -155,8 +155,8 @@ var
   _DizinGirisi: PDizinGirisi;
 begin
 
-  _DizinGirisi := @AramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
-  AramaKayitListesi[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
+  _DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
+  GAramaKayitListesi[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
   Result := DizinGirdisiOku(_DizinGirisi, AAramaSuzgec, ADosyaArama);
 end;
 
@@ -169,8 +169,8 @@ var
   Aranan: string;
 begin
 
-  _DizinGirisi := @AramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
-  Aranan := AramaKayitListesi[ADosyaArama.Kimlik].Aranan;
+  _DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
+  Aranan := GAramaKayitListesi[ADosyaArama.Kimlik].Aranan;
   Result := DizinGirdisiOku(_DizinGirisi, Aranan, ADosyaArama);
 end;
 

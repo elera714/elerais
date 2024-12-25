@@ -6,7 +6,7 @@
   Dosya Adı: fat32.pas
   Dosya İşlevi: fat32 dosya sistem yönetim işlevlerini yönetir
 
-  Güncelleme Tarihi: 26/10/2019
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -87,7 +87,7 @@ var
 begin
 
   // işlem yapılan dosyayla ilgili bellek bölgesine konumlan
-  DosyaKayit := @DosyaKayitListesi[ADosyaKimlik];
+  DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   // üzerinde işlem yapılacak sürücü
   MantiksalSurucu := DosyaKayit^.MantiksalSurucu;
@@ -168,8 +168,8 @@ begin
   UzunDosyaAdi[0] := #0;
   UzunDosyaAdi[1] := #0;
 
-  DizinGirisi := @AramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
-  AramaKayitListesi[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
+  DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
+  GAramaKayitListesi[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
   Result := DizinGirdisiOku(DizinGirisi, AAramaSuzgec, ADosyaArama);
 end;
 
@@ -182,8 +182,8 @@ var
   Aranan: string;
 begin
 
-  DizinGirisi := @AramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
-  Aranan := AramaKayitListesi[ADosyaArama.Kimlik].Aranan;
+  DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
+  Aranan := GAramaKayitListesi[ADosyaArama.Kimlik].Aranan;
   Result := DizinGirdisiOku(DizinGirisi, Aranan, ADosyaArama);
 end;
 
@@ -216,7 +216,7 @@ begin
   TumGirislerOkundu := False;
 
   // aramanın yapılacağı sürücü
-  MantiksalSurucu := AramaKayitListesi[ADosyaArama.Kimlik].MantiksalSurucu;
+  MantiksalSurucu := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalSurucu;
 
   NormalDosyaAdiBulundu := False;
   UzunDosyaAdiBulundu := False;

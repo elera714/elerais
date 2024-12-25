@@ -6,7 +6,7 @@
   Dosya Adı: src_com.pas
   Dosya İşlevi: COM iletişim sürücüsü
 
-  Güncelleme Tarihi: 13/05/2020
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -41,8 +41,8 @@ type
 procedure Yukle;
 function COMIletisimAygitiVarMi(ACOMIletisim: TCOMIletisim): Boolean;
 procedure COMIletisimAygitiniAyarla(ACOMIletisim: TCOMIletisim);
-procedure Yaz(APortNo: TSayi4; AVeri: string);
-procedure Yaz(APortNo: TSayi4; ABellekAdresi: PChar; AUzunluk: TSayi4);
+procedure Yaz(APortNo: TISayi4; AVeri: string);
+procedure Yaz(APortNo: TISayi4; ABellekAdresi: PChar; AUzunluk: TSayi4);
 
 implementation
 
@@ -50,7 +50,7 @@ implementation
   COM iletişim aygıt listesi
  ==============================================================================}
 var
-  TCOMIletisimListesi: array[1..4] of TCOMIletisim = (
+  GCOMIletisimListesi: array[0..3] of TCOMIletisim = (
     (PortNo: $3F8; Mevcut: False), (PortNo: $2F8; Mevcut: False),
     (PortNo: $3E8; Mevcut: False), (PortNo: $2E8; Mevcut: False));
 
@@ -62,14 +62,14 @@ var
   i: TSayi4;
 begin
 
-  for i := 1 to 4 do
+  for i := 0 to 3 do
   begin
 
-    if(COMIletisimAygitiVarMi(TCOMIletisimListesi[i])) then
+    if(COMIletisimAygitiVarMi(GCOMIletisimListesi[i])) then
     begin
 
-      TCOMIletisimListesi[i].Mevcut := True;
-      COMIletisimAygitiniAyarla(TCOMIletisimListesi[i]);
+      GCOMIletisimListesi[i].Mevcut := True;
+      COMIletisimAygitiniAyarla(GCOMIletisimListesi[i]);
     end;
   end;
 end;
@@ -118,17 +118,17 @@ end;
 {==============================================================================
   COM iletişim aygıtı üzerinden veri gönderir
  ==============================================================================}
-procedure Yaz(APortNo: TSayi4; AVeri: string);
+procedure Yaz(APortNo: TISayi4; AVeri: string);
 var
   VeriUzunluk, i: TSayi4;
   _Deger: TSayi1;
 begin
 
   // port aralık kontrolü
-  if(APortNo < 1) or (APortNo > 4) then Exit;
+  if(APortNo < 0) or (APortNo > 3) then Exit;
 
   // aygıt sistemde mevcut mu ?
-  if(TCOMIletisimListesi[APortNo].Mevcut = False) then Exit;
+  if(GCOMIletisimListesi[APortNo].Mevcut = False) then Exit;
 
   // port'a gönderilecek verinin uzunluğunu al
   VeriUzunluk := Length(AVeri);
@@ -140,18 +140,18 @@ begin
     // LSR bit 5 = 1 oluncaya kadar bekle (Empty Transmitter Holding Register)
     repeat
 
-      _Deger := PortAl1(TCOMIletisimListesi[APortNo].PortNo + 5);
+      _Deger := PortAl1(GCOMIletisimListesi[APortNo].PortNo + 5);
     until ((_Deger and $20) <> 0);
 
     // veriyi port'a gönder
-    PortYaz1(TCOMIletisimListesi[APortNo].PortNo, Byte(AVeri[i]));
+    PortYaz1(GCOMIletisimListesi[APortNo].PortNo, Byte(AVeri[i]));
   end;
 end;
 
 {==============================================================================
   COM iletişim aygıtı üzerinden veri gönderir
  ==============================================================================}
-procedure Yaz(APortNo: TSayi4; ABellekAdresi: PChar; AUzunluk: TSayi4);
+procedure Yaz(APortNo: TISayi4; ABellekAdresi: PChar; AUzunluk: TSayi4);
 var
   i: TSayi4;
   _Deger: TSayi1;
@@ -159,10 +159,10 @@ var
 begin
 
   // port aralık kontrolü
-  if(APortNo < 1) or (APortNo > 4) then Exit;
+  if(APortNo < 0) or (APortNo > 3) then Exit;
 
   // aygıt sistemde mevcut mu ?
-  if(TCOMIletisimListesi[APortNo].Mevcut = False) then Exit;
+  if(GCOMIletisimListesi[APortNo].Mevcut = False) then Exit;
 
   // port'a gönderilecek verinin uzunluğunu al
   if(AUzunluk = 0) then Exit;
@@ -175,11 +175,11 @@ begin
     // LSR bit 5 = 1 oluncaya kadar bekle (Empty Transmitter Holding Register)
     repeat
 
-      _Deger := PortAl1(TCOMIletisimListesi[APortNo].PortNo + 5);
+      _Deger := PortAl1(GCOMIletisimListesi[APortNo].PortNo + 5);
     until ((_Deger and $20) <> 0);
 
     // veriyi port'a gönder
-    PortYaz1(TCOMIletisimListesi[APortNo].PortNo, TSayi1(p^));
+    PortYaz1(GCOMIletisimListesi[APortNo].PortNo, TSayi1(p^));
 
     Inc(p);
   end;

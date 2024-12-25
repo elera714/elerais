@@ -6,7 +6,7 @@
   Dosya Adý: dosya.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 16/09/2024
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -49,17 +49,17 @@ begin
   FileResult := 0;
 
   // arama deðiþkenlerini sýfýrla
-  for _i := 1 to USTSINIR_ARAMAKAYIT do
+  for _i := 0 to USTSINIR_ARAMAKAYIT - 1 do
   begin
 
-    AramaKayitListesi[_i].Kullanilabilir := True;
+    GAramaKayitListesi[_i].Kullanilabilir := True;
   end;
 
   // dosya iþlev deðiþkenlerini sýfýrla
-  for _i := 1 to USTSINIR_DOSYAKAYIT do
+  for _i := 0 to USTSINIR_DOSYAKAYIT - 1 do
   begin
 
-    DosyaKayitListesi[_i].Kullanilabilir := True;
+    GDosyaKayitListesi[_i].Kullanilabilir := True;
   end;
 end;
 
@@ -78,7 +78,7 @@ begin
 
   // arama için arama bilgilerinin saklanacaðý bellek bölgesi tahsis et
   AramaKimlik := AramaKaydiOlustur;
-  if(AramaKimlik = 0) then
+  if(AramaKimlik = -1) then
   begin
 
     Result := 1;
@@ -121,19 +121,19 @@ begin
   begin
 
     // sürücüyü arama bellek bölgesine ekle
-    AramaKayitListesi[AramaKimlik].MantiksalSurucu := _MantiksalSurucu;
+    GAramaKayitListesi[AramaKimlik].MantiksalSurucu := _MantiksalSurucu;
 
     // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-    AramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
       _MantiksalSurucu^.Acilis.DizinGirisi.IlkSektor;
-    AramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor :=
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor :=
       _MantiksalSurucu^.Acilis.DizinGirisi.ToplamSektor;
-    AramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi :=
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi :=
       _MantiksalSurucu^.Acilis.DizinGirisi.GirdiSayisi;
-    AramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
 
     // dosya sistem tipine göre iþlevi yönlendir
-    _BolumTipi := AramaKayitListesi[AramaKimlik].MantiksalSurucu^.BolumTipi;
+    _BolumTipi := GAramaKayitListesi[AramaKimlik].MantiksalSurucu^.BolumTipi;
     case _BolumTipi of
       DATTIP_FAT12    : Result := fat12.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
       DATTIP_FAT16    : Result := fat16.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
@@ -147,19 +147,19 @@ begin
 
     // -> yukarýdaki yapý ile ayný
     // sürücüyü arama bellek bölgesine ekle
-    AramaKayitListesi[AramaKimlik].MantiksalSurucu := _MantiksalSurucu;
+    GAramaKayitListesi[AramaKimlik].MantiksalSurucu := _MantiksalSurucu;
 
     // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-    AramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
       _MantiksalSurucu^.Acilis.DizinGirisi.IlkSektor;
-    AramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor :=
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor :=
       _MantiksalSurucu^.Acilis.DizinGirisi.ToplamSektor;
-    AramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi :=
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi :=
       _MantiksalSurucu^.Acilis.DizinGirisi.GirdiSayisi;
-    AramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
 
     // dosya sistem tipine göre iþlevi yönlendir
-    _BolumTipi := AramaKayitListesi[AramaKimlik].MantiksalSurucu^.BolumTipi;
+    _BolumTipi := GAramaKayitListesi[AramaKimlik].MantiksalSurucu^.BolumTipi;
     case _BolumTipi of
       DATTIP_FAT12    : AramaSonuc := fat12.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
       DATTIP_FAT16    : AramaSonuc := fat16.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
@@ -182,20 +182,20 @@ begin
 
       // -> yukarýdaki yapý ile ayný
       // sürücüyü arama bellek bölgesine ekle
-      AramaKayitListesi[AramaKimlik].MantiksalSurucu := _MantiksalSurucu;
+      GAramaKayitListesi[AramaKimlik].MantiksalSurucu := _MantiksalSurucu;
 
       // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-      AramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
         ADosyaArama.BaslangicKumeNo + 622;
-      AramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := 1;
-      AramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := 16;
-      AramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := 1;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := 16;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
 
       _AranacakDeger := '*.*';
-      AramaKayitListesi[AramaKimlik].Aranan := '*.*';
+      GAramaKayitListesi[AramaKimlik].Aranan := '*.*';
 
       // dosya sistem tipine göre iþlevi yönlendir
-      _BolumTipi := AramaKayitListesi[AramaKimlik].MantiksalSurucu^.BolumTipi;
+      _BolumTipi := GAramaKayitListesi[AramaKimlik].MantiksalSurucu^.BolumTipi;
       case _BolumTipi of
         DATTIP_FAT12    : AramaSonuc := fat12.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
         DATTIP_FAT16    : AramaSonuc := fat16.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
@@ -218,7 +218,7 @@ var
   _BolumTipi: TSayi1;
 begin
 
-  _BolumTipi := AramaKayitListesi[ADosyaArama.Kimlik].MantiksalSurucu^.BolumTipi;
+  _BolumTipi := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalSurucu^.BolumTipi;
   if(_BolumTipi = DATTIP_FAT12) then
 
     Result := fat12.FindNext(ADosyaArama)
@@ -259,10 +259,10 @@ begin
 
   // dosya iþlemi için bellek bölgesi ayýr
   _DosyaKimlik := DosyaKaydiOlustur;
-  if(_DosyaKimlik = 0) then Exit;
+  if(_DosyaKimlik = -1) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  _DosyaKayit := @DosyaKayitListesi[_DosyaKimlik];
+  _DosyaKayit := @GDosyaKayitListesi[_DosyaKimlik];
 
   // sürücünün iþaret ettiði bellek bölgesine konumlan
   _MantiksalSurucu := SurucuAl(ADosyaAdi, _KalinanSira);
@@ -310,7 +310,7 @@ begin
   if(FileResult > 0) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  _DosyaKayit := @DosyaKayitListesi[ADosyaKimlik];
+  _DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   // tam dosya adýný al
   _TamAramaYolu := _DosyaKayit^.MantiksalSurucu^.AygitAdi + ':\*.*';
@@ -362,7 +362,7 @@ end;
 function FileSize(ADosyaKimlik: TKimlik): TISayi4;
 begin
 
-  Result := DosyaKayitListesi[ADosyaKimlik].Uzunluk;
+  Result := GDosyaKayitListesi[ADosyaKimlik].Uzunluk;
 end;
 
 {==============================================================================
@@ -380,7 +380,7 @@ begin
   if(FileResult > 0) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  _DosyaKayit := @DosyaKayitListesi[ADosyaKimlik];
+  _DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   _BolumTipi := _DosyaKayit^.MantiksalSurucu^.BolumTipi;
   if(_BolumTipi = DATTIP_FAT12) then
@@ -415,19 +415,19 @@ var
 begin
 
   // boþ bellek bölgesi ara
-  for i := 1 to USTSINIR_ARAMAKAYIT do
+  for i := 0 to USTSINIR_ARAMAKAYIT - 1 do
   begin
 
-    if(AramaKayitListesi[i].Kullanilabilir) then
+    if(GAramaKayitListesi[i].Kullanilabilir) then
     begin
 
-      AramaKayitListesi[i].Kullanilabilir := False;
+      GAramaKayitListesi[i].Kullanilabilir := False;
       Result := i;
       Exit;
     end;
   end;
 
-  Result := 0;
+  Result := -1;
 end;
 
 {==============================================================================
@@ -436,8 +436,8 @@ end;
 procedure AramaKaydiniYokEt(ADosyaKimlik: TKimlik);
 begin
 
-  if(AramaKayitListesi[ADosyaKimlik].Kullanilabilir = False) then
-    AramaKayitListesi[ADosyaKimlik].Kullanilabilir := True;
+  if(GAramaKayitListesi[ADosyaKimlik].Kullanilabilir = False) then
+    GAramaKayitListesi[ADosyaKimlik].Kullanilabilir := True;
 end;
 
 {==============================================================================
@@ -449,19 +449,19 @@ var
 begin
 
   // boþ bellek bölgesi ara
-  for i := 1 to USTSINIR_DOSYAKAYIT do
+  for i := 0 to USTSINIR_DOSYAKAYIT - 1 do
   begin
 
-    if(DosyaKayitListesi[i].Kullanilabilir) then
+    if(GDosyaKayitListesi[i].Kullanilabilir) then
     begin
 
-      DosyaKayitListesi[i].Kullanilabilir := False;
+      GDosyaKayitListesi[i].Kullanilabilir := False;
       Result := i;
       Exit;
     end;
   end;
 
-  Result := 0;
+  Result := -1;
 end;
 
 {==============================================================================
@@ -470,8 +470,8 @@ end;
 procedure DosyaKaydiniYokEt(ADosyaKimlik: TKimlik);
 begin
 
-  if(DosyaKayitListesi[ADosyaKimlik].Kullanilabilir = False) then
-    DosyaKayitListesi[ADosyaKimlik].Kullanilabilir := True;
+  if(GDosyaKayitListesi[ADosyaKimlik].Kullanilabilir = False) then
+    GDosyaKayitListesi[ADosyaKimlik].Kullanilabilir := True;
 end;
 
 end.

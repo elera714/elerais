@@ -6,7 +6,7 @@
   Dosya Adı: gn_masaustu.pas
   Dosya İşlevi: masaüstü nesne işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 24/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ type
   TMasaustu = object
   private
     FKimlik: TKimlik;
-    function ToplamMasaustuSayisiniAl: TSayi4;
+    function ToplamMasaustuSayisiniAl: TISayi4;
     function AktifMasaustunuAl: TKimlik;
     procedure MasaustunuAktiflestir(AKimlik: TKimlik);
   public
@@ -32,12 +32,12 @@ type
     property Kimlik: TKimlik read FKimlik;
   published
     property AktifMasaustu: TKimlik read AktifMasaustunuAl write MasaustunuAktiflestir;
-    property ToplamMasaustuSayisi: TSayi4 read ToplamMasaustuSayisiniAl;
+    property ToplamMasaustuSayisi: TISayi4 read ToplamMasaustuSayisiniAl;
   end;
 
 function _MasaustuOlustur(AMasaustuAdi: string): TKimlik; assembler;
 function _MasaustunuGoster(AKimlik: TKimlik): TKimlik; assembler;
-function _ToplamMasaustuSayisiniAl: TSayi4; assembler;
+function _ToplamMasaustuSayisiniAl: TISayi4; assembler;
 function _AktifMasaustunuAl: TKimlik; assembler;
 function _MasaustunuAktiflestir(AKimlik: TKimlik): Boolean; assembler;
 procedure _MasaustunuGuncelle(AKimlik: TKimlik); assembler;
@@ -59,7 +59,7 @@ begin
   Result := _MasaustunuGoster(FKimlik);
 end;
 
-function TMasaustu.ToplamMasaustuSayisiniAl: TSayi4;
+function TMasaustu.ToplamMasaustuSayisiniAl: TISayi4;
 begin
 
   Result := _ToplamMasaustuSayisiniAl;
@@ -112,7 +112,7 @@ asm
   add	  esp,4
 end;
 
-function _ToplamMasaustuSayisiniAl: TSayi4;
+function _ToplamMasaustuSayisiniAl: TISayi4;
 asm
   mov	  eax,MASAUSTU_AL_TOPLAM
   int	  $34

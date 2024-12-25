@@ -44,7 +44,7 @@ var
   GorselNesneListesi: array[1..USTSINIR_GORSELNESNE] of PGorselNesne;
   AgIletisimListesi: array[1..USTSINIR_AGILETISIM] of PBaglanti;
   GDNSBaglantilari: array[0..USTSINIR_DNSBAGLANTI - 1] of PDNS;
-  MasaustuListesi: array[1..USTSINIR_MASAUSTU] of PMasaustu = (nil, nil, nil, nil);
+  GMasaustuListesi: array[0..USTSINIR_MASAUSTU - 1] of PMasaustu = (nil, nil, nil, nil);
 
   // sistem içerisinde kullanılacak görsel olmayan listeler
   GYaziListesi: array[0..USTSINIR_YAZILISTESI - 1] of PYaziListesi;

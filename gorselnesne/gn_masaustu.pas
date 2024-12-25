@@ -6,7 +6,7 @@
   Dosya Adý: gn_masaustu.pas
   Dosya Ýþlevi: masaüstü yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -88,15 +88,15 @@ begin
       i := PISayi4(ADegiskenler + 00)^;
 
       // eðer belirtilen aralýktaysa ...
-      if(i > 0) and (i <= USTSINIR_MASAUSTU) then
+      if(i > -1) and (i < USTSINIR_MASAUSTU) then
       begin
 
         // belirlenen sýradaki masüstü mevcut ise
-        if(MasaustuListesi[i] <> nil) then
+        if(GMasaustuListesi[i] <> nil) then
         begin
 
           // masaüstünü aktif olarak iþaretle
-          GAktifMasaustu := MasaustuListesi[i];
+          GAktifMasaustu := GMasaustuListesi[i];
 
           GAktifMasaustu^.Aktiflestir;
 
@@ -222,16 +222,16 @@ begin
   Masaustu^.FCizimBaslangic.Ust := 0;
 
   // masaüstü nesnesi için bellekte boþ yer bul
-  for i := 1 to USTSINIR_MASAUSTU do
+  for i := 0 to USTSINIR_MASAUSTU - 1 do
   begin
 
-    if(MasaustuListesi[i] = nil) then
+    if(GMasaustuListesi[i] = nil) then
     begin
 
       // 1. masaüstü kimliðini boþ olarak bulunan yere kaydet
       // 2. oluþturulan masaüstü nesne sayýsýný artýr
       // 3. geriye nesneyi döndür
-      MasaustuListesi[i] := Masaustu;
+      GMasaustuListesi[i] := Masaustu;
       Inc(ToplamMasaustu);
 
       // nesne adresini geri döndür

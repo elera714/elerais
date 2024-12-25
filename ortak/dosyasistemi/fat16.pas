@@ -6,7 +6,7 @@
   Dosya Adı: fat16.pas
   Dosya İşlevi: fat16 dosya sistem yönetim işlevlerini yönetir
 
-  Güncelleme Tarihi: 26/10/2019
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -85,7 +85,7 @@ var
 begin
 
   // işlem yapılan dosyayla ilgili bellek bölgesine konumlan
-  _DosyaKayit := @DosyaKayitListesi[ADosyaKimlik];
+  _DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   // üzerinde işlem yapılacak sürücü
   _MantiksalSurucu := _DosyaKayit^.MantiksalSurucu;
@@ -170,8 +170,8 @@ var
   _DizinGirisi: PDizinGirisi;
 begin
 
-  _DizinGirisi := @AramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
-  AramaKayitListesi[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
+  _DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
+  GAramaKayitListesi[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
   Result := DizinGirdisiOku(_DizinGirisi, AAramaSuzgec, ADosyaArama);
 end;
 
@@ -184,8 +184,8 @@ var
   _Aranan: string;
 begin
 
-  _DizinGirisi := @AramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
-  _Aranan := AramaKayitListesi[ADosyaArama.Kimlik].Aranan;
+  _DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
+  _Aranan := GAramaKayitListesi[ADosyaArama.Kimlik].Aranan;
   Result := DizinGirdisiOku(_DizinGirisi, _Aranan, ADosyaArama);
 end;
 
@@ -216,7 +216,7 @@ begin
   _TumGirislerOkundu := False;
 
   // aramanın yapılacağı sürücü
-  _MantiksalSurucu := AramaKayitListesi[ADosyaArama.Kimlik].MantiksalSurucu;
+  _MantiksalSurucu := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalSurucu;
 
   // aramaya başla
   repeat

@@ -655,9 +655,9 @@ type
 var
   FileResult: TISayi4;
   // arama iþlem veri yapýlarý
-  AramaKayitListesi: array[1..USTSINIR_ARAMAKAYIT] of TAramaKayit;
+  GAramaKayitListesi: array[0..USTSINIR_ARAMAKAYIT - 1] of TAramaKayit;
   // dosya iþlem veri yapýlarý
-  DosyaKayitListesi: array[1..USTSINIR_DOSYAKAYIT] of TDosyaKayit;
+  GDosyaKayitListesi: array[0..USTSINIR_DOSYAKAYIT - 1] of TDosyaKayit;
 
 var
   CalisanGorevSayisi,                     // oluþturulan / çalýþan program sayýsý
