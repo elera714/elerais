@@ -6,7 +6,7 @@
   Dosya Adý: bolumleme.pas
   Dosya Ýþlevi: depolama aygýtý bölüm yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/09/2024
+  Güncelleme Tarihi: 24/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,8 +18,8 @@ interface
 uses paylasim;
 
 var
-  MantiksalDisketHavuzListesi: array[1..2] of Integer;    // disket numaralama listesi
-  MantiksalDiskHavuzListesi: array[1..4] of Integer;      // disk numaralama listesi
+  MantiksalDisketHavuzListesi: array[0..1] of Integer;    // disket numaralama listesi
+  MantiksalDiskHavuzListesi: array[0..3] of Integer;      // disk numaralama listesi
 
 procedure Yukle;
 function MantiksalSurucuOlustur: PMantiksalSurucu;
@@ -56,14 +56,14 @@ begin
   end;
 
   // mantýksal disket sürücü numara üreticisini sýfýrla
-  for i := 1 to 2 do
+  for i := 0 to 1 do
   begin
 
     MantiksalDisketHavuzListesi[i] := 0;
   end;
 
   // mantýksal disk sürücü numara üreticisini sýfýrla
-  for i := 1 to 4 do
+  for i := 0 to 3 do
   begin
 
     MantiksalDiskHavuzListesi[i] := 0;
@@ -295,7 +295,7 @@ end;
 function SurucuAl(ATamAdresYolu: string; var AKalinanSira: Integer): PMantiksalSurucu;
 var
   i: TSayi4;
-  _SurucuAdi: string;
+  SurucuAdi: string;
 begin
 
   // dosya yolunda sürücü belirtilmiþ mi ?
@@ -307,9 +307,9 @@ begin
   if(i > 0) then
   begin
 
-    _SurucuAdi := Copy(ATamAdresYolu, 1, i - 1);
+    SurucuAdi := Copy(ATamAdresYolu, 1, i - 1);
     AKalinanSira := i + 1;
-  end else _SurucuAdi := AcilisSurucuAygiti;
+  end else SurucuAdi := AcilisSurucuAygiti;
 
   // sürücü sistemde mevcut mu ?
   for i := 1 to 6 do
@@ -318,7 +318,7 @@ begin
     if(MantiksalDepolamaAygitListesi[i].AygitMevcut) then
     begin
 
-      if(MantiksalDepolamaAygitListesi[i].AygitAdi = _SurucuAdi) then
+      if(MantiksalDepolamaAygitListesi[i].AygitAdi = SurucuAdi) then
 
         Exit(@MantiksalDepolamaAygitListesi[i]);
     end;
@@ -339,14 +339,14 @@ begin
   if(ASurucuTip = SURUCUTIP_DISKET) then
   begin
 
-    for i := 1 to 2 do
+    for i := 0 to 1 do
     begin
 
       if(MantiksalDisketHavuzListesi[i] = 0) then
       begin
 
         MantiksalDisketHavuzListesi[i] := 1;
-        Exit(i);
+        Exit(i + 1);
       end;
     end;
   end
@@ -355,14 +355,14 @@ begin
   else if(ASurucuTip = SURUCUTIP_DISK) then
   begin
 
-    for i := 1 to 4 do
+    for i := 0 to 3 do
     begin
 
       if(MantiksalDiskHavuzListesi[i] = 0) then
       begin
 
         MantiksalDiskHavuzListesi[i] := 1;
-        Exit(i);
+        Exit(i + 1);
       end;
     end;
   end;

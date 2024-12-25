@@ -48,7 +48,7 @@ begin
     begin
 
       Inc(UDPPaketSayisi);
-      UDPPaketleriniIsle(PUDPPaket(@AIPPaket^.Veri));
+      UDPPaketleriniIsle(AIPPaket);
     end;
   end
   // 2. sistemin ip adresi var ise...
@@ -82,7 +82,7 @@ begin
       begin
 
         Inc(UDPPaketSayisi);
-        UDPPaketleriniIsle(PUDPPaket(@AIPPaket^.Veri));
+        UDPPaketleriniIsle(AIPPaket);
       end;
     end
     else
@@ -90,8 +90,8 @@ begin
 
       Inc(GAEPaketSayisi);
       SISTEM_MESAJ(RENK_KIRMIZI, 'IP.PAS: bilinmeyen IP paketi:', []);
-      SISTEM_MESAJ_IP(RENK_BORDO, '  -> Hedef IP adresi: ', AIPPaket^.HedefIP);
-      SISTEM_MESAJ(RENK_BORDO, '  -> Hedef protokol: %d', [AIPPaket^.Protokol]);
+      SISTEM_MESAJ_IP(RENK_MOR, '  -> Hedef IP adresi: ', AIPPaket^.HedefIP);
+      SISTEM_MESAJ(RENK_MOR, '  -> Hedef protokol: %d', [AIPPaket^.Protokol]);
     end;
   end;
 end;
@@ -134,8 +134,6 @@ begin
 
   Veri := @IPPaket^.Veri;
   Tasi2(AVeri, Veri, AVeriUzunlugu);
-
-  SISTEM_MESAJ(RENK_KIRMIZI, 'IPPaketGonder!', []);
 
   // paketi donanıma (ethernet) gönder
   AgKartinaVeriGonder(AHedefMACAdres, ptIP, IPPaket, AVeriUzunlugu + IP_BASLIK_U);

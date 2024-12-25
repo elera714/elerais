@@ -160,10 +160,13 @@ begin
 
         IPPaketleriniIsle(@EthernetPaket^.Veri, i - ETHERNET_BASLIKU)
       else
+      begin
 
-      // bilinmeyen protokol
-
-        SISTEM_MESAJ_S16(RENK_KIRMIZI, 'AG.PAS: Bilinmeyen Protokol: ', Protokol, 4);
+        // bilinmeyen protokol
+        SISTEM_MESAJ_S16(RENK_KIRMIZI, 'AG.PAS: bilinmeyen protokol: ', Protokol, 4);
+        SISTEM_MESAJ_MAC(RENK_MOR, '  -> Kaynak MAC Adresi: ', EthernetPaket^.KaynakMACAdres);
+        SISTEM_MESAJ_MAC(RENK_MOR, '  -> Hedef MAC Adresi: ', EthernetPaket^.HedefMACAdres);
+      end;
     end;
   end;
 end;
@@ -197,7 +200,6 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTip: TProtokolTip;
   AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 var
   EthernetPaket: PEthernetPaket;
-  IPPaket: PIPPaket;
   Bellek: Isaretci;
 begin
 
@@ -218,14 +220,12 @@ begin
       ptARP : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
       ptICMP: EthernetPaket^.PaketTipi := PROTOKOL_ICMP;
     end;
-
-    IPPaket := EthernetPaket^.Veri;
-
-    {SISTEM_MESAJ(RENK_MOR, 'ETH', []);
+{
+    SISTEM_MESAJ(RENK_MOR, 'ETH', []);
     SISTEM_MESAJ_MAC(RENK_LACIVERT, 'ETH: Kaynak MAC: ', EthernetPaket^.KaynakMACAdres);
     SISTEM_MESAJ_MAC(RENK_LACIVERT, 'ETH: Hedef MAC: ', EthernetPaket^.HedefMACAdres);
-    SISTEM_MESAJ_S16(RENK_LACIVERT, 'ETH: PaketTip: ', EthernetPaket^.PaketTipi, 4);}
-
+    SISTEM_MESAJ_S16(RENK_LACIVERT, 'ETH: PaketTip: ', EthernetPaket^.PaketTipi, 4);
+}
     Bellek := @EthernetPaket^.Veri;
     Tasi2(AVeri, Bellek, AVeriUzunlugu);
 

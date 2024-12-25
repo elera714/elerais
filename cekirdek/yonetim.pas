@@ -6,7 +6,7 @@
   Dosya Adý: yonetim.pas
   Dosya Ýþlevi: sistem ana yönetim / kontrol kýsmý
 
-  Güncelleme Tarihi: 22/07/2020
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -341,7 +341,6 @@ begin
           end;
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
-          //Gorev^.Calistir('disk1:\hafiza.c');
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then
@@ -359,7 +358,6 @@ begin
           // aþaðýdaki programlar üzerinden fdc iþlemleri tamamlanacak
           //Gorev^.Calistir('disket1:\kopyala.c');
           //Gorev^.Calistir('disket1:\dskgor.c');
-          //Gorev^.Calistir('disket1:\dskbolum.c');
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then

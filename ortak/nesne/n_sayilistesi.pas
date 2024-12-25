@@ -6,7 +6,7 @@
   Dosya Adı: n_sayilistesi.pas
   Dosya İşlevi: sayı liste nesne işlevlerini gerçekleştirir.
 
-  Güncelleme Tarihi: 29/09/2019
+  Güncelleme Tarihi: 24/12/2024
 
   Bilgi: sistem tasarlama yönünden FPC'nin sağladığı imkanlarından yararlanamama
   konusunda kısıtlamaları aşmak amacıyla (dinamik bellek yönetiminin kullanılamamasına
@@ -113,7 +113,7 @@ var
 begin
 
   // tüm girişleri incele
-  for i := 1 to USTSINIR_SAYILISTESI do
+  for i := 0 to USTSINIR_SAYILISTESI - 1 do
   begin
 
     p := GSayiListesi[i];

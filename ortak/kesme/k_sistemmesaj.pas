@@ -6,7 +6,7 @@
   Dosya Adı: k_sistemmesaj.pas
   Dosya İşlevi: hata ayıklama (debug) amaçlı mesaj yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 03/09/2024
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,7 +46,7 @@ begin
   begin
 
     p := PMesaj(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
-    GSistemMesaj.MesajAl(PSayi4(ADegiskenler + 00)^, p);
+    GSistemMesaj.MesajAl(PISayi4(ADegiskenler + 00)^, p);
     Result := GSistemMesaj.ToplamMesaj;
   end
 
@@ -63,7 +63,14 @@ begin
 
     SISTEM_MESAJ_S16(PRenk(ADegiskenler + 00)^, PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi))^,
       PSayi4(ADegiskenler + 08)^, PSayi4(ADegiskenler + 12)^);
-  end;
+  end
+
+  // toplam ssitem mesaj sayısını al
+  else if(IslevNo = 5) then
+  begin
+
+    GSistemMesaj.Temizle;
+  end
 end;
 
 end.

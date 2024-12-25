@@ -21,7 +21,7 @@ const
   UDP_BASLIK_U = 8;
   UDP_SOZDEBASLIK_U  = 12;
 
-procedure UDPPaketleriniIsle(AUDPBaslik: PUDPPaket);
+procedure UDPPaketleriniIsle(AIPPaket: PIPPaket);
 procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakAdres, AHedefAdres: TIPAdres;
   AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 procedure DNSSorgulariniYanitla(AUDPBaslik: PUDPPaket);
@@ -34,65 +34,66 @@ uses genel, saglama, ip, donusum, sistemmesaj, dhcp, iletisim, dns;
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir
  ==============================================================================}
-procedure UDPPaketleriniIsle(AUDPBaslik: PUDPPaket);
+procedure UDPPaketleriniIsle(AIPPaket: PIPPaket);
 var
   Baglanti: PBaglanti;
+  UDPPaket: PUDPPaket;
   KaynakPort, HedefPort: TSayi2;
   U2: TSayi2;
 begin
+
+  UDPPaket := PUDPPaket(@AIPPaket^.Veri);
 
   {$IFDEF UDP_BILGI}
   //UDPBaslikBilgileriniGoruntule(AUDPBaslik);
   {$ENDIF}
 
-  KaynakPort := Takas2(AUDPBaslik^.KaynakPort);
-  HedefPort := Takas2(AUDPBaslik^.HedefPort);
+  KaynakPort := ntohs(UDPPaket^.KaynakPort);
+  HedefPort := ntohs(UDPPaket^.HedefPort);
 
   // dns port = 53
   if(KaynakPort = 53) then
   begin
 
-    DNSPaketleriniIsle(AUDPBaslik);
+    DNSPaketleriniIsle(UDPPaket);
   end
   else if(HedefPort = 68) then
   begin
 
-    DHCPPaketleriniIsle(@AUDPBaslik^.Veri);
+    DHCPPaketleriniIsle(@UDPPaket^.Veri);
   end
   { TODO - sorgulama iþlemi yapýlacak - 14.11.2024 }
   else if(HedefPort = 137) then
   begin
 
-    DNSSorgulariniYanitla(AUDPBaslik);
+    DNSSorgulariniYanitla(UDPPaket);
   end
   else if(KaynakPort = 137) and (HedefPort = 137) then
   begin
 
-    DNSSorgulariniYanitla(AUDPBaslik);
+    DNSSorgulariniYanitla(UDPPaket);
   end
   else
   begin
-
-    {SISTEM_MESAJ(RENK_KIRMIZI, 'UDP: Bilinmeyen istek', []);
-    SISTEM_MESAJ(RENK_LACIVERT, '  -> Kaynak Port: %d', [KaynakPort]);
-    SISTEM_MESAJ(RENK_LACIVERT, '  -> Hedef Port: %d', [HedefPort]);}
 
     Baglanti := Baglanti^.UDPBaglantiAl(HedefPort);
     if(Baglanti = nil) then
     begin
 
-      SISTEM_MESAJ(RENK_KIRMIZI, 'Eþleþen UDP port bulunamadý: %d', [HedefPort]);
+      SISTEM_MESAJ(RENK_KIRMIZI, 'UDP.PAS: eþleþen UDP portu bulunamadý: %d', [HedefPort]);
+      SISTEM_MESAJ_IP(RENK_MOR, '  -> Kaynak IP: ', AIPPaket^.KaynakIP);
+      SISTEM_MESAJ_IP(RENK_MOR, '  -> Hedef IP: ', AIPPaket^.HedefIP);
       Exit;
     end
     else
     begin
 
-      U2 := Takas2(AUDPBaslik^.Uzunluk);
+      U2 := Takas2(UDPPaket^.Uzunluk);
 
       //SISTEM_MESAJ(RENK_MOR, 'UDP Veri Uzunluðu: %d', [B2]);
 
       // 8 byte, udp paket baþlýk uzunluðu
-      if(U2 > 8) then Baglanti^.BellegeEkle(@AUDPBaslik^.Veri, U2 - 8);
+      if(U2 > 8) then Baglanti^.BellegeEkle(@UDPPaket^.Veri, U2 - 8);
     end;
   end;
 end;

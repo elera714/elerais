@@ -6,7 +6,7 @@
   Dosya Adı: paylasim.pas
   Dosya İşlevi: program arabiriminde kullanılacak sabit değerleri içerir
 
-  Güncelleme Tarihi: 08/11/2024
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -318,6 +318,7 @@ const
   SISTEMMESAJ_MESAJAL	        = $00000200 + SAC_MESAJ;
   SISTEMMESAJ_YAZIEKLE        = $00000300 + SAC_MESAJ;
   SISTEMMESAJ_SAYI16EKLE		  = $00000400 + SAC_MESAJ;
+  SISTEMMESAJ_TEMIZLE		      = $00000500 + SAC_MESAJ;
 
   BELLEK_CEKIRDEKBILGISI	    = $00000100 + SAC_BELLEK;
   BELLEK_GENELBILGI	          = $00000200 + SAC_BELLEK;

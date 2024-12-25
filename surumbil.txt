@@ -1,7 +1,7 @@
 *******************************************************************************
   Sürüm: 0.3.7 - 00.00.0000 (R33) - Beta
 *******************************************************************************
-  +
+  + kod çalýþabilirlik güncelleme çalýþmalarý
 
   + fiziksel disket sürücü kopyalama programý (kopyala.c) kodlandý
   + daha önce programlar içerisinde tanýmlanan depolama API iþlevleri n_depolama olarak sýnýflaþtýrýldý

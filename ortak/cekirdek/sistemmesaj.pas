@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 05/09/2024
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -33,14 +33,15 @@ type
   TSistemMesaj = object
   private
     FServisCalisiyor: Boolean;
-    FMesajNo, FToplamMesaj: TSayi4;
+    FMesajNo, FToplamMesaj: TISayi4;
   public
     procedure Yukle;
     procedure Ekle(ARenk: TRenk; AMesaj: string);
-    procedure MesajAl(ASiraNo: TSayi4; var AMesaj: PMesaj);
+    procedure Temizle;
+    procedure MesajAl(ASiraNo: TISayi4; var AMesaj: PMesaj);
     property ServisCalisiyor: Boolean read FServisCalisiyor write FServisCalisiyor;
-    property MesajNo: TSayi4 read FMesajNo;
-    property ToplamMesaj: TSayi4 read FToplamMesaj;
+    property MesajNo: TISayi4 read FMesajNo;
+    property ToplamMesaj: TISayi4 read FToplamMesaj;
   end;
 
 { TODO : // aşağıdaki tüm çağrılar iptal edilerek bu çağrının içerisine alınacak }
@@ -66,7 +67,9 @@ const
 
 var
   MesajBellekAdresi: Isaretci;
-  MesajListesi: array[1..USTSINIR_MESAJ] of PMesaj;
+  { TODO - istemci yazılım eski mantık olan 1..USTSINIR_MESAJ aralığında çalışmaktadır
+    gerekli düzeltmeler ilgili yazılımda yapıldıktan sonra bu kodlar yeniden incelenecektir }
+  MesajListesi: array[0..USTSINIR_MESAJ - 1] of PMesaj;
 
 {==============================================================================
   oluşturulacak mesajların ana yükleme işlevlerini içerir
@@ -80,7 +83,7 @@ begin
   MesajBellekAdresi := GGercekBellek.Ayir(USTSINIR_MESAJ * SizeOf(TMesaj));
 
   // bellek girişlerini mesaj yapılarıyla eşleştir
-  for i := 1 to USTSINIR_MESAJ do
+  for i := 0 to USTSINIR_MESAJ - 1 do
   begin
 
     MesajListesi[i] := MesajBellekAdresi;
@@ -103,54 +106,77 @@ end;
 procedure TSistemMesaj.Ekle(ARenk: TRenk; AMesaj: string);
 var
   Saat, Dakika, Saniye: TSayi1;
-  i: TSayi4;
+  i, j: TISayi4;
 begin
 
   if not(ServisCalisiyor) then Exit;
 
   // kaydedilecek mesaj sıra numarasını belirle
   Inc(FMesajNo);
-  Inc(FToplamMesaj);
 
   // mesaj sayısının USTSINIR_MESAJ sayısını aşması durumunda tüm mesajları yukarı kaydır
   // ve yeni mesajı en alta ekle
-  if(FToplamMesaj > USTSINIR_MESAJ) then
+  i := FToplamMesaj;
+  if(i >= USTSINIR_MESAJ) then
   begin
 
-    for i := 2 to USTSINIR_MESAJ do
+    for j := 1 to USTSINIR_MESAJ - 1 do
     begin
 
-      MesajListesi[i - 1]^.SiraNo := MesajListesi[i]^.SiraNo;
-      MesajListesi[i - 1]^.Saat := MesajListesi[i]^.Saat;
-      MesajListesi[i - 1]^.Renk := MesajListesi[i]^.Renk;
-      MesajListesi[i - 1]^.Mesaj := MesajListesi[i]^.Mesaj;
+      MesajListesi[j - 1]^.SiraNo := MesajListesi[j]^.SiraNo;
+      MesajListesi[j - 1]^.Saat := MesajListesi[j]^.Saat;
+      MesajListesi[j - 1]^.Renk := MesajListesi[j]^.Renk;
+      MesajListesi[j - 1]^.Mesaj := MesajListesi[j]^.Mesaj;
     end;
 
-    FToplamMesaj := USTSINIR_MESAJ;
+    Dec(i);
   end;
 
   // mesaj sıra numarası
-  MesajListesi[ToplamMesaj]^.SiraNo := MesajNo;
+  MesajListesi[i]^.SiraNo := MesajNo;
 
   // mesaj saati
   SaatAl(Saat, Dakika, Saniye);
-  MesajListesi[ToplamMesaj]^.Saat := (Saniye shl 16) or (Dakika shl 8) or Saat;
+  MesajListesi[i]^.Saat := (Saniye shl 16) or (Dakika shl 8) or Saat;
 
   // mesaj rengi
-  MesajListesi[ToplamMesaj]^.Renk := ARenk;
+  MesajListesi[i]^.Renk := ARenk;
 
   // mesaj
-  MesajListesi[ToplamMesaj]^.Mesaj := AMesaj;
+  MesajListesi[i]^.Mesaj := AMesaj;
+
+  Inc(i);
+  FToplamMesaj := i;
+end;
+
+{==============================================================================
+  mesaj kayıtlarını temizler
+ ==============================================================================}
+procedure TSistemMesaj.Temizle;
+var
+  i: TSayi4;
+begin
+
+  FToplamMesaj := 0;
+
+  for i := 0 to USTSINIR_MESAJ - 1 do
+  begin
+
+    MesajListesi[i]^.SiraNo := -1;
+    MesajListesi[i]^.Saat := 0;
+    MesajListesi[i]^.Renk := RENK_SIYAH;
+    MesajListesi[i]^.Mesaj := '';
+  end;
 end;
 
 {==============================================================================
   mesaj kayıtlarından istenen sıradaki mesajı alır
  ==============================================================================}
-procedure TSistemMesaj.MesajAl(ASiraNo: TSayi4; var AMesaj: PMesaj);
+procedure TSistemMesaj.MesajAl(ASiraNo: TISayi4; var AMesaj: PMesaj);
 begin
 
   // istenen mesajın belirtilen aralıkta olup olmadığını kontrol et
-  if(ASiraNo > 0) and (ASiraNo <= USTSINIR_MESAJ) then
+  if(ASiraNo > -1) and (ASiraNo <= USTSINIR_MESAJ) then
   begin
 
     AMesaj^.SiraNo := MesajListesi[ASiraNo]^.SiraNo;

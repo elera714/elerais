@@ -47,8 +47,8 @@ var
   MasaustuListesi: array[1..USTSINIR_MASAUSTU] of PMasaustu = (nil, nil, nil, nil);
 
   // sistem içerisinde kullanılacak görsel olmayan listeler
-  GYaziListesi: array[1..USTSINIR_YAZILISTESI] of PYaziListesi;
-  GSayiListesi: array[1..USTSINIR_SAYILISTESI] of PSayiListesi;
+  GYaziListesi: array[0..USTSINIR_YAZILISTESI - 1] of PYaziListesi;
+  GSayiListesi: array[0..USTSINIR_SAYILISTESI - 1] of PSayiListesi;
 
 procedure ListeleriIlkDegerlerleYukle;
 
@@ -68,7 +68,7 @@ begin
   YL := GGercekBellek.Ayir(Align(SizeOf(TYaziListesi), 16) * USTSINIR_YAZILISTESI);
 
   // bellek girişlerini nesne yapı girişleriyle eşleştir
-  for i := 1 to USTSINIR_YAZILISTESI do
+  for i := 0 to USTSINIR_YAZILISTESI - 1 do
   begin
 
     GYaziListesi[i] := YL;
@@ -84,7 +84,7 @@ begin
   SL := GGercekBellek.Ayir(Align(SizeOf(TSayiListesi), 16) * USTSINIR_SAYILISTESI);
 
   // bellek girişlerini nesne yapı girişleriyle eşleştir
-  for i := 1 to USTSINIR_SAYILISTESI do
+  for i := 0 to USTSINIR_SAYILISTESI - 1 do
   begin
 
     GSayiListesi[i] := SL;

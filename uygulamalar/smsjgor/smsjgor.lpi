@@ -33,12 +33,12 @@
         </Mode0>
       </Modes>
     </RunParams>
-    <Units Count="34">
+    <Units Count="38">
       <Unit0>
         <Filename Value="smsjgor.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <UsageCount Value="68"/>
+        <UsageCount Value="71"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -201,7 +201,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <DefaultSyntaxHighlighter Value="Bat"/>
       </Unit29>
       <Unit30>
@@ -211,15 +211,13 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit30>
       <Unit31>
         <Filename Value="../../rtl_uygulama/linux/system.pp"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="15"/>
-        <CursorPos X="5" Y="33"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
       </Unit31>
       <Unit32>
         <Filename Value="../../rtl_uygulama/linux/gn_pencere.pas"/>
@@ -233,126 +231,84 @@
         <CursorPos X="3" Y="126"/>
         <UsageCount Value="10"/>
       </Unit33>
+      <Unit34>
+        <Filename Value="../../rtl_uygulama/linux/n_sistemmesaj.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="9"/>
+        <UsageCount Value="12"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../../rtl_uygulama/linux/elera.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../../rtl_uygulama/linux/n_genel.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit37>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="14" HistoryIndex="13">
       <Position1>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="83" Column="46" TopLine="61"/>
+        <Caret Line="99" Column="14" TopLine="75"/>
       </Position1>
       <Position2>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="14" Column="35"/>
+        <Caret Line="35" Column="32" TopLine="17"/>
       </Position2>
       <Position3>
         <Filename Value="smsjgor.lpr"/>
+        <Caret Line="87" Column="12" TopLine="70"/>
       </Position3>
       <Position4>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="44" Column="52" TopLine="24"/>
+        <Caret Line="44" Column="31" TopLine="25"/>
       </Position4>
       <Position5>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="10" Column="25"/>
+        <Caret Line="32" Column="3" TopLine="12"/>
       </Position5>
       <Position6>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="14" Column="29"/>
+        <Caret Line="54" Column="13" TopLine="24"/>
       </Position6>
       <Position7>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="25" Column="8"/>
+        <Caret Line="85" Column="28" TopLine="63"/>
       </Position7>
       <Position8>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="26" Column="10"/>
+        <Caret Line="89" TopLine="66"/>
       </Position8>
       <Position9>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="27" Column="14"/>
       </Position9>
       <Position10>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="28" Column="14"/>
+        <Caret Line="86" Column="5" TopLine="67"/>
       </Position10>
       <Position11>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="29" Column="8"/>
+        <Caret Line="85" Column="73" TopLine="67"/>
       </Position11>
       <Position12>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="48" Column="8" TopLine="23"/>
+        <Caret Line="110" Column="78" TopLine="83"/>
       </Position12>
       <Position13>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="30" Column="66" TopLine="6"/>
+        <Caret Line="37" Column="33" TopLine="19"/>
       </Position13>
       <Position14>
         <Filename Value="smsjgor.lpr"/>
-        <Caret Line="10" Column="25"/>
+        <Caret Line="45" Column="50" TopLine="19"/>
       </Position14>
-      <Position15>
-        <Filename Value="smsjgor.lpr"/>
-      </Position15>
-      <Position16>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="30" Column="7" TopLine="12"/>
-      </Position16>
-      <Position17>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="38" Column="3" TopLine="25"/>
-      </Position17>
-      <Position18>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="43" Column="79" TopLine="25"/>
-      </Position18>
-      <Position19>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="26" Column="17"/>
-      </Position19>
-      <Position20>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="21" Column="3" TopLine="3"/>
-      </Position20>
-      <Position21>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="10" Column="25"/>
-      </Position21>
-      <Position22>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="73" Column="31" TopLine="28"/>
-      </Position22>
-      <Position23>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="90" Column="45" TopLine="61"/>
-      </Position23>
-      <Position24>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="91" Column="67" TopLine="63"/>
-      </Position24>
-      <Position25>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="90" Column="46" TopLine="63"/>
-      </Position25>
-      <Position26>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="93" Column="37" TopLine="63"/>
-      </Position26>
-      <Position27>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="42" Column="24" TopLine="26"/>
-      </Position27>
-      <Position28>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="41" Column="27" TopLine="25"/>
-      </Position28>
-      <Position29>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="10" Column="33"/>
-      </Position29>
-      <Position30>
-        <Filename Value="smsjgor.lpr"/>
-        <Caret Line="48" Column="27" TopLine="30"/>
-      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

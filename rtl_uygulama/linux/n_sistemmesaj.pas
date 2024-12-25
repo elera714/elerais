@@ -6,7 +6,7 @@
   Dosya Adı: n_sistemmesaj.pas
   Dosya İşlevi: hata ayıklama (debug) amaçlı mesaj yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 03/09/2024
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,28 +19,30 @@ type
   PSistemMesaj = ^TSistemMesaj;
   TSistemMesaj = object
   private
-    FToplamMesaj: TSayi4;
+    FToplamMesaj: TISayi4;
   public
-    function Toplam: TSayi4;
-    procedure Al(ASiraNo: TSayi4; AMesaj: PMesaj);
+    function Toplam: TISayi4;
+    procedure Al(ASiraNo: TISayi4; AMesaj: PMesaj);
     procedure YaziEkle(ARenk: TRenk; AMesaj: string);
     procedure Sayi16Ekle(ARenk: TRenk; AMesaj: string; ASayi16, AHaneSayisi: TSayi4);
+    procedure Temizle;
   end;
 
-function _SistemMesajToplam: TSayi4; assembler;
-procedure _SistemMesajAl(ASiraNo: TSayi4; AMesaj: PMesaj); assembler;
+function _SistemMesajToplam: TISayi4; assembler;
+procedure _SistemMesajAl(ASiraNo: TISayi4; AMesaj: PMesaj); assembler;
 procedure _SistemMesajYaziEkle(ARenk: TRenk; AMesaj: string); assembler;
 procedure _SistemMesajSayi16Ekle(ARenk: TRenk; AMesaj: string; ASayi16, AHaneSayisi: TSayi4); assembler;
+procedure _Temizle; assembler;
 
 implementation
 
-function TSistemMesaj.Toplam: TSayi4;
+function TSistemMesaj.Toplam: TISayi4;
 begin
 
   Result := _SistemMesajToplam;
 end;
 
-procedure TSistemMesaj.Al(ASiraNo: TSayi4; AMesaj: PMesaj);
+procedure TSistemMesaj.Al(ASiraNo: TISayi4; AMesaj: PMesaj);
 begin
 
   _SistemMesajAl(ASiraNo, AMesaj);
@@ -58,13 +60,19 @@ begin
   _SistemMesajSayi16Ekle(ARenk, AMesaj, ASayi16, AHaneSayisi);
 end;
 
-function _SistemMesajToplam: TSayi4;
+procedure TSistemMesaj.Temizle;
+begin
+
+  _Temizle;
+end;
+
+function _SistemMesajToplam: TISayi4;
 asm
   mov   eax,SISTEMMESAJ_TOPLAM
   int   $34
 end;
 
-procedure _SistemMesajAl(ASiraNo: TSayi4; AMesaj: PMesaj);
+procedure _SistemMesajAl(ASiraNo: TISayi4; AMesaj: PMesaj);
 asm
   push  DWORD AMesaj
   push  DWORD ASiraNo
@@ -91,6 +99,12 @@ asm
   mov   eax,SISTEMMESAJ_SAYI16EKLE
   int   $34
   add   esp,16
+end;
+
+procedure _Temizle; assembler;
+asm
+  mov   eax,SISTEMMESAJ_TEMIZLE
+  int   $34
 end;
 
 end.
