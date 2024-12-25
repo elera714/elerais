@@ -15,11 +15,11 @@ Kullanılan Yazılım Araçları:
 
 ![Ağ](ag.png)
 
-![Görüntü3](elera3.png)
+![Dosya Yöneticisi](dsyyntcs.png)
 
 ![DNS](dns.png)
 
-![Görüntü5](elera5.png)
+![Tarayıcı](tarayici.png)
 
 ![Defter](defter.png)
 

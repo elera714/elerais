@@ -6,7 +6,7 @@
   Dosya Adý: icmp.pas
   Dosya Ýþlevi: ICMP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 24/12/2024
+  Güncelleme Tarihi: 25/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -45,12 +45,12 @@ uses genel, saglama, donusum, ip, sistemmesaj;
 procedure ICMPPaketleriniIsle(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
   AHedefIPAdres: TIPAdres);
 var
-  s: string;
-  i: TSayi2;
+  s: array[0..128] of Byte;
+  i: TSayi4;
 begin
 
   i := APaketUzunlugu - ICMP_BASLIK_UZUNLUGU;
-  s := Copy(PChar(@AICMPBaslik^.Veri), 0, i);
+  Tasi2(@AICMPBaslik^.Veri, @s[0], i);
 
   {$IFDEF ICMP_HATAAYIKLA}
   SISTEM_MESAJ_IP(RENK_LACIVERT, 'ICMP kaynak IP: ', AHedefIPAdres);
@@ -73,13 +73,14 @@ procedure ICMPPaketGonder(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
   AHedefIPAdres: TIPAdres);
 var
   ICMPBaslik: PICMPBaslik;
+  s: array[0..128] of Byte;
   p: PByte;
-  s: string;
-  i, SaglamaToplami: TSayi2;
+  i: TSayi4;
+  SaglamaToplami: TSayi2;
 begin
 
   i := APaketUzunlugu - ICMP_BASLIK_UZUNLUGU;
-  s := Copy(PChar(@AICMPBaslik^.Veri), 0, i);
+  Tasi2(@AICMPBaslik^.Veri, @s[0], i);
 
   // gönderilecek paket için bellek bölgesi oluþtur
   ICMPBaslik := GGercekBellek.Ayir(4095);
@@ -90,11 +91,11 @@ begin
   ICMPBaslik^.Tanimlayici := AICMPBaslik^.Tanimlayici;
   ICMPBaslik^.DiziSiraNo := AICMPBaslik^.DiziSiraNo;
   p := @ICMPBaslik^.Veri;
-  Tasi2(@s[1], p, i);
+  Tasi2(@s[0], p, i);
 
   ICMPBaslik^.BaslikSaglamaToplami := 0;
   SaglamaToplami := SaglamasiniYap(ICMPBaslik, ICMP_BASLIK_UZUNLUGU + i, nil, 0);
-  ICMPBaslik^.BaslikSaglamaToplami := Takas2(SaglamaToplami);
+  ICMPBaslik^.BaslikSaglamaToplami := htons(SaglamaToplami);
 
   // sisteme gelen icmp isteðine icmp yanýtý (paket) gönder
   IPPaketGonder(MACAdres255, GAgBilgisi.IP4Adres, AHedefIPAdres, ptICMP, 0,
