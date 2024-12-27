@@ -223,6 +223,9 @@ end;
 procedure SistemAnaKontrol;
 const
   disketyaz: string = 'merhaba';
+  veriler: array[0..19] of Byte = ($45, $00, $00, $3c, $fa, $b2, $40, $00, $40, $06, 0, 0,
+  $0a, $00, $02, $0f, $c0, $a8, $01, $33);
+
 var
   Gorev: PGorev = nil;
   Tus: Char;
@@ -232,7 +235,7 @@ var
   G: PGorev;
   Z: TSayi4;
   fs: PFizikselSurucu3;
-  IRR: TSayi2;
+  IRR, zzz: TSayi2;
   _AygitSiraNo, AygitKimlik: TSayi4;
 begin
 
@@ -341,6 +344,10 @@ begin
           end;
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
+          //Gorev^.Calistir('disket1:\tarayici.c');
+
+          zzz := SaglamaToplamiOlustur(@veriler[0], 20, nil, 0);
+          SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Hex Deðer: ', zzz, 4);
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then

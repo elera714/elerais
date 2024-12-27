@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 24/12/2024
+  Güncelleme Tarihi: 27/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -326,8 +326,8 @@ var
   B4: PSayi4;
 begin
 
-  HedefPort := Takas2(TSayi2(AUDPPaket^.HedefPort));
-  Uzunluk := Takas2(AUDPPaket^.Uzunluk) - 8;
+  HedefPort := ntohs(AUDPPaket^.HedefPort);
+  Uzunluk := ntohs(AUDPPaket^.Uzunluk) - 8;
 
   DNS := DNS^.DNSBaglantiAl(HedefPort);
   if not(DNS = nil) then

@@ -28,8 +28,8 @@ var
   OnDegerMasaustuProgram: string = 'muyntcs.c';
 
 type
-  PProtokolTip = ^TProtokolTip;
-  TProtokolTip = (ptBilinmiyor, ptIP, ptARP, ptTCP, ptUDP, ptICMP);
+  PProtokolTipi = ^TProtokolTipi;
+  TProtokolTipi = (ptBilinmiyor, ptIP, ptARP, ptTCP, ptUDP, ptICMP);
 
   // baðlantýyý IP'ýn tanýmlayýcýsý olan MAC veya yayin (broadcast) olarak gerçekleþtir
   PBaglantiTipi = ^TBaglantiTipi;
@@ -318,7 +318,7 @@ type
     ServisTipi: TSayi1;
     ToplamUzunluk,                    // Not2
     Tanimlayici,                      // tanýmlayýcý
-    BayrakVeParcaSiraNo: TSayi2;
+    ParcaSiraNo: TSayi2;              // üst 3 bit parçanýn olup olmadýðý, diðer bitler parça numarasý
     YasamSuresi,
     Protokol: TSayi1;
     BaslikSaglamaToplami: TSayi2;
@@ -382,10 +382,11 @@ type
   end;
 
 type
-  PSozdeBaslik = ^TSozdeBaslik;
-  TSozdeBaslik = packed record      // pseudoheader
-    KaynakIPAdres: TIPAdres;
-    HedefIPAdres: TIPAdres;
+  // tcp ve udp kontrol toplamý için ek baþlýk yapýsý
+  PEkBaslik = ^TEkBaslik;
+  TEkBaslik = packed record         // pseudoheader
+    KaynakIP: TIPAdres;
+    HedefIP: TIPAdres;
     Sifir,
     Protokol: TSayi1;
     Uzunluk: TSayi2;                // udp veya tcp 'nin data ile beraber uzunluðu
@@ -1034,6 +1035,9 @@ function Karsilastir(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4): TSayi4;
 function IPKarsilastir(IP1, IP2: TIPAdres): Boolean;
 function IPKarsilastir2(AGonderenIP, ABenimIP: TIPAdres): Boolean;
 function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
+function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
+  ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;
+
 
 implementation
 
@@ -1125,6 +1129,107 @@ begin
     (ANokta.Ust >= AAlan.Ust) and (ANokta.Ust <= AAlan.Alt) then
 
   Result := True;
+end;
+
+{==============================================================================
+  verilerin toplam saðlama iþlemini gerçekleþtirir
+ ==============================================================================}
+{
+  kontrol toplamý örneði:
+  08 00 00 00 00 01 00 a7 61 62 63 64 65 66 67 68
+  69 6a 6b
+
+  önemli: kontrol toplamý yapýlýrken, deðerlerin içerisinde saðlama (checksum) deðeri
+  var ise saðlama deðeri iþlem öncesi mutlaka sýfýrlanmalýdýr.
+
+  0800
+  0000
+  0001
+  0047
+  6162
+  6364
+  6566
+  6768        1. toplama iþleminden sonra, yüksek 16 bitlik deðer ($2) alçak 16
+  696a        bitlik deðere ($03B1) eklenir. $03B1 + $2 = $03B3
+    6b
++-------      2. $03B3 deðeri mantýksal NOT iþlemine tabi tutulur. $03B3 -> $FC4C
+ 203B1
+
+}
+function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
+  ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;
+var
+  WordVeriAdresi: PSayi2;
+  i, WordVeriUzunlugu: TSayi2;
+  SaglamaToplami: TSayi4;
+begin
+
+  // eðer veri bellek adresi verilmemiþ veya uzunluk 0 ise çýk
+  if(AVeriAdresi = nil) or (AVeriUzunlugu = 0) then Exit(0);
+
+  // saðlama toplamý ilk deðer atamasý
+  SaglamaToplami := 0;
+
+  // 1. önce veri deðerlerini topla
+  //----------------------------------------------------------------------------
+
+  // toplanacak word sayýsý
+  WordVeriUzunlugu := (AVeriUzunlugu shr 1);
+
+  // word deðerleri topla
+  WordVeriAdresi := AVeriAdresi;
+  if(WordVeriUzunlugu > 1) then
+  begin
+
+    for i := 0 to WordVeriUzunlugu - 1 do
+    begin
+
+      SaglamaToplami := SaglamaToplami + WordVeriAdresi^;
+      Inc(WordVeriAdresi);
+    end;
+  end;
+
+  // eðer geriye tek deðer (byte) kaldýysa onu da toplama ekle
+  if((AVeriUzunlugu mod 2) = 1) then
+  begin
+
+    SaglamaToplami := SaglamaToplami + PByte(WordVeriAdresi)^;
+  end;
+
+  // 2. daha sonra (var) ise sahte baþlýk deðerlerini topla
+  //----------------------------------------------------------------------------
+  if(ASahteBaslikAdresi <> nil) and (ASahteBaslikUzunlugu > 0) then
+  begin
+
+    // toplanacak word sayýsý
+    WordVeriUzunlugu := (ASahteBaslikUzunlugu shr 1);
+
+    // word deðerleri topla
+    WordVeriAdresi := ASahteBaslikAdresi;
+    if(WordVeriUzunlugu > 1) then
+    begin
+
+      for i := 0 to WordVeriUzunlugu - 1 do
+      begin
+
+        SaglamaToplami := SaglamaToplami + WordVeriAdresi^;
+        Inc(WordVeriAdresi);
+      end;
+    end;
+
+    // eðer geriye tek deðer (byte) kaldýysa onu da toplama ekle
+    if((ASahteBaslikUzunlugu mod 2) = 1) then
+    begin
+
+      SaglamaToplami := SaglamaToplami + PByte(WordVeriAdresi)^;
+    end;
+  end;
+
+  // word deðeri aþan (17 ve sonraki bitler) kýsmý ilk 16 bit deðere ekle
+  SaglamaToplami := (SaglamaToplami mod $10000) + (SaglamaToplami div $10000);
+
+  // son olarak deðeri ters çevir
+  Result := not SaglamaToplami;
 end;
 
 end.

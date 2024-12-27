@@ -35,9 +35,9 @@ begin
   Gorev.Yukle;
   Gorev.Ad := ProgramAdi;
 
-  IPAdres := '193.1.1.1';
+  IPAdres := '192.168.1.51';
 
-  Pencere.Olustur(-1, 50, 50, 445, 275, ptIletisim, ProgramAdi, $FAF1E3);
+  Pencere.Olustur(-1, 50, 50, 600, 480, ptBoyutlanabilir, ProgramAdi, $FAF1E3);
   if(Pencere.Kimlik < 0) then Gorev.Sonlandir(-1);
 
   etAdres.Olustur(Pencere.Kimlik, 5, 10, RENK_SIYAH, 'Adres');
@@ -58,7 +58,7 @@ begin
   DurumCubugu.Olustur(Pencere.Kimlik, 0, 0, 100, 20, 'Baðlantý yok!');
   DurumCubugu.Goster;
 
-  Defter.Olustur(Pencere.Kimlik, 5, 34, 428, 216, RENK_BEYAZ, RENK_SIYAH, False);
+  Defter.Olustur(Pencere.Kimlik, 5, 34, 583, 421, RENK_BEYAZ, RENK_SIYAH, True);
   //Defter.Hizala(hzTum);
   Defter.Goster;
 

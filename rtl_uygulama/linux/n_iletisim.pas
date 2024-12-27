@@ -20,7 +20,7 @@ type
   private
     FBaglanti: TKimlik;
   public
-    function Baglan(AProtokolTip: TProtokolTip; AHedefIPAdres: string;
+    function Baglan(AProtokolTipi: TProtokolTipi; AHedefIPAdres: string;
       AHedefPort: TSayi4): TISayi4;
     function BagliMi: Boolean;
     function VeriUzunluguAl: TISayi4;
@@ -30,7 +30,7 @@ type
     property Baglanti: TKimlik read FBaglanti;
   end;
 
-function _Baglan(AProtokolTip: TProtokolTip; AHedefIPAdres: string;
+function _Baglan(AProtokolTipi: TProtokolTipi; AHedefIPAdres: string;
   AHedefPort: TSayi4): TISayi4;
 function _BagliMi(ABaglanti: TKimlik): Boolean;
 function _VeriUzunluguAl(ABaglanti: TKimlik): TISayi4;
@@ -40,11 +40,11 @@ function _BaglantiyiKes(ABaglanti: TKimlik): Boolean;
 
 implementation
 
-function TIletisim.Baglan(AProtokolTip: TProtokolTip; AHedefIPAdres: string;
+function TIletisim.Baglan(AProtokolTipi: TProtokolTipi; AHedefIPAdres: string;
   AHedefPort: TSayi4): TISayi4;
 begin
 
-  FBaglanti := _Baglan(AProtokolTip, AHedefIPAdres, AHedefPort);
+  FBaglanti := _Baglan(AProtokolTipi, AHedefIPAdres, AHedefPort);
 
   Result := FBaglanti;
 end;
@@ -80,12 +80,12 @@ begin
   FBaglanti := -1;
 end;
 
-function _Baglan(AProtokolTip: TProtokolTip; AHedefIPAdres: string;
+function _Baglan(AProtokolTipi: TProtokolTipi; AHedefIPAdres: string;
   AHedefPort: TSayi4): TISayi4; assembler;
 asm
   push  DWORD AHedefPort
   push  DWORD AHedefIPAdres
-  push  DWORD AProtokolTip
+  push  DWORD AProtokolTipi
   mov   eax,ILETISIM_BAGLAN
   int   $34
   add   esp,12

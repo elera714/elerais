@@ -7,11 +7,11 @@ program calistir;
   Program Adý: calistir.lpr
   Program Ýþlevi: komut satýrýndan çalýþtýrýlabilir programlarý çalýþtýrýr
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 24/12/2024
 
  ==============================================================================}
 {$mode objfpc}
-uses n_gorev, gn_pencere, gn_etiket, gn_giriskutusu, gn_dugme;
+uses n_gorev, gn_pencere, gn_etiket, gn_giriskutusu, gn_dugme, n_ekran;
 
 const
   ProgramAdi: string = 'Program Çalýþtýr';
@@ -22,6 +22,7 @@ var
   Etiket: TEtiket;
   GirisKutusu: TGirisKutusu;
   gkCalistir: TDugme;
+  Ekran: TEkran;
   Olay: TOlay;
 
 procedure ProgramCalistir;
@@ -39,7 +40,11 @@ begin
   Gorev.Yukle;
   Gorev.Ad := ProgramAdi;
 
-  Pencere.Olustur(-1, 100, 100, 365, 30, ptIletisim, ProgramAdi, RENK_BEYAZ);
+  // ekran çözünürlüðünü al
+  Ekran.CozunurlukAl;
+
+  // (Görev Çubuðu Yüksekliði = 40, Pencere Yüksekliði = 30, Pencere Baþlýk / Alt Yüksekliði = 32)
+  Pencere.Olustur(-1, 0, Ekran.Yukseklik - (40 + 30 + 32), 365, 30, ptIletisim, ProgramAdi, RENK_BEYAZ);
   if(Pencere.Kimlik < 0) then Gorev.Sonlandir(-1);
 
   Etiket.Olustur(Pencere.Kimlik, 4, 7, RENK_SIYAH, 'Dosya Adý:');

@@ -6,7 +6,7 @@
   Dosya Adı: iletisim.pas
   Dosya İşlevi: bağlantı (soket) iletişim yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/09/2024
+  Güncelleme Tarihi: 26/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -42,7 +42,7 @@ type
   public
     FKimlik: TKimlik;
     FBaglantiDurum: TBaglantiDurum;
-    FProtokol: TProtokolTip;
+    FProtokolTipi: TProtokolTipi;
     FPencereU: TSayi2;
     FSiraNo,                      // TCP sıra no (sequence number)
     FOnayNo: TSayi4;              // TCP onay no (acknowledgment number)
@@ -52,7 +52,7 @@ type
     FBagli: Boolean;
     FBellek: Pointer;
     FBellekUzunlugu: Integer;
-    function Olustur(AProtokolTip: TProtokolTip; AUzakIPAdres: TIPAdres; AYerelPort,
+    function Olustur(AProtokolTipi: TProtokolTipi; AUzakIPAdres: TIPAdres; AYerelPort,
       AUzakPort: TSayi2): PBaglanti;
     function YeniBaglantiOlustur: PBaglanti;
     function Baglan(ABaglantiTipi: TBaglantiTipi): TISayi4;
@@ -87,10 +87,10 @@ begin
   _Baglanti := GGercekBellek.Ayir(SizeOf(TBaglanti) * USTSINIR_AGILETISIM);
 
   // bellek girişlerini dizi girişleriyle eşleştir
-  for i := 1 to USTSINIR_AGILETISIM do
+  for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
-    AgIletisimListesi[i] := _Baglanti;
+    GAgIletisimListesi[i] := _Baglanti;
 
     // işlemi boş olarak belirle
     _Baglanti^.FBaglantiDurum := bdYok;
@@ -106,7 +106,7 @@ end;
 {==============================================================================
   ağ bağlantısı için bağlantı oluşturur
  ==============================================================================}
-function TBaglanti.Olustur(AProtokolTip: TProtokolTip; AUzakIPAdres: TIPAdres;
+function TBaglanti.Olustur(AProtokolTipi: TProtokolTipi; AUzakIPAdres: TIPAdres;
   AYerelPort, AUzakPort: TSayi2): PBaglanti;
 var
   _Baglanti: PBaglanti;
@@ -114,7 +114,7 @@ begin
 
   _Baglanti := nil;
 
-  if(AProtokolTip = ptTCP) then
+  if(AProtokolTipi = ptTCP) then
   begin
 
     _Baglanti := YeniBaglantiOlustur;
@@ -122,7 +122,7 @@ begin
     begin
 
       _Baglanti^.FBagli := False;
-      _Baglanti^.FProtokol := AProtokolTip;
+      _Baglanti^.FProtokolTipi := AProtokolTipi;
       _Baglanti^.FHedefMACAdres := MACAdres0;
       _Baglanti^.FHedefIPAdres := AUzakIPAdres;
       _Baglanti^.FYerelPort := AYerelPort;
@@ -135,7 +135,7 @@ begin
       FBellek := GGercekBellek.Ayir(_Baglanti^.FPencereU);
     end;
   end
-  else if(AProtokolTip = ptUDP) then
+  else if(AProtokolTipi = ptUDP) then
   begin
 
     _Baglanti := YeniBaglantiOlustur;
@@ -143,7 +143,7 @@ begin
     begin
 
       _Baglanti^.FBaglantiDurum := bdBaglandi;
-      _Baglanti^.FProtokol := AProtokolTip;
+      _Baglanti^.FProtokolTipi := AProtokolTipi;
       _Baglanti^.FHedefIPAdres := AUzakIPAdres;
       _Baglanti^.FYerelPort := AYerelPort;
       _Baglanti^.FUzakPort := AUzakPort;
@@ -184,10 +184,10 @@ var
 begin
 
   // tüm işlem girişlerini incele
-  for i := 1 to USTSINIR_AGILETISIM do
+  for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
-    _Baglanti := AgIletisimListesi[i];
+    _Baglanti := GAgIletisimListesi[i];
 
     // bağlantı durumu boş ise
     if(_Baglanti^.FBaglantiDurum = bdYok) then
@@ -213,10 +213,10 @@ const
 begin
 
   // bağlantı kimliği tanımlanan aralıkta ise...
-  if(FKimlik > 0) and (FKimlik <= USTSINIR_AGILETISIM) then
+  if(FKimlik > -1) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
-    if(FProtokol = ptUDP) then
+    if(FProtokolTipi = ptUDP) then
     begin
 
       if(ABaglantiTipi = btYayin) then
@@ -234,7 +234,7 @@ begin
         Exit(FKimlik);
       end;
     end
-    else if(FProtokol = ptTCP) then
+    else if(FProtokolTipi = ptTCP) then
     begin
 
       if(FBaglantiDurum = bdKapali) then
@@ -250,7 +250,7 @@ begin
     end;
   end;
 
-  Result := 0;
+  Result := -1;
 end;
 
 {==============================================================================
@@ -260,13 +260,13 @@ function TBaglanti.BagliMi: Boolean;
 begin
 
   // bağlantı kimliği tanımlanan aralıkta ise...
-  if(FKimlik > 0) and (FKimlik <= USTSINIR_AGILETISIM) then
+  if(FKimlik > -1) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
-    if(FProtokol = ptUDP) then
+    if(FProtokolTipi = ptUDP) then
 
       Result := FBagli
-    else if(FProtokol = ptTCP) then
+    else if(FProtokolTipi = ptTCP) then
     begin
 
       if(FBaglantiDurum = bdBaglandi) then
@@ -284,14 +284,14 @@ function TBaglanti.BaglantiyiKes: TISayi4;
 begin
 
   // bağlantı kimliği tanımlanan aralıkta ise...
-  if(FKimlik > 0) and (FKimlik <= USTSINIR_AGILETISIM) then
+  if(FKimlik > -1) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
-    if(FProtokol = ptUDP) then
+    if(FProtokolTipi = ptUDP) then
     begin
 
       FBaglantiDurum := bdKapali;
-      FProtokol := ptBilinmiyor;
+      FProtokolTipi := ptBilinmiyor;
       FHedefIPAdres := IPAdres0;
       FYerelPort := 0;
       FUzakPort := 0;
@@ -300,7 +300,7 @@ begin
 
       Result := 0;
     end
-    else if(FProtokol = ptTCP) then
+    else if(FProtokolTipi = ptTCP) then
     begin
 
       if(FBaglantiDurum = bdBaglandi) then
@@ -340,10 +340,10 @@ var
 begin
 
   // tüm işlem girişlerini incele
-  for i := 1 to USTSINIR_AGILETISIM do
+  for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
-    _Baglanti := AgIletisimListesi[i];
+    _Baglanti := GAgIletisimListesi[i];
     if not(_Baglanti^.FBaglantiDurum = bdYok) and (_Baglanti^.FYerelPort = AYerelPort) and
       (_Baglanti^.FUzakPort = AUzakPort) then Exit(_Baglanti);
   end;
@@ -361,10 +361,10 @@ var
 begin
 
   // tüm işlem girişlerini incele
-  for i := 1 to USTSINIR_AGILETISIM do
+  for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
-    _Baglanti := AgIletisimListesi[i];
+    _Baglanti := GAgIletisimListesi[i];
     if not(_Baglanti^.FBaglantiDurum = bdYok) and (_Baglanti^.FYerelPort = AYerelPort) then
       Exit(_Baglanti);
   end;
@@ -391,10 +391,10 @@ end;
 function TBaglanti.VeriUzunlugu: TISayi4;
 begin
 
-  if(FKimlik > 0) and (FKimlik <= USTSINIR_AGILETISIM) then
+  if(FKimlik > -1) and (FKimlik < USTSINIR_AGILETISIM) then
     Exit(Self.FBellekUzunlugu);
 
-  Result := 0;
+  Result := -1;
 end;
 
 {==============================================================================
@@ -405,7 +405,7 @@ var
   i: TSayi4;
 begin
 
-  if(FKimlik > 0) and (FKimlik <= USTSINIR_AGILETISIM) then
+  if(FKimlik > -1) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
     i := Self.FBellekUzunlugu;
@@ -419,7 +419,7 @@ begin
     end;
   end;
 
-  Result := 0;
+  Result := -1;
 end;
 
 {==============================================================================
@@ -428,10 +428,10 @@ end;
 procedure TBaglanti.Yaz(ABellek: Isaretci; AUzunluk: TISayi4);
 begin
 
-  if(FKimlik > 0) and (FKimlik <= USTSINIR_AGILETISIM) then
+  if(FKimlik > -1) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
-    if(FProtokol = ptTCP) then
+    if(FProtokolTipi = ptTCP) then
     begin
 
       if(FBaglantiDurum = bdBaglandi) then
@@ -442,7 +442,7 @@ begin
           ABellek, AUzunluk);
       end;
     end
-    else if(FProtokol = ptUDP) then
+    else if(FProtokolTipi = ptUDP) then
     begin
 
       UDPPaketGonder(FHedefMACAdres, GAgBilgisi.IP4Adres, FHedefIPAdres,

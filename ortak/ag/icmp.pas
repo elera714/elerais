@@ -6,7 +6,7 @@
   Dosya Adý: icmp.pas
   Dosya Ýþlevi: ICMP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 27/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -39,7 +39,7 @@ procedure ICMPPaketGonder(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
 
 implementation
 
-uses genel, saglama, donusum, ip, sistemmesaj;
+uses genel, donusum, ip, sistemmesaj;
 
 // icmp protokolü üzerinden gelen paketleri iþler
 procedure ICMPPaketleriniIsle(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
@@ -94,8 +94,8 @@ begin
   Tasi2(@s[0], p, i);
 
   ICMPBaslik^.BaslikSaglamaToplami := 0;
-  SaglamaToplami := SaglamasiniYap(ICMPBaslik, ICMP_BASLIK_UZUNLUGU + i, nil, 0);
-  ICMPBaslik^.BaslikSaglamaToplami := htons(SaglamaToplami);
+  SaglamaToplami := SaglamaToplamiOlustur(ICMPBaslik, ICMP_BASLIK_UZUNLUGU + i, nil, 0);
+  ICMPBaslik^.BaslikSaglamaToplami := SaglamaToplami;
 
   // sisteme gelen icmp isteðine icmp yanýtý (paket) gönder
   IPPaketGonder(MACAdres255, GAgBilgisi.IP4Adres, AHedefIPAdres, ptICMP, 0,

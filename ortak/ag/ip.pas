@@ -6,7 +6,7 @@
   Dosya Adı: ip.pas
   Dosya İşlevi: ip paket yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 05/09/2024
+  Güncelleme Tarihi: 27/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,15 +14,14 @@ unit ip;
 
 interface
 
-uses paylasim, genel, saglama, ag, sistemmesaj;
+uses paylasim, genel, ag, sistemmesaj;
 
 const
   IP_BASLIK_U = 20;
 
 procedure IPPaketleriniIsle(AIPPaket: PIPPaket; AIPPaketUzunluk: TISayi4);
-procedure IPPaketGonder(AHedefMACAdres: TMACAdres; AKaynakAdres, AHedefAdres: TIPAdres;
-  AProtokolTip: TProtokolTip; ABayrakVeParcaSiraNo: TSayi2; AVeri: Isaretci;
-  AVeriUzunlugu: TSayi2);
+procedure IPPaketGonder(AHedefMACAdres: TMACAdres; AKaynakIP, AHedefIP: TIPAdres;
+  AProtokolTipi: TProtokolTipi; AParcaSiraNo: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 
 implementation
 
@@ -61,8 +60,6 @@ begin
       (IPKarsilastir(AIPPaket^.HedefIP, IPAdres255))) then
     begin
 
-      //SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', AIPPaket^.Protokol, 4);
-
       // icmp protokolü
       if(AIPPaket^.Protokol = PROTOKOL_ICMP) then
       begin
@@ -97,43 +94,43 @@ begin
 end;
 
 // ip protokolü üzerinden paket gönderim işlevlerini gerçekleştirir
-procedure IPPaketGonder(AHedefMACAdres: TMACAdres; AKaynakAdres, AHedefAdres: TIPAdres;
-  AProtokolTip: TProtokolTip; ABayrakVeParcaSiraNo: TSayi2; AVeri: Isaretci;
-  AVeriUzunlugu: TSayi2);
+procedure IPPaketGonder(AHedefMACAdres: TMACAdres; AKaynakIP, AHedefIP: TIPAdres;
+  AProtokolTipi: TProtokolTipi; AParcaSiraNo: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 var
   IPPaket: PIPPaket;
-  Veri: PByte;
-  SaglamaToplam: TSayi2;
+  SaglamaToplami: TSayi2;
+  v: PByte;
 begin
 
   // paket için bellek bölgesi oluştur
   IPPaket := GGercekBellek.Ayir(AVeriUzunlugu + IP_BASLIK_U);
 
   // ip paketi hazırlanıyor
-  IPPaket^.SurumVeBaslikUzunlugu := $45;     // 4 = ip4; 5 * 4 = ip başlık uzunluğu
+  IPPaket^.SurumVeBaslikUzunlugu := $45;      // 4 = ip4; 5 * 4 = 20 = ip başlık uzunluğu
   IPPaket^.ServisTipi := $00;
-  IPPaket^.ToplamUzunluk := Takas2(AVeriUzunlugu + IP_BASLIK_U);
-  IPPaket^.Tanimlayici := Takas2(GIPTanimlayici);
-  // BayrakVeParcaSiraNo: $4000 = tcp / http, $0000 = dns
-  IPPaket^.BayrakVeParcaSiraNo := Takas2(ABayrakVeParcaSiraNo);
-  IPPaket^.YasamSuresi := $80;
-  case AProtokolTip of
+  IPPaket^.ToplamUzunluk := htons(AVeriUzunlugu + IP_BASLIK_U);
+  IPPaket^.Tanimlayici := htons(GIPTanimlayici);
+  // ParcaSiraNo: $4000 = 16 bit -> 010 0000000000000
+  // ilk 3 bit = 2 = parçalanma yok, diğer bitler parça no = 0
+  IPPaket^.ParcaSiraNo := htons(AParcaSiraNo);
+  IPPaket^.YasamSuresi := $40;
+  case AProtokolTipi of
     ptICMP: IPPaket^.Protokol := PROTOKOL_ICMP;
     ptTCP : IPPaket^.Protokol := PROTOKOL_TCP;
     ptUDP : IPPaket^.Protokol := PROTOKOL_UDP;
   end;
-  IPPaket^.KaynakIP := AKaynakAdres;
-  IPPaket^.HedefIP := AHedefAdres;
+  IPPaket^.KaynakIP := AKaynakIP;
+  IPPaket^.HedefIP := AHedefIP;
 
   // sağlama öncesi BaslikSaglamaToplami değeri sıfırlanıyor
   IPPaket^.BaslikSaglamaToplami := $0000;
-  SaglamaToplam := SaglamasiniYap(IPPaket, IP_BASLIK_U, nil, 0);
-  IPPaket^.BaslikSaglamaToplami := Takas2(SaglamaToplam);
+  SaglamaToplami := SaglamaToplamiOlustur(IPPaket, IP_BASLIK_U, nil, 0);
+  IPPaket^.BaslikSaglamaToplami := SaglamaToplami;
 
   Inc(GIPTanimlayici);
 
-  Veri := @IPPaket^.Veri;
-  Tasi2(AVeri, Veri, AVeriUzunlugu);
+  v := @IPPaket^.Veri;
+  Tasi2(AVeri, v, AVeriUzunlugu);
 
   // paketi donanıma (ethernet) gönder
   AgKartinaVeriGonder(AHedefMACAdres, ptIP, IPPaket, AVeriUzunlugu + IP_BASLIK_U);

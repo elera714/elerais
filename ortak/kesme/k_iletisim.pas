@@ -6,7 +6,7 @@
   Dosya Adı: k_iletisim.pas
   Dosya İşlevi: ağ bağlantı (socket) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 18/04/2020
+  Güncelleme Tarihi: 26/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,97 +27,97 @@ uses iletisim, genel, donusum, dns, sistemmesaj;
  ==============================================================================}
 function AgIletisimCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
 var
-  _Baglanti: PBaglanti;
-  _ProtokolTip: TProtokolTip;
-  _IPAdres2: TIPAdres;
-  _IPAdres: string;
-  _AnaIslev, _YerelPort,
-  _HedefPort, i, j, _AltIslev: TSayi4;
-  _BaglantiKimlik: TKimlik;
+  Baglanti: PBaglanti;
+  ProtokolTipi: TProtokolTipi;
+  IPAdres2: TIPAdres;
+  IPAdres: string;
+  AnaIslev, YerelPort,
+  HedefPort, i, j, AltIslev: TSayi4;
+  BaglantiKimlik: TKimlik;
 begin
 
-  _AnaIslev := (IslevNo and $FF);
-  _AltIslev := ((IslevNo shr 8) and $FFFF);
+  AnaIslev := (IslevNo and $FF);
+  AltIslev := ((IslevNo shr 8) and $FFFF);
 
   // tcp / udp ham bağlantı işlevleri
-  if(_AnaIslev = 1) then
+  if(AnaIslev = 1) then
   begin
 
     // bağlantı oluştur ve hedef porta bağlan
-    if(_AltIslev = 1) then
+    if(AltIslev = 1) then
     begin
 
-      _ProtokolTip := PProtokolTip(Degiskenler + 00)^;
-      _IPAdres := PKarakterKatari(PSayi4(Degiskenler + 04)^ + CalisanGorevBellekAdresi)^;
-      _HedefPort := PSayi4(Degiskenler + 08)^;
+      ProtokolTipi := PProtokolTipi(Degiskenler + 00)^;
+      IPAdres := PKarakterKatari(PSayi4(Degiskenler + 04)^ + CalisanGorevBellekAdresi)^;
+      HedefPort := PSayi4(Degiskenler + 08)^;
 
-      _IPAdres2 := StrToIP(_IPAdres);
+      IPAdres2 := StrToIP(IPAdres);
 
       // udp iletişiminde yerelport = hedefport
-      if(_ProtokolTip = ptTCP) then
-        _YerelPort := YerelPortAl
-      else _YerelPort := _HedefPort;
+      if(ProtokolTipi = ptTCP) then
+        YerelPort := YerelPortAl
+      else YerelPort := HedefPort;
 
-      _Baglanti := _Baglanti^.Olustur(_ProtokolTip, _IPAdres2, Lo(_YerelPort), Lo(_HedefPort));
-      if not(_Baglanti = nil) then
+      Baglanti := Baglanti^.Olustur(ProtokolTipi, IPAdres2, Lo(YerelPort), Lo(HedefPort));
+      if not(Baglanti = nil) then
 
-        Result := _Baglanti^.Baglan(btIP)
+        Result := Baglanti^.Baglan(btIP)
       else Result := HATA_KIMLIK
     end
     // bağlantının varlığını kontrol et
-    else if(_AltIslev = 2) then
+    else if(AltIslev = 2) then
     begin
 
-      _BaglantiKimlik := PSayi4(Degiskenler + 00)^;
-      _Baglanti := AgIletisimListesi[_BaglantiKimlik];
-      Result := TISayi4(_Baglanti^.BagliMi);
+      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      Baglanti := GAgIletisimListesi[BaglantiKimlik];
+      Result := TISayi4(Baglanti^.BagliMi);
     end
     // porta gelen veri uzunluğunu al
-    else if(_AltIslev = 3) then
+    else if(AltIslev = 3) then
     begin
 
-      _BaglantiKimlik := PSayi4(Degiskenler + 00)^;
-      _Baglanti := AgIletisimListesi[_BaglantiKimlik];
-      Result := _Baglanti^.VeriUzunlugu;
+      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      Baglanti := GAgIletisimListesi[BaglantiKimlik];
+      Result := Baglanti^.VeriUzunlugu;
     end
     // bağlantıya gelen veriyi al
-    else if(_AltIslev = 4) then
+    else if(AltIslev = 4) then
     begin
 
-      _BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
       i := PSayi4(Degiskenler + 04)^;
 
-      _Baglanti := AgIletisimListesi[_BaglantiKimlik];
-      Result := _Baglanti^.Oku(Isaretci(i + CalisanGorevBellekAdresi));
+      Baglanti := GAgIletisimListesi[BaglantiKimlik];
+      Result := Baglanti^.Oku(Isaretci(i + CalisanGorevBellekAdresi));
     end
     // bağlantıya veri gönder
-    else if(_AltIslev = 5) then
+    else if(AltIslev = 5) then
     begin
 
-      _BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
       i := PSayi4(Degiskenler + 04)^;
       j := PSayi4(Degiskenler + 08)^;
 
-      _Baglanti := AgIletisimListesi[_BaglantiKimlik];
-      _Baglanti^.Yaz(Isaretci(i + CalisanGorevBellekAdresi), j);
+      Baglanti := GAgIletisimListesi[BaglantiKimlik];
+      Baglanti^.Yaz(Isaretci(i + CalisanGorevBellekAdresi), j);
     end
     // bağlantıyı kapat
-    else if(_AltIslev = 6) then
+    else if(AltIslev = 6) then
     begin
 
       { TODO : kaynakların yok edilmesi test edilecek }
-      _BaglantiKimlik := PSayi4(Degiskenler + 00)^;
-      _Baglanti := AgIletisimListesi[_BaglantiKimlik];
-      Result := _Baglanti^.BaglantiyiKes;
+      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      Baglanti := GAgIletisimListesi[BaglantiKimlik];
+      Result := Baglanti^.BaglantiyiKes;
     end
 
     else Result := HATA_ISLEV;
   end
   // dns bağlantı işlevleri
-  else if(_AnaIslev = 2) then
+  else if(AnaIslev = 2) then
   begin
 
-    Result := DNSIletisimCagriIslevleri(_AltIslev, Degiskenler);
+    Result := DNSIletisimCagriIslevleri(AltIslev, Degiskenler);
   end
 
   else Result := HATA_ISLEV;

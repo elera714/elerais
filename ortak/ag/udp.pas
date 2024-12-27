@@ -29,7 +29,7 @@ procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 
 implementation
 
-uses genel, saglama, ip, donusum, sistemmesaj, dhcp, iletisim, dns;
+uses genel, ip, donusum, sistemmesaj, dhcp, iletisim, dns;
 
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir
@@ -105,7 +105,7 @@ procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakAdres, AHedefAdres: TIPAdr
   AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 var
   UDPBaslik: PUDPPaket;
-  SozdeBaslik: TSozdeBaslik;
+  EkBaslik: TEkBaslik;
   SaglamaDeger: TSayi2;
   B1: PSayi1;
 begin
@@ -113,11 +113,11 @@ begin
   UDPBaslik := GGercekBellek.Ayir(AVeriUzunlugu + UDP_BASLIK_U);
 
   // udp için ek baþlýk hesaplanýyor
-  SozdeBaslik.KaynakIPAdres := AKaynakAdres;
-  SozdeBaslik.HedefIPAdres := AHedefAdres;
-  SozdeBaslik.Sifir := 0;
-  SozdeBaslik.Protokol := PROTOKOL_UDP;
-  SozdeBaslik.Uzunluk := Takas2(TSayi2(AVeriUzunlugu + UDP_BASLIK_U));
+  EkBaslik.KaynakIP := AKaynakAdres;
+  EkBaslik.HedefIP := AHedefAdres;
+  EkBaslik.Sifir := 0;
+  EkBaslik.Protokol := PROTOKOL_UDP;
+  EkBaslik.Uzunluk := Takas2(TSayi2(AVeriUzunlugu + UDP_BASLIK_U));
 
   // udp paketi hazýrlanýyor
   UDPBaslik^.KaynakPort := Takas2(TSayi2(AKaynakPort));
@@ -126,9 +126,9 @@ begin
   UDPBaslik^.SaglamaToplam := $0000;
   B1 := @UDPBaslik^.Veri;
   Tasi2(PSayi1(AVeri), B1, AVeriUzunlugu);
-  SaglamaDeger := SaglamasiniYap(UDPBaslik, AVeriUzunlugu + UDP_BASLIK_U,
-    @SozdeBaslik, UDP_SOZDEBASLIK_U);
-  UDPBaslik^.SaglamaToplam := Takas2(TSayi2(SaglamaDeger));
+  SaglamaDeger := SaglamaToplamiOlustur(UDPBaslik, AVeriUzunlugu + UDP_BASLIK_U,
+    @EkBaslik, UDP_SOZDEBASLIK_U);
+  UDPBaslik^.SaglamaToplam := SaglamaDeger;
 
   IPPaketGonder(AMACAdres, AKaynakAdres, AHedefAdres, ptUDP, 0, UDPBaslik,
     AVeriUzunlugu + UDP_BASLIK_U);

@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 05/09/2024
+  Güncelleme Tarihi: 26/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -447,12 +447,6 @@ end;
 procedure ElleGorevDegistir; nostackframe; assembler;
 asm
 
-  int $20
-  ret
-
-  { TODO - aþaðýdaki kodlar geçici olarak devre dýþý }
-
-  // alttaki kodlar iptal edilebilir mi? test edilecek - 10.11.2019
   cli
   pushad
   pushfd

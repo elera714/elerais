@@ -228,8 +228,8 @@ const
   MACAdres255: TMACAdres = (255, 255, 255, 255, 255, 255);
 
 type
-  PProtokolTip = ^TProtokolTip;
-  TProtokolTip = (ptBilinmiyor, ptIP, ptARP, ptTCP, ptUDP, ptICMP);
+  PProtokolTipi = ^TProtokolTipi;
+  TProtokolTipi = (ptBilinmiyor, ptIP, ptARP, ptTCP, ptUDP, ptICMP);
   
 type
   TGorevDurum = (gdBos, gdOlusturuldu, gdCalisiyor, gdDurduruldu);

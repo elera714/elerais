@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 24/12/2024
+  Güncelleme Tarihi: 27/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -34,7 +34,7 @@ procedure IlkAdresDegerleriniYukle;
 function GenelAgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 procedure AgKartiVeriAlmaIslevi;
 function AgKartindanVeriAl(AHedefBellekAdresi: Isaretci): Integer;
-procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTip: TProtokolTip;
+procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi;
   AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 
 implementation
@@ -196,7 +196,7 @@ end;
 {==============================================================================
   að kartýna (ethernet) veri gönderir
  ==============================================================================}
-procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTip: TProtokolTip;
+procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi;
   AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 var
   EthernetPaket: PEthernetPaket;
@@ -213,7 +213,7 @@ begin
     EthernetPaket^.KaynakMACAdres := GAgBilgisi.MACAdres;
 
     // paketin protokol tipi
-    case AProtokolTip of
+    case AProtokolTipi of
       ptIP  : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_IP);
       ptTCP : EthernetPaket^.PaketTipi := PROTOKOL_TCP;
       ptUDP : EthernetPaket^.PaketTipi := PROTOKOL_UDP;

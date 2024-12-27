@@ -23,7 +23,7 @@ procedure TCPPaketGonder(AKaynakIPAdres: TIPAdres; ABaglanti: PBaglanti;
 
 implementation
 
-uses genel, donusum, saglama, ip, sistemmesaj;
+uses genel, donusum, ip, sistemmesaj;
 
 procedure TCPPaketleriniIsle(AIPPaket: PIPPaket);
 var
@@ -146,7 +146,7 @@ begin
 
         TCPPaketGonder(GAgBilgisi.IP4Adres, _Baglanti, TCP_BAYRAK_KABUL, nil, 0);
 
-        _Baglanti^.FProtokol := ptBilinmiyor;
+        _Baglanti^.FProtokolTipi := ptBilinmiyor;
         _Baglanti^.FHedefIPAdres := IPAdres0;
         _Baglanti^.FYerelPort := 0;
         _Baglanti^.FUzakPort := 0;
@@ -165,7 +165,7 @@ procedure TCPPaketGonder(AKaynakIPAdres: TIPAdres; ABaglanti: PBaglanti;
   ABayrak: TSayi1; AVeri: Isaretci; AVeriU: TSayi4; AVeriSonEk: Boolean = False);
 var
   _TCPBaslik: PTCPPaket;
-  _SozdeBaslik: TSozdeBaslik;
+  EkBaslik: TEkBaslik;
   _Saglama: TSayi2;
   _BaslikUzunlugu: TSayi1;
   _p: PByte;
@@ -174,11 +174,11 @@ begin
   _TCPBaslik := GGercekBellek.Ayir(TCPBASLIK_UZUNLUGU + AVeriU);
 
   // tcp için ek baþlýk hesaplanýyor
-  _SozdeBaslik.KaynakIPAdres := AKaynakIPAdres;
-  _SozdeBaslik.HedefIPAdres := ABaglanti^.FHedefIPAdres;
-  _SozdeBaslik.Sifir := 0;
-  _SozdeBaslik.Protokol := PROTOKOL_TCP;
-  _SozdeBaslik.Uzunluk := Takas2(TSayi2(AVeriU + TCPBASLIK_UZUNLUGU));
+  EkBaslik.KaynakIP := AKaynakIPAdres;
+  EkBaslik.HedefIP := ABaglanti^.FHedefIPAdres;
+  EkBaslik.Sifir := 0;
+  EkBaslik.Protokol := PROTOKOL_TCP;
+  EkBaslik.Uzunluk := Takas2(TSayi2(AVeriU + TCPBASLIK_UZUNLUGU));
 
   // tcp paketi hazýrlanýyor
   if(AVeriSonEk) then
@@ -200,9 +200,9 @@ begin
     Tasi2(PByte(AVeri), _p, AVeriU);
   end;
 
-  _Saglama := SaglamasiniYap(_TCPBaslik, TCPBASLIK_UZUNLUGU + AVeriU,
-    @_SozdeBaslik, SOZDE_TCPBASLIK_UZUNLUGU);
-  _TCPBaslik^.SaglamaToplam := Takas2(_Saglama);
+  _Saglama := SaglamaToplamiOlustur(_TCPBaslik, TCPBASLIK_UZUNLUGU + AVeriU,
+    @EkBaslik, SOZDE_TCPBASLIK_UZUNLUGU);
+  _TCPBaslik^.SaglamaToplam := _Saglama;
 
   IPPaketGonder(ABaglanti^.FHedefMACAdres, AKaynakIPAdres, ABaglanti^.FHedefIPAdres,
     ptTCP, $4000, _TCPBaslik, TCPBASLIK_UZUNLUGU + AVeriU);

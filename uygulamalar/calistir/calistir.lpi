@@ -36,6 +36,8 @@
         <Filename Value="calistir.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
+        <TopLine Value="32"/>
+        <CursorPos X="98" Y="46"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
