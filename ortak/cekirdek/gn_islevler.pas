@@ -51,13 +51,13 @@ begin
   GNBellekAdresi := GGercekBellek.Ayir(USTSINIR_GORSELNESNE * GN_UZUNLUK);
 
   // nesneye ait işaretçileri bellek bölgeleriyle eşleştir
-  for i := 1 to USTSINIR_GORSELNESNE do
+  for i := 0 to USTSINIR_GORSELNESNE - 1 do
   begin
 
-    GorselNesneListesi[i] := GNBellekAdresi;
+    GGorselNesneListesi[i] := GNBellekAdresi;
 
     // nesneyi kullanılmadı olarak işaretle
-    GorselNesneListesi[i]^.Kimlik := HATA_KIMLIK;
+    GGorselNesneListesi[i]^.Kimlik := HATA_KIMLIK;
 
     GNBellekAdresi += GN_UZUNLUK;
   end;
@@ -98,10 +98,10 @@ begin
   begin
 
     Kimlik := PISayi4(ADegiskenler + 00)^;
-    if(Kimlik >= 1) and (Kimlik <= USTSINIR_GORSELNESNE) then
+    if(Kimlik >= 0) and (Kimlik < USTSINIR_GORSELNESNE) then
     begin
 
-      GorselNesne := GorselNesneListesi[Kimlik];
+      GorselNesne := GGorselNesneListesi[Kimlik];
       BellekAdresi := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
       Tasi2(GorselNesne, BellekAdresi, SizeOf(TGorselNesne));
 

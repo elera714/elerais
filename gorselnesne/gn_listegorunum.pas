@@ -6,7 +6,7 @@
   Dosya Adý: gn_listegorunum.pas
   Dosya Ýþlevi: liste görünüm (TListView) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 28/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -552,7 +552,7 @@ begin
   else if(AOlay.Olay = FO_KAYDIRMA) then
   begin
 
-    //SISTEM_MESAJ(RENK_KIRMIZI, 'Kaydýrma Deðeri: %d', [AOlay.Deger1]);
+    // SISTEM_MESAJ(RENK_KIRMIZI, 'Kaydýrma Deðeri: %d', [AOlay.Deger1]);
 
     // listeyi yukarý kaydýrma iþlemi. ilk elemana doðru
     if(AOlay.Deger1 < 0) then

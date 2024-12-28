@@ -6,7 +6,7 @@
   Dosya Adı: genel.pas
   Dosya İşlevi: sistem genelinde kullanılan sabit, değişken ve yapıları içerir
 
-  Güncelleme Tarihi: 24/12/2024
+  Güncelleme Tarihi: 28/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -41,7 +41,7 @@ var
   GFareIleBasilanSonGN: PGorselNesne = nil;
 
   GorevListesi: array[1..USTSINIR_GOREVSAYISI] of PGorev;
-  GorselNesneListesi: array[1..USTSINIR_GORSELNESNE] of PGorselNesne;
+  GGorselNesneListesi: array[0..USTSINIR_GORSELNESNE - 1] of PGorselNesne;
   GAgIletisimListesi: array[0..USTSINIR_AGILETISIM - 1] of PBaglanti;
   GDNSBaglantilari: array[0..USTSINIR_DNSBAGLANTI - 1] of PDNS;
   GMasaustuListesi: array[0..USTSINIR_MASAUSTU - 1] of PMasaustu = (nil, nil, nil, nil);

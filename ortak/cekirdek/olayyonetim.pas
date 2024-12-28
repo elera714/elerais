@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 11/07/2020
+  Güncelleme Tarihi: 28/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -164,7 +164,6 @@ procedure TOlayYonetim.FareOlaylariniIsle;
 var
   GorselNesne: PGorselNesne;
   Olay, Olay2: TOlay;
-  Alan: TAlan;
   Konum: TKonum;
 begin
 
@@ -216,10 +215,7 @@ begin
       // nesneye yönlendirilecek parametreleri hazýrla
       Olay.Kimlik := GorselNesne^.Kimlik;
       if(Olay.Olay <> FO_KAYDIRMA) then
-        Olay.Deger1 := GFareSurucusu.YatayKonum - Alan.Sol;
-      Olay.Deger2 := GFareSurucusu.DikeyKonum - Alan.Ust;
-
-      Olay.Deger1 := Konum.Sol;
+        Olay.Deger1 := Konum.Sol;
       Olay.Deger2 := Konum.Ust;
 
 {      SISTEM_MESAJ(RENK_SIYAH, 'Yatay: %d', [Olay.Deger1]);

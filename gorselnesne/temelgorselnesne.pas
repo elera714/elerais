@@ -6,7 +6,7 @@
   Dosya Adý: temelgorselnesne.pas
   Dosya Ýþlevi: temel görsel nesne yapýsýný içerir
 
-  Güncelleme Tarihi: 13/07/2020
+  Güncelleme Tarihi: 28/12/2024
 
  ==============================================================================}
 {$mode objfpc}

@@ -6,15 +6,16 @@
   Dosya Adı: src_ps2.pas
   Dosya İşlevi: ps / 2 fare sürücüsü
 
-  Güncelleme Tarihi: 11/06/2020
+  Güncelleme Tarihi: 28/12/2024
 
  ==============================================================================}
 {$mode objfpc}
+{$asmmode intel}
 unit src_ps2;
 
 interface
 
-uses paylasim;
+uses paylasim, sistemmesaj;
 
 type
   PFareOlay = ^TFareOlay;
@@ -44,7 +45,7 @@ type
     property YatayKonum: Integer read FYatayKonum;
     property DikeyKonum: Integer read FDikeyKonum;
     property FareDugmeleri: Byte read FFareDugmeleri;
-    property KaydirmaDegeri: ShortInt read FKaydirmaDegeri;
+    property KaydirmaDegeri: TISayi1 read FKaydirmaDegeri;
   end;
 
 procedure FareKesmeCagrisi;
@@ -227,8 +228,10 @@ begin
         FFareDugmeleri += (FareVeriBellegi[3] and 32);
 
         if((FareVeriBellegi[3] and 8) = 8) then
-          FKaydirmaDegeri := $F8 or (FareVeriBellegi[3] and 7)
-        else FKaydirmaDegeri := (FareVeriBellegi[3] and 7);
+          FKaydirmaDegeri := $F0 or (FareVeriBellegi[3] and $F)
+        else FKaydirmaDegeri := (FareVeriBellegi[3] and $F);
+
+        // SISTEM_MESAJ_S16(RENK_LACIVERT, '-> Değer: ', B1, 2);
       end;
     end;
 

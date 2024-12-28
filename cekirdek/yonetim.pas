@@ -237,6 +237,8 @@ var
   fs: PFizikselSurucu3;
   IRR, zzz: TSayi2;
   _AygitSiraNo, AygitKimlik: TSayi4;
+  DD1: TISayi1;
+  DD4: TISayi4;
 begin
 
 {  if(CalisanGorevSayisi = 1) then
@@ -346,8 +348,11 @@ begin
           //Gorev^.Calistir('disk1:\6.bmp');
           //Gorev^.Calistir('disket1:\tarayici.c');
 
-          zzz := SaglamaToplamiOlustur(@veriler[0], 20, nil, 0);
-          SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Hex Deðer: ', zzz, 4);
+          DD1 := $FF;
+          DD4 := DD1;
+          SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Deðer1: ', DD1, 2);
+          SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Deðer4: ', DD4, 8);
+          SISTEM_MESAJ(RENK_KIRMIZI, 'Deðer: %d, %d', [DD1, DD4]);
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then

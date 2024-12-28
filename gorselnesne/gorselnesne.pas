@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 16/09/2024
+  Güncelleme Tarihi: 28/12/2024
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -287,10 +287,10 @@ var
 begin
 
   // tüm nesneleri ara
-  for i := 1 to USTSINIR_GORSELNESNE do
+  for i := 0 to USTSINIR_GORSELNESNE - 1 do
   begin
 
-    TemelGorselNesne := GorselNesneListesi[i];
+    TemelGorselNesne := GGorselNesneListesi[i];
 
     // eðer nesne kullanýlmamýþ ise ...
     if(TemelGorselNesne^.Kimlik = HATA_KIMLIK) then
@@ -326,7 +326,7 @@ procedure TGorselNesne.YokEt;
 begin
 
   // eðer nesne istenen aralýkta ise yok et
-  if(Kimlik > 0) and (Kimlik <= USTSINIR_GORSELNESNE) then
+  if(Kimlik >= 0) and (Kimlik < USTSINIR_GORSELNESNE) then
   begin
 
     Kimlik := HATA_KIMLIK;
@@ -560,13 +560,13 @@ var
 begin
 
   // nesne istenen sayý aralýðýnda ise
-  if(AKimlik > 0) and (AKimlik <= USTSINIR_GORSELNESNE) then
+  if(AKimlik >= 0) and (AKimlik < USTSINIR_GORSELNESNE) then
   begin
 
-    GorselNesne := GorselNesneListesi[AKimlik];
+    GorselNesne := GGorselNesneListesi[AKimlik];
 
     // nesne oluþturulmuþ mu ?
-    if(GorselNesne^.Kimlik <> 0) then
+    if(GorselNesne^.Kimlik <> HATA_KIMLIK) then
     begin
 
       // nesne tipini kontrol et
@@ -587,13 +587,13 @@ var
 begin
 
   // nesne istenen sayý aralýðýnda ise
-  if(AKimlik > 0) and (AKimlik <= USTSINIR_GORSELNESNE) then
+  if(AKimlik >= 0) and (AKimlik < USTSINIR_GORSELNESNE) then
   begin
 
-    GorselNesne := GorselNesneListesi[AKimlik];
+    GorselNesne := GGorselNesneListesi[AKimlik];
 
     // nesne oluþturulmuþ mu ?
-    if(GorselNesne^.Kimlik <> 0) then
+    if(GorselNesne^.Kimlik <> HATA_KIMLIK) then
     begin
 
       // nesne tipini kontrol et
@@ -611,9 +611,9 @@ function TGorselNesne.NesneyiAl(AKimlik: TKimlik): PGorselNesne;
 begin
 
   // nesne istenen sayý aralýðýnda ise
-  if(AKimlik > 0) and (AKimlik <= USTSINIR_GORSELNESNE) then
+  if(AKimlik >= 0) and (AKimlik < USTSINIR_GORSELNESNE) then
 
-    Result := PGorselNesne(GorselNesneListesi[AKimlik])
+    Result := PGorselNesne(GGorselNesneListesi[AKimlik])
 
   else Result := nil;
 end;
@@ -627,10 +627,10 @@ var
 begin
 
   // nesne istenen sayý aralýðýnda ise
-  if(AKimlik > 0) and (AKimlik <= USTSINIR_GORSELNESNE) then
+  if(AKimlik >= 0) and (AKimlik < USTSINIR_GORSELNESNE) then
   begin
 
-    GorselNesne := GorselNesneListesi[AKimlik];
+    GorselNesne := GGorselNesneListesi[AKimlik];
 
     while (GorselNesne <> nil) do
     begin
@@ -695,7 +695,7 @@ var
 begin
 
   // talepte bulunan nesnenin kimlik deðerini kontrol et
-  GorselNesne := GorselNesneListesi[AKimlik];
+  GorselNesne := GGorselNesneListesi[AKimlik];
 
   if((Self.NesneTipi = gntMasaustu) or (Self.NesneTipi = gntPencere) or
     (Self.NesneTipi = gntMenu) or (Self.NesneTipi = gntAcilirMenu)) then
@@ -746,7 +746,7 @@ var
   GorselNesne: PGorselNesne;
 begin
 
-  GorselNesne := GorselNesneListesi[AKimlik];
+  GorselNesne := GGorselNesneListesi[AKimlik];
 
   // nesnenin üst nesneye baðlý koordinatlarýný al
   Result := CizimAlaniniAl(AKimlik);
@@ -789,7 +789,7 @@ end;
 function TGorselNesne.NesneAl(AKimlik: TKimlik): PGorselNesne;
 begin
 
-  Result := GorselNesneListesi[AKimlik];
+  Result := GGorselNesneListesi[AKimlik];
 end;
 
 {==============================================================================

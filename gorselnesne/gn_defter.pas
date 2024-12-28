@@ -6,7 +6,7 @@
   Dosya Adý: gn_defter.pas
   Dosya Ýþlevi: defter nesnesi (TMemo) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 24/12/2024
+  Güncelleme Tarihi: 28/12/2024
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     40K ve çekirdek bölümüne eklenen 40K bellek kullanmaktadýr.
@@ -198,16 +198,19 @@ begin
 
   Defter^.FFareImlecTipi := fitGiris;
 
+  { TODO - kaydýrma çubuklarýna sabit deðer olarak 50 deðeri verilmiþtir. Bu deðer
+    nesne içeriðindeki metine göre dinamik olarak oluþturulacaktýr }
+
   // yatay kaydýrma çubuðu
   Defter^.FYatayKCubugu := Defter^.FYatayKCubugu^.Olustur(ktBilesen, Defter,
     0, AYukseklik - 16, AGenislik - 16, 16, yYatay);
-  Defter^.FYatayKCubugu^.DegerleriBelirle(0, 10);
+  Defter^.FYatayKCubugu^.DegerleriBelirle(0, 50);
   Defter^.FYatayKCubugu^.OlayYonlendirmeAdresi := @KaydirmaCubuguOlaylariniIsle;
 
   // dikey kaydýrma çubuðu
   Defter^.FDikeyKCubugu := Defter^.FDikeyKCubugu^.Olustur(ktBilesen, Defter,
     AGenislik - 16, 0, 16, AYukseklik - 16, yDikey);
-  Defter^.FDikeyKCubugu^.DegerleriBelirle(0, 10);
+  Defter^.FDikeyKCubugu^.DegerleriBelirle(0, 50);
   Defter^.FDikeyKCubugu^.OlayYonlendirmeAdresi := @KaydirmaCubuguOlaylariniIsle;
 
   // defter nesnesinin içeriði için bellek ayýr
@@ -519,10 +522,40 @@ end;
 procedure TDefter.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
   Defter: PDefter;
+  i: TISayi4;
 begin
 
   Defter := PDefter(AGonderici);
   if(Defter = nil) then Exit;
+
+  if(AOlay.Olay = FO_KAYDIRMA) then
+  begin
+
+    // metni yukarý kaydýrma iþlevi
+    if(AOlay.Deger1 < 0) then
+    begin
+
+      i := Defter^.FDikeyKCubugu^.FMevcutDeger;
+      Dec(i);
+      if(i >= 0) then Defter^.FDikeyKCubugu^.FMevcutDeger := i;
+
+      Defter^.Ciz;
+    end
+
+    // metni aþaðýya kaydýrma iþlevi
+    else if(AOlay.Deger1 > 0) then
+    begin
+
+      i := Defter^.FDikeyKCubugu^.FMevcutDeger;
+      Inc(i);
+      if(i < Defter^.FDikeyKCubugu^.FUstDeger) then
+      begin
+
+        Defter^.FDikeyKCubugu^.FMevcutDeger := i;
+        Defter^.Ciz;
+      end;
+    end;
+  end;
 
   // geçerli fare göstergesini güncelle
   GecerliFareGostegeTipi := Defter^.FFareImlecTipi;
