@@ -6,7 +6,7 @@
   Dosya Adı: ip.pas
   Dosya İşlevi: ip paket yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/12/2024
+  Güncelleme Tarihi: 31/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -122,10 +122,10 @@ begin
   IPPaket^.KaynakIP := AKaynakIP;
   IPPaket^.HedefIP := AHedefIP;
 
-  // sağlama öncesi BaslikSaglamaToplami değeri sıfırlanıyor
-  IPPaket^.BaslikSaglamaToplami := $0000;
+  // sağlama öncesi SaglamaToplami değeri sıfırlanıyor
+  IPPaket^.SaglamaToplami := 0;
   SaglamaToplami := SaglamaToplamiOlustur(IPPaket, IP_BASLIK_U, nil, 0);
-  IPPaket^.BaslikSaglamaToplami := SaglamaToplami;
+  IPPaket^.SaglamaToplami := SaglamaToplami;
 
   Inc(GIPTanimlayici);
 

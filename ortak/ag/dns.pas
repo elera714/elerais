@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 27/12/2024
+  Güncelleme Tarihi: 31/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit dns;
 
 interface
 
-uses paylasim, iletisim;
+uses paylasim, iletisim, udp;
 
 const
   USTSINIR_DNSBAGLANTI  = 16;
@@ -59,13 +59,39 @@ type
     procedure YokEt(ADNSKimlik: TKimlik);
   end;
 
-function DNSIletisimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 procedure Yukle;
+function DNSIletisimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 procedure DNSPaketleriniIsle(AUDPPaket: PUDPPaket);
 
 implementation
 
 uses genel, donusum, sistemmesaj;
+
+{==============================================================================
+  dns protokol değişken / yapı ilk yükleme işlevlerini içerir
+ ==============================================================================}
+procedure Yukle;
+var
+  DNS: PDNS;
+  i: TSayi4;
+begin
+
+  // dns bilgilerinin yerleştirilmesi için bellek ayır
+  DNS := GGercekBellek.Ayir(SizeOf(TDNS) * USTSINIR_DNSBAGLANTI);
+
+  // bellek girişlerini dizi girişleriyle eşleştir
+  for i := 0 to USTSINIR_DNSBAGLANTI - 1 do
+  begin
+
+    GDNSBaglantilari[i] := DNS;
+
+    // işlemi boş olarak belirle
+    DNS^.FBaglantiDurum := ddOlusturuldu;
+    DNS^.FKimlik := i;
+
+    Inc(DNS);
+  end;
+end;
 
 {==============================================================================
   dns yönetim işlevlerini içerir
@@ -130,28 +156,29 @@ begin
 end;
 
 {==============================================================================
-  dns protokol değişken / yapı ilk yükleme işlevlerini içerir
+  sisteme gelen tüm DNS yanıtlarını işle ve ilgili girişlere yönlendir
  ==============================================================================}
-procedure Yukle;
+procedure DNSPaketleriniIsle(AUDPPaket: PUDPPaket);
 var
   DNS: PDNS;
-  i: TSayi4;
+  HedefPort, Uzunluk: TSayi2;
+  B4: PSayi4;
 begin
 
-  // dns bilgilerinin yerleştirilmesi için bellek ayır
-  DNS := GGercekBellek.Ayir(SizeOf(TDNS) * USTSINIR_DNSBAGLANTI);
+  HedefPort := ntohs(AUDPPaket^.HedefPort);
+  Uzunluk := ntohs(AUDPPaket^.Uzunluk) - 8;
 
-  // bellek girişlerini dizi girişleriyle eşleştir
-  for i := 0 to USTSINIR_DNSBAGLANTI - 1 do
+  DNS := DNS^.DNSBaglantiAl(HedefPort);
+  if not(DNS = nil) then
   begin
 
-    GDNSBaglantilari[i] := DNS;
+    B4 := PSayi4(DNS^.FBellekAdresi + 2048);
+    B4^ := Uzunluk;
 
-    // işlemi boş olarak belirle
-    DNS^.FBaglantiDurum := ddOlusturuldu;
-    DNS^.FKimlik := i;
+    Tasi2(@AUDPPaket^.Veri, PSayi4(DNS^.FBellekAdresi + 2048 + 4), Uzunluk);
 
-    Inc(DNS);
+    DNS^.FYanitUzunluk := Uzunluk;
+    DNS^.FBaglantiDurum := ddSorgulandi;
   end;
 end;
 
@@ -314,33 +341,6 @@ begin
   DNS^.FBaglanti^.BaglantiyiKes;
 
   GGercekBellek.YokEt(DNS^.FBellekAdresi, 4095);
-end;
-
-{==============================================================================
-  sisteme gelen tüm DNS yanıtlarını işle ve ilgili girişlere yönlendir
- ==============================================================================}
-procedure DNSPaketleriniIsle(AUDPPaket: PUDPPaket);
-var
-  DNS: PDNS;
-  HedefPort, Uzunluk: TSayi2;
-  B4: PSayi4;
-begin
-
-  HedefPort := ntohs(AUDPPaket^.HedefPort);
-  Uzunluk := ntohs(AUDPPaket^.Uzunluk) - 8;
-
-  DNS := DNS^.DNSBaglantiAl(HedefPort);
-  if not(DNS = nil) then
-  begin
-
-    B4 := PSayi4(DNS^.FBellekAdresi + 2048);
-    B4^ := Uzunluk;
-
-    Tasi2(@AUDPPaket^.Veri, PSayi4(DNS^.FBellekAdresi + 2048 + 4), Uzunluk);
-
-    DNS^.FYanitUzunluk := Uzunluk;
-    DNS^.FBaglantiDurum := ddSorgulandi;
-  end;
 end;
 
 {==============================================================================

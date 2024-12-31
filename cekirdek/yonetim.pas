@@ -223,8 +223,11 @@ end;
 procedure SistemAnaKontrol;
 const
   disketyaz: string = 'merhaba';
-  veriler: array[0..19] of Byte = ($45, $00, $00, $3c, $fa, $b2, $40, $00, $40, $06, 0, 0,
-  $0a, $00, $02, $0f, $c0, $a8, $01, $33);
+  // ip checksum = $e6b8 (inet sýralama)
+  veriler: array[0..19] of Byte = ($45, $00, $04, $fe, $00, $00, $40, $00, $39,
+    //$11, $e6, $b8, $8e, $fa, $bb, $8e, $0a, $64, $01, $4a);
+    $11, $00, $00, $8e, $fa, $bb, $8e, $0a, $64, $01, $4a);
+
 
 var
   Gorev: PGorev = nil;
@@ -235,7 +238,7 @@ var
   G: PGorev;
   Z: TSayi4;
   fs: PFizikselSurucu3;
-  IRR, zzz: TSayi2;
+  IRR, zzz, SaglamaToplam: TSayi2;
   _AygitSiraNo, AygitKimlik: TSayi4;
   DD1: TISayi1;
   DD4: TISayi4;
@@ -348,6 +351,8 @@ begin
           //Gorev^.Calistir('disk1:\6.bmp');
           //Gorev^.Calistir('disket1:\tarayici.c');
           Gorev^.Calistir('disket1:\iletisim.c');
+          //SaglamaToplam := SaglamaToplamiOlustur(@veriler, 20, nil, 0);
+          //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Saðlama Toplam: ', SaglamaToplam, 4);
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then

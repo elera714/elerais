@@ -70,13 +70,13 @@ begin
   etIPAdresi.Olustur(UstMesajPaneli.Kimlik, 10, 12, RENK_SIYAH, 'IP Adresi');
   etIPAdresi.Goster;
 
-  gkIPAdresi.Olustur(UstMesajPaneli.Kimlik, 88, 10, 140, 22, '');
+  gkIPAdresi.Olustur(UstMesajPaneli.Kimlik, 88, 10, 140, 22, '192.168.1.51');
   gkIPAdresi.Goster;
 
   etPort.Olustur(UstMesajPaneli.Kimlik, 244, 12, RENK_SIYAH, 'Port');
   etPort.Goster;
 
-  gkPort.Olustur(UstMesajPaneli.Kimlik, 280, 10, 60, 22, '0');
+  gkPort.Olustur(UstMesajPaneli.Kimlik, 280, 10, 60, 22, '365');
   gkPort.Goster;
 
   etBagTip.Olustur(UstMesajPaneli.Kimlik, 356, 12, RENK_SIYAH, 'Bað.Tip');

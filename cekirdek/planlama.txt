@@ -3,7 +3,7 @@
 ================================================================================
 - listegorunum nesnesine eleman sayýsý, seçili eleman oku / yaz iþlevi eklenecek (görev yöneticisi için)
 
-
+- çekirdek içeriðinin yeniden özelleþtirilebilmesi için ayarlar sayfasý oluþturulacak
 - API alt iþlevlerinden olan AL, YAZ, AL_YAZ sayýsal deðer olarak gözdn geçirilerek yapýsallaþtýrýlacak
 - usb uhci kod çalýþmalarý (usb / uhci)
 - çekirdek sürücü model çalýþmalarý (görev)

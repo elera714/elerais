@@ -34,13 +34,13 @@
         </Mode0>
       </Modes>
     </RunParams>
-    <Units Count="119">
+    <Units Count="120">
       <Unit0>
         <Filename Value="muyntcs.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="7"/>
-        <CursorPos X="38" Y="26"/>
+        <TopLine Value="121"/>
+        <CursorPos X="20" Y="126"/>
         <UsageCount Value="96"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -624,8 +624,11 @@
       </Unit110>
       <Unit111>
         <Filename Value="../../rtl_uygulama/linux/gn_pencere.pas"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="104"/>
+        <CursorPos X="38" Y="134"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit111>
       <Unit112>
         <Filename Value="../../rtl_uygulama/linux/gn_panel.pas"/>
@@ -650,8 +653,11 @@
       </Unit115>
       <Unit116>
         <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="118"/>
+        <CursorPos X="69" Y="116"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit116>
       <Unit117>
         <Filename Value="../../rtl_uygulama/linux/gn_etiket.pas"/>
@@ -661,23 +667,53 @@
       </Unit117>
       <Unit118>
         <Filename Value="../../rtl_uygulama/linux/elera.inc"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit118>
+      <Unit119>
+        <Filename Value="../../rtl_uygulama/linux/linux.pp"/>
+        <UnitName Value="Linux"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit119>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="9" HistoryIndex="8">
       <Position1>
         <Filename Value="muyntcs.lpr"/>
         <Caret Line="391" Column="80" TopLine="362"/>
       </Position1>
       <Position2>
         <Filename Value="muyntcs.lpr"/>
-        <Caret TopLine="7"/>
+        <Caret Line="26" Column="38" TopLine="7"/>
       </Position2>
       <Position3>
         <Filename Value="muyntcs.lpr"/>
-        <Caret Line="26" Column="38" TopLine="7"/>
+        <Caret Line="29" Column="50" TopLine="7"/>
       </Position3>
+      <Position4>
+        <Filename Value="muyntcs.lpr"/>
+        <Caret Line="383" Column="75" TopLine="366"/>
+      </Position4>
+      <Position5>
+        <Filename Value="../../rtl_uygulama/linux/gn_pencere.pas"/>
+        <Caret Line="33" Column="15" TopLine="10"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../../rtl_uygulama/linux/gn_pencere.pas"/>
+        <Caret Line="87" Column="25" TopLine="80"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
+      </Position7>
+      <Position8>
+        <Filename Value="muyntcs.lpr"/>
+        <Caret Line="400" Column="28" TopLine="369"/>
+      </Position8>
+      <Position9>
+        <Filename Value="muyntcs.lpr"/>
+      </Position9>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

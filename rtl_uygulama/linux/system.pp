@@ -29,9 +29,11 @@ unit system;
 {$define USE_NOTHREADMANAGER}
 
 {$i osdefs.inc}
+{$I ..\unix\sysunixh.inc}
 
-{$I sysunixh.inc}
+// elera iþletim sistemine ait tüm sabit/deðiþken/yapý/iþlev/ek dosyalar bu dosyanýn içerisindedir
 {$i elera.inc}
+
 
 function get_cmdline:Pchar; 
 property cmdline:Pchar read get_cmdline;
@@ -63,8 +65,6 @@ function ParamStr1(Index: LongInt): string;
 {$endif defined(CPUARM) or defined(CPUM68K) or (defined(CPUSPARC) and defined(VER2_6))}
 
 { program çaðrý baþlýk bilgileri }
-
-  {$i paylasim.inc}
 
 {*****************************************************************************}
                                  implementation

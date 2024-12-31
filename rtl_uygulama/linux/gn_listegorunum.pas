@@ -25,6 +25,7 @@ type
     procedure Hizala(AHiza: THiza);
     procedure ElemanEkle(ADeger: string);
     function SeciliSiraAl: TISayi4;
+    function SeciliSiraYaz(ASiraNo: TISayi4): TISayi4;
     function SeciliYaziAl: string;
     procedure Temizle;
     procedure BasliklariTemizle;
@@ -36,6 +37,7 @@ function _ListeGorunumOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukse
 procedure _ListeGorunumHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
 procedure _ListeGorunumElemanEkle(AKimlik: TKimlik; ADeger: string); assembler;
 function _ListeGorunumSeciliSiraAl(AKimlik: TKimlik): TISayi4; assembler;
+function _ListeGorunumSeciliSiraYaz(AKimlik: TKimlik; ASiraNo: TISayi4): TISayi4; assembler;
 procedure _ListeGorunumSeciliYaziAl(AKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
 procedure _ListeGorunumTemizle(AKimlik: TKimlik); assembler;
 procedure _ListeGorunumBasliklariTemizle(AKimlik: TKimlik); assembler;
@@ -69,10 +71,10 @@ begin
   Result := _ListeGorunumSeciliSiraAl(FKimlik);
 end;
 
-procedure TListeGorunum.Temizle;
+function TListeGorunum.SeciliSiraYaz(ASiraNo: TISayi4): TISayi4;
 begin
 
-  _ListeGorunumTemizle(FKimlik);
+  Result := _ListeGorunumSeciliSiraYaz(FKimlik, ASiraNo);
 end;
 
 function TListeGorunum.SeciliYaziAl: string;
@@ -82,6 +84,12 @@ begin
 
   _ListeGorunumSeciliYaziAl(FKimlik, Isaretci(@s[0]));
   Result := s;
+end;
+
+procedure TListeGorunum.Temizle;
+begin
+
+  _ListeGorunumTemizle(FKimlik);
 end;
 
 procedure TListeGorunum.BasliklariTemizle;
@@ -132,6 +140,15 @@ asm
   mov   eax,LISTEGORUNUM_AL_SECILISN
   int   $34
   add   esp,4
+end;
+
+function _ListeGorunumSeciliSiraYaz(AKimlik: TKimlik; ASiraNo: TISayi4): TISayi4;
+asm
+  push  DWORD ASiraNo
+  push  DWORD AKimlik
+  mov   eax,LISTEGORUNUM_YAZ_SECILISN
+  int   $34
+  add   esp,8
 end;
 
 procedure _ListeGorunumSeciliYaziAl(AKimlik: TKimlik; AHedefBellek: Isaretci);

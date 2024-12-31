@@ -6,7 +6,7 @@
   Dosya Adý: gn_pencere.pas
   Dosya Ýþlevi: pencere (TForm) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/08/2020
+  Güncelleme Tarihi: 31/12/2024
 
   Önemli Bilgiler:
 
@@ -124,12 +124,16 @@ begin
       if(Pencere <> nil) then Pencere^.Guncelle;
     end;
 
+    // pencere durumunu deðiþtir
     $010F:
     begin
 
       // nesnenin kimlik, tip deðerlerini denetle.
       Pencere := PPencere(Pencere^.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(Pencere <> nil) then Pencere^.FPencereDurum := TPencereDurum(PKimlik(ADegiskenler + 04)^);
+
+      //SISTEM_MESAJ(RENK_KIRMIZI, 'Pencere: %d', [Pencere^.Kimlik]);
+      //SISTEM_MESAJ(RENK_KIRMIZI, 'Durum: %d', [Ord(Pencere^.FPencereDurum)]);
     end
 
     else Result := HATA_ISLEV;

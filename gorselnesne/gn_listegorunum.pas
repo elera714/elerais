@@ -6,7 +6,7 @@
   Dosya Adý: gn_listegorunum.pas
   Dosya Ýþlevi: liste görünüm (TListView) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 31/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -101,6 +101,15 @@ begin
       ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeGorunum));
       if(ListeGorunum <> nil) then Result := ListeGorunum^.FSeciliSiraNo;
+    end;
+
+    // seçilen sýra deðerini yaz
+    $020F:
+    begin
+
+      ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
+        PKimlik(ADegiskenler + 00)^, gntListeGorunum));
+      if(ListeGorunum <> nil) then ListeGorunum^.FSeciliSiraNo := PISayi4(ADegiskenler + 04)^;
     end;
 
     // liste içeriðini temizle

@@ -191,7 +191,7 @@ begin
   _TCPBaslik^.BaslikU := _BaslikUzunlugu;     // üst 4 bit = _BaslikUzunlugu * 4 = baþlýk uzunluðu;
   _TCPBaslik^.Bayrak := ABayrak;
   _TCPBaslik^.Pencere := Takas2(ABaglanti^.FPencereU);
-  _TCPBaslik^.SaglamaToplam := 0;
+  _TCPBaslik^.SaglamaToplami := 0;
   _TCPBaslik^.AcilIsaretci := 0;
   if(AVeriU > 0) then
   begin
@@ -202,7 +202,7 @@ begin
 
   _Saglama := SaglamaToplamiOlustur(_TCPBaslik, TCPBASLIK_UZUNLUGU + AVeriU,
     @EkBaslik, SOZDE_TCPBASLIK_UZUNLUGU);
-  _TCPBaslik^.SaglamaToplam := _Saglama;
+  _TCPBaslik^.SaglamaToplami := _Saglama;
 
   IPPaketGonder(ABaglanti^.FHedefMACAdres, AKaynakIPAdres, ABaglanti^.FHedefIPAdres,
     ptTCP, $4000, _TCPBaslik, TCPBASLIK_UZUNLUGU + AVeriU);

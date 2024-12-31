@@ -321,7 +321,7 @@ type
     ParcaSiraNo: TSayi2;              // üst 3 bit parçanýn olup olmadýðý, diðer bitler parça numarasý
     YasamSuresi,
     Protokol: TSayi1;
-    BaslikSaglamaToplami: TSayi2;
+    SaglamaToplami: TSayi2;
     KaynakIP,
     HedefIP: TIPAdres;
     Veri: Isaretci;
@@ -347,19 +347,9 @@ type
     BaslikU: TSayi1;            // 11111000 = 111111 = Data Offset, 000 = Reserved
     Bayrak: TSayi1;
     Pencere: TSayi2;
-    SaglamaToplam,
+    SaglamaToplami,
     AcilIsaretci: TSayi2;       // urgent pointer
     Secenekler: Isaretci;
-  end;
-
-type
-  PUDPPaket = ^TUDPPaket;
-  TUDPPaket = packed record
-    KaynakPort,
-    HedefPort,
-    Uzunluk,                  // UDP baþlýk + veri uzunluðu
-    SaglamaToplam: TSayi2;
-    Veri: Isaretci;
   end;
 
 type
@@ -1155,6 +1145,9 @@ end;
 +-------      2. $03B3 deðeri mantýksal NOT iþlemine tabi tutulur. $03B3 -> $FC4C
  203B1
 
+
+  önemli: iþlevin geri dönüþ deðeri (sýk kullanýmdan dolayý) byte deðerler ters sýrada
+    geri döndürülür. örneðin, deðer $CDAB ise bu deðer geriye ABCD olarak döndürülür
 }
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
   ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;

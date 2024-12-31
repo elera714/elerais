@@ -6,7 +6,7 @@
   Dosya Adı: paylasim.pas
   Dosya İşlevi: program arabiriminde kullanılacak sabit değerleri içerir
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 31/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -199,6 +199,7 @@ const
   LISTEGORUNUM_HIZALA         = HIZALA + LISTEGORUNUM + SAC_GNESNE;
   LISTEGORUNUM_YAZ_ELEMANEKLE = $01000000 + YAZ + LISTEGORUNUM + SAC_GNESNE;
   LISTEGORUNUM_AL_SECILISN    = $02000000 + AL + LISTEGORUNUM + SAC_GNESNE;
+  LISTEGORUNUM_YAZ_SECILISN   = $02000000 + YAZ + LISTEGORUNUM + SAC_GNESNE;
   LISTEGORUNUM_YAZ_TEMIZLE    = $03000000 + YAZ + LISTEGORUNUM + SAC_GNESNE;
   LISTEGORUNUM_AL_SECILIYAZI  = $04000000 + AL + LISTEGORUNUM + SAC_GNESNE;
   LISTEGORUNUM_YAZ_BTEMIZLE   = $05000000 + YAZ + LISTEGORUNUM + SAC_GNESNE;    // başlıkları temizle

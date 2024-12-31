@@ -6,7 +6,7 @@
   Dosya Adý: icmp.pas
   Dosya Ýþlevi: ICMP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/12/2024
+  Güncelleme Tarihi: 31/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,7 +27,7 @@ type
   TICMPBaslik = packed record
     MesajTipi,
     Kod: TSayi1;
-    BaslikSaglamaToplami,
+    SaglamaToplami,
     Tanimlayici, DiziSiraNo: TSayi2;
     Veri: Isaretci;
   end;
@@ -93,9 +93,9 @@ begin
   p := @ICMPBaslik^.Veri;
   Tasi2(@s[0], p, i);
 
-  ICMPBaslik^.BaslikSaglamaToplami := 0;
+  ICMPBaslik^.SaglamaToplami := 0;
   SaglamaToplami := SaglamaToplamiOlustur(ICMPBaslik, ICMP_BASLIK_UZUNLUGU + i, nil, 0);
-  ICMPBaslik^.BaslikSaglamaToplami := SaglamaToplami;
+  ICMPBaslik^.SaglamaToplami := SaglamaToplami;
 
   // sisteme gelen icmp isteðine icmp yanýtý (paket) gönder
   IPPaketGonder(MACAdres255, GAgBilgisi.IP4Adres, AHedefIPAdres, ptICMP, 0,

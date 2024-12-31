@@ -31,7 +31,7 @@ type
 //  PDWord = ^DWord;
   TColor = LongWord;
   PColor = ^TColor;
-  PHandle = ^THandle;
+//  PHandle = ^THandle;
 //  PLongWord = ^LongWord;
 //  PLongInt = ^LongInt;
 //  PSmallInt = ^SmallInt;
@@ -80,6 +80,8 @@ type
 //  PSmallInt = ^SmallInt;
 //  TDate = Sayi4;
 //  PBoolean = ^Boolean;
+
+{$i paylasim.inc}
 
 // sistem dosya arama yapýsý
 type

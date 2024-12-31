@@ -7,7 +7,7 @@ program grvyntcs;
   Program Adý: grvyntcs.lpr
   Program Ýþlevi: görev yöneticisi
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 31/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -31,6 +31,7 @@ var
   SeciliGorevNo, Sonuc: TISayi4;
   i: TKimlik;
   SeciliYazi, s: string;
+  AktifSN: TISayi4;
 
 begin
 
@@ -107,6 +108,8 @@ begin
     else if(Olay.Olay = CO_ZAMANLAYICI) then
     begin
 
+      AktifSN := lgGorevListesi.SeciliSiraAl;
+
       // her tetiklemede iþlem sayýsýný denetle ve
       // pencereye yeniden çizilme mesajý gönder
       lgGorevListesi.Temizle;
@@ -128,11 +131,13 @@ begin
         end;
       end;
 
+      if(AktifSN > CalisanGorevSayisi) then AktifSN := -1;
+
+      lgGorevListesi.SeciliSiraYaz(AktifSN);
+
       s := 'Çalýþabilir Program: ' + IntToStr(UstSinirGorevSayisi) +
         ' - Çalýþan Program: ' + IntToStr(CalisanGorevSayisi);
       DurumCubugu.DurumYazisiDegistir(s);
-
-      Pencere.Ciz;
     end;
   end;
 end.
