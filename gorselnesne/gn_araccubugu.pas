@@ -6,7 +6,7 @@
   Dosya Adý: gn_araccubugu.pas
   Dosya Ýþlevi: araç çubuðu (TToolBar) nesne yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 30/12/2024
 
  ==============================================================================}
 {$mode objfpc}

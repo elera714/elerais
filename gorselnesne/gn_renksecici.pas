@@ -6,7 +6,7 @@
   Dosya Adý: gn_renksecici.pas
   Dosya Ýþlevi: renk seçim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 30/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -160,8 +160,14 @@ end;
   renk seçici nesnesini boyutlandýrýr
  ==============================================================================}
 procedure TRenkSecici.Boyutlandir;
+var
+  RenkSecici: PRenkSecici = nil;
 begin
 
+  RenkSecici := PRenkSecici(RenkSecici^.NesneAl(Kimlik));
+  if(RenkSecici = nil) then Exit;
+
+  RenkSecici^.Hizala;
 end;
 
 {==============================================================================

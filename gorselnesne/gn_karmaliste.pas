@@ -6,7 +6,7 @@
   Dosya Adý: gn_karmaliste.pas
   Dosya Ýþlevi: karma liste (açýlýr / kapanýr liste kutusu (TComboBox)) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 21/09/2024
+  Güncelleme Tarihi: 30/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -249,8 +249,14 @@ end;
   karma liste nesnesini boyutlandýrýr
  ==============================================================================}
 procedure TKarmaListe.Boyutlandir;
+var
+  KarmaListe: PKarmaListe = nil;
 begin
 
+  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(Kimlik));
+  if(KarmaListe = nil) then Exit;
+
+  KarmaListe^.Hizala;
 end;
 
 {==============================================================================

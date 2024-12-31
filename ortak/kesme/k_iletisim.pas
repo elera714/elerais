@@ -61,11 +61,19 @@ begin
       Baglanti := Baglanti^.Olustur(ProtokolTipi, IPAdres2, Lo(YerelPort), Lo(HedefPort));
       if not(Baglanti = nil) then
 
-        Result := Baglanti^.Baglan(btIP)
+        Result := Baglanti^.FKimlik
       else Result := HATA_KIMLIK
     end
-    // bağlantının varlığını kontrol et
+    // bağlantı oluştur ve hedef porta bağlan
     else if(AltIslev = 2) then
+    begin
+
+      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      Baglanti := GAgIletisimListesi[BaglantiKimlik];
+      Result := Baglanti^.Baglan(btIP);
+    end
+    // bağlantının varlığını kontrol et
+    else if(AltIslev = 3) then
     begin
 
       BaglantiKimlik := PSayi4(Degiskenler + 00)^;
@@ -73,7 +81,7 @@ begin
       Result := TISayi4(Baglanti^.BagliMi);
     end
     // porta gelen veri uzunluğunu al
-    else if(AltIslev = 3) then
+    else if(AltIslev = 4) then
     begin
 
       BaglantiKimlik := PSayi4(Degiskenler + 00)^;
@@ -81,7 +89,7 @@ begin
       Result := Baglanti^.VeriUzunlugu;
     end
     // bağlantıya gelen veriyi al
-    else if(AltIslev = 4) then
+    else if(AltIslev = 5) then
     begin
 
       BaglantiKimlik := PSayi4(Degiskenler + 00)^;
@@ -91,7 +99,7 @@ begin
       Result := Baglanti^.Oku(Isaretci(i + CalisanGorevBellekAdresi));
     end
     // bağlantıya veri gönder
-    else if(AltIslev = 5) then
+    else if(AltIslev = 6) then
     begin
 
       BaglantiKimlik := PSayi4(Degiskenler + 00)^;
@@ -102,7 +110,7 @@ begin
       Baglanti^.Yaz(Isaretci(i + CalisanGorevBellekAdresi), j);
     end
     // bağlantıyı kapat
-    else if(AltIslev = 6) then
+    else if(AltIslev = 7) then
     begin
 
       { TODO : kaynakların yok edilmesi test edilecek }

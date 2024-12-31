@@ -6,7 +6,7 @@
   Dosya Adı: gn_onaykutusu.pas
   Dosya İşlevi: onay kutusu (TCheckBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 30/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -161,8 +161,14 @@ end;
   onay kutusu nesnesini boyutlandırır
  ==============================================================================}
 procedure TOnayKutusu.Boyutlandir;
+var
+  OnayKutusu: POnayKutusu = nil;
 begin
 
+  OnayKutusu := POnayKutusu(OnayKutusu^.NesneAl(Kimlik));
+  if(OnayKutusu = nil) then Exit;
+
+  OnayKutusu^.Hizala;
 end;
 
 {==============================================================================

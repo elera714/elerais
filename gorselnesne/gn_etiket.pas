@@ -6,7 +6,7 @@
   Dosya Adı: gn_etiket.pas
   Dosya İşlevi: etiket (TLabel) nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 30/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -178,8 +178,14 @@ end;
   etiket nesnesini boyutlandırır
  ==============================================================================}
 procedure TEtiket.Boyutlandir;
+var
+  Etiket: PEtiket = nil;
 begin
 
+  Etiket := PEtiket(Etiket^.NesneAl(Kimlik));
+  if(Etiket = nil) then Exit;
+
+  Etiket^.Hizala;
 end;
 
 {==============================================================================

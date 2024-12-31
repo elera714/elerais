@@ -6,7 +6,7 @@
   Dosya Adı: gn_resimdugmesi.pas
   Dosya İşlevi: resim düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 31/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -173,8 +173,16 @@ end;
   resim düğmesi nesnesini boyutlandırır
  ==============================================================================}
 procedure TResimDugmesi.Boyutlandir;
+{var
+  ResimDugmesi: PResimDugmesi = nil;}
 begin
 
+  { TODO - pasifleştirilen kodlar aktifleştiğinde pencere kontrol düğmeleri hatalı etkilenmektedir }
+
+{  ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl(Kimlik));
+  if(ResimDugmesi = nil) then Exit;
+
+  ResimDugmesi^.Hizala;}
 end;
 
 {==============================================================================

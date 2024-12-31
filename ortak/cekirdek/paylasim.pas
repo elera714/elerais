@@ -1037,7 +1037,7 @@ function IPKarsilastir2(AGonderenIP, ABenimIP: TIPAdres): Boolean;
 function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
   ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;
-
+function ProtokolTipAdi(AProtokolTipi: TProtokolTipi): string;
 
 implementation
 
@@ -1230,6 +1230,19 @@ begin
 
   // son olarak deðeri ters çevir
   Result := not SaglamaToplami;
+end;
+
+function ProtokolTipAdi(AProtokolTipi: TProtokolTipi): string;
+begin
+
+  case AProtokolTipi of
+    ptIP    : Result := 'IP';
+    ptARP   : Result := 'ARP';
+    ptTCP   : Result := 'TCP';
+    ptUDP   : Result := 'UDP';
+    ptICMP  : Result := 'ICMP';
+    else {ptBilinmiyor:} Result := 'Bilinmiyor';
+  end;
 end;
 
 end.

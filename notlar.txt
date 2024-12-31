@@ -6,3 +6,4 @@ resim ve liste kutusu iþlevi (oluþturma) içerisinde çizim alaný manuel olarak be
   kontrol edilsin ve gerekirse iþlevselleþtirilsin
 
 index deðeri 1'den baþlayan yapýlar / deðiþkenler 0'dan baþlayacak þekilde yeniden yapýlandýrýlacak
+

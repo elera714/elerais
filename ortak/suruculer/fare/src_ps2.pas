@@ -6,7 +6,7 @@
   Dosya Adı: src_ps2.pas
   Dosya İşlevi: ps / 2 fare sürücüsü
 
-  Güncelleme Tarihi: 28/12/2024
+  Güncelleme Tarihi: 31/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,6 +28,9 @@ type
 type
   TFareSurucusu = object
   private
+    // -> yazılımsal hızlandırma amaçlı değişkenler
+    FYatayDeger, FDikeyDeger, FHiz: Double;
+    // yazılımsal hızlandırma amaçlı değişkenler <-
     FYatayKonum, FDikeyKonum: TISayi4;
     FFareDugmeleri: TSayi1;
     FKaydirmaDegeri: TISayi1;
@@ -80,8 +83,11 @@ begin
   FAygitPaketUzunlugu := 3;
 
   // fare kursor pozisyonu
-  FYatayKonum := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk div 2;
-  FDikeyKonum := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk div 2;
+  FYatayDeger := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk div 2;
+  FYatayKonum := Round(FYatayDeger);
+  FDikeyDeger := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk div 2;
+  FDikeyKonum := Round(FDikeyDeger);
+  FHiz := 1.4;
   FFareDugmeleri := 0;
   FKaydirmaDegeri := 0;
 
@@ -186,16 +192,16 @@ begin
       B1 := FareVeriBellegi[0];
       B2 := (((B1 shr 4) and 1) shl 8) or FareVeriBellegi[1];
 
-      // yazılımsal hızlandırma. Bir adımdan fazla ise Değer * 2
-      if(B2 > 1) then B2 := B2 shl 1;
-
-      FYatayKonum += B2;
+      // özelleştirilebilir yazılımsal hızlandırma
+      FYatayDeger += (B2 * FHiz);
 
       // x limit denetimi
-      if(FYatayKonum < 0) then
-        FYatayKonum := 0
-      else if(FYatayKonum > GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1) then
-        FYatayKonum := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1;
+      if(FYatayDeger < 0) then
+        FYatayDeger := 0
+      else if(FYatayDeger > GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1) then
+        FYatayDeger := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1;
+
+      FYatayKonum := Round(FYatayDeger);
 
       // NOT: fare y hareketi. Y SGN + 8 bit = toplam 9 bit
       // eğer hareket aşağıya doğru ise gelen değer negatif
@@ -209,16 +215,16 @@ begin
         B2 := Abs(B2)
       else B2 := -B2;
 
-      // yazılımsal hızlandırma. Bir adımdan fazla ise Değer * 2
-      if(B2 > 1) then B2 := B2 shl 1;
-
-      FDikeyKonum += B2;
+      // özelleştirilebilir yazılımsal hızlandırma
+      FDikeyDeger += B2 * (FHiz);
 
       // x limit denetimi
-      if(FDikeyKonum < 0) then
-        FDikeyKonum := 0
-      else if(FDikeyKonum > GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1) then
-        FDikeyKonum := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1;
+      if(FDikeyDeger < 0) then
+        FDikeyDeger := 0
+      else if(FDikeyDeger > GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1) then
+        FDikeyDeger := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1;
+
+      FDikeyKonum := Round(FDikeyDeger);
 
       // paket sayısı 3'ten fazla ise diğer değerleri de işle
       if(FAygitPaketUzunlugu > 3) then

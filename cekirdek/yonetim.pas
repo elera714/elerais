@@ -347,12 +347,7 @@ begin
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
           //Gorev^.Calistir('disket1:\tarayici.c');
-
-          DD1 := $FF;
-          DD4 := DD1;
-          SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Deðer1: ', DD1, 2);
-          SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Deðer4: ', DD4, 8);
-          SISTEM_MESAJ(RENK_KIRMIZI, 'Deðer: %d, %d', [DD1, DD4]);
+          Gorev^.Calistir('disket1:\iletisim.c');
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then

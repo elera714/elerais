@@ -6,7 +6,7 @@
   Dosya Adý: gn_giriskutusu.pas
   Dosya Ýþlevi: giriþ kutusu (TEdit) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 30/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -225,6 +225,8 @@ begin
   GirisKutusu^.FSilmeDugmesi^.FBoyut.Genislik := 10;
   GirisKutusu^.FSilmeDugmesi^.FBoyut.Yukseklik := 16;
   GirisKutusu^.FSilmeDugmesi^.BoyutlariYenidenHesapla;
+
+  GirisKutusu^.Hizala;
 end;
 
 {==============================================================================

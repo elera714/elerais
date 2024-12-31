@@ -6,7 +6,7 @@
   Dosya Adý: gn_acilirmenu.pas
   Dosya Ýþlevi: açýlýr menü (TPopupMenu) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 30/12/2024
 
  ==============================================================================}
 {$mode objfpc}

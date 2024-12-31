@@ -387,8 +387,8 @@
         <Filename Value="yonetim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="334"/>
-        <CursorPos X="27" Y="356"/>
+        <TopLine Value="161"/>
+        <CursorPos X="19" Y="178"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit52>
@@ -518,7 +518,9 @@
       <Unit72>
         <Filename Value="..\surumbil.txt"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="9"/>
+        <CursorPos X="17" Y="27"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -808,8 +810,8 @@
         <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="684"/>
-        <CursorPos X="5" Y="701"/>
+        <TopLine Value="904"/>
+        <CursorPos X="24" Y="1235"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit116>
@@ -961,7 +963,6 @@
         <Filename Value="..\ortak\ag\dns.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="24" Y="9"/>
         <UsageCount Value="224"/>
       </Unit140>
       <Unit141>
@@ -980,16 +981,17 @@
         <Filename Value="..\ortak\ag\iletisim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="22"/>
-        <CursorPos X="26" Y="445"/>
+        <TopLine Value="110"/>
+        <CursorPos X="34" Y="127"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit143>
       <Unit144>
         <Filename Value="..\ortak\ag\tcp.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="8"/>
+        <TopLine Value="178"/>
+        <CursorPos X="22" Y="192"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit144>
@@ -997,8 +999,8 @@
         <Filename Value="..\ortak\ag\udp.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="144"/>
-        <CursorPos X="90" Y="161"/>
+        <TopLine Value="51"/>
+        <CursorPos X="57" Y="80"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit145>
@@ -1024,8 +1026,8 @@
         <Filename Value="..\ortak\ag\dhcp.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="395"/>
-        <CursorPos X="47" Y="409"/>
+        <TopLine Value="391"/>
+        <CursorPos X="33" Y="408"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit149>
@@ -1140,7 +1142,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="6"/>
         <TopLine Value="44"/>
-        <CursorPos X="23" Y="59"/>
+        <CursorPos X="36" Y="61"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit167>
@@ -1319,6 +1321,7 @@
         <Filename Value="..\gorselnesne\gn_masaustu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="224"/>
       </Unit196>
       <Unit197>
@@ -1399,7 +1402,7 @@
         <Filename Value="..\notlar.txt"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="12"/>
-        <CursorPos X="13" Y="8"/>
+        <CursorPos X="28" Y="9"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -1479,7 +1482,7 @@
         <Filename Value="..\ortak\suruculer\diger\vbox.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="195"/>
+        <UsageCount Value="202"/>
       </Unit222>
       <Unit223>
         <Filename Value="C:\lazarus\fpc\3.0.4\source\rtl\inc\systemh.inc"/>
@@ -1500,12 +1503,7 @@
         <UsageCount Value="5"/>
       </Unit225>
     </Units>
-    <JumpHistory Count="1">
-      <Position1>
-        <Filename Value="..\ortak\ag\tcp.pas"/>
-        <Caret Line="124" Column="26" TopLine="111"/>
-      </Position1>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

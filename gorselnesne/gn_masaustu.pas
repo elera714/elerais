@@ -6,7 +6,7 @@
   Dosya Adý: gn_masaustu.pas
   Dosya Ýþlevi: masaüstü yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 30/12/2024
 
  ==============================================================================}
 {$mode objfpc}
