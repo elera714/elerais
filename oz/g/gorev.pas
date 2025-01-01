@@ -135,7 +135,7 @@ begin
   Gorev := GGercekBellek.Ayir(SizeOf(TGorev) * USTSINIR_GOREVSAYISI);
 
   // bellek giriþlerini görev yapýlarýyla eþleþtir
-  for i := 1 to USTSINIR_GOREVSAYISI do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     GorevListesi[i] := Gorev;
@@ -398,8 +398,8 @@ var
   i: TSayi4;
 begin
 
-  // tüm iþlem giriþlerini incele - ilk 3 görev giriþi sisteme ayrýldý
-  for i := 4 to USTSINIR_GOREVSAYISI do
+  // tüm iþlem giriþlerini incele - ilk 3 görev (0, 1, 2) giriþi sisteme ayrýldý
+  for i := AYRILMIS_GOREV_SAYISI to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     Gorev := GorevListesi[i];
@@ -427,13 +427,13 @@ var
   Uzunluk, i: TSayi4;
 begin
 
+  // uygulamanýn ilk görev kimliði 3 (olan muyntcs.c)'tür
   i := GorevKimlik;
 
   Uzunluk := FBellekUzunlugu shr 12;
 
-  // uygulamanýn TSS, CS, DS seçicilerini belirle
-  // uygulamanýn ilk görev kimliði 2'dir. her bir program 3 seçici içerir
-  SeciciCSSiraNo := ((i - (AYRILMIS_GOREV_SAYISI + 1)) * 3) + AYRILMIS_SECICISAYISI;
+  // uygulamanýn TSS, CS, DS seçicilerini belirle, her bir program 3 seçici içerir
+  SeciciCSSiraNo := ((i - (AYRILMIS_GOREV_SAYISI)) * 3) + AYRILMIS_SECICISAYISI;
   SeciciDSSiraNo := SeciciCSSiraNo + 1;
   SeciciTSSSiraNo := SeciciDSSiraNo + 1;
 
@@ -682,10 +682,10 @@ var
 begin
 
   // aranacak görev sýra numarasý
-  j := 0;
+  j := -1;
 
   // tüm iþlem bellek bölgelerini araþtýr
-  for i := 1 to USTSINIR_GOREVSAYISI do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     // görev boþ deðil ise görev sýra numarasýný bir artýr
@@ -708,7 +708,7 @@ begin
 
   Result := 0;
 
-  for i := 1 to USTSINIR_GOREVSAYISI do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     // 1. görev boþ deðilse
@@ -744,7 +744,7 @@ begin
 
   Result.PencereKimlik := HATA_KIMLIK;
 
-  for i := 1 to USTSINIR_GOREVSAYISI do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     // 1. görev boþ deðilse
@@ -786,7 +786,7 @@ var
 begin
 
   // tüm görev giriþlerini incele
-  for i := 1 to USTSINIR_GOREVSAYISI do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     Gorev := GorevListesi[i];
@@ -808,7 +808,7 @@ var
 begin
 
   // tüm iþlem bellek bölgelerini araþtýr
-  for i := 1 to USTSINIR_GOREVSAYISI do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     // görev boþ deðil ise görev sýra numarasýný bir artýr
@@ -828,10 +828,10 @@ var
 begin
 
   // aranacak görev sýra numarasý
-  j := 0;
+  j := -1;
 
   // tüm iþlem bellek bölgelerini araþtýr
-  for i := 1 to USTSINIR_GOREVSAYISI do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     // görev çalýþýyor ise görev sýra numarasýný bir artýr
@@ -841,7 +841,7 @@ begin
     if(AGorevSiraNo = j) then Exit(i);
   end;
 
-  Result := 0;
+  Result := -1;
 end;
 
 {==============================================================================
@@ -857,11 +857,11 @@ begin
   GorevKimlik := CalisanGorev;
 
   // bir sonraki görevden itibaren tüm görevleri incele
-  for i := 1 to USTSINIR_GOREVSAYISI do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     Inc(GorevKimlik);
-    if(GorevKimlik > USTSINIR_GOREVSAYISI) then GorevKimlik := 1;
+    if(GorevKimlik > USTSINIR_GOREVSAYISI) then GorevKimlik := 0;
 
     // çalýþan görev aranan görev ise çaðýran iþleve geri dön
     if(GorevListesi[GorevKimlik]^.FGorevDurum = gdCalisiyor) then Break;

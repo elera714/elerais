@@ -38,8 +38,6 @@
         <Filename Value="grvyntcs.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="23"/>
-        <CursorPos Y="41"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -172,14 +170,15 @@
       </Unit21>
       <Unit22>
         <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="22"/>
-        <CursorPos X="3" Y="70"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="196"/>
+        <CursorPos X="10" Y="210"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit22>
       <Unit23>
         <Filename Value="../../rtl_uygulama/linux/system.pp"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="15"/>
         <CursorPos X="5" Y="33"/>
         <UsageCount Value="10"/>
@@ -187,7 +186,7 @@
       </Unit23>
       <Unit24>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="65"/>
         <CursorPos Y="88"/>
         <UsageCount Value="10"/>
@@ -195,7 +194,9 @@
       </Unit24>
       <Unit25>
         <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="313"/>
+        <CursorPos X="3" Y="331"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit25>
@@ -213,123 +214,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="137" Column="25" TopLine="115"/>
+        <Caret Line="29" Column="14" TopLine="17"/>
       </Position1>
       <Position2>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="40" Column="93" TopLine="21"/>
+        <Caret Line="74" Column="30" TopLine="74"/>
       </Position2>
       <Position3>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="145" Column="10" TopLine="131"/>
+        <Caret Line="27" Column="20" TopLine="15"/>
       </Position3>
       <Position4>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="40" Column="10" TopLine="22"/>
+        <Caret Line="70" Column="3" TopLine="68"/>
       </Position4>
       <Position5>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="77" Column="44" TopLine="53"/>
+        <Caret Line="28" Column="14" TopLine="9"/>
       </Position5>
       <Position6>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="75" Column="18" TopLine="63"/>
+        <Caret Line="90" Column="3" TopLine="86"/>
       </Position6>
       <Position7>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="29" Column="14" TopLine="17"/>
+        <Caret Line="29" Column="14" TopLine="10"/>
       </Position7>
       <Position8>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="74" Column="30" TopLine="74"/>
+        <Caret Line="75" Column="65" TopLine="74"/>
       </Position8>
       <Position9>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="27" Column="20" TopLine="15"/>
+        <Caret Line="28" Column="14" TopLine="13"/>
       </Position9>
       <Position10>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="70" Column="3" TopLine="68"/>
+        <Caret Line="70" Column="38" TopLine="59"/>
       </Position10>
       <Position11>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="28" Column="14" TopLine="9"/>
+        <Caret Line="27" Column="14" TopLine="9"/>
       </Position11>
       <Position12>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="90" Column="3" TopLine="86"/>
+        <Caret Line="70" Column="3" TopLine="68"/>
       </Position12>
       <Position13>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="29" Column="14" TopLine="10"/>
+        <Caret Line="27" Column="14" TopLine="9"/>
       </Position13>
       <Position14>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="75" Column="65" TopLine="74"/>
+        <Caret Line="75" Column="3" TopLine="68"/>
       </Position14>
       <Position15>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="28" Column="14" TopLine="13"/>
+        <Caret Line="28" Column="14" TopLine="10"/>
       </Position15>
       <Position16>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="70" Column="38" TopLine="59"/>
+        <Caret Line="76" Column="3" TopLine="74"/>
       </Position16>
       <Position17>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="27" Column="14" TopLine="9"/>
+        <Caret Line="28" Column="14" TopLine="10"/>
       </Position17>
       <Position18>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="70" Column="3" TopLine="68"/>
+        <Caret Line="82" Column="3" TopLine="74"/>
       </Position18>
       <Position19>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="27" Column="14" TopLine="9"/>
+        <Caret Line="29" Column="25" TopLine="12"/>
       </Position19>
       <Position20>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="75" Column="3" TopLine="68"/>
+        <Caret Line="88" TopLine="65"/>
       </Position20>
       <Position21>
-        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="28" Column="14" TopLine="10"/>
-      </Position21>
-      <Position22>
-        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="76" Column="3" TopLine="74"/>
-      </Position22>
-      <Position23>
-        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="28" Column="14" TopLine="10"/>
-      </Position23>
-      <Position24>
-        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="82" Column="3" TopLine="74"/>
-      </Position24>
-      <Position25>
-        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="29" Column="25" TopLine="12"/>
-      </Position25>
-      <Position26>
-        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <Caret Line="88" TopLine="65"/>
-      </Position26>
-      <Position27>
         <Filename Value="grvyntcs.lpr"/>
         <Caret Line="141" Column="53" TopLine="114"/>
-      </Position27>
-      <Position28>
+      </Position21>
+      <Position22>
         <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
         <Caret Line="200" Column="40" TopLine="172"/>
-      </Position28>
-      <Position29>
+      </Position22>
+      <Position23>
         <Filename Value="grvyntcs.lpr"/>
         <Caret Line="119" Column="22" TopLine="108"/>
+      </Position23>
+      <Position24>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="34" Column="25" TopLine="16"/>
+      </Position24>
+      <Position25>
+        <Filename Value="grvyntcs.lpr"/>
+        <Caret Line="118" Column="17" TopLine="97"/>
+      </Position25>
+      <Position26>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="32" Column="14" TopLine="22"/>
+      </Position26>
+      <Position27>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="95" Column="3" TopLine="93"/>
+      </Position27>
+      <Position28>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="55" Column="10" TopLine="37"/>
+      </Position28>
+      <Position29>
+        <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
+        <Caret Line="210" Column="10" TopLine="196"/>
       </Position29>
       <Position30>
         <Filename Value="grvyntcs.lpr"/>
-        <Caret Line="34" Column="25" TopLine="16"/>
+        <Caret Line="118" Column="44" TopLine="97"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

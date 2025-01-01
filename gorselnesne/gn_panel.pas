@@ -6,7 +6,7 @@
   Dosya Adı: gn_panel.pas
   Dosya İşlevi: panel (TPanel) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}

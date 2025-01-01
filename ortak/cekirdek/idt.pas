@@ -6,7 +6,7 @@
   Dosya Adý: idt.pas
   Dosya Ýþlevi: kesme servis rutinlerini (isr) içerir
 
-  Güncelleme Tarihi: 06/04/2020
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -243,7 +243,6 @@ asm
 
 // programý sonlandýr
   mov eax,CalisanGorev
-  dec eax
   shl eax,2
   mov esi,GorevListesi[eax]
   mov edx,$00
@@ -499,7 +498,6 @@ asm
 
 // programý sonlandýr
   mov eax,CalisanGorev
-  dec eax
   shl eax,2
   mov esi,GorevListesi[eax]
   mov edx,$06
@@ -514,8 +512,6 @@ asm
 
   sti
   iretd
-
-
 
 @@loop:
   jmp @@loop
@@ -669,7 +665,6 @@ asm
 
 // programý sonlandýr
   mov eax,CalisanGorev
-  dec eax
   shl eax,2
   mov esi,GorevListesi[eax]
   mov ecx,$0A
@@ -762,7 +757,6 @@ asm
 
 // programý sonlandýr
   mov eax,CalisanGorev
-  dec eax
   shl eax,2
   mov esi,GorevListesi[eax]
   mov edx,$0C
@@ -819,7 +813,6 @@ asm
 
 // programý sonlandýr
   mov eax,CalisanGorev
-  dec eax
   shl eax,2
   mov esi,GorevListesi[eax]
   mov edx,$0D

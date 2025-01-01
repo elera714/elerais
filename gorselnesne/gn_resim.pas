@@ -6,7 +6,7 @@
   Dosya Adı: gn_resim.pas
   Dosya İşlevi: resim (TImage) nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}

@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/12/2024
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -339,8 +339,6 @@ asm
 
 @@kontrol1:
 
-  { rutin iþlev kontrollerinin gerçekleþtirildiði kýsým }
-
   // uygulamalar tarafýndan oluþturulan zamanlayýcý nesnelerini denetle
   call  ZamanlayicilariKontrolEt
 
@@ -367,7 +365,6 @@ asm
   mov CalisanGorev,eax
 
   // aktif görevin bellek baþlangýç adresini al
-  dec eax
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,[esi + TGorev.FBellekBaslangicAdresi]
@@ -385,15 +382,15 @@ asm
 
   // görevin devredileceði TSS giriþini belirle
   mov   ecx,CalisanGorev
-  cmp   ecx,1
+  cmp   ecx,0
   je    @@TSS_SISTEM
-  cmp   ecx,2
+  cmp   ecx,1
   je    @@TSS_CAGRI
-  cmp   ecx,3
+  cmp   ecx,2
   je    @@TSS_GRAFIK
 
 @@TSS_UYGULAMA:
-  sub   ecx,AYRILMIS_GOREV_SAYISI + 1
+  sub   ecx,AYRILMIS_GOREV_SAYISI
   imul  ecx,3
   add   ecx,AYRILMIS_SECICISAYISI + 2
   imul  ecx,8
@@ -479,7 +476,6 @@ asm
 
   // aktif görevin bellek baþlangýç adresini al
   mov eax,CalisanGorev
-  dec eax
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,[esi + TGorev.FBellekBaslangicAdresi]
@@ -487,7 +483,6 @@ asm
 
   // görev deðiþiklik sayacýný bir artýr
   mov eax,CalisanGorev
-  dec eax
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,[esi + TGorev.FGorevSayaci]
@@ -496,15 +491,15 @@ asm
 
   // görevin devredileceði TSS giriþini belirle
   mov   ecx,CalisanGorev
-  cmp   ecx,1
+  cmp   ecx,0
   je    @@TSS_SISTEM
-  cmp   ecx,2
+  cmp   ecx,1
   je    @@TSS_CAGRI
-  cmp   ecx,3
+  cmp   ecx,2
   je    @@TSS_GRAFIK
 
 @@TSS_UYGULAMA:
-  sub   ecx,AYRILMIS_GOREV_SAYISI + 1
+  sub   ecx,AYRILMIS_GOREV_SAYISI
   imul  ecx,3
   add   ecx,AYRILMIS_SECICISAYISI + 2
   imul  ecx,8

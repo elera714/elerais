@@ -6,7 +6,7 @@
   Dosya Adý: paylasim.pas
   Dosya Ýþlevi: tüm birimler için ortak paylaþýlan iþlevleri içerir
 
-  Güncelleme Tarihi: 18/08/2020
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -55,7 +55,7 @@ const
   // seçici (selector) sabitleri
   // ayrýlmýþ seçici sayýsý
   // aþaðýdaki seçiciler (tss) sistem için ayrýlmýþtýr
-  AYRILMIS_SECICISAYISI = 11;
+  AYRILMIS_SECICISAYISI = 13;
 
   // boþ seçici
   SECICI_SISTEM_BOS     = 0;
@@ -75,6 +75,8 @@ const
   SECICI_GRAFIK_TSS     = 9;
 
   SECICI_GRAFIK_LFB     = 10;
+  SECICI_AYRILDI1       = 11;
+  SECICI_AYRILDI2       = 12;
 
 {==============================================================================
   Data Type     Bytes   Range
@@ -188,10 +190,9 @@ const
   PROTOKOL_ARP  = TSayi2($0806);
   PROTOKOL_IP   = TSayi2($0800);
 
-  { TODO - yukarýdaki gibi network sýralý kodlanacak }
-  PROTOKOL_TCP  = TSayi1($6);
+  PROTOKOL_TCP  = TSayi1($06);
   PROTOKOL_UDP  = TSayi1($11);
-  PROTOKOL_ICMP = TSayi1($1);
+  PROTOKOL_ICMP = TSayi1($01);
 
 const
   HATA_YOK                    = TISayi4(0);
@@ -917,7 +918,7 @@ const
   TSS_UZUNLUK = 104 + 8192;   // 104 byte TSS, 8192 byte giriþ / çýkýþ port izin haritasý
 
 var
-  GorevTSSListesi: array[1..USTSINIR_GOREVSAYISI] of PTSS;
+  GorevTSSListesi: array[0..USTSINIR_GOREVSAYISI - 1] of PTSS;
 
 type
   PIDTYazmac = ^TIDTYazmac;

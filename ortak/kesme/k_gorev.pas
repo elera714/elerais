@@ -6,7 +6,7 @@
   Dosya Adı: k_gorev.pas
   Dosya İşlevi: görev (program) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 09/09/2024
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -68,7 +68,7 @@ begin
       p := GorevListesi[CalisanGorev];
       p^.Sonlandir(CalisanGorev);
     end
-    else if(i > 0) and (i <= USTSINIR_GOREVSAYISI) then
+    else if(i >= 0) and (i < USTSINIR_GOREVSAYISI) then
     begin
 
       p := GorevListesi[i];
@@ -93,7 +93,7 @@ begin
   begin
 
     i := PISayi4(ADegiskenler + 00)^;
-    if(i > 0) and (i <= USTSINIR_GOREVSAYISI) then
+    if(i >= 0) and (i < USTSINIR_GOREVSAYISI) then
     begin
 
       p := GorevBilgisiAl(i);
@@ -119,11 +119,11 @@ begin
   begin
 
     i := PISayi4(ADegiskenler + 00)^;
-    if(i > 0) and (i <= USTSINIR_GOREVSAYISI) then
+    if(i >= 0) and (i < USTSINIR_GOREVSAYISI) then
     begin
 
       GorevKimlik := GorevSiraNumarasiniAl(i);
-      if(GorevKimlik > 0) then
+      if(GorevKimlik >= 0) then
       begin
 
         p4 := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);

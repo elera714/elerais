@@ -7,7 +7,7 @@ program muyntcs;
   Program Adý: muyntcs.lpr
   Program Ýþlevi: çoklu masaüstü yönetim programý
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}

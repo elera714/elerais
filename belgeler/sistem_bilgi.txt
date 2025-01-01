@@ -4,14 +4,14 @@ GDT Yapýsý
 GDT girdi sýra numarasýna göre GDT yapýsý.
 
 bilgi-1: her bir girdi içeriði 8'in katlarý olarak bellekte bulunur
-bilgi-2: aþaðýdaki ilk 11 GDT girdisi sisteme ayrýlmýþtýr
+bilgi-2: aþaðýdaki ilk (12 + 1 =) 13 GDT girdisi sisteme ayrýlmýþtýr
 
 GDTR
 
-00 - $00 - boþ (null)
+00 - $00 - boþ (null) -> bilden.asm dosyasýnda tanýmlandý
 
-01 - $08 - sistem kod
-02 - $10 - sistem veri
+01 - $08 - sistem kod -> bilden.asm dosyasýnda tanýmlandý
+02 - $10 - sistem veri -> bilden.asm dosyasýnda tanýmlandý
 03 - $18 - sistem tss
 
 04 - $20 - çaðrý kod
@@ -23,13 +23,15 @@ GDTR
 09 - $48 - grafik tss
 
 10 - $50 - grafik lfb
+11 - $58 - ayrýldý
+12 - $60 - ayrýldý
 
-11 - $58 - program-1 kod
-12 - $60 - program-1 veri
-13 - $68 - program-1 tss
+13 - $68 - program-1 kod
+14 - $70 - program-1 veri
+15 - $78 - program-1 tss
 
-14 - $70 - program-2 kod
-15 - $78 - program-2 veri
-16 - $80 - program-2 tss
+16 - $80 - program-2 kod
+17 - $88 - program-2 veri
+18 - $90 - program-2 tss
 
-her 3 girdide bir sonraki program
+her 3 girdi bir programa tahsis edilmektedir

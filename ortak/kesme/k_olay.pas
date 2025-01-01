@@ -6,7 +6,7 @@
   Dosya Adý: k_olay.pas
   Dosya Ýþlevi: olay (event) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 23/06/2020
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}

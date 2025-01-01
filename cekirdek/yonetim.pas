@@ -6,7 +6,7 @@
   Dosya Adý: yonetim.pas
   Dosya Ýþlevi: sistem ana yönetim / kontrol kýsmý
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -48,9 +48,6 @@ type
   TArgeProgram = procedure of object;
 
 type
-
-  { TArGe }
-
   TArGe = object
   private
     P1Dugmeler: array[0..44] of PGucDugmesi;
@@ -150,20 +147,20 @@ begin
   GecerliFareGostegeTipi := fitBekle;
 
   // çekirdeðin kullanacaðý TSS'nin içeriðini sýfýrla
-  FillByte(GorevTSSListesi[1]^, 104, $00);
+  FillByte(GorevTSSListesi[0]^, 104, $00);
 
   // TSS içeriðini doldur
-  //GorevTSSListesi[1].CR3 := GERCEKBELLEK_DIZINADRESI;
-  GorevTSSListesi[1]^.EIP := TSayi4(@SistemAnaKontrol);
-  GorevTSSListesi[1]^.EFLAGS := $202;
-  GorevTSSListesi[1]^.ESP := SISTEM_ESP;
-  GorevTSSListesi[1]^.CS := SECICI_SISTEM_KOD * 8;
-  GorevTSSListesi[1]^.DS := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[1]^.ES := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[1]^.SS := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[1]^.FS := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[1]^.GS := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[1]^.SS0 := SECICI_SISTEM_VERI * 8;
+  //GorevTSSListesi[0].CR3 := GERCEKBELLEK_DIZINADRESI;
+  GorevTSSListesi[0]^.EIP := TSayi4(@SistemAnaKontrol);
+  GorevTSSListesi[0]^.EFLAGS := $202;
+  GorevTSSListesi[0]^.ESP := SISTEM_ESP;
+  GorevTSSListesi[0]^.CS := SECICI_SISTEM_KOD * 8;
+  GorevTSSListesi[0]^.DS := SECICI_SISTEM_VERI * 8;
+  GorevTSSListesi[0]^.ES := SECICI_SISTEM_VERI * 8;
+  GorevTSSListesi[0]^.SS := SECICI_SISTEM_VERI * 8;
+  GorevTSSListesi[0]^.FS := SECICI_SISTEM_VERI * 8;
+  GorevTSSListesi[0]^.GS := SECICI_SISTEM_VERI * 8;
+  GorevTSSListesi[0]^.SS0 := SECICI_SISTEM_VERI * 8;
 
   // not: sistem için CS ve DS seçicileri bilden programý tarafýndan
   // oluþturuldu. tekrar oluþturmaya gerek yok
@@ -171,22 +168,22 @@ begin
   // sistem için görev seçicisi (TSS)
   // Eriþim  : 1 = mevcut, 00 = DPL0, 010 = 32 bit kullanýlabilir TSS, 0 = meþgul biti (meþgul deðil), 1
   // Esneklik: 1 = gran = 1Byte çözünürlük, 00, 1 = bana tahsis edildi, 0000 = uzunluk 16..19 bit
-  GDTRGirdisiEkle(SECICI_SISTEM_TSS, TSayi4(GorevTSSListesi[1]), 104,
+  GDTRGirdisiEkle(SECICI_SISTEM_TSS, TSayi4(GorevTSSListesi[0]), 104,
     %10001001, %00010000);
 
   // sistem görev deðerlerini belirle
-  GorevListesi[1]^.GorevSayaci := 0;
-  GorevListesi[1]^.BellekBaslangicAdresi := CekirdekBaslangicAdresi;
-  GorevListesi[1]^.BellekUzunlugu := CekirdekUzunlugu;
-  GorevListesi[1]^.OlaySayisi := 0;
-  GorevListesi[1]^.OlayBellekAdresi := nil;
-  GorevListesi[1]^.FAktifPencere := nil;
+  GorevListesi[0]^.GorevSayaci := 0;
+  GorevListesi[0]^.BellekBaslangicAdresi := CekirdekBaslangicAdresi;
+  GorevListesi[0]^.BellekUzunlugu := CekirdekUzunlugu;
+  GorevListesi[0]^.OlaySayisi := 0;
+  GorevListesi[0]^.OlayBellekAdresi := nil;
+  GorevListesi[0]^.FAktifPencere := nil;
 
-  GorevListesi[1]^.FDosyaAdi := 'cekirdek.bin';
-  GorevListesi[1]^.FProgramAdi := 'Sistem Çekirdeði';
+  GorevListesi[0]^.FDosyaAdi := 'cekirdek.bin';
+  GorevListesi[0]^.FProgramAdi := 'Sistem Çekirdeði';
 
   // sistem görevini çalýþýyor olarak iþaretle
-  Gorev := GorevListesi[1];
+  Gorev := GorevListesi[0];
   Gorev^.OlaySayisi := 0;
 
   Olay := POlay(GGercekBellek.Ayir(4096));
@@ -196,17 +193,17 @@ begin
     Gorev^.FOlayBellekAdresi := Olay;
   end else Gorev^.FOlayBellekAdresi := nil;
 
-  Gorev^.DurumDegistir(1, gdCalisiyor);
+  Gorev^.DurumDegistir(0, gdCalisiyor);
 
   // çalýþan ve oluþturulan görev deðerlerini belirle
   CalisanGorevSayisi := 1;
-  CalisanGorev := CalisanGorevSayisi;
+  CalisanGorev := 0;
 
   // ilk TSS'yi yükle
   // not : tss'nin yükleme iþlevi görev geçiþini gerçekleþtirmez. sadece
   // TSS'yi meþgul olarak ayarlar.
   asm
-    mov   ax, SECICI_SISTEM_TSS * 8;
+    mov   ax,SECICI_SISTEM_TSS * 8;
     ltr   ax
   end;
 
@@ -316,23 +313,6 @@ begin
           end;
 }
           //Gorev^.Sonlandir(5, 6);
-
-{          G := GorevListesi[3];
-
-          //
-          asm
-          mov esi,GorevListesi[8]
-          mov eax,[esi + TGorev.FBellekBaslangicAdresi]
-          mov Z,eax
-          end;
-
-          SISTEM_MESAJ_S16(RENK_KIRMIZI, 'Bellek Adresi: ', G^.BellekBaslangicAdresi, 8);
-          SISTEM_MESAJ_S16(RENK_KIRMIZI, 'Bellek Adresi: ', Z, 8);
-}
-
-          //SISTEM_MESAJ(RENK_SIYAH, 'Panel1 Alt NS: %d', [P3Panel[0]^.FAltNesneSayisi]);
-          //SISTEM_MESAJ(RENK_SIYAH, 'Panel2 Alt NS: %d', [P3Panel[1]^.FAltNesneSayisi]);
-
 
           {i := FindFirst('disk1:\kaynak\*.*', 0, AramaKaydi);
           while i = 0 do
@@ -453,39 +433,39 @@ begin
   // görev seçicisi (TSS)
   // Eriþim  : 1 = mevcut, 00 = DPL0, 010 = 32 bit kullanýlabilir TSS, 0 = meþgul biti (meþgul deðil), 1
   // Esneklik: 1 = gran = 1Byte çözünürlük, 00, 1 = bana tahsis edildi, 0000 = uzunluk 16..19 bit
-  GDTRGirdisiEkle(SECICI_CAGRI_TSS, TSayi4(GorevTSSListesi[2]), 104,
+  GDTRGirdisiEkle(SECICI_CAGRI_TSS, TSayi4(GorevTSSListesi[1]), 104,
     %10001001, %00010000);
 
   // denetçinin kullanacaðý TSS'nin içeriðini sýfýrla
-  FillByte(GorevTSSListesi[2]^, 104, $00);
+  FillByte(GorevTSSListesi[1]^, 104, $00);
 
-  GorevTSSListesi[2]^.EIP := TSayi4(@ProgramCagrilariniYanitla);    // DPL 0
-  GorevTSSListesi[2]^.EFLAGS := $202;
-  GorevTSSListesi[2]^.ESP := CAGRI_ESP;
-  GorevTSSListesi[2]^.CS := SECICI_CAGRI_KOD * 8;
-  GorevTSSListesi[2]^.DS := SECICI_CAGRI_VERI * 8;
-  GorevTSSListesi[2]^.ES := SECICI_CAGRI_VERI * 8;
-  GorevTSSListesi[2]^.SS := SECICI_CAGRI_VERI * 8;
-  GorevTSSListesi[2]^.FS := SECICI_CAGRI_VERI * 8;
-  GorevTSSListesi[2]^.GS := SECICI_CAGRI_VERI * 8;
-  GorevTSSListesi[2]^.SS0 := SECICI_CAGRI_VERI * 8;
-  GorevTSSListesi[2]^.ESP0 := CAGRI_ESP;
+  GorevTSSListesi[1]^.EIP := TSayi4(@ProgramCagrilariniYanitla);    // DPL 0
+  GorevTSSListesi[1]^.EFLAGS := $202;
+  GorevTSSListesi[1]^.ESP := CAGRI_ESP;
+  GorevTSSListesi[1]^.CS := SECICI_CAGRI_KOD * 8;
+  GorevTSSListesi[1]^.DS := SECICI_CAGRI_VERI * 8;
+  GorevTSSListesi[1]^.ES := SECICI_CAGRI_VERI * 8;
+  GorevTSSListesi[1]^.SS := SECICI_CAGRI_VERI * 8;
+  GorevTSSListesi[1]^.FS := SECICI_CAGRI_VERI * 8;
+  GorevTSSListesi[1]^.GS := SECICI_CAGRI_VERI * 8;
+  GorevTSSListesi[1]^.SS0 := SECICI_CAGRI_VERI * 8;
+  GorevTSSListesi[1]^.ESP0 := CAGRI_ESP;
 
   // sistem görev deðerlerini belirle
-  GorevListesi[2]^.GorevSayaci := 0;
-  GorevListesi[2]^.BellekBaslangicAdresi := TSayi4(@ProgramCagrilariniYanitla);
-  GorevListesi[2]^.BellekUzunlugu := $FFFFFFFF;
-  GorevListesi[2]^.OlaySayisi := 0;
-  GorevListesi[2]^.OlayBellekAdresi := nil;
-  GorevListesi[2]^.FAktifPencere := nil;
+  GorevListesi[1]^.GorevSayaci := 0;
+  GorevListesi[1]^.BellekBaslangicAdresi := TSayi4(@ProgramCagrilariniYanitla);
+  GorevListesi[1]^.BellekUzunlugu := $FFFFFFFF;
+  GorevListesi[1]^.OlaySayisi := 0;
+  GorevListesi[1]^.OlayBellekAdresi := nil;
+  GorevListesi[1]^.FAktifPencere := nil;
 
   // sistem görev adý (dosya adý)
-  GorevListesi[2]^.FDosyaAdi := 'çaðrý.bin';
-  GorevListesi[2]^.FProgramAdi := 'Sistem Çaðrýlarý';
+  GorevListesi[1]^.FDosyaAdi := 'çaðrý.bin';
+  GorevListesi[1]^.FProgramAdi := 'Sistem Çaðrýlarý';
 
   // sistem görevini çalýþýyor olarak iþaretle
-  Gorev := GorevListesi[2];
-  Gorev^.DurumDegistir(2, gdCalisiyor);
+  Gorev := GorevListesi[1];
+  Gorev^.DurumDegistir(1, gdCalisiyor);
 
   // çalýþan ve oluþturulan görev deðerlerini belirle
   CalisanGorevSayisi := 2;
@@ -510,39 +490,39 @@ begin
   // görev seçicisi (TSS)
   // Eriþim  : 1 = mevcut, 00 = DPL0, 010 = 32 bit kullanýlabilir TSS, 0 = meþgul biti (meþgul deðil), 1
   // Esneklik: 1 = gran = 1Byte çözünürlük, 00, 1 = bana tahsis edildi, 0000 = uzunluk 16..19 bit
-  GDTRGirdisiEkle(SECICI_GRAFIK_TSS, TSayi4(GorevTSSListesi[3]), 104,
+  GDTRGirdisiEkle(SECICI_GRAFIK_TSS, TSayi4(GorevTSSListesi[2]), 104,
     %10001001, %00010000);
 
   // denetçinin kullanacaðý TSS'nin içeriðini sýfýrla
-  FillByte(GorevTSSListesi[3]^, 104, $00);
+  FillByte(GorevTSSListesi[2]^, 104, $00);
 
-  GorevTSSListesi[3]^.EIP := TSayi4(@GrafikYonetimi);    // DPL 0
-  GorevTSSListesi[3]^.EFLAGS := $202;
-  GorevTSSListesi[3]^.ESP := GRAFIK_ESP;
-  GorevTSSListesi[3]^.CS := SECICI_GRAFIK_KOD * 8;
-  GorevTSSListesi[3]^.DS := SECICI_GRAFIK_VERI * 8;
-  GorevTSSListesi[3]^.ES := SECICI_GRAFIK_VERI * 8;
-  GorevTSSListesi[3]^.SS := SECICI_GRAFIK_VERI * 8;
-  GorevTSSListesi[3]^.FS := SECICI_GRAFIK_VERI * 8;
-  GorevTSSListesi[3]^.GS := SECICI_GRAFIK_VERI * 8;
-  GorevTSSListesi[3]^.SS0 := SECICI_GRAFIK_VERI * 8;
-  GorevTSSListesi[3]^.ESP0 := GRAFIK_ESP;
+  GorevTSSListesi[2]^.EIP := TSayi4(@GrafikYonetimi);    // DPL 0
+  GorevTSSListesi[2]^.EFLAGS := $202;
+  GorevTSSListesi[2]^.ESP := GRAFIK_ESP;
+  GorevTSSListesi[2]^.CS := SECICI_GRAFIK_KOD * 8;
+  GorevTSSListesi[2]^.DS := SECICI_GRAFIK_VERI * 8;
+  GorevTSSListesi[2]^.ES := SECICI_GRAFIK_VERI * 8;
+  GorevTSSListesi[2]^.SS := SECICI_GRAFIK_VERI * 8;
+  GorevTSSListesi[2]^.FS := SECICI_GRAFIK_VERI * 8;
+  GorevTSSListesi[2]^.GS := SECICI_GRAFIK_VERI * 8;
+  GorevTSSListesi[2]^.SS0 := SECICI_GRAFIK_VERI * 8;
+  GorevTSSListesi[2]^.ESP0 := GRAFIK_ESP;
 
   // sistem görev deðerlerini belirle
-  GorevListesi[3]^.GorevSayaci := 0;
-  GorevListesi[3]^.BellekBaslangicAdresi := TSayi4(@GrafikYonetimi);
-  GorevListesi[3]^.BellekUzunlugu := $FFFFFFFF;
-  GorevListesi[3]^.OlaySayisi := 0;
-  GorevListesi[3]^.OlayBellekAdresi := nil;
-  GorevListesi[3]^.FAktifPencere := nil;
+  GorevListesi[2]^.GorevSayaci := 0;
+  GorevListesi[2]^.BellekBaslangicAdresi := TSayi4(@GrafikYonetimi);
+  GorevListesi[2]^.BellekUzunlugu := $FFFFFFFF;
+  GorevListesi[2]^.OlaySayisi := 0;
+  GorevListesi[2]^.OlayBellekAdresi := nil;
+  GorevListesi[2]^.FAktifPencere := nil;
 
   // sistem görev adý (dosya adý)
-  GorevListesi[3]^.FDosyaAdi := 'grafik.bin';
-  GorevListesi[3]^.FProgramAdi := 'Grafik Yöneticisi';
+  GorevListesi[2]^.FDosyaAdi := 'grafik.bin';
+  GorevListesi[2]^.FProgramAdi := 'Grafik Yöneticisi';
 
   // sistem görevini çalýþýyor olarak iþaretle
-  Gorev := GorevListesi[3];
-  Gorev^.DurumDegistir(3, gdCalisiyor);
+  Gorev := GorevListesi[2];
+  Gorev^.DurumDegistir(2, gdCalisiyor);
 
   // çalýþan ve oluþturulan görev deðerlerini belirle
   CalisanGorevSayisi := 3;
@@ -592,7 +572,7 @@ var
   Olay: TOlay;
 begin
 
-  Gorev := GorevListesi[1];
+  Gorev := GorevListesi[0];
 
   if(Gorev^.OlayAl(Olay)) then
   begin

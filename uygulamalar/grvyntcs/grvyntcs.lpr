@@ -7,7 +7,7 @@ program grvyntcs;
   Program Adý: grvyntcs.lpr
   Program Ýþlevi: görev yöneticisi
 
-  Güncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -115,7 +115,7 @@ begin
       lgGorevListesi.Temizle;
       Gorev.GorevSayilariniAl(UstSinirGorevSayisi, CalisanGorevSayisi);
 
-      for i := 1 to CalisanGorevSayisi do
+      for i := 0 to CalisanGorevSayisi - 1 do
       begin
 
         if(Gorev.GorevBilgisiAl(i, @GorevKayit) = 0) then
