@@ -52,7 +52,7 @@ type
     FOlayBellekAdresi: POlay;             // olaylarýn yerleþtirileceði bellek bölgesi
     FOlaySayisi: TSayi4;                  // olay sayacý
 
-    FGorevKimlik: TKimlik;                // iþlem numarasý
+    FGorevKimlik: TKimlik;                // görev kimlik numarasý
     FGorevDurum: TGorevDurum;             // iþlem durumu
     FGorevSayaci: TSayi4;                 // görev deðiþim sayacý
     FBellekBaslangicAdresi: TSayi4;       // iþlemin yüklendiði bellek adresi

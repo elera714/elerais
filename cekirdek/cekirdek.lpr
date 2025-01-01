@@ -75,6 +75,7 @@ begin
 //  _Gorev^.DurumDegistir(2, gdDurduruldu);
 
   SISTEM_MESAJ(RENK_LACIVERT, '+ Masaüstü yönetim programý yükleniyor...', []);
+  //_Gorev^.Calistir('disket1' {AcilisSurucuAygiti} + ':\' + OnDegerMasaustuProgram);
   _Gorev^.Calistir(AcilisSurucuAygiti + ':\' + OnDegerMasaustuProgram);
 
   // sistem ana kontrol kýsmýna geçiþ yap

@@ -6,7 +6,7 @@
   Dosya Adı: src_vesa20.pas
   Dosya İşlevi: genel vesa 2.0 grafik kartı sürücüsü
 
-  Güncelleme Tarihi: 19/08/2020
+  Güncelleme Tarihi: 01/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -264,25 +264,28 @@ begin
   i := KartBilgisi.YatayCozunurluk * KartBilgisi.DikeyCozunurluk *
     KartBilgisi.NoktaBasinaByteSayisi;
 
-  { TODO : ileride 2 ve 4 byte'lık taşımalar gerçekleştirilerek hızlandırma artırılabilir }
   asm
+    cli
     pushad
-    mov eax,SECICI_GRAFIK_LFB * 8
-    mov gs,ax
+    push ds
+    push es
+
+    mov ax,SECICI_SISTEM_VERI * 8
+    mov ds,ax
     mov esi,ArkaBellek
+    mov ax,SECICI_GRAFIK_LFB * 8
+    mov es,ax
     mov edi,0
+
     mov ecx,i
     shr ecx,2
-    @1:
-    mov eax,ds:[esi]
-    mov gs:[edi],eax //dword fs:[edi], 1 // EkranBellegi
-    add esi,4
-    add edi,4
-    loop  @1
-    //mov ecx,i
-    //cld
-    //rep movsb
+    cld
+    repnz movsd
+
+    pop es
+    pop ds
     popad
+    sti
   end;
 end;
 

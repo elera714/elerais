@@ -133,6 +133,11 @@ var
   i: TSayi4;
 begin
 
+  // 1. GC'de mevcut programlarý pasif olarak iþaretle
+  // 2. çalýþan program listesini sistemden alarak GC'de pasif olanlarý aktif olarak iþaretle
+  // 3. GC'de pasif kalan programlarý yok et
+  // 4. GC'de en son programa ait kalan tüm düðmeleri yeniden boyutlandýr
+
   GBD := Gorev.GorevBayrakDegeriniAl;
 
   // görev bayrak deðerlerinde deðiþiklik yoksa çýk

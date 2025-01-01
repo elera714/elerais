@@ -26,6 +26,11 @@ Kullanılan Yazılım Araçları:
 ![Takvim](takvim.png)
 
 ---
+Tanıtım Videosu
+
+[ELERA İşletim Sistemi - Sürüm: 0.3.7 - (R33) - Beta](https://www.youtube.com/watch?v=ca5P5aRIvtA)
+
+---
 Öğretici Videolar
 
 * [Öğretici 1 - Kaynak Kodların Depodan Alınması](https://www.youtube.com/watch?v=Zns4jp_sYag&t=6s)

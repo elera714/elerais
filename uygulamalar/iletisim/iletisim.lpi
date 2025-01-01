@@ -39,8 +39,7 @@
       <Unit0>
         <Filename Value="iletisim.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="25"/>
-        <CursorPos Y="50"/>
+        <IsVisibleTab Value="True"/>
         <UsageCount Value="47"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -427,7 +426,6 @@
       </Unit64>
       <Unit65>
         <Filename Value="../../rtl_uygulama/linux/elera.inc"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="6"/>
         <TopLine Value="74"/>
         <CursorPos X="26" Y="24"/>
@@ -511,7 +509,7 @@
         <Loaded Value="True"/>
       </Unit77>
     </Units>
-    <JumpHistory Count="23" HistoryIndex="22">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
         <Filename Value="iletisim.lpr"/>
         <Caret Line="43" Column="38" TopLine="15"/>
@@ -602,6 +600,10 @@
         <Filename Value="iletisim.lpr"/>
         <Caret Line="50" TopLine="25"/>
       </Position23>
+      <Position24>
+        <Filename Value="iletisim.lpr"/>
+        <Caret Line="192" Column="22" TopLine="157"/>
+      </Position24>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

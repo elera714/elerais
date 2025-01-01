@@ -1,26 +1,35 @@
 GDT Yapýsý
 ==================================
 
-GDT girdi sýra numarasýna göre GDT yapýsý. (her bir girdi içeriði 8'in katlarý olarak bellekte bulunur)
+GDT girdi sýra numarasýna göre GDT yapýsý.
 
-GDT-00 - boþ (null)
+bilgi-1: her bir girdi içeriði 8'in katlarý olarak bellekte bulunur
+bilgi-2: aþaðýdaki ilk 11 GDT girdisi sisteme ayrýlmýþtýr
 
-01 - $08 - çekirdek kod
-02 - $10 - çekirdek veri
-03 - $18 - çekirdek tss
+GDTR
 
-04 - $20 - denetim kod
-05 - $28 - denetim veri
-06 - $30 - denetim tss
+00 - $00 - boþ (null)
 
-07 - $38 - çekirdek grafik
+01 - $08 - sistem kod
+02 - $10 - sistem veri
+03 - $18 - sistem tss
 
-08 - $40 - program-1 kod
-09 - $48 - program-1 veri
-10 - $50 - program-1 tss
+04 - $20 - çaðrý kod
+05 - $28 - çaðrý veri
+06 - $30 - çaðrý tss
 
-11 - $58 - program-2 kod
-12 - $60 - program-2 veri
-13 - $68 - program-2 tss
+07 - $38 - grafik kod
+08 - $40 - grafik veri
+09 - $48 - grafik tss
+
+10 - $50 - grafik lfb
+
+11 - $58 - program-1 kod
+12 - $60 - program-1 veri
+13 - $68 - program-1 tss
+
+14 - $70 - program-2 kod
+15 - $78 - program-2 veri
+16 - $80 - program-2 tss
 
 her 3 girdide bir sonraki program
