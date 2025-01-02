@@ -406,12 +406,17 @@ begin
   DHCPKayitUzunlugu += 1;
 
   Baglanti := GBaglanti^.Olustur(ptUDP, IPAdres255, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  if not(Baglanti = nil) then
+  begin
 
-  Baglanti^.Baglan(btYayin);
+    if(Baglanti^.Baglan(btYayin) <> -1) then
+    begin
 
-  Baglanti^.Yaz(@DHCPKayit[0], DHCPKayitUzunlugu);
+      Baglanti^.Yaz(@DHCPKayit[0], DHCPKayitUzunlugu);
 
-  Baglanti^.BaglantiyiKes;
+      Baglanti^.BaglantiyiKes;
+    end;
+  end;
 
   GGercekBellek.YokEt(DHCPKayit, 4095);
 end;

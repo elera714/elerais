@@ -6,7 +6,7 @@
   Dosya Adý: udp.pas
   Dosya Ýþlevi: udp protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 02/01/2025
 
  ==============================================================================}
 {$mode objfpc}

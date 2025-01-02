@@ -6,7 +6,7 @@
   Dosya Adı: iletisim.pas
   Dosya İşlevi: bağlantı (soket) iletişim yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/12/2024
+  Güncelleme Tarihi: 02/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -57,7 +57,7 @@ type
     FBellekUzunlugu: Integer;
     function Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: TIPAdres; AYerelPort,
       AUzakPort: TSayi2): PBaglanti;
-    function YeniBaglantiOlustur: PBaglanti;
+    function BaglantiOlustur: PBaglanti;
     function Baglan(ABaglantiTipi: TBaglantiTipi): TISayi4;
     function BagliMi: Boolean;
     function BaglantiyiKes: TISayi4;
@@ -111,87 +111,67 @@ end;
  ==============================================================================}
 function TBaglanti.Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: TIPAdres;
   AYerelPort, AUzakPort: TSayi2): PBaglanti;
-const
-  MACAdr: TMACAdres = ($50, $ff, $20, $6c, $8f, $e1);
 var
-  Baglanti: PBaglanti;
+  Bag: PBaglanti;
   s: string;
 begin
 
-  Baglanti := nil;
+  Bag := nil;
+
+  Bag := BaglantiOlustur;
+  if(Bag = nil) then Exit(Bag);
+
+  Bag^.FBagli := False;
+  Bag^.FProtokolTipi := AProtokolTipi;
+  Bag^.FHedefIPAdres := AHedefIPAdres;
+  Bag^.FYerelPort := AYerelPort;
+  Bag^.FUzakPort := AUzakPort;
+
+  { TODO - arp protokolü aracılığıyla verinin gideceği ilgili ip adresinin mac
+    adresi alınarak buraya eklenecek }
+  Bag^.FHedefMACAdres := MACAdres0;
 
   if(AProtokolTipi = ptTCP) then
   begin
 
-    Baglanti := YeniBaglantiOlustur;
-    if(Baglanti <> nil) then
-    begin
+    Bag^.FPencereU := TCP_PENCERE_UZUNLUK;
+    Bag^.FSiraNo := TCPIlkSiraNoAl;
+    Bag^.FOnayNo := 0;
 
-      Baglanti^.FBagli := False;
-      Baglanti^.FProtokolTipi := AProtokolTipi;
-      Baglanti^.FHedefMACAdres := MACAdres0;
-      Baglanti^.FHedefIPAdres := AHedefIPAdres;
-      Baglanti^.FYerelPort := AYerelPort;
-      Baglanti^.FUzakPort := AUzakPort;
-      Baglanti^.FPencereU := TCP_PENCERE_UZUNLUK;
-      Baglanti^.FSiraNo := TCPIlkSiraNoAl;
-      Baglanti^.FOnayNo := 0;
-
-      FBellekUzunlugu := 0;
-      FBellek := GGercekBellek.Ayir(Baglanti^.FPencereU);
-    end;
+    FBellekUzunlugu := 0;
+    FBellek := GGercekBellek.Ayir(Bag^.FPencereU);
   end
   else if(AProtokolTipi = ptUDP) then
   begin
 
-    Baglanti := YeniBaglantiOlustur;
-    if(Baglanti <> nil) then
-    begin
+    FBellekUzunlugu := 0;
+    FBellek := GGercekBellek.Ayir(4095);
 
-      //Baglanti^.FBaglantiDurum := bdBaglandi;
-      Baglanti^.FBagli := False;
-      Baglanti^.FProtokolTipi := AProtokolTipi;
-      Baglanti^.FHedefIPAdres := AHedefIPAdres;
-      Baglanti^.FYerelPort := AYerelPort;
-      Baglanti^.FUzakPort := AUzakPort;
-
-      { hedef mac adres }
-//      Baglanti^.FHedefMACAdres := MACAdr;
-
-      FBellekUzunlugu := 0;
-      FBellek := GGercekBellek.Ayir(4095);
-
-      {SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Protokol -> UDP', []);
-      SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Kimlik %d', [Baglanti^.FKimlik]);
-      SISTEM_MESAJ_IP(RENK_LACIVERT, 'Hedef IP: ', AHedefIPAdres);
-      SISTEM_MESAJ(RENK_LACIVERT, 'Kaynak Port: %d', [AYerelPort]);
-      SISTEM_MESAJ(RENK_LACIVERT, 'Hedef Port: %d', [AUzakPort]); }
-    end;
+    {SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Protokol -> UDP', []);
+    SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Kimlik %d', [Bag^.FKimlik]);
+    SISTEM_MESAJ_IP(RENK_LACIVERT, 'Hedef IP: ', AHedefIPAdres);
+    SISTEM_MESAJ(RENK_LACIVERT, 'Kaynak Port: %d', [AYerelPort]);
+    SISTEM_MESAJ(RENK_LACIVERT, 'Hedef Port: %d', [AUzakPort]); }
   end
   else
   begin
 
-    Baglanti := YeniBaglantiOlustur;
-    if(Baglanti <> nil) then
-    begin
-
-      s := ProtokolTipAdi(AProtokolTipi);
-      SISTEM_MESAJ(RENK_KIRMIZI, 'ILETISIM.PAS: TBaglanti.Olustur', []);
-      SISTEM_MESAJ_YAZI(RENK_KIRMIZI, '  -> Bilinmeyen Protokol: %s ', s);
-      SISTEM_MESAJ_IP(RENK_ACIKMAVI, '  -> Hedef IP: ', AHedefIPAdres);
-      SISTEM_MESAJ_S16(RENK_ACIKMAVI, '  -> Hedef Port: ', AUzakPort, 4);
-    end;
+    s := ProtokolTipAdi(AProtokolTipi);
+    SISTEM_MESAJ(RENK_KIRMIZI, 'ILETISIM.PAS: TBaglanti.Olustur', []);
+    SISTEM_MESAJ_YAZI(RENK_KIRMIZI, '  -> Bilinmeyen Protokol: %s ', s);
+    SISTEM_MESAJ_IP(RENK_ACIKMAVI, '  -> Hedef IP: ', AHedefIPAdres);
+    SISTEM_MESAJ_S16(RENK_ACIKMAVI, '  -> Hedef Port: ', AUzakPort, 4);
   end;
 
-  Result := Baglanti;
+  Result := Bag;
 end;
 
 {==============================================================================
   yeni bağlantı için boş bağlantı noktası bulur
  ==============================================================================}
-function TBaglanti.YeniBaglantiOlustur: PBaglanti;
+function TBaglanti.BaglantiOlustur: PBaglanti;
 var
-  _Baglanti: PBaglanti;
+  Bag: PBaglanti;
   i: TSayi4;
 begin
 
@@ -199,15 +179,15 @@ begin
   for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
-    _Baglanti := GAgIletisimListesi[i];
+    Bag := GAgIletisimListesi[i];
 
     // bağlantı durumu boş ise
-    if(_Baglanti^.FBaglantiDurum = bdYok) then
+    if(Bag^.FBaglantiDurum = bdYok) then
     begin
 
       // bağlantıyı ayır ve çağıran işleve geri dön
-      _Baglanti^.FBaglantiDurum := bdKapali;
-      Exit(_Baglanti);
+      Bag^.FBaglantiDurum := bdKapali;
+      Exit(Bag);
     end;
   end;
 
@@ -241,7 +221,7 @@ begin
       else
       begin
 
-        SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Baglan', []);
+        { TODO - MAC adres konusunda Olustur kısmındaki nota bakın }
         //FHedefMACAdres := MACAdresiAl(FHedefIPAdres);
         FBagli := True;
         Exit(FKimlik);
@@ -308,6 +288,7 @@ begin
       FHedefIPAdres := IPAdres0;
       FYerelPort := 0;
       FUzakPort := 0;
+
       GGercekBellek.YokEt(FBellek, FBellekUzunlugu);
       FBagli := False;
 
@@ -348,7 +329,7 @@ end;
  ==============================================================================}
 function TBaglanti.TCPBaglantiAl(AYerelPort, AUzakPort: TSayi2): PBaglanti;
 var
-  _Baglanti: PBaglanti;
+  Bag: PBaglanti;
   i: TSayi4;
 begin
 
@@ -356,9 +337,9 @@ begin
   for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
-    _Baglanti := GAgIletisimListesi[i];
-    if not(_Baglanti^.FBaglantiDurum = bdYok) and (_Baglanti^.FYerelPort = AYerelPort) and
-      (_Baglanti^.FUzakPort = AUzakPort) then Exit(_Baglanti);
+    Bag := GAgIletisimListesi[i];
+    if not(Bag^.FBaglantiDurum = bdYok) and (Bag^.FYerelPort = AYerelPort) and
+      (Bag^.FUzakPort = AUzakPort) then Exit(Bag);
   end;
 
   Result := nil;
@@ -369,7 +350,7 @@ end;
  ==============================================================================}
 function TBaglanti.UDPBaglantiAl(AYerelPort: TSayi2): PBaglanti;
 var
-  _Baglanti: PBaglanti;
+  Bag: PBaglanti;
   i: TSayi4;
 begin
 
@@ -377,9 +358,9 @@ begin
   for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
-    _Baglanti := GAgIletisimListesi[i];
-    if not(_Baglanti^.FBaglantiDurum = bdYok) and (_Baglanti^.FYerelPort = AYerelPort) then
-      Exit(_Baglanti);
+    Bag := GAgIletisimListesi[i];
+    if not(Bag^.FBaglantiDurum = bdYok) and (Bag^.FYerelPort = AYerelPort) then
+      Exit(Bag);
   end;
 
   Result := nil;
@@ -404,8 +385,7 @@ end;
 function TBaglanti.VeriUzunlugu: TISayi4;
 begin
 
-  if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then
-    Exit(Self.FBellekUzunlugu);
+  if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then Exit(Self.FBellekUzunlugu);
 
   Result := -1;
 end;
