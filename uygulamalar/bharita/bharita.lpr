@@ -7,11 +7,7 @@ program bharita;
   Program Adý: bharita.lpr
   Program Ýþlevi: bellek içerik harita programý
 
-  Güncelleme Tarihi: 20/09/2024
-
-  Not:
-    programýn çalýþmasý için gereken 8K bellek makinenin kilitlenmesine sebep olduðu
-    ve dinamik hafýza henüz tasarlanmadýðýndan dolayý 4K'lýk parça bellek kullanýlmýþtýr.
+  Güncelleme Tarihi: 05/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,8 +15,7 @@ uses n_gorev, gn_pencere, gn_durumcubugu, n_zamanlayici, n_genel;
 
 const
   ProgramAdi: string = 'Bellek Haritasý';
-  // MEVCUTBELLEKADRESI = bellek haritasýnýn adresi
-  MEVCUTBELLEKADRESI = $510000;
+  MEVCUTBELLEKADRESI = $510000;   // bellek haritasýnýn çekirdek yazýlýmdaki adresi
 
 var
   Genel: TGenel;
@@ -31,9 +26,9 @@ var
   DurumCubugu: TDurumCubugu;
   ToplamRAMBlok, AyrilmisRAMBlok,
   KullanilanRAMBlok, BosRAMBlok,
-  RAMUzunlugu: TSayi4;
-  s: string;
+  RAMUzunlugu, BellekAdresi,
   Sol, Ust: TSayi4;
+  s: string;
   p: PSayi1;
 
 procedure NoktaIsaretle(ASol, AUst: TSayi4; ARenk: TRenk);
@@ -53,14 +48,15 @@ end;
 
 var
   Veriler: array[0..4095] of TSayi1;
+  i: TSayi4;
+  BellekOku: Boolean;
 
 begin
 
   Gorev.Yukle;
   Gorev.Ad := ProgramAdi;
 
-  Pencere.Olustur(-1, 5, 5, (128 * 3) - 1, (64 * 3) + 20 - 1, ptBoyutlanabilir,
-    ProgramAdi, RENK_SIYAH);
+  Pencere.Olustur(-1, 5, 5, 161 * 3, 140 * 3, ptBoyutlanabilir, ProgramAdi, RENK_SIYAH);
   if(Pencere.Kimlik < 0) then Gorev.Sonlandir(-1);
 
   DurumCubugu.Olustur(Pencere.Kimlik, 0, 0, 100, 20, 'Boþ Blok Sayýsý: 0');
@@ -68,8 +64,8 @@ begin
 
   Pencere.Gorunum := True;
 
-  // 3 saniyelik frekansla güncelle
-  Zamanlayici.Olustur(300);
+  // 10 saniyelik frekansla güncelle
+  Zamanlayici.Olustur(1000);
   Zamanlayici.Baslat;
 
   while True do
@@ -92,43 +88,44 @@ begin
       s += IntToStr(BosRAMBlok);
       DurumCubugu.DurumYazisiDegistir(s);
 
-//      Pencere.Tuval.Dikdortgen(0, 0, 128 * 3, 64 * 3, $000000, True);
-
-      // 1. 4K bellek sistemden okunuyor
-      Genel.BellekIcerikOku(ISaretci(MEVCUTBELLEKADRESI), @Veriler[0], 4096);
-
-      p := PByte(@Veriler[0]);
-      for Ust := 0 to 31 do
+      if(ToplamRAMBlok > 0) then
       begin
 
-        for Sol := 0 to 127 do
+        BellekOku := False;
+        BellekAdresi := MEVCUTBELLEKADRESI;
+        Sol := 0; Ust := 0;
+
+        for i := 0 to ToplamRAMBlok - 1 do
         begin
 
-          if(p^ = 0) then
+          // her 4096 byte sonrasýnda bir sonraki bellek alanýný oku
+          if((i mod 4096) = 0) then BellekOku := True;
 
+          // 4K bellek bilgisi sistemden okunuyor
+          if(BellekOku) then
+          begin
+
+            BellekOku := False;
+            Genel.BellekIcerikOku(Isaretci(BellekAdresi), @Veriler[0], 4096);
+            BellekAdresi += 4096;
+            p := PByte(@Veriler[0]);
+          end;
+
+          if(p^ = 0) then
             NoktaIsaretle(Sol, Ust, $00FF00)
           else if(p^ = 1) then NoktaIsaretle(Sol, Ust, $FF0000);
 
           Inc(p);
-        end;
-      end;
 
-      // 2. 4K bellek sistemden okunuyor
-      Genel.BellekIcerikOku(Pointer(MEVCUTBELLEKADRESI + 4096), @Veriler[0], 4096);
+          Inc(Sol);
 
-      p := PByte(@Veriler[0]);
-      for Ust := 32 to 63 do
-      begin
+          // yatay 200 nokta
+          if(Sol > 160) then
+          begin
 
-        for Sol := 0 to 127 do
-        begin
-
-          if(p^ = 0) then
-
-            NoktaIsaretle(Sol, Ust, $00FF00)
-          else if(p^ = 1) then NoktaIsaretle(Sol, Ust, $FF0000);
-
-          Inc(p);
+            Inc(Ust);
+            Sol := 0;
+          end;
         end;
       end;
     end;

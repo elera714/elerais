@@ -318,7 +318,6 @@ begin
             end;
           end;
 }
-          //Gorev^.Sonlandir(5, 6);
 
           {i := FindFirst('disk1:\kaynak\*.*', 0, AramaKaydi);
           while i = 0 do
@@ -329,7 +328,8 @@ begin
           end;
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
-          Gorev^.Calistir('disket1:\tarayici.c');
+          //Gorev^.Calistir('disket1:\tarayici.c');
+          Gorev^.Calistir('disket1:\bharita.c');
           //Gorev^.Calistir('disket1:\iletisim.c');
         end
         // test iþlev tuþu-1
@@ -351,6 +351,7 @@ begin
 
           //BellekI := GGercekBellek.Ayir(4095);
           //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
+          //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then

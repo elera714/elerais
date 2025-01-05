@@ -6,7 +6,7 @@
   Dosya Adý: gn_pencere.pas
   Dosya Ýþlevi: pencere (TForm) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 05/01/2025
 
   Önemli Bilgiler:
 
@@ -1564,7 +1564,7 @@ begin
     else if(ResimDugmesi^.Kimlik = Pencere^.FKapatmaDugmesi^.Kimlik) then
     begin
 
-      Gorev^.Sonlandir(Pencere^.GorevKimlik);
+      Gorev^.Isaretle(Pencere^.GorevKimlik);
     end;
   end;
 end;

@@ -66,13 +66,13 @@ begin
     begin
 
       p := GorevListesi[CalisanGorev];
-      p^.Sonlandir(CalisanGorev);
+      p^.Isaretle(CalisanGorev);
     end
     else if(i >= 0) and (i < USTSINIR_GOREVSAYISI) then
     begin
 
       p := GorevListesi[i];
-      p^.Sonlandir(i);
+      p^.Isaretle(i);
     end;
   end
 

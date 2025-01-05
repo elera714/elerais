@@ -147,11 +147,10 @@ begin
 //                 asm cli end;
 //          Bag^.BellegeEkle(Merhaba, 60);
           Bag^.BellegeEkle(Bag, @TCPPaket^.Secenekler, U);
-{          Bag^.BellegeEkle(Bag, Merhaba, 60);
           Bag^.BellegeEkle(Bag, Merhaba, 60);
           Bag^.BellegeEkle(Bag, Merhaba, 60);
           Bag^.BellegeEkle(Bag, Merhaba, 60);
-}
+          Bag^.BellegeEkle(Bag, Merhaba, 60);
 //          asm sti end;
 
         //SISTEM_MESAJ_YAZI(RENK_MOR, PChar(@TCPPaket^.Secenekler), j);

@@ -6,7 +6,7 @@
   Dosya Adý: src_disket.pas
   Dosya Ýþlevi: disket aygýt sürücüsü
 
-  Güncelleme Tarihi: 22/10/2019
+  Güncelleme Tarihi: 05/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -175,7 +175,7 @@ begin
   if(AFizikselSurucu^.IslemYapiliyor) then
   begin
 
-    SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 1', []);
+    //SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 1', []);
     Exit;
   end;
 
@@ -185,7 +185,7 @@ begin
   begin
 
     AFizikselSurucu^.IslemYapiliyor := True;
-    SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 2', []);
+    //SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 2', []);
     Exit;
   end;
 

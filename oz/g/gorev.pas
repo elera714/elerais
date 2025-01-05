@@ -56,8 +56,7 @@ type
     FGorevDurum: TGorevDurum;             // iþlem durumu
 
     // hata ile ilgili deðiþkenler
-    FHataKodu: TSayi4;
-    FHataESP: TSayi4;
+    FHataKodu, FHataESP: TISayi4;
 
     FGorevSayaci: TSayi4;                 // görev deðiþim sayacý
     FBellekBaslangicAdresi: TSayi4;       // iþlemin yüklendiði bellek adresi
@@ -68,6 +67,7 @@ type
     procedure DurumDegistir(AGorevKimlik: TKimlik; AGorevDurum: TGorevDurum);
     procedure OlayEkle(AGorevKimlik: TKimlik; AOlay: TOlay);
     function OlayAl(var AOlay: TOlay): Boolean;
+    procedure Isaretle(AGorevKimlik: TKimlik; const ASonlanmaSebebi: TISayi4 = -1);
     function Sonlandir(AGorevKimlik: TKimlik; const ASonlanmaSebebi: TISayi4 = -1): TISayi4;
     function GorevBul(AGorevKimlik: TKimlik): PGorev;
     function GorevKimligiAl(AGorevAdi: string): TKimlik;
@@ -679,6 +679,21 @@ begin
   Result := 0;
 end;
 
+procedure TGorev.Isaretle(AGorevKimlik: TKimlik; const ASonlanmaSebebi: TISayi4 = -1);
+var
+  Gorev: PGorev;
+begin
+
+  if(AGorevKimlik >= 0) and (AGorevKimlik < USTSINIR_GOREVSAYISI) then
+  begin
+
+    Gorev := GorevListesi[AGorevKimlik];
+    Gorev^.FHataKodu := -1;
+    Gorev^.FHataESP := -1;
+    Gorev^.FGorevDurum := gdSonlandiriliyor;
+  end;
+end;
+
 {==============================================================================
   görev ile ilgili bellek bölgesini geri döndürür
  ==============================================================================}
@@ -918,6 +933,7 @@ begin
   begin
 
     Gorev := GorevListesi[i];
+
     if(Gorev^.FGorevDurum = gdSonlandiriliyor) then
       Gorev^.Sonlandir(Gorev^.FGorevKimlik, Gorev^.FHataKodu);
   end;
