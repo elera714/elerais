@@ -6,7 +6,7 @@
   Dosya Adý: yonetim.pas
   Dosya Ýþlevi: sistem ana yönetim / kontrol kýsmý
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 05/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -93,6 +93,10 @@ var
   DugmeSayisi: TSayi4;
   TestAlani: TArGe;
   SonKonumY, SonKonumD, SonSecim: TSayi4;
+
+  iiiii: Integer;
+  sssss: string;
+  ppppp: pchar;
 
 procedure Yukle;
 procedure SistemAnaKontrol;
@@ -233,6 +237,8 @@ var
   _AygitSiraNo, AygitKimlik: TSayi4;
   DD1: TISayi1;
   DD4: TISayi4;
+  BellekI: Isaretci;
+//  sss: string;
 begin
 
 {  if(CalisanGorevSayisi = 1) then
@@ -323,8 +329,8 @@ begin
           end;
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
-          //Gorev^.Calistir('disket1:\tarayici.c');
-          Gorev^.Calistir('disket1:\iletisim.c');
+          Gorev^.Calistir('disket1:\tarayici.c');
+          //Gorev^.Calistir('disket1:\iletisim.c');
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then
@@ -342,6 +348,9 @@ begin
           // aþaðýdaki programlar üzerinden fdc iþlemleri tamamlanacak
           //Gorev^.Calistir('disket1:\kopyala.c');
           //Gorev^.Calistir('disket1:\dskgor.c');
+
+          //BellekI := GGercekBellek.Ayir(4095);
+          //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then
@@ -411,6 +420,9 @@ begin
 
     // disket sürücü motorunun aktifliðini kontrol eder, gerekirse motoru kapatýr
     DisketSurucuMotorunuKontrolEt;
+
+    // sonlandýrýlmýþ olarak iþaretlenen görevleri sonlandýr
+    IsaretlenenGorevleriSonlandir;
   end;
 end;
 

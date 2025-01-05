@@ -7,7 +7,7 @@ program iletisim;
   Program Adý: iletisim.lpr
   Program Ýþlevi: tcp / udp test programý
 
-  Güncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 02/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -70,13 +70,13 @@ begin
   etIPAdresi.Olustur(UstMesajPaneli.Kimlik, 10, 12, RENK_SIYAH, 'IP Adresi');
   etIPAdresi.Goster;
 
-  gkIPAdresi.Olustur(UstMesajPaneli.Kimlik, 88, 10, 140, 22, '192.168.1.51');
+  gkIPAdresi.Olustur(UstMesajPaneli.Kimlik, 88, 10, 140, 22, '192.168.1.1');
   gkIPAdresi.Goster;
 
   etPort.Olustur(UstMesajPaneli.Kimlik, 244, 12, RENK_SIYAH, 'Port');
   etPort.Goster;
 
-  gkPort.Olustur(UstMesajPaneli.Kimlik, 280, 10, 60, 22, '365');
+  gkPort.Olustur(UstMesajPaneli.Kimlik, 280, 10, 60, 22, '80');
   gkPort.Goster;
 
   etBagTip.Olustur(UstMesajPaneli.Kimlik, 356, 12, RENK_SIYAH, 'Bað.Tip');
@@ -85,7 +85,7 @@ begin
   klBaglanti.Olustur(UstMesajPaneli.Kimlik, 418, 8, 70, 22);
   klBaglanti.ElemanEkle('TCP');
   klBaglanti.ElemanEkle('UDP');
-  klBaglanti.BaslikSiraNo := 1;
+  klBaglanti.BaslikSiraNo := 0;
   klBaglanti.Goster;
 
   okBaglanti.Olustur(UstMesajPaneli.Kimlik, 500, 11, 'Aktif');

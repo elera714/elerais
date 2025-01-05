@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 04/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -45,7 +45,7 @@ type
   end;
 
 { TODO : // aşağıdaki tüm çağrılar iptal edilerek bu çağrının içerisine alınacak }
-procedure SISTEM_MESAJ(ARenk: TRenk; AMesaj: string; ASayisalDegerler: array of TSayi4);
+procedure SISTEM_MESAJ(ARenk: TRenk; AMesaj: string; ASayisalDegerler: array of const);
 
 procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj: PWideChar);
 procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj1, AMesaj2: string);
@@ -189,11 +189,10 @@ end;
 {==============================================================================
   sistem kayıtlarına mesaj ekle
  ==============================================================================}
-procedure SISTEM_MESAJ(ARenk: TRenk; AMesaj: string; ASayisalDegerler: array of TSayi4);
+procedure SISTEM_MESAJ(ARenk: TRenk; AMesaj: string; ASayisalDegerler: array of const);
 var
   i, j, DegerSiraNo: Integer;
-  s: string;
-  s2: string[10];
+  s, s2: string;
 begin
 
   DegerSiraNo := 0;
@@ -204,29 +203,25 @@ begin
   begin
 
     j := 1;
-    while (j <= i) do begin
+    while (j <= i) do
+    begin
 
-      {if(AMesaj[j] = '%') and (AMesaj[j + 1] = 's') then
+      if(AMesaj[j] = '%') and (AMesaj[j + 1] = 's') then
       begin
 
         // sayısal değeri karaktere çevir
-        s2 := string(ASayisalDegerler[DegerSiraNo]);
+        s2 := TVarRec(ASayisalDegerler[DegerSiraNo]).VString^;
         Inc(DegerSiraNo);
-
-        j := Length(AMesaj1);
-        if(j > 0) then
-        begin
-
-          for i := 1 to j do s := s + AMesaj1[i];
-        end;
+        s += s2;
 
         Inc(j);
       end
-      else} if(AMesaj[j] = '%') and (AMesaj[j + 1] = 'd') then
+      else if(AMesaj[j] = '%') and (AMesaj[j + 1] = 'd') then
       begin
 
         // sayısal değeri karaktere çevir
-        s2 := IntToStr(ASayisalDegerler[DegerSiraNo]);
+        //i := TVarRec(ASayisalDegerler[0]).VInteger;
+        s2 := IntToStr(TVarRec(ASayisalDegerler[DegerSiraNo]).VInteger);
         Inc(DegerSiraNo);
         s += s2;
 
@@ -236,7 +231,7 @@ begin
       begin
 
         // sayısal değeri karaktere çevir
-        s2 := '0x' + hexStr(ASayisalDegerler[DegerSiraNo], 8);
+        s2 := '0x' + hexStr(TVarRec(ASayisalDegerler[DegerSiraNo]).VInteger, 8);
         Inc(DegerSiraNo);
         s += s2;
 

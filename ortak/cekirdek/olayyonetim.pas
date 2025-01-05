@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 28/12/2024
+  Güncelleme Tarihi: 04/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -220,12 +220,12 @@ begin
 
 {      SISTEM_MESAJ(RENK_SIYAH, 'Yatay: %d', [Olay.Deger1]);
       SISTEM_MESAJ(RENK_SIYAH, 'Dikey: %d', [Olay.Deger2]);
-      SISTEM_MESAJ_YAZI(RENK_SIYAH, 'Görsel Nesne: ', GorselNesne^.NesneAdi);
+      SISTEM_MESAJ(RENK_SIYAH, 'Görsel Nesne: %s', [GorselNesne^.NesneAdi]);
       SISTEM_MESAJ(RENK_SIYAH, 'Sol: %d', [GorselNesne^.FKonum.Sol]);
       SISTEM_MESAJ(RENK_SIYAH, 'Üst: %d', [GorselNesne^.FKonum.Ust]);
       SISTEM_MESAJ(RENK_SIYAH, 'Geniþlik: %d', [GorselNesne^.FBoyut.Genislik]);
-      SISTEM_MESAJ(RENK_SIYAH, 'Yükseklik: %d', [GorselNesne^.FBoyut.Yukseklik]);
-}
+      SISTEM_MESAJ(RENK_SIYAH, 'Yükseklik: %d', [GorselNesne^.FBoyut.Yukseklik]);}
+
       // olayý nesneye yönlendir
       OlaylariYonlendir(GorselNesne, Olay);
     end;

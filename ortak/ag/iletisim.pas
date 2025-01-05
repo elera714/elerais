@@ -10,6 +10,7 @@
 
  ==============================================================================}
 {$mode objfpc}
+{$asmmode intel}
 unit iletisim;
 
 interface
@@ -17,7 +18,7 @@ interface
 uses paylasim, sistemmesaj;
 
 const
-  USTSINIR_AGILETISIM = 64;
+  USTSINIR_AGILETISIM = 32; //64;
   TCP_PENCERE_UZUNLUK = 8192;
   ILK_YERELPORTNO     = $A00E;
 
@@ -37,7 +38,7 @@ type
     bdKapaniyor1 = istemcinin sunucuya gönderdiği FIN + ACK durumu
     bdKapaniyor2 = sunucunun istemciye gönderdiği FIN + ACK durumu
 }
-  TBaglantiDurum = (bdYok, bdKapali, bdBaglaniyor, bdBaglandi, bdKapaniyor1, bdKapaniyor2);
+  TBaglantiDurum = (bdYok, bdKapali, bdBaglaniyor, bdBaglandi, bdKapaniyor1);
 
 type
   PBaglanti = ^TBaglanti;
@@ -53,8 +54,9 @@ type
     FHedefIPAdres: TIPAdres;
     FYerelPort, FUzakPort: TSayi2;
     FBagli: Boolean;
-    FBellek: Pointer;
-    FBellekUzunlugu: Integer;
+    FBellek: Isaretci;
+    FBellekUzunlugu: TSayi4;
+    FVeriEkleniyor: Boolean;
     function Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: TIPAdres; AYerelPort,
       AUzakPort: TSayi2): PBaglanti;
     function BaglantiOlustur: PBaglanti;
@@ -64,9 +66,9 @@ type
     function TCPIlkSiraNoAl: TSayi4;
     function TCPBaglantiAl(AYerelPort, AUzakPort: TSayi2): PBaglanti;
     function UDPBaglantiAl(AYerelPort: TSayi2): PBaglanti;
-    procedure BellegeEkle(AKaynakBellek: Isaretci; ABellekUzunlugu: TSayi4);
-    function VeriUzunlugu: TISayi4;
-    function Oku(ABellek: Isaretci): TISayi4;
+    procedure BellegeEkle(ABaglanti: PBaglanti; AKaynakBellek: Isaretci; ABellekUzunlugu: TSayi4);
+    function VeriUzunlugu: TSayi4;
+    function Oku(ABellek: Isaretci): TSayi4;
     procedure Yaz(ABellek: Isaretci; AUzunluk: TISayi4);
   end;
 
@@ -76,6 +78,9 @@ function YerelPortAl: TSayi2;
 implementation
 
 uses gercekbellek, genel, tcp, udp, arp, zamanlayici;
+
+var
+  GBellek: array[0..4095] of Byte;
 
 {==============================================================================
   bağlantı ana yükleme işlevlerini içerir
@@ -127,10 +132,6 @@ begin
   Bag^.FYerelPort := AYerelPort;
   Bag^.FUzakPort := AUzakPort;
 
-  { TODO - arp protokolü aracılığıyla verinin gideceği ilgili ip adresinin mac
-    adresi alınarak buraya eklenecek }
-  Bag^.FHedefMACAdres := MACAdres0;
-
   if(AProtokolTipi = ptTCP) then
   begin
 
@@ -138,8 +139,10 @@ begin
     Bag^.FSiraNo := TCPIlkSiraNoAl;
     Bag^.FOnayNo := 0;
 
+    FVeriEkleniyor := True;
     FBellekUzunlugu := 0;
-    FBellek := GGercekBellek.Ayir(Bag^.FPencereU);
+    FBellek :=  @GBellek; //GGercekBellek.Ayir(4095); //Bag^.FPencereU);
+    //if(FBellek = nil) then SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek yok', []);
   end
   else if(AProtokolTipi = ptUDP) then
   begin
@@ -158,7 +161,7 @@ begin
 
     s := ProtokolTipAdi(AProtokolTipi);
     SISTEM_MESAJ(RENK_KIRMIZI, 'ILETISIM.PAS: TBaglanti.Olustur', []);
-    SISTEM_MESAJ_YAZI(RENK_KIRMIZI, '  -> Bilinmeyen Protokol: %s ', s);
+    SISTEM_MESAJ(RENK_KIRMIZI, '  -> Bilinmeyen Protokol: %s ', [s]);
     SISTEM_MESAJ_IP(RENK_ACIKMAVI, '  -> Hedef IP: ', AHedefIPAdres);
     SISTEM_MESAJ_S16(RENK_ACIKMAVI, '  -> Hedef Port: ', AUzakPort, 4);
   end;
@@ -204,6 +207,9 @@ const
     $02, $04, $05, $B4, $01, $03, $03, $08, $01, $01, $04, $02);
 begin
 
+  { TODO - arp protokolü aracılığıyla verinin gideceği ilgili ip adresinin mac
+    adresi alınarak aşağıda ilgili yere eklenecek }
+
   // bağlantı kimliği tanımlanan aralıkta ise...
   if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
@@ -221,8 +227,7 @@ begin
       else
       begin
 
-        { TODO - MAC adres konusunda Olustur kısmındaki nota bakın }
-        //FHedefMACAdres := MACAdresiAl(FHedefIPAdres);
+        FHedefMACAdres := MACAdresiAl(FHedefIPAdres);
         FBagli := True;
         Exit(FKimlik);
       end;
@@ -236,7 +241,7 @@ begin
         FHedefMACAdres := MACAdresiAl(FHedefIPAdres);
 
         // ilk paket olan SYN (ARZ) paketi gönderiliyor
-        TCPPaketGonder(GAgBilgisi.IP4Adres, @Self, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);
+        TCPPaketGonder(@Self, GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);
         FBaglantiDurum := bdBaglaniyor;
         Exit(FKimlik);
       end;
@@ -300,7 +305,7 @@ begin
       if(FBaglantiDurum = bdBaglandi) then
       begin
 
-        TCPPaketGonder(GAgBilgisi.IP4Adres, @Self, TCP_BAYRAK_SON + TCP_BAYRAK_KABUL,
+        TCPPaketGonder(@Self, GAgBilgisi.IP4Adres, TCP_BAYRAK_SON + TCP_BAYRAK_KABUL,
           nil, 0);
 
         FBaglantiDurum := bdKapaniyor1;
@@ -369,35 +374,71 @@ end;
 {==============================================================================
   bağlantı kurulan bilgisayardan gelen verileri programın kullanması için belleğe kaydeder
  ==============================================================================}
-procedure TBaglanti.BellegeEkle(AKaynakBellek: Isaretci; ABellekUzunlugu: TSayi4);
+procedure TBaglanti.BellegeEkle(ABaglanti: PBaglanti; AKaynakBellek: Isaretci; ABellekUzunlugu: TSayi4);
 var
   p: PChar;
+  i: TSayi4;
+const
+  Merhaba: PChar = 'Merhaba';
 begin
 
-  p := Self.FBellek + Self.FBellekUzunlugu;
-  Tasi2(AKaynakBellek, p, ABellekUzunlugu);
-  Inc(Self.FBellekUzunlugu, ABellekUzunlugu);
+  //if(ABellekUzunlugu = 60) then Exit;
+
+//  asm cli end;
+  //if(Self.FBellekUzunlugu + ABellekUzunlugu < 4000) then
+  begin
+
+    p := ABaglanti^.FBellek + ABaglanti^.FBellekUzunlugu;
+
+{    Tasi2(Merhaba, p, 7);
+    i := ABaglanti^.FBellekUzunlugu;
+    i += 7;
+    ABaglanti^.FBellekUzunlugu := i;
+    Exit;
+}
+
+{
+    FillChar(p, 100, 'A');
+
+    i := Self.FBellekUzunlugu;
+    i += 120;
+    Self.FBellekUzunlugu := i;
+    exit;
+}
+    Tasi2(AKaynakBellek, p, ABellekUzunlugu);
+    i := ABaglanti^.FBellekUzunlugu;
+    i += ABellekUzunlugu;
+    ABaglanti^.FBellekUzunlugu := i;
+  end;
+//  asm sti end;
 end;
 
 {==============================================================================
   bağlantı kurulan cihazdan gelip işlenmeyi bekleyen veri miktarını alır
  ==============================================================================}
-function TBaglanti.VeriUzunlugu: TISayi4;
+function TBaglanti.VeriUzunlugu: TSayi4;
 begin
 
-  if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then Exit(Self.FBellekUzunlugu);
+  if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then Exit(Self.FBellekUzunlugu)
+{  begin
 
-  Result := -1;
+    if(Self.FVeriEkleniyor) then
+      Self.FBellekUzunlugu := 0
+    else Self.FBellekUzunlugu := Self.FBellekUzunlugu);
+
+    Result := Self.FBellekUzunlugu;}
+  else Result := 0;
 end;
 
 {==============================================================================
   bağlantı üzerinden gelen veriyi okuyarak ilgili programa yönlendirir
  ==============================================================================}
-function TBaglanti.Oku(ABellek: Isaretci): TISayi4;
+function TBaglanti.Oku(ABellek: Isaretci): TSayi4;
 var
   i: TSayi4;
 begin
 
+//  asm cli end;
   if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
@@ -406,13 +447,16 @@ begin
     begin
 
       Tasi2(Self.FBellek, ABellek, i);
+      //FillByte(ABellek, 100, Byte('A'));
+      //PChar(ABellek + 100)^ := #0;
       Result := Self.FBellekUzunlugu;
       Self.FBellekUzunlugu := 0;
-      Exit;
+      Exit(i);
     end;
   end;
 
-  Result := -1;
+  Result := 0;
+//  asm sti end;
 end;
 
 {==============================================================================
@@ -431,7 +475,7 @@ begin
       begin
 
         FPencereU := $100;
-        TCPPaketGonder(GAgBilgisi.IP4Adres, @Self, TCP_BAYRAK_KABUL or TCP_BAYRAK_GONDER,
+        TCPPaketGonder(@Self, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL or TCP_BAYRAK_GONDER,
           ABellek, AUzunluk);
       end;
     end

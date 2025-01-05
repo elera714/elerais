@@ -7,65 +7,73 @@ program tarayici;
   Program Adý: tarayici.lpr
   Program Ýþlevi: internet tarayýcý programý
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 02/01/2025
 
  ==============================================================================}
 {$mode objfpc}
-uses n_gorev, gn_pencere, gn_dugme, gn_giriskutusu, gn_durumcubugu, gn_karmaliste,
-  n_zamanlayici, n_iletisim, gn_defter, gn_etiket;
+uses n_gorev, gn_pencere, gn_panel, gn_dugme, gn_giriskutusu, gn_durumcubugu,
+  gn_karmaliste, n_zamanlayici, n_iletisim, gn_defter, gn_etiket;
 
 const
-  ProgramAdi: string = 'Ýnternet Tarayýcý';
+  ProgramAdi: string = 'Ýnternet Tarayýcýsý';
 
 var
   Gorev: TGorev;
   Pencere: TPencere;
+  UstMesajPaneli: TPanel;
   Defter: TDefter;
   DurumCubugu: TDurumCubugu;
   etAdres: TEtiket;
-  gkAdres: TGirisKutusu;
+  gkIPAdresi: TGirisKutusu;
   Zamanlayici: TZamanlayici;
-  dugBaglan, dugGonder, dugBKes: TDugme;
+  dugYukle: TDugme;
   Olay: TOlay;
-  Iletisim: TIletisim;
-  IPAdres, s: string;
-  VeriUzunlugu: Integer;
+  Iletisim0: TIletisim;
+  IPAdresi, SonDurum, s: string;
+  VeriUzunlugu: TSayi4;
+  SayfaIstendi: Boolean;
+  Veriler: array[0..4095] of TSayi1;
 begin
 
   Gorev.Yukle;
   Gorev.Ad := ProgramAdi;
 
-  IPAdres := '192.168.1.51';
+  IPAdresi := '192.168.1.1';
+  SonDurum := 'Baðlantý yok!';
 
   Pencere.Olustur(-1, 50, 50, 600, 480, ptBoyutlanabilir, ProgramAdi, $FAF1E3);
   if(Pencere.Kimlik < 0) then Gorev.Sonlandir(-1);
 
-  etAdres.Olustur(Pencere.Kimlik, 5, 10, RENK_SIYAH, 'Adres');
+  // üst panel
+  UstMesajPaneli.Olustur(Pencere.Kimlik, 10, 10, 250, 40, 2, RENK_SIYAH, $FAF1E3, RENK_SIYAH, '');
+  UstMesajPaneli.Hizala(hzUst);
+
+  etAdres.Olustur(UstMesajPaneli.Kimlik, 4, 12, RENK_SIYAH, 'Adres');
   etAdres.Goster;
 
-  gkAdres.Olustur(Pencere.Kimlik, 50, 6, 205, 22, IPAdres);
-  gkAdres.Goster;
+  gkIPAdresi.Olustur(UstMesajPaneli.Kimlik, 50, 9, 456, 22, IPAdresi);
+  gkIPAdresi.Goster;
 
-  dugBaglan.Olustur(Pencere.Kimlik, 268, 5, 55, 22, 'Baðlan');
-  dugBaglan.Goster;
+  dugYukle.Olustur(UstMesajPaneli.Kimlik, 520, 7, 55, 22, 'Yükle');
+  dugYukle.Goster;
 
-  dugGonder.Olustur(Pencere.Kimlik, 325, 5, 55, 22, 'Gönder');
-  dugGonder.Goster;
+  UstMesajPaneli.Goster;
 
-  dugBKes.Olustur(Pencere.Kimlik, 382, 5, 55, 22, 'B.Kes');
-  dugBKes.Goster;
-
-  DurumCubugu.Olustur(Pencere.Kimlik, 0, 0, 100, 20, 'Baðlantý yok!');
+  DurumCubugu.Olustur(Pencere.Kimlik, 0, 0, 100, 20, SonDurum);
   DurumCubugu.Goster;
 
   Defter.Olustur(Pencere.Kimlik, 5, 34, 583, 421, RENK_BEYAZ, RENK_SIYAH, True);
-  //Defter.Hizala(hzTum);
+  Defter.Hizala(hzTum);
   Defter.Goster;
 
   Pencere.Gorunum := True;
 
   Zamanlayici.Olustur(100);
   Zamanlayici.Baslat;
+
+  SayfaIstendi := False;
+
+  Iletisim0.Constructor0;
 
   while True do
   begin
@@ -75,51 +83,67 @@ begin
     if(Olay.Olay = CO_ZAMANLAYICI) then
     begin
 
-      if(Iletisim.BagliMi) then
+      if(Iletisim0.Kimlik <> HATA_KIMLIK) then
       begin
 
-        DurumCubugu.DurumYazisiDegistir('Baðlantý kuruldu.');
-
-        VeriUzunlugu := Iletisim.VeriUzunluguAl;
-        if(VeriUzunlugu > 0) then
+        if(Iletisim0.BagliMi) then
         begin
 
-          VeriUzunlugu := Iletisim.VeriOku(@s[1]);
-          SetLength(s, VeriUzunlugu);
+          SonDurum := 'Baðlantý kuruldu.';
 
-          Defter.YaziEkle(s + #13#10);
+          if not(SayfaIstendi) then
+          begin
 
-          //Pencere.Ciz;
-        end;
-      end else DurumCubugu.DurumYazisiDegistir('Baðlantý yok!');
+            SonDurum := 'Sayfa bekleniyor...';
+
+            s := 'GET / HTTP/1.1' + #13#10;
+            s += 'Host: ' + IPAdresi + #13#10#13#10;
+
+            Iletisim0.VeriYaz(@s[1], Length(s));
+
+            SayfaIstendi := True;
+          end
+          else if(SayfaIstendi) then
+          begin
+
+            VeriUzunlugu := Iletisim0.VeriUzunluguAl;
+            if(VeriUzunlugu > 0) then
+            begin
+
+              VeriUzunlugu := Iletisim0.VeriOku(@Veriler);
+              Veriler[VeriUzunlugu] := 0;
+
+              Defter.YaziEkle(PChar(@Veriler));
+
+              Iletisim0.BaglantiyiKes;
+            end;
+          end;
+        end else SonDurum := 'Baðlantý yok!';
+      end else SonDurum := 'Baðlantý yok!';
+
+      DurumCubugu.DurumYazisiDegistir(SonDurum);
     end
     else if(Olay.Olay = FO_TIKLAMA) then
     begin
 
-      if(Olay.Kimlik = dugBaglan.Kimlik) then
+      if(Olay.Kimlik = dugYukle.Kimlik) then
       begin
 
-        Iletisim.Baglan(ptTCP, IPAdres, 80)
-      end
-      else if(Olay.Kimlik = dugGonder.Kimlik) then
-      begin
+        IPAdresi := gkIPAdresi.IcerikAl;
 
-        IPAdres := gkAdres.IcerikAl;
+        if(Length(IPAdresi) > 0) then
+        begin
 
-        s := 'GET / HTTP/1.1' + #13#10;
-        s += 'Host: ' + IPAdres + #13#10#13#10;
+          SayfaIstendi := False;
 
-        Iletisim.VeriYaz(@s[1], Length(s));
-      end
-      else if(Olay.Kimlik = dugBKes.Kimlik) then
-      begin
+          Defter.Temizle;
 
-        Iletisim.BaglantiyiKes;
-        Defter.Temizle;
-        Pencere.Ciz;
+          Iletisim0.Olustur(ptTCP, IPAdresi, 80);
+          Iletisim0.Baglan;
+        end;
       end;
     end;
   end;
 
-  //Iletisim.Close;
+  Iletisim0.Destructor0;
 end.

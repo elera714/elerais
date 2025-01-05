@@ -432,13 +432,24 @@ procedure TDefter.YaziEkle(AYaziBellekAdresi: Isaretci);
 var
   p: PSayi1;
   i: TSayi4;
+  function StrLen2: TSayi4;
+  var
+    p: PChar;
+  begin
+
+    Result := 0;
+
+    p := AYaziBellekAdresi;
+
+    while (p^ <> #0) do begin Inc(p); Inc(Result); end;
+  end;
 begin
 
   // karakter katarý için bellek ayrýlmýþ mý ?
   if(Self.FYaziBellekAdresi = nil) then Exit;
 
   // verinin uzunluðunu al
-  i := StrLen(AYaziBellekAdresi);
+  i := StrLen2; //(AYaziBellekAdresi);
   if(i = 0) or (i > (4096 * 10)) then Exit;
 
   // karakter katarýný hedef bölgeye kopyala

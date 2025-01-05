@@ -27,7 +27,7 @@ type
       AHedefPort: TSayi4): TISayi4;
     function Baglan: TISayi4;
     function BagliMi: Boolean;
-    function VeriUzunluguAl: TISayi4;
+    function VeriUzunluguAl: TSayi4;
     function VeriOku(ABellek: Isaretci): TISayi4;
     procedure VeriYaz(ABellek: Isaretci; AUzunluk: TISayi4);
     function BaglantiyiKes: Boolean;
@@ -38,7 +38,7 @@ function _Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: string;
   AHedefPort: TSayi4): TISayi4;
 function _Baglan(AKimlik: TKimlik): TISayi4;
 function _BagliMi(AKimlik: TKimlik): Boolean;
-function _VeriUzunluguAl(AKimlik: TKimlik): TISayi4;
+function _VeriUzunluguAl(AKimlik: TKimlik): TSayi4;
 function _VeriOku(AKimlik: TKimlik; ABellek: Isaretci): TISayi4;
 procedure _VeriYaz(AKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TISayi4);
 function _BaglantiyiKes(AKimlik: TKimlik): Boolean;
@@ -78,7 +78,7 @@ begin
   Result := _BagliMi(FKimlik);
 end;
 
-function TIletisim.VeriUzunluguAl: TISayi4;
+function TIletisim.VeriUzunluguAl: TSayi4;
 begin
 
   Result := _VeriUzunluguAl(FKimlik);
@@ -131,7 +131,7 @@ asm
   add   esp,4
 end;
 
-function _VeriUzunluguAl(AKimlik: TKimlik): TISayi4; assembler;
+function _VeriUzunluguAl(AKimlik: TKimlik): TSayi4; assembler;
 asm
   push  DWORD AKimlik
   mov   eax,ILETISIM_VERIUZUNLUGU

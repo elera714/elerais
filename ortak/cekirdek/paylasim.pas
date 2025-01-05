@@ -6,7 +6,7 @@
   Dosya Adý: paylasim.pas
   Dosya Ýþlevi: tüm birimler için ortak paylaþýlan iþlevleri içerir
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 05/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -326,31 +326,6 @@ type
     KaynakIP,
     HedefIP: TIPAdres;
     Veri: Isaretci;
-  end;
-
-const
-  TCPBASLIK_UZUNLUGU        = 20; //32;
-  SOZDE_TCPBASLIK_UZUNLUGU  = 12;
-
-type
-  PTCPPaket = ^TTCPPaket;
-  TTCPPaket = packed record
-    {SrcIpAddr,
-    DestIpAddr: TIPAdres;
-    Zero: Byte;
-    Protocol: Byte;
-    Length: Word;               // tcp header + data}
-
-    YerelPort,
-    UzakPort: TSayi2;
-    SiraNo,                     // sequence number
-    OnayNo: TSayi4;
-    BaslikU: TSayi1;            // 11111000 = 111111 = Data Offset, 000 = Reserved
-    Bayrak: TSayi1;
-    Pencere: TSayi2;
-    SaglamaToplami,
-    AcilIsaretci: TSayi2;       // urgent pointer
-    Secenekler: Isaretci;
   end;
 
 type
@@ -928,7 +903,7 @@ type
   end;
 
 type
-  TGorevDurum = (gdBos, gdOlusturuldu, gdCalisiyor, gdDurduruldu);
+  TGorevDurum = (gdBos, gdOlusturuldu, gdCalisiyor, gdDurduruldu, gdSonlandiriliyor);
 
 type
   PPencereTipi = ^TPencereTipi;

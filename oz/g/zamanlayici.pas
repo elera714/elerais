@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 05/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -47,7 +47,7 @@ type
 var
   ZamanlayiciYapiBellekAdresi: Isaretci;
   OlusturulanZamanlayiciSayisi: TSayi4 = 0;
-  ZamanlayiciListesi: array[1..AZAMI_ZAMANLAYICI_SAYISI] of PZamanlayici;
+  GZamanlayiciListesi: array[0..AZAMI_ZAMANLAYICI_SAYISI - 1] of PZamanlayici;
 
 procedure ZamanlayicilariKontrolEt;
 procedure ZamanlayicilariYokEt(AGorevKimlik: TKimlik);
@@ -89,11 +89,11 @@ begin
 
   // bellek giriþlerini zamanlayýcý yapýlarýyla eþleþtir
   BellekAdresi := ZamanlayiciYapiBellekAdresi;
-  for i := 1 to AZAMI_ZAMANLAYICI_SAYISI do
+  for i := 0 to AZAMI_ZAMANLAYICI_SAYISI - 1 do
   begin
 
     Zamanlayici := BellekAdresi;
-    ZamanlayiciListesi[i] := Zamanlayici;
+    GZamanlayiciListesi[i] := Zamanlayici;
 
     Zamanlayici^.FZamanlayiciDurum := zdBos;
     Zamanlayici^.FKimlik := i;
@@ -148,16 +148,16 @@ var
 begin
 
   // tüm zamanlayýcý nesnelerini ara
-  for i := 1 to AZAMI_ZAMANLAYICI_SAYISI do
+  for i := 0 to AZAMI_ZAMANLAYICI_SAYISI - 1 do
   begin
 
     // zamanlayýcý nesnesinin durumu boþ ise
-    if(ZamanlayiciListesi[i]^.FZamanlayiciDurum = zdBos) then
+    if(GZamanlayiciListesi[i]^.FZamanlayiciDurum = zdBos) then
     begin
 
       // durduruldu olarak iþaretle ve çaðýran iþleve geri dön
-      ZamanlayiciListesi[i]^.FZamanlayiciDurum := zdDurduruldu;
-      Result := ZamanlayiciListesi[i];
+      GZamanlayiciListesi[i]^.FZamanlayiciDurum := zdDurduruldu;
+      Result := GZamanlayiciListesi[i];
       Exit;
     end;
   end;
@@ -197,37 +197,37 @@ begin
   if(OlusturulanZamanlayiciSayisi = 0) then Exit;
 
   // tüm zamanlayýcý nesnelerini denetle
-  for i := 1 to AZAMI_ZAMANLAYICI_SAYISI do
+  for i := 0 to AZAMI_ZAMANLAYICI_SAYISI - 1 do
   begin
 
     // eðer çalýþýyorsa
-    if(ZamanlayiciListesi[i]^.FZamanlayiciDurum = zdCalisiyor) then
+    if(GZamanlayiciListesi[i]^.FZamanlayiciDurum = zdCalisiyor) then
     begin
 
       // zamanlayýcý sayacýný 1 azalt
-      GeriSayimSayaci := ZamanlayiciListesi[i]^.GeriSayimSayaci;
+      GeriSayimSayaci := GZamanlayiciListesi[i]^.GeriSayimSayaci;
       Dec(GeriSayimSayaci);
-      ZamanlayiciListesi[i]^.GeriSayimSayaci := GeriSayimSayaci;
+      GZamanlayiciListesi[i]^.GeriSayimSayaci := GeriSayimSayaci;
 
       // sayaç 0 deðerini bulmuþsa
       if(GeriSayimSayaci = 0) then
       begin
 
         // yeni sayým için geri sayým deðerini yeniden yükle
-        ZamanlayiciListesi[i]^.GeriSayimSayaci := ZamanlayiciListesi[i]^.TetiklemeSuresi;
+        GZamanlayiciListesi[i]^.GeriSayimSayaci := GZamanlayiciListesi[i]^.TetiklemeSuresi;
 
         Olay.Kimlik := i;
         Olay.Olay := CO_ZAMANLAYICI;
         Olay.Deger1 := 0;
         Olay.Deger2 := 0;
 
-        if not(ZamanlayiciListesi[i]^.FOlayYonlendirmeAdresi = nil) then
+        if not(GZamanlayiciListesi[i]^.FOlayYonlendirmeAdresi = nil) then
 
-          ZamanlayiciListesi[i]^.FOlayYonlendirmeAdresi(nil, Olay)
+          GZamanlayiciListesi[i]^.FOlayYonlendirmeAdresi(nil, Olay)
         else
         begin
 
-          Gorev := GorevListesi[ZamanlayiciListesi[i]^.GorevKimlik];
+          Gorev := GorevListesi[GZamanlayiciListesi[i]^.GorevKimlik];
           Gorev^.OlayEkle(Gorev^.GorevKimlik, Olay);
         end;
       end;
@@ -241,14 +241,14 @@ end;
 procedure ZamanlayicilariYokEt(AGorevKimlik: TKimlik);
 var
   Zamanlayici: PZamanlayici = nil;
-  i: TISayi4;
+  i: TSayi4;
 begin
 
   // tüm zamanlayýcý nesnelerini ara
-  for i := 1 to AZAMI_ZAMANLAYICI_SAYISI do
+  for i := 0 to AZAMI_ZAMANLAYICI_SAYISI - 1 do
   begin
 
-    Zamanlayici := ZamanlayiciListesi[i];
+    Zamanlayici := GZamanlayiciListesi[i];
 
     // zamanlayýcý nesnesi aranan iþleme mi ait
     if(Zamanlayici^.GorevKimlik = AGorevKimlik) then

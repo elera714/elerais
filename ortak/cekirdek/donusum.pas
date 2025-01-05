@@ -6,7 +6,7 @@
   Dosya Adı: donusum.pas
   Dosya İşlevi: değer dönüşüm (convert) işlevlerini içerir
 
-  Güncelleme Tarihi: 27/06/2020
+  Güncelleme Tarihi: 04/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -30,10 +30,10 @@ function StrToIP(AIPAdres: string): TIPAdres;
 function LowerCase(AKarakter: Char): Char;
 function UpperCase(AKarakter: Char): Char;
 function UpperCase(ADeger: string): string;
-function Takas2(ADeger: Word): Word;
-function ntohs(ADeger: Word): Word;
-function htons(ADeger: Word): Word;
-function Takas4(ADeger: TSayi4): TSayi4;
+function ntohs(ADeger: TSayi2): TSayi2;
+function ntohs(ADeger: TSayi4): TSayi4;
+function htons(ADeger: TSayi2): TSayi2;
+function htons(ADeger: TSayi4): TSayi4;
 function UTF16Ascii(ABellek: PWideChar): string;
 function WideChar2String(ABellek: PWideChar): string;
 function WideChar2Char(AWideCharKod: TISayi4): Char;
@@ -162,55 +162,55 @@ end;
  ==============================================================================}
 function IntToStr(ADeger: TISayi4): string;
 var
-  _Bellek: array[0..11] of Char;
-  _Negatif: Boolean;
-  _HaneSayisi: TISayi4;
-  _Deger: TISayi4;
-	_p: PChar;
+  Bellek: array[0..11] of Char;
+  Negatif: Boolean;
+  HaneSayisi: TISayi4;
+  Deger: TISayi4;
+	p: PChar;
 begin
 
   // 32 bit maximum sayı = 4294967295 - on hane
 
   // hane sayısını sıfırla
-  _HaneSayisi := 0;
+  HaneSayisi := 0;
 
   // değerlerin yerleştirileceği belleğin en son kısmına konumlan
-  _p := @_Bellek[11];
+  p := @Bellek[11];
 
   // sayısal değer negatif mi ? pozitif mi ?
 	if (ADeger < 0) then
 	begin
 
-		_Deger := -ADeger;
-		_Negatif := True;
+		Deger := -ADeger;
+		Negatif := True;
 	end
 	else
 	begin
 
-		_Deger := ADeger;
-		_Negatif := False;
+		Deger := ADeger;
+		Negatif := False;
 	end;
 
   // sayısal değeri çevir
 	repeat
 
-		_p^ := Char((_Deger mod 10) + Byte('0'));
-		_Deger := _Deger div 10;
-    Inc(_HaneSayisi);
-		Dec(_p);
-	until (_Deger = 0);
+		p^ := Char((Deger mod 10) + Byte('0'));
+		Deger := Deger div 10;
+    Inc(HaneSayisi);
+		Dec(p);
+	until (Deger = 0);
 
   // sayısal değer negatif ise - işaretini de ekle
-	if(_Negatif) then
+	if(Negatif) then
 	begin
 
-		PChar(_p)^ := '-';
-    Inc(_HaneSayisi);
+		PChar(p)^ := '-';
+    Inc(HaneSayisi);
 	end;
 
   // değeri hedef bölgeye kopyala
-  Tasi2(@_Bellek[11 - _HaneSayisi + 1], @Result[1], _HaneSayisi);
-  SetLength(Result, _HaneSayisi);
+  Tasi2(@Bellek[11 - HaneSayisi + 1], @Result[1], HaneSayisi);
+  SetLength(Result, HaneSayisi);
 end;
 
 {==============================================================================
@@ -245,7 +245,7 @@ end;
  ==============================================================================}
 function IP_KarakterKatari(AIPAdres: TIPAdres): string;
 var
-   Toplam, i: TSayi1;
+  Toplam, i: TSayi1;
   Deger: string[3];
 begin
 
@@ -368,37 +368,34 @@ begin
   end else Result := '';
 end;
 
-// 2 bytelık değerin byte değerlerini takas eder. örnek: $1234 -> $3412
 // big endian -> little endian çevrimi
-function Takas2(ADeger: TSayi2): TSayi2;
+
+// network sıralı değeri host sıralı değere çevirir (örnek: $1234 -> $3412)
+function ntohs(ADeger: TSayi2): TSayi2;
 begin
 
   Result := SwapEndian(ADeger);
 end;
 
-// üstteki işlev ile aynı (üstteki işlev zamanı geldiğinde iptal edilecek)
-// network sıralı değeri host sıralı değere çevirir (örnek: $1234 -> $3412)
-function ntohs(ADeger: Word): Word;
+// network sıralı değeri host sıralı değere çevirir (örnek: $12345678 -> $56781234)
+function ntohs(ADeger: TSayi4): TSayi4;
 begin
 
-  Result := Takas2(ADeger);
+  Result := SwapEndian(ADeger);
 end;
 
-// üstteki işlev ile aynı
 // host sıralı değeri network sıralı değere çevirir (örnek: $1234 -> $3412)
-function htons(ADeger: Word): Word;
+function htons(ADeger: TSayi2): TSayi2;
 begin
 
-  Result := Takas2(ADeger);
+  Result := SwapEndian(ADeger);
 end;
 
-// network sıralı dword değeri host sıralı değere dönüştürür
-// örnek: $12345678 -> $78563412
-function Takas4(ADeger: TSayi4): TSayi4;
+// host sıralı değeri network sıralı değere çevirir (örnek: $12345678 -> $56781234)
+function htons(ADeger: TSayi4): TSayi4;
 begin
 
-  Result := ((ADeger shl 24) and $FF000000) or ((ADeger shl 8) and $00FF0000) or
-    ((ADeger shr 8) and $0000FF00) or ((ADeger shr 24) and $000000FF);
+  Result := SwapEndian(ADeger);
 end;
 
 // UTF-16 (UnicodeString - 16bit) kod çevrimi
@@ -421,92 +418,92 @@ end;
 }
 function UTF16Ascii(ABellek: PWideChar): string;
 var
-  _p: PByte;
-  _B1, _B2: TSayi1;
-  _KodSayisi, _UTF8Kod: TISayi4;
-  _KodUTF8Mi, _IlkUTFKod: Boolean;
+  p: PByte;
+  B1, B2: TSayi1;
+  KodSayisi, UTF8Kod: TISayi4;
+  KodUTF8Mi, IlkUTFKod: Boolean;
 begin
 
   Result := '';
 
-  _p := PByte(ABellek);
+  p := PByte(ABellek);
 
-  _B1 := _p^;
-  Inc(_p);
-  _B2 := _p^;
-  Inc(_p);
+  B1 := p^;
+  Inc(p);
+  B2 := p^;
+  Inc(p);
 
-  _KodUTF8Mi := False;
-  _IlkUTFKod := False;
-  while (_B1 <> 0) or (_B2 <> 0) do
+  KodUTF8Mi := False;
+  IlkUTFKod := False;
+  while (B1 <> 0) or (B2 <> 0) do
   begin
 
-    if((_B1 and $C0) = $C0) then
+    if((B1 and $C0) = $C0) then
     begin
 
-      _IlkUTFKod := True;
-      _UTF8Kod := _B1 and $1F;
-      _KodUTF8Mi := True;
-      _KodSayisi := 2 - 1;
+      IlkUTFKod := True;
+      UTF8Kod := B1 and $1F;
+      KodUTF8Mi := True;
+      KodSayisi := 2 - 1;
     end
-    else if((_B1 and $E0) = $E0) then
+    else if((B1 and $E0) = $E0) then
     begin
 
-      _IlkUTFKod := True;
-      _UTF8Kod := _B1 and $F;
-      _KodUTF8Mi := True;
-      _KodSayisi := 3 - 1;
+      IlkUTFKod := True;
+      UTF8Kod := B1 and $F;
+      KodUTF8Mi := True;
+      KodSayisi := 3 - 1;
     end
-    else if((_B1 and $F0) = $F0) then
+    else if((B1 and $F0) = $F0) then
     begin
 
-      _IlkUTFKod := True;
-      _UTF8Kod := _B1 and $7;
-      _KodUTF8Mi := True;
-      _KodSayisi := 4 - 1;
+      IlkUTFKod := True;
+      UTF8Kod := B1 and $7;
+      KodUTF8Mi := True;
+      KodSayisi := 4 - 1;
     end
-    else if not(_KodUTF8Mi) then
+    else if not(KodUTF8Mi) then
     begin
 
-      _UTF8Kod := (_B2 shl 8) or _B1;
-      _KodUTF8Mi := False;
+      UTF8Kod := (B2 shl 8) or B1;
+      KodUTF8Mi := False;
     end;
 
-    if not(_KodUTF8Mi) then
+    if not(KodUTF8Mi) then
 
-      Result += WideChar2Char(_UTF8Kod)
+      Result += WideChar2Char(UTF8Kod)
     else
     begin
 
       // ilk utf kod ise, değer yukarıda alındığı için sadece bayrağı pasifleştir
-      if(_IlkUTFKod) then
+      if(IlkUTFKod) then
 
-        _IlkUTFKod := False
+        IlkUTFKod := False
       else
       begin
 
         // 2 ve sonraki utf kodları 10xx xxxx biçimindedir
         // 7-6. bitler (10) ihmal edilmiştir
-        _UTF8Kod := (_UTF8Kod shl 6) or (_B1 and $3F);
+        UTF8Kod := (UTF8Kod shl 6) or (B1 and $3F);
 
-        Dec(_KodSayisi);
+        Dec(KodSayisi);
 
         // son utf kodu ise, çevrim işlemini gerçekleştir
-        if(_KodSayisi = 0) then
+        if(KodSayisi = 0) then
         begin
 
-          Result += WideChar2Char(_UTF8Kod);
+          Result += WideChar2Char(UTF8Kod);
 
-          _IlkUTFKod := False;
-          _KodUTF8Mi := False;
+          IlkUTFKod := False;
+          KodUTF8Mi := False;
         end;
       end;
     end;
 
-    _B1 := Byte(_p^);
-    Inc(_p);
-    _B2 := Byte(_p^);
-    Inc(_p);
+    B1 := Byte(p^);
+    Inc(p);
+    B2 := Byte(p^);
+    Inc(p);
   end;
 end;
 

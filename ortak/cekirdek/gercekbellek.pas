@@ -6,7 +6,7 @@
   Dosya Adı: gercekbellek.pas
   Dosya İşlevi: gerçek (fiziksel) bellek yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 24/11/2019
+  Güncelleme Tarihi: 04/01/2025
 
   Bilgi: Bellek rezervasyonları 4K blok ve katları halinde yönetilmektedir
 
@@ -46,14 +46,14 @@ uses genel;
  ==============================================================================}
 procedure TGercekBellek.Yukle;
 var
-  i, ii, _ToplamBellekMiktari: TSayi4;
+  i, ii, ToplamBellekMiktari: TSayi4;
   Bellek: PSayi1;
 begin
 
-  _ToplamBellekMiktari := ToplamBellekMiktariniAl;
+  ToplamBellekMiktari := ToplamBellekMiktariniAl;
 
   // sistemdeki toplam RAM miktarı
-  FToplamRAM := _ToplamBellekMiktari;
+  FToplamRAM := ToplamBellekMiktari;
 
   // RAM miktarını blok sayısına çevir. (1 blok = 4K)
   FToplamBlok := (FToplamRAM shr 12);
@@ -85,7 +85,7 @@ end;
 {$asmmode intel}
 function TGercekBellek.ToplamBellekMiktariniAl: TSayi4;
 var
-  _ToplamBellek: TSayi4;
+  ToplamBellek: TSayi4;
 begin
 
   asm
@@ -111,12 +111,12 @@ begin
     and     eax, not($40000000 + $20000000)
     mov     cr0, eax
 
-    mov   _ToplamBellek,edi
+    mov   ToplamBellek,edi
 
     popad
   end;
 
-  Result := _ToplamBellek;
+  Result := ToplamBellek;
 end;
 
 {==============================================================================

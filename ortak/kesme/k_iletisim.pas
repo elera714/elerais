@@ -70,7 +70,7 @@ begin
     else if(AltIslev = 2) then
     begin
 
-      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       Baglanti := GAgIletisimListesi[BaglantiKimlik];
       Result := Baglanti^.Baglan(btIP);
     end
@@ -78,7 +78,7 @@ begin
     else if(AltIslev = 3) then
     begin
 
-      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       Baglanti := GAgIletisimListesi[BaglantiKimlik];
       Result := TISayi4(Baglanti^.BagliMi);
     end
@@ -86,15 +86,15 @@ begin
     else if(AltIslev = 4) then
     begin
 
-      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       Baglanti := GAgIletisimListesi[BaglantiKimlik];
       Result := Baglanti^.VeriUzunlugu;
     end
-    // bağlantıya gelen veriyi al
+    // bağlantıya gelen veriyi oku
     else if(AltIslev = 5) then
     begin
 
-      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       i := PSayi4(Degiskenler + 04)^;
 
       Baglanti := GAgIletisimListesi[BaglantiKimlik];
@@ -104,7 +104,7 @@ begin
     else if(AltIslev = 6) then
     begin
 
-      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       i := PSayi4(Degiskenler + 04)^;
       j := PSayi4(Degiskenler + 08)^;
 
@@ -116,7 +116,7 @@ begin
     begin
 
       { TODO : kaynakların yok edilmesi test edilecek }
-      BaglantiKimlik := PSayi4(Degiskenler + 00)^;
+      BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       Baglanti := GAgIletisimListesi[BaglantiKimlik];
       Result := Baglanti^.BaglantiyiKes;
     end

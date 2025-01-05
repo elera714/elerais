@@ -6,7 +6,7 @@
   Dosya Adı: genel.pas
   Dosya İşlevi: sistem genelinde kullanılan sabit, değişken ve yapıları içerir
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 05/01/2025
 
  ==============================================================================}
 {$mode objfpc}

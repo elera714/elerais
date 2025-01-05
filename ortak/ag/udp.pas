@@ -6,7 +6,7 @@
   Dosya Adý: udp.pas
   Dosya Ýþlevi: udp protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 02/01/2025
+  Güncelleme Tarihi: 04/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,7 +15,7 @@ unit udp;
 
 interface
 
-uses paylasim;
+uses ip, paylasim;
 
 const
   UDP_BASLIK_U    = 8;
@@ -38,7 +38,7 @@ procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 
 implementation
 
-uses genel, ip, donusum, sistemmesaj, dhcp, iletisim, dns, netbios;
+uses donusum, sistemmesaj, dhcp, iletisim, dns, netbios, genel;
 
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir
@@ -94,7 +94,7 @@ begin
       //SISTEM_MESAJ(RENK_MOR, 'UDP Veri Uzunluðu: %d', [U2]);
 
       // 8 byte = udp paket baþlýk uzunluðu
-      if(U2 > 8) then Baglanti^.BellegeEkle(@UDPPaket^.Veri, U2 - 8);
+      if(U2 > 8) then Baglanti^.BellegeEkle(Baglanti, @UDPPaket^.Veri, U2 - 8);
     end;
   end;
 end;

@@ -7,7 +7,7 @@ program kmodtest;
   Program Adý: kmodtest.lpr
   Program Ýþlevi: ring3 seviyesi korumalý mod test programý
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 05/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -53,11 +53,6 @@ begin
       if(Olay.Kimlik = bagKomutIN.Kimlik) then
       begin
       asm
-        mov edx,0
-        mov eax,8003h
-        mov ecx,0
-        div ecx
-
         mov   dx,$1F0
         in    al,dx
       end;
@@ -65,22 +60,12 @@ begin
       else if(Olay.Kimlik = bagKomutCLI.Kimlik) then
       begin
       asm
-      mov edx,0
-      mov eax,8003h
-      mov ecx,0
-      div ecx
-
         cli
       end;
       end
       else if(Olay.Kimlik = bagKomutJMP.Kimlik) then
       begin
       asm
-      mov edx,0
-      mov eax,8003h
-      mov ecx,0
-      div ecx
-
         db  $EA
         dd  0
         dw  8
@@ -89,11 +74,6 @@ begin
       else if(Olay.Kimlik = bagKomutMOV.Kimlik) then
       begin
       asm
-      mov edx,0
-      mov eax,8003h
-      mov ecx,0
-      div ecx
-
         mov   esi,[$FFFFFFFF]
       end;
       end;

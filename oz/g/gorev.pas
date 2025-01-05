@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 19/08/2020
+  Güncelleme Tarihi: 05/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -54,6 +54,11 @@ type
 
     FGorevKimlik: TKimlik;                // görev kimlik numarasý
     FGorevDurum: TGorevDurum;             // iþlem durumu
+
+    // hata ile ilgili deðiþkenler
+    FHataKodu: TSayi4;
+    FHataESP: TSayi4;
+
     FGorevSayaci: TSayi4;                 // görev deðiþim sayacý
     FBellekBaslangicAdresi: TSayi4;       // iþlemin yüklendiði bellek adresi
     FDosyaAdi,                            // görevin yüklendiði dosya adý
@@ -85,6 +90,7 @@ function AktifProgramiAl: TISayi4;
 function GorevSiraNumarasiniAl(AGorevSiraNo: TISayi4): TKimlik;
 function CalistirilacakBirSonrakiGoreviBul: TKimlik;
 function IliskiliProgramAl(ADosyaUzanti: string): TDosyaIliskisi;
+procedure IsaretlenenGorevleriSonlandir;
 
 implementation
 
@@ -894,6 +900,26 @@ begin
       Result.DosyaTip := IliskiliUygulamaListesi[i].DosyaTip;
       Exit;
     end;
+  end;
+end;
+
+{==============================================================================
+  sonlandýrma amaçlý iþaretlenen görevlerin sonlandýrýr
+  bilgi: uygulama öncelikle sonladýrmak için iþaretlenir daha sonlandýrýlýr
+ ==============================================================================}
+procedure IsaretlenenGorevleriSonlandir;
+var
+  Gorev: PGorev;
+  i: TISayi4;
+begin
+
+  // bellek giriþlerini görev yapýlarýyla eþleþtir
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
+  begin
+
+    Gorev := GorevListesi[i];
+    if(Gorev^.FGorevDurum = gdSonlandiriliyor) then
+      Gorev^.Sonlandir(Gorev^.FGorevKimlik, Gorev^.FHataKodu);
   end;
 end;
 

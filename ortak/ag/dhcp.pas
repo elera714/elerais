@@ -468,7 +468,7 @@ begin
             DHCPYanit.DHCPSunucusu := PIPAdres(@DHCPMesaj^.Mesaj)^
           else if(MesajTipi = DHCP_SECIM_IP_KIRALAMA_SURESI) then
 
-            DHCPYanit.IPKiraSuresi := Takas4(PLongWord(@DHCPMesaj^.Mesaj)^)
+            DHCPYanit.IPKiraSuresi := ntohs(PLongWord(@DHCPMesaj^.Mesaj)^)
           else if(MesajTipi = DHCP_SECIM_MESAJ_TIP) then
           begin
 

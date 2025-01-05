@@ -227,12 +227,12 @@ begin
     DNSPaket := PDNSPaket(DNS^.FBellekAdresi);
 
     // 12 bytelık veri
-	  DNSPaket^.Tanimlayici := ntohs($1234 + DNS^.FKimlik);
-    DNSPaket^.Bayrak := ntohs($0100);                 // standard sorgu, recursion
-    DNSPaket^.SorguSayisi := ntohs(1);                // 1 = sorgu sayısı
-    DNSPaket^.YanitSayisi := ntohs(0);
-    DNSPaket^.YetkiSayisi := ntohs(0);
-    DNSPaket^.DigerSayisi := ntohs(0);
+	  DNSPaket^.Tanimlayici := ntohs(TSayi2($1234 + DNS^.FKimlik));
+    DNSPaket^.Bayrak := ntohs(TSayi2($0100));       // standard sorgu, recursion
+    DNSPaket^.SorguSayisi := ntohs(TSayi2(1));      // sorgu sayısı = 1
+    DNSPaket^.YanitSayisi := ntohs(TSayi2(0));
+    DNSPaket^.YetkiSayisi := ntohs(TSayi2(0));
+    DNSPaket^.DigerSayisi := ntohs(TSayi2(0));
 
     B1 := @DNSPaket^.Veriler;
     ParcaUzunlukBellek := B1;     // 1 bytelık verinin uzunluğunun adresi
@@ -271,9 +271,9 @@ begin
 
     Inc(B1);
     B2 := Isaretci(B1);
-    B2^ := ntohs(TypeCode_A);
+    B2^ := ntohs(TSayi2(TypeCode_A));
     Inc(B2);
-    B2^ := ntohs(Class_IN);
+    B2^ := ntohs(TSayi2(Class_IN));
 
     DNS^.FBaglanti := DNS^.FBaglanti^.Olustur(ptUDP, GAgBilgisi.DNSSunucusu,
       DNS^.FYerelPort, DNS_PORTNO);

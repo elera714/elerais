@@ -38,6 +38,8 @@
         <Filename Value="kmodtest.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
+        <TopLine Value="43"/>
+        <CursorPos X="3" Y="62"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -54,7 +56,7 @@
         <UsageCount Value="10"/>
       </Unit3>
       <Unit4>
-        <Filename Value="../../../../../../lazarus/fpc/3.0.2/source/packages/fcl-process/src/process.pp"/>
+        <Filename Value="../../../../../lazarus/fpc/3.0.2/source/packages/fcl-process/src/process.pp"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="10"/>
       </Unit4>

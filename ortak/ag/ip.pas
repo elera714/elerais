@@ -6,7 +6,7 @@
   Dosya Adı: ip.pas
   Dosya İşlevi: ip paket yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 02/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit ip;
 
 interface
 
-uses paylasim, genel, ag, sistemmesaj;
+uses paylasim, ag, sistemmesaj;
 
 const
   IP_BASLIK_U = 20;
@@ -25,7 +25,7 @@ procedure IPPaketGonder(AHedefMACAdres: TMACAdres; AKaynakIP, AHedefIP: TIPAdres
 
 implementation
 
-uses donusum, icmp, udp, tcp;
+uses donusum, icmp, udp, tcp, genel;
 
 var
   GIPTanimlayici: TSayi2 = $BABA;
@@ -108,7 +108,7 @@ begin
   // ip paketi hazırlanıyor
   IPPaket^.SurumVeBaslikUzunlugu := $45;      // 4 = ip4; 5 * 4 = 20 = ip başlık uzunluğu
   IPPaket^.ServisTipi := $00;
-  IPPaket^.ToplamUzunluk := htons(AVeriUzunlugu + IP_BASLIK_U);
+  IPPaket^.ToplamUzunluk := htons(TSayi2(AVeriUzunlugu + IP_BASLIK_U));
   IPPaket^.Tanimlayici := htons(GIPTanimlayici);
   // ParcaSiraNo: $4000 = 16 bit -> 010 0000000000000
   // ilk 3 bit = 2 = parçalanma yok, diğer bitler parça no = 0

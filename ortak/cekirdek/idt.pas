@@ -6,7 +6,7 @@
   Dosya Adý: idt.pas
   Dosya Ýþlevi: kesme servis rutinlerini (isr) içerir
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 05/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -203,81 +203,36 @@ end;
  ==============================================================================}
 
 {==============================================================================
-  KesmeIslevi00 - hata kodu döndürmez
+  sýfýra bölme hatasý - hata kodu döndürmez
  ==============================================================================}
 procedure KesmeIslevi00; nostackframe; assembler;
-
-  // not : sistemin stabilizasyonu için ileride yeniden yazýlacak
 asm
 
   // tüm kesmeleri durdur
   cli
 
-  // hata kodunu yýðýna at
-  push  dword $00
-
-  // tüm genel yazmaçlarý yýðýna at
-  pushad
-
-  // segment yazmaçlarýný yýðýna at
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
-
   // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  // tüm bilgileri ekrana dök
-  mov eax,esp
-  call  YazmacGoruntuleHY
-
-// programý sonlandýr
+  // programý ilgili deðerlerle iþaretle
   mov eax,CalisanGorev
   shl eax,2
   mov esi,GorevListesi[eax]
-  mov edx,$00
-  mov eax,[esi+TGorev.FGorevKimlik]
-  call TGorev.Sonlandir
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$00
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
 
-  // EOI - kesme sonu, bir sonraki kesmeden devam et mesajý
+  add   esp,4
+
   mov   al,$20
   out   PIC1_KOMUT,al
 
   int $20
 
-  sti
-  iretd
-
-  mov eax,OtomatikGorevDegistir //SistemAnaKontrol
-  jmp eax
-
-  // saklanan ds yazmacýný yýðýndan al ve eski konumuna geri getir
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-
-  // es, ss, fs, gs yazmacý yýðýndan alýnýyor
-  add   esp,2 * 4
-
-  // genel yazmaçlar yýðýndan alýnýyor
-  popad
-
-  // hata kodu yýðýndan alýnýyor
-  add   esp,4
-
-  // kesmeleri aktifleþtir ve çýk
-  sti
-  iretd
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -285,37 +240,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi01; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $01
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$01
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -323,37 +273,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi02; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $02
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$02
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -361,37 +306,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi03; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $03
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$03
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -399,37 +339,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi04; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $04
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$04
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -437,37 +372,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi05; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $05
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$05
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -475,57 +405,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi06; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $06
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
-
-// programý sonlandýr
+  // programý ilgili deðerlerle iþaretle
   mov eax,CalisanGorev
   shl eax,2
   mov esi,GorevListesi[eax]
-  mov edx,$06
-  mov eax,[esi+TGorev.FGorevKimlik]
-  call TGorev.Sonlandir
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$06
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
 
-  // EOI - kesme sonu, bir sonraki kesmeden devam et mesajý
+  add   esp,4
+
   mov   al,$20
   out   PIC1_KOMUT,al
 
   int $20
 
-  sti
-  iretd
-
-@@loop:
-  jmp @@loop
-
-  mov   al,$20
-  out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -566,37 +471,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi08; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $08
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHV
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$08
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,2 * 4     //IsrNum + ErrCode
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -604,37 +504,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi09; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $09
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$09
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -642,53 +537,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi0A; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $0A
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHV
-
-// programý sonlandýr
+  // programý ilgili deðerlerle iþaretle
   mov eax,CalisanGorev
   shl eax,2
   mov esi,GorevListesi[eax]
-  mov ecx,$0A
-  mov edx,[esi+TGorev.FGorevKimlik]
-  //mov edx,CalisanGorev
-  mov eax,TGorev.Sonlandir
-  call eax
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$0A
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
 
-  mov eax,SistemAnaKontrol
-  jmp eax
-
-  mov eax,esp
-  call  YazmacGoruntuleHV
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,2 * 4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -696,37 +570,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi0B; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $0B
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHV
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$0B
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,2 * 4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -734,111 +603,65 @@ end;
  ==============================================================================}
 procedure KesmeIslevi0C; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $0C
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHV
-
-// programý sonlandýr
+  // programý ilgili deðerlerle iþaretle
   mov eax,CalisanGorev
   shl eax,2
   mov esi,GorevListesi[eax]
-  mov edx,$0C
-  mov eax,[esi+TGorev.FGorevKimlik]
-  call TGorev.Sonlandir
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$0C
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
 
-  // EOI - kesme sonu, bir sonraki kesmeden devam et mesajý
+  add   esp,4
+
   mov   al,$20
   out   PIC1_KOMUT,al
 
   int $20
 
-  sti
-  iretd
-
-  mov   al,$20
-  out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,2 * 4
-  sti
-  iretd
+@@son: jmp @@son
 end;
 
 {==============================================================================
-  KesmeIslevi0D - genel koruma hatasý (General Protection Exception) - hata kodu döndürür
+  genel koruma hatasý - hata kodu döndürür
  ==============================================================================}
 procedure KesmeIslevi0D; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
 
-  push  dword $0D
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHV
-
-// programý sonlandýr
+  // programý ilgili deðerlerle iþaretle
   mov eax,CalisanGorev
   shl eax,2
   mov esi,GorevListesi[eax]
-  mov edx,$0D
-  mov eax,[esi+TGorev.FGorevKimlik]
-  call TGorev.Sonlandir
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$0D
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
 
-  // EOI - kesme sonu, bir sonraki kesmeden devam et mesajý
+  add   esp,4
+
   mov   al,$20
   out   PIC1_KOMUT,al
 
   int $20
 
-  sti
-  iretd
-
-  mov   al,$20
-  out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,2 * 4
-  sti
-  iretd
-//end;
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -846,37 +669,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi0E; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $0E
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHV
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$0E
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,2 * 4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -884,37 +702,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi0F; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $0F
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$0F
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -922,37 +735,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi10; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $10
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$10
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -960,37 +768,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi11; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $11
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHV
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$11
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,2 * 4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -998,37 +801,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi12; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $12
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$12
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1036,37 +834,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi13; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $13
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$13
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1074,37 +867,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi14; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $14
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$14
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1112,37 +900,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi15; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $15
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$15
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1150,37 +933,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi16; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $16
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$16
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1188,37 +966,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi17; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $17
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$17
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1226,37 +999,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi18; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $18
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$18
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1264,37 +1032,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi19; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $19
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$19
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1302,37 +1065,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi1A; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $1A
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$1A
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1340,37 +1098,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi1B; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $1B
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$1B
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1378,37 +1131,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi1C; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $1C
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$1C
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1416,37 +1164,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi1D; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $1D
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$1D
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1454,37 +1197,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi1E; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $1E
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHV
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$1E
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1492,37 +1230,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi1F; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $1F
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$1F
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
+
+  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
-  add   esp,4
-  sti
-  iretd
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1534,35 +1267,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi30; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $30
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$30
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
 
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
   add   esp,4
-  sti
-  iretd
+
+  mov   al,$20
+  out   PIC1_KOMUT,al
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1570,35 +1300,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi31; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $31
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$31
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
 
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
   add   esp,4
-  sti
-  iretd
+
+  mov   al,$20
+  out   PIC1_KOMUT,al
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1606,35 +1333,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi32; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $32
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$32
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
 
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
   add   esp,4
-  sti
-  iretd
+
+  mov   al,$20
+  out   PIC1_KOMUT,al
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================
@@ -1642,35 +1366,32 @@ end;
  ==============================================================================}
 procedure KesmeIslevi33; nostackframe; assembler;
 asm
+
+  // tüm kesmeleri durdur
   cli
-  push  dword $33
-  pushad
-  xor   eax,eax
-//  mov   ax,gs
-//  push  eax
-//  mov   ax,fs
-//  push  eax
-  mov   ax,ss
-  push  eax
-  mov   ax,es
-  push  eax
-  mov   ax,ds
-  push  eax
+
+  // ds ve es yazmaçlarýný sistem yazmaçlarýna ayarla
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
-  mov   es,ax
 
-  mov eax,esp
-  call  YazmacGoruntuleHY
+  // programý ilgili deðerlerle iþaretle
+  mov eax,CalisanGorev
+  shl eax,2
+  mov esi,GorevListesi[eax]
+  mov eax,4                             // gdSonlandiriliyor
+  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,$33
+  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.FHataESP],esp
 
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
-  add   esp,2 * 4
-  popad
   add   esp,4
-  sti
-  iretd
+
+  mov   al,$20
+  out   PIC1_KOMUT,al
+
+  int $20
+
+@@son: jmp @@son
 end;
 
 {==============================================================================

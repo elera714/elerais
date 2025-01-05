@@ -20,7 +20,7 @@ interface
     Big Endian:   78 56 34 12
     Litle Endian: 12 34 56 78
  ==============================================================================}
-uses paylasim, aygityonetimi, iletisim, genel;
+uses paylasim, aygityonetimi, iletisim;
 
 const
   ETHERNET_BASLIKU = TSayi1(14);
@@ -39,7 +39,7 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi
 
 implementation
 
-uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum;
+uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, genel;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
