@@ -30,7 +30,9 @@ uses
   gn_degerdugmesi, gn_etiket, gn_durumcubugu, gn_secimdugmesi, gn_baglanti, gn_resim,
   gn_menu, n_zamanlayici, n_sistemmesaj, n_gorev, n_iletisim, n_dns, gn_listegorunum,
   gn_resimdugmesi, gn_kaydirmacubugu, gn_karmaliste, gn_acilirmenu, gn_degerlistesi,
-  gn_izgara, gn_renksecici, gn_araccubugu, gn_sayfakontrol, n_genel, n_giysi, n_depolama;
+  gn_izgara, gn_renksecici, gn_araccubugu, gn_sayfakontrol, n_genel, n_giysi, n_depolama,
+
+  _forms;
 
 type
   TSysInfo = record

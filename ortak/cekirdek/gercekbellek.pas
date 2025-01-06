@@ -6,7 +6,7 @@
   Dosya Adı: gercekbellek.pas
   Dosya İşlevi: gerçek (fiziksel) bellek yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 04/01/2025
+  Güncelleme Tarihi: 05/01/2025
 
   Bilgi: Bellek rezervasyonları 4K blok ve katları halinde yönetilmektedir
 
@@ -46,7 +46,7 @@ uses genel;
  ==============================================================================}
 procedure TGercekBellek.Yukle;
 var
-  i, ii, ToplamBellekMiktari: TSayi4;
+  i, ToplamBellekMiktari: TSayi4;
   Bellek: PSayi1;
 begin
 
@@ -59,9 +59,9 @@ begin
   FToplamBlok := (FToplamRAM shr 12);
 
   // çekirdek için bellek ayrımını gerçekleştir
-  ii := (SISTEME_AYRILMIS_RAM shr 12);
-  FAyrilmisBlok := ii;
-  FKullanilmisBlok := ii;
+  i := (SISTEME_AYRILMIS_RAM shr 12);
+  FAyrilmisBlok := i;
+  FKullanilmisBlok := i;
 
   // tüm belleği boş olarak işaretle
   Bellek := BELLEK_HARITA_ADRESI;
@@ -85,62 +85,64 @@ end;
 {$asmmode intel}
 function TGercekBellek.ToplamBellekMiktariniAl: TSayi4;
 var
-  ToplamBellek: TSayi4;
+  i: TSayi4;
 begin
+asm
+  pushad
 
-  asm
-    pushad
+  // önbellek işlemini durdur
+  mov   eax,cr0
+  and   eax,not($40000000 + $20000000)
+  or    eax,$40000000
+  mov   cr0,eax
+  wbinvd
 
-    // önbellek işlemini durdur
-    mov   eax, cr0
-    and   eax, not($40000000 + $20000000)
-    or    eax, $40000000
-    mov   cr0, eax
-    wbinvd
+  xor   edi,edi
+  mov   ebx,'1234'
+@tekrar:
+  add   edi,$100000
+  xchg  ebx,DWORD[edi]
+  cmp   DWORD[edi],'1234'
+  xchg  ebx,DWORD[edi]
+  je    @tekrar
 
-    xor   edi, edi
-    mov   ebx, '1234'
-  @tekrar:
-    add     edi, $100000
-    xchg    ebx, dword [edi]
-    cmp     dword [edi], '1234'
-    xchg    ebx, dword [edi]
-    je      @tekrar
+  // önbellek işlemine devam et
+  and   eax,not($40000000 + $20000000)
+  mov   cr0,eax
 
-    // önbellek işlemine devam et
-    and     eax, not($40000000 + $20000000)
-    mov     cr0, eax
+  mov   i,edi
 
-    mov   ToplamBellek,edi
+  popad
+end;
 
-    popad
-  end;
-
-  Result := ToplamBellek;
+  Result := i;
 end;
 
 {==============================================================================
   boş bellek alanını rezerv eder ve bellek bölgesini sıfırlar
+  bilgi: istenen bellek miktarı 4096 byte ve katları olarak tahsis edilir
+  1    byte..4096 byte arası 1 blok
+  4097 byte..8192 byte arası 2 blok tahsis edilir
  ==============================================================================}
 function TGercekBellek.Ayir(AIstenenBellek: TSayi4): Isaretci;
 var
   IlkBlok: TISayi4;
-  BlokSayisi, i: TSayi4;
+  IstenenBellek, BlokSayisi,
+  i: TSayi4;
   Bellek: PByte;
 begin
 
+  if(AIstenenBellek = 0) then Exit(nil);
+
   // AIstenenBellek = byte türünden istenen bellek miktarı
-  BlokSayisi := (AIstenenBellek shr 12) + 1;
+  // 1..4096 arası 1 blok tasarımı
+  IstenenBellek := AIstenenBellek - 1;
+
+  BlokSayisi := (IstenenBellek shr 12) + 1;
 
   // boş bellek alanı bul
   IlkBlok := BosBellekBul(BlokSayisi);
-
-  if(IlkBlok = -1) then
-  begin
-
-    Result := nil;
-    Exit;
-  end;
+  if(IlkBlok < 0) then Exit(nil);
 
   Bellek := BELLEK_HARITA_ADRESI;
   Inc(Bellek, IlkBlok);
@@ -155,7 +157,7 @@ begin
 
   // bellek bölgesini sıfır ile doldur
   i := (IlkBlok shl 12);
-  FillByte(Isaretci(i)^, AIstenenBellek, 0);
+  FillByte(Isaretci(i)^, BlokSayisi shl 12, 0);
 
   Inc(FKullanilmisBlok, BlokSayisi);
 
@@ -167,7 +169,8 @@ end;
  ==============================================================================}
 procedure TGercekBellek.YokEt(ABellekAdresi: Isaretci; ABellekUzunlugu: TSayi4);
 var
-  IlkBlok, BlokSayisi, i: TSayi4;
+  IlkBlok, BlokSayisi,
+  i: TSayi4;
   Bellek: PByte;
 begin
 

@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-01-05T16:39:55Z">
+  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-01-06T10:20:28Z">
     <Description>ELERA &#x130;&#x15F;letim Sistemi (32 Bit)</Description>
     <MediaRegistry>
       <HardDisks>
@@ -252,7 +252,7 @@
       <AudioAdapter driver="DirectSound" enabled="true" enabledIn="true" enabledOut="true"/>
       <Clipboard mode="Bidirectional"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1736095159633328100" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1736158818022531800" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="Floppy Controller" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">

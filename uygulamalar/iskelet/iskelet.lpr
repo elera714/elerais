@@ -6,29 +6,30 @@
   Program Adý: iskelet.lpr
   Program Ýþlevi: ana program iskeleti
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 06/01/2025
+
+  Bilgi: ELERA Ýþletim Sistemi program ana yapýsýnýn Lazarus nesnesel yapýsý ile uyumlu olmasý
+    için gerekli çalýþmalar bu uygulama iskelet çalýþmasý aracýlýðýyla gerçekleþmektedir
 
  ==============================================================================}
 {$mode objfpc}
 program iskelet;
 
-uses n_gorev, anabirim, birim2, birim3;
-
-const
-  ProgramAdi: string = 'Temel Ýskelet';
-
-var
-  Gorev: TGorev;
+uses n_gorev, anasayfafrm, islemfrm, onayfrm, _forms;
 
 begin
 
-  Gorev.Yukle;
-  Gorev.Ad := ProgramAdi;
+  Application.Olustur;
 
-  Pencere1.Olustur;
-  Pencere2.Olustur;
-  Pencere3.Olustur;
+  Application.Title := 'Temel Ýskelet';
+  //Application.Initialize;
+  //Application.CreateForm(TfrmAnaSayfa, frmAnaSayfa);
+  //Application.Run;
 
-  Pencere1.Goster;
-  Pencere1.OlaylariIsle;
+  frmAnaSayfa.Olustur;
+  frmIslem.Olustur;
+  frmOnay.Olustur;
+
+  frmAnaSayfa.Goster;
+  frmAnaSayfa.OlaylariIsle;
 end.

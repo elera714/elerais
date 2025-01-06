@@ -605,23 +605,10 @@ end;
 {==============================================================================
   çalýþan görevi sonlandýrýr
  ==============================================================================}
-var
-  SonlandirGorevNo: TSayi4 = 0;
-
 function TGorev.Sonlandir(AGorevKimlik: TKimlik; const ASonlanmaSebebi: TISayi4 = -1): TISayi4;
 var
   Gorev: PGorev = nil;
 begin
-
-//  if(SonlandirGorevNo <> 0) then while SonlandirGorevNo <> 0 do;
-
-  SonlandirGorevNo := AGorevKimlik;
-
-  // çalýþan görevi durdur
-  Gorev^.DurumDegistir(AGorevKimlik, gdDurduruldu);
-
-//  SISTEM_MESAJ(RENK_KIRMIZI, 'Sonlandýrýlan Görev Kimlik: %d', [AGorevKimlik]);
-//  Exit;
 
   // görevin sonlandýrýlma bilgisini ver
   if(ASonlanmaSebebi = -1) then
@@ -650,28 +637,19 @@ begin
   // göreve ait görsel nesneleri yok et
   GorevGorselNesneleriniYokEt(AGorevKimlik);
 
-  // görevi iþlem listesinden çýkart
-  DurumDegistir(AGorevKimlik, gdBos);
-
   // göreve ait olay bellek bölgesini iptal et
   { TODO : 1. bu iþlev olay yönetim sistem nesnesinin içerisine dahil edilecek
            2. olay bellek bölgesi iptal edilmeden önce önceden oluþturulan olaylar da kayýtlardan çýkarýlacak }
   GGercekBellek.YokEt(OlayBellekAdresi, 4096);
 
   // görev için ayrýlan bellek bölgesini serbest býrak
-  GGercekBellek.YokEt(Isaretci(BellekBaslangicAdresi), FBellekUzunlugu +
-    PROGRAM_YIGIN_BELLEK);
+  GGercekBellek.YokEt(Isaretci(BellekBaslangicAdresi), BellekUzunlugu);
 
   // görevi iþlem listesinden çýkart
   DurumDegistir(AGorevKimlik, gdBos);
 
   // görev sayýsýný bir azalt
   Dec(CalisanGorevSayisi);
-
-  //CalisanGorev := 0;
-  //GAktifMasaustu^.Guncelle;   artýk anlamsýz
-
-  SonlandirGorevNo := 0;
 
   // görev bayrak deðerini artýr
   Inc(GorevBayrakDegeri);
