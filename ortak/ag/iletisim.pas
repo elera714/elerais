@@ -388,7 +388,7 @@ begin
   //if(Self.FBellekUzunlugu + ABellekUzunlugu < 4000) then
   begin
 
-    p := ABaglanti^.FBellek + ABaglanti^.FBellekUzunlugu;
+    p := ABaglanti^.FBellek; // + ABaglanti^.FBellekUzunlugu;
 
 {    Tasi2(Merhaba, p, 7);
     i := ABaglanti^.FBellekUzunlugu;
@@ -408,6 +408,8 @@ begin
     Tasi2(AKaynakBellek, p, ABellekUzunlugu);
     i := ABaglanti^.FBellekUzunlugu;
     i += ABellekUzunlugu;
+
+    i := ABellekUzunlugu;
     ABaglanti^.FBellekUzunlugu := i;
   end;
 //  asm sti end;

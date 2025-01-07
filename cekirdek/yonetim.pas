@@ -6,7 +6,7 @@
   Dosya Adý: yonetim.pas
   Dosya Ýþlevi: sistem ana yönetim / kontrol kýsmý
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 07/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -111,7 +111,7 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, donusum, gn_islevler, giysi_normal, giysi_mac, depolama,
-  src_disket, vbox, usb, ohci;
+  src_disket, vbox, usb, ohci, port;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -238,7 +238,7 @@ var
   DD1: TISayi1;
   DD4: TISayi4;
   BellekI: Isaretci;
-//  sss: string;
+  B1: TSayi1;
 begin
 
 {  if(CalisanGorevSayisi = 1) then
@@ -329,7 +329,7 @@ begin
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
           //Gorev^.Calistir('disket1:\tarayici.c');
-          Gorev^.Calistir('disket1:\bharita.c');
+          //Gorev^.Calistir('disket1:\bharita.c');
           //Gorev^.Calistir('disket1:\iletisim.c');
         end
         // test iþlev tuþu-1
@@ -396,6 +396,13 @@ begin
 
           Gorev^.Calistir('disk1:\grvyntcs.c')
 
+        // bilgisayarý kapat
+        else if(Tus = 'k') then
+        begin
+
+          asm cli; hlt; end;
+        end
+
         // mesaj görüntüleme programýný çalýþtýr
         else if(Tus = 'm') then
 
@@ -404,7 +411,23 @@ begin
         // resim görüntüleme programýný çalýþtýr
         else if(Tus = 'r') then
 
-          Gorev^.Calistir('disk1:\resimgor.c');
+          Gorev^.Calistir('disk1:\resimgor.c')
+
+        // bilgisayarý yeniden baþlat
+        else if(Tus = 'y') then
+        begin
+
+          repeat
+
+            B1 := PortAl1($64);
+            if((B1 and 1) = 0) then PortAl1($60);     // = 1 = veri mevcut olduðu müddetçe porttan veriyi al
+          until ((B1 and 2) = 0);                     // = 0 = veri yazýlabilir olmadýðý müddetçe tekrarla
+
+          // porta veriyi yaz - yeniden baþlat
+          PortYaz1($64, $FE);
+
+          asm @@1: hlt; jmp @@1; end;
+        end
       end
       else
       begin

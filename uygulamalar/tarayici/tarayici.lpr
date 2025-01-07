@@ -83,6 +83,8 @@ begin
     if(Olay.Olay = CO_ZAMANLAYICI) then
     begin
 
+      SonDurum := 'Baðlantý yok!';
+
       if(Iletisim0.Kimlik <> HATA_KIMLIK) then
       begin
 
@@ -110,16 +112,16 @@ begin
             if(VeriUzunlugu > 0) then
             begin
 
-              VeriUzunlugu := Iletisim0.VeriOku(@Veriler);
+              VeriUzunlugu := Iletisim0.VeriOku(@Veriler[0]);
               Veriler[VeriUzunlugu] := 0;
 
-              Defter.YaziEkle(PChar(@Veriler));
+              Defter.YaziEkle(PChar(@Veriler[0]));
 
               Iletisim0.BaglantiyiKes;
             end;
           end;
-        end else SonDurum := 'Baðlantý yok!';
-      end else SonDurum := 'Baðlantý yok!';
+        end;
+      end;
 
       DurumCubugu.DurumYazisiDegistir(SonDurum);
     end
