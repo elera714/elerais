@@ -94,11 +94,10 @@ begin
   else if(Islev = $74) then
   begin
 
-    SISTEM_MESAJ(RENK_MOR, 'fiziksel depolama aygýtýna veri yaz iþlevi', []);
-    {AygitKimlik := PSayi4(ADegiskenler + 00)^;
+    AygitKimlik := PSayi4(ADegiskenler + 00)^;
     p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
-    Result := FizikselDepolamaVeriOku(AygitKimlik, PSayi4(ADegiskenler + 04)^,
-      PSayi4(ADegiskenler + 08)^, p);}
+    Result := FizikselDepolamaVeriYaz(AygitKimlik, PSayi4(ADegiskenler + 04)^,
+      PSayi4(ADegiskenler + 08)^, p);
   end;
 end;
 

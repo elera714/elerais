@@ -453,13 +453,13 @@ type
 type
   PIDEDisk = ^TIDEDisk;
   TIDEDisk = record
-    PortNo: Word;
+    AnaPort, KontrolPort: Word;
     Kanal: Byte;
   end;
 
 type
   TSektorIslev = function(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-    ABellek: Isaretci): Boolean;
+    ABellek: Isaretci): TSayi4;
 
 // fiziksel sürücü yapýsý
 type
@@ -477,7 +477,7 @@ type
     SonIzKonumu: TISayi1;           // floppy sürücüsünün kafasýnýn bulunduðu son iz (track) no
     IslemYapiliyor: Boolean;        // True = sürücü iþlem yapmakta, False = sürücü boþta
     MotorSayac: TSayi4;             // motor kapatma geri sayým sayacý (þu an sadece floppy sürücüsü için)
-    PortBilgisi: TIDEDisk;
+    Aygit: TIDEDisk;                // depolama aygýtý
     SektorOku: TSektorIslev;        // sektör okuma iþlevi
     SektorYaz: TSektorIslev;        // sektör yazma iþlevi
   end;

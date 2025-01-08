@@ -76,7 +76,7 @@ var
   _DATSiraNo: TSayi2;
   _OkunacakSektorSayisi, _i: TSayi2;
   _OkunacakVeri: TISayi4;
-  _OkumaSonuc: Boolean;
+  _OkumaSonuc: TSayi4;
 begin
 
   // iþlem yapýlan dosyayla ilgili bellek bölgesine konumlan
@@ -94,7 +94,7 @@ begin
     _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.IlkSektor,
     _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.ToplamSektor, _DATBellekAdresi);
 
-  if not(_OkumaSonuc) then SISTEM_MESAJ(RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
+  if(_OkumaSonuc <> 0) then SISTEM_MESAJ(RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
 
   _OkunacakVeri := _DosyaKayit^.Uzunluk;
 
@@ -102,7 +102,7 @@ begin
 
   _OkunacakSektorSayisi := _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
 
-  _OkumaSonuc := False;
+  _OkumaSonuc := 1;
 
   repeat
 
@@ -130,10 +130,10 @@ begin
     _Zincir := _DATSiraNo;
 
     _OkunacakVeri -= (_OkunacakSektorSayisi * 512);
-    if(_OkunacakSektorSayisi <= 0) then _OkumaSonuc := True;
+    if(_OkunacakSektorSayisi <= 0) then _OkumaSonuc := 0;
 
   // eðer 0xFF8..0xFFF aralýðýndaysa bu dosyanýn en son zinciridir
-  until (_Zincir >= $FF8) or (_OkumaSonuc);
+  until (_Zincir >= $FF8) or (_OkumaSonuc = 0);
 
   GGercekBellek.YokEt(_DATBellekAdresi,
     _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);

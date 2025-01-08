@@ -35,8 +35,9 @@
       <Unit0>
         <Filename Value="kopyala.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="133"/>
-        <CursorPos X="36" Y="152"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="130"/>
+        <CursorPos X="69" Y="154"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -65,8 +66,8 @@
       <Unit4>
         <Filename Value="..\..\rtl_uygulama\linux\paylasim.inc"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="326"/>
-        <CursorPos X="25" Y="357"/>
+        <TopLine Value="341"/>
+        <CursorPos X="40" Y="360"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit4>
@@ -109,8 +110,9 @@
       </Unit9>
       <Unit10>
         <Filename Value="..\..\rtl_uygulama\linux\n_depolama.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
+        <TopLine Value="78"/>
+        <CursorPos X="85" Y="79"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit10>

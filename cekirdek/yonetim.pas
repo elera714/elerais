@@ -239,6 +239,7 @@ var
   DD4: TISayi4;
   BellekI: Isaretci;
   B1: TSayi1;
+  Belk: array[0..511] of TSayi1;
 begin
 
 {  if(CalisanGorevSayisi = 1) then
@@ -331,6 +332,8 @@ begin
           //Gorev^.Calistir('disket1:\tarayici.c');
           //Gorev^.Calistir('disket1:\bharita.c');
           //Gorev^.Calistir('disket1:\iletisim.c');
+          Gorev^.Calistir('disket1:\kopyala.c');
+          //vbox.Listele;
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then
@@ -352,6 +355,7 @@ begin
           //BellekI := GGercekBellek.Ayir(4095);
           //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
           //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
+          //vbox.IcerigiGoruntule;
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then

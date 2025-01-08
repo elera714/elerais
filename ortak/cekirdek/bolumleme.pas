@@ -87,7 +87,7 @@ begin
 
           // disketin ilk sektörünü oku
           if(FizikselDepolamaAygitListesi[i].SektorOku(@FizikselDepolamaAygitListesi[i],
-            0, 1, @_Bellek1)) then
+            0, 1, @_Bellek1) = 0) then
           begin
 
             // okunan bilgi yapýsýna konumlan
@@ -146,7 +146,7 @@ begin
 
           // diskin ilk sektörünü (MBR) oku
           if(FizikselDepolamaAygitListesi[i].SektorOku(@FizikselDepolamaAygitListesi[i],
-            0, 1, @_Bellek1)) then
+            0, 1, @_Bellek1) = 0) then
           begin
 
             // bölümleme bilgisine konumlan

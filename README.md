@@ -25,6 +25,8 @@ Kullanılan Yazılım Araçları:
 
 ![Takvim](takvim.png)
 
+![Kopyala](kopyala.png)
+
 ---
 Tanıtım Videosu
 

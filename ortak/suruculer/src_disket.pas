@@ -59,9 +59,9 @@ procedure SektoruAyristir(ASektorNo: TSayi2; var AKafa, AIz, ASektor: TSayi1);
 function TekSektorOku(AFizikselSurucu: PFizikselSurucu; ASektorNo: TSayi4): Boolean;
 function TekSektorYaz(AFizikselSurucu: PFizikselSurucu; ASektorNo: TSayi4): Boolean;
 function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): Boolean;
+  AHedefBellek: Isaretci): TSayi4;
 function SektorYaz(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): Boolean;
+  AHedefBellek: Isaretci): TSayi4;
 
 implementation
 
@@ -111,8 +111,8 @@ begin
         _FizikselSurucu^.Ozellikler := j;
         _FizikselSurucu^.SektorOku := @SektorOku;
         _FizikselSurucu^.SektorYaz := @SektorYaz;
-        _FizikselSurucu^.PortBilgisi.PortNo := $3F0;
-        _FizikselSurucu^.PortBilgisi.Kanal := 0;
+        _FizikselSurucu^.Aygit.AnaPort:= $3F0;
+        _FizikselSurucu^.Aygit.Kanal := 0;
         _FizikselSurucu^.SonIzKonumu := -1;
 
         _FizikselSurucu^.SilindirSayisi := 18;
@@ -140,8 +140,8 @@ begin
         _FizikselSurucu^.Ozellikler := j;
         _FizikselSurucu^.SektorOku := @SektorOku;
         _FizikselSurucu^.SektorYaz := @SektorYaz;
-        _FizikselSurucu^.PortBilgisi.PortNo := $3F0;
-        _FizikselSurucu^.PortBilgisi.Kanal := 1;
+        _FizikselSurucu^.Aygit.AnaPort:= $3F0;
+        _FizikselSurucu^.Aygit.Kanal := 1;
         _FizikselSurucu^.SonIzKonumu := -1;
 
         _FizikselSurucu^.SilindirSayisi := 18;
@@ -195,7 +195,7 @@ begin
   PortYaz1(DISKET_CIKISYAZMAC, 0);
 
   // motor'u aç
-  if(AFizikselSurucu^.PortBilgisi.Kanal = 0) then
+  if(AFizikselSurucu^.Aygit.Kanal = 0) then
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $1C);
@@ -221,7 +221,7 @@ procedure MotorKapat(AFizikselSurucu: PFizikselSurucu);
 begin
 
   // motor'u kapat
-  if(AFizikselSurucu^.PortBilgisi.Kanal = 0) then
+  if(AFizikselSurucu^.Aygit.Kanal = 0) then
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $C);
@@ -363,7 +363,7 @@ begin
   IRQ6Tetiklendi := False;
 
   DurumYaz(7);                                      // Konumlan0
-  DurumYaz(AFizikselSurucu^.PortBilgisi.Kanal);     // kafa no (0) + sürücü
+  DurumYaz(AFizikselSurucu^.Aygit.Kanal);           // kafa no (0) + sürücü
 
   // iþlemin bitmesini bekle
   Bekle;
@@ -396,7 +396,7 @@ begin
   IRQ6Tetiklendi := False;
 
   DurumYaz($F);                                                   // Konumlan
-  DurumYaz((AKafa shl 2) or AFizikselSurucu^.PortBilgisi.Kanal);  // kafa no + sürücü
+  DurumYaz((AKafa shl 2) or AFizikselSurucu^.Aygit.Kanal);        // kafa no + sürücü
   DurumYaz(AIz);
 
   // iþlemin bitmesini bekle
@@ -523,7 +523,7 @@ begin
 
   // MFS sektör oku
   DurumYaz($E6);
-  DurumYaz((_Kafa shl 2) or AFizikselSurucu^.PortBilgisi.Kanal);
+  DurumYaz((_Kafa shl 2) or AFizikselSurucu^.Aygit.Kanal);
   DurumYaz(_Iz);
   DurumYaz(_Kafa);
   DurumYaz(_Sektor);
@@ -592,7 +592,7 @@ begin
 
   // MFS sektör oku
   DurumYaz($45);
-  DurumYaz((_Kafa shl 2) or AFizikselSurucu^.PortBilgisi.Kanal);
+  DurumYaz((_Kafa shl 2) or AFizikselSurucu^.Aygit.Kanal);
   DurumYaz(_Iz);
   DurumYaz(_Kafa);
   DurumYaz(_Sektor);
@@ -622,7 +622,7 @@ end;
   disket sürücü sektör okuma iþlevi
  ==============================================================================}
 function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): Boolean;
+  AHedefBellek: Isaretci): TSayi4;
 var
   _FizikselSurucu: PFizikselSurucu;
   _BellekAdresi: Isaretci;
@@ -634,7 +634,7 @@ begin
   _FizikselSurucu := AFizikselSurucu;
 
   // öndeðer dönüþ deðeri
-  Result := True;
+  Result := 0;
 
   // hedef bellek bölgesi
   _BellekAdresi := AHedefBellek;
@@ -677,7 +677,7 @@ begin
       // not: bu iþlem kalibrasyon için yapýlmaktadýr.
       _FizikselSurucu^.SonIzKonumu := -1;
 
-      Result := False;
+      Result := 1;
       Exit;
     end;
 
@@ -692,7 +692,7 @@ end;
   disket sürücü sektör okuma iþlevi
  ==============================================================================}
 function SektorYaz(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): Boolean;
+  AHedefBellek: Isaretci): TSayi4;
 var
   _FizikselSurucu: PFizikselSurucu;
   _BellekAdresi: Isaretci;
@@ -704,7 +704,7 @@ begin
   _FizikselSurucu := AFizikselSurucu;
 
   // öndeðer dönüþ deðeri
-  Result := True;
+  Result := 0;
 
   // hedef bellek bölgesi
   _BellekAdresi := AHedefBellek;

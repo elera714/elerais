@@ -6,7 +6,7 @@
   Dosya Adý: yukleyici.pas
   Dosya Ýþlevi: sistem ilk açýlýþ yükleme iþlevleri gerçekleþtirir
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 07/01/2025
 
  ==============================================================================}
 {$mode objfpc}
