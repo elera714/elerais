@@ -7,7 +7,7 @@ program dsyyntcs;
   Program Adý: dsyyntcs.lpr
   Program Ýþlevi: dosya yöneticisi
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -29,7 +29,7 @@ var
   DurumCubugu: TDurumCubugu;
   lgDosyaListesi: TListeGorunum;
   Olay: TOlay;
-  MantiksalSurucu: TMantiksalSurucu3;
+  MantiksalDepolama: TMantiksalDepolama3;
   AygitSayisi, i, DosyaSayisi: TSayi4;
   GecerliSurucu, SeciliYazi, s: string;
 
@@ -113,11 +113,11 @@ begin
   if(AygitSayisi > 0) then
   begin
 
-    for i := 1 to AygitSayisi do
+    for i := 0 to AygitSayisi - 1 do
     begin
 
-      if(Depolama.MantiksalDepolamaAygitBilgisiAl(i, @MantiksalSurucu)) then
-        klSurucu.ElemanEkle(MantiksalSurucu.AygitAdi);
+      if(Depolama.MantiksalDepolamaAygitBilgisiAl(i, @MantiksalDepolama)) then
+        klSurucu.ElemanEkle(MantiksalDepolama.AygitAdi);
     end;
 
     if(klSurucu.ElemanSayisi > 0) then klSurucu.BaslikSiraNo := 0;

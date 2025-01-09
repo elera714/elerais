@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÃ‡
-  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
+  Kodlayan: Fatih KILIÇ
+  Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya AdÄ±: netbios.pas
-  Dosya Ä°ÅŸlevi: netbios api iÅŸlevlerini yÃ¶netir
+  Dosya Adı: netbios.pas
+  Dosya İşlevi: netbios api işlevlerini yönetir
 
-  GÃ¼ncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 31/12/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -23,7 +23,7 @@ implementation
 uses sistemmesaj, donusum;
 
 {==============================================================================
-  dns sorgularÄ±nÄ± yanÄ±tlar
+  dns sorgularını yanıtlar
  ==============================================================================}
 procedure DNSSorgulariniYanitla(AUDPBaslik: PUDPPaket);
 var
@@ -51,18 +51,18 @@ begin
   SISTEM_MESAJ_S16(RENK_LACIVERT, '-> YetkiSayisi: ', ntohs(DNSPacket^.YetkiSayisi), 4);
   SISTEM_MESAJ_S16(RENK_LACIVERT, '-> DigerSayisi: ', ntohs(DNSPacket^.DigerSayisi), 4);
 
-  // sorgu sayÄ±sÄ± ve yanÄ±t sayÄ±sÄ± kontrolÃ¼
+  // sorgu sayısı ve yanıt sayısı kontrolü
   SorguSayisi := ntohs(DNSPacket^.SorguSayisi);
   DigerSayisi := ntohs(DNSPacket^.DigerSayisi);
 
-  // SADECE 1 adet sorguya sahip baÅŸlÄ±k deÄŸerlendirilecek
+  // SADECE 1 adet sorguya sahip başlık değerlendirilecek
   if(SorguSayisi <> 1) then Exit;
   //if(DigerSayisi <> 1) then Exit;
 
   NetBIOSAdi := '';
 
   _B1 := @DNSPacket^.Veriler;
-  Inc(_B1);    // uzunluÄŸu atla
+  Inc(_B1);    // uzunluğu atla
   while _B1^ <> 0 do
   begin
 
@@ -77,10 +77,10 @@ begin
     NetBIOSAdi := NetBIOSAdi + Char(B3);
   end;
 
-  // sÄ±fÄ±r sonlandÄ±rmayÄ± atla
+  // sıfır sonlandırmayı atla
   Inc(_B1);
 
-  // type ve class deÄŸerini atla
+  // type ve class değerini atla
   _B2 := PSayi2(_B1);
   Inc(_B2);
   Inc(_B2);
@@ -93,7 +93,7 @@ begin
 
   SISTEM_MESAJ_S16(RENK_MOR, '-> Tip: ', ntohs(_B2^), 4);
   Inc(_B2);
-  SISTEM_MESAJ_S16(RENK_MOR, '-> SÄ±nÄ±f: ', ntohs(_B2^), 4);
+  SISTEM_MESAJ_S16(RENK_MOR, '-> Sınıf: ', ntohs(_B2^), 4);
   Inc(_B2);
 
   _B4 := PSayi4(_B2);
@@ -101,10 +101,10 @@ begin
   Inc(_B4);
 
   _B2 := PSayi2(_B4);
-  SISTEM_MESAJ_S16(RENK_MOR, '-> Veri UzunluÄŸu: ', ntohs(_B2^), 4);
+  SISTEM_MESAJ_S16(RENK_MOR, '-> Veri Uzunluğu: ', ntohs(_B2^), 4);
   Inc(_B2);
 
-  // isim bayraÄŸÄ± - name flags
+  // isim bayrağı - name flags
   Inc(_B2);
 
   _B1 := PSayi1(_B2);

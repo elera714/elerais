@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÃ‡
-  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
+  Kodlayan: Fatih KILIÇ
+  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
-  Dosya AdÄ±: depolama.pas
-  Dosya Ä°ÅŸlevi: depolama aygÄ±t iÅŸlevlerini yÃ¶netir
+  Dosya Adý: depolama.pas
+  Dosya Ýþlevi: depolama aygýt iþlevlerini yönetir
 
-  GÃ¼ncelleme Tarihi: 16/10/2019
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,182 +16,155 @@ interface
 
 uses paylasim;
 
-function FizikselDepolamaAygitBilgisiAl(AAygitKimlik: TKimlik; AFizikselSurucu3:
-  PFizikselSurucu3): TISayi4;
-function FizikselDepolamaVeriOku(AAygitKimlik, ASektorNo, AOkunacakSektor: TSayi4;
-  AHedefBellek: Isaretci): TISayi4;
-function FizikselDepolamaVeriYaz(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
-function MantiksalDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-  AMantiksalSurucu3: PMantiksalSurucu3): TISayi4;
-function MantiksalDepolamaVeriOku(AAygitKimlik, ASektorNo, AOkunacakSektor: TSayi4;
-  AHedefBellek: Isaretci): TISayi4;
+function FizikselSurucuAl(ASiraNo: TISayi4): PFizikselDepolama;
+function FizikselSurucuAl2(AKimlik: TKimlik): PFizikselDepolama;
+function FizikselDepolamaVeriOku(AFizikselDepolama: PFizikselDepolama; ASektorNo,
+  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+function FizikselDepolamaVeriYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo,
+  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+function MantiksalSurucuAl(ASiraNo: TISayi4): PMantiksalDepolama;
+function MantiksalSurucuAl2(AKimlik: TKimlik): PMantiksalDepolama;
+function MantiksalDepolamaVeriOku(AMantiksalDepolama: PMantiksalDepolama; ASektorNo,
+  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 
 implementation
 
 uses sistemmesaj;
 
 {==============================================================================
-  fiziksel depolama aygÄ±tÄ± ile ilgili bilgiler verir
+  sýra numarasýna göre fiziksel depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function FizikselDepolamaAygitBilgisiAl(AAygitKimlik: TKimlik; AFizikselSurucu3:
-  PFizikselSurucu3): TISayi4;
+function FizikselSurucuAl(ASiraNo: TISayi4): PFizikselDepolama;
 var
-  _AygitSiraNo, i: TSayi4;
+  FD: TFizikselDepolama;
+  SiraNo, i: TISayi4;
 begin
 
-  if(AAygitKimlik > 0) and (AAygitKimlik <= FizikselDepolamaAygitSayisi) then
+  if(ASiraNo >= Low(FizikselDepolamaAygitListesi)) and (ASiraNo <= High(FizikselDepolamaAygitListesi)) then
   begin
 
-    _AygitSiraNo := 0;
-    for i := 1 to 6 do
+    SiraNo := -1;
+    for i := Low(FizikselDepolamaAygitListesi) to High(FizikselDepolamaAygitListesi) do
     begin
 
-      if(FizikselDepolamaAygitListesi[i].Mevcut) then Inc(_AygitSiraNo);
+      FD := FizikselDepolamaAygitListesi[i];
+      if(FD.Mevcut0) then Inc(SiraNo);
 
-      if(_AygitSiraNo = AAygitKimlik) then
-      begin
-
-        AFizikselSurucu3^.AygitAdi := FizikselDepolamaAygitListesi[i].AygitAdi;
-        AFizikselSurucu3^.SurucuTipi := FizikselDepolamaAygitListesi[i].SurucuTipi;
-        AFizikselSurucu3^.KafaSayisi := FizikselDepolamaAygitListesi[i].KafaSayisi;
-        AFizikselSurucu3^.SilindirSayisi := FizikselDepolamaAygitListesi[i].SilindirSayisi;
-        AFizikselSurucu3^.IzBasinaSektorSayisi := FizikselDepolamaAygitListesi[i].IzBasinaSektorSayisi;
-        AFizikselSurucu3^.ToplamSektorSayisi := FizikselDepolamaAygitListesi[i].ToplamSektorSayisi;
-        Exit(1);
-      end;
+      if(SiraNo = ASiraNo) then Exit(@FizikselDepolamaAygitListesi[i]);
     end;
   end;
 
-  Result := 0;
+  Result := nil;
 end;
 
 {==============================================================================
-  fiziksel depolama aygÄ±tÄ±ndan veri okur
+  kimlik deðerine göre fiziksel depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function FizikselDepolamaVeriOku(AAygitKimlik, ASektorNo, AOkunacakSektor: TSayi4;
-  AHedefBellek: Isaretci): TISayi4;
+function FizikselSurucuAl2(AKimlik: TKimlik): PFizikselDepolama;
 var
-  _AygitSiraNo, i: TSayi4;
+  FD: TFizikselDepolama;
+  i: TISayi4;
 begin
 
-  if(AAygitKimlik > 0) and (AAygitKimlik <= FizikselDepolamaAygitSayisi) then
+  for i := Low(FizikselDepolamaAygitListesi) to High(FizikselDepolamaAygitListesi) do
   begin
 
-    _AygitSiraNo := 0;
-    for i := 1 to 6 do
-    begin
-
-      if(FizikselDepolamaAygitListesi[i].Mevcut) then Inc(_AygitSiraNo);
-
-      if(_AygitSiraNo = AAygitKimlik) then
-      begin
-
-        if(FizikselDepolamaAygitListesi[i].SektorOku(@FizikselDepolamaAygitListesi[i],
-          ASektorNo, AOkunacakSektor, AHedefBellek) = 0) then Exit(0)
-        else Exit(1);
-      end;
-    end;
+    FD := FizikselDepolamaAygitListesi[i];
+    if(FD.Mevcut0) and (FD.FD3.Kimlik = AKimlik) then Exit(@FizikselDepolamaAygitListesi[i]);
   end;
 
-  Result := 1;
+  Result := nil;
 end;
 
 {==============================================================================
-  fiziksel depolama aygÄ±tÄ±ndan veri okur
+  fiziksel depolama aygýtýndan veri oku
  ==============================================================================}
-function FizikselDepolamaVeriYaz(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
-var
-  _AygitSiraNo, i: TSayi4;
+function FizikselDepolamaVeriOku(AFizikselDepolama: PFizikselDepolama; ASektorNo,
+  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 begin
 
-  if(AAygitKimlik > 0) and (AAygitKimlik <= FizikselDepolamaAygitSayisi) then
-  begin
+{  SISTEM_MESAJ(RENK_MAVI, 'Depolama Kimlik: %d', [AFizikselDepolama^.FD3.Kimlik]);
+  SISTEM_MESAJ(RENK_MAVI, 'Depolama Sürücü Tipi: %d', [AFizikselDepolama^.FD3.SurucuTipi]);
+  SISTEM_MESAJ(RENK_MAVI, 'Depolama Adý: %s', [AFizikselDepolama^.FD3.AygitAdi]);
+  SISTEM_MESAJ(RENK_MAVI, 'Okunacak Ýlk Sektör: %d', [ASektorNo]);
+  SISTEM_MESAJ(RENK_MAVI, 'Okunacak Sektör Sayýsý: %d', [ASektorSayisi]); }
 
-    _AygitSiraNo := 0;
-    for i := 1 to 6 do
-    begin
-
-      if(FizikselDepolamaAygitListesi[i].Mevcut) then Inc(_AygitSiraNo);
-
-      if(_AygitSiraNo = AAygitKimlik) then
-      begin
-
-        if(FizikselDepolamaAygitListesi[i].SektorYaz(@FizikselDepolamaAygitListesi[i],
-          ASektorNo, ASektorSayisi, ABellek) = 0) then Exit(0)
-        else Exit(1);
-      end;
-    end;
-  end;
-
-  Result := 1;
+  Result := AFizikselDepolama^.SektorOku(AFizikselDepolama, ASektorNo,
+    ASektorSayisi, ABellek);
 end;
 
 {==============================================================================
-  mantÄ±ksal depolama aygÄ±tÄ± ile ilgili bilgiler verir
+  fiziksel depolama aygýtýna veri yaz
  ==============================================================================}
-function MantiksalDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-  AMantiksalSurucu3: PMantiksalSurucu3): TISayi4;
-var
-  _AygitSiraNo, i: TSayi4;
+function FizikselDepolamaVeriYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo,
+  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 begin
 
-  if(AAygitKimlik > 0) and (AAygitKimlik <= MantiksalDepolamaAygitSayisi) then
-  begin
-
-    _AygitSiraNo := 0;
-    for i := 1 to 6 do
-    begin
-
-      if(MantiksalDepolamaAygitListesi[i].AygitMevcut) then Inc(_AygitSiraNo);
-
-      if(_AygitSiraNo = AAygitKimlik) then
-      begin
-
-        AMantiksalSurucu3^.AygitAdi := MantiksalDepolamaAygitListesi[i].AygitAdi;
-        AMantiksalSurucu3^.SurucuTipi := MantiksalDepolamaAygitListesi[i].FizikselSurucu^.SurucuTipi;
-        AMantiksalSurucu3^.DosyaSistemTipi := MantiksalDepolamaAygitListesi[i].BolumTipi;
-        AMantiksalSurucu3^.BolumIlkSektor := MantiksalDepolamaAygitListesi[i].BolumIlkSektor;
-        AMantiksalSurucu3^.BolumToplamSektor := MantiksalDepolamaAygitListesi[i].BolumToplamSektor;
-        Exit(1);
-      end;
-    end;
-  end;
-
-  Result := 0;
+  Result := AFizikselDepolama^.SektorYaz(AFizikselDepolama, ASektorNo,
+    ASektorSayisi, ABellek);
 end;
 
 {==============================================================================
-  mantÄ±ksal depolama aygÄ±tÄ±ndan veri okur
+  sýra numarasýna göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function MantiksalDepolamaVeriOku(AAygitKimlik, ASektorNo, AOkunacakSektor: TSayi4;
-  AHedefBellek: Isaretci): TISayi4;
+function MantiksalSurucuAl(ASiraNo: TISayi4): PMantiksalDepolama;
 var
-  _AygitSiraNo, i: TSayi4;
+  MD: TMantiksalDepolama;
+  SiraNo, i: TISayi4;
 begin
 
-  if(AAygitKimlik > 0) and (AAygitKimlik <= MantiksalDepolamaAygitSayisi) then
+  if(ASiraNo >= Low(MantiksalDepolamaAygitListesi)) and (ASiraNo <= High(MantiksalDepolamaAygitListesi)) then
   begin
 
-    _AygitSiraNo := 0;
-    for i := 1 to 6 do
+    SiraNo := -1;
+    for i := Low(MantiksalDepolamaAygitListesi) to High(MantiksalDepolamaAygitListesi) do
     begin
 
-      if(MantiksalDepolamaAygitListesi[i].AygitMevcut) then Inc(_AygitSiraNo);
+      MD := MantiksalDepolamaAygitListesi[i];
+      if(MD.Mevcut) then Inc(SiraNo);
 
-      if(_AygitSiraNo = AAygitKimlik) then
-      begin
-
-        if(MantiksalDepolamaAygitListesi[i].FizikselSurucu^.SektorOku(
-          MantiksalDepolamaAygitListesi[i].FizikselSurucu, MantiksalDepolamaAygitListesi[i].BolumIlkSektor +
-          ASektorNo, AOkunacakSektor, AHedefBellek) = 0) then Exit(0)
-        else Exit(1);
-      end;
+      if(SiraNo = ASiraNo) then Exit(@MantiksalDepolamaAygitListesi[i]);
     end;
   end;
 
-  Result := 1;
+  Result := nil;
+end;
+
+{==============================================================================
+  kimlik deðerine göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
+ ==============================================================================}
+function MantiksalSurucuAl2(AKimlik: TKimlik): PMantiksalDepolama;
+var
+  MD: TMantiksalDepolama;
+  i: TISayi4;
+begin
+
+  for i := Low(MantiksalDepolamaAygitListesi) to High(MantiksalDepolamaAygitListesi) do
+  begin
+
+    MD := MantiksalDepolamaAygitListesi[i];
+    if(MD.Mevcut) and (MD.MD3.Kimlik = AKimlik) then Exit(@FizikselDepolamaAygitListesi[i]);
+  end;
+
+  Result := nil;
+end;
+
+{==============================================================================
+  mantýksal depolama aygýtýndan veri okur
+ ==============================================================================}
+function MantiksalDepolamaVeriOku(AMantiksalDepolama: PMantiksalDepolama; ASektorNo,
+  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+begin
+
+
+{  SISTEM_MESAJ(RENK_MAVI, 'Depolama Kimlik: %d', [AMantiksalDepolama^.MD3.Kimlik]);
+  SISTEM_MESAJ(RENK_MAVI, 'Depolama Sürücü Tipi: %d', [AMantiksalDepolama^.MD3.SurucuTipi]);
+  SISTEM_MESAJ(RENK_MAVI, 'Depolama Adý: %s', [AMantiksalDepolama^.MD3.AygitAdi]);
+  SISTEM_MESAJ(RENK_MAVI, 'Okunacak Ýlk Sektör: %d', [ASektorNo]);
+  SISTEM_MESAJ(RENK_MAVI, 'Okunacak Sektör Sayýsý: %d', [ASektorSayisi]); }
+
+  Result := AMantiksalDepolama^.FD^.SektorOku(AMantiksalDepolama, ASektorNo,
+    ASektorSayisi, ABellek);
 end;
 
 end.

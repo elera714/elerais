@@ -194,25 +194,27 @@ const   // DATTIP = dosya ayýrma tablosu (FAT)
   DATTIP_FAT32      = Byte($B);
   DATTIP_FAT32LBA   = Byte($C);
 
-// fiziksel sürücü yapýsý - program için
+// fiziksel depolama aygýt yapýsý - program için
 type
-  PFizikselSurucu3 = ^TFizikselSurucu3;
-  TFizikselSurucu3 = packed record
+  PFizikselDepolama3 = ^TFizikselDepolama3;
+  TFizikselDepolama3 = packed record
+    Kimlik: TKimlik;
+    SurucuTipi: TSayi4;
     AygitAdi: string[16];
-    SurucuTipi: TSayi1;
-    KafaSayisi: TSayi2;
-    SilindirSayisi: TSayi2;
-    IzBasinaSektorSayisi: TSayi2;
+    KafaSayisi: TSayi4;
+    SilindirSayisi: TSayi4;
+    IzBasinaSektorSayisi: TSayi4;
     ToplamSektorSayisi: TSayi4;
   end;
 
-// mantýksal sürücü yapýsý - program için
+// mantýksal depolama aygýt yapýsý - program için
 type
-  PMantiksalSurucu3 = ^TMantiksalSurucu3;
-  TMantiksalSurucu3 = packed record
+  PMantiksalDepolama3 = ^TMantiksalDepolama3;
+  TMantiksalDepolama3 = packed record
+    Kimlik: TKimlik;
+    SurucuTipi: TSayi4;
     AygitAdi: string[16];
-    SurucuTipi: TSayi1;
-    DosyaSistemTipi: TSayi1;
+    DosyaSistemTipi: TSayi4;
     BolumIlkSektor: TSayi4;
     BolumToplamSektor: TSayi4
   end;

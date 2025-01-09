@@ -6,11 +6,11 @@
   Dosya Adý: bolumleme.pas
   Dosya Ýþlevi: depolama aygýtý bölüm yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 24/12/2024
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
-{$DEFINE BOLUMLEME_BILGI}
+//{$DEFINE BOLUMLEME_BILGI}
 unit bolumleme;
 
 interface
@@ -22,116 +22,105 @@ var
   MantiksalDiskHavuzListesi: array[0..3] of Integer;      // disk numaralama listesi
 
 procedure Yukle;
-function MantiksalSurucuOlustur: PMantiksalSurucu;
-function SurucuAl(ATamAdresYolu: string; var AKalinanSira: Integer): PMantiksalSurucu;
-function MantiksalSurucuNumarasiAl(ASurucuTip: TSayi4): TISayi4;
+function MantiksalSurucuOlustur: PMantiksalDepolama;
+function SurucuAl(ATamAdresYolu: string; var AKalinanSira: Integer): PMantiksalDepolama;
+function MantiksalSurucuNumarasiAl(ASurucuTipi: TSayi4): TISayi4;
 
 implementation
 
-uses donusum, sistemmesaj;
+uses donusum, sistemmesaj, aygityonetimi;
 
 {==============================================================================
   depolama aygýtý mantýksal sürücü atama iþlevlerini yerine getirir
  ==============================================================================}
 procedure Yukle;
 var
-  _MantiksalSurucu: PMantiksalSurucu;
-  _DiskBolum: PDiskBolum;
-  _AcilisKayit1x: PAcilisKayit1x;
-  _AcilisKayit32: PAcilisKayit32;
-  _DosyaAyirmaTablosu: PDosyaAyirmaTablosu;
-  _DizinGirisi: PDizinGirisi;
-  _Bellek1: array[0..511] of TSayi1;
-  _Bellek2: array[0..511] of TSayi1;
-  _SurucuNo, i, _BolumSayisi: TISayi4;
-  _BolumIlkSektor, _BolumToplamSektor: TSayi4;
+  MD: PMantiksalDepolama;
+  DiskBolum: PDiskBolum;
+  AcilisKayit1x: PAcilisKayit1x;
+  AcilisKayit32: PAcilisKayit32;
+  DosyaAyirmaTablosu: PDosyaAyirmaTablosu;
+  DizinGirisi: PDizinGirisi;
+  Bellek1: array[0..511] of TSayi1;
+  Bellek2: array[0..511] of TSayi1;
+  SurucuNo, i, BolumSayisi: TISayi4;
+  BolumIlkSektor, BolumToplamSektor: TSayi4;
 begin
 
   // mantýksal sürücü deðiþkenlerini ilk deðerlerle yükle
   MantiksalDepolamaAygitSayisi := 0;
-  for i := 1 to 6 do
-  begin
-
-    MantiksalDepolamaAygitListesi[i].AygitMevcut := False;
-  end;
+  for i := 0 to 5 do MantiksalDepolamaAygitListesi[i].Mevcut := False;
 
   // mantýksal disket sürücü numara üreticisini sýfýrla
-  for i := 0 to 1 do
-  begin
-
-    MantiksalDisketHavuzListesi[i] := 0;
-  end;
+  for i := 0 to 1 do MantiksalDisketHavuzListesi[i] := 0;
 
   // mantýksal disk sürücü numara üreticisini sýfýrla
-  for i := 0 to 3 do
-  begin
-
-    MantiksalDiskHavuzListesi[i] := 0;
-  end;
+  for i := 0 to 3 do MantiksalDiskHavuzListesi[i] := 0;
 
   // sistemde fiziksel depolama aygýtý var ise
   if(FizikselDepolamaAygitSayisi > 0) then
   begin
 
     // tüm aygýtlarý denetle. (toplam 6 fiziksel aygýt)
-    for i := 1 to 6 do
+    for i := 0 to 5 do
     begin
 
       // eðer aygýt mevcut ise ...
-      if(FizikselDepolamaAygitListesi[i].Mevcut) then
+      if(FizikselDepolamaAygitListesi[i].Mevcut0) then
       begin
 
         // aygýt disket sürücüsü ise ...
-        if(FizikselDepolamaAygitListesi[i].SurucuTipi = SURUCUTIP_DISKET) then
+        if(FizikselDepolamaAygitListesi[i].FD3.SurucuTipi = SURUCUTIP_DISKET) then
         begin
 
           // disketin ilk sektörünü oku
           if(FizikselDepolamaAygitListesi[i].SektorOku(@FizikselDepolamaAygitListesi[i],
-            0, 1, @_Bellek1) = 0) then
+            0, 1, @Bellek1) = 0) then
           begin
 
             // okunan bilgi yapýsýna konumlan
-            _AcilisKayit1x := @_Bellek1;
+            AcilisKayit1x := @Bellek1;
 
             // eðer dosya sistemi FAT12 ise...
-            if(_AcilisKayit1x^.DosyaSistemEtiket = 'FAT12   ') then
+            if(AcilisKayit1x^.DosyaSistemEtiket = 'FAT12   ') then
             begin
 
               // mantýksal sürücü için sürücü numarasý al
-              _SurucuNo := MantiksalSurucuNumarasiAl(SURUCUTIP_DISKET);
-              if(_SurucuNo > -1) then
+              SurucuNo := MantiksalSurucuNumarasiAl(SURUCUTIP_DISKET);
+              if(SurucuNo > -1) then
               begin
 
                 // mantýksal sürücü oluþtur
-                _MantiksalSurucu := MantiksalSurucuOlustur;
-                if not(_MantiksalSurucu = nil) then
+                MD := MantiksalSurucuOlustur;
+                if not(MD = nil) then
                 begin
 
                   // mantýksal sürücü bilgileri ata
-                  _MantiksalSurucu^.FizikselSurucu := @FizikselDepolamaAygitListesi[i];
-                  _MantiksalSurucu^.AygitAdi := 'disket' + IntToStr(_SurucuNo);
+                  MD^.FD := @FizikselDepolamaAygitListesi[i];
+                  MD^.MD3.AygitAdi := 'disket' + IntToStr(SurucuNo);
                   {$IFDEF BOLUMLEME_BILGI}
-                  SISTEM_MESAJ(RENK_YESIL, '  + Mantýksal aygýt: ' + _MantiksalSurucu^.AygitAdi, []);
+                  SISTEM_MESAJ(RENK_YESIL, '  + Mantýksal aygýt: ' + MD^.MD3.AygitAdi, []);
                   {$ENDIF}
-                  _MantiksalSurucu^.BolumIlkSektor := _AcilisKayit1x^.BolumOncesiSektorSayisi;
-                  _MantiksalSurucu^.BolumToplamSektor := _AcilisKayit1x^.ToplamSektorSayisi1x;
-                  _MantiksalSurucu^.BolumTipi := DATTIP_FAT12;
+                  MD^.MD3.BolumIlkSektor := AcilisKayit1x^.BolumOncesiSektorSayisi;
+                  MD^.MD3.BolumToplamSektor := AcilisKayit1x^.ToplamSektorSayisi1x;
+                  MD^.MD3.DosyaSistemTipi := DATTIP_FAT12;
+                  MD^.MD3.SurucuTipi := FizikselDepolamaAygitListesi[i].FD3.SurucuTipi;
 
-                  // _DizinGirisi dizin giriþleri
-                  _DizinGirisi := @_MantiksalSurucu^.Acilis.DizinGirisi;
-                  _DizinGirisi^.IlkSektor := (_AcilisKayit1x^.DATBasinaSektor *
-                    _AcilisKayit1x^.DATSayisi) + _AcilisKayit1x^.AyrilmisSektor1;
-                  _DizinGirisi^.GirdiSayisi := 16;    // 512 / 32 = 16
-                  _DizinGirisi^.ToplamSektor := (_AcilisKayit1x^.AzamiDizinGirisi
-                    div _DizinGirisi^.GirdiSayisi);
+                  // DizinGirisi dizin giriþleri
+                  DizinGirisi := @MD^.Acilis.DizinGirisi;
+                  DizinGirisi^.IlkSektor := (AcilisKayit1x^.DATBasinaSektor *
+                    AcilisKayit1x^.DATSayisi) + AcilisKayit1x^.AyrilmisSektor1;
+                  DizinGirisi^.GirdiSayisi := 16;    // 512 / 32 = 16
+                  DizinGirisi^.ToplamSektor := (AcilisKayit1x^.AzamiDizinGirisi
+                    div DizinGirisi^.GirdiSayisi);
 
                   // dosya ayýrma tablosu bilgileri
-                  _DosyaAyirmaTablosu := @_MantiksalSurucu^.Acilis.DosyaAyirmaTablosu;
-                  _DosyaAyirmaTablosu^.IlkSektor := _AcilisKayit1x^.AyrilmisSektor1;
-                  _DosyaAyirmaTablosu^.ToplamSektor := _AcilisKayit1x^.DATBasinaSektor;
-                  _DosyaAyirmaTablosu^.KumeBasinaSektor := _AcilisKayit1x^.ZincirBasinaSektor;
-                  _DosyaAyirmaTablosu^.IlkVeriSektoru := (_DizinGirisi^.IlkSektor +
-                    _DizinGirisi^.ToplamSektor);
+                  DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
+                  DosyaAyirmaTablosu^.IlkSektor := AcilisKayit1x^.AyrilmisSektor1;
+                  DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit1x^.DATBasinaSektor;
+                  DosyaAyirmaTablosu^.KumeBasinaSektor := AcilisKayit1x^.ZincirBasinaSektor;
+                  DosyaAyirmaTablosu^.IlkVeriSektoru := (DizinGirisi^.IlkSektor +
+                    DizinGirisi^.ToplamSektor);
 
                   Inc(MantiksalDepolamaAygitSayisi);
                 end;
@@ -141,100 +130,101 @@ begin
         end
 
         // aygýt disk sürücüsü ise ...
-        else if(FizikselDepolamaAygitListesi[i].SurucuTipi = SURUCUTIP_DISK) then
+        else if(FizikselDepolamaAygitListesi[i].FD3.SurucuTipi = SURUCUTIP_DISK) then
         begin
 
           // diskin ilk sektörünü (MBR) oku
           if(FizikselDepolamaAygitListesi[i].SektorOku(@FizikselDepolamaAygitListesi[i],
-            0, 1, @_Bellek1) = 0) then
+            0, 1, @Bellek1) = 0) then
           begin
 
             // bölümleme bilgisine konumlan
-            _DiskBolum := @_Bellek1[$1BE];
+            DiskBolum := @Bellek1[$1BE];
 
             // bölüm bilgisinin tümünün tipini al ve destekleniyorsa disk listesine ekle
-            for _BolumSayisi := 1 to 4 do
+            for BolumSayisi := 1 to 4 do
             begin
 
-              if(_DiskBolum^.BolumTipi = DATTIP_FAT12) or
-                (_DiskBolum^.BolumTipi = DATTIP_FAT16) or
-                (_DiskBolum^.BolumTipi = DATTIP_FAT32) or
-                (_DiskBolum^.BolumTipi = DATTIP_FAT32LBA) then
+              if(DiskBolum^.BolumTipi = DATTIP_FAT12) or
+                (DiskBolum^.BolumTipi = DATTIP_FAT16) or
+                (DiskBolum^.BolumTipi = DATTIP_FAT32) or
+                (DiskBolum^.BolumTipi = DATTIP_FAT32LBA) then
               begin
 
-                _BolumIlkSektor := _DiskBolum^.LBAIlkSektor;
-                _BolumToplamSektor := _DiskBolum^.BolumSektorSayisi;
+                BolumIlkSektor := DiskBolum^.LBAIlkSektor;
+                BolumToplamSektor := DiskBolum^.BolumSektorSayisi;
 
                 // bölümün ilk sektörünü oku
                 FizikselDepolamaAygitListesi[i].SektorOku(@FizikselDepolamaAygitListesi[i],
-                  _DiskBolum^.LBAIlkSektor, 1, @_Bellek2);
-                _AcilisKayit1x := @_Bellek2;
+                  DiskBolum^.LBAIlkSektor, 1, @Bellek2);
+                AcilisKayit1x := @Bellek2;
 
                 // mantýksal sürücü deðer tanýmlamalarý
 
                 // mantýksal sürücü için sürücü numarasý al
-                _SurucuNo := MantiksalSurucuNumarasiAl(SURUCUTIP_DISK);
-                if(_SurucuNo > -1) then
+                SurucuNo := MantiksalSurucuNumarasiAl(SURUCUTIP_DISK);
+                if(SurucuNo > -1) then
                 begin
 
                   // mantýksal sürücü oluþtur
-                  _MantiksalSurucu := MantiksalSurucuOlustur;
-                  if not(_MantiksalSurucu = nil) then
+                  MD := MantiksalSurucuOlustur;
+                  if not(MD = nil) then
                   begin
 
                     // mantýksal sürücü bilgileri ata
-                    _MantiksalSurucu^.FizikselSurucu := @FizikselDepolamaAygitListesi[i];
-                    _MantiksalSurucu^.AygitAdi := 'disk' + IntToStr(_SurucuNo);
+                    MD^.FD := @FizikselDepolamaAygitListesi[i];
+                    MD^.MD3.AygitAdi := 'disk' + IntToStr(SurucuNo);
                     {$IFDEF BOLUMLEME_BILGI}
-                    SISTEM_MESAJ(RENK_YESIL, '  + Mantýksal aygit: ' + _MantiksalSurucu^.AygitAdi, []);
+                    SISTEM_MESAJ(RENK_YESIL, '  + Mantýksal aygit: ' + MD^.MD3.AygitAdi, []);
                     {$ENDIF}
-                    _MantiksalSurucu^.BolumIlkSektor := _BolumIlkSektor;
-                    _MantiksalSurucu^.BolumToplamSektor := _BolumToplamSektor;
-                    _MantiksalSurucu^.BolumTipi := _DiskBolum^.BolumTipi;
+                    MD^.MD3.BolumIlkSektor := BolumIlkSektor;
+                    MD^.MD3.BolumToplamSektor := BolumToplamSektor;
+                    MD^.MD3.DosyaSistemTipi := DiskBolum^.BolumTipi;
+                    MD^.MD3.SurucuTipi := FizikselDepolamaAygitListesi[i].FD3.SurucuTipi;
 
-                    if(_DiskBolum^.BolumTipi = DATTIP_FAT32) or
-                      (_DiskBolum^.BolumTipi = DATTIP_FAT32LBA) then
+                    if(DiskBolum^.BolumTipi = DATTIP_FAT32) or
+                      (DiskBolum^.BolumTipi = DATTIP_FAT32LBA) then
                     begin
 
-                      _AcilisKayit32 := @_Bellek2;
+                      AcilisKayit32 := @Bellek2;
 
-                      // _DizinGirisi dizin giriþleri
-                      _DizinGirisi := @_MantiksalSurucu^.Acilis.DizinGirisi;
-                      _DizinGirisi^.IlkSektor := (_AcilisKayit32^.DATBasinaSektor *
-                        _AcilisKayit32^.DATSayisi) + _AcilisKayit32^.AyrilmisSektor1 +
-                        _AcilisKayit32^.BolumOncesiSektorSayisi;
-                      _DizinGirisi^.GirdiSayisi := 16;    // 512 / 32 = 16
-                      _DizinGirisi^.ToplamSektor := 100; // geçici deðer  (_AcilisKayit32^.AzamiDizinGirisi div _DizinGirisi^.GirdiSayisi);
+                      // DizinGirisi dizin giriþleri
+                      DizinGirisi := @MD^.Acilis.DizinGirisi;
+                      DizinGirisi^.IlkSektor := (AcilisKayit32^.DATBasinaSektor *
+                        AcilisKayit32^.DATSayisi) + AcilisKayit32^.AyrilmisSektor1 +
+                        AcilisKayit32^.BolumOncesiSektorSayisi;
+                      DizinGirisi^.GirdiSayisi := 16;    // 512 / 32 = 16
+                      DizinGirisi^.ToplamSektor := 100; // geçici deðer  (AcilisKayit32^.AzamiDizinGirisi div DizinGirisi^.GirdiSayisi);
 
-                      // _DosyaAyirmaTablosu bilgileri
-                      _DosyaAyirmaTablosu := @_MantiksalSurucu^.Acilis.DosyaAyirmaTablosu;
-                      _DosyaAyirmaTablosu^.IlkSektor := _AcilisKayit32^.BolumOncesiSektorSayisi +
-                        _AcilisKayit32^.AyrilmisSektor1;
-                      _DosyaAyirmaTablosu^.ToplamSektor := _AcilisKayit32^.DATBasinaSektor;
-                      _DosyaAyirmaTablosu^.KumeBasinaSektor := _AcilisKayit32^.ZincirBasinaSektor;
+                      // DosyaAyirmaTablosu bilgileri
+                      DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
+                      DosyaAyirmaTablosu^.IlkSektor := AcilisKayit32^.BolumOncesiSektorSayisi +
+                        AcilisKayit32^.AyrilmisSektor1;
+                      DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit32^.DATBasinaSektor;
+                      DosyaAyirmaTablosu^.KumeBasinaSektor := AcilisKayit32^.ZincirBasinaSektor;
                       // fat32 dosya sistemi için geçerli deðil
-                      _DosyaAyirmaTablosu^.IlkVeriSektoru := _DizinGirisi^.IlkSektor; //(_DizinGirisi^.IlkSektor + _DizinGirisi^.ToplamSektor);
+                      DosyaAyirmaTablosu^.IlkVeriSektoru := DizinGirisi^.IlkSektor; //(DizinGirisi^.IlkSektor + DizinGirisi^.ToplamSektor);
                     end
                     else
                     begin
 
-                      // _DizinGirisi dizin giriþleri
-                      _DizinGirisi := @_MantiksalSurucu^.Acilis.DizinGirisi;
-                      _DizinGirisi^.IlkSektor := (_AcilisKayit1x^.DATBasinaSektor *
-                        _AcilisKayit1x^.DATSayisi) + _AcilisKayit1x^.AyrilmisSektor1 +
-                        _AcilisKayit1x^.BolumOncesiSektorSayisi;
-                      _DizinGirisi^.GirdiSayisi := 16;    // 512 / 32 = 16
-                      _DizinGirisi^.ToplamSektor := (_AcilisKayit1x^.AzamiDizinGirisi div
-                        _DizinGirisi^.GirdiSayisi);
+                      // DizinGirisi dizin giriþleri
+                      DizinGirisi := @MD^.Acilis.DizinGirisi;
+                      DizinGirisi^.IlkSektor := (AcilisKayit1x^.DATBasinaSektor *
+                        AcilisKayit1x^.DATSayisi) + AcilisKayit1x^.AyrilmisSektor1 +
+                        AcilisKayit1x^.BolumOncesiSektorSayisi;
+                      DizinGirisi^.GirdiSayisi := 16;    // 512 / 32 = 16
+                      DizinGirisi^.ToplamSektor := (AcilisKayit1x^.AzamiDizinGirisi div
+                        DizinGirisi^.GirdiSayisi);
 
-                      // _DosyaAyirmaTablosu bilgileri
-                      _DosyaAyirmaTablosu := @_MantiksalSurucu^.Acilis.DosyaAyirmaTablosu;
-                      _DosyaAyirmaTablosu^.IlkSektor := _AcilisKayit1x^.BolumOncesiSektorSayisi +
-                        _AcilisKayit1x^.AyrilmisSektor1;
-                      _DosyaAyirmaTablosu^.ToplamSektor := _AcilisKayit1x^.DATBasinaSektor;
-                      _DosyaAyirmaTablosu^.KumeBasinaSektor := _AcilisKayit1x^.ZincirBasinaSektor;
-                      _DosyaAyirmaTablosu^.IlkVeriSektoru := (_DizinGirisi^.IlkSektor +
-                        _DizinGirisi^.ToplamSektor);
+                      // DosyaAyirmaTablosu bilgileri
+                      DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
+                      DosyaAyirmaTablosu^.IlkSektor := AcilisKayit1x^.BolumOncesiSektorSayisi +
+                        AcilisKayit1x^.AyrilmisSektor1;
+                      DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit1x^.DATBasinaSektor;
+                      DosyaAyirmaTablosu^.KumeBasinaSektor := AcilisKayit1x^.ZincirBasinaSektor;
+                      DosyaAyirmaTablosu^.IlkVeriSektoru := (DizinGirisi^.IlkSektor +
+                        DizinGirisi^.ToplamSektor);
                     end;
 
                     { SISTEM_MESAJ_S16SISTEM_MESAJ_S16(RENK_SIYAH, 'RootFirstSector: ', _MantiksalSurucu^.Acilis.DizinGirisi.IlkSektor, 8);
@@ -250,13 +240,13 @@ begin
                     Inc(MantiksalDepolamaAygitSayisi);
                   end;
                 end;
-              end else if not(_DiskBolum^.BolumTipi = DATTIP_BELIRSIZ) then
+              end else if not(DiskBolum^.BolumTipi = DATTIP_BELIRSIZ) then
               begin
 
-                SISTEM_MESAJ_S16(RENK_KIRMIZI, '  ! Bilinmeyen DAT Tipi: ', _DiskBolum^.BolumTipi, 2);
+                SISTEM_MESAJ_S16(RENK_KIRMIZI, '  ! Bilinmeyen DAT Tipi: ', DiskBolum^.BolumTipi, 2);
               end;
 
-              Inc(_DiskBolum);
+              Inc(DiskBolum);
             end;
           end;
         end;
@@ -268,19 +258,20 @@ end;
 {==============================================================================
   mantýksal sürücü oluþturma iþlevi
  ==============================================================================}
-function MantiksalSurucuOlustur: PMantiksalSurucu;
+function MantiksalSurucuOlustur: PMantiksalDepolama;
 var
   i: TSayi4;
 begin
 
   // boþ bir mantýksal sürücü yapýsý bul
-  for i := 1 to 6 do
+  for i := 0 to 5 do
   begin
 
-    if(MantiksalDepolamaAygitListesi[i].AygitMevcut = False) then
+    if(MantiksalDepolamaAygitListesi[i].Mevcut = False) then
     begin
 
-      MantiksalDepolamaAygitListesi[i].AygitMevcut := True;
+      MantiksalDepolamaAygitListesi[i].Mevcut := True;
+      MantiksalDepolamaAygitListesi[i].MD3.Kimlik := MD_KIMLIK_ILKDEGER + i;
       Exit(@MantiksalDepolamaAygitListesi[i]);
     end;
   end;
@@ -292,7 +283,7 @@ end;
   dosya yolundan sürücüyü bulur ve geriye sürücüye ait bellek bölgesini döndürür
   þu anda dosya yol biçimi: disket1:\dosya.c þeklinde
  ==============================================================================}
-function SurucuAl(ATamAdresYolu: string; var AKalinanSira: Integer): PMantiksalSurucu;
+function SurucuAl(ATamAdresYolu: string; var AKalinanSira: Integer): PMantiksalDepolama;
 var
   i: TSayi4;
   SurucuAdi: string;
@@ -312,13 +303,13 @@ begin
   end else SurucuAdi := AcilisSurucuAygiti;
 
   // sürücü sistemde mevcut mu ?
-  for i := 1 to 6 do
+  for i := 0 to 5 do
   begin
 
-    if(MantiksalDepolamaAygitListesi[i].AygitMevcut) then
+    if(MantiksalDepolamaAygitListesi[i].Mevcut) then
     begin
 
-      if(MantiksalDepolamaAygitListesi[i].AygitAdi = SurucuAdi) then
+      if(MantiksalDepolamaAygitListesi[i].MD3.AygitAdi = SurucuAdi) then
 
         Exit(@MantiksalDepolamaAygitListesi[i]);
     end;
@@ -330,13 +321,13 @@ end;
 {==============================================================================
   sürücüler için sayýsal sýra numarasý saðlar
  ==============================================================================}
-function MantiksalSurucuNumarasiAl(ASurucuTip: TSayi4): TISayi4;
+function MantiksalSurucuNumarasiAl(ASurucuTipi: TSayi4): TISayi4;
 var
   i: TSayi4;
 begin
 
   // disket sürücüsü için
-  if(ASurucuTip = SURUCUTIP_DISKET) then
+  if(ASurucuTipi = SURUCUTIP_DISKET) then
   begin
 
     for i := 0 to 1 do
@@ -352,7 +343,7 @@ begin
   end
 
   // disk sürücüsü için
-  else if(ASurucuTip = SURUCUTIP_DISK) then
+  else if(ASurucuTipi = SURUCUTIP_DISK) then
   begin
 
     for i := 0 to 3 do

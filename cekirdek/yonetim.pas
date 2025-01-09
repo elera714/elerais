@@ -232,7 +232,7 @@ var
   D1, D2, D3, i: Integer;
   G: PGorev;
   Z: TSayi4;
-  fs: PFizikselSurucu3;
+  FD3: PFizikselDepolama3;
   IRR, zzz, SaglamaToplam: TSayi2;
   _AygitSiraNo, AygitKimlik: TSayi4;
   DD1: TISayi1;
@@ -306,19 +306,6 @@ begin
           {if(iMTRR) then
             SISTEM_MESAJ(RENK_YESIL, 'MTRR Mevcut', [])
           else SISTEM_MESAJ(RENK_KIRMIZI, 'MTRR Yok', []);}
-{
-          SISTEM_MESAJ(RENK_KIRMIZI, 'FizikselDepolamaAygitSayisi: %d', [FizikselDepolamaAygitSayisi]);
-          for i := 1 to FizikselDepolamaAygitSayisi do
-          begin
-
-            if(FizikselDepolamaAygitBilgisiAl(i, fs) > 0) then
-            begin
-
-              SISTEM_MESAJ(RENK_KIRMIZI, '%d. aygıt - ' + fs^.AygitAdi, [i]);
-              SISTEM_MESAJ(RENK_KIRMIZI, 'Sürücü Tipi: %d', [fs^.SurucuTipi]);
-            end;
-          end;
-}
 
           {i := FindFirst('disk1:\kaynak\*.*', 0, AramaKaydi);
           while i = 0 do
@@ -332,7 +319,7 @@ begin
           //Gorev^.Calistir('disket1:\tarayici.c');
           //Gorev^.Calistir('disket1:\bharita.c');
           //Gorev^.Calistir('disket1:\iletisim.c');
-          Gorev^.Calistir('disket1:\kopyala.c');
+          Gorev^.Calistir('disket1:\dskbolum.c');
           //vbox.Listele;
         end
         // test işlev tuşu-1
@@ -360,26 +347,6 @@ begin
         // test işlev tuşu-2
         else if(Tus = '5') then
         begin
-
-          AygitKimlik := 2;
-          if(AygitKimlik > 0) and (AygitKimlik <= FizikselDepolamaAygitSayisi) then
-          begin
-
-            _AygitSiraNo := 0;
-            for i := 1 to 6 do
-            begin
-
-              if(FizikselDepolamaAygitListesi[i].Mevcut) then Inc(_AygitSiraNo);
-
-              if(_AygitSiraNo = AygitKimlik) then
-              begin
-
-                //SISTEM_MESAJ(RENK_KIRMIZI, 'IRR Değeri: ' + FizikselDepolamaAygitListesi[i].AygitAdi, []);
-                FizikselDepolamaAygitListesi[i].SektorYaz(@FizikselDepolamaAygitListesi[i], 1, 1, @disketyaz);
-                Break;
-              end;
-            end;
-          end;
 
           //IRR := pic.ISRDegeriniOku;
           //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'IRR Değeri: ', IRR, 4);

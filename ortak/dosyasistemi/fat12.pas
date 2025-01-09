@@ -6,7 +6,7 @@
   Dosya Adý: fat12.pas
   Dosya Ýþlevi: fat12 dosya sistem yönetim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -68,75 +68,70 @@ end;
  ==============================================================================}
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
-  _MantiksalSurucu: PMantiksalSurucu;
-  _DosyaKayit: PDosyaKayit;
-  _DATBellekAdresi: Isaretci;
-  _Zincir: TSayi2;
-  _YeniDATSiraNo: TSayi4;
-  _DATSiraNo: TSayi2;
-  _OkunacakSektorSayisi, _i: TSayi2;
-  _OkunacakVeri: TISayi4;
-  _OkumaSonuc: TSayi4;
+  MD: PMantiksalDepolama;
+  DosyaKayit: PDosyaKayit;
+  DATBellekAdresi: Isaretci;
+  Zincir, DATSiraNo: TSayi2;
+  YeniDATSiraNo: TSayi4;
+  OkunacakSektorSayisi, i: TSayi2;
+  OkunacakVeri: TISayi4;
+  OkumaSonuc: TSayi4;
 begin
 
   // iþlem yapýlan dosyayla ilgili bellek bölgesine konumlan
-  _DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
+  DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   // üzerinde iþlem yapýlacak sürücü
-  _MantiksalSurucu := _DosyaKayit^.MantiksalSurucu;
+  MD := DosyaKayit^.MantiksalDepolama;
 
   // FAT tablosu için bellekte yer ayýr
-  _DATBellekAdresi := GGercekBellek.Ayir(
-    _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
+  DATBellekAdresi := GGercekBellek.Ayir(MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
 
   // depolama aygýtýnýn ilk FAT kopyasýnýn tümünü belleðe yükle
-  _OkumaSonuc := _MantiksalSurucu^.FizikselSurucu^.SektorOku(_MantiksalSurucu^.FizikselSurucu,
-    _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.IlkSektor,
-    _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.ToplamSektor, _DATBellekAdresi);
+  OkumaSonuc := MD^.FD^.SektorOku(MD^.FD, MD^.Acilis.DosyaAyirmaTablosu.IlkSektor,
+    MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor, DATBellekAdresi);
 
-  if(_OkumaSonuc <> 0) then SISTEM_MESAJ(RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
+  if(OkumaSonuc <> 0) then SISTEM_MESAJ(RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
 
-  _OkunacakVeri := _DosyaKayit^.Uzunluk;
+  OkunacakVeri := DosyaKayit^.Uzunluk;
 
-  _Zincir := _DosyaKayit^.IlkZincirSektor;
+  Zincir := DosyaKayit^.IlkZincirSektor;
 
-  _OkunacakSektorSayisi := _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
+  OkunacakSektorSayisi := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
 
-  _OkumaSonuc := 1;
+  OkumaSonuc := 1;
 
   repeat
 
     // okunacak sektör zincir numarasý
-    _i := (_Zincir - 2) * _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
+    i := (Zincir - 2) * MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
 
     // sektörü belleðe oku
-    _MantiksalSurucu^.FizikselSurucu^.SektorOku(_MantiksalSurucu^.FizikselSurucu,
-      _i + _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru,
-      _OkunacakSektorSayisi, AHedefBellek);
+    MD^.FD^.SektorOku(MD^.FD, i + MD^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru,
+      OkunacakSektorSayisi, AHedefBellek);
 
-    //src_com.Yaz(1, AHedefBellek, _OkunacakSektorSayisi * 512);
+    //src_com.Yaz(1, AHedefBellek, OkunacakSektorSayisi * 512);
 
     // okunacak bilginin yerleþtirileceði bir sonraki adresi belirle
-    AHedefBellek += (_OkunacakSektorSayisi * 512);
+    AHedefBellek += (OkunacakSektorSayisi * 512);
 
     // zincir deðerini 1.5 ile çarp ve bir sonraki zincir deðerini al
-    _YeniDATSiraNo := (_Zincir shr 1) + _Zincir + TSayi4(_DATBellekAdresi);
-    _DATSiraNo := PSayi2(_YeniDATSiraNo)^;
+    YeniDATSiraNo := (Zincir shr 1) + Zincir + TSayi4(DATBellekAdresi);
+    DATSiraNo := PSayi2(YeniDATSiraNo)^;
 
-    if((_Zincir and 1) = 1) then
-      _DATSiraNo := _DATSiraNo shr 4
-    else _DATSiraNo := _DATSiraNo and $FFF;
+    if((Zincir and 1) = 1) then
+      DATSiraNo := DATSiraNo shr 4
+    else DATSiraNo := DATSiraNo and $FFF;
 
-    _Zincir := _DATSiraNo;
+    Zincir := DATSiraNo;
 
-    _OkunacakVeri -= (_OkunacakSektorSayisi * 512);
-    if(_OkunacakSektorSayisi <= 0) then _OkumaSonuc := 0;
+    OkunacakVeri -= (OkunacakSektorSayisi * 512);
+    if(OkunacakSektorSayisi <= 0) then OkumaSonuc := 0;
 
   // eðer 0xFF8..0xFFF aralýðýndaysa bu dosyanýn en son zinciridir
-  until (_Zincir >= $FF8) or (_OkumaSonuc = 0);
+  until (Zincir >= $FF8) or (OkumaSonuc = 0);
 
-  GGercekBellek.YokEt(_DATBellekAdresi,
-    _MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
+  GGercekBellek.YokEt(DATBellekAdresi, MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
 end;
 
 {==============================================================================
@@ -152,12 +147,12 @@ end;
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
   var ADosyaArama: TDosyaArama): TISayi4;
 var
-  _DizinGirisi: PDizinGirisi;
+  DizinGirisi: PDizinGirisi;
 begin
 
-  _DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
+  DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
   GAramaKayitListesi[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
-  Result := DizinGirdisiOku(_DizinGirisi, AAramaSuzgec, ADosyaArama);
+  Result := DizinGirdisiOku(DizinGirisi, AAramaSuzgec, ADosyaArama);
 end;
 
 {==============================================================================
@@ -165,13 +160,13 @@ end;
  ==============================================================================}
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 var
-  _DizinGirisi: PDizinGirisi;
+  DizinGirisi: PDizinGirisi;
   Aranan: string;
 begin
 
-  _DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
+  DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
   Aranan := GAramaKayitListesi[ADosyaArama.Kimlik].Aranan;
-  Result := DizinGirdisiOku(_DizinGirisi, Aranan, ADosyaArama);
+  Result := DizinGirdisiOku(DizinGirisi, Aranan, ADosyaArama);
 end;
 
 {==============================================================================

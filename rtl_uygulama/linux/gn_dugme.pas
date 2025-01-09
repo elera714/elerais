@@ -20,7 +20,7 @@ type
   TDugme = object
   private
     FKimlik: TKimlik;
-    FEtiket: TSayi4;
+    FEtiket: TISayi4;
     FBaslik: string;
   public
     function Olustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
@@ -31,7 +31,7 @@ type
     procedure BaslikDegistir(ABaslik: string);
     procedure Hizala(AHiza: THiza);
     property Kimlik: TKimlik read FKimlik;
-    property Etiket: TSayi4 read FEtiket write FEtiket;
+    property Etiket: TISayi4 read FEtiket write FEtiket;
   end;
 
 function _DugmeOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;

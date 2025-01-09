@@ -6,7 +6,7 @@
   Dosya Adý: k_depolama.pas
   Dosya Ýþlevi: depolama aygýt kesme çaðrýlarýný yönetir
 
-  Güncelleme Tarihi: 23/06/2020
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,84 +20,107 @@ function DepolamaCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISay
 
 implementation
 
-uses depolama, sistemmesaj;
+uses depolama;
 
 {==============================================================================
   depolama aygýt kesme çaðrýlarýný yönetir
  ==============================================================================}
 function DepolamaCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  Islev: TSayi4;
-  AygitKimlik: TKimlik;
+  IslevNo: TSayi4;
+  FD: PFizikselDepolama;
+  MD: PMantiksalDepolama;
   p: Isaretci;
 begin
 
   // iþlev no
-  Islev := (AIslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
   //********** mantýksal aygýt iþlevleri ***********
 
   // toplam mantýksal depolama aygýt sayýsýný al
-  if(Islev = 1) then
+  if(IslevNo = 1) then
   begin
 
     Result := MantiksalDepolamaAygitSayisi;
   end
 
   // mantýksal depolama aygýt bilgilerini al
-  else if(Islev = 2) then
+  else if(IslevNo = 2) then
   begin
 
-    AygitKimlik := PISayi4(ADegiskenler + 00)^;
-    p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
-    Result := MantiksalDepolamaAygitBilgisiAl(AygitKimlik, p);
+    MD := MantiksalSurucuAl(PSayi4(ADegiskenler + 00)^);
+    if not(MD = nil) then
+    begin
+
+      p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      PMantiksalDepolama3(p)^ := MD^.MD3;
+      Result := SizeOf(TMantiksalDepolama3);
+    end else Result := 0;
   end
 
   // mantýksal depolama aygýtýndan veri oku
-  else if(Islev = 3) then
+  else if(IslevNo = 3) then
   begin
 
-    AygitKimlik := PSayi4(ADegiskenler + 00)^;
-    p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
-    Result := MantiksalDepolamaVeriOku(AygitKimlik, PSayi4(ADegiskenler + 04)^,
-      PSayi4(ADegiskenler + 08)^, p);
+    MD := MantiksalSurucuAl2(PKimlik(ADegiskenler + 00)^);
+    if not(MD = nil) then
+    begin
+
+      p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
+      Result := MantiksalDepolamaVeriOku(MD, PSayi4(ADegiskenler + 04)^,
+        PSayi4(ADegiskenler + 08)^, p);
+    end else Result := 1;
   end;
 
   //********** fiziksel aygýt iþlevleri ***********
 
   // toplam fiziksel depolama aygýt sayýsýný al
-  if(Islev = $71) then
+  if(IslevNo = $71) then
   begin
 
     Result := FizikselDepolamaAygitSayisi;
   end
 
   // fiziksel depolama aygýt bilgilerini al
-  else if(Islev = $72) then
+  else if(IslevNo = $72) then
   begin
 
-    AygitKimlik := PSayi4(ADegiskenler + 00)^;
-    p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
-    Result := FizikselDepolamaAygitBilgisiAl(AygitKimlik, p);
+    FD := FizikselSurucuAl(PSayi4(ADegiskenler + 00)^);
+    if not(FD = nil) then
+    begin
+
+      p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      PFizikselDepolama3(p)^ := FD^.FD3;
+      Result := SizeOf(TFizikselDepolama3);
+    end else Result := 0;
   end
 
   // fiziksel depolama aygýtýndan veri oku
-  else if(Islev = $73) then
+  else if(IslevNo = $73) then
   begin
 
-    AygitKimlik := PSayi4(ADegiskenler + 00)^;
-    p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
-    Result := FizikselDepolamaVeriOku(AygitKimlik, PSayi4(ADegiskenler + 04)^,
-      PSayi4(ADegiskenler + 08)^, p);
+    FD := FizikselSurucuAl2(PKimlik(ADegiskenler + 00)^);
+    if not(FD = nil) then
+    begin
+
+      p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
+      Result := FizikselDepolamaVeriOku(FD, PSayi4(ADegiskenler + 04)^,
+        PSayi4(ADegiskenler + 08)^, p);
+    end else Result := 1;
   end
   // fiziksel depolama aygýtýna veri yaz
-  else if(Islev = $74) then
+  else if(IslevNo = $74) then
   begin
 
-    AygitKimlik := PSayi4(ADegiskenler + 00)^;
-    p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
-    Result := FizikselDepolamaVeriYaz(AygitKimlik, PSayi4(ADegiskenler + 04)^,
-      PSayi4(ADegiskenler + 08)^, p);
+    FD := FizikselSurucuAl2(PKimlik(ADegiskenler + 00)^);
+    if not(FD = nil) then
+    begin
+
+      p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
+      Result := FizikselDepolamaVeriYaz(FD, PSayi4(ADegiskenler + 04)^,
+        PSayi4(ADegiskenler + 08)^, p);
+    end else Result := 1;
   end;
 end;
 

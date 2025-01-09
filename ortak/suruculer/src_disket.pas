@@ -6,7 +6,7 @@
   Dosya Adý: src_disket.pas
   Dosya Ýþlevi: disket aygýt sürücüsü
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -45,23 +45,23 @@ var
   DURUM0, DURUM1, DURUM2: TSayi1;
 
 procedure Yukle;
-procedure MotorAc(AFizikselSurucu: PFizikselSurucu);
-procedure MotorKapat(AFizikselSurucu: PFizikselSurucu);
+procedure MotorAc(AFizikselDepolama: PFizikselDepolama);
+procedure MotorKapat(AFizikselDepolama: PFizikselDepolama);
 procedure DMA2Yukle(Op: Byte);
 function DurumOku: TSayi1;
 procedure DurumYaz(ADeger: TSayi1);
 function Bekle: Boolean;
 procedure IRQ6KesmeIslevi;
-function Konumlan0(AFizikselSurucu: PFizikselSurucu): Boolean;
-function Konumlan(AFizikselSurucu: PFizikselSurucu; AIz, AKafa: TSayi1): Boolean;
+function Konumlan0(AFizikselDepolama: PFizikselDepolama): Boolean;
+function Konumlan(AFizikselDepolama: PFizikselDepolama; AIz, AKafa: TSayi1): Boolean;
 procedure DisketSurucuMotorunuKontrolEt;
 procedure SektoruAyristir(ASektorNo: TSayi2; var AKafa, AIz, ASektor: TSayi1);
-function TekSektorOku(AFizikselSurucu: PFizikselSurucu; ASektorNo: TSayi4): Boolean;
-function TekSektorYaz(AFizikselSurucu: PFizikselSurucu; ASektorNo: TSayi4): Boolean;
+function TekSektorOku(AFizikselDepolama: PFizikselDepolama; ASektorNo: TSayi4): Boolean;
+function TekSektorYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo: TSayi4): Boolean;
 function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): TSayi4;
-function SektorYaz(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): TSayi4;
+  AHedefBellek: Isaretci): TISayi4;
+function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+  ABellek: Isaretci): TISayi4;
 
 implementation
 
@@ -72,7 +72,7 @@ uses irq, zamanlayici, aygityonetimi, sistemmesaj;
  ==============================================================================}
 procedure Yukle;
 var
-  _FizikselSurucu: PFizikselSurucu;
+  FD: PFizikselDepolama;
   i, j: TSayi1;
 begin
 
@@ -104,27 +104,27 @@ begin
     if(j > 0) then
     begin
 
-      _FizikselSurucu := FizikselDepolamaAygitiOlustur(SURUCUTIP_DISKET);
-      if(_FizikselSurucu <> nil) then
+      FD := FizikselDepolamaAygitiOlustur(SURUCUTIP_DISKET);
+      if(FD <> nil) then
       begin
 
-        _FizikselSurucu^.Ozellikler := j;
-        _FizikselSurucu^.SektorOku := @SektorOku;
-        _FizikselSurucu^.SektorYaz := @SektorYaz;
-        _FizikselSurucu^.Aygit.AnaPort:= $3F0;
-        _FizikselSurucu^.Aygit.Kanal := 0;
-        _FizikselSurucu^.SonIzKonumu := -1;
+        FD^.Ozellikler := j;
+        FD^.SektorOku := @SektorOku;
+        FD^.SektorYaz := @SektorYaz;
+        FD^.Aygit.AnaPort:= $3F0;
+        FD^.Aygit.Kanal := 0;
+        FD^.SonIzKonumu := -1;
 
-        _FizikselSurucu^.SilindirSayisi := 18;
-        _FizikselSurucu^.KafaSayisi := 2;
-        _FizikselSurucu^.IzBasinaSektorSayisi := 80;
-        _FizikselSurucu^.ToplamSektorSayisi := 18 * 2 * 80;
+        FD^.FD3.SilindirSayisi := 18;
+        FD^.FD3.KafaSayisi := 2;
+        FD^.FD3.IzBasinaSektorSayisi := 80;
+        FD^.FD3.ToplamSektorSayisi := 18 * 2 * 80;
 
         // disket sürücü motorunu kapat
-        _FizikselSurucu^.IslemYapiliyor := False;
-        _FizikselSurucu^.MotorSayac := $1000000;
+        FD^.IslemYapiliyor := False;
+        FD^.MotorSayac := $1000000;
 
-        PDisket1 := _FizikselSurucu;
+        PDisket1 := FD;
       end;
     end;
 
@@ -133,27 +133,27 @@ begin
     if(j > 0) then
     begin
 
-      _FizikselSurucu := FizikselDepolamaAygitiOlustur(SURUCUTIP_DISKET);
-      if(_FizikselSurucu <> nil) then
+      FD := FizikselDepolamaAygitiOlustur(SURUCUTIP_DISKET);
+      if(FD <> nil) then
       begin
 
-        _FizikselSurucu^.Ozellikler := j;
-        _FizikselSurucu^.SektorOku := @SektorOku;
-        _FizikselSurucu^.SektorYaz := @SektorYaz;
-        _FizikselSurucu^.Aygit.AnaPort:= $3F0;
-        _FizikselSurucu^.Aygit.Kanal := 1;
-        _FizikselSurucu^.SonIzKonumu := -1;
+        FD^.Ozellikler := j;
+        FD^.SektorOku := @SektorOku;
+        FD^.SektorYaz := @SektorYaz;
+        FD^.Aygit.AnaPort:= $3F0;
+        FD^.Aygit.Kanal := 1;
+        FD^.SonIzKonumu := -1;
 
-        _FizikselSurucu^.SilindirSayisi := 18;
-        _FizikselSurucu^.KafaSayisi := 2;
-        _FizikselSurucu^.IzBasinaSektorSayisi := 80;
-        _FizikselSurucu^.ToplamSektorSayisi := 18 * 2 * 80;
+        FD^.FD3.SilindirSayisi := 18;
+        FD^.FD3.KafaSayisi := 2;
+        FD^.FD3.IzBasinaSektorSayisi := 80;
+        FD^.FD3.ToplamSektorSayisi := 18 * 2 * 80;
 
         // disket sürücü motorunu kapat
-        _FizikselSurucu^.IslemYapiliyor := False;
-        _FizikselSurucu^.MotorSayac := $1000000;
+        FD^.IslemYapiliyor := False;
+        FD^.MotorSayac := $1000000;
 
-        PDisket2 := _FizikselSurucu;
+        PDisket2 := FD;
       end;
     end;
 
@@ -168,11 +168,11 @@ end;
 {==============================================================================
   disket sürücü motorunu çalýþtýrýr
  ==============================================================================}
-procedure MotorAc(AFizikselSurucu: PFizikselSurucu);
+procedure MotorAc(AFizikselDepolama: PFizikselDepolama);
 begin
 
   // eðer aygýt ile ilgili iþlem yapýlmakta ise çýk (motor zaten açýk)
-  if(AFizikselSurucu^.IslemYapiliyor) then
+  if(AFizikselDepolama^.IslemYapiliyor) then
   begin
 
     //SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 1', []);
@@ -181,21 +181,21 @@ begin
 
   // eðer aygýt ile ilgili iþlem tamamlanmýþ ve motorun kapanmasý için geri sayým
   // gerçekleþmekte ise geri sayým iþlemini iptal et
-  if(AFizikselSurucu^.IslemYapiliyor = False) and (AFizikselSurucu^.MotorSayac > 0) then
+  if(AFizikselDepolama^.IslemYapiliyor = False) and (AFizikselDepolama^.MotorSayac > 0) then
   begin
 
-    AFizikselSurucu^.IslemYapiliyor := True;
+    AFizikselDepolama^.IslemYapiliyor := True;
     //SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 2', []);
     Exit;
   end;
 
   // motor açma iþlemlerini gerçekleþtir
-  AFizikselSurucu^.IslemYapiliyor := True;
+  AFizikselDepolama^.IslemYapiliyor := True;
 
   PortYaz1(DISKET_CIKISYAZMAC, 0);
 
   // motor'u aç
-  if(AFizikselSurucu^.Aygit.Kanal = 0) then
+  if(AFizikselDepolama^.Aygit.Kanal = 0) then
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $1C);
@@ -217,11 +217,11 @@ end;
 {==============================================================================
   disket sürücü motorunu durdurur
  ==============================================================================}
-procedure MotorKapat(AFizikselSurucu: PFizikselSurucu);
+procedure MotorKapat(AFizikselDepolama: PFizikselDepolama);
 begin
 
   // motor'u kapat
-  if(AFizikselSurucu^.Aygit.Kanal = 0) then
+  if(AFizikselDepolama^.Aygit.Kanal = 0) then
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $C);
@@ -354,7 +354,7 @@ end;
 {==============================================================================
   disket okuma kafasýný baþlangýç konumuna (0. sektör) getirir (calibrate)
  ==============================================================================}
-function Konumlan0(AFizikselSurucu: PFizikselSurucu): Boolean;
+function Konumlan0(AFizikselDepolama: PFizikselDepolama): Boolean;
 var
   _Iz: TSayi1;
 begin
@@ -363,7 +363,7 @@ begin
   IRQ6Tetiklendi := False;
 
   DurumYaz(7);                                      // Konumlan0
-  DurumYaz(AFizikselSurucu^.Aygit.Kanal);           // kafa no (0) + sürücü
+  DurumYaz(AFizikselDepolama^.Aygit.Kanal);           // kafa no (0) + sürücü
 
   // iþlemin bitmesini bekle
   Bekle;
@@ -385,7 +385,7 @@ end;
 {==============================================================================
   floppy okuma kafasýný belirtilen iz'e (track) konumlandýrýr
  ==============================================================================}
-function Konumlan(AFizikselSurucu: PFizikselSurucu; AIz, AKafa: TSayi1): Boolean;
+function Konumlan(AFizikselDepolama: PFizikselDepolama; AIz, AKafa: TSayi1): Boolean;
 var
   _Iz: TSayi1;
 begin
@@ -396,7 +396,7 @@ begin
   IRQ6Tetiklendi := False;
 
   DurumYaz($F);                                                   // Konumlan
-  DurumYaz((AKafa shl 2) or AFizikselSurucu^.Aygit.Kanal);        // kafa no + sürücü
+  DurumYaz((AKafa shl 2) or AFizikselDepolama^.Aygit.Kanal);        // kafa no + sürücü
   DurumYaz(AIz);
 
   // iþlemin bitmesini bekle
@@ -484,7 +484,7 @@ end;
 {==============================================================================
   disketten tek bir sektör okuma iþlevini gerçekleþtirir
  ==============================================================================}
-function TekSektorOku(AFizikselSurucu: PFizikselSurucu; ASektorNo: TSayi4): Boolean;
+function TekSektorOku(AFizikselDepolama: PFizikselDepolama; ASektorNo: TSayi4): Boolean;
 var
   _Kafa, _Iz, _Sektor: TSayi1;
 begin
@@ -513,7 +513,7 @@ begin
   end;
 }
   // kafanýn konumlandýðý izi kaydet
-  AFizikselSurucu^.SonIzKonumu := _Iz;
+  AFizikselDepolama^.SonIzKonumu := _Iz;
 
   // DMA2'yi aygýttan okuma için ayarla
   DMA2Yukle(DMA_OKU);
@@ -523,7 +523,7 @@ begin
 
   // MFS sektör oku
   DurumYaz($E6);
-  DurumYaz((_Kafa shl 2) or AFizikselSurucu^.Aygit.Kanal);
+  DurumYaz((_Kafa shl 2) or AFizikselDepolama^.Aygit.Kanal);
   DurumYaz(_Iz);
   DurumYaz(_Kafa);
   DurumYaz(_Sektor);
@@ -549,7 +549,7 @@ end;
 {==============================================================================
   diskete tek bir sektör yazma iþlevini gerçekleþtirir
  ==============================================================================}
-function TekSektorYaz(AFizikselSurucu: PFizikselSurucu; ASektorNo: TSayi4): Boolean;
+function TekSektorYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo: TSayi4): Boolean;
 const
   s: string = 'merhaba';
 var
@@ -582,7 +582,7 @@ begin
   end;
 }
   // kafanýn konumlandýðý izi kaydet
-  AFizikselSurucu^.SonIzKonumu := _Iz;
+  AFizikselDepolama^.SonIzKonumu := _Iz;
 
   // DMA2'yi aygýttan okuma için ayarla
   DMA2Yukle(DMA_YAZ);
@@ -592,7 +592,7 @@ begin
 
   // MFS sektör oku
   DurumYaz($45);
-  DurumYaz((_Kafa shl 2) or AFizikselSurucu^.Aygit.Kanal);
+  DurumYaz((_Kafa shl 2) or AFizikselDepolama^.Aygit.Kanal);
   DurumYaz(_Iz);
   DurumYaz(_Kafa);
   DurumYaz(_Sektor);
@@ -622,16 +622,16 @@ end;
   disket sürücü sektör okuma iþlevi
  ==============================================================================}
 function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): TSayi4;
+  AHedefBellek: Isaretci): TISayi4;
 var
-  _FizikselSurucu: PFizikselSurucu;
+  FD: PFizikselDepolama;
   _BellekAdresi: Isaretci;
   _OkumaSonuc: Boolean;
   _OkunacakSektor, _SektorSayisi, i: TSayi4;
 begin
 
   // sürücü bilgisine konumlan
-  _FizikselSurucu := AFizikselSurucu;
+  FD := AFizikselSurucu;
 
   // öndeðer dönüþ deðeri
   Result := 0;
@@ -643,7 +643,7 @@ begin
   _SektorSayisi := ASektorSayisi;
 
   // motoru aç
-  MotorAc(_FizikselSurucu);
+  MotorAc(FD);
 
   repeat
 
@@ -651,7 +651,7 @@ begin
     begin
 
       // belirtilen sektörü oku
-      _OkumaSonuc := TekSektorOku(_FizikselSurucu, _OkunacakSektor);
+      _OkumaSonuc := TekSektorOku(FD, _OkunacakSektor);
       if(_OkumaSonuc = True) then Break;
     end;
 
@@ -675,15 +675,15 @@ begin
 
       // eðer okuma baþarý ile gerçekleþmemiþse mevcut iz durumunu deðiþtir
       // not: bu iþlem kalibrasyon için yapýlmaktadýr.
-      _FizikselSurucu^.SonIzKonumu := -1;
+      FD^.SonIzKonumu := -1;
 
       Result := 1;
       Exit;
     end;
 
     // motoru kapat
-    _FizikselSurucu^.IslemYapiliyor := False;
-    _FizikselSurucu^.MotorSayac := $1000000;
+    FD^.IslemYapiliyor := False;
+    FD^.MotorSayac := $1000000;
 
   until (_SektorSayisi = 0);
 end;
@@ -691,36 +691,35 @@ end;
 {==============================================================================
   disket sürücü sektör okuma iþlevi
  ==============================================================================}
-function SektorYaz(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): TSayi4;
+function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+  ABellek: Isaretci): TISayi4;
 var
-  _FizikselSurucu: PFizikselSurucu;
+  FD: PFizikselDepolama;
   _BellekAdresi: Isaretci;
   _OkumaSonuc: Boolean;
   _OkunacakSektor, _SektorSayisi, i: TSayi4;
 begin
 
   // sürücü bilgisine konumlan
-  _FizikselSurucu := AFizikselSurucu;
+  FD := AFizikselDepolama;
 
   // öndeðer dönüþ deðeri
   Result := 0;
 
   // hedef bellek bölgesi
-  _BellekAdresi := AHedefBellek;
+  _BellekAdresi := ABellek;
 
   _OkunacakSektor := AIlkSektor;
   _SektorSayisi := ASektorSayisi;
 
   // motoru aç
-  MotorAc(_FizikselSurucu);
+  MotorAc(FD);
 
-  TekSektorYaz(AFizikselSurucu, AIlkSektor);
+  TekSektorYaz(AFizikselDepolama, AIlkSektor);
 
   // motoru kapat
-  _FizikselSurucu^.IslemYapiliyor := False;
-  _FizikselSurucu^.MotorSayac := $1000000;
-
+  FD^.IslemYapiliyor := False;
+  FD^.MotorSayac := $1000000;
 end;
 
 end.

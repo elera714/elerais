@@ -6,7 +6,7 @@
   Dosya Adý: dosya.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -42,24 +42,24 @@ uses bolumleme, fat12, fat16, fat32, sistemmesaj, islevler;
  ==============================================================================}
 procedure Yukle;
 var
-  _i: TISayi4;
+  i: TISayi4;
 begin
 
   // öndeðer dosya iþlem dönüþ deðeri. IOResult için
   FileResult := 0;
 
   // arama deðiþkenlerini sýfýrla
-  for _i := 0 to USTSINIR_ARAMAKAYIT - 1 do
+  for i := 0 to USTSINIR_ARAMAKAYIT - 1 do
   begin
 
-    GAramaKayitListesi[_i].Kullanilabilir := True;
+    GAramaKayitListesi[i].Kullanilabilir := True;
   end;
 
   // dosya iþlev deðiþkenlerini sýfýrla
-  for _i := 0 to USTSINIR_DOSYAKAYIT - 1 do
+  for i := 0 to USTSINIR_DOSYAKAYIT - 1 do
   begin
 
-    GDosyaKayitListesi[_i].Kullanilabilir := True;
+    GDosyaKayitListesi[i].Kullanilabilir := True;
   end;
 end;
 
@@ -69,11 +69,12 @@ end;
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
   var ADosyaArama: TDosyaArama): TISayi4;
 var
-  _MantiksalSurucu: PMantiksalSurucu;
+  MD: PMantiksalDepolama;
   AramaKimlik: TKimlik;
-  _BolumTipi: Byte;
-  _AranacakDeger: string;
-  _KalinanSira, UTamAramaYolu, AramaSonuc: TISayi4;
+  DosyaSistemTipi: TSayi4;
+  AranacakDeger: string;
+  KalinanSira, UTamAramaYolu,
+  AramaSonuc: TISayi4;
 begin
 
   // arama için arama bilgilerinin saklanacaðý bellek bölgesi tahsis et
@@ -89,8 +90,8 @@ begin
   ADosyaArama.Kimlik := AramaKimlik;
 
   // arama iþlevinin yapýlacaðý sürücüyü al
-  _MantiksalSurucu := SurucuAl(AAramaSuzgec, _KalinanSira);
-  if(_MantiksalSurucu = nil) then
+  MD := SurucuAl(AAramaSuzgec, KalinanSira);
+  if(MD = nil) then
   begin
 
     // arama için kullanýlan bellek bölgesini serbest býrak
@@ -99,7 +100,7 @@ begin
     Exit;
   end;
 
-  if not(AAramaSuzgec[_KalinanSira] = '\') then
+  if not(AAramaSuzgec[KalinanSira] = '\') then
   begin
 
     SISTEM_MESAJ(RENK_KIRMIZI, 'DOSYA.PAS: AranacakDeger hatalý!', []);
@@ -107,38 +108,35 @@ begin
     Exit;
   end;
 
-  _AranacakDeger := '';
-  Inc(_KalinanSira);
+  AranacakDeger := '';
+  Inc(KalinanSira);
   UTamAramaYolu := Length(AAramaSuzgec);
-  while (AAramaSuzgec[_KalinanSira] <> '\') and (_KalinanSira <= UTamAramaYolu) do
+  while (AAramaSuzgec[KalinanSira] <> '\') and (KalinanSira <= UTamAramaYolu) do
   begin
 
-    _AranacakDeger += AAramaSuzgec[_KalinanSira];
-    Inc(_KalinanSira);
+    AranacakDeger += AAramaSuzgec[KalinanSira];
+    Inc(KalinanSira);
   end;
 
-  if(_AranacakDeger = '*.*') then
+  if(AranacakDeger = '*.*') then
   begin
 
     // sürücüyü arama bellek bölgesine ekle
-    GAramaKayitListesi[AramaKimlik].MantiksalSurucu := _MantiksalSurucu;
+    GAramaKayitListesi[AramaKimlik].MantiksalDepolama := MD;
 
     // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
-      _MantiksalSurucu^.Acilis.DizinGirisi.IlkSektor;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor :=
-      _MantiksalSurucu^.Acilis.DizinGirisi.ToplamSektor;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi :=
-      _MantiksalSurucu^.Acilis.DizinGirisi.GirdiSayisi;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := MD^.Acilis.DizinGirisi.IlkSektor;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := MD^.Acilis.DizinGirisi.GirdiSayisi;
     GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
 
     // dosya sistem tipine göre iþlevi yönlendir
-    _BolumTipi := GAramaKayitListesi[AramaKimlik].MantiksalSurucu^.BolumTipi;
-    case _BolumTipi of
-      DATTIP_FAT12    : Result := fat12.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
-      DATTIP_FAT16    : Result := fat16.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
+    DosyaSistemTipi := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DosyaSistemTipi;
+    case DosyaSistemTipi of
+      DATTIP_FAT12    : Result := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DATTIP_FAT16    : Result := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
       DATTIP_FAT32,
-      DATTIP_FAT32LBA : Result := fat32.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DATTIP_FAT32LBA : Result := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
       else Result := 1;
     end;
   end
@@ -147,32 +145,29 @@ begin
 
     // -> yukarýdaki yapý ile ayný
     // sürücüyü arama bellek bölgesine ekle
-    GAramaKayitListesi[AramaKimlik].MantiksalSurucu := _MantiksalSurucu;
+    GAramaKayitListesi[AramaKimlik].MantiksalDepolama := MD;
 
     // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
-      _MantiksalSurucu^.Acilis.DizinGirisi.IlkSektor;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor :=
-      _MantiksalSurucu^.Acilis.DizinGirisi.ToplamSektor;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi :=
-      _MantiksalSurucu^.Acilis.DizinGirisi.GirdiSayisi;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := MD^.Acilis.DizinGirisi.IlkSektor;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := MD^.Acilis.DizinGirisi.GirdiSayisi;
     GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
 
     // dosya sistem tipine göre iþlevi yönlendir
-    _BolumTipi := GAramaKayitListesi[AramaKimlik].MantiksalSurucu^.BolumTipi;
-    case _BolumTipi of
-      DATTIP_FAT12    : AramaSonuc := fat12.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
-      DATTIP_FAT16    : AramaSonuc := fat16.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
+    DosyaSistemTipi := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DosyaSistemTipi;
+    case DosyaSistemTipi of
+      DATTIP_FAT12    : AramaSonuc := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DATTIP_FAT16    : AramaSonuc := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
       DATTIP_FAT32,
-      DATTIP_FAT32LBA : AramaSonuc := fat32.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DATTIP_FAT32LBA : AramaSonuc := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
       else AramaSonuc := 1;
     end;
     // <- yukarýdaki yapý ile ayný
 
-    if not(_AranacakDeger = '*.*') and (AramaSonuc = 0) then
+    if not(AranacakDeger = '*.*') and (AramaSonuc = 0) then
     begin
 
-      {SISTEM_MESAJ(RENK_SIYAH, 'Aranacak Deðer: ', _AranacakDeger, []);
+      {SISTEM_MESAJ(RENK_SIYAH, 'Aranacak Deðer: ', AranacakDeger, []);
       SISTEM_MESAJ_S16(RENK_SIYAH, 'BaslangicKumeNo: ', ADosyaArama.BaslangicKumeNo, 8);
       SISTEM_MESAJ(RENK_SIYAH, 'Dosya Adý: ', ADosyaArama.DosyaAdi, []);
       SISTEM_MESAJ_S16(RENK_SIYAH, 'DosyaUzunlugu: ', ADosyaArama.DosyaUzunlugu, 8);
@@ -182,7 +177,7 @@ begin
 
       // -> yukarýdaki yapý ile ayný
       // sürücüyü arama bellek bölgesine ekle
-      GAramaKayitListesi[AramaKimlik].MantiksalSurucu := _MantiksalSurucu;
+      GAramaKayitListesi[AramaKimlik].MantiksalDepolama := MD;
 
       // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
       GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
@@ -191,16 +186,16 @@ begin
       GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := 16;
       GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
 
-      _AranacakDeger := '*.*';
+      AranacakDeger := '*.*';
       GAramaKayitListesi[AramaKimlik].Aranan := '*.*';
 
       // dosya sistem tipine göre iþlevi yönlendir
-      _BolumTipi := GAramaKayitListesi[AramaKimlik].MantiksalSurucu^.BolumTipi;
-      case _BolumTipi of
-        DATTIP_FAT12    : AramaSonuc := fat12.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
-        DATTIP_FAT16    : AramaSonuc := fat16.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DosyaSistemTipi := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DosyaSistemTipi;
+      case DosyaSistemTipi of
+        DATTIP_FAT12    : AramaSonuc := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+        DATTIP_FAT16    : AramaSonuc := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
         DATTIP_FAT32,
-        DATTIP_FAT32LBA : AramaSonuc := fat32.FindFirst(_AranacakDeger, ADosyaOzellik, ADosyaArama);
+        DATTIP_FAT32LBA : AramaSonuc := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
         else AramaSonuc := 1;
       end;
       // <- yukarýdaki yapý ile ayný
@@ -215,17 +210,17 @@ end;
  ==============================================================================}
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 var
-  _BolumTipi: TSayi1;
+  DosyaSistemTipi: TSayi4;
 begin
 
-  _BolumTipi := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalSurucu^.BolumTipi;
-  if(_BolumTipi = DATTIP_FAT12) then
+  DosyaSistemTipi := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalDepolama^.MD3.DosyaSistemTipi;
+  if(DosyaSistemTipi = DATTIP_FAT12) then
 
     Result := fat12.FindNext(ADosyaArama)
-  else if(_BolumTipi = DATTIP_FAT16) then
+  else if(DosyaSistemTipi = DATTIP_FAT16) then
 
     Result := fat16.FindNext(ADosyaArama)
-  else if(_BolumTipi = DATTIP_FAT32) or (_BolumTipi = DATTIP_FAT32LBA) then
+  else if(DosyaSistemTipi = DATTIP_FAT32) or (DosyaSistemTipi = DATTIP_FAT32LBA) then
 
     Result := fat32.FindNext(ADosyaArama);
 end;
@@ -244,11 +239,11 @@ end;
  ==============================================================================}
 procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
 var
-  _MantiksalSurucu: PMantiksalSurucu;
-  _DosyaKayit: PDosyaKayit;
-  _DosyaKimlik: TKimlik;
-  _Surucu, _Dizin, _DosyaAdi: string;
-  _KalinanSira: TISayi4;
+  MD: PMantiksalDepolama;
+  DosyaKayit: PDosyaKayit;
+  DosyaKimlik: TKimlik;
+  Surucu, Dizin, DosyaAdi: string;
+  KalinanSira: TISayi4;
 begin
 
   // öndeðer dosya iþlem dönüþ deðeri
@@ -258,41 +253,41 @@ begin
   ADosyaKimlik := 0;
 
   // dosya iþlemi için bellek bölgesi ayýr
-  _DosyaKimlik := DosyaKaydiOlustur;
-  if(_DosyaKimlik = -1) then Exit;
+  DosyaKimlik := DosyaKaydiOlustur;
+  if(DosyaKimlik = -1) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  _DosyaKayit := @GDosyaKayitListesi[_DosyaKimlik];
+  DosyaKayit := @GDosyaKayitListesi[DosyaKimlik];
 
   // sürücünün iþaret ettiði bellek bölgesine konumlan
-  _MantiksalSurucu := SurucuAl(ADosyaAdi, _KalinanSira);
-  if(_MantiksalSurucu = nil) then
+  MD := SurucuAl(ADosyaAdi, KalinanSira);
+  if(MD = nil) then
   begin
 
-    DosyaKaydiniYokEt(_DosyaKimlik);
+    DosyaKaydiniYokEt(DosyaKimlik);
     Exit;
   end;
 
   FileResult := 0;
 
   // dosya tanýmlayýcýyý kaydet
-  ADosyaKimlik := _DosyaKimlik;
+  ADosyaKimlik := DosyaKimlik;
 
   // iþlem yapýlacak sürücü
-  _DosyaKayit^.MantiksalSurucu := _MantiksalSurucu;
+  DosyaKayit^.MantiksalDepolama := MD;
 
   // dosya yolunu ayrýþtýr
-  DosyaYolunuParcala(ADosyaAdi, _Surucu, _Dizin, _DosyaAdi);
+  DosyaYolunuParcala(ADosyaAdi, Surucu, Dizin, DosyaAdi);
 
   // dosya adý
-  _DosyaKayit^.DosyaAdi := _DosyaAdi;
+  DosyaKayit^.DosyaAdi := DosyaAdi;
 
   // diðer deðerleri sýfýrla
-  _DosyaKayit^.DATBellekAdresi := nil;
-  _DosyaKayit^.IlkZincirSektor := 0;
-  _DosyaKayit^.Uzunluk := 0;
-  _DosyaKayit^.Konum := 0;
-  _DosyaKayit^.VeriBellekAdresi := nil;
+  DosyaKayit^.DATBellekAdresi := nil;
+  DosyaKayit^.IlkZincirSektor := 0;
+  DosyaKayit^.Uzunluk := 0;
+  DosyaKayit^.Konum := 0;
+  DosyaKayit^.VeriBellekAdresi := nil;
 end;
 
 {==============================================================================
@@ -300,41 +295,41 @@ end;
  ==============================================================================}
 procedure Reset(ADosyaKimlik: TKimlik);
 var
-  _DosyaKayit: PDosyaKayit;
-  _DosyaArama: TDosyaArama;
-  _TamAramaYolu: string;
-  _Bulundu: Boolean;
+  DosyaKayit: PDosyaKayit;
+  DosyaArama: TDosyaArama;
+  TamAramaYolu: string;
+  Bulundu: Boolean;
 begin
 
   // en son iþlem hatalý ise çýk
   if(FileResult > 0) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  _DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
+  DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   // tam dosya adýný al
-  _TamAramaYolu := _DosyaKayit^.MantiksalSurucu^.AygitAdi + ':\*.*';
+  TamAramaYolu := DosyaKayit^.MantiksalDepolama^.MD3.AygitAdi + ':\*.*';
 
   // dosyayý dosya tablosunda bul
-  _Bulundu := False;
-  if(FindFirst(_TamAramaYolu, 0, _DosyaArama) = 0) then
+  Bulundu := False;
+  if(FindFirst(TamAramaYolu, 0, DosyaArama) = 0) then
   begin
 
     repeat
 
-      if(_DosyaArama.DosyaAdi = _DosyaKayit^.DosyaAdi) then _Bulundu := True;
-    until (_Bulundu) or (FindNext(_DosyaArama) <> 0);
+      if(DosyaArama.DosyaAdi = DosyaKayit^.DosyaAdi) then Bulundu := True;
+    until (Bulundu) or (FindNext(DosyaArama) <> 0);
 
-    FindClose(_DosyaArama);
+    FindClose(DosyaArama);
   end;
 
   // dosyanýn tabloda bulunmasý halinde
   // dosyanýn ilk dizi ve uzunluðunu al
-  if(_Bulundu) then
+  if(Bulundu) then
   begin
 
-    _DosyaKayit^.IlkZincirSektor := _DosyaArama.BaslangicKumeNo;
-    _DosyaKayit^.Uzunluk := _DosyaArama.DosyaUzunlugu;
+    DosyaKayit^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
+    DosyaKayit^.Uzunluk := DosyaArama.DosyaUzunlugu;
   end else FileResult := 1;
 end;
 
@@ -370,8 +365,8 @@ end;
  ==============================================================================}
 function Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci): TISayi4;
 var
-  _DosyaKayit: PDosyaKayit;
-  _BolumTipi: TSayi1;
+  DosyaKayit: PDosyaKayit;
+  DosyaSistemTipi: TSayi4;
 begin
 
   Result := 0;
@@ -380,17 +375,17 @@ begin
   if(FileResult > 0) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  _DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
+  DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
-  _BolumTipi := _DosyaKayit^.MantiksalSurucu^.BolumTipi;
-  if(_BolumTipi = DATTIP_FAT12) then
+  DosyaSistemTipi := DosyaKayit^.MantiksalDepolama^.MD3.DosyaSistemTipi;
+  if(DosyaSistemTipi = DATTIP_FAT12) then
 
     fat12.Read(ADosyaKimlik, AHedefBellek)
 
-  else if(_BolumTipi = DATTIP_FAT16) then
+  else if(DosyaSistemTipi = DATTIP_FAT16) then
 
     fat16.Read(ADosyaKimlik, AHedefBellek)
-  else if(_BolumTipi = DATTIP_FAT32) or (_BolumTipi = DATTIP_FAT32LBA) then
+  else if(DosyaSistemTipi = DATTIP_FAT32) or (DosyaSistemTipi = DATTIP_FAT32LBA) then
 
     fat32.Read(ADosyaKimlik, AHedefBellek);
 

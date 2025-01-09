@@ -7,7 +7,7 @@ program kopyala;
   Program Adý: kopyala.lpr
   Program Ýþlevi: fiziksel disk kopyalama iþlevini gerçekleþtirir
 
-  Güncelleme Tarihi: 08/01/2025
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -26,13 +26,13 @@ var
   etkSuruculer, etkKaynak, etkHedef, etkBilgi: TEtiket;
   klKaynak, klHedef: TKarmaListe;
   IslemGostergesi: TIslemGostergesi;
-  Dugme: TDugme;
+  dugKopyala: TDugme;
   Olay: TOlay;
   AygitDurum: TISayi4;
-  FizikselAygitSayisi, DiskAygitSayisi, i,
-  KaynakDisk, HedefDisk: TSayi4;
-  // FizikselSurucuListesi: 0 = genel, 1 = disk1, 2 = disk2
-  FizikselSurucuListesi: array[0..2] of TFizikselSurucu3;
+  FizikselAygitSayisi, DiskAygitSayisi,
+  i: TSayi4;
+  // FizikselDepolamaListesi: 0 = genel / geçici kullaným, 1 = disk1, 2 = disk2
+  FizikselDepolamaListesi: array[0..2] of TFizikselDepolama3;
   DiskBellek: array[0..511] of TSayi1;
 
 begin
@@ -65,8 +65,8 @@ begin
   IslemGostergesi.KonumBelirle(0);
   IslemGostergesi.Goster;
 
-  Dugme.Olustur(Pencere.Kimlik, 90, 165, 170, 30, 'Diski Kopyala');
-  Dugme.Goster;
+  dugKopyala.Olustur(Pencere.Kimlik, 90, 165, 170, 30, 'Diski Kopyala');
+  dugKopyala.Goster;
 
   { TODO - sistemde 2 adet disk aygýtýnýn olmamasý durumunda kullanýcýya uyarý bilgisi verilecek }
   FizikselAygitSayisi := Depolama.FizikselDepolamaAygitSayisiAl;
@@ -74,28 +74,22 @@ begin
   begin
 
     DiskAygitSayisi := 0;
-    for i := 1 to FizikselAygitSayisi do
+    for i := 0 to FizikselAygitSayisi - 1 do
     begin
 
-      if(Depolama.FizikselDepolamaAygitBilgisiAl(i, @FizikselSurucuListesi[0])) then
+      if(Depolama.FizikselDepolamaAygitBilgisiAl(i, @FizikselDepolamaListesi[0]) > 0) then
       begin
 
-        if(FizikselSurucuListesi[0].SurucuTipi = SURUCUTIP_DISK) and (DiskAygitSayisi < 2) then
+        if(FizikselDepolamaListesi[0].SurucuTipi = SURUCUTIP_DISK) and (DiskAygitSayisi < 2) then
         begin
 
           Inc(DiskAygitSayisi);
 
-          // aygýtlarýn kimlikleri alýnýyor
-          if(DiskAygitSayisi = 1) then
-            KaynakDisk := i
-          else if(DiskAygitSayisi = 2) then
-            HedefDisk := i;
-
           // disk sürücü bilgilerini kaydet
-          FizikselSurucuListesi[DiskAygitSayisi] := FizikselSurucuListesi[0];
+          FizikselDepolamaListesi[DiskAygitSayisi] := FizikselDepolamaListesi[0];
 
-          klKaynak.ElemanEkle(FizikselSurucuListesi[DiskAygitSayisi].AygitAdi);
-          klHedef.ElemanEkle(FizikselSurucuListesi[DiskAygitSayisi].AygitAdi);
+          klKaynak.ElemanEkle(FizikselDepolamaListesi[DiskAygitSayisi].AygitAdi);
+          klHedef.ElemanEkle(FizikselDepolamaListesi[DiskAygitSayisi].AygitAdi);
         end;
       end;
     end;
@@ -127,7 +121,7 @@ OlayBekle:
     if(Olay.Olay = FO_TIKLAMA) then
     begin
 
-      if(Olay.Kimlik = Dugme.Kimlik) then
+      if(Olay.Kimlik = dugKopyala.Kimlik) then
       begin
 
         // kaynak / hedef aygýt seçili ise kopyalama iþlemine baþla
@@ -136,13 +130,14 @@ OlayBekle:
 
           etkBilgi.BaslikDegistir('Kopyalama iþlemi devam ediyor...');
 
-          { TODO $E800 deðeri olan toplam sektör deðeri sistemden alýnacak ve her 2 diskin
-            ayný sayýda sektör / kafa / iz içerdiði doðrulanacak }
-          for i := 0 to $E800 - 1 do
+          { TODO $FFCC deðeri olan toplam sektör deðeri sistemden alýnacak ve her 2 diskin
+            ayný sayýda sektör / kafa / iz içerik denkliði doðrulanacak }
+          for i := 0 to $FFCC - 1 do
           begin
 
             // disk sektör okuma iþlemi
-            AygitDurum := Depolama.FizikselDepolamaVeriOku(KaynakDisk, i, 1, @DiskBellek);
+            AygitDurum := Depolama.FizikselDepolamaVeriOku(
+              FizikselDepolamaListesi[klKaynak.BaslikSiraNo + 1].Kimlik, i, 1, @DiskBellek);
             if(AygitDurum <> 0) then
             begin
 
@@ -151,7 +146,8 @@ OlayBekle:
             end;
 
             // disk sektör yazma iþlemi
-            AygitDurum := Depolama.FizikselDepolamaVeriYaz(HedefDisk, i, 1, @DiskBellek);
+            AygitDurum := Depolama.FizikselDepolamaVeriYaz(
+              FizikselDepolamaListesi[klHedef.BaslikSiraNo + 1].Kimlik, i, 1, @DiskBellek);
             if(AygitDurum <> 0) then
             begin
 

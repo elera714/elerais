@@ -7,7 +7,7 @@
   Dosya İşlevi: depolama aygıtlarını yönetir
   İşlev No: 0x0F
 
-  Güncelleme Tarihi: 08/11/2024
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -26,26 +26,26 @@ type
     FGenel: TGenel;
   public
     function MantiksalDepolamaAygitSayisiAl: TSayi4;
-    function MantiksalDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-      AMantiksalSurucu3: PMantiksalSurucu3): Boolean;
+    function MantiksalDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
+      AMantiksalDepolama: PMantiksalDepolama3): Boolean;
     function FizikselDepolamaAygitSayisiAl: TSayi4;
-    function FizikselDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-      AFizikselSurucu3: PFizikselSurucu3): Boolean;
-    function FizikselDepolamaVeriOku(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
+    function FizikselDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
+      AFizikselDepolama: PFizikselDepolama3): TSayi4;
+    function FizikselDepolamaVeriOku(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
       ABellek: Isaretci): TISayi4;
-    function FizikselDepolamaVeriYaz(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
+    function FizikselDepolamaVeriYaz(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
       ABellek: Isaretci): TISayi4;
   end;
 
 function _MantiksalDepolamaAygitSayisiAl: TSayi4; assembler;
-function _MantiksalDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-  AMantiksalSurucu3: PMantiksalSurucu3): Boolean; assembler;
+function _MantiksalDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
+  AMantiksalDepolama: PMantiksalDepolama3): Boolean; assembler;
 function _FizikselDepolamaAygitSayisiAl: TSayi4; assembler;
-function _FizikselDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-  AFizikselSurucu3: PFizikselSurucu3): Boolean; assembler;
-function _FizikselDepolamaVeriOku(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
+function _FizikselDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
+  AFizikselDepolama: PFizikselDepolama3): TSayi4; assembler;
+function _FizikselDepolamaVeriOku(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4; assembler;
-function _FizikselDepolamaVeriYaz(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
+function _FizikselDepolamaVeriYaz(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4; assembler;
 
 implementation
@@ -56,11 +56,11 @@ begin
   Result := _MantiksalDepolamaAygitSayisiAl;
 end;
 
-function TDepolama.MantiksalDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-  AMantiksalSurucu3: PMantiksalSurucu3): Boolean;
+function TDepolama.MantiksalDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
+  AMantiksalDepolama: PMantiksalDepolama3): Boolean;
 begin
 
-  Result := _MantiksalDepolamaAygitBilgisiAl(AAygitKimlik, AMantiksalSurucu3);
+  Result := _MantiksalDepolamaAygitBilgisiAl(ASiraNo, AMantiksalDepolama);
 end;
 
 function TDepolama.FizikselDepolamaAygitSayisiAl: TSayi4;
@@ -69,25 +69,25 @@ begin
   Result := _FizikselDepolamaAygitSayisiAl;
 end;
 
-function TDepolama.FizikselDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-  AFizikselSurucu3: PFizikselSurucu3): Boolean;
+function TDepolama.FizikselDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
+  AFizikselDepolama: PFizikselDepolama3): TSayi4;
 begin
 
-  Result := _FizikselDepolamaAygitBilgisiAl(AAygitKimlik, AFizikselSurucu3);
+  Result := _FizikselDepolamaAygitBilgisiAl(ASiraNo, AFizikselDepolama);
 end;
 
-function TDepolama.FizikselDepolamaVeriOku(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
+function TDepolama.FizikselDepolamaVeriOku(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 begin
 
-  Result := _FizikselDepolamaVeriOku(AAygitKimlik, ASektorNo, ASektorSayisi, ABellek);
+  Result := _FizikselDepolamaVeriOku(AKimlik, ASektorNo, ASektorSayisi, ABellek);
 end;
 
-function TDepolama.FizikselDepolamaVeriYaz(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
+function TDepolama.FizikselDepolamaVeriYaz(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 begin
 
-  Result := _FizikselDepolamaVeriYaz(AAygitKimlik, ASektorNo, ASektorSayisi, ABellek);
+  Result := _FizikselDepolamaVeriYaz(AKimlik, ASektorNo, ASektorSayisi, ABellek);
 end;
 
 function _MantiksalDepolamaAygitSayisiAl: TSayi4;
@@ -96,11 +96,11 @@ asm
   int	  $34
 end;
 
-function _MantiksalDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-  AMantiksalSurucu3: PMantiksalSurucu3): Boolean;
+function _MantiksalDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
+  AMantiksalDepolama: PMantiksalDepolama3): Boolean;
 asm
-  push  AMantiksalSurucu3
-  push  AAygitKimlik
+  push  AMantiksalDepolama
+  push  ASiraNo
   mov   eax,DEPOLAMA_MDEPO_AYG_BILGIAL
   int   $34
   add   esp,8
@@ -112,35 +112,35 @@ asm
   int	  $34
 end;
 
-function _FizikselDepolamaAygitBilgisiAl(AAygitKimlik: TSayi4;
-  AFizikselSurucu3: PFizikselSurucu3): Boolean;
+function _FizikselDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
+  AFizikselDepolama: PFizikselDepolama3): TSayi4;
 asm
-  push  AFizikselSurucu3
-  push  AAygitKimlik
+  push  AFizikselDepolama
+  push  ASiraNo
   mov   eax,DEPOLAMA_FDEPO_AYG_BILGIAL
   int   $34
   add   esp,8
 end;
 
-function _FizikselDepolamaVeriOku(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
+function _FizikselDepolamaVeriOku(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 asm
   push  ABellek
   push  ASektorSayisi
   push  ASektorNo
-  push  AAygitKimlik
+  push  AKimlik
   mov   eax,DEPOLAMA_FDEPO_VERIOKU
   int   $34
   add   esp,16
 end;
 
-function _FizikselDepolamaVeriYaz(AAygitKimlik, ASektorNo, ASektorSayisi: TSayi4;
+function _FizikselDepolamaVeriYaz(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 asm
   push  ABellek
   push  ASektorSayisi
   push  ASektorNo
-  push  AAygitKimlik
+  push  AKimlik
   mov   eax,DEPOLAMA_FDEPO_VERIYAZ
   int   $34
   add   esp,16

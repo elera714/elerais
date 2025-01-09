@@ -6,7 +6,7 @@
   Dosya Adý: aygityonetimi.pas
   Dosya Ýþlevi: aygýt (device) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 22/09/2024
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,6 +21,9 @@ const
   PCIAYGIT_AG_ETHERNET            = $0200;
   PCIAYGIT_CEVREBIRIM_DIGER       = $0880;
 
+  FD_KIMLIK_ILKDEGER              = $1000;    // fiziksel depolama
+  MD_KIMLIK_ILKDEGER              = $2000;    // mantýksal depolama
+
 var
   SistemdekiAgAygitSayisi: TSayi4 = 0;
 
@@ -28,15 +31,15 @@ procedure DepolamaAygitlariniYukle;
 procedure AgAygitlariniYukle;
 procedure AygitiSistemeKaydet(APCI: PPCI);
 procedure AgAygitiEkle(APCI: PPCI);
-function FizikselDepolamaAygitiOlustur(AAygitTipi: TSayi4): PFizikselSurucu;
+function FizikselDepolamaAygitiOlustur(AAygitTipi: TSayi4): PFizikselDepolama;
 
 implementation
 
 uses src_disket, src_pcnet32, src_ide, donusum, vbox;
 
 const
-  DESTEKLENEN_AGAYGIT_SAYISI = 1;
-  USTSINIR_AGAYGITI = 4;
+  DESTEKLENEN_AGAYGIT_SAYISI  = 1;
+  USTSINIR_AGAYGITI           = 4;
 
 type
   TYukle = function(APCI: PPCI): TISayi4;
@@ -49,10 +52,10 @@ type
   end;
 
 var
-  DesteklenenAgAygitlari: array[1..DESTEKLENEN_AGAYGIT_SAYISI] of TAygit = (
+  DesteklenenAgAygitlari: array[0..DESTEKLENEN_AGAYGIT_SAYISI - 1] of TAygit = (
     (SaticiKimlik: $1022; AygitKimlik: $2000; Yukle: @src_pcnet32.Yukle));
 
-  AgAygitListesi: array[1..USTSINIR_AGAYGITI] of PPCI = (nil, nil, nil, nil);
+  AgAygitListesi: array[0..USTSINIR_AGAYGITI - 1] of PPCI = (nil, nil, nil, nil);
 
 { TODO : Tüm aygýt yüklemeleri buraya alýnabilir }
 
@@ -66,14 +69,14 @@ begin
 
   // fiziksel sürücü deðiþkenlerini sýfýrla
   FizikselDepolamaAygitSayisi := 0;
-  for i := 1 to 6 do
+  for i := 0 to 5 do
   begin
 
-    FizikselDepolamaAygitListesi[i].Mevcut := False;
-    FizikselDepolamaAygitListesi[i].Kimlik := i;
+    FizikselDepolamaAygitListesi[i].Mevcut0 := False;
+    FizikselDepolamaAygitListesi[i].FD3.Kimlik := FD_KIMLIK_ILKDEGER + i;
 
     // fda = fiziksel depolama aygýtý
-    FizikselDepolamaAygitListesi[i].AygitAdi := 'fda' + IntToStr(i);
+    FizikselDepolamaAygitListesi[i].FD3.AygitAdi := 'fda' + IntToStr(i + 1);
   end;
 
   // floppy aygýtlarýný yükle
@@ -88,9 +91,9 @@ end;
  ==============================================================================}
 procedure AgAygitlariniYukle;
 var
-  _PCI: PPCI;
-  _Aygit: TAygit;
-  _AygitSiraNo, _DesteklenenAygitSiraNo,
+  PCIKayit: PPCI;
+  Aygit: TAygit;
+  AygitSiraNo, DesteklenenAygitSiraNo,
   i: TSayi4;
 begin
 
@@ -104,22 +107,22 @@ begin
   begin
 
     // sistemde mevcut, sistem tarafýndan desteklenen aygýtlarý yükle
-    for _AygitSiraNo := 1 to USTSINIR_AGAYGITI do
+    for AygitSiraNo := 0 to USTSINIR_AGAYGITI - 1 do
     begin
 
-      _PCI := AgAygitListesi[_AygitSiraNo];
-      if(_PCI <> nil) then
+      PCIKayit := AgAygitListesi[AygitSiraNo];
+      if(PCIKayit <> nil) then
       begin
 
-        for _DesteklenenAygitSiraNo := 1 to DESTEKLENEN_AGAYGIT_SAYISI do
+        for DesteklenenAygitSiraNo := 0 to DESTEKLENEN_AGAYGIT_SAYISI - 1 do
         begin
 
-          _Aygit := DesteklenenAgAygitlari[_DesteklenenAygitSiraNo];
-          if(_Aygit.SaticiKimlik = _PCI^.SaticiKimlik) and (_Aygit.AygitKimlik = _PCI^.AygitKimlik) then
+          Aygit := DesteklenenAgAygitlari[DesteklenenAygitSiraNo];
+          if(Aygit.SaticiKimlik = PCIKayit^.SaticiKimlik) and (Aygit.AygitKimlik = PCIKayit^.AygitKimlik) then
           begin
 
             // eðer aygýt yüklemesi baþarýlý ise að yükleme deðiþkenini aktifleþtir
-            i := _Aygit.Yukle(_PCI);
+            i := Aygit.Yukle(PCIKayit);
             if(i = 0) then AgYuklendi := True;
           end;
         end;
@@ -155,30 +158,30 @@ begin
   // sisteme eklenecek üstsýnýr að aygýt sayýsý aþýldý mý ?
   if(SistemdekiAgAygitSayisi >= USTSINIR_AGAYGITI) then Exit;
 
-  // aygýt sayýsýný bir artýr
-  Inc(SistemdekiAgAygitSayisi);
-
   // aygýtý listeye ekle
   AgAygitListesi[SistemdekiAgAygitSayisi] := APCI;
+
+  // aygýt sayýsýný bir artýr
+  Inc(SistemdekiAgAygitSayisi);
 end;
 
 {==============================================================================
   fiziksel depolama aygýtý için sistemde sürücü oluþturma iþlevi
  ==============================================================================}
-function FizikselDepolamaAygitiOlustur(AAygitTipi: TSayi4): PFizikselSurucu;
+function FizikselDepolamaAygitiOlustur(AAygitTipi: TSayi4): PFizikselDepolama;
 var
   i: TSayi4;
 begin
 
   // boþ fiziksel sürücü yapýsý bul
-  for i := 1 to 6 do
+  for i := 0 to 5 do
   begin
 
-    if(FizikselDepolamaAygitListesi[i].Mevcut = False) then
+    if(FizikselDepolamaAygitListesi[i].Mevcut0 = False) then
     begin
 
-      FizikselDepolamaAygitListesi[i].Mevcut := True;
-      FizikselDepolamaAygitListesi[i].SurucuTipi := AAygitTipi;
+      FizikselDepolamaAygitListesi[i].Mevcut0 := True;
+      FizikselDepolamaAygitListesi[i].FD3.SurucuTipi := AAygitTipi;
 
       // fiziksel sürücü sayýsýný artýr
       Inc(FizikselDepolamaAygitSayisi);

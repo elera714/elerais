@@ -7,7 +7,7 @@ program dskgor;
   Program Adý: dskgor.lpr
   Program Ýþlevi: depolama aygýtý sektör içeriðini görüntüler
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,13 +32,13 @@ var
   DurumCubugu: TDurumCubugu;
   etiSektorNo: TEtiket;
   dugAzalt, dugArtir, dugYenile: TDugme;
-  dugDepolamaAygitlari: array[1..6] of TDugme;
+  dugDepolamaAygitlari: array[0..5] of TDugme;
   gkAdres: TGirisKutusu;
   Olay: TOlay;
-  FizikselDepolamaAygitSayisi, SeciliAygitSiraNo,
-  DugmeA1, i: TSayi4;
+  FizikselDepolamaAygitSayisi, DugmeA1: TSayi4;
+  SeciliAygitSN, i: TISayi4;
   AygitOkumaDurumu, ToplamSektor, MevcutSektor: TISayi4;
-  FizikselSurucuListesi: array[1..6] of TFizikselSurucu3;
+  FizikselDepolamaListesi: array[0..5] of TFizikselDepolama3;
   s: string;
 
 procedure SektorAdresleriniYaz(ASektorNo: TSayi4);
@@ -123,15 +123,14 @@ begin
 
     // fiziksel sürücü bilgilerini al ve düðmeleri oluþtur
     DugmeA1 := 0;
-    for i := 1 to FizikselDepolamaAygitSayisi do
+    for i := 0 to FizikselDepolamaAygitSayisi - 1 do
     begin
 
-      if(Depolama.FizikselDepolamaAygitBilgisiAl(i, @FizikselSurucuListesi[i])) then
+      if(Depolama.FizikselDepolamaAygitBilgisiAl(i, @FizikselDepolamaListesi[i]) > 0) then
       begin
 
         dugDepolamaAygitlari[i].Olustur(Pencere.Kimlik, DugmeA1, 2, 65, 22,
-          FizikselSurucuListesi[i].AygitAdi);
-        dugDepolamaAygitlari[i].Etiket := i;
+          FizikselDepolamaListesi[i].AygitAdi);
         dugDepolamaAygitlari[i].Goster;
         DugmeA1 += 70;
       end;
@@ -166,7 +165,7 @@ begin
   Pencere.Gorunum := True;
 
   // öndeðer atamalarý
-  SeciliAygitSiraNo := 0;
+  SeciliAygitSN := -1;
   ToplamSektor := 0;
   MevcutSektor := 0;
 
@@ -185,16 +184,16 @@ begin
         MevcutSektor := StrToHex(s);
 
         // tüm iþlemlerde, eðer disk seçili ise okuma iþlemi yap ve bilgileri güncelle
-        if(SeciliAygitSiraNo > 0) then
+        if(SeciliAygitSN > -1) then
         begin
 
           DurumCubugu.DurumYazisiDegistir('Aygýt: ' +
-            FizikselSurucuListesi[SeciliAygitSiraNo].AygitAdi + ' - Sektör: ' +
-            HexToStr(FizikselSurucuListesi[SeciliAygitSiraNo].ToplamSektorSayisi, True, 8) + ' / ' +
+            FizikselDepolamaListesi[SeciliAygitSN].AygitAdi + ' - Sektör: ' +
+            HexToStr(FizikselDepolamaListesi[SeciliAygitSN].ToplamSektorSayisi, True, 8) + ' / ' +
             HexToStr(MevcutSektor, True, 8));
 
-          AygitOkumaDurumu := Depolama.FizikselDepolamaVeriOku(SeciliAygitSiraNo,
-            MevcutSektor, 1, @DiskBellek);
+          AygitOkumaDurumu := Depolama.FizikselDepolamaVeriOku(
+            FizikselDepolamaListesi[SeciliAygitSN].Kimlik, MevcutSektor, 1, @DiskBellek);
           Pencere.Ciz;
         end;
       end;
@@ -215,7 +214,7 @@ begin
       begin
 
         // eðer disk seçili ise
-        if(SeciliAygitSiraNo > 0) then
+        if(SeciliAygitSN > -1) then
         begin
 
           Dec(MevcutSektor);
@@ -228,7 +227,7 @@ begin
       begin
 
         // eðer disk seçili ise
-        if(SeciliAygitSiraNo > 0) then
+        if(SeciliAygitSN > -1) then
         begin
 
           Inc(MevcutSektor);
@@ -239,14 +238,14 @@ begin
       begin
 
         // aksi durumda disk seçme düðmesi
-        for i := 1 to 6 do
+        for i := 0 to 5 do
         begin
 
           if(dugDepolamaAygitlari[i].Kimlik = Olay.Kimlik) then
           begin
 
-            SeciliAygitSiraNo := dugDepolamaAygitlari[i].Etiket;
-            ToplamSektor := FizikselSurucuListesi[i].ToplamSektorSayisi;
+            SeciliAygitSN := i;
+            ToplamSektor := FizikselDepolamaListesi[SeciliAygitSN].ToplamSektorSayisi;
 
             MevcutSektor := 0;
             Break;
@@ -255,16 +254,16 @@ begin
       end;
 
       // disk seçili ise okuma iþlemi yap ve bilgileri güncelle
-      if(SeciliAygitSiraNo > 0) then
+      if(SeciliAygitSN > -1) then
       begin
 
         DurumCubugu.DurumYazisiDegistir('Aygýt: ' +
-          FizikselSurucuListesi[SeciliAygitSiraNo].AygitAdi + ' - Sektör: ' +
-          HexToStr(FizikselSurucuListesi[SeciliAygitSiraNo].ToplamSektorSayisi, True, 8) + ' / ' +
+          FizikselDepolamaListesi[SeciliAygitSN].AygitAdi + ' - Sektör: ' +
+          HexToStr(FizikselDepolamaListesi[SeciliAygitSN].ToplamSektorSayisi, True, 8) + ' / ' +
           HexToStr(MevcutSektor, True, 8));
 
-        AygitOkumaDurumu := Depolama.FizikselDepolamaVeriOku(SeciliAygitSiraNo,
-          MevcutSektor, 1, @DiskBellek);
+        AygitOkumaDurumu := Depolama.FizikselDepolamaVeriOku(
+          FizikselDepolamaListesi[SeciliAygitSN].Kimlik, MevcutSektor, 1, @DiskBellek);
         Pencere.Ciz;
       end;
     end
@@ -282,10 +281,10 @@ begin
       begin
 
         Pencere.Tuval.KalemRengi := RENK_KIRMIZI;
-        if(SeciliAygitSiraNo = 0) then
+        if(SeciliAygitSN = -1) then
 
           Pencere.Tuval.YaziYaz(0, 58, DepolamaAygitiSeciniz)
-        else if(AygitOkumaDurumu = 0) then
+        else if(AygitOkumaDurumu <> 0) then
 
           Pencere.Tuval.YaziYaz(0, 58, DepolamaAygitiOkumaHatasi)
         else

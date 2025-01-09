@@ -6,7 +6,7 @@
   Dosya Adý: paylasim.pas
   Dosya Ýþlevi: tüm birimler için ortak paylaþýlan iþlevleri içerir
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -451,38 +451,6 @@ type
   end;
 
 type
-  PIDEDisk = ^TIDEDisk;
-  TIDEDisk = record
-    AnaPort, KontrolPort: Word;
-    Kanal: Byte;
-  end;
-
-type
-  TSektorIslev = function(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-    ABellek: Isaretci): TSayi4;
-
-// fiziksel sürücü yapýsý
-type
-  PFizikselSurucu = ^TFizikselSurucu;
-  TFizikselSurucu = record
-    Mevcut: Boolean;
-    Kimlik: TKimlik;
-    AygitAdi: string[16];
-    KafaSayisi: TSayi2;
-    SilindirSayisi: TSayi2;
-    IzBasinaSektorSayisi: TSayi2;
-    ToplamSektorSayisi: TSayi4;
-    SurucuTipi: TSayi1;
-    Ozellikler: TSayi1;
-    SonIzKonumu: TISayi1;           // floppy sürücüsünün kafasýnýn bulunduðu son iz (track) no
-    IslemYapiliyor: Boolean;        // True = sürücü iþlem yapmakta, False = sürücü boþta
-    MotorSayac: TSayi4;             // motor kapatma geri sayým sayacý (þu an sadece floppy sürücüsü için)
-    Aygit: TIDEDisk;                // depolama aygýtý
-    SektorOku: TSektorIslev;        // sektör okuma iþlevi
-    SektorYaz: TSektorIslev;        // sektör yazma iþlevi
-  end;
-
-type
   PDizinGirisi = ^TDizinGirisi;
   TDizinGirisi = record
     IlkSektor: TSayi4;
@@ -527,40 +495,65 @@ type
     DosyaAyirmaTablosu: TDosyaAyirmaTablosu;
   end;
 
-// mantýksal sürücü yapýsý - sistem için
 type
-  PMantiksalSurucu = ^TMantiksalSurucu;
-  TMantiksalSurucu = packed record
-    AygitMevcut: Boolean;
-    FizikselSurucu: PFizikselSurucu;
-    AygitAdi: string[16];
-    BolumIlkSektor: TSayi4;
-    BolumToplamSektor: TSayi4;
-    BolumTipi: TSayi1;
-    Acilis: TAcilis;
+  PIDEDisk = ^TIDEDisk;
+  TIDEDisk = record
+    AnaPort, KontrolPort: Word;
+    Kanal: Byte;
   end;
 
-// mantýksal sürücü yapýsý - program için
 type
-  PMantiksalSurucu3 = ^TMantiksalSurucu3;
-  TMantiksalSurucu3 = packed record
+  TSektorIslev = function(AFizikselDepolama: Isaretci; AIlkSektor,
+    ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+
+// fiziksel depolama aygýt yapýsý - program için
+type
+  PFizikselDepolama3 = ^TFizikselDepolama3;
+  TFizikselDepolama3 = packed record
+    Kimlik: TKimlik;
+    SurucuTipi: TSayi4;
     AygitAdi: string[16];
-    SurucuTipi: TSayi1;
-    DosyaSistemTipi: TSayi1;
+    KafaSayisi: TSayi4;
+    SilindirSayisi: TSayi4;
+    IzBasinaSektorSayisi: TSayi4;
+    ToplamSektorSayisi: TSayi4;
+  end;
+
+// fiziksel depolama aygýt yapýsý - sistem için
+type
+  PFizikselDepolama = ^TFizikselDepolama;
+  TFizikselDepolama = record
+    FD3: TFizikselDepolama3;
+    Mevcut0: Boolean;
+    Ozellikler: TSayi1;
+    SonIzKonumu: TISayi1;           // floppy sürücüsünün kafasýnýn bulunduðu son iz (track) no
+    IslemYapiliyor: Boolean;        // True = sürücü iþlem yapmakta, False = sürücü boþta
+    MotorSayac: TSayi4;             // motor kapatma geri sayým sayacý (þu an sadece floppy sürücüsü için)
+    Aygit: TIDEDisk;                // depolama aygýtý
+    SektorOku: TSektorIslev;        // sektör okuma iþlevi
+    SektorYaz: TSektorIslev;        // sektör yazma iþlevi
+  end;
+
+// mantýksal depolama aygýt yapýsý - program için
+type
+  PMantiksalDepolama3 = ^TMantiksalDepolama3;
+  TMantiksalDepolama3 = packed record
+    Kimlik: TKimlik;
+    SurucuTipi: TSayi4;     { TODO - bu deðer TMantiksalDepolama.FD içerisinde de mevcut, tasarýmsal olarak iptal edilmeli }
+    AygitAdi: string[16];
+    DosyaSistemTipi: TSayi4;
     BolumIlkSektor: TSayi4;
     BolumToplamSektor: TSayi4
   end;
 
-// fiziksel sürücü yapýsý - program için
+// mantýksal depolama aygýt yapýsý - sistem için
 type
-  PFizikselSurucu3 = ^TFizikselSurucu3;
-  TFizikselSurucu3 = packed record
-    AygitAdi: string[16];
-    SurucuTipi: TSayi1;
-    KafaSayisi: TSayi2;
-    SilindirSayisi: TSayi2;
-    IzBasinaSektorSayisi: TSayi2;
-    ToplamSektorSayisi: TSayi4;
+  PMantiksalDepolama = ^TMantiksalDepolama;
+  TMantiksalDepolama = packed record
+    MD3: TMantiksalDepolama3;
+    FD: PFizikselDepolama;
+    Mevcut: Boolean;
+    Acilis: TAcilis;
   end;
 
 // sistem dosya arama yapýsý
@@ -582,14 +575,14 @@ type
 var
   // fiziksel sürücü listesi. en fazla 2 floppy sürücüsü + 4 disk sürücüsü
   FizikselDepolamaAygitSayisi: TSayi4;
-  FizikselDepolamaAygitListesi: array[1..6] of TFizikselSurucu;
+  FizikselDepolamaAygitListesi: array[0..5] of TFizikselDepolama;
 
   // mantýksal sürücü listesi. en fazla 6 depolama sürücüsü
   MantiksalDepolamaAygitSayisi: TISayi4;
-  MantiksalDepolamaAygitListesi: array[1..6] of TMantiksalSurucu;
+  MantiksalDepolamaAygitListesi: array[0..5] of TMantiksalDepolama;
 
-  PDisket1: PFizikselSurucu;
-  PDisket2: PFizikselSurucu;
+  PDisket1: PFizikselDepolama;
+  PDisket2: PFizikselDepolama;
 
 const
   USTSINIR_ARAMAKAYIT = 5;
@@ -600,7 +593,7 @@ type
   PAramaKayit = ^TAramaKayit;
   TAramaKayit = record
     Kullanilabilir: Boolean;
-    MantiksalSurucu: PMantiksalSurucu;
+    MantiksalDepolama: PMantiksalDepolama;
     DizinGirisi: TDizinGirisi;
     Aranan: string;
   end;
@@ -610,7 +603,7 @@ type
   PDosyaKayit = ^TDosyaKayit;
   TDosyaKayit = record
     Kullanilabilir: Boolean;
-    MantiksalSurucu: PMantiksalSurucu;
+    MantiksalDepolama: PMantiksalDepolama;
     DosyaAdi: string;
     DATBellekAdresi: Isaretci;    // Dosya Ayýrma Tablosu bellek adresi
     IlkZincirSektor: Word;

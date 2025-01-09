@@ -6,7 +6,7 @@
   Dosya Adı: fat32.pas
   Dosya İşlevi: fat32 dosya sistem yönetim işlevlerini yönetir
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -76,7 +76,7 @@ end;
  ==============================================================================}
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
-  MantiksalSurucu: PMantiksalSurucu;
+  MD: PMantiksalDepolama;
   DosyaKayit: PDosyaKayit;
   DATBellekAdresi: Isaretci;
   OkunacakSektorSayisi, i: TSayi2;
@@ -90,22 +90,20 @@ begin
   DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   // üzerinde işlem yapılacak sürücü
-  MantiksalSurucu := DosyaKayit^.MantiksalSurucu;
+  MD := DosyaKayit^.MantiksalDepolama;
 
   // FAT tablosu için bellekte yer ayır
-  DATBellekAdresi := GGercekBellek.Ayir(
-    MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
+  DATBellekAdresi := GGercekBellek.Ayir(MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
 
   // depolama aygıtının ilk FAT kopyasının tümünü belleğe yükle
-  MantiksalSurucu^.FizikselSurucu^.SektorOku(MantiksalSurucu^.FizikselSurucu,
-    MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.IlkSektor,
-    MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.ToplamSektor, DATBellekAdresi);
+  MD^.FD^.SektorOku(MD^.FD, MD^.Acilis.DosyaAyirmaTablosu.IlkSektor,
+    MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor, DATBellekAdresi);
 
   OkunacakVeri := DosyaKayit^.Uzunluk;
 
   Zincir := DosyaKayit^.IlkZincirSektor;
 
-  ZincirBasinaSektor := MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
+  ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
 
   OkumaSonuc := False;
 
@@ -129,11 +127,10 @@ begin
 
     // okunacak cluster numarası
     i := (Zincir - 2) * ZincirBasinaSektor;
-    i += MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru;
+    i += MD^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru;
 
     // sektörü belleğe oku
-    MantiksalSurucu^.FizikselSurucu^.SektorOku(MantiksalSurucu^.FizikselSurucu,
-      i, OkunacakSektorSayisi, AHedefBellek);
+    MD^.FD^.SektorOku(MD^.FD, i, OkunacakSektorSayisi, AHedefBellek);
 
     // okunacak bilginin yerleştirileceği bir sonraki adresi belirle
     AHedefBellek += KopyalanacakVeriUzunlugu;
@@ -145,8 +142,7 @@ begin
   // eğer 0xfff8..0xffff aralığındaysa bu dosyanın en son cluster'idir
   until (Zincir = $FFFFFFF) or (OkunacakVeri = 0) or (OkumaSonuc);
 
-  GGercekBellek.YokEt(DATBellekAdresi,
-    MantiksalSurucu^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
+  GGercekBellek.YokEt(DATBellekAdresi, MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
 end;
 
 {==============================================================================
@@ -202,7 +198,7 @@ end;
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
  var ADosyaArama: TDosyaArama): TSayi1;
 var
-  MantiksalSurucu: PMantiksalSurucu;
+  MD: PMantiksalDepolama;
   DizinGirdisi: PDizinGirdisi;
   TumGirislerOkundu, NormalDosyaAdiBulundu,
   UzunDosyaAdiBulundu: Boolean;
@@ -216,7 +212,7 @@ begin
   TumGirislerOkundu := False;
 
   // aramanın yapılacağı sürücü
-  MantiksalSurucu := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalSurucu;
+  MD := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalDepolama;
 
   NormalDosyaAdiBulundu := False;
   UzunDosyaAdiBulundu := False;
@@ -230,8 +226,7 @@ begin
       ADizinGirisi^.DizinTablosuKayitNo := 0;
 
       // bir sonraki dizin girişini oku
-      MantiksalSurucu^.FizikselSurucu^.SektorOku(MantiksalSurucu^.FizikselSurucu,
-        ADizinGirisi^.IlkSektor, 1, @DizinBellekAdresi);
+      MD^.FD^.SektorOku(MD^.FD, ADizinGirisi^.IlkSektor, 1, @DizinBellekAdresi);
       Inc(ADizinGirisi^.IlkSektor);
     end;
 

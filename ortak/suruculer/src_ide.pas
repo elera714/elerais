@@ -6,7 +6,7 @@
   Dosya Adý: src_ide.pas
   Dosya Ýþlevi: ide aygýt sürücüsü
 
-  Güncelleme Tarihi: 09/11/2024
+  Güncelleme Tarihi: 09/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -117,9 +117,9 @@ function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
 function IDEAygitiHazirMi(AIDEDisk: PIDEDisk): Boolean;
 procedure Bekle(AIDEDisk: PIDEDisk);
 function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TSayi4;
-function SektorYaz28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TSayi4;
+  ABellek: Isaretci): TISayi4;
+function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+  ABellek: Isaretci): TISayi4;
 
 implementation
 
@@ -137,8 +137,8 @@ var
  ==============================================================================}
 procedure Yukle;
 var
-  _FizikselSurucu: PFizikselSurucu;
-  _Bellek: TATA4;
+  FD: PFizikselDepolama;
+  Bellek: TATA4;
   i: TSayi4;
 begin
 
@@ -159,7 +159,7 @@ begin
     begin
 
       // ide disk bilgilerini al
-      IDEAygitBilgisiniAl(@IDEDiskListesi[i], @_Bellek);
+      IDEAygitBilgisiniAl(@IDEDiskListesi[i], @Bellek);
 
       {$IFDEF IDE_BILGI}
       SISTEM_MESAJ(RENK_LACIVERT, '  + IDE Aygýt: ' + IntToStr(i + 1), []);
@@ -172,21 +172,21 @@ begin
       {$ENDIF}
 
       // mevcut ise fiziksel sürücü yapýsýný oluþtur
-      _FizikselSurucu := FizikselDepolamaAygitiOlustur(SURUCUTIP_DISK);
-      if(_FizikselSurucu <> nil) then
+      FD := FizikselDepolamaAygitiOlustur(SURUCUTIP_DISK);
+      if(FD <> nil) then
       begin
 
-        _FizikselSurucu^.Ozellikler := 0;
-        _FizikselSurucu^.SektorOku := @SektorOku28;
-        _FizikselSurucu^.SektorYaz := @SektorYaz28;
-        _FizikselSurucu^.Aygit.AnaPort:= IDEDiskListesi[i].AnaPort;
-        _FizikselSurucu^.Aygit.Kanal := IDEDiskListesi[i].Kanal;
+        FD^.Ozellikler := 0;
+        FD^.SektorOku := @SektorOku28;
+        FD^.SektorYaz := @SektorYaz28;
+        FD^.Aygit.AnaPort:= IDEDiskListesi[i].AnaPort;
+        FD^.Aygit.Kanal := IDEDiskListesi[i].Kanal;
 
-        _FizikselSurucu^.SilindirSayisi := _Bellek.SilindirSayisi;
-        _FizikselSurucu^.KafaSayisi := _Bellek.KafaSayisi;
-        _FizikselSurucu^.IzBasinaSektorSayisi := _Bellek.IzBasinaSektor;
-        _FizikselSurucu^.ToplamSektorSayisi := _Bellek.SilindirSayisi *
-          _Bellek.KafaSayisi * _Bellek.IzBasinaSektor;
+        FD^.FD3.SilindirSayisi := Bellek.SilindirSayisi;
+        FD^.FD3.KafaSayisi := Bellek.KafaSayisi;
+        FD^.FD3.IzBasinaSektorSayisi := Bellek.IzBasinaSektor;
+        FD^.FD3.ToplamSektorSayisi := Bellek.SilindirSayisi *
+          Bellek.KafaSayisi * Bellek.IzBasinaSektor;
       end;
     end;
   end;
@@ -215,7 +215,7 @@ end;
  ==============================================================================}
 function SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
 var
-  i: Byte;
+  i: TSayi1;
 begin
 
   // öndeðer geri dönüþ deðeri
@@ -249,8 +249,8 @@ end;
  ==============================================================================}
 function IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
 var
-  _PortNo: Word;
-  i: Byte;
+  PortNo: TSayi2;
+  i: TSayi1;
 begin
 
   Result := False;
@@ -265,13 +265,13 @@ begin
 
   if(IDEAygitiMesgulMu(AIDEDisk)) then Exit;
 
-  _PortNo := AIDEDisk^.AnaPort;
+  PortNo := AIDEDisk^.AnaPort;
 
   asm
     pushad
     mov edi,AAygitBilgisi
     mov ecx,256
-    mov dx,_PortNo
+    mov dx,PortNo
     cld
     rep insw
     popad
@@ -330,16 +330,16 @@ begin
   PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_ALTDURUM);
 end;
 
-{==============================================================================
-  LBA modunda 28 bitlik sektör okuma iþlemi yapar
- ==============================================================================}
 var
   ReadSector28GorevNo: LongWord = 0;
 
+{==============================================================================
+  LBA modunda 28 bitlik sektör okuma iþlemi yapar
+ ==============================================================================}
 function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TSayi4;
+  ABellek: Isaretci): TISayi4;
 var
-  FizikselSurucu: PFizikselSurucu;
+  FD: PFizikselDepolama;
   PortNo: TSayi2;
   i: TSayi1;
 begin
@@ -353,10 +353,10 @@ begin
   ReadSector28GorevNo := CalisanGorev;
 
   // sürücü bilgisine konumlan
-  FizikselSurucu := AFizikselSurucu;
+  FD := AFizikselSurucu;
 
   // aygýt meþgulse çýk
-  if(IDEAygitiMesgulMu(@FizikselSurucu^.Aygit)) then
+  if(IDEAygitiMesgulMu(@FD^.Aygit)) then
   begin
 
     ReadSector28GorevNo := 0;
@@ -366,39 +366,39 @@ begin
 //  asm cli end;
 
   //okunacak sektör sayýsý
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_SEKTORSAYISI, ASektorSayisi);
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORSAYISI, ASektorSayisi);
 
   //okunacak sektör numarasý (28 bit)
   // LBA 07..00
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_SEKTORNO, (AIlkSektor and $FF));
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORNO, (AIlkSektor and $FF));
   // LBA 15..08
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
   // LBA 23..16
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
   // lba 27..24
   i := ((AIlkSektor shr 24) and $0F);
-  if(FizikselSurucu^.Aygit.Kanal = ATA_KANAL1) then
+  if(FD^.Aygit.Kanal = ATA_KANAL1) then
     i := i or $F0
   else i := i or $E0;
-  i := i or (FizikselSurucu^.Aygit.Kanal shl 4);
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_AYGITSECIM, i);
+  i := i or (FD^.Aygit.Kanal shl 4);
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   // sektör oku komutu gönder
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTOROKU);
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTOROKU);
 
-  Bekle(@FizikselSurucu^.Aygit);
+  Bekle(@FD^.Aygit);
 
 //  asm sti end;
 
   // okuma iþlevini gerçekleþtir
   repeat
 
-    PortNo := FizikselSurucu^.Aygit.AnaPort;
+    PortNo := FD^.Aygit.AnaPort;
 
-    if(IDEAygitiMesgulMu(@FizikselSurucu^.Aygit) = False) then
+    if(IDEAygitiMesgulMu(@FD^.Aygit) = False) then
     begin
 
-      if(IDEAygitiHazirMi(@FizikselSurucu^.Aygit)) then
+      if(IDEAygitiHazirMi(@FD^.Aygit)) then
       begin
 
         asm
@@ -415,20 +415,22 @@ begin
 
         Dec(ASektorSayisi);
         ABellek += 512;
+        Result := 0;
       end else Result := 1;
     end;
 
   until (ASektorSayisi = 0) or (Result = 1);
 
   ReadSector28GorevNo := 0;
-
-  Result := 0;
 end;
 
-function SektorYaz28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TSayi4;
+{==============================================================================
+  LBA modunda 28 bitlik sektör yazma iþlemi yapar
+ ==============================================================================}
+function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+  ABellek: Isaretci): TISayi4;
 var
-  FizikselSurucu: PFizikselSurucu;
+  FD: PFizikselDepolama;
   PortNo: TSayi2;
   i: TSayi1;
 begin
@@ -442,10 +444,10 @@ begin
   ReadSector28GorevNo := CalisanGorev;
 
   // sürücü bilgisine konumlan
-  FizikselSurucu := AFizikselSurucu;
+  FD := PFizikselDepolama(AFizikselDepolama);
 
   // aygýt meþgulse çýk
-  if(IDEAygitiMesgulMu(@FizikselSurucu^.Aygit)) then
+  if(IDEAygitiMesgulMu(@FD^.Aygit)) then
   begin
 
     ReadSector28GorevNo := 0;
@@ -455,39 +457,39 @@ begin
 //  asm cli end;
 
   //okunacak sektör sayýsý
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_SEKTORSAYISI, ASektorSayisi);
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORSAYISI, ASektorSayisi);
 
   //okunacak sektör numarasý (28 bit)
   // LBA 07..00
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_SEKTORNO, (AIlkSektor and $FF));
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORNO, (AIlkSektor and $FF));
   // LBA 15..08
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
   // LBA 23..16
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
   // lba 27..24
   i := ((AIlkSektor shr 24) and $0F);
-  if(FizikselSurucu^.Aygit.Kanal = ATA_KANAL1) then
+  if(FD^.Aygit.Kanal = ATA_KANAL1) then
     i := i or $F0
   else i := i or $E0;
-  i := i or (FizikselSurucu^.Aygit.Kanal shl 4);
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_AYGITSECIM, i);
+  i := i or (FD^.Aygit.Kanal shl 4);
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   // sektör oku komutu gönder
-  PortYaz1(FizikselSurucu^.Aygit.AnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTORYAZ);
+  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTORYAZ);
 
-  Bekle(@FizikselSurucu^.Aygit);
+  Bekle(@FD^.Aygit);
 
 //  asm sti end;
 
   // okuma iþlevini gerçekleþtir
   repeat
 
-    PortNo := FizikselSurucu^.Aygit.AnaPort;
+    PortNo := FD^.Aygit.AnaPort;
 
-    if(IDEAygitiMesgulMu(@FizikselSurucu^.Aygit) = False) then
+    if(IDEAygitiMesgulMu(@FD^.Aygit) = False) then
     begin
 
-      if(IDEAygitiHazirMi(@FizikselSurucu^.Aygit)) then
+      if(IDEAygitiHazirMi(@FD^.Aygit)) then
       begin
 
         asm
@@ -504,14 +506,13 @@ begin
 
         Dec(ASektorSayisi);
         ABellek += 512;
+        Result := 0;
       end else Result := 1;
     end;
 
   until (ASektorSayisi = 0) or (Result = 1);
 
   ReadSector28GorevNo := 0;
-
-  Result := 0;
 end;
 
 end.

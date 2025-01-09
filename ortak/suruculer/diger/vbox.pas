@@ -159,7 +159,7 @@ begin
 
 	VBoxFare.Baslik.Uzunluk := SizeOf(TVBoxFare);
 	VBoxFare.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
-	VBoxFare.Baslik.IstekTipi := VMM_FARE_DURUMAL;
+	VBoxFare.Baslik.IstekTipi := VMM_FARE_DURUMYAZ;
 	VBoxFare.Baslik.RC := 0;
 	VBoxFare.Baslik.Ayrildi1 := 0;
 	VBoxFare.Baslik.Ayrildi2 := 0;
