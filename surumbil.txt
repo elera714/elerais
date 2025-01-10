@@ -1,8 +1,14 @@
 *******************************************************************************
-  Sürüm: 0.3.7 - 00.00.0000 (R33) - Beta
+  Sürüm: 0.3.8 - 10.01.2025 (R34) - Beta
 *******************************************************************************
-  + kod çalýþabilirlik güncelleme çalýþmalarý
 
+*******************************************************************************
+  Sürüm: 0.3.7 - 10.01.2025 (R33) - Beta
+*******************************************************************************
+  + sistem uygulamalarý lazarus arabiriminde diðer sistemlerle derlenecek (cross platform)
+    þekilde yeniden tasarlandý (.lpr dosya uyumluluðu)
+  + tüm çekirdek / sistem program kodlarý güncellendi
+  + kod çalýþabilirlik güncelleme çalýþmalarý
   + fiziksel disket sürücü kopyalama programý (kopyala.c) kodlandý
   + daha önce programlar içerisinde tanýmlanan depolama API iþlevleri n_depolama olarak sýnýflaþtýrýldý
   + 2. disket sürücü okuma problemi düzeltildi

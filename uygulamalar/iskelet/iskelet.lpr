@@ -9,13 +9,13 @@
   Güncelleme Tarihi: 10/01/2025
 
   Bilgi: ELERA Ýþletim Sistemi program ana yapýsýnýn Lazarus nesnesel yapýsý ile uyumlu olmasý
-    için gerekli çalýþmalar bu uygulama iskelet çalýþmasý aracýlýðýyla gerçekleþmektedir
+    için gerekli çalýþmalar bu iskelet çalýþmasý üzerinden gerçekleþmektedir
 
  ==============================================================================}
 {$mode objfpc}
 program iskelet;
 
-uses n_gorev, anasayfafrm, islemfrm, onayfrm, _forms;
+uses anasayfafrm, islemfrm, onayfrm, _forms;
 
 begin
 

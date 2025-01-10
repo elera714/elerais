@@ -1,4 +1,3 @@
-program kmodtest;
 {==============================================================================
 
   Kodlayan: Fatih KILIÇ
@@ -7,76 +6,21 @@ program kmodtest;
   Program Adý: kmodtest.lpr
   Program Ýþlevi: ring3 seviyesi korumalý mod test programý
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 10/01/2025
 
  ==============================================================================}
 {$mode objfpc}
-{$asmmode intel}
-uses n_gorev, gn_pencere, gn_dugme, gn_baglanti;
+program kmodtest;
 
-const
-  ProgramAdi: string = 'Korumalý Mod Test (Ring3)';
-
-var
-  Gorev: TGorev;
-  Pencere: TPencere;
-  bagKomutIN, bagKomutCLI,
-  bagKomutJMP, bagKomutMOV: TBaglanti;
-  Olay: TOlay;
+uses anasayfafrm, _forms;
 
 begin
 
-  Gorev.Yukle;
-  Gorev.Ad := ProgramAdi;
+  Application.Title := 'Korumalý Mod Test (Ring3';
+  Application.Initialize;
 
-  Pencere.Olustur(-1, 200, 200, 250, 130, ptIletisim, ProgramAdi, RENK_BEYAZ);
-  if(Pencere.Kimlik < 0) then Gorev.Sonlandir(-1);
+  Application.CreateForm(frmAnaSayfa, @frmAnaSayfa.Olustur, @frmAnaSayfa.Goster,
+    @frmAnaSayfa.OlaylariIsle);
 
-  bagKomutIN.Olustur(Pencere.Kimlik, 18, 10, $000000, $FF0000, 'in al,$1F0');
-  bagKomutIN.Goster;
-  bagKomutCLI.Olustur(Pencere.Kimlik, 18, 30, $000000, $FF0000, 'cli');
-  bagKomutCLI.Goster;
-  bagKomutJMP.Olustur(Pencere.Kimlik, 18, 50, $000000, $FF0000, 'jmp 0x8:0');
-  bagKomutJMP.Goster;
-  bagKomutMOV.Olustur(Pencere.Kimlik, 18, 70, $000000, $FF0000, 'mov esi,[$FFFFFFFF]');
-  bagKomutMOV.Goster;
-
-  Pencere.Gorunum := True;
-
-  while True do
-  begin
-
-    Gorev.OlayBekle(Olay);
-    if(Olay.Olay = FO_TIKLAMA) then
-    begin
-
-      if(Olay.Kimlik = bagKomutIN.Kimlik) then
-      begin
-      asm
-        mov   dx,$1F0
-        in    al,dx
-      end;
-      end
-      else if(Olay.Kimlik = bagKomutCLI.Kimlik) then
-      begin
-      asm
-        cli
-      end;
-      end
-      else if(Olay.Kimlik = bagKomutJMP.Kimlik) then
-      begin
-      asm
-        db  $EA
-        dd  0
-        dw  8
-      end;
-      end
-      else if(Olay.Kimlik = bagKomutMOV.Kimlik) then
-      begin
-      asm
-        mov   esi,[$FFFFFFFF]
-      end;
-      end;
-    end;
-  end;
+  Application.Run;
 end.

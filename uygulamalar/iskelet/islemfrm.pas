@@ -1,14 +1,3 @@
-{==============================================================================
-
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
-
-  Program Adý: islemfrm.pas
-  Program Ýþlevi: iþlem sayfasý
-
-  Güncelleme Tarihi: 10/01/2025
-
- ==============================================================================}
 {$mode objfpc}
 unit islemfrm;
 
@@ -19,9 +8,9 @@ uses gn_pencere, n_gorev, gn_dugme, _forms;
 type
   TfrmIslem = object(TForm)
   public
-    Gorev: TGorev;
-    Pencere: TPencere;
-    Dugme1: TDugme;
+    FGorev: TGorev;
+    FPencere: TPencere;
+    FDugme1: TDugme;
     procedure Olustur;
     procedure Goster;
     function OlaylariIsle(AOlay: TOlay): TISayi4;
@@ -40,25 +29,25 @@ const
 procedure TfrmIslem.Olustur;
 begin
 
-  Pencere.Olustur(-1, 120, 120, 300, 300, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
-  if(Pencere.Kimlik < 0) then Gorev.Sonlandir(-1);
+  FPencere.Olustur(-1, 120, 120, 300, 300, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
+  if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
-  Dugme1.Olustur(Pencere.Kimlik, 50, 135, 200, 22, 'Ýþlemleri Gerçekleþtir');
+  FDugme1.Olustur(FPencere.Kimlik, 50, 135, 200, 22, 'Ýþlemleri Gerçekleþtir');
 
-//  SistemMesaj.YaziEkle('iskelet -> frmIslem oluþturuldu...');
+//  FSistemMesaj.YaziEkle('iskelet -> frmIslem oluþturuldu...');
 end;
 
 procedure TfrmIslem.Goster;
 begin
 
-  Dugme1.Goster;
-  Pencere.Gorunum := True;
+  FDugme1.Goster;
+  FPencere.Gorunum := True;
 end;
 
 function TfrmIslem.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
-  if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = Dugme1.Kimlik) then
+  if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = FDugme1.Kimlik) then
   begin
 
     frmOnay.Goster;

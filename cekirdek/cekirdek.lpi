@@ -388,8 +388,6 @@
         <Filename Value="yonetim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="312"/>
-        <CursorPos X="65" Y="327"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit52>
@@ -520,7 +518,7 @@
         <Filename Value="..\surumbil.txt"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="15"/>
-        <CursorPos X="5" Y="19"/>
+        <CursorPos X="52" Y="22"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -814,7 +812,9 @@
       <Unit116>
         <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
+        <CursorPos X="37" Y="27"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit116>
@@ -1091,7 +1091,6 @@
       <Unit159>
         <Filename Value="..\ortak\kesme\k_olay.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="11"/>
         <TopLine Value="69"/>
         <UsageCount Value="224"/>
@@ -1218,7 +1217,7 @@
         <Filename Value="..\gorselnesne\gn_pencere.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="15"/>
+        <TopLine Value="14"/>
         <CursorPos X="76" Y="330"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
@@ -1363,7 +1362,6 @@
         <Filename Value="..\oz\g\gorev.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="315"/>
         <CursorPos X="73" Y="641"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
@@ -1554,7 +1552,7 @@
         <UsageCount Value="7"/>
       </Unit230>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
+    <JumpHistory Count="9" HistoryIndex="8">
       <Position1>
         <Filename Value="..\ortak\ag\netbios.pas"/>
         <Caret Line="112" Column="49" TopLine="87"/>
@@ -1574,6 +1572,22 @@
         <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
         <Caret Line="27" Column="3" TopLine="9"/>
       </Position5>
+      <Position6>
+        <Filename Value="yonetim.pas"/>
+        <Caret Line="337" Column="44" TopLine="312"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\surumbil.txt"/>
+        <Caret Line="2" Column="30"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\surumbil.txt"/>
+        <Caret Line="4"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\surumbil.txt"/>
+        <Caret Line="9" Column="58" TopLine="4"/>
+      </Position9>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

@@ -31,13 +31,11 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="calistir.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="32"/>
-        <CursorPos X="98" Y="46"/>
+        <CursorPos X="9" Y="26"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -58,7 +56,7 @@
       </Unit2>
       <Unit3>
         <Filename Value="..\..\rtl_uygulama\linux\n_genel.pas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <CursorPos X="20" Y="18"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
@@ -66,14 +64,14 @@
       <Unit4>
         <Filename Value="..\..\rtl_uygulama\linux\linux.pp"/>
         <UnitName Value="Linux"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="13"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\rtl_uygulama\linux\system.pp"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="21"/>
         <CursorPos X="37" Y="41"/>
         <UsageCount Value="11"/>
@@ -81,10 +79,19 @@
       </Unit5>
       <Unit6>
         <Filename Value="..\..\rtl_uygulama\linux\n_gorev.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="anasayfafrm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <CursorPos Y="26"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

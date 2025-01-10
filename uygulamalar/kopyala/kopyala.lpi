@@ -31,10 +31,12 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="kopyala.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="17" Y="13"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -54,7 +56,7 @@
       </Unit2>
       <Unit3>
         <Filename Value="..\..\rtl_uygulama\linux\system.pp"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="15"/>
         <CursorPos X="5" Y="33"/>
         <UsageCount Value="11"/>
@@ -62,7 +64,7 @@
       </Unit3>
       <Unit4>
         <Filename Value="..\..\rtl_uygulama\linux\paylasim.inc"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="211"/>
         <CursorPos X="3" Y="229"/>
         <UsageCount Value="10"/>
@@ -70,8 +72,7 @@
       </Unit4>
       <Unit5>
         <Filename Value="..\..\rtl_uygulama\linux\elera.inc"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="192"/>
         <CursorPos X="5" Y="201"/>
         <UsageCount Value="10"/>
@@ -79,10 +80,19 @@
       </Unit5>
       <Unit6>
         <Filename Value="..\..\rtl_uygulama\linux\n_depolama.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="anasayfafrm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="28"/>
+        <CursorPos X="18" Y="7"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

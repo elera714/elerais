@@ -1,4 +1,4 @@
-ELERA İşletim Sistemi (elerais) - 0.3.6 [R32]
+ELERA İşletim Sistemi (elerais) - 0.3.7 [R33]
 
 ---
 Kullanılan Yazılım Araçları:
@@ -30,7 +30,7 @@ Kullanılan Yazılım Araçları:
 ---
 Tanıtım Videosu
 
-[ELERA İşletim Sistemi - Sürüm: 0.3.7 - (R33) - Beta](https://www.youtube.com/watch?v=ca5P5aRIvtA)
+[ELERA İşletim Sistemi - Sürüm: 0.3.6 - (R32) - Beta](https://www.youtube.com/watch?v=ca5P5aRIvtA)
 
 ---
 Öğretici Videolar

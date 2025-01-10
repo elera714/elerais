@@ -31,13 +31,11 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <Units Count="3">
+    <Units Count="5">
       <Unit0>
         <Filename Value="agbilgi.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="39"/>
-        <CursorPos X="26" Y="57"/>
+        <CursorPos X="36" Y="19"/>
         <UsageCount Value="32"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -55,6 +53,22 @@
         <UsageCount Value="23"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="anasayfafrm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\rtl_uygulama\linux\elera.inc"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="312"/>
+        <CursorPos X="3" Y="330"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

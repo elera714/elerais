@@ -1,14 +1,3 @@
-{==============================================================================
-
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
-
-  Program Adý: onayfrm.pas
-  Program Ýþlevi: onay sayfasý
-
-  Güncelleme Tarihi: 10/01/2025
-
- ==============================================================================}
 {$mode objfpc}
 unit onayfrm;
 
@@ -19,10 +8,10 @@ uses gn_pencere, n_gorev, gn_dugme, gn_etiket, _forms;
 type
   TfrmOnay = object(TForm)
   public
-    Gorev: TGorev;
-    Pencere: TPencere;
-    Dugme1: TDugme;
-    Etiket1: TEtiket;
+    FGorev: TGorev;
+    FPencere: TPencere;
+    FDugme1: TDugme;
+    FEtiket1: TEtiket;
     procedure Olustur;
     procedure Goster;
     procedure Gizle;
@@ -40,37 +29,37 @@ const
 procedure TfrmOnay.Olustur;
 begin
 
-  Pencere.Olustur(-1, 150, 150, 250, 65, ptIletisim, PencereAdi, RENK_BEYAZ);
-  if(Pencere.Kimlik < 0) then Gorev.Sonlandir(-1);
+  FPencere.Olustur(-1, 150, 150, 250, 65, ptIletisim, PencereAdi, RENK_BEYAZ);
+  if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
-  Etiket1.Olustur(Pencere.Kimlik, 4, 4, RENK_SIYAH, 'Tüm iþlemler tamamlandý...');
+  FEtiket1.Olustur(FPencere.Kimlik, 4, 4, RENK_SIYAH, 'Tüm iþlemler tamamlandý...');
 
-  Dugme1.Olustur(Pencere.Kimlik, 100, 30, 50, 22, 'Tamam');
+  FDugme1.Olustur(FPencere.Kimlik, 100, 30, 50, 22, 'Tamam');
 end;
 
 procedure TfrmOnay.Goster;
 begin
 
-  Etiket1.Goster;
-  Dugme1.Goster;
-  Pencere.Gorunum := True;
+  FEtiket1.Goster;
+  FDugme1.Goster;
+  FPencere.Gorunum := True;
 end;
 
 procedure TfrmOnay.Gizle;
 begin
 
-  //Etiket1.Gizle;
-  Dugme1.Gizle;
-  Pencere.Gorunum := False;
+  //FEtiket1.Gizle;
+  FDugme1.Gizle;
+  FPencere.Gorunum := False;
 end;
 
 function TfrmOnay.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
-  if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = Dugme1.Kimlik) then
+  if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = FDugme1.Kimlik) then
   begin
 
-    Pencere.Gorunum := False;
+    FPencere.Gorunum := False;
     Result := 0;
   end else Result := -1;
 end;
