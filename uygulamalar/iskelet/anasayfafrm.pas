@@ -6,7 +6,7 @@
   Program Adý: anasayfafrm.pas
   Program Ýþlevi: program ana sayfasý
 
-  Güncelleme Tarihi: 06/01/2025
+  Güncelleme Tarihi: 10/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,31 +14,30 @@ unit anasayfafrm;
 
 interface
 
-uses gn_pencere, n_gorev, gn_dugme, islemfrm, onayfrm;
+uses gn_pencere, n_gorev, gn_dugme, islemfrm, onayfrm, _forms;
 
 type
-  TForm = object
+  TfrmAnaSayfa = object(TForm)
   public
     Gorev: TGorev;
     Pencere: TPencere;
     Dugme2: TDugme;
 //    SistemMesaj: TSistemMesaj;
-    Olay: TOlay;
     TiklamaSayisi: TSayi4;
     procedure Olustur;
     procedure Goster;
-    function OlaylariIsle: TISayi4;
+    function OlaylariIsle(AOlay: TOlay): TISayi4;
   end;
 
 var
-  frmAnaSayfa: TForm;
+  frmAnaSayfa: TfrmAnaSayfa;
 
 implementation
 
 const
   PencereAdi: string = 'Tüm Ýþlemler';
 
-procedure TForm.Olustur;
+procedure TfrmAnaSayfa.Olustur;
 begin
 
   TiklamaSayisi := 0;
@@ -51,7 +50,7 @@ begin
 //  SistemMesaj.YaziEkle('iskelet -> frmAnaSayfa oluþturuldu...');
 end;
 
-procedure TForm.Goster;
+procedure TfrmAnaSayfa.Goster;
 begin
 
   Dugme2.Goster;
@@ -59,39 +58,34 @@ begin
   Pencere.Gorunum := True;
 end;
 
-function TForm.OlaylariIsle: TISayi4;
+function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
-  while True do
+  if(AOlay.Olay = FO_TIKLAMA) then
   begin
 
-    Gorev.OlayBekle(Olay);
-    if(Olay.Olay = FO_TIKLAMA) then
+    if(AOlay.Kimlik = Dugme2.Kimlik) then
+      frmIslem.Goster
+    else
     begin
 
-      if(Olay.Kimlik = Dugme2.Kimlik) then
-        frmIslem.Goster
-      else
-      begin
+      Inc(TiklamaSayisi);
+      Pencere.Ciz;
 
-        Inc(TiklamaSayisi);
-        Pencere.Ciz;
-
-        if(frmIslem.OlaylariIsle(Olay) = -1) then
-          frmOnay.OlaylariIsle(Olay);
-      end;
-    end
-
-    else if(Olay.Olay = CO_CIZIM) then
-    begin
-
-      Pencere.Tuval.KalemRengi := RENK_SIYAH;
-      Pencere.Tuval.YaziYaz(50, 20, '');
-//      Pencere.Tuval.SayiYaz10(17 * 8, 10, TiklamaSayisi);
+      if(frmIslem.OlaylariIsle(AOlay) = -1) then
+        frmOnay.OlaylariIsle(AOlay);
     end;
+  end
+
+  else if(AOlay.Olay = CO_CIZIM) then
+  begin
+
+    Pencere.Tuval.KalemRengi := RENK_SIYAH;
+    Pencere.Tuval.YaziYaz(50, 20, '');
+//      Pencere.Tuval.SayiYaz10(17 * 8, 10, TiklamaSayisi);
   end;
 
-  Result := -1;
+  Result := 1;
 end;
 
 end.

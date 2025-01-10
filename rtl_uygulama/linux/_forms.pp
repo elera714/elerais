@@ -20,14 +20,29 @@ interface
 uses n_gorev;
 
 type
+
+  TCagriIslevi = procedure of object;
+  TOlayIslevi = function(AOlay: TOlay): TISayi4 of object;
+
+  TForm = object
+  private
+  public
+    Olustur: TCagriIslevi;
+  end;
+
   TApplication = object
   private
     FTitle: string;
     Gorev: TGorev;
+    FGoster: TCagriIslevi;
+    FOlay: TOlayIslevi;
     function GetTitle: string;
     procedure SetTitle(AValue: string);
   public
-    procedure Olustur;
+    procedure Initialize;
+    procedure CreateForm(AForm: TForm; AOlustur, AGoster: TCagriIslevi;
+      AOlay: TOlayIslevi);
+    procedure Run;
   published
     property Title: string read GetTitle write SetTitle;
   end;
@@ -37,10 +52,42 @@ var
 
 implementation
 
-procedure TApplication.Olustur;
+procedure TApplication.Initialize;
 begin
 
+  FGoster := nil;
   Gorev.Yukle;
+end;
+
+procedure TApplication.CreateForm(AForm: TForm; AOlustur, AGoster: TCagriIslevi;
+  AOlay: TOlayIslevi);
+begin
+
+  // ilgili formun (pencere) oluştur (create) işlevini çalıştır
+  AOlustur;
+
+  // ilk formun göster işlevini al
+  if(FGoster = nil) then
+  begin
+
+    FGoster := AGoster;
+    FOlay := AOlay;
+  end;
+end;
+
+procedure TApplication.Run;
+var
+  Olay: TOlay;
+begin
+
+  FGoster;
+
+  while True do
+  begin
+
+    Gorev.OlayBekle(Olay);
+    FOlay(Olay);
+  end;
 end;
 
 function TApplication.GetTitle: string;

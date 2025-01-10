@@ -6,7 +6,7 @@
   Program Adý: islemfrm.pas
   Program Ýþlevi: iþlem sayfasý
 
-  Güncelleme Tarihi: 06/01/2025
+  Güncelleme Tarihi: 10/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,22 +14,21 @@ unit islemfrm;
 
 interface
 
-uses gn_pencere, n_gorev, gn_dugme;
+uses gn_pencere, n_gorev, gn_dugme, _forms;
 
 type
-  TForm = object
+  TfrmIslem = object(TForm)
   public
     Gorev: TGorev;
     Pencere: TPencere;
     Dugme1: TDugme;
-    Olay: TOlay;
     procedure Olustur;
     procedure Goster;
     function OlaylariIsle(AOlay: TOlay): TISayi4;
   end;
 
 var
-  frmIslem: TForm;
+  frmIslem: TfrmIslem;
 
 implementation
 
@@ -38,7 +37,7 @@ uses onayfrm;
 const
   PencereAdi: string = 'Ýþlemler';
 
-procedure TForm.Olustur;
+procedure TfrmIslem.Olustur;
 begin
 
   Pencere.Olustur(-1, 120, 120, 300, 300, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
@@ -49,14 +48,14 @@ begin
 //  SistemMesaj.YaziEkle('iskelet -> frmIslem oluþturuldu...');
 end;
 
-procedure TForm.Goster;
+procedure TfrmIslem.Goster;
 begin
 
   Dugme1.Goster;
   Pencere.Gorunum := True;
 end;
 
-function TForm.OlaylariIsle(AOlay: TOlay): TISayi4;
+function TfrmIslem.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
   if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = Dugme1.Kimlik) then

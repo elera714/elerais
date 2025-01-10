@@ -39,9 +39,8 @@
       <Unit0>
         <Filename Value="dskgor.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="169"/>
-        <CursorPos X="16" Y="39"/>
+        <TopLine Value="116"/>
+        <CursorPos X="52" Y="145"/>
         <UsageCount Value="30"/>
         <Loaded Value="True"/>
       </Unit0>

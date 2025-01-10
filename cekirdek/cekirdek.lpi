@@ -519,7 +519,7 @@
       <Unit72>
         <Filename Value="..\surumbil.txt"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="15"/>
         <CursorPos X="5" Y="19"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -535,7 +535,7 @@
       <Unit74>
         <Filename Value="..\bellek.txt"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="16"/>
+        <EditorIndex Value="17"/>
         <CursorPos X="45" Y="10"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -558,7 +558,7 @@
       <Unit77>
         <Filename Value="planlama.txt"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="16"/>
         <CursorPos X="86" Y="6"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -814,7 +814,6 @@
       <Unit116>
         <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
@@ -986,7 +985,7 @@
       <Unit143>
         <Filename Value="..\ortak\ag\iletisim.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="13"/>
         <TopLine Value="432"/>
         <CursorPos X="32" Y="453"/>
         <UsageCount Value="224"/>
@@ -995,7 +994,7 @@
       <Unit144>
         <Filename Value="..\ortak\ag\tcp.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="14"/>
         <TopLine Value="128"/>
         <CursorPos X="44" Y="149"/>
         <UsageCount Value="224"/>
@@ -1092,8 +1091,11 @@
       <Unit159>
         <Filename Value="..\ortak\kesme\k_olay.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="69"/>
         <UsageCount Value="224"/>
+        <Loaded Value="True"/>
       </Unit159>
       <Unit160>
         <Filename Value="..\ortak\kesme\k_dosya.pas"/>
@@ -1143,7 +1145,7 @@
       <Unit167>
         <Filename Value="..\ortak\kesme\k_iletisim.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="12"/>
         <TopLine Value="102"/>
         <CursorPos X="33" Y="130"/>
         <UsageCount Value="224"/>
@@ -1216,7 +1218,7 @@
         <Filename Value="..\gorselnesne\gn_pencere.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="313"/>
+        <TopLine Value="15"/>
         <CursorPos X="76" Y="330"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
@@ -1412,7 +1414,7 @@
       <Unit209>
         <Filename Value="..\notlar.txt"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="17"/>
+        <EditorIndex Value="18"/>
         <CursorPos X="28" Y="9"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>

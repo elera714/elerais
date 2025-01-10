@@ -6,7 +6,7 @@
   Program Adý: onayfrm.pas
   Program Ýþlevi: onay sayfasý
 
-  Güncelleme Tarihi: 06/01/2025
+  Güncelleme Tarihi: 10/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,16 +14,15 @@ unit onayfrm;
 
 interface
 
-uses gn_pencere, n_gorev, gn_dugme, gn_etiket;
+uses gn_pencere, n_gorev, gn_dugme, gn_etiket, _forms;
 
 type
-  TForm = object
+  TfrmOnay = object(TForm)
   public
     Gorev: TGorev;
     Pencere: TPencere;
     Dugme1: TDugme;
     Etiket1: TEtiket;
-    Olay: TOlay;
     procedure Olustur;
     procedure Goster;
     procedure Gizle;
@@ -31,14 +30,14 @@ type
   end;
 
 var
-  frmOnay: TForm;
+  frmOnay: TfrmOnay;
 
 implementation
 
 const
   PencereAdi: string = 'Ýþlem Durumu';
 
-procedure TForm.Olustur;
+procedure TfrmOnay.Olustur;
 begin
 
   Pencere.Olustur(-1, 150, 150, 250, 65, ptIletisim, PencereAdi, RENK_BEYAZ);
@@ -49,7 +48,7 @@ begin
   Dugme1.Olustur(Pencere.Kimlik, 100, 30, 50, 22, 'Tamam');
 end;
 
-procedure TForm.Goster;
+procedure TfrmOnay.Goster;
 begin
 
   Etiket1.Goster;
@@ -57,7 +56,7 @@ begin
   Pencere.Gorunum := True;
 end;
 
-procedure TForm.Gizle;
+procedure TfrmOnay.Gizle;
 begin
 
   //Etiket1.Gizle;
@@ -65,7 +64,7 @@ begin
   Pencere.Gorunum := False;
 end;
 
-function TForm.OlaylariIsle(AOlay: TOlay): TISayi4;
+function TfrmOnay.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
   if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = Dugme1.Kimlik) then
