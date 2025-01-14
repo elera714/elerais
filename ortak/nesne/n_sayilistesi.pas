@@ -24,27 +24,27 @@ type
   PSayiListesi = ^TSayiListesi;
   TSayiListesi = object
   private
-    FTanimlayici: Integer;
+    FTanimlayici: TISayi4;
     FNesneKullanilabilir: Boolean;    // kullanılabilir = boşta = kullanıma hazır
     FBellekBaslangicAdresi,
-    FMevcutBellekAdresi: PInteger;
-    FBellekUzunlugu: Integer;
-    FElemanSayisi: Integer;
+    FMevcutBellekAdresi: PISayi4;
+    FBellekUzunlugu: TISayi4;
+    FElemanSayisi: TISayi4;
     function ElemanAl(ASiraNo: TISayi4): TISayi4;
   public
     function Olustur: PSayiListesi;
     procedure YokEt;
     function KullanilabilirNesneBul: PSayiListesi;
     procedure Temizle;
-    function Ekle(ADeger: Integer): Integer;
-    property Eleman[SiraNo: Integer]: Integer read ElemanAl;
-    property BellekBaslangicAdresi: PInteger read FBellekBaslangicAdresi write FBellekBaslangicAdresi;
-    property MevcutBellekAdresi: PInteger read FMevcutBellekAdresi write FMevcutBellekAdresi;
-    property BellekUzunlugu: Integer read FBellekUzunlugu write FBellekUzunlugu;
+    function Ekle(ADeger: TISayi4): TISayi4;
+    property Eleman[SiraNo: TISayi4]: TISayi4 read ElemanAl;
+    property BellekBaslangicAdresi: PISayi4 read FBellekBaslangicAdresi write FBellekBaslangicAdresi;
+    property MevcutBellekAdresi: PISayi4 read FMevcutBellekAdresi write FMevcutBellekAdresi;
+    property BellekUzunlugu: TISayi4 read FBellekUzunlugu write FBellekUzunlugu;
   published
-    property Tanimlayici: Integer read FTanimlayici write FTanimlayici;
+    property Tanimlayici: TISayi4 read FTanimlayici write FTanimlayici;
     property NesneKullanilabilir: Boolean read FNesneKullanilabilir write FNesneKullanilabilir;
-    property ElemanSayisi: Integer read FElemanSayisi write FElemanSayisi;
+    property ElemanSayisi: TISayi4 read FElemanSayisi write FElemanSayisi;
   end;
 
 implementation
@@ -146,7 +146,7 @@ end;
 {==============================================================================
   liste nesnesine eleman ekler
  ==============================================================================}
-function TSayiListesi.Ekle(ADeger: Integer): Integer;
+function TSayiListesi.Ekle(ADeger: TISayi4): TISayi4;
 var
   p: PISayi4;
 begin

@@ -6,7 +6,7 @@
   Dosya Adı: n_yazilistesi.pas
   Dosya İşlevi: yazı liste nesne işlevlerini gerçekleştirir.
 
-  Güncelleme Tarihi: 24/12/2024
+  Güncelleme Tarihi: 12/01/2025
 
   Bilgi: sistem tasarlama yönünden FPC'nin sağladığı imkanlarından yararlanamama
   konusunda kısıtlamaları aşmak amacıyla (dinamik bellek yönetiminin kullanılamamasına
@@ -22,30 +22,37 @@ interface
 uses paylasim;
 
 type
+  TRenkYazi = record
+    Renk: TRenk;
+    Yazi: string;
+  end;
+
+type
   PYaziListesi = ^TYaziListesi;
   TYaziListesi = object
   private
-    FTanimlayici: Integer;
+    FTanimlayici: TISayi4;
     FNesneKullanilabilir: Boolean;    // kullanılabilir = boşta = kullanıma hazır
     FBellekBaslangicAdresi,
-    FMevcutBellekAdresi: Pointer;
-    FBellekUzunlugu: Integer;
-    FElemanSayisi: Integer;
+    FMevcutBellekAdresi: Isaretci;
+    FBellekUzunlugu: TISayi4;
+    FElemanSayisi: TISayi4;
     function ElemanAl(ASiraNo: TISayi4): string;
   public
     function Olustur: PYaziListesi;
     procedure YokEt;
     function KullanilmayanNesneBul: PYaziListesi;
     procedure Temizle;
-    function Ekle(ADeger: string): Integer;
-    property Eleman[SiraNo: Integer]: string read ElemanAl;
-    property BellekBaslangicAdresi: Pointer read FBellekBaslangicAdresi write FBellekBaslangicAdresi;
-    property MevcutBellekAdresi: Pointer read FMevcutBellekAdresi write FMevcutBellekAdresi;
-    property BellekUzunlugu: Integer read FBellekUzunlugu write FBellekUzunlugu;
+    function Ekle(ADeger: string; AYaziRengi: TRenk = RENK_SIYAH): TISayi4;
+    function ElemanAl2(ASiraNo: TISayi4): TRenkYazi;
+    property Eleman[SiraNo: TISayi4]: string read ElemanAl;
+    property BellekBaslangicAdresi: Isaretci read FBellekBaslangicAdresi write FBellekBaslangicAdresi;
+    property MevcutBellekAdresi: Isaretci read FMevcutBellekAdresi write FMevcutBellekAdresi;
+    property BellekUzunlugu: TISayi4 read FBellekUzunlugu write FBellekUzunlugu;
   published
-    property Tanimlayici: Integer read FTanimlayici write FTanimlayici;
+    property Tanimlayici: TISayi4 read FTanimlayici write FTanimlayici;
     property NesneKullanilabilir: Boolean read FNesneKullanilabilir write FNesneKullanilabilir;
-    property ElemanSayisi: Integer read FElemanSayisi write FElemanSayisi;
+    property ElemanSayisi: TISayi4 read FElemanSayisi write FElemanSayisi;
   end;
 
 implementation
@@ -147,7 +154,7 @@ end;
 {==============================================================================
   liste nesnesine eleman ekler
  ==============================================================================}
-function TYaziListesi.Ekle(ADeger: string): Integer;
+function TYaziListesi.Ekle(ADeger: string; AYaziRengi: TRenk = RENK_SIYAH): TISayi4;
 var
   Uzunluk: TSayi1;
   p: PKarakterKatari;
@@ -156,17 +163,25 @@ begin
   // verinin uzunluğunu al
   Uzunluk := Length(ADeger);
 
-  if(Uzunluk = 0) or (Uzunluk + 1 > BellekUzunlugu) then Exit;
+  // 4 byte yazı rengi + 1 byte yazı uzunluk değeri
+  if(Uzunluk = 0) or (Uzunluk + (4 + 1) > BellekUzunlugu) then Exit;
 
-  // yazı uzunluğu & değeri kaydet
+  // yazı uzunluğunu kaydet
   p := MevcutBellekAdresi;
-  p^ := Copy(ADeger, 1, Uzunluk);
+  PRenk(p)^ := AYaziRengi;
+
+  p := MevcutBellekAdresi + 4;
+  PByte(p)^ := Uzunluk;
+
+  // yazının kendisini kaydet
+  p := MevcutBellekAdresi + (4 + 1);
+  Tasi2(@ADeger[1], p, Uzunluk);
 
   // bir sonraki kaydın yapılacağı bellek adresini belirle
-  MevcutBellekAdresi := MevcutBellekAdresi + Uzunluk + 1;
+  MevcutBellekAdresi := MevcutBellekAdresi + Uzunluk + (4 + 1);
 
   // bellek kapasitesini azalt
-  BellekUzunlugu := BellekUzunlugu - (Uzunluk + 1);
+  BellekUzunlugu := BellekUzunlugu - (Uzunluk + (4 + 1));
 
   // eleman sayısını 1 artır
   Inc(FElemanSayisi);
@@ -175,9 +190,9 @@ begin
 end;
 
 {==============================================================================
-  listenin belirtilen elemanını geriye döndürür
+  listenin belirtilen yazı elemanını ve rengini geriye döndürür
  ==============================================================================}
-function TYaziListesi.ElemanAl(ASiraNo: TISayi4): string;
+function TYaziListesi.ElemanAl2(ASiraNo: TISayi4): TRenkYazi;
 var
   p: PSayi1;
   i: TSayi2;
@@ -189,7 +204,8 @@ begin
   if(ElemanSayisi = 0) or (ASiraNo >= ElemanSayisi) then
   begin
 
-    Result := '';
+    Result.Renk := RENK_SIYAH;
+    Result.Yazi := '';
     Exit;
   end;
 
@@ -203,13 +219,26 @@ begin
     for i := 0 to ASiraNo - 1 do
     begin
 
-      Uzunluk := p^;
-      Inc(p, Uzunluk + 1);
+      Uzunluk := (p + 4)^;
+      Inc(p, Uzunluk + (4 + 1));
     end;
   end;
 
   // geri dönüş değeri
-  Result := PKarakterKatari(p)^;
+  Result.Renk := PRenk(p)^;
+  Result.Yazi := PKarakterKatari(p + 4)^;
+end;
+
+{==============================================================================
+  listenin belirtilen yazı elemanını geriye döndürür
+ ==============================================================================}
+function TYaziListesi.ElemanAl(ASiraNo: TISayi4): string;
+var
+  RY: TRenkYazi;
+begin
+
+  RY := ElemanAl2(ASiraNo);
+  Result := RY.Yazi;
 end;
 
 end.

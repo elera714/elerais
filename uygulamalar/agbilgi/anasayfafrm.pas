@@ -80,13 +80,13 @@ procedure TfrmAnaSayfa.IcerigiGuncelle;
 begin
 
   FDegerListesi.Temizle;
-  FDegerListesi.DegerEkle('MAC Adresi|' + MAC_KarakterKatari(FAgBilgisi.MACAdres));
-  FDegerListesi.DegerEkle('IP4 Adresi|' + IP_KarakterKatari(FAgBilgisi.IP4Adres));
-  FDegerListesi.DegerEkle('IP4 Alt Að Maskesi|' + IP_KarakterKatari(FAgBilgisi.AltAgMaskesi));
-  FDegerListesi.DegerEkle('Að Geçidi|' + IP_KarakterKatari(FAgBilgisi.AgGecitAdresi));
-  FDegerListesi.DegerEkle('DHCP Sunucusu|' + IP_KarakterKatari(FAgBilgisi.DHCPSunucusu));
-  FDegerListesi.DegerEkle('DNS Sunucusu|' + IP_KarakterKatari(FAgBilgisi.DNSSunucusu));
-  FDegerListesi.DegerEkle('IP Kira Süresi|' + IntToStr(FAgBilgisi.IPKiraSuresi));
+  FDegerListesi.DegerEkle('MAC Adresi|' + MAC_KarakterKatari(FAgBilgisi.MACAdres), RENK_SIYAH);
+  FDegerListesi.DegerEkle('IP4 Adresi|' + IP_KarakterKatari(FAgBilgisi.IP4Adres), RENK_SIYAH);
+  FDegerListesi.DegerEkle('IP4 Alt Að Maskesi|' + IP_KarakterKatari(FAgBilgisi.AltAgMaskesi), RENK_SIYAH);
+  FDegerListesi.DegerEkle('Að Geçidi|' + IP_KarakterKatari(FAgBilgisi.AgGecitAdresi), RENK_SIYAH);
+  FDegerListesi.DegerEkle('DHCP Sunucusu|' + IP_KarakterKatari(FAgBilgisi.DHCPSunucusu), RENK_SIYAH);
+  FDegerListesi.DegerEkle('DNS Sunucusu|' + IP_KarakterKatari(FAgBilgisi.DNSSunucusu), RENK_SIYAH);
+  FDegerListesi.DegerEkle('IP Kira Süresi|' + IntToStr(FAgBilgisi.IPKiraSuresi), RENK_SIYAH);
 end;
 
 end.

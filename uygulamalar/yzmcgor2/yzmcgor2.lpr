@@ -6,7 +6,7 @@
   Program Adý: yzmcgor2.lpr
   Program Ýþlevi: programýn yazmaç içeriðini görüntüler
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 12/01/2025
 
  ==============================================================================}
 {$mode objfpc}

@@ -6,7 +6,7 @@
   Dosya Adı: gn_degerlistesi.pas
   Dosya İşlevi: değer listesi (TValueListeEditor) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 12/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -25,7 +25,7 @@ type
     procedure Goster;
     procedure Hizala(AHiza: THiza);
     procedure BaslikBelirle(ABaslik1, ABaslik2: string; ABaslik1U: TSayi4);
-    procedure DegerEkle(ADeger: string);
+    procedure DegerEkle(ADeger: string; AYaziRengi: TRenk);
     procedure Temizle;
     function SeciliYaziAl: string;
     property Kimlik: TKimlik read FKimlik;
@@ -37,7 +37,7 @@ procedure _DegerListesiGoster(AKimlik: TKimlik); assembler;
 procedure _DegerListesiHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
 procedure _DegerListesiBaslikBelirle(AKimlik: TKimlik; ABaslik1, ABaslik2: string;
   ABaslik1U: TSayi4); assembler;
-procedure _DegerListesiDegerEkle(AKimlik: TKimlik; ADeger: string); assembler;
+procedure _DegerListesiDegerEkle(AKimlik: TKimlik; ADeger: string; AYaziRengi: TRenk); assembler;
 procedure _DegerListesiTemizle(AKimlik: TKimlik); assembler;
 procedure _DegerListesiSeciliYaziAl(AKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
 
@@ -69,10 +69,10 @@ begin
   _DegerListesiBaslikBelirle(FKimlik, ABaslik1, ABaslik2, ABaslik1U);
 end;
 
-procedure TDegerListesi.DegerEkle(ADeger: string);
+procedure TDegerListesi.DegerEkle(ADeger: string; AYaziRengi: TRenk);
 begin
 
-  _DegerListesiDegerEkle(FKimlik, ADeger);
+  _DegerListesiDegerEkle(FKimlik, ADeger, AYaziRengi);
 end;
 
 procedure TDegerListesi.Temizle;
@@ -132,13 +132,14 @@ asm
   add   esp,16
 end;
 
-procedure _DegerListesiDegerEkle(AKimlik: TKimlik; ADeger: string);
+procedure _DegerListesiDegerEkle(AKimlik: TKimlik; ADeger: string; AYaziRengi: TRenk);
 asm
+  push  DWORD AYaziRengi
   push  DWORD ADeger
   push  DWORD AKimlik
   mov   eax,DEGERLISTESI_YAZ_DEGEREKLE
   int   $34
-  add   esp,8
+  add   esp,12
 end;
 
 procedure _DegerListesiTemizle(AKimlik: TKimlik);

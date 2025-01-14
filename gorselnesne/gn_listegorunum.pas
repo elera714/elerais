@@ -6,7 +6,7 @@
   Dosya Adý: gn_listegorunum.pas
   Dosya Ýþlevi: liste görünüm (TListView) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 12/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -90,7 +90,8 @@ begin
       ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeGorunum));
       if(ListeGorunum <> nil) then ListeGorunum^.FDegerler^.Ekle(
-        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^,
+        PRenk(ADegiskenler + 08)^);
       Result := 1;
     end;
 
@@ -306,7 +307,8 @@ var
   Alan1, Alan2: TAlan;
   ElemanSayisi, SatirNo, i, j,
   Sol, Ust: TISayi4;
-  s: string;
+  RY: TRenkYazi;
+  s: String;
 begin
 
   ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(Kimlik));
@@ -380,6 +382,7 @@ begin
 
     // deðeri belirtilen karakter ile bölümle
     Bolumle(FDegerler^.Eleman[SatirNo], '|', FDegerDizisi);
+    RY := FDegerler^.ElemanAl2(SatirNo);
 
     Sol := Alan1.Sol + 1;
     if(FDegerDizisi^.ElemanSayisi > 0) then
@@ -408,7 +411,7 @@ begin
             Alan2.Sag, Alan2.Alt, RENK_BEYAZ, RENK_BEYAZ);
         end;
 
-        ListeGorunum^.AlanaYaziYaz(ListeGorunum, Alan2, 2, 2, s, RENK_SIYAH);
+        ListeGorunum^.AlanaYaziYaz(ListeGorunum, Alan2, 2, 2, s, RY.Renk);
 
         Sol += 1 + KolonUzunluklari^.Eleman[j];
       end;

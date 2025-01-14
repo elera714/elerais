@@ -97,6 +97,7 @@ var
   iiiii: Integer;
   sssss: string;
   ppppp: pchar;
+  TestSinif: TTestSinif;
 
 procedure Yukle;
 procedure SistemAnaKontrol;
@@ -318,9 +319,12 @@ begin
           //Gorev^.Calistir('disk1:\6.bmp');
           //Gorev^.Calistir('disket1:\tarayici.c');
           //Gorev^.Calistir('disket1:\bharita.c');
-          //Gorev^.Calistir('disket1:\iletisim.c');
-          Gorev^.Calistir('disket1:\dskbolum.c');
+          //Gorev^.Calistir('disket1:\mustudk.c');
+          //Gorev^.Calistir('disk1:\sisbilgi.c');
+          //Gorev^.Calistir('disket1:\yzmcgor2.c');
           //vbox.Listele;
+
+          TestSinif := TTestSinif.Create;
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then
@@ -343,6 +347,7 @@ begin
           //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
           //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
           //vbox.IcerigiGoruntule;
+          TestSinif.Artir;
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then
@@ -607,6 +612,7 @@ end;
 constructor TTestSinif.Create;
 begin
 
+  FDeger1 := 100;;
 end;
 
 procedure TTestSinif.Artir;
@@ -614,7 +620,7 @@ begin
 
   Inc(FDeger1);
   SISTEM_MESAJ(RENK_SIYAH, 'TTest1.Artir: %d', [FDeger1]);
-  SISTEM_MESAJ_YAZI(RENK_SIYAH, 'Birim: ', UnitName);
+  //SISTEM_MESAJ_YAZI(RENK_SIYAH, 'Birim: ', UnitName);
 end;
 
 procedure TTestSinif.Eksilt;

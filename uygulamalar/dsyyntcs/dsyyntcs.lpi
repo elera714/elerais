@@ -33,11 +33,11 @@
         </Mode0>
       </Modes>
     </RunParams>
-    <Units Count="61">
+    <Units Count="62">
       <Unit0>
         <Filename Value="dsyyntcs.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="41" Y="19"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="45"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -360,133 +360,140 @@
       <Unit60>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="18" Y="20"/>
+        <TopLine Value="2"/>
+        <CursorPos X="5" Y="20"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit60>
+      <Unit61>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit61>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="dsyyntcs.lpr"/>
-        <Caret Line="19" Column="42"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="66" Column="20" TopLine="62"/>
       </Position1>
       <Position2>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="6" Column="102"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="38" Column="11" TopLine="20"/>
       </Position2>
       <Position3>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="44" Column="69" TopLine="26"/>
+        <Caret Line="161" Column="31" TopLine="139"/>
       </Position3>
       <Position4>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="101" Column="7" TopLine="83"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="26" Column="74" TopLine="8"/>
       </Position4>
       <Position5>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="20" Column="6"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="65" Column="54" TopLine="62"/>
       </Position5>
       <Position6>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="45" Column="33" TopLine="26"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="26" Column="27" TopLine="20"/>
       </Position6>
       <Position7>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="47" Column="19" TopLine="29"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="64" Column="3" TopLine="62"/>
       </Position7>
       <Position8>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="50" Column="23" TopLine="32"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="26" Column="15" TopLine="8"/>
       </Position8>
       <Position9>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="54" Column="4" TopLine="35"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="64" Column="3" TopLine="62"/>
       </Position9>
       <Position10>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="53" Column="22" TopLine="35"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="26" Column="30" TopLine="20"/>
       </Position10>
       <Position11>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="56" Column="4" TopLine="38"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="64" Column="3" TopLine="62"/>
       </Position11>
       <Position12>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="62" Column="19" TopLine="45"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="38" Column="86" TopLine="20"/>
       </Position12>
       <Position13>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="69" Column="11" TopLine="52"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="135" Column="31" TopLine="128"/>
       </Position13>
       <Position14>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="70" Column="10" TopLine="53"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="29" Column="22"/>
       </Position14>
       <Position15>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="73" Column="42" TopLine="56"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="84" Column="3" TopLine="80"/>
       </Position15>
       <Position16>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="77" Column="4" TopLine="59"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="41" Column="11" TopLine="23"/>
       </Position16>
       <Position17>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="76" Column="25" TopLine="59"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="29" Column="25" TopLine="18"/>
       </Position17>
       <Position18>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="81" Column="4" TopLine="63"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="84" Column="3" TopLine="80"/>
       </Position18>
       <Position19>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="80" Column="28" TopLine="63"/>
+        <Caret Line="162" Column="15" TopLine="146"/>
       </Position19>
       <Position20>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="87" Column="4" TopLine="67"/>
+        <Caret Line="140" Column="46" TopLine="111"/>
       </Position20>
       <Position21>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="94" Column="4" TopLine="77"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="26" Column="27"/>
       </Position21>
       <Position22>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="101" Column="52" TopLine="83"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="64" Column="3" TopLine="62"/>
       </Position22>
       <Position23>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="104" Column="20" TopLine="86"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="38" Column="11" TopLine="20"/>
       </Position23>
       <Position24>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="112" Column="6" TopLine="94"/>
+        <Caret Line="173" Column="60" TopLine="149"/>
       </Position24>
       <Position25>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="114" Column="62" TopLine="96"/>
+        <Caret Line="20" Column="5" TopLine="2"/>
       </Position25>
       <Position26>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="117" Column="23" TopLine="100"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="26" Column="31" TopLine="2"/>
       </Position26>
       <Position27>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="137" Column="6" TopLine="120"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="64" Column="3" TopLine="62"/>
       </Position27>
       <Position28>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="141" Column="20" TopLine="123"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="9" Column="24"/>
       </Position28>
       <Position29>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="162" Column="8" TopLine="143"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="26" Column="59"/>
       </Position29>
       <Position30>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="167" Column="57" TopLine="143"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
+        <Caret Line="62" Column="69" TopLine="62"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

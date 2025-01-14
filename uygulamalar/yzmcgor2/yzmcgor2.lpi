@@ -31,11 +31,12 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="yzmcgor2.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="34" Y="19"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -56,11 +57,17 @@
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="..\..\rtl_uygulama\linux\gn_degerlistesi.pas"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="16" Y="20"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

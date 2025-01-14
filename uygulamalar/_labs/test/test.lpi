@@ -25,9 +25,6 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
-      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
@@ -42,9 +39,9 @@
         <Filename Value="test.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="19"/>
-        <CursorPos X="25" Y="32"/>
-        <UsageCount Value="23"/>
+        <TopLine Value="41"/>
+        <CursorPos X="26" Y="72"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -365,12 +362,11 @@
       </Unit59>
       <Unit60>
         <Filename Value="../../../../widgets/eleram.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit60>
     </Units>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
         <Filename Value="test.lpr"/>
         <Caret Line="55" Column="25" TopLine="21"/>
@@ -384,9 +380,92 @@
         <Caret Line="59" Column="10" TopLine="30"/>
       </Position3>
       <Position4>
-        <Filename Value="../../../../widgets/eleram.pas"/>
-        <Caret Line="381" Column="41" TopLine="363"/>
+        <Filename Value="test.lpr"/>
+        <Caret Line="35" Column="17" TopLine="16"/>
       </Position4>
+      <Position5>
+        <Filename Value="test.lpr"/>
+        <Caret Line="16" Column="9"/>
+      </Position5>
+      <Position6>
+        <Filename Value="test.lpr"/>
+        <Caret Line="15" Column="9"/>
+      </Position6>
+      <Position7>
+        <Filename Value="test.lpr"/>
+        <Caret Line="26" Column="8" TopLine="4"/>
+      </Position7>
+      <Position8>
+        <Filename Value="test.lpr"/>
+        <Caret Line="18" Column="6"/>
+      </Position8>
+      <Position9>
+        <Filename Value="test.lpr"/>
+        <Caret Line="19" Column="6"/>
+      </Position9>
+      <Position10>
+        <Filename Value="test.lpr"/>
+        <Caret Line="21" Column="12" TopLine="4"/>
+      </Position10>
+      <Position11>
+        <Filename Value="test.lpr"/>
+        <Caret Line="37" Column="13" TopLine="29"/>
+      </Position11>
+      <Position12>
+        <Filename Value="test.lpr"/>
+        <Caret Line="18" Column="7"/>
+      </Position12>
+      <Position13>
+        <Filename Value="test.lpr"/>
+        <Caret Line="19" Column="6"/>
+      </Position13>
+      <Position14>
+        <Filename Value="test.lpr"/>
+        <Caret Line="18" Column="6"/>
+      </Position14>
+      <Position15>
+        <Filename Value="test.lpr"/>
+        <Caret Line="43" Column="31" TopLine="27"/>
+      </Position15>
+      <Position16>
+        <Filename Value="test.lpr"/>
+        <Caret Line="31" Column="12" TopLine="4"/>
+      </Position16>
+      <Position17>
+        <Filename Value="test.lpr"/>
+        <Caret Line="21" Column="21" TopLine="3"/>
+      </Position17>
+      <Position18>
+        <Filename Value="test.lpr"/>
+        <Caret Line="26" Column="34"/>
+      </Position18>
+      <Position19>
+        <Filename Value="test.lpr"/>
+        <Caret Line="53" Column="40" TopLine="24"/>
+      </Position19>
+      <Position20>
+        <Filename Value="test.lpr"/>
+        <Caret Line="71" TopLine="37"/>
+      </Position20>
+      <Position21>
+        <Filename Value="test.lpr"/>
+      </Position21>
+      <Position22>
+        <Filename Value="test.lpr"/>
+        <Caret Line="73" Column="18" TopLine="41"/>
+      </Position22>
+      <Position23>
+        <Filename Value="test.lpr"/>
+        <Caret Line="37" Column="17" TopLine="5"/>
+      </Position23>
+      <Position24>
+        <Filename Value="test.lpr"/>
+        <Caret Line="75" Column="9" TopLine="41"/>
+      </Position24>
+      <Position25>
+        <Filename Value="test.lpr"/>
+        <Caret Line="36"/>
+      </Position25>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -396,9 +475,9 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../rtl/units/i386-linux"/>
+      <OtherUnitFiles Value="../../../rtl_uygulama/linux/units/i386-linux"/>
       <UnitOutputDirectory Value="output"/>
-      <SrcPath Value="../../../../rtl_uygulama/linux"/>
+      <SrcPath Value="../../../rtl_uygulama/linux"/>
     </SearchPaths>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>

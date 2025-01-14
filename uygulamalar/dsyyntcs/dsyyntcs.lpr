@@ -6,7 +6,7 @@
   Program Adý: dsyyntcs.lpr
   Program Ýþlevi: dosya yöneticisi
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 12/01/2025
 
  ==============================================================================}
 {$mode objfpc}

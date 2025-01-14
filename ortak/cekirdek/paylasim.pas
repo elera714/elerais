@@ -979,8 +979,9 @@ type
 
 var
   // çekirdek genelinde kullanýlan ortak yapýlar / deðiþkenler
-  GMakineAdi: string = 'elera-bil';
-  GAgBilgisi: TAgBilgisi;             // içerik ag.IlkAdresDegerleriniYukle iþlevi tarafýndan doldurulmaktadýr
+  GMakineAdi: string = 'elera-bil';     // sistemin çalýþtýðý bilgisayarýn adý
+  GGrupAdi: string = 'programlama';     // sistemin grup olarak çalýþtýðý að adý
+  GAgBilgisi: TAgBilgisi;               // içerik ag.IlkAdresDegerleriniYukle iþlevi tarafýndan doldurulmaktadýr
 
   IPAdres0: TIPAdres = (0, 0, 0, 0);
   IPAdres255: TIPAdres = (255, 255, 255, 255);
@@ -997,6 +998,11 @@ function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
   ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;
 function ProtokolTipAdi(AProtokolTipi: TProtokolTipi): string;
+procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
+procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
+procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
+function BuyutVeTamala(AGrupAdi: string; AUzunluk: TSayi4): string;
+function Trim(const S: string): string;
 
 implementation
 
@@ -1205,6 +1211,78 @@ begin
     ptICMP  : Result := 'ICMP';
     else {ptBilinmiyor:} Result := 'Bilinmiyor';
   end;
+end;
+
+// indy yardýmcý iþlev - veriye word deðer ekleme (veriler big-endian biçiminde)
+procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
+begin
+
+  PSayi1(AHedef)^ := ADeger;
+end;
+
+// indy yardýmcý iþlev - veriye word deðer ekleme (veriler big-endian biçiminde)
+procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
+begin
+
+  EkleByte(AHedef + 0, Byte(ADeger shr 8));
+  EkleByte(AHedef + 1, Byte(ADeger and $FF));
+end;
+
+// indy yardýmcý iþlev - veriye dword deðer ekleme (veriler big-endian biçiminde)
+procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
+begin
+
+  EkleByte(AHedef + 0, Byte(ADeger shr 24));
+  EkleByte(AHedef + 1, Byte(ADeger shr 16));
+  EkleByte(AHedef + 2, Byte(ADeger shr 8));
+  EkleByte(AHedef + 3, Byte(ADeger and $FF));
+end;
+
+// karakterleri büyütür ve belirten uzunluða kadar sað tarafa boþluk karakteri ekler
+function BuyutVeTamala(AGrupAdi: string; AUzunluk: TSayi4): string;
+var
+  i: TSayi4;
+  j: Integer;
+begin
+
+  Result := '';
+
+  i := Length(AGrupAdi);
+  if(i > AUzunluk) then i := AUzunluk;
+
+  if(i > 0) then
+  begin
+
+    for j := 1 to i do
+    begin
+
+      Result += UpCase(AGrupAdi[j]);
+    end;
+  end;
+
+  if(i < AUzunluk) then
+  begin
+
+    for j := i to AUzunluk - 1 do
+    begin
+
+      Result += ' ';
+    end;
+  end;
+end;
+
+{TODO - lazarus'tan buraya eklendi. lazarus birimi eklenince kaldýrýlacak }
+function Trim(const S: string): string;
+var
+  Ofs, Len: sizeint;
+begin
+  len := Length(S);
+  while (Len>0) and (S[Len]<=' ') do
+   dec(Len);
+  Ofs := 1;
+  while (Ofs<=Len) and (S[Ofs]<=' ') do
+    Inc(Ofs);
+  result := Copy(S, Ofs, 1 + Len - Ofs);
 end;
 
 end.

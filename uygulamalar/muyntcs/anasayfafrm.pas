@@ -20,19 +20,6 @@ type
 type
   TfrmAnaSayfa = object(TForm)
   private
-    FGenel: TGenel;
-    FGorev: TGorev;
-    FEkran: TEkran;
-    FMasaustu: TMasaustu;
-    FGorevPenceresi: TPencere;
-    FSolPanel, FSagPanel, FOrtaPanel: TPanel;
-    FCalisanProgramlar: array[0..CALISAN_PROGRAM_SAYISI - 1] of TCalisanProgramlar;
-    FBaslatMenusu: TMenu;
-    FAcilirMenu: TAcilirMenu;
-    FELERA: TGucDugmesi;
-    FSaatDegeri, FTarihDegeri, FAgBilgisi: TEtiket;
-    FZamanlayici: TZamanlayici;
-    FAgBilgisiDurum: TAgBilgisi;
     procedure TarihSaatBilgileriniGuncelle;
     procedure CalisanProgramListesineEkle(ASiraNo: TSayi4; AProgramKayit: TProgramKayit);
     procedure GorevCubugunuGuncelle;
@@ -45,7 +32,21 @@ type
   end;
 
 var
+  { TODO - bu nesneler object alanýnda olduðunda hata veriyor }
   frmAnaSayfa: TfrmAnaSayfa;
+  FGenel: TGenel;
+  FGorev: TGorev;
+  FEkran: TEkran;
+  FMasaustu: TMasaustu;
+  FGorevPenceresi: TPencere;
+  FSolPanel, FSagPanel, FOrtaPanel: TPanel;
+  FCalisanProgramlar: array[0..CALISAN_PROGRAM_SAYISI - 1] of TCalisanProgramlar;
+  FBaslatMenusu: TMenu;
+  FAcilirMenu: TAcilirMenu;
+  FELERA: TGucDugmesi;
+  FSaatDegeri, FTarihDegeri, FAgBilgisi: TEtiket;
+  FZamanlayici: TZamanlayici;
+  FAgBilgisiDurum: TAgBilgisi;
 
 implementation
 
@@ -150,10 +151,6 @@ begin
 
   FTarihDegeri.Olustur(FSagPanel.Kimlik, 42, 23, $800000, '00.00.0000 Aa');
   FTarihDegeri.Goster;
-end;
-
-procedure TfrmAnaSayfa.Goster;
-begin
 
   // paneli (GorevPenceresi) görüntüle
   FGorevPenceresi.Gorunum := True;
@@ -193,6 +190,12 @@ begin
   FAcilirMenu.ElemanEkle('Nesne Görüntüleyicisi', 12);
   FAcilirMenu.ElemanEkle('Ekran Koruyucuyu', 12);
   FAcilirMenu.ElemanEkle('Sistem Bilgisi', 12);
+
+end;
+
+procedure TfrmAnaSayfa.Goster;
+begin
+
 end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;

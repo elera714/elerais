@@ -41,7 +41,7 @@ var
 procedure TfrmAnaSayfa.Olustur;
 begin
 
-  FPencere.Olustur(-1, 80, 80, 510, 355, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
+  FPencere.Olustur(-1, 80, 80, 660, 355, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
   FPanel.Olustur(FPencere.Kimlik, 0, 0, 100, 30, 0, 0, 0, 0, '');
@@ -81,7 +81,7 @@ begin
   FlgDosyaListesi.Hizala(hzTum);
 
   // liste görünüm baþlýklarýný ekle
-  FlgDosyaListesi.BaslikEkle('Dosya Adý', 150);
+  FlgDosyaListesi.BaslikEkle('Dosya Adý', 300);
   FlgDosyaListesi.BaslikEkle('Tarih / Saat', 165);
   FlgDosyaListesi.BaslikEkle('Tip', 80);
   FlgDosyaListesi.BaslikEkle('Boyut', 80);
@@ -129,6 +129,7 @@ var
   TarihDizi: array[0..2] of TSayi2;
   SaatDizi: array[0..2] of TSayi1;
   Tarih, Saat, GirdiTip: string;
+  YaziRengi: TRenk;
 begin
 
   if(GecerliSurucu <> '') then
@@ -156,11 +157,20 @@ begin
       Saat := TimeToStr(SaatDizi);
 
       if((DosyaArama.Ozellikler and $10) = $10) then
-        GirdiTip := 'Dizin'
-      else GirdiTip := 'Dosya';
+      begin
+
+        YaziRengi := RENK_MAVI;
+        GirdiTip := 'Dizin';
+      end
+      else
+      begin
+
+        YaziRengi := RENK_SIYAH;
+        GirdiTip := 'Dosya';
+      end;
 
       FlgDosyaListesi.ElemanEkle(DosyaArama.DosyaAdi + '|' + Tarih + ' ' + Saat + '|' +
-        GirdiTip + '|' + IntToStr(DosyaArama.DosyaUzunlugu));
+        GirdiTip + '|' + IntToStr(DosyaArama.DosyaUzunlugu), YaziRengi);
 
       Inc(DosyaSayisi);
 

@@ -133,7 +133,7 @@ begin
           HexToStr(GorevKayit.BellekUzunlugu, True, 8) + '|' +
           IntToStr(Ord(GorevKayit.GorevDurum)) + '|' +
           IntToStr(GorevKayit.OlaySayisi) + '|' +
-          IntToStr(GorevKayit.GorevSayaci));
+          IntToStr(GorevKayit.GorevSayaci), RENK_SIYAH);
       end;
     end;
 

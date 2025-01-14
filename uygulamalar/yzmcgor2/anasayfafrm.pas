@@ -32,7 +32,7 @@ const
 
 var
   GorevKayit: TGorevKayit;
-  TSS: TTSS;
+  OncekiTSS, TSS: TTSS;
   GorevNo: TISayi4;
   UstSinirGorevSayisi, CalisanGorevSayisi, i: TSayi4;
 
@@ -41,7 +41,7 @@ begin
 
   GorevNo := -1;
 
-  FPencere.Olustur(-1, 0, 0, 220, 440, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
+  FPencere.Olustur(-1, 10, 10, 220, 560, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
   FUstPanel.Olustur(FPencere.Kimlik, 0, 0, 100, 29, 0, 0, 0, 0, '');
@@ -57,6 +57,8 @@ begin
   FDegerListesi.Olustur(FPencere.Kimlik, 0, 0, 100, 100);
   FDegerListesi.Hizala(hzTum);
   FDegerListesi.BaslikBelirle('Yazmaç', 'Deðer', 100);
+
+  FillByte(OncekiTSS, SizeOf(OncekiTSS), 0);
 end;
 
 procedure TfrmAnaSayfa.Goster;
@@ -71,6 +73,8 @@ begin
 end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
+var
+  YaziRengi: TRenk;
 begin
 
   if(AOlay.Olay = CO_ZAMANLAYICI) then
@@ -84,30 +88,127 @@ begin
       if(FGorev.GorevYazmacBilgisiAl(GorevNo, @TSS) >= 0) then
       begin
 
-        FDegerListesi.DegerEkle('EIP|0x' + hexStr(TSS.EIP, 8));
-        FDegerListesi.DegerEkle('EFLAGS|0x' + hexStr(TSS.EFLAGS, 8));
-        FDegerListesi.DegerEkle('CR3|0x' + hexStr(TSS.CR3, 8));
-        FDegerListesi.DegerEkle('CS|0x' + hexStr(TSS.CS, 8));
-        FDegerListesi.DegerEkle('DS|0x' + hexStr(TSS.DS, 8));
-        FDegerListesi.DegerEkle('ES|0x' + hexStr(TSS.ES, 8));
-        FDegerListesi.DegerEkle('FS|0x' + hexStr(TSS.FS, 8));
-        FDegerListesi.DegerEkle('GS|0x' + hexStr(TSS.GS, 8));
-        FDegerListesi.DegerEkle('EAX|0x' + hexStr(TSS.EAX, 8));
-        FDegerListesi.DegerEkle('EBX|0x' + hexStr(TSS.EBX, 8));
-        FDegerListesi.DegerEkle('ECX|0x' + hexStr(TSS.ECX, 8));
-        FDegerListesi.DegerEkle('EDX|0x' + hexStr(TSS.EDX, 8));
-        FDegerListesi.DegerEkle('ESI|0x' + hexStr(TSS.ESI, 8));
-        FDegerListesi.DegerEkle('EDI|0x' + hexStr(TSS.EDI, 8));
-        FDegerListesi.DegerEkle('EBP|0x' + hexStr(TSS.EBP, 8));
-        FDegerListesi.DegerEkle('SS|0x' + hexStr(TSS.SS, 8));
-        FDegerListesi.DegerEkle('ESP|0x' + hexStr(TSS.ESP, 8));
-        FDegerListesi.DegerEkle('SS0|0x' + hexStr(TSS.SS0, 8));
-        FDegerListesi.DegerEkle('ESP0|0x' + hexStr(TSS.ESP0, 8));
-        FDegerListesi.DegerEkle('SS1|0x' + hexStr(TSS.SS1, 8));
-        FDegerListesi.DegerEkle('ESP1|0x' + hexStr(TSS.ESP1, 8));
-        FDegerListesi.DegerEkle('SS2|0x' + hexStr(TSS.SS2, 8));
-        FDegerListesi.DegerEkle('ESP2|0x' + hexStr(TSS.ESP2, 8));
-        FDegerListesi.DegerEkle('LDT|0x' + hexStr(TSS.LDT, 8));
+        if(OncekiTSS.EFLAGS <> TSS.EFLAGS) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('EFLAGS|0x' + hexStr(TSS.EFLAGS, 8), YaziRengi);
+
+        if(OncekiTSS.EIP <> TSS.EIP) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('EIP|0x' + hexStr(TSS.EIP, 8), YaziRengi);
+
+        if(OncekiTSS.CS <> TSS.CS) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('CS|0x' + hexStr(TSS.CS, 8), YaziRengi);
+
+        if(OncekiTSS.DS <> TSS.DS) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('DS|0x' + hexStr(TSS.DS, 8), YaziRengi);
+
+        if(OncekiTSS.ES <> TSS.ES) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('ES|0x' + hexStr(TSS.ES, 8), YaziRengi);
+
+        if(OncekiTSS.FS <> TSS.FS) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('FS|0x' + hexStr(TSS.FS, 8), YaziRengi);
+
+        if(OncekiTSS.GS <> TSS.GS) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('GS|0x' + hexStr(TSS.GS, 8), YaziRengi);
+
+        if(OncekiTSS.EAX <> TSS.EAX) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('EAX|0x' + hexStr(TSS.EAX, 8), YaziRengi);
+
+        if(OncekiTSS.EBX <> TSS.EBX) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('EBX|0x' + hexStr(TSS.EBX, 8), YaziRengi);
+
+        if(OncekiTSS.ECX <> TSS.ECX) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('ECX|0x' + hexStr(TSS.ECX, 8), YaziRengi);
+
+        if(OncekiTSS.EDX <> TSS.EDX) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('EDX|0x' + hexStr(TSS.EDX, 8), YaziRengi);
+
+        if(OncekiTSS.ESI <> TSS.ESI) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('ESI|0x' + hexStr(TSS.ESI, 8), YaziRengi);
+
+        if(OncekiTSS.EDI <> TSS.EDI) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('EDI|0x' + hexStr(TSS.EDI, 8), YaziRengi);
+
+        if(OncekiTSS.EBP <> TSS.EBP) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('EBP|0x' + hexStr(TSS.EBP, 8), YaziRengi);
+
+        if(OncekiTSS.SS <> TSS.SS) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('SS|0x' + hexStr(TSS.SS, 8), YaziRengi);
+
+        if(OncekiTSS.ESP <> TSS.ESP) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('ESP|0x' + hexStr(TSS.ESP, 8), YaziRengi);
+
+        if(OncekiTSS.SS0 <> TSS.SS0) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('SS0|0x' + hexStr(TSS.SS0, 8), YaziRengi);
+
+        if(OncekiTSS.ESP0 <> TSS.ESP0) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('ESP0|0x' + hexStr(TSS.ESP0, 8), YaziRengi);
+
+        if(OncekiTSS.SS1 <> TSS.SS1) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('SS1|0x' + hexStr(TSS.SS1, 8), YaziRengi);
+
+        if(OncekiTSS.ESP1 <> TSS.ESP1) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('ESP1|0x' + hexStr(TSS.ESP1, 8), YaziRengi);
+
+        if(OncekiTSS.SS2 <> TSS.SS2) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('SS2|0x' + hexStr(TSS.SS2, 8), YaziRengi);
+
+        if(OncekiTSS.ESP2 <> TSS.ESP2) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('ESP2|0x' + hexStr(TSS.ESP2, 8), YaziRengi);
+
+        if(OncekiTSS.CR3 <> TSS.CR3) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('CR3|0x' + hexStr(TSS.CR3, 8), YaziRengi);
+
+        if(OncekiTSS.LDT <> TSS.LDT) then
+          YaziRengi := RENK_KIRMIZI
+        else YaziRengi := RENK_SIYAH;
+        FDegerListesi.DegerEkle('LDT|0x' + hexStr(TSS.LDT, 8), YaziRengi);
+
+        OncekiTSS := TSS;
       end;
     end;
   end
@@ -127,7 +228,7 @@ begin
     if(CalisanGorevSayisi > 0) then
     begin
 
-      for i := 1 to CalisanGorevSayisi do
+      for i := 0 to CalisanGorevSayisi - 1 do
       begin
 
         if(FGorev.GorevBilgisiAl(i, @GorevKayit) = 0) then

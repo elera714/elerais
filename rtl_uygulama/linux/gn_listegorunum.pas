@@ -6,7 +6,7 @@
   Dosya Adı: gn_listegorunum.pas
   Dosya İşlevi: liste görünüm (TListView) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 12/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -23,7 +23,7 @@ type
   public
     function Olustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik;
     procedure Hizala(AHiza: THiza);
-    procedure ElemanEkle(ADeger: string);
+    procedure ElemanEkle(ADeger: string; AYaziRengi: TRenk);
     function SeciliSiraAl: TISayi4;
     function SeciliSiraYaz(ASiraNo: TISayi4): TISayi4;
     function SeciliYaziAl: string;
@@ -35,7 +35,7 @@ type
 
 function _ListeGorunumOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik; assembler;
 procedure _ListeGorunumHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
-procedure _ListeGorunumElemanEkle(AKimlik: TKimlik; ADeger: string); assembler;
+procedure _ListeGorunumElemanEkle(AKimlik: TKimlik; ADeger: string; AYaziRengi: TRenk); assembler;
 function _ListeGorunumSeciliSiraAl(AKimlik: TKimlik): TISayi4; assembler;
 function _ListeGorunumSeciliSiraYaz(AKimlik: TKimlik; ASiraNo: TISayi4): TISayi4; assembler;
 procedure _ListeGorunumSeciliYaziAl(AKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
@@ -59,10 +59,10 @@ begin
   _ListeGorunumHizala(FKimlik, AHiza);
 end;
 
-procedure TListeGorunum.ElemanEkle(ADeger: string);
+procedure TListeGorunum.ElemanEkle(ADeger: string; AYaziRengi: TRenk);
 begin
 
-  _ListeGorunumElemanEkle(FKimlik, ADeger);
+  _ListeGorunumElemanEkle(FKimlik, ADeger, AYaziRengi);
 end;
 
 function TListeGorunum.SeciliSiraAl: TISayi4;
@@ -125,13 +125,14 @@ asm
   add   esp,8
 end;
 
-procedure _ListeGorunumElemanEkle(AKimlik: TKimlik; ADeger: string);
+procedure _ListeGorunumElemanEkle(AKimlik: TKimlik; ADeger: string; AYaziRengi: TRenk);
 asm
+  push  DWORD AYaziRengi
   push  DWORD ADeger
   push  DWORD AKimlik
   mov   eax,LISTEGORUNUM_YAZ_ELEMANEKLE
   int   $34
-  add   esp,8
+  add   esp,12
 end;
 
 function _ListeGorunumSeciliSiraAl(AKimlik: TKimlik): TISayi4;

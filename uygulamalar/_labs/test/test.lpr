@@ -5,62 +5,73 @@ program test;
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
   Program Adı: test.lpr
-  Program İşlevi: ELERA İşletim Sistemi programları için test işlemlerini gerçekleştirir
+  Program İşlevi: ELERA İşletim Sistemi programlarının Lazarus ile uyumu amacıyla
+    oluşturulmuş test ortamı
 
-  Güncelleme Tarihi: 16/03/2013
+  Güncelleme Tarihi: 13/01/2025
 
  ==============================================================================}
 {$mode objfpc}
 type
-
-  { TObj }
-
-  PObj = ^TObj;
-  TObj = object
-    //procedure Init;
+  PSinif = ^TSinif;
+  TSinif = class
   private
-    Say1: Integer;
-    Yazi: string;
+    ii: Integer;
   public
-    function Create1: TObj;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+type
+  PNesne = ^TNesne;
+  TNesne = object
+  private
+    s: string;
+    i: Integer;
+  public
+    function Olustur: TNesne;
     constructor Create;
   end;
 
 var
-  Obj1: TObj;
+  Sinif: TSinif;
+  Nesne: TNesne;
 
-function TObj.Create1: TObj;
+{ ------------------------------- SINIF -------------------------------------- }
+
+constructor TSinif.Create;
 begin
 
+  ii := $1234;
 end;
 
-constructor TObj.Create;
+destructor TSinif.Destroy;
 begin
 
+  ii := $5678;
 end;
 
-{ TObj }
-{
-constructor TObj.Create;
+{ ------------------------------- NESNE -------------------------------------- }
+
+function TNesne.Olustur: TNesne;
 begin
 
+  Result := Self;
 end;
 
-procedure TObj.Init;
-  var
-  a: Pointer;
+constructor TNesne.Create;
 begin
-  a := @self;
+
+  i := $5678;
 end;
-}
+
 begin
 
-  //Obj1.Create;
-  Obj1 := Obj1.Create1;// := Obj.Create;
+{  Nesne := Nesne.Olustur;
+  Nesne.s := 'merhaba';
+  Nesne.i := $12345678; }
 
-  //Obj1 := Pointer(1000);
-
-  Obj1.Say1 := 100;
-  Obj1.Yazi := 'merhaba';
-
+  Sinif := Sinif.Create;
+  Sinif.ii := $12345678;
+  Sinif.Destroy;
 end.

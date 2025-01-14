@@ -1,6 +1,10 @@
 *******************************************************************************
   Sürüm: 0.3.8 - 10.01.2025 (R34) - Beta
 *******************************************************************************
+  + iletisim.c uygulamasý nesnelerin yeni özelliklerine göre yenilendi
+  + TListeGorunum ve TDegerListesi nesnelerine renkli eleman ekleme desteði eklendi
+  + netbios temel api iþlevi tamamlandý (çalýþmalar devam etmekte)
+  + çekirdeðe að grup adý eklendi, bu deðerin netbios api iþlevi üzerinden daðýtýmý saðlandý
 
 *******************************************************************************
   Sürüm: 0.3.7 - 10.01.2025 (R33) - Beta

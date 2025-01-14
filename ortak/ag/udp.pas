@@ -73,7 +73,7 @@ begin
   // netbios api
   else if(HedefPort = 137) then
 
-    DNSSorgulariniYanitla(UDPPaket)
+    DNSSorgulariniYanitla(AIPPaket, UDPPaket)
 
   else
   begin

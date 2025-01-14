@@ -6,7 +6,7 @@
   Dosya Adı: gn_degerlistesi.pas
   Dosya İşlevi: değer listesi (TValueListeEditor) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 12/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -40,7 +40,7 @@ type
     procedure Bolumle(ABicimlenmisDeger: string; AAyiracDeger: Char;
       DegerDizisi: PYaziListesi);
     function BaslikEkle(AKolon1, AKolon2: string; AKolon1U: TISayi4): Boolean;
-    function DegerEkle(ADeger: string): Boolean;
+    function DegerEkle(ADeger: string; AYaziRengi: TRenk): Boolean;
     procedure DegerIceriginiTemizle;
   end;
 
@@ -102,7 +102,8 @@ begin
       DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntDegerListesi));
       if(DegerListesi <> nil) then Result := TISayi4(DegerListesi^.DegerEkle(
-        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^));
+        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^,
+        PRenk(ADegiskenler + 08)^));
     end;
 
     // liste içeriğini temizle
@@ -300,6 +301,7 @@ var
   ElemanSayisi, SatirNo, i, j,
   Sol, Ust, DegerSayisi: TISayi4;
   s: string;
+  RY: TRenkYazi;
 begin
 
   DegerListesi := PDegerListesi(DegerListesi^.NesneAl(Kimlik));
@@ -373,6 +375,7 @@ begin
 
     // değeri belirtilen karakter ile bölümle
     Bolumle(FDegerler^.Eleman[SatirNo], '|', FDegerDizisi);
+    RY := FDegerler^.ElemanAl2(SatirNo);
 
     Sol := Alan1.Sol + 1;
     if(FDegerDizisi^.ElemanSayisi > 0) then
@@ -405,7 +408,7 @@ begin
             Alan2.Sag, Alan2.Alt, RENK_BEYAZ, RENK_BEYAZ);
         end;
 
-        DegerListesi^.AlanaYaziYaz(DegerListesi, Alan2, 2, 2, s, RENK_SIYAH);
+        DegerListesi^.AlanaYaziYaz(DegerListesi, Alan2, 2, 2, s, RY.Renk);
 
         Sol += 1 + KolonUzunluklari^.Eleman[j];
       end;
@@ -664,7 +667,7 @@ begin
   Result := True;
 end;
 
-function TDegerListesi.DegerEkle(ADeger: string): Boolean;
+function TDegerListesi.DegerEkle(ADeger: string; AYaziRengi: TRenk): Boolean;
 var
   DegerListesi: PDegerListesi;
 begin
@@ -673,7 +676,7 @@ begin
   DegerListesi := PDegerListesi(DegerListesi^.NesneAl(Kimlik));
   if(DegerListesi = nil) then Exit;
 
-  DegerListesi^.FDegerler^.Ekle(ADeger);
+  DegerListesi^.FDegerler^.Ekle(ADeger, AYaziRengi);
 
   if(DegerListesi^.Gorunum) then DegerListesi^.Ciz;
 

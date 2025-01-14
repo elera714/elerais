@@ -38,7 +38,6 @@
       <Unit0>
         <Filename Value="resimgor.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="18" Y="13"/>
         <UsageCount Value="39"/>
         <Loaded Value="True"/>
@@ -425,8 +424,9 @@
       <Unit69>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="14" Y="128"/>
+        <CursorPos X="36" Y="166"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit69>
