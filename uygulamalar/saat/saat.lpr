@@ -19,7 +19,6 @@ begin
   Application.Title := 'Dijital Saat';
   Application.Initialize;
 
-  //Application.CreateForm(TfrmAnaSayfa, frmAnaSayfa);
   Application.CreateForm(frmAnaSayfa, @frmAnaSayfa.Olustur, @frmAnaSayfa.Goster,
     @frmAnaSayfa.OlaylariIsle);
 

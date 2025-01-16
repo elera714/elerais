@@ -27,18 +27,18 @@ type
   TForm = object
   private
   public
-    Olustur: TCagriIslevi;
+//    Olustur: TCagriIslevi;
   end;
 
   TApplication = object
   private
     FTitle: string;
-    Gorev: TGorev;
     FGoster: TCagriIslevi;
     FOlay: TOlayIslevi;
     function GetTitle: string;
     procedure SetTitle(AValue: string);
   public
+    Gorev: TGorev;
     procedure Initialize;
     procedure CreateForm(AForm: TForm; AOlustur, AGoster: TCagriIslevi;
       AOlay: TOlayIslevi);

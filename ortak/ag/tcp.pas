@@ -6,7 +6,7 @@
   Dosya Adý: tcp.pas
   Dosya Ýþlevi: tcp katmaný veri iletiþimini gerçekleþtirir
 
-  Güncelleme Tarihi: 02/01/2025
+  Güncelleme Tarihi: 16/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -30,7 +30,6 @@ type
     Zero: Byte;
     Protocol: Byte;
     Length: Word;               // tcp header + data}
-
     YerelPort,
     UzakPort: TSayi2;
     SiraNo,                     // sequence number
@@ -58,8 +57,6 @@ var
   YerelPort, UzakPort,
   U: TSayi2;
   i, j: TSayi4;
-const
-  Merhaba: PChar = 'diðer dns üzerinden ip adresi al ve dns sunucu mac üzerinden gönder';
 begin
 
   TCPPaket := PTCPPaket(@AIPPaket^.Veri);
@@ -124,12 +121,7 @@ begin
         Bag^.FOnayNo := i;
 
         U := ntohs(AIPPaket^.ToplamUzunluk) - 40;
-        //if(U > 0) then Bag^.BellegeEkle(Merhaba, 60); // @TCPPaket^.Secenekler, 100);
-        //SISTEM_MESAJ(RENK_KIRMIZI, 'U: %d', [U]);
-
-        Bag^.FVeriEkleniyor := True;
-
-        //SISTEM_MESAJ(RENK_MOR, 'TCP Durum: TCP_BAYRAK_KABUL', []);
+        if(U > 0) then Bag^.BellegeEkle(Bag, @TCPPaket^.Secenekler, U);
       end
       // alýnan veri
       else if(TCPPaket^.Bayrak = TCP_BAYRAK_GONDER or TCP_BAYRAK_KABUL) then
@@ -142,23 +134,7 @@ begin
         U := ntohs(AIPPaket^.ToplamUzunluk) - 40;
         Bag^.FOnayNo := i + U;
 
-        //if(U > 0) then
-        begin
-//                 asm cli end;
-//          Bag^.BellegeEkle(Merhaba, 60);
-          Bag^.BellegeEkle(Bag, @TCPPaket^.Secenekler, U);
-          Bag^.BellegeEkle(Bag, Merhaba, 60);
-          Bag^.BellegeEkle(Bag, Merhaba, 60);
-          Bag^.BellegeEkle(Bag, Merhaba, 60);
-          Bag^.BellegeEkle(Bag, Merhaba, 60);
-//          asm sti end;
-
-        //SISTEM_MESAJ_YAZI(RENK_MOR, PChar(@TCPPaket^.Secenekler), j);
-        //SISTEM_MESAJ(RENK_LACIVERT, 'Uzunluk: %d', [j]);
-        //SISTEM_MESAJ_YAZI(RENK_LACIVERT, PChar(Bag^.FBellek), Bag^.FBellekUzunlugu);
-        end;
-
-        Bag^.FVeriEkleniyor := False;
+        if(U > 0) then Bag^.BellegeEkle(Bag, @TCPPaket^.Secenekler, U);
 
         TCPPaketGonder(Bag, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
       end;
@@ -185,8 +161,6 @@ begin
         GGercekBellek.YokEt(Bag^.FBellek, Bag^.FBellekUzunlugu);
         Bag^.FBagli := False;
         Bag^.FBaglantiDurum := bdYok;
-
-        //SISTEM_MESAJ(RENK_KIRMIZI, 'TCP Durum: baþlamadý', []);
       end;
     end;
   end;

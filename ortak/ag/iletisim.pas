@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÃ‡
-  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
+  Kodlayan: Fatih KILIÇ
+  Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya AdÄ±: iletisim.pas
-  Dosya Ä°ÅŸlevi: baÄŸlantÄ± (soket) iletiÅŸim yÃ¶netim iÅŸlevlerini iÃ§erir
+  Dosya Adı: iletisim.pas
+  Dosya İşlevi: bağlantı (soket) iletişim yönetim işlevlerini içerir
 
-  GÃ¼ncelleme Tarihi: 02/01/2025
+  Güncelleme Tarihi: 16/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -33,10 +33,10 @@ var
 
 type
 {
-    bdYok = tcp/udp veri alanlarÄ±nÄ±n ilk yÃ¼kleme ve tcp/bdKapaniyor2 (? teyit et) sonrasÄ± aÅŸamasÄ±
-    bdKapali = tcp/udp yeni baÄŸlantÄ± oluÅŸturma ve udp/baÄŸlantÄ± kapatma sonrasÄ± aÅŸamasÄ±
-    bdKapaniyor1 = istemcinin sunucuya gÃ¶nderdiÄŸi FIN + ACK durumu
-    bdKapaniyor2 = sunucunun istemciye gÃ¶nderdiÄŸi FIN + ACK durumu
+    bdYok = tcp/udp veri alanlarının ilk yükleme ve tcp/bdKapaniyor2 (? teyit et) sonrası aşaması
+    bdKapali = tcp/udp yeni bağlantı oluşturma ve udp/bağlantı kapatma sonrası aşaması
+    bdKapaniyor1 = istemcinin sunucuya gönderdiği FIN + ACK durumu
+    bdKapaniyor2 = sunucunun istemciye gönderdiği FIN + ACK durumu
 }
   TBaglantiDurum = (bdYok, bdKapali, bdBaglaniyor, bdBaglandi, bdKapaniyor1);
 
@@ -48,7 +48,7 @@ type
     FBaglantiDurum: TBaglantiDurum;
     FProtokolTipi: TProtokolTipi;
     FPencereU: TSayi2;
-    FSiraNo,                      // TCP sÄ±ra no (sequence number)
+    FSiraNo,                      // TCP sıra no (sequence number)
     FOnayNo: TSayi4;              // TCP onay no (acknowledgment number)
     FHedefMACAdres: TMACAdres;
     FHedefIPAdres: TIPAdres;
@@ -56,7 +56,6 @@ type
     FBagli: Boolean;
     FBellek: Isaretci;
     FBellekUzunlugu: TSayi4;
-    FVeriEkleniyor: Boolean;
     function Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: TIPAdres; AYerelPort,
       AUzakPort: TSayi2): PBaglanti;
     function BaglantiOlustur: PBaglanti;
@@ -79,32 +78,29 @@ implementation
 
 uses gercekbellek, genel, tcp, udp, arp, zamanlayici;
 
-var
-  GBellek: array[0..4095] of Byte;
-
 {==============================================================================
-  baÄŸlantÄ± ana yÃ¼kleme iÅŸlevlerini iÃ§erir
+  bağlantı ana yükleme işlevlerini içerir
  ==============================================================================}
 procedure Yukle;
 var
-  Baglanti: PBaglanti;
+  Bag: PBaglanti;
   i: TSayi4;
 begin
 
-  // baÄŸlantÄ± bilgilerinin yerleÅŸtirilmesi iÃ§in bellek ayÄ±r
-  Baglanti := GGercekBellek.Ayir(SizeOf(TBaglanti) * USTSINIR_AGILETISIM);
+  // bağlantı bilgilerinin yerleştirilmesi için bellek ayır
+  Bag := GGercekBellek.Ayir(SizeOf(TBaglanti) * USTSINIR_AGILETISIM);
 
-  // bellek giriÅŸlerini dizi giriÅŸleriyle eÅŸleÅŸtir
+  // bellek girişlerini dizi girişleriyle eşleştir
   for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
-    GAgIletisimListesi[i] := Baglanti;
+    GAgIletisimListesi[i] := Bag;
 
-    // iÅŸlemi boÅŸ olarak belirle
-    Baglanti^.FBaglantiDurum := bdYok;
-    Baglanti^.FKimlik := i;
+    // işlemi boş olarak belirle
+    Bag^.FBaglantiDurum := bdYok;
+    Bag^.FKimlik := i;
 
-    Inc(Baglanti);
+    Inc(Bag);
   end;
 
   TCPIlkSiraNo := $10001000;
@@ -112,7 +108,7 @@ begin
 end;
 
 {==============================================================================
-  aÄŸ baÄŸlantÄ±sÄ± iÃ§in baÄŸlantÄ± oluÅŸturur
+  ağ bağlantısı için bağlantı oluşturur
  ==============================================================================}
 function TBaglanti.Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: TIPAdres;
   AYerelPort, AUzakPort: TSayi2): PBaglanti;
@@ -139,16 +135,15 @@ begin
     Bag^.FSiraNo := TCPIlkSiraNoAl;
     Bag^.FOnayNo := 0;
 
-    FVeriEkleniyor := True;
-    FBellekUzunlugu := 0;
-    FBellek :=  @GBellek; //GGercekBellek.Ayir(4095); //Bag^.FPencereU);
-    //if(FBellek = nil) then SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek yok', []);
+    Bag^.FBellekUzunlugu := 0;
+    Bag^.FBellek := GGercekBellek.Ayir(4095); //Bag^.FPencereU);
+    if(Bag^.FBellek = nil) then SISTEM_MESAJ(RENK_KIRMIZI, 'ILETISIM.PAS: Bellek yok', []);
   end
   else if(AProtokolTipi = ptUDP) then
   begin
 
-    FBellekUzunlugu := 0;
-    FBellek := GGercekBellek.Ayir(4095);
+    Bag^.FBellekUzunlugu := 0;
+    Bag^.FBellek := GGercekBellek.Ayir(4095);
 
     {SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Protokol -> UDP', []);
     SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Kimlik %d', [Bag^.FKimlik]);
@@ -170,7 +165,7 @@ begin
 end;
 
 {==============================================================================
-  yeni baÄŸlantÄ± iÃ§in boÅŸ baÄŸlantÄ± noktasÄ± bulur
+  yeni bağlantı için boş bağlantı noktası bulur
  ==============================================================================}
 function TBaglanti.BaglantiOlustur: PBaglanti;
 var
@@ -178,17 +173,17 @@ var
   i: TSayi4;
 begin
 
-  // tÃ¼m iÅŸlem giriÅŸlerini incele
+  // tüm işlem girişlerini incele
   for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
     Bag := GAgIletisimListesi[i];
 
-    // baÄŸlantÄ± durumu boÅŸ ise
+    // bağlantı durumu boş ise
     if(Bag^.FBaglantiDurum = bdYok) then
     begin
 
-      // baÄŸlantÄ±yÄ± ayÄ±r ve Ã§aÄŸÄ±ran iÅŸleve geri dÃ¶n
+      // bağlantıyı ayır ve çağıran işleve geri dön
       Bag^.FBaglantiDurum := bdKapali;
       Exit(Bag);
     end;
@@ -198,19 +193,19 @@ begin
 end;
 
 {==============================================================================
-  oluÅŸturulan baÄŸlantÄ± Ã¼zerinden uzaktaki sisteme baÄŸlantÄ± kurar
+  oluşturulan bağlantı üzerinden uzaktaki sisteme bağlantı kurar
  ==============================================================================}
 function TBaglanti.Baglan(ABaglantiTipi: TBaglantiTipi): TISayi4;
 const
-  // tcp baÄŸlantÄ±sÄ±nÄ±n ilk SYN, SYN + ACK paketi iÃ§in gerekli ek veri deÄŸerleri
+  // tcp bağlantısının ilk SYN, SYN + ACK paketi için gerekli ek veri değerleri
   TCPSYNSonEk: array[0..11] of TSayi1 = (
     $02, $04, $05, $B4, $01, $03, $03, $08, $01, $01, $04, $02);
 begin
 
-  { TODO - arp protokolÃ¼ aracÄ±lÄ±ÄŸÄ±yla verinin gideceÄŸi ilgili ip adresinin mac
-    adresi alÄ±narak aÅŸaÄŸÄ±da ilgili yere eklenecek }
+  { TODO - arp protokolü aracılığıyla verinin gideceği ilgili ip adresinin mac
+    adresi alınarak aşağıda ilgili yere eklenecek }
 
-  // baÄŸlantÄ± kimliÄŸi tanÄ±mlanan aralÄ±kta ise...
+  // bağlantı kimliği tanımlanan aralıkta ise...
   if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
@@ -240,7 +235,7 @@ begin
 
         FHedefMACAdres := MACAdresiAl(FHedefIPAdres);
 
-        // ilk paket olan SYN (ARZ) paketi gÃ¶nderiliyor
+        // ilk paket olan SYN (ARZ) paketi gönderiliyor
         TCPPaketGonder(@Self, GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);
         FBaglantiDurum := bdBaglaniyor;
         Exit(FKimlik);
@@ -252,12 +247,12 @@ begin
 end;
 
 {==============================================================================
-  baÄŸlantÄ±nÄ±n var olup olmadÄ±ÄŸÄ±nÄ± kontrol eder
+  bağlantının var olup olmadığını kontrol eder
  ==============================================================================}
 function TBaglanti.BagliMi: Boolean;
 begin
 
-  // baÄŸlantÄ± kimliÄŸi tanÄ±mlanan aralÄ±kta ise...
+  // bağlantı kimliği tanımlanan aralıkta ise...
   if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
@@ -276,12 +271,12 @@ begin
 end;
 
 {==============================================================================
-  baÄŸlantÄ±yÄ± kapatÄ±r
+  bağlantıyı kapatır
  ==============================================================================}
 function TBaglanti.BaglantiyiKes: TISayi4;
 begin
 
-  // baÄŸlantÄ± kimliÄŸi tanÄ±mlanan aralÄ±kta ise...
+  // bağlantı kimliği tanımlanan aralıkta ise...
   if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
@@ -310,7 +305,7 @@ begin
 
         FBaglantiDurum := bdKapaniyor1;
 
-        // baÄŸlantÄ±yÄ± kapatmanÄ±n diÄŸer aÅŸamalarÄ± sunucu + istemci olarak tcp.pas dosyasÄ±ndadÄ±r
+        // bağlantıyı kapatmanın diğer aşamaları sunucu + istemci olarak tcp.pas dosyasındadır
 
         //SISTEM_MESAJ(RENK_KIRMIZI, 'TCP Durum: bdKapaniyor1', []);
 
@@ -321,7 +316,7 @@ begin
 end;
 
 {==============================================================================
-  TCP veri alÄ±ÅŸveriÅŸinin gerÃ§ekleÅŸmesi iÃ§in gereken ilk sÄ±ra numarasÄ±nÄ± alÄ±r
+  TCP veri alışverişinin gerçekleşmesi için gereken ilk sıra numarasını alır
  ==============================================================================}
 function TBaglanti.TCPIlkSiraNoAl: TSayi4;
 begin
@@ -330,7 +325,7 @@ begin
 end;
 
 {==============================================================================
-  tcp yerel / uzak portun sahibi olan baÄŸlantÄ±yÄ± alÄ±r
+  tcp yerel / uzak portun sahibi olan bağlantıyı alır
  ==============================================================================}
 function TBaglanti.TCPBaglantiAl(AYerelPort, AUzakPort: TSayi2): PBaglanti;
 var
@@ -338,7 +333,7 @@ var
   i: TSayi4;
 begin
 
-  // tÃ¼m iÅŸlem giriÅŸlerini incele
+  // tüm işlem girişlerini incele
   for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
@@ -351,7 +346,7 @@ begin
 end;
 
 {==============================================================================
-  udp yerel portun sahibi olan baÄŸlantÄ±yÄ± alÄ±r
+  udp yerel portun sahibi olan bağlantıyı alır
  ==============================================================================}
 function TBaglanti.UDPBaglantiAl(AYerelPort: TSayi2): PBaglanti;
 var
@@ -359,7 +354,7 @@ var
   i: TSayi4;
 begin
 
-  // tÃ¼m iÅŸlem giriÅŸlerini incele
+  // tüm işlem girişlerini incele
   for i := 0 to USTSINIR_AGILETISIM - 1 do
   begin
 
@@ -372,75 +367,47 @@ begin
 end;
 
 {==============================================================================
-  baÄŸlantÄ± kurulan bilgisayardan gelen verileri programÄ±n kullanmasÄ± iÃ§in belleÄŸe kaydeder
+  bağlantı kurulan bilgisayardan gelen verileri programın kullanması için belleğe kaydeder
  ==============================================================================}
 procedure TBaglanti.BellegeEkle(ABaglanti: PBaglanti; AKaynakBellek: Isaretci; ABellekUzunlugu: TSayi4);
 var
   p: PChar;
   i: TSayi4;
-const
-  Merhaba: PChar = 'Merhaba';
 begin
 
-  //if(ABellekUzunlugu = 60) then Exit;
+  if(ABellekUzunlugu = 0) then Exit;
 
-//  asm cli end;
-  //if(Self.FBellekUzunlugu + ABellekUzunlugu < 4000) then
+  if(ABaglanti^.FBellekUzunlugu + ABellekUzunlugu < 4096) then
   begin
 
-    p := ABaglanti^.FBellek; // + ABaglanti^.FBellekUzunlugu;
+    p := ABaglanti^.FBellek + ABaglanti^.FBellekUzunlugu;
 
-{    Tasi2(Merhaba, p, 7);
-    i := ABaglanti^.FBellekUzunlugu;
-    i += 7;
-    ABaglanti^.FBellekUzunlugu := i;
-    Exit;
-}
-
-{
-    FillChar(p, 100, 'A');
-
-    i := Self.FBellekUzunlugu;
-    i += 120;
-    Self.FBellekUzunlugu := i;
-    exit;
-}
     Tasi2(AKaynakBellek, p, ABellekUzunlugu);
     i := ABaglanti^.FBellekUzunlugu;
     i += ABellekUzunlugu;
-
-    i := ABellekUzunlugu;
     ABaglanti^.FBellekUzunlugu := i;
   end;
-//  asm sti end;
 end;
 
 {==============================================================================
-  baÄŸlantÄ± kurulan cihazdan gelip iÅŸlenmeyi bekleyen veri miktarÄ±nÄ± alÄ±r
+  bağlantı kurulan cihazdan gelip işlenmeyi bekleyen veri miktarını alır
  ==============================================================================}
 function TBaglanti.VeriUzunlugu: TSayi4;
 begin
 
-  if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then Exit(Self.FBellekUzunlugu)
-{  begin
-
-    if(Self.FVeriEkleniyor) then
-      Self.FBellekUzunlugu := 0
-    else Self.FBellekUzunlugu := Self.FBellekUzunlugu);
-
-    Result := Self.FBellekUzunlugu;}
+  if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then
+    Exit(Self.FBellekUzunlugu)
   else Result := 0;
 end;
 
 {==============================================================================
-  baÄŸlantÄ± Ã¼zerinden gelen veriyi okuyarak ilgili programa yÃ¶nlendirir
+  bağlantı üzerinden gelen veriyi okuyarak ilgili programa yönlendirir
  ==============================================================================}
 function TBaglanti.Oku(ABellek: Isaretci): TSayi4;
 var
   i: TSayi4;
 begin
 
-//  asm cli end;
   if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
@@ -449,8 +416,6 @@ begin
     begin
 
       Tasi2(Self.FBellek, ABellek, i);
-      //FillByte(ABellek, 100, Byte('A'));
-      //PChar(ABellek + 100)^ := #0;
       Result := Self.FBellekUzunlugu;
       Self.FBellekUzunlugu := 0;
       Exit(i);
@@ -458,11 +423,10 @@ begin
   end;
 
   Result := 0;
-//  asm sti end;
 end;
 
 {==============================================================================
-  baÄŸlantÄ± kurulan bilgisayara veri gÃ¶nderir
+  bağlantı kurulan bilgisayara veri gönderir
  ==============================================================================}
 procedure TBaglanti.Yaz(ABellek: Isaretci; AUzunluk: TISayi4);
 begin
@@ -491,7 +455,7 @@ begin
 end;
 
 {==============================================================================
-  yerel port numarasÄ± Ã¼retir
+  yerel port numarası üretir
  ==============================================================================}
 function YerelPortAl: TSayi2;
 begin

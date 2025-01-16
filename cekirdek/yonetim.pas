@@ -93,6 +93,7 @@ var
   DugmeSayisi: TSayi4;
   TestAlani: TArGe;
   SonKonumY, SonKonumD, SonSecim: TSayi4;
+  TestAdres: Isaretci;
 
   iiiii: Integer;
   sssss: string;
@@ -317,14 +318,17 @@ begin
           end;
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
-          //Gorev^.Calistir('disket1:\tarayici.c');
+          Gorev^.Calistir('disket1:\tarayici.c');
           //Gorev^.Calistir('disket1:\bharita.c');
           //Gorev^.Calistir('disket1:\mustudk.c');
           //Gorev^.Calistir('disk1:\sisbilgi.c');
           //Gorev^.Calistir('disket1:\yzmcgor2.c');
           //vbox.Listele;
 
-          TestSinif := TTestSinif.Create;
+          //TestAdres := Isaretci($10000);
+          //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek U3: %d', [TSayi4(TestAdres)]);
+
+          //TestSinif := TTestSinif.Create;
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then
@@ -347,7 +351,8 @@ begin
           //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
           //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
           //vbox.IcerigiGoruntule;
-          TestSinif.Artir;
+          //TestSinif.Artir;
+          Gorev^.Calistir('disket1:\yzmcgor2.c');
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then

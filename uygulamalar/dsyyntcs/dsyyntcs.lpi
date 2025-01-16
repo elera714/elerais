@@ -360,15 +360,15 @@
       <Unit60>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="2"/>
+        <TopLine Value="83"/>
         <CursorPos X="5" Y="20"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit60>
       <Unit61>
         <Filename Value="../../rtl_uygulama/linux/gn_listegorunum.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
