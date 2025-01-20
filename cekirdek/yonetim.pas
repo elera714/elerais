@@ -18,7 +18,7 @@ interface
 uses paylasim, gn_pencere, gn_etiket, zamanlayici, dns, gn_panel, gorselnesne,
   gn_gucdugmesi, gn_resim, gn_karmaliste, gn_degerlistesi, gn_dugme, gn_izgara,
   gn_araccubugu, gn_durumcubugu, gn_giriskutusu, gn_onaykutusu, gn_sayfakontrol,
-  gn_defter, gn_kaydirmacubugu, islemci, pic;
+  gn_defter, gn_kaydirmacubugu, islemci, pic, arp, dosya;
 
 type
   // gerçek moddan gelen veri yapýsý
@@ -238,10 +238,13 @@ var
   IRR, zzz, SaglamaToplam: TSayi2;
   _AygitSiraNo, AygitKimlik: TSayi4;
   DD1: TISayi1;
-  DD4: TISayi4;
+  DD4, DosyaUzunluk: TISayi4;
   BellekI: Isaretci;
   B1: TSayi1;
   Belk: array[0..511] of TSayi1;
+  IPAdres: TIPAdres = (192, 168, 1, 129);
+  DosyaKimlik: TKimlik;
+  DosyaAdi: string;
 begin
 
 {  if(CalisanGorevSayisi = 1) then
@@ -318,17 +321,37 @@ begin
           end;
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
-          Gorev^.Calistir('disket1:\tarayici.c');
+          //Gorev^.Calistir('disket1:\tarayici.c');
           //Gorev^.Calistir('disket1:\bharita.c');
           //Gorev^.Calistir('disket1:\mustudk.c');
           //Gorev^.Calistir('disk1:\sisbilgi.c');
           //Gorev^.Calistir('disket1:\yzmcgor2.c');
+          Gorev^.Calistir('disket1:\tarayici.c');
           //vbox.Listele;
 
           //TestAdres := Isaretci($10000);
           //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek U3: %d', [TSayi4(TestAdres)]);
 
           //TestSinif := TTestSinif.Create;
+
+
+          {DosyaAdi := 'disk1:\harfler.txt';
+          dosya.AssignFile(DosyaKimlik, DosyaAdi);
+          dosya.Reset(DosyaKimlik);
+
+          DosyaUzunluk := dosya.FileSize(DosyaKimlik);
+
+          //if(DosyaUzunluk <= DOSYA_BELLEK_KAPASITESI) then
+          begin
+
+            //_IOResult;
+
+            //_EOF(DosyaKimlik);
+
+            dosya.Read(DosyaKimlik, Isaretci($3000000));
+          end;
+
+          dosya.CloseFile(DosyaKimlik); }
         end
         // test iþlev tuþu-1
         else if(Tus = '4') then
@@ -352,7 +375,7 @@ begin
           //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
           //vbox.IcerigiGoruntule;
           //TestSinif.Artir;
-          Gorev^.Calistir('disket1:\yzmcgor2.c');
+          Gorev^.Calistir('disk1:\arpbilgi.c');
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then

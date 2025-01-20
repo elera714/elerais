@@ -4,7 +4,7 @@ unit anasayfafrm;
 interface
 
 uses n_gorev, gn_pencere, n_zamanlayici, _forms, gn_panel, gn_dugme, gn_giriskutusu,
-  gn_durumcubugu, n_iletisim, gn_defter, gn_etiket;
+  gn_durumcubugu, n_iletisim, gn_defter, gn_etiket, n_dns;
 
 type
   TfrmAnaSayfa = object(TForm)
@@ -15,10 +15,11 @@ type
     FDefter: TDefter;
     FDurumCubugu: TDurumCubugu;
     FetAdres: TEtiket;
-    FgkIPAdresi: TGirisKutusu;
+    FgkBaglantiAdresi: TGirisKutusu;
     FZamanlayici: TZamanlayici;
     FdugYukle: TDugme;
     FIletisim0: TIletisim;
+    DNS: TDNS;
   public
     procedure Olustur;
     procedure Goster;
@@ -34,7 +35,8 @@ const
   PencereAdi: string = 'Ýnternet Tarayýcýsý';
 
 var
-  IPAdresi, SonDurum, s: string;
+  BaglantiAdresi, IPAdresi,
+  SonDurum, s: string;
   VeriUzunlugu: TSayi4;
   SayfaIstendi: Boolean;
   Veriler: array[0..4095] of TSayi1;
@@ -42,7 +44,7 @@ var
 procedure TfrmAnaSayfa.Olustur;
 begin
 
-  IPAdresi := '192.168.1.1';
+  BaglantiAdresi := 'www.google.com';
   SonDurum := 'Baðlantý yok!';
 
   FPencere.Olustur(-1, 50, 50, 600, 480, ptBoyutlanabilir, PencereAdi, $FAF1E3);
@@ -55,8 +57,8 @@ begin
   FetAdres.Olustur(FUstMesajPaneli.Kimlik, 4, 12, RENK_SIYAH, 'Adres');
   FetAdres.Goster;
 
-  FgkIPAdresi.Olustur(FUstMesajPaneli.Kimlik, 50, 9, 456, 22, IPAdresi);
-  FgkIPAdresi.Goster;
+  FgkBaglantiAdresi.Olustur(FUstMesajPaneli.Kimlik, 50, 9, 456, 22, BaglantiAdresi);
+  FgkBaglantiAdresi.Goster;
 
   FdugYukle.Olustur(FUstMesajPaneli.Kimlik, 520, 7, 55, 22, 'Yükle');
   FdugYukle.Goster;
@@ -138,17 +140,43 @@ begin
     if(AOlay.Kimlik = FdugYukle.Kimlik) then
     begin
 
-      IPAdresi := FgkIPAdresi.IcerikAl;
+      BaglantiAdresi := FgkBaglantiAdresi.IcerikAl;
 
-      if(Length(IPAdresi) > 0) then
+      if(Length(BaglantiAdresi) > 0) then
       begin
 
-        SayfaIstendi := False;
+        DNS.Olustur;
 
-        FDefter.Temizle;
+        if not(DNS.Kimlik = -1) then
+        begin
 
-        FIletisim0.Olustur(ptTCP, IPAdresi, 80);
-        FIletisim0.Baglan;
+          if(DNS.Sorgula(BaglantiAdresi)) then
+          begin
+
+            DNS.IcerikAl;
+
+            // tek bir sorgudan farklý veya yanýtýn olmamasý durumunda çýkýþ yap
+            if(DNS.QDCount <> 1) or (DNS.ANCount = 0) or (DNS.RecType <> 1) or (DNS.RecClass <> 1)  then
+            begin
+
+              //FSonuc.YaziEkle('Hata: adres çözümlenemiyor!');
+              //FDurumCubugu.DurumYazisiDegistir('Beklemede.');
+              DNS.YokEt;
+              Exit;
+            end;
+
+            IPAdresi := IP_KarakterKatari(DNS.RData);
+
+            DNS.YokEt;
+
+            SayfaIstendi := False;
+
+            FDefter.Temizle;
+
+            FIletisim0.Olustur(ptTCP, IPAdresi, 80);
+            FIletisim0.Baglan;
+          end;
+        end;
       end;
     end;
   end;

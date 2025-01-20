@@ -71,7 +71,7 @@ function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
 var
   MD: PMantiksalDepolama;
   AramaKimlik: TKimlik;
-  DosyaSistemTipi: TSayi4;
+  DST: TSayi4;
   AranacakDeger: string;
   KalinanSira, UTamAramaYolu,
   AramaSonuc: TISayi4;
@@ -131,12 +131,12 @@ begin
     GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
 
     // dosya sistem tipine göre iþlevi yönlendir
-    DosyaSistemTipi := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DosyaSistemTipi;
-    case DosyaSistemTipi of
-      DATTIP_FAT12    : Result := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
-      DATTIP_FAT16    : Result := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
-      DATTIP_FAT32,
-      DATTIP_FAT32LBA : Result := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+    DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
+    case DST of
+      DST_FAT12     : Result := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DST_FAT16     : Result := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DST_FAT32,
+      DST_FAT32LBA  : Result := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
       else Result := 1;
     end;
   end
@@ -154,12 +154,12 @@ begin
     GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
 
     // dosya sistem tipine göre iþlevi yönlendir
-    DosyaSistemTipi := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DosyaSistemTipi;
-    case DosyaSistemTipi of
-      DATTIP_FAT12    : AramaSonuc := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
-      DATTIP_FAT16    : AramaSonuc := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
-      DATTIP_FAT32,
-      DATTIP_FAT32LBA : AramaSonuc := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+    DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
+    case DST of
+      DST_FAT12     : AramaSonuc := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DST_FAT16     : AramaSonuc := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DST_FAT32,
+      DST_FAT32LBA  : AramaSonuc := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
       else AramaSonuc := 1;
     end;
     // <- yukarýdaki yapý ile ayný
@@ -190,12 +190,12 @@ begin
       GAramaKayitListesi[AramaKimlik].Aranan := '*.*';
 
       // dosya sistem tipine göre iþlevi yönlendir
-      DosyaSistemTipi := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DosyaSistemTipi;
-      case DosyaSistemTipi of
-        DATTIP_FAT12    : AramaSonuc := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
-        DATTIP_FAT16    : AramaSonuc := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
-        DATTIP_FAT32,
-        DATTIP_FAT32LBA : AramaSonuc := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
+      case DST of
+        DST_FAT12     : AramaSonuc := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+        DST_FAT16     : AramaSonuc := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+        DST_FAT32,
+        DST_FAT32LBA  : AramaSonuc := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
         else AramaSonuc := 1;
       end;
       // <- yukarýdaki yapý ile ayný
@@ -210,17 +210,17 @@ end;
  ==============================================================================}
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 var
-  DosyaSistemTipi: TSayi4;
+  DST: TSayi4;
 begin
 
-  DosyaSistemTipi := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalDepolama^.MD3.DosyaSistemTipi;
-  if(DosyaSistemTipi = DATTIP_FAT12) then
+  DST := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalDepolama^.MD3.DST;
+  if(DST = DST_FAT12) then
 
     Result := fat12.FindNext(ADosyaArama)
-  else if(DosyaSistemTipi = DATTIP_FAT16) then
+  else if(DST = DST_FAT16) then
 
     Result := fat16.FindNext(ADosyaArama)
-  else if(DosyaSistemTipi = DATTIP_FAT32) or (DosyaSistemTipi = DATTIP_FAT32LBA) then
+  else if(DST = DST_FAT32) or (DST = DST_FAT32LBA) then
 
     Result := fat32.FindNext(ADosyaArama);
 end;
@@ -366,7 +366,7 @@ end;
 function Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci): TISayi4;
 var
   DosyaKayit: PDosyaKayit;
-  DosyaSistemTipi: TSayi4;
+  DST: TSayi4;
 begin
 
   Result := 0;
@@ -377,15 +377,15 @@ begin
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
-  DosyaSistemTipi := DosyaKayit^.MantiksalDepolama^.MD3.DosyaSistemTipi;
-  if(DosyaSistemTipi = DATTIP_FAT12) then
+  DST := DosyaKayit^.MantiksalDepolama^.MD3.DST;
+  if(DST = DST_FAT12) then
 
     fat12.Read(ADosyaKimlik, AHedefBellek)
 
-  else if(DosyaSistemTipi = DATTIP_FAT16) then
+  else if(DST = DST_FAT16) then
 
     fat16.Read(ADosyaKimlik, AHedefBellek)
-  else if(DosyaSistemTipi = DATTIP_FAT32) or (DosyaSistemTipi = DATTIP_FAT32LBA) then
+  else if(DST = DST_FAT32) or (DST = DST_FAT32LBA) then
 
     fat32.Read(ADosyaKimlik, AHedefBellek);
 

@@ -3,7 +3,7 @@ unit anasayfafrm;
 
 interface
 
-uses gn_pencere, n_zamanlayici, _forms, gn_etiket, gn_giriskutusu, gn_dugme, gn_defter,
+uses gn_pencere, _forms, gn_etiket, gn_giriskutusu, gn_dugme, gn_defter,
   n_dns, gn_durumcubugu, n_gorev;
 
 type
@@ -16,7 +16,6 @@ type
     FSorgula: TDugme;
     FSonuc: TDefter;
     FDurumCubugu: TDurumCubugu;
-    FZamanlayici: TZamanlayici;
     procedure Sorgula;
   public
     procedure Olustur;
@@ -34,25 +33,12 @@ const
 
 var
   DNS: TDNS;
-  DNSAdresSorgu, DNSAdresYanit: string;
-  DNSDurum: TDNSDurum;
-  DNSKimlik: TKimlik;
-  DNSPaket: PDNSPaket;
-  Veriler: array[0..1023] of TSayi1;
-  SorguSayisi, YanitSayisi: TSayi2;
-  DNSBolum: TSayi4;
-  Veri1: PByte;
-  Veri1U, i: TSayi1;
-  Veri2: PSayi2;
-  Veri4: PSayi4;
-  IPAdres: TIPAdres;
+  DNSAdresSorgu: string;
 
 procedure TfrmAnaSayfa.Olustur;
 begin
 
   DNSAdresSorgu := 'lazarus-ide.org';
-
-  DNSKimlik := -1;
 
   FPencere.Olustur(-1, 100, 100, 358, 250, ptIletisim, PencereAdi, RENK_BEYAZ);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
@@ -77,115 +63,12 @@ procedure TfrmAnaSayfa.Goster;
 begin
 
   FPencere.Gorunum := True;
-
-  FZamanlayici.Olustur(100);
-  FZamanlayici.Baslat;
 end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
-  if(AOlay.Olay = CO_ZAMANLAYICI) then
-  begin
-
-    if not(DNS.Kimlik = -1) then
-    begin
-
-      DNSDurum := DNS.DurumAl;
-      if(DNSDurum = ddSorgulandi) then
-      begin
-
-        DNS.IcerikAl(@Veriler[0]);
-
-        // ilk 4 byte dns yanýt verisinin uzunluðunu içerir
-        DNSPaket := PDNSPaket(@Veriler[4]);
-
-        // sorgu sayýsý ve yanýt sayýsý kontrolü
-        SorguSayisi := Takas2(DNSPaket^.SorguSayisi);
-        YanitSayisi := Takas2(DNSPaket^.YanitSayisi);
-        //SISTEM_MESAJ_S16('SorguSayisi: ', TSayi4(SorguSayisi), 4);
-        //SISTEM_MESAJ_S16('YanitSayisi: ', TSayi4(YanitSayisi), 4);
-
-        // tek bir sorgudan farklý veya yanýtýn olmamasý durumunda çýkýþ yap
-        if(SorguSayisi <> 1) or (YanitSayisi = 0) then
-        begin
-
-          DNS.Kapat;
-
-          FSonuc.YaziEkle('Hata: adres çözümlenemiyor!');
-
-          FDurumCubugu.DurumYazisiDegistir('Beklemede.');
-
-          Exit;
-        end;
-
-        // örnek dns adres verisi: [6]google[3]com[0]
-        // bilgi: [] arasýndaki veri sayýsal byte türünde veridir.
-
-        // dns sorgu adresinin alýnmasý
-        DNSBolum := 0;        // dns adresindeki her bir bölüm
-        DNSAdresYanit := '';
-
-        Veri1 := @DNSPaket^.Veriler;
-        while Veri1^ <> 0 do
-        begin
-
-          if(DNSBolum > 0) then DNSAdresYanit := DNSAdresYanit + '.';
-
-          Veri1U := Veri1^;     // kaydýn uzunluðu
-          Inc(Veri1);
-          i := 0;
-          while i < Veri1U do
-          begin
-
-            DNSAdresYanit := DNSAdresYanit + Char(Veri1^);
-            Inc(Veri1);
-            Inc(i);
-            Inc(DNSBolum);
-          end;
-        end;
-        Inc(Veri1);
-
-        FSonuc.YaziEkle('Yanýt Bilgileri:' + #13#10);
-        FSonuc.YaziEkle('DNS Adý: ' + DNSAdresYanit + #13#10);
-
-        Veri2 := PSayi2(Veri1);
-        Inc(Veri2);
-        Inc(Veri2);
-        Inc(Veri2);
-
-        FSonuc.YaziEkle('Tip: ' + IntToStr(Takas2(Veri2^)) + #13#10);
-        Inc(Veri2);
-        FSonuc.YaziEkle('Sýnýf: ' + IntToStr(Takas2(Veri2^)) + #13#10);
-        Inc(Veri2);
-
-        Veri4 := PSayi4(Veri2);
-        FSonuc.YaziEkle('Yaþam Ömrü: ' + IntToStr(Takas4(Veri4^)) + #13#10);
-        Inc(Veri4);
-
-        Veri2 := PSayi2(Veri4);
-        //SISTEM_MESAJ_S16('Veri Uzunluðu: ', Takas2(Veri2^), 4);
-        Inc(Veri2);
-
-        Veri1 := PSayi1(Veri2);
-
-        IPAdres[0] := Veri1^;
-        Inc(Veri1);
-        IPAdres[1] := Veri1^;
-        Inc(Veri1);
-        IPAdres[2] := Veri1^;
-        Inc(Veri1);
-        IPAdres[3] := Veri1^;
-
-        FSonuc.YaziEkle('IP Adresi: ' + IP_KarakterKatari(IPAdres));
-
-        FDurumCubugu.DurumYazisiDegistir('Beklemede.');
-
-        DNS.Kapat;
-      end;
-    end;
-  end
-  else if(AOlay.Olay = CO_TUSBASILDI) then
+  if(AOlay.Olay = CO_TUSBASILDI) then
   begin
 
     if(AOlay.Deger1 = 10) then Sorgula;
@@ -195,9 +78,6 @@ begin
 
     if(AOlay.Kimlik = FSorgula.Kimlik) then Sorgula;
   end;
-
-  // program kapanýrken bu iþlev çalýþtýrýlacak. (daha zaman var, þu an deðil :D)
-  //DNS.YokEt;
 
   Result := 1;
 end;
@@ -210,27 +90,66 @@ begin
   FSonuc.Temizle;
   FgkDNSAdi.IcerikYaz('');
 
-  if(DNSKimlik = -1) then DNS.Olustur;
-
-  DNSKimlik := DNS.Kimlik;
-
-  if not(DNSKimlik = -1) then
+  if(Length(DNSAdresSorgu) = 0) then
   begin
 
-    if(Length(DNSAdresSorgu) = 0) then
-    begin
+    FSonuc.Temizle;
+    FSonuc.YaziEkle('Hata: DNS adres alaný boþ...');
+    Exit;
+  end
+  else
+  begin
 
-      FSonuc.Temizle;
-      FSonuc.YaziEkle('Hata: DNS adres alaný boþ...')
-    end
-    else
+    DNS.Olustur;
+
+    if not(DNS.Kimlik = -1) then
     begin
 
       FSonuc.Temizle;
       FSonuc.YaziEkle('Sorgulanan Adres: ' + DNSAdresSorgu + #13#10#13#10);
 
       FDurumCubugu.DurumYazisiDegistir('Adres sorgulanýyor...');
-      DNS.Sorgula(DNSAdresSorgu);
+
+      if(DNS.Sorgula(DNSAdresSorgu)) then
+      begin
+
+        DNS.IcerikAl;
+
+        // tek bir sorgudan farklý veya yanýtýn olmamasý durumunda çýkýþ yap
+        if(DNS.QDCount <> 1) or (DNS.ANCount = 0) then
+        begin
+
+          FSonuc.YaziEkle('Hata: adres çözümlenemiyor!');
+          FDurumCubugu.DurumYazisiDegistir('Beklemede.');
+          DNS.YokEt;
+          Exit;
+        end;
+
+        FSonuc.YaziEkle('Yanýt Bilgileri:' + #13#10);
+        FSonuc.YaziEkle('DNS Adý: ' + DNS.Name + #13#10);
+
+        FSonuc.YaziEkle('Tip: ' + IntToStr(DNS.RecType) + #13#10);
+        FSonuc.YaziEkle('Sýnýf: ' + IntToStr(DNS.RecClass) + #13#10);
+        FSonuc.YaziEkle('Yaþam Ömrü: ' + IntToStr(DNS.TTL) + #13#10);
+        FSonuc.YaziEkle('IP Adresi: ' + IP_KarakterKatari(DNS.RData));
+
+        FDurumCubugu.DurumYazisiDegistir('Beklemede.');
+        DNS.YokEt;
+      end
+      else
+      begin
+
+        FSonuc.YaziEkle('Hata: adres çözümlenemiyor!');
+        FDurumCubugu.DurumYazisiDegistir('Beklemede.');
+        DNS.YokEt;
+      end;
+    end
+    else
+    begin
+
+      FSonuc.YaziEkle('Hata: DNS için sorgulama yapýlamýyor!');
+      FDurumCubugu.DurumYazisiDegistir('Beklemede.');
+      DNS.YokEt;
     end;
   end;
 end;

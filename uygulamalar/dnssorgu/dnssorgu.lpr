@@ -6,7 +6,7 @@
   Program Adý: dnssorgu.lpr
   Program Ýþlevi: dns adres sorgulama programý
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 20/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,7 +16,7 @@ uses anasayfafrm, _forms;
 
 begin
 
-  Application.Title := 'Dijital Saat';
+  Application.Title := 'DNS Sorgu';
   Application.Initialize;
 
   Application.CreateForm(frmAnaSayfa, @frmAnaSayfa.Olustur, @frmAnaSayfa.Goster,

@@ -1,6 +1,9 @@
 *******************************************************************************
   Sürüm: 0.3.8 - 10.01.2025 (R34) - Beta
 *******************************************************************************
+  + tcp/ip protokolünün tcp katmanýndaki problem çözümlendi
+  + tarayici.c programýnýn http veri içeriði alýmýndaki problem giderildi
+
   + iletisim.c uygulamasý nesnelerin yeni özelliklerine göre yenilendi
   + TListeGorunum ve TDegerListesi nesnelerine renkli eleman ekleme desteði eklendi
   + netbios temel api iþlevi tamamlandý (çalýþmalar devam etmekte)

@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 16/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,7 +22,7 @@ const
   ARPISLEM_YANIT = TSayi2($0002);
 
 const
-  USTLIMIT_KAYITSAYISI    = 10;
+  USTLIMIT_KAYITSAYISI    = 32;
   ARPDONANIMTIP_ETHERNET  = TSayi2($0001);        // network byte sýralý
   ARPPROTOKOLTIP_IPV4     = TSayi2($0800);        // network byte sýralý
 
@@ -53,7 +53,6 @@ uses genel, ag, islevler, zamanlayici, sistemmesaj, donusum;
 
 var
   ARPKayitSayisi: TISayi4;
-  ARPKayitBellekAdresi: Isaretci;
   GARPKayitListesi: array[0..USTLIMIT_KAYITSAYISI - 1] of PARPKayit;
 
 {==============================================================================
@@ -272,7 +271,7 @@ end;
  ==============================================================================}
 function MACAdresiAl(AIPAdres: TIPAdres): TMACAdres;
 var
-  i: TISayi4;
+  i, j: TISayi4;
 begin
 
   // arp tabolsunda ip karþýlýðý olan mac adresleri var ise kontrol et
@@ -289,22 +288,28 @@ begin
     end;
   end;
 
-  // ip adresinin mac adresi tabloda bulunamadýðý için istek gönder
-  ARPIstegiGonder(arpIstek, @MACAdres0, @AIPAdres);
-
-  BekleMS(200);
-
-  // yeniden tabloyu kontrol et
-  if(ARPKayitSayisi > 0) then
+  // istenen ip adresinin amc adresini sorgula
+  for i := 1 to 10 do
   begin
 
-    for i := 0 to USTLIMIT_KAYITSAYISI - 1 do
+    // ip adresinin mac adresi tabloda bulunamadýðý için istek gönder
+    ARPIstegiGonder(arpIstek, @MACAdres0, @AIPAdres);
+
+    // 0.5 saniye bekle
+    BekleMS(50);
+
+    // yeniden tabloyu kontrol et
+    if(ARPKayitSayisi > 0) then
     begin
 
-      // ARP girdisi mevcut ise ( > -1)
-      if(GARPKayitListesi[i]^.YasamSuresi > -1) then
-        if(IPAdresleriniKarsilastir(GARPKayitListesi[i]^.IPAdres, AIPAdres)) then
-          Exit(GARPKayitListesi[i]^.MACAdres);
+      for j := 0 to USTLIMIT_KAYITSAYISI - 1 do
+      begin
+
+        // ARP girdisi mevcut ise ( > -1)
+        if(GARPKayitListesi[j]^.YasamSuresi > -1) then
+          if(IPAdresleriniKarsilastir(GARPKayitListesi[j]^.IPAdres, AIPAdres)) then
+            Exit(GARPKayitListesi[j]^.MACAdres);
+      end;
     end;
   end;
 

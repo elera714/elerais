@@ -103,7 +103,7 @@ begin
                   {$ENDIF}
                   MD^.MD3.BolumIlkSektor := AcilisKayit1x^.BolumOncesiSektorSayisi;
                   MD^.MD3.BolumToplamSektor := AcilisKayit1x^.ToplamSektorSayisi1x;
-                  MD^.MD3.DosyaSistemTipi := DATTIP_FAT12;
+                  MD^.MD3.DST := DST_FAT12;
                   MD^.MD3.SurucuTipi := FizikselDepolamaAygitListesi[i].FD3.SurucuTipi;
 
                   // DizinGirisi dizin giriþleri
@@ -118,7 +118,7 @@ begin
                   DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
                   DosyaAyirmaTablosu^.IlkSektor := AcilisKayit1x^.AyrilmisSektor1;
                   DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit1x^.DATBasinaSektor;
-                  DosyaAyirmaTablosu^.KumeBasinaSektor := AcilisKayit1x^.ZincirBasinaSektor;
+                  DosyaAyirmaTablosu^.KumeBasinaSektor0 := AcilisKayit1x^.ZincirBasinaSektor;
                   DosyaAyirmaTablosu^.IlkVeriSektoru := (DizinGirisi^.IlkSektor +
                     DizinGirisi^.ToplamSektor);
 
@@ -145,10 +145,10 @@ begin
             for BolumSayisi := 1 to 4 do
             begin
 
-              if(DiskBolum^.BolumTipi = DATTIP_FAT12) or
-                (DiskBolum^.BolumTipi = DATTIP_FAT16) or
-                (DiskBolum^.BolumTipi = DATTIP_FAT32) or
-                (DiskBolum^.BolumTipi = DATTIP_FAT32LBA) then
+              if(DiskBolum^.BolumTipi = DST_FAT12) or
+                (DiskBolum^.BolumTipi = DST_FAT16) or
+                (DiskBolum^.BolumTipi = DST_FAT32) or
+                (DiskBolum^.BolumTipi = DST_FAT32LBA) then
               begin
 
                 BolumIlkSektor := DiskBolum^.LBAIlkSektor;
@@ -179,11 +179,11 @@ begin
                     {$ENDIF}
                     MD^.MD3.BolumIlkSektor := BolumIlkSektor;
                     MD^.MD3.BolumToplamSektor := BolumToplamSektor;
-                    MD^.MD3.DosyaSistemTipi := DiskBolum^.BolumTipi;
+                    MD^.MD3.DST := DiskBolum^.BolumTipi;
                     MD^.MD3.SurucuTipi := FizikselDepolamaAygitListesi[i].FD3.SurucuTipi;
 
-                    if(DiskBolum^.BolumTipi = DATTIP_FAT32) or
-                      (DiskBolum^.BolumTipi = DATTIP_FAT32LBA) then
+                    if(DiskBolum^.BolumTipi = DST_FAT32) or
+                      (DiskBolum^.BolumTipi = DST_FAT32LBA) then
                     begin
 
                       AcilisKayit32 := @Bellek2;
@@ -201,7 +201,7 @@ begin
                       DosyaAyirmaTablosu^.IlkSektor := AcilisKayit32^.BolumOncesiSektorSayisi +
                         AcilisKayit32^.AyrilmisSektor1;
                       DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit32^.DATBasinaSektor;
-                      DosyaAyirmaTablosu^.KumeBasinaSektor := AcilisKayit32^.ZincirBasinaSektor;
+                      DosyaAyirmaTablosu^.KumeBasinaSektor0 := AcilisKayit32^.ZincirBasinaSektor;
                       // fat32 dosya sistemi için geçerli deðil
                       DosyaAyirmaTablosu^.IlkVeriSektoru := DizinGirisi^.IlkSektor; //(DizinGirisi^.IlkSektor + DizinGirisi^.ToplamSektor);
                     end
@@ -222,7 +222,7 @@ begin
                       DosyaAyirmaTablosu^.IlkSektor := AcilisKayit1x^.BolumOncesiSektorSayisi +
                         AcilisKayit1x^.AyrilmisSektor1;
                       DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit1x^.DATBasinaSektor;
-                      DosyaAyirmaTablosu^.KumeBasinaSektor := AcilisKayit1x^.ZincirBasinaSektor;
+                      DosyaAyirmaTablosu^.KumeBasinaSektor0 := AcilisKayit1x^.ZincirBasinaSektor;
                       DosyaAyirmaTablosu^.IlkVeriSektoru := (DizinGirisi^.IlkSektor +
                         DizinGirisi^.ToplamSektor);
                     end;
@@ -240,7 +240,7 @@ begin
                     Inc(MantiksalDepolamaAygitSayisi);
                   end;
                 end;
-              end else if not(DiskBolum^.BolumTipi = DATTIP_BELIRSIZ) then
+              end else if not(DiskBolum^.BolumTipi = DST_BELIRSIZ) then
               begin
 
                 SISTEM_MESAJ_S16(RENK_KIRMIZI, '  ! Bilinmeyen DAT Tipi: ', DiskBolum^.BolumTipi, 2);

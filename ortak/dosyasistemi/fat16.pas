@@ -121,7 +121,7 @@ begin
     // aksi durumda zincir sayısınca sektör oku
     begin
 
-      OkunacakSektorSayisi := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
+      OkunacakSektorSayisi := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor0;
       OkunacakVeri -= (OkunacakSektorSayisi * 512);
     end;
 
@@ -129,7 +129,7 @@ begin
     begin
 
       // okunacak zincir numarası
-      i := (Zincir - 2) * MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
+      i := (Zincir - 2) * MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor0;
 
       // sektörü belleğe oku
       MD^.FD^.SektorOku(MD^.FD, i + MD^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru,

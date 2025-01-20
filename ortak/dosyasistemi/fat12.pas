@@ -97,14 +97,14 @@ begin
 
   Zincir := DosyaKayit^.IlkZincirSektor;
 
-  OkunacakSektorSayisi := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
+  OkunacakSektorSayisi := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor0;
 
   OkumaSonuc := 1;
 
   repeat
 
     // okunacak sektör zincir numarasý
-    i := (Zincir - 2) * MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
+    i := (Zincir - 2) * MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor0;
 
     // sektörü belleðe oku
     MD^.FD^.SektorOku(MD^.FD, i + MD^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru,

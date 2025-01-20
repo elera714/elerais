@@ -45,8 +45,10 @@ function DateToStr(Buffer: array of Word; GunAdiEkle: Boolean): string;
 function StrToHex(Val: string): LongWord;
 function UpperCase(s: string): string;
 procedure Tasi2(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4);
-function Takas2(ADeger: TSayi2): TSayi2;
-function Takas4(ADeger: TSayi4): TSayi4;
+function ntohs(ADeger: TSayi2): TSayi2;
+function ntohs(ADeger: TSayi4): TSayi4;
+function htons(ADeger: TSayi2): TSayi2;
+function htons(ADeger: TSayi4): TSayi4;
 function IP_KarakterKatari(AIPAdres: TIPAdres): string;
 function MAC_KarakterKatari(AMACAdres: TMACAdres): string;
 procedure StrPasEx(Src, Dest: Pointer);
@@ -312,21 +314,34 @@ asm
   popad
 end;
 
-// 2 bytelýk deðerin byte deðerlerini takas eder. örnek: $1234 - 3412
 // big endian -> little endian çevrimi
-function Takas2(ADeger: TSayi2): TSayi2;
+
+// network sýralý deðeri host sýralý deðere çevirir (örnek: $1234 -> $3412)
+function ntohs(ADeger: TSayi2): TSayi2;
 begin
 
-  Result := ((ADeger shl 8) and $FF00) or ((ADeger shr 8) and $00FF);
+  Result := SwapEndian(ADeger);
 end;
 
-// network sýralý dword deðeri host sýralý deðere dönüþtürür
-// örnek: $12345678 - 78563412
-function Takas4(ADeger: TSayi4): TSayi4;
+// network sýralý deðeri host sýralý deðere çevirir (örnek: $12345678 -> $56781234)
+function ntohs(ADeger: TSayi4): TSayi4;
 begin
 
-  Result := ((ADeger shl 24) and $FF000000) or ((ADeger shl 8) and $00FF0000) or
-    ((ADeger shr 8) and $0000FF00) or ((ADeger shr 24) and $000000FF);
+  Result := SwapEndian(ADeger);
+end;
+
+// host sýralý deðeri network sýralý deðere çevirir (örnek: $1234 -> $3412)
+function htons(ADeger: TSayi2): TSayi2;
+begin
+
+  Result := SwapEndian(ADeger);
+end;
+
+// host sýralý deðeri network sýralý deðere çevirir (örnek: $12345678 -> $56781234)
+function htons(ADeger: TSayi4): TSayi4;
+begin
+
+  Result := SwapEndian(ADeger);
 end;
 
 {==============================================================================

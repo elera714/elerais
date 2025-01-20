@@ -6,7 +6,7 @@
   Dosya Adı: k_iletisim.pas
   Dosya İşlevi: ağ bağlantı (socket) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/01/2025
+  Güncelleme Tarihi: 20/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -52,6 +52,7 @@ begin
       HedefPort := PSayi4(Degiskenler + 08)^;
 
       IPAdres := StrToIP(s);
+      //SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP Adresi: ', IPAdres);
 
       { TODO - udp yerel port ve uzak port eşitlenerek porta gelen verilerin alınması sağlanmakta.
         geçicidir, sunucu / istemci yapısı kurulduğunda bu yapının olması gerektiği gibi

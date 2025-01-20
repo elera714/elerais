@@ -103,7 +103,7 @@ begin
 
   Zincir := DosyaKayit^.IlkZincirSektor;
 
-  ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor;
+  ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor0;
 
   OkumaSonuc := False;
 

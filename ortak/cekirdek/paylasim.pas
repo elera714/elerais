@@ -359,15 +359,15 @@ type
   end;
 
 const
-  SURUCUTIP_DISKET  = Byte(1);
-  SURUCUTIP_DISK    = Byte(2);
+  SURUCUTIP_DISKET  = 1;
+  SURUCUTIP_DISK    = 2;
 
-const   // DATTIP = dosya ayýrma tablosu (FAT)
-  DATTIP_BELIRSIZ   = Byte($0);
-  DATTIP_FAT12      = Byte($1);
-  DATTIP_FAT16      = Byte($4);
-  DATTIP_FAT32      = Byte($B);
-  DATTIP_FAT32LBA   = Byte($C);
+const   // DST = dosya sistem tipi (FAT)
+  DST_BELIRSIZ      = $0;
+  DST_FAT12         = $1;
+  DST_FAT16         = $4;
+  DST_FAT32         = $B;
+  DST_FAT32LBA      = $C;
 
 type
   // 12 & 16 bitlik boot kayýt yapýsý
@@ -484,7 +484,7 @@ type
   TDosyaAyirmaTablosu = record         // dosya ayýrma tablosu (file allocation table)
     IlkSektor: TSayi2;
     ToplamSektor: TSayi2;
-    KumeBasinaSektor: TSayi1;
+    KumeBasinaSektor0: TSayi1;
     IlkVeriSektoru: TSayi4;
   end;
 
@@ -541,7 +541,7 @@ type
     Kimlik: TKimlik;
     SurucuTipi: TSayi4;     { TODO - bu deðer TMantiksalDepolama.FD içerisinde de mevcut, tasarýmsal olarak iptal edilmeli }
     AygitAdi: string[16];
-    DosyaSistemTipi: TSayi4;
+    DST: TSayi4;
     BolumIlkSektor: TSayi4;
     BolumToplamSektor: TSayi4
   end;
@@ -994,6 +994,7 @@ procedure Tasi2(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4);
 function Karsilastir(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4): TSayi4;
 function IPKarsilastir(IP1, IP2: TIPAdres): Boolean;
 function IPKarsilastir2(AGonderenIP, ABenimIP: TIPAdres): Boolean;
+function IPAdresiAyniAgdaMi(AGonderenIP: TIPAdres): Boolean;
 function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
   ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;
@@ -1069,8 +1070,8 @@ begin
   Result := True;
 end;
 
-// ip adresinin aða baðlý bilgisayar olup olmadýðýný test eder
-// örn: 192.168.1.1 -> 192.168.1.255
+// ip adresinin aða baðlý bilgisayarlara yayýn olarak gönderilip
+// gönderilmediðini test eder. örn: 192.168.1.1 -> 192.168.1.255
 function IPKarsilastir2(AGonderenIP, ABenimIP: TIPAdres): Boolean;
 var
   i: TISayi4;
@@ -1081,6 +1082,20 @@ begin
   for i := 0 to 2 do if(AGonderenIP[i] <> ABenimIP[i]) then Exit;
 
   if(AGonderenIP[3] <> 255) then Exit;
+
+  Result := True;
+end;
+
+// xxx.xxx.xxx.yyy - xxx deðerlerinin ayný olup olmadýðýný test eder
+// bilgi: 0 ve 255 deðerleri ayný aðda kabul edilmektedir
+function IPAdresiAyniAgdaMi(AGonderenIP: TIPAdres): Boolean;
+var
+  i: TISayi4;
+begin
+
+  Result := False;
+
+  for i := 0 to 2 do if(AGonderenIP[i] <> GAgBilgisi.IP4Adres[i]) then Exit;
 
   Result := True;
 end;

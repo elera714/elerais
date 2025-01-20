@@ -13,7 +13,7 @@
 {$asmmode intel}
 //{$DEFINE IDE_BILGI}
 unit src_ide;
- 
+
 interface
 
 uses paylasim, port;
@@ -344,6 +344,10 @@ var
   i: TSayi1;
 begin
 
+  SISTEM_MESAJ(RENK_SIYAH, 'AIlkSektor: %d', [AIlkSektor]);
+  //SISTEM_MESAJ(RENK_SIYAH, 'ASektorSayisi: %d', [ASektorSayisi]);
+  //SISTEM_MESAJ(RENK_SIYAH, 'ABellek: %d', [TSayi4(ABellek)]);
+
   if(ReadSector28GorevNo <> 0) then
   begin
 
@@ -362,6 +366,8 @@ begin
     ReadSector28GorevNo := 0;
     Exit(1);
   end;
+
+  //SISTEM_MESAJ(RENK_SIYAH, 'Tamam1', []);
 
 //  asm cli end;
 

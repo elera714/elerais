@@ -6,7 +6,7 @@
   Dosya Adı: iletisim.pas
   Dosya İşlevi: bağlantı (soket) iletişim yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/01/2025
+  Güncelleme Tarihi: 20/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -200,45 +200,51 @@ const
   // tcp bağlantısının ilk SYN, SYN + ACK paketi için gerekli ek veri değerleri
   TCPSYNSonEk: array[0..11] of TSayi1 = (
     $02, $04, $05, $B4, $01, $03, $03, $08, $01, $01, $04, $02);
+var
+  Bag: PBaglanti;
 begin
-
-  { TODO - arp protokolü aracılığıyla verinin gideceği ilgili ip adresinin mac
-    adresi alınarak aşağıda ilgili yere eklenecek }
 
   // bağlantı kimliği tanımlanan aralıkta ise...
   if(FKimlik >= 0) and (FKimlik < USTSINIR_AGILETISIM) then
   begin
 
-    if(FProtokolTipi = ptUDP) then
+    Bag := GAgIletisimListesi[FKimlik];
+
+    if(Bag^.FProtokolTipi = ptUDP) then
     begin
 
       if(ABaglantiTipi = btYayin) then
       begin
 
-        FHedefMACAdres := MACAdres255;
-        FBagli := True;
-        Exit(FKimlik);
+        Bag^.FHedefMACAdres := MACAdres255;
+        Bag^.FBagli := True;
+        Exit(Bag^.FKimlik);
       end
       else
       begin
 
-        FHedefMACAdres := MACAdresiAl(FHedefIPAdres);
-        FBagli := True;
-        Exit(FKimlik);
+        if(IPAdresiAyniAgdaMi(FHedefIPAdres)) then
+          Bag^.FHedefMACAdres := MACAdresiAl(FHedefIPAdres)
+        else Bag^.FHedefMACAdres := MACAdresiAl(GAgBilgisi.DNSSunucusu);
+
+        Bag^.FBagli := True;
+        Exit(Bag^.FKimlik);
       end;
     end
     else if(FProtokolTipi = ptTCP) then
     begin
 
-      if(FBaglantiDurum = bdKapali) then
+      if(Bag^.FBaglantiDurum = bdKapali) then
       begin
 
-        FHedefMACAdres := MACAdresiAl(FHedefIPAdres);
+        if(IPAdresiAyniAgdaMi(FHedefIPAdres)) then
+          Bag^.FHedefMACAdres := MACAdresiAl(FHedefIPAdres)
+        else Bag^.FHedefMACAdres := MACAdresiAl(GAgBilgisi.DNSSunucusu);
 
         // ilk paket olan SYN (ARZ) paketi gönderiliyor
-        TCPPaketGonder(@Self, GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);
-        FBaglantiDurum := bdBaglaniyor;
-        Exit(FKimlik);
+        TCPPaketGonder(Bag, GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);
+        Bag^.FBaglantiDurum := bdBaglaniyor;
+        Exit(Bag^.FKimlik);
       end;
     end;
   end;
@@ -440,7 +446,7 @@ begin
       if(FBaglantiDurum = bdBaglandi) then
       begin
 
-        FPencereU := $100;
+        // FPencereU := $100;
         TCPPaketGonder(@Self, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL or TCP_BAYRAK_GONDER,
           ABellek, AUzunluk);
       end;

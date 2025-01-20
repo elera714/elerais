@@ -6,7 +6,7 @@
   Dosya Adý: gn_defter.pas
   Dosya Ýþlevi: defter nesnesi (TMemo) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 28/12/2024
+  Güncelleme Tarihi: 16/01/2025
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     40K ve çekirdek bölümüne eklenen 40K bellek kullanmaktadýr.
@@ -124,7 +124,7 @@ begin
       end;
     end;
 
-    // defter nesnesinin içerisindeki verileri sil
+    // defter nesnesinin içerisindeki verileri temizle
     $030F:
     begin
 
@@ -417,6 +417,9 @@ procedure TDefter.Temizle;
 begin
 
   Self.FYaziUzunlugu := 0;
+
+  Self.FDikeyKCubugu^.FMevcutDeger := 0;
+  Self.FYatayKCubugu^.FMevcutDeger := 0;
 
   BellekDoldur(Self.FYaziBellekAdresi, 4096 * 10, 0);
 
