@@ -275,29 +275,37 @@ end;
  ==============================================================================}
 function StrToIP(AIPAdres: string): TIPAdres;
 var
-  s: string;
-  i, s2, Sonuc, SiraNo: TSayi4;
+  IPAdres, s: string;
+  NoktaSayisi, SiraNo,
+  Sonuc, i: TSayi1;
+  s2: TSayi2;
   Deger: Char;
 label
-  Cik;
+  Hata;
 begin
 
-  { TODO : nokta kontrolü ve diğer kontroller eklenecek }
-
-  s := '';
+  // ip adresinin sağ / sol taraflarındaki boşlukları yok et
+  IPAdres := Trim(AIPAdres);
+  NoktaSayisi := 0;
   SiraNo := 0;
+  s := '';
 
   // ip adresini çevir
-  for i := 1 to Length(AIPAdres) do
+  for i := 1 to Length(IPAdres) do
   begin
 
-    Deger := AIPAdres[i];
+    Deger := IPAdres[i];
     if(Deger = '.') then
     begin
 
-      if(i = 1) then Goto Cik;
+      Inc(NoktaSayisi);
+
+      // 2 nokta arasında rakam yoksa çık
+      if(Length(s) = 0) then Goto Hata;
 
       Val(s, s2, Sonuc);
+      if(s2 > 255) then Goto Hata;
+
       Result[SiraNo] := s2;
 
       s := '';
@@ -307,16 +315,20 @@ begin
     begin
 
       if(Deger in ['0'..'9']) then
-        s += AIPAdres[i]
-      else Goto Cik;
+        s += IPAdres[i]
+      else Goto Hata;
     end;
   end;
 
   Val(s, s2, Sonuc);
+  if(s2 > 255) then Goto Hata;
+
   Result[SiraNo] := s2;
+
+  if(NoktaSayisi <> 3) then Goto Hata;
   Exit;
 
-Cik:
+Hata:
   Result := IPAdres0;
 end;
 

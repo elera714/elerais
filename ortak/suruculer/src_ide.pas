@@ -344,7 +344,7 @@ var
   i: TSayi1;
 begin
 
-  SISTEM_MESAJ(RENK_SIYAH, 'AIlkSektor: %d', [AIlkSektor]);
+  //SISTEM_MESAJ(RENK_SIYAH, 'AIlkSektor: %d', [AIlkSektor]);
   //SISTEM_MESAJ(RENK_SIYAH, 'ASektorSayisi: %d', [ASektorSayisi]);
   //SISTEM_MESAJ(RENK_SIYAH, 'ABellek: %d', [TSayi4(ABellek)]);
 

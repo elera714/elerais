@@ -38,6 +38,7 @@ unit system;
 function get_cmdline:Pchar; 
 property cmdline:Pchar read get_cmdline;
 
+function Trim(const S: string): string;
 function IntToStr(ADeger: TISayi4): string;
 function HexToStr(Val: LongInt; WritePrefix: LongBool; DivNum: LongInt): string;
 function TimeToStr(Buffer: array of Byte): string;
@@ -49,6 +50,8 @@ function ntohs(ADeger: TSayi2): TSayi2;
 function ntohs(ADeger: TSayi4): TSayi4;
 function htons(ADeger: TSayi2): TSayi2;
 function htons(ADeger: TSayi4): TSayi4;
+function StrToIP(AIPAdres: string): TIPAdres;
+function IPAdresiGecerliMi(AIPAdresi: string): Boolean;
 function IP_KarakterKatari(AIPAdres: TIPAdres): string;
 function MAC_KarakterKatari(AMACAdres: TMACAdres): string;
 procedure StrPasEx(Src, Dest: Pointer);
@@ -75,6 +78,21 @@ const
   SayiSistemi16: PChar = ('0123456789ABCDEF');
 
 {$asmmode intel}
+
+{TODO - lazarus'tan buraya eklendi. lazarus birimi eklenince kaldýrýlacak }
+function Trim(const S: string): string;
+var
+  Ofs, Len: sizeint;
+begin
+  len := Length(S);
+  while (Len>0) and (S[Len]<=' ') do
+   dec(Len);
+  Ofs := 1;
+  while (Ofs<=Len) and (S[Ofs]<=' ') do
+    Inc(Ofs);
+  result := Copy(S, Ofs, 1 + Len - Ofs);
+end;
+
 procedure MoveEx(Src, Dest: Pointer; Size: LongInt); assembler;
 asm
 
@@ -375,6 +393,80 @@ begin
 end;
 
 {==============================================================================
+  karakter katar deðerini IP adres deðerine dönüþtürür
+ ==============================================================================}
+function StrToIP(AIPAdres: string): TIPAdres;
+var
+  IPAdres, s: string;
+  NoktaSayisi, SiraNo,
+  Sonuc, i: TSayi1;
+  s2: TSayi2;
+  Deger: Char;
+label
+  Hata;
+begin
+
+  // ip adresinin sað / sol taraflarýndaki boþluklarý yok et
+  IPAdres := Trim(AIPAdres);
+  NoktaSayisi := 0;
+  SiraNo := 0;
+  s := '';
+
+  // ip adresini çevir
+  for i := 1 to Length(IPAdres) do
+  begin
+
+    Deger := IPAdres[i];
+    if(Deger = '.') then
+    begin
+
+      Inc(NoktaSayisi);
+
+      // 2 nokta arasýnda rakam yoksa çýk
+      if(Length(s) = 0) then Goto Hata;
+
+      Val(s, s2, Sonuc);
+      if(s2 > 255) then Goto Hata;
+
+      Result[SiraNo] := s2;
+
+      s := '';
+      Inc(SiraNo);
+    end
+    else
+    begin
+
+      if(Deger in ['0'..'9']) then
+        s += IPAdres[i]
+      else Goto Hata;
+    end;
+  end;
+
+  Val(s, s2, Sonuc);
+  if(s2 > 255) then Goto Hata;
+
+  Result[SiraNo] := s2;
+
+  if(NoktaSayisi <> 3) then Goto Hata;
+  Exit;
+
+Hata:
+  Result := IPAdres0;
+end;
+
+{==============================================================================
+  IP adresinin geçerli bir ip adresi olup olmadýðýný kontrol eder
+ ==============================================================================}
+function IPAdresiGecerliMi(AIPAdresi: string): Boolean;
+var
+  IPAdres: TIPAdres;
+begin
+
+  IPAdres := StrToIP(AIPAdresi);
+  Result := not(IPKarsilastir(IPAdres, IPAdres0));
+end;
+
+{==============================================================================
   MAC adresini karakter katarýna dönüþtürür
  ==============================================================================}
 function MAC_KarakterKatari(AMACAdres: TMACAdres): string;
@@ -428,7 +520,7 @@ const calculated_cmdline:Pchar=nil;
 
 {$endif defined(CPUARM) or defined(CPUM68K) or (defined(CPUSPARC) and defined(VER2_6))}
 
-{$I system.inc}
+{$I ..\inc\system.inc}
 
 {$ifdef android}
 {$I sysandroid.inc}
@@ -703,7 +795,7 @@ end;
 // signal handler is arch dependant due to processorexception to language
 // exception translation
 
-{$i sighnd.inc}
+{$i i386\sighnd.inc}
 
 procedure InstallDefaultSignalHandler(signum: longint; out oldact: SigActionRec); public name '_FPC_INSTALLDEFAULTSIGHANDLER';
 var

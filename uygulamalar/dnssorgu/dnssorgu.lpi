@@ -35,7 +35,6 @@
       <Unit0>
         <Filename Value="dnssorgu.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -56,7 +55,10 @@
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
+        <TopLine Value="68"/>
+        <CursorPos Y="75"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit3>

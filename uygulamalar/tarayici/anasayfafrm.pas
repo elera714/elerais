@@ -24,6 +24,7 @@ type
     procedure Olustur;
     procedure Goster;
     function OlaylariIsle(AOlay: TOlay): TISayi4;
+    procedure SayfayiYukle;
   end;
 
 var
@@ -134,57 +135,72 @@ begin
 
     FDurumCubugu.DurumYazisiDegistir(SonDurum);
   end
-  else if(AOlay.Olay = FO_TIKLAMA) then
-  begin
+  else if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = FdugYukle.Kimlik) then
 
-    if(AOlay.Kimlik = FdugYukle.Kimlik) then
-    begin
+    SayfayiYukle
 
-      BaglantiAdresi := FgkBaglantiAdresi.IcerikAl;
+  else if(AOlay.Olay = CO_TUSBASILDI) and (AOlay.Deger1 = 10) then
 
-      if(Length(BaglantiAdresi) > 0) then
-      begin
-
-        DNS.Olustur;
-
-        if not(DNS.Kimlik = -1) then
-        begin
-
-          if(DNS.Sorgula(BaglantiAdresi)) then
-          begin
-
-            DNS.IcerikAl;
-
-            // tek bir sorgudan farklý veya yanýtýn olmamasý durumunda çýkýþ yap
-            if(DNS.QDCount <> 1) or (DNS.ANCount = 0) or (DNS.RecType <> 1) or (DNS.RecClass <> 1)  then
-            begin
-
-              //FSonuc.YaziEkle('Hata: adres çözümlenemiyor!');
-              //FDurumCubugu.DurumYazisiDegistir('Beklemede.');
-              DNS.YokEt;
-              Exit;
-            end;
-
-            IPAdresi := IP_KarakterKatari(DNS.RData);
-
-            DNS.YokEt;
-
-            SayfaIstendi := False;
-
-            FDefter.Temizle;
-
-            FIletisim0.Olustur(ptTCP, IPAdresi, 80);
-            FIletisim0.Baglan;
-          end;
-        end;
-      end;
-    end;
-  end;
-
-  { TODO - çýkýþta / iþi bittiðinde nesne bellekten atýlacak }
-  // Iletisim0.Destructor0;
+    SayfayiYukle;
 
   Result := 1;
 end;
+
+procedure TfrmAnaSayfa.SayfayiYukle;
+begin
+
+  BaglantiAdresi := FgkBaglantiAdresi.IcerikAl;
+
+  if(IPAdresiGecerliMi(BaglantiAdresi)) then
+
+    IPAdresi := BaglantiAdresi
+  else
+  begin
+
+    if(Length(BaglantiAdresi) > 0) then
+    begin
+
+      DNS.Olustur;
+
+      if not(DNS.Kimlik = -1) then
+      begin
+
+        if(DNS.Sorgula(BaglantiAdresi)) then
+        begin
+
+          DNS.IcerikAl;
+
+          // tek bir sorgudan farklý veya yanýtýn olmamasý durumunda çýkýþ yap
+          if(DNS.QDCount <> 1) or (DNS.ANCount = 0) or (DNS.RecType <> 1) or (DNS.RecClass <> 1)  then
+          begin
+
+            //FSonuc.YaziEkle('Hata: adres çözümlenemiyor!');
+            //FDurumCubugu.DurumYazisiDegistir('Beklemede.');
+            DNS.YokEt;
+            Exit;
+          end;
+
+          IPAdresi := IP_KarakterKatari(DNS.RData);
+
+          DNS.YokEt;
+        end;
+      end else IPAdresi := '0.0.0.0';
+    end else IPAdresi := '0.0.0.0';
+  end;
+
+  if(IPAdresi <> '0.0.0.0') then
+  begin
+
+    SayfaIstendi := False;
+
+    FDefter.Temizle;
+
+    FIletisim0.Olustur(ptTCP, IPAdresi, 80);
+    FIletisim0.Baglan;
+  end;
+end;
+
+{ TODO - çýkýþta / iþi bittiðinde nesne bellekten atýlacak }
+// FIletisim0.Destructor0;
 
 end.

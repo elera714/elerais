@@ -88,7 +88,7 @@ const
 
 type
 
-{$i stat.inc}
+{$i i386\stat.inc}
 
   TStat      = Stat;
   PStat      = ^Stat;

@@ -154,7 +154,7 @@ function do_isdevice(handle:thandle):boolean;forward;
   {$ifdef SYSPROCDEFINED}
     {$Error Can't determine processor type !}
   {$endif}
-  {$i i386.inc}  { Case dependent, don't change }
+  {$i ..\i386\i386.inc}  { Case dependent, don't change }
   {$define SYSPROCDEFINED}
 {$endif cpui386}
 
@@ -320,7 +320,7 @@ end;
 ****************************************************************************}
 
 { Include set support which is processor specific}
-{$i set.inc}
+{$i ..\i386\set.inc}
 { Include generic pascal routines for sets if the processor }
 { specific routines are not available.                      }
 {$i genset.inc}
@@ -390,7 +390,7 @@ end;
 {$i cgenmath.inc}
 {$endif FPC_USE_LIBC}
 { Include processor specific routines }
-{$I math.inc}
+{$I ..\i386\math.inc}
 { Include generic version }
 {$I genmath.inc}
 {$endif}
@@ -417,7 +417,7 @@ function aligntoptr(p : pointer) : pointer;inline;
 {$i sstrings.inc}
 
 { requires sstrings.inc for initval }
-{$I int64p.inc}
+{$I ..\i386\int64p.inc}
 {$I int64.inc}
 
 {Requires int64.inc, since that contains the VAL functions for int64 and qword}
@@ -1450,7 +1450,7 @@ end;
                        SetJmp/LongJmp support.
 *****************************************************************************}
 
-{$i setjump.inc}
+{$i ..\i386\setjump.inc}
 
 
 {$pop} //{$I-,R-,Q-} before 'procedure fpc_rangeerror'
@@ -1460,7 +1460,7 @@ end;
                                Heap
 *****************************************************************************}
 
-{$i sysheap.inc}
+{$i ..\unix\sysheap.inc}
 
 {$i heap.inc}
 
@@ -1595,7 +1595,7 @@ end;
 
 { OS dependent low level file functions }
 {$ifdef FPC_HAS_FEATURE_FILEIO}
-{$i sysfile.inc}
+{$i ..\unix\sysfile.inc}
 
 {$ifndef FPCRTL_FILESYSTEM_SINGLE_BYTE_API}
 {$ifdef FPC_ANSI_TEXTFILEREC}
@@ -1704,7 +1704,7 @@ function min(v1,v2 : SizeInt) : SizeInt;
 
 {$ifdef FPC_HAS_FEATURE_FILEIO}
 { OS dependent dir functions }
-{$i sysdir.inc}
+{$i ..\unix\sysdir.inc}
 
 
 {$ifdef FPC_HAS_FEATURE_ANSISTRINGS}

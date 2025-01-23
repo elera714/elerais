@@ -217,7 +217,7 @@ type
     end;
 
 { CPU dependent TSigContext }
-{$i sighndh.inc}
+{$i i386\sighndh.inc}
 
 type
   signalhandler_t = procedure(signal: longint); cdecl;

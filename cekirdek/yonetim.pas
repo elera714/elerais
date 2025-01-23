@@ -224,10 +224,10 @@ end;
   sistem ana kontrol kýsmý
  ==============================================================================}
 procedure SistemAnaKontrol;
-const
-  disketyaz: string = 'merhaba';
 var
   Gorev: PGorev = nil;
+  Tus2: TSayi2;
+  Kontrol: TSayi1;
   Tus: Char;
   TusDurum: TTusDurum;
   AtaGorselNesne: PGorselNesne = nil;
@@ -242,7 +242,6 @@ var
   BellekI: Isaretci;
   B1: TSayi1;
   Belk: array[0..511] of TSayi1;
-  IPAdres: TIPAdres = (192, 168, 1, 129);
   DosyaKimlik: TKimlik;
   DosyaAdi: string;
 begin
@@ -254,9 +253,12 @@ begin
     ElleGorevDegistir;
   until CalisanGorevSayisi > 1;
 }
-  KONTROLTusDurumu := tdYok;
-  ALTTusDurumu := tdYok;
-  DEGISIMTusDurumu := tdYok;
+  SolKontrolTusDurumu := tdYok;
+  SagKontrolTusDurumu := tdYok;
+  SolAltTusDurumu := tdYok;
+  SagAltTusDurumu := tdYok;
+  SolDegisimTusDurumu := tdYok;
+  SagDegisimTusDurumu := tdYok;
 
   // masaüstü aktif olana kadar bekle
   while GAktifMasaustu = nil do;
@@ -264,7 +266,7 @@ begin
   // sistem deðer görüntüleyicisini baþlat
   SistemDegerleriBasla;
 
-  TestAlani.Olustur;
+  //TestAlani.Olustur;
 
   if not(TestAlani.FCalisanBirim = nil) then TestAlani.FCalisanBirim;
 
@@ -278,11 +280,17 @@ begin
     Inc(SistemSayaci);
 
     // klavyeden basýlan tuþu al
-    TusDurum := KlavyedenTusAl(Tus);
+    // 2 bytelýk Tus deðerinin üst byte'ý kontrol deðeri, alt byte'ý ise karakter deðeridir
+    TusDurum := KlavyedenTusAl(Tus2);
+    Kontrol := (Tus2 shr 8);
+    Tus := Char(Tus2 and $FF);
     if(TusDurum = tdBasildi) and (Tus <> #0) then
     begin
 
-      if(KONTROLTusDurumu = tdBasildi) then
+      //SISTEM_MESAJ(RENK_KIRMIZI, 'Basýlan Tuþ Deðeri: %d', [Ord(Tus)]);
+      //SISTEM_MESAJ(RENK_KIRMIZI, 'Basýlan Tuþ: %c', [Tus]);
+
+      if(SolKontrolTusDurumu = tdBasildi) or (SagKontrolTusDurumu = tdBasildi) then
       begin
 
         // DHCP sunucusundan IP adresi al

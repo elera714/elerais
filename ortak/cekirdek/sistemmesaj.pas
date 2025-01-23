@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 04/01/2025
+  Güncelleme Tarihi: 22/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -48,7 +48,6 @@ type
 procedure SISTEM_MESAJ(ARenk: TRenk; AMesaj: string; ASayisalDegerler: array of const);
 
 procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj: PWideChar);
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj1, AMesaj2: string);
 procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj: PChar; AMesajUz: TISayi4);
 procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj1: PChar; AMesajUz1: TISayi4;
   AMesaj2: PChar; AMesajUz2: TISayi4);
@@ -67,8 +66,6 @@ const
 
 var
   MesajBellekAdresi: Isaretci;
-  { TODO - istemci yazılım eski mantık olan 1..USTSINIR_MESAJ aralığında çalışmaktadır
-    gerekli düzeltmeler ilgili yazılımda yapıldıktan sonra bu kodlar yeniden incelenecektir }
   MesajListesi: array[0..USTSINIR_MESAJ - 1] of PMesaj;
 
 {==============================================================================
@@ -105,7 +102,8 @@ end;
  ==============================================================================}
 procedure TSistemMesaj.Ekle(ARenk: TRenk; AMesaj: string);
 var
-  Saat, Dakika, Saniye: TSayi1;
+  Saat, Dakika,
+  Saniye: TSayi1;
   i, j: TISayi4;
 begin
 
@@ -191,8 +189,10 @@ end;
  ==============================================================================}
 procedure SISTEM_MESAJ(ARenk: TRenk; AMesaj: string; ASayisalDegerler: array of const);
 var
-  i, j, DegerSiraNo: Integer;
+  DegerSiraNo,
+  i, j: TSayi4;
   s, s2: string;
+  C: Char;
 begin
 
   DegerSiraNo := 0;
@@ -206,7 +206,17 @@ begin
     while (j <= i) do
     begin
 
-      if(AMesaj[j] = '%') and (AMesaj[j + 1] = 's') then
+      if(AMesaj[j] = '%') and (AMesaj[j + 1] = 'c') then
+      begin
+
+        // sayısal değeri karaktere çevir
+        C := TVarRec(ASayisalDegerler[DegerSiraNo]).VChar;
+        Inc(DegerSiraNo);
+        s += C;
+
+        Inc(j);
+      end
+      else if(AMesaj[j] = '%') and (AMesaj[j + 1] = 's') then
       begin
 
         // sayısal değeri karaktere çevir
@@ -256,36 +266,6 @@ begin
 
   // 16 bitlik UTF karakterini tek bytlık ascii değere çevir
   s := UTF16Ascii(AMesaj);
-
-  SISTEM_MESAJ(ARenk, s, []);
-end;
-
-{==============================================================================
-  sistem kayıtlarına mesaj ekle - 2 mesajı birleştirerek
- ==============================================================================}
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj1, AMesaj2: string);
-var
-  i, j: Integer;
-  s: string;
-begin
-
-  s := '';
-
-  // 1. karakter katarı
-  j := Length(AMesaj1);
-  if(j > 0) then
-  begin
-
-    for i := 1 to j do s := s + AMesaj1[i];
-  end;
-
-  // 2. karakter katarı
-  j := Length(AMesaj2);
-  if(j > 0) then
-  begin
-
-    for i := 1 to j do s := s + AMesaj2[i];
-  end;
 
   SISTEM_MESAJ(ARenk, s, []);
 end;

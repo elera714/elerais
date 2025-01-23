@@ -241,7 +241,7 @@ begin
 
     SISTEM_MESAJ(RENK_BORDO, 'NetBios yanýtý gönderilmedi!', []);
     SISTEM_MESAJ(RENK_MAVI, 'NetBios Bilgileri: ', []);
-    SISTEM_MESAJ_YAZI(RENK_MOR, '-> Sorgulanan Ad: ', NetBIOSAdi);
+    SISTEM_MESAJ(RENK_MOR, '-> Sorgulanan Ad: %s', [NetBIOSAdi]);
     SISTEM_MESAJ(RENK_MOR, '-> Ýstek Tipi: %d', [IstekTipi]);
     SISTEM_MESAJ(RENK_MOR, '-> Ýstek Sýnýfý: %d', [IstekSinifi]);
   end;

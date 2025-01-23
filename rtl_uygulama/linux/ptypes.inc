@@ -57,7 +57,7 @@ const
 {$endif CPU32}
 {$endif MIPS}
 
-{$I ctypes.inc}
+{$I ..\unix\ctypes.inc}
 {$packrecords c}
 
 Type

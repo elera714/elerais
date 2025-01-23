@@ -63,11 +63,11 @@ end;
   {$i oscdeclh.inc}
   {$i oscdecl.inc}
 {$else}
-  {$I syscallh.inc}
-  {$I syscall.inc}
-  {$I sysnr.inc}
+  {$I i386\syscallh.inc}
+  {$I i386\syscall.inc}
+  {$I i386\sysnr.inc}
   {$I ossysc.inc}
-  {$I syscgen.inc}
+  {$I ..\unix\syscgen.inc}
 {$endif}
 
 {$I osmacro.inc}
