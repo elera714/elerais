@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 28/12/2024
+  Güncelleme Tarihi: 25/01/2025
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -1762,16 +1762,16 @@ begin
 
     BaslatMenuResimAdresi := GSistemResimler.BellekAdresi + (AResimSiraNo * 24 * 24 * 4);
 
-    for Ust := 1 to 24 do
+    for Ust := 0 to 23 do
     begin
 
-      for Sol := 1 to 24 do
+      for Sol := 0 to 23 do
       begin
 
         // çizilecek resmin bitmap bölgesine konumlan
         Renk := BaslatMenuResimAdresi^;
 
-        PixelYaz(AGorselNesne, ASol + (Sol - 1), AUst + (Ust - 1), Renk);
+        PixelYaz(AGorselNesne, ASol + Sol, AUst + Ust, Renk);
 
         Inc(BaslatMenuResimAdresi);
       end;

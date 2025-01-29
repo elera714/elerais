@@ -144,6 +144,8 @@ begin
 	VBoxGuestYetenek.Yetenek := 4;
 	PortYaz4(VBPort, TSayi4(Isaretci(@VBoxGuestYetenek)));
 
+  //PSayi4(Isaretci(VBBellek) + 04)^ := $FFFFFFFF;
+  //PSayi4(Isaretci(VBBellek) + 08)^ := $FFFFFFFF;
   PSayi4(Isaretci(VBBellek) + 12)^ := $FFFFFFFF;
 
   SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);

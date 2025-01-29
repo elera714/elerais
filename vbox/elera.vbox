@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-01-23T17:18:26Z">
+  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-01-29T16:35:23Z">
     <Description>ELERA &#x130;&#x15F;letim Sistemi (32 Bit)</Description>
     <MediaRegistry>
       <HardDisks>
@@ -22,7 +22,7 @@
       <ExtraDataItem name="GUI/InformationWindowGeometry" value="507,249,598,332"/>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
       <ExtraDataItem name="GUI/LastGuestSizeHint" value="800,600"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="845,107,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="693,107,1024,808"/>
       <ExtraDataItem name="GUI/LastScaleWindowPosition" value="189,230,1096,595"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeDevicesMenuActions" value="HardDrives"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeMachineMenuActions" value="SaveState,PowerOff"/>
@@ -37,7 +37,6 @@
         <HardwareVirtExLargePages enabled="false"/>
       </CPU>
       <Memory RAMSize="64"/>
-      <Chipset type="ICH9"/>
       <Paravirt provider="Legacy"/>
       <Boot>
         <Order position="1" device="Floppy"/>
@@ -68,7 +67,7 @@
           </DisabledModes>
           <BridgedInterface name="Realtek PCIe GBE Ailesi Denetleyici"/>
         </Adapter>
-        <Adapter slot="1" MACAddress="0800278B3645">
+        <Adapter slot="1" enabled="true" MACAddress="0800278B3645" type="82540EM">
           <DisabledModes>
             <NAT localhost-reachable="true"/>
           </DisabledModes>
@@ -103,146 +102,6 @@
             <NAT localhost-reachable="true"/>
           </DisabledModes>
         </Adapter>
-        <Adapter slot="8" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="9" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="10" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="11" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="12" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="13" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="14" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="15" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="16" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="17" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="18" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="19" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="20" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="21" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="22" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="23" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="24" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="25" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="26" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="27" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="28" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="29" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="30" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="31" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="32" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="33" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="34" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="35" cable="false">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
       </Network>
       <UART>
         <Port slot="0" enabled="false" IOBase="0x3f8" IRQ="4" path="C:\Users\elera\Documents\bitbucket\elerais\comport1.txt" hostMode="RawFile"/>
@@ -253,7 +112,7 @@
       <AudioAdapter driver="DirectSound" enabled="true" enabledIn="true" enabledOut="true"/>
       <Clipboard mode="Bidirectional"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1737652443822404900" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1738168362244492700" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="Floppy Controller" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">

@@ -6,7 +6,7 @@
   Dosya Adý: gn_dugme.pas
   Dosya Ýþlevi: düðme (TButton) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2020
+  Güncelleme Tarihi: 27/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -252,7 +252,10 @@ begin
     Pencere := EnUstPencereNesnesiniAl(Dugme);
 
     // en üstte olmamasý durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> AktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak iþaretle
+    GAktifNesne := Dugme;
 
     // sol tuþa basým iþlemi nesnenin olay alanýnda mý gerçekleþti ?
     if(Dugme^.FareNesneOlayAlanindaMi(Dugme)) then

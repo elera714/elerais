@@ -18,7 +18,7 @@ interface
 uses paylasim, gn_pencere, gn_etiket, zamanlayici, dns, gn_panel, gorselnesne,
   gn_gucdugmesi, gn_resim, gn_karmaliste, gn_degerlistesi, gn_dugme, gn_izgara,
   gn_araccubugu, gn_durumcubugu, gn_giriskutusu, gn_onaykutusu, gn_sayfakontrol,
-  gn_defter, gn_kaydirmacubugu, islemci, pic, arp, dosya;
+  gn_defter, gn_kaydirmacubugu, islemci, pic, arp, dosya, src_pcnet32;
 
 type
   // gerçek moddan gelen veri yapýsý
@@ -183,7 +183,7 @@ begin
   GorevListesi[0]^.BellekUzunlugu := CekirdekUzunlugu;
   GorevListesi[0]^.OlaySayisi := 0;
   GorevListesi[0]^.OlayBellekAdresi := nil;
-  GorevListesi[0]^.FAktifPencere := nil;
+  GorevListesi[0]^.AktifPencere := nil;
 
   GorevListesi[0]^.FDosyaAdi := 'cekirdek.bin';
   GorevListesi[0]^.FProgramAdi := 'Sistem Çekirdeði';
@@ -268,7 +268,7 @@ begin
 
   //TestAlani.Olustur;
 
-  if not(TestAlani.FCalisanBirim = nil) then TestAlani.FCalisanBirim;
+  //if not(TestAlani.FCalisanBirim = nil) then TestAlani.FCalisanBirim;
 
   // sistem için DHCP sunucusundan IP adresi al
   if(AgYuklendi) and (GAgBilgisi.IPAdresiAlindi = False) then DHCPIpAdresiAl;
@@ -329,12 +329,11 @@ begin
           end;
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
-          //Gorev^.Calistir('disket1:\tarayici.c');
+          Gorev^.Calistir('disket1:\tarayici.c');
           //Gorev^.Calistir('disket1:\bharita.c');
           //Gorev^.Calistir('disket1:\mustudk.c');
           //Gorev^.Calistir('disk1:\sisbilgi.c');
           //Gorev^.Calistir('disket1:\yzmcgor2.c');
-          Gorev^.Calistir('disket1:\tarayici.c');
           //vbox.Listele;
 
           //TestAdres := Isaretci($10000);
@@ -381,9 +380,9 @@ begin
           //BellekI := GGercekBellek.Ayir(4095);
           //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
           //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
-          //vbox.IcerigiGoruntule;
+          vbox.IcerigiGoruntule;
           //TestSinif.Artir;
-          Gorev^.Calistir('disk1:\arpbilgi.c');
+          //Gorev^.Calistir('disk1:\arpbilgi.c');
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then
@@ -505,7 +504,7 @@ begin
   GorevListesi[1]^.BellekUzunlugu := $FFFFFFFF;
   GorevListesi[1]^.OlaySayisi := 0;
   GorevListesi[1]^.OlayBellekAdresi := nil;
-  GorevListesi[1]^.FAktifPencere := nil;
+  GorevListesi[1]^.AktifPencere := nil;
 
   // sistem görev adý (dosya adý)
   GorevListesi[1]^.FDosyaAdi := 'çaðrý.bin';
@@ -562,7 +561,7 @@ begin
   GorevListesi[2]^.BellekUzunlugu := $FFFFFFFF;
   GorevListesi[2]^.OlaySayisi := 0;
   GorevListesi[2]^.OlayBellekAdresi := nil;
-  GorevListesi[2]^.FAktifPencere := nil;
+  GorevListesi[2]^.AktifPencere := nil;
 
   // sistem görev adý (dosya adý)
   GorevListesi[2]^.FDosyaAdi := 'grafik.bin';

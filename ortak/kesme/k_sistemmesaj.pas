@@ -34,7 +34,7 @@ begin
   // ana işlev
   IslevNo := (AIslevNo and $FF);
 
-  // toplam ssitem mesaj sayısını al
+  // toplam sistem mesaj sayısını al
   if(IslevNo = 1) then
   begin
 
@@ -65,7 +65,7 @@ begin
       PSayi4(ADegiskenler + 08)^, PSayi4(ADegiskenler + 12)^);
   end
 
-  // toplam ssitem mesaj sayısını al
+  // toplam sistem mesaj sayısını al
   else if(IslevNo = 5) then
   begin
 

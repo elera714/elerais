@@ -6,7 +6,7 @@
   Dosya Adı: gn_islevler.pas
   Dosya İşlevi: görsel nesne (visual object) işlevlerini içerir
 
-  Güncelleme Tarihi: 09/08/2020
+  Güncelleme Tarihi: 27/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,8 +17,9 @@ interface
 uses gorselnesne, genel, paylasim, gn_masaustu, gn_pencere;
 
 var
-  AktifPencere: PPencere = nil;
-  YakalananGorselNesne: PGorselNesne;  // farenin, üzerine sol tuş ile basılıp seçildiği nesne
+  GAktifPencere: PPencere = nil;        // aktif olan pencere
+  GAktifNesne: PGorselNesne = nil;      // aktif pencerenin aktif nesnesi
+  YakalananGorselNesne: PGorselNesne;   // farenin, üzerine sol tuş ile basılıp seçildiği nesne
 
 procedure Yukle;
 function GorselNesneIslevCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -65,8 +66,9 @@ begin
   // görsel nesne değişkenlerini ilk değerlerle yükle
   ToplamMasaustu := 0;
   ToplamGNSayisi := 0;
-  AktifPencere := nil;
   GAktifMasaustu := nil;
+  GAktifPencere := nil;
+  GAktifNesne := nil;
   GAktifMenu := nil;
   YakalananGorselNesne := nil;
 end;

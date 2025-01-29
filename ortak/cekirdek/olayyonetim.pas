@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 04/01/2025
+  Güncelleme Tarihi: 27/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,7 +22,6 @@ type
     FSonYatayFareDegeri, FSonDikeyFareDegeri: TISayi4;
     FSonBasilanFareTusu: TSayi1;
     FOdaklanilanGorselNesne: PGorselNesne;     // farenin, üzerinde bulunduðu nesne
-    FAktifGorselNesne: PGorselNesne;           // farenin, üzerine sol tuþ ile basýlýp seçildiði nesne
   protected
     procedure OlaylariYonlendir(AGorselNesne: PGorselNesne; AOlay: TOlay);
   public
@@ -44,7 +43,6 @@ begin
 
   FOdaklanilanGorselNesne := nil;
   YakalananGorselNesne := nil;
-  FAktifGorselNesne := nil;
 
   FSonBasilanFareTusu := 0;
 end;
@@ -245,17 +243,17 @@ begin
   begin
 
     // aktif nesne belirli mi?
-    if(FAktifGorselNesne <> nil) then
+    if(GAktifNesne <> nil) then
     begin
 
       // aktif nesne giriþ kutusu nesnesi mi?
-      //if(FAktifGorselNesne^.GorselNesneTipi = gntGirisKutusu) then
+      //if(GAktifNesne^.GorselNesneTipi = gntGirisKutusu) then
       begin
 
         // odaklanan nesneye CO_TUSBASILDI mesajý gönder
         Olay.Deger1 := TISayi4(ATus);
         Olay.Olay := CO_TUSBASILDI;
-        OlaylariYonlendir(FAktifGorselNesne, Olay);
+        OlaylariYonlendir(GAktifNesne, Olay);
       end;
     end;
   end;
@@ -278,7 +276,7 @@ begin
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
-    FAktifGorselNesne := AGorselNesne;
+    GAktifNesne := AGorselNesne;
   end;
 
   if not(AGorselNesne^.OlayCagriAdresi = nil) then

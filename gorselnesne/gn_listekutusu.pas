@@ -6,7 +6,7 @@
   Dosya Adı: gn_listekutusu.pas
   Dosya İşlevi: liste kutusu (TListBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 27/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -389,7 +389,10 @@ begin
     Pencere := EnUstPencereNesnesiniAl(ListeKutusu);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> AktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak işaretle
+    GAktifNesne := ListeKutusu;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(ListeKutusu^.FareNesneOlayAlanindaMi(ListeKutusu)) then

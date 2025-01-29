@@ -6,7 +6,7 @@
   Dosya Adý: gn_listegorunum.pas
   Dosya Ýþlevi: liste görünüm (TListView) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 12/01/2025
+  Güncelleme Tarihi: 27/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -441,7 +441,10 @@ begin
     Pencere := EnUstPencereNesnesiniAl(ListeGorunum);
 
     // en üstte olmamasý durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> AktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak iþaretle
+    GAktifNesne := ListeGorunum;
 
     // sol tuþa basým iþlemi nesnenin olay alanýnda mý gerçekleþti ?
     if(ListeGorunum^.FareNesneOlayAlanindaMi(ListeGorunum)) then

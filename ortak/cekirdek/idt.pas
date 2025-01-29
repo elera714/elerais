@@ -6,7 +6,7 @@
   Dosya Adý: idt.pas
   Dosya Ýþlevi: kesme servis rutinlerini (isr) içerir
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 29/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -648,13 +648,26 @@ asm
   mov eax,CalisanGorev
   shl eax,2
   mov esi,GorevListesi[eax]
+
   mov eax,4                             // gdSonlandiriliyor
   mov [esi + TGorev.FGorevDurum],eax
+
   mov eax,$0D
   mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
 
-  add   esp,4
+  mov eax,[esp + 04]
+  mov [esi + TGorev.FHataEIP],eax
+
+  mov eax,[esp + 08]
+  mov [esi + TGorev.FHataCS],eax
+
+  mov eax,[esp + 12]
+  mov [esi + TGorev.FHataBayrak],eax
+
+  mov eax,[esp + 16]
+  mov [esi + TGorev.FHataESP],eax
+
+//  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
@@ -850,6 +863,7 @@ asm
   mov [esi + TGorev.FGorevDurum],eax
   mov eax,$13
   mov [esi + TGorev.FHataKodu],eax
+  mov eax,esp
   mov [esi + TGorev.FHataESP],esp
 
   add   esp,4

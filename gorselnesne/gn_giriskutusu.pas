@@ -6,7 +6,7 @@
   Dosya Adý: gn_giriskutusu.pas
   Dosya Ýþlevi: giriþ kutusu (TEdit) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 27/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -160,7 +160,7 @@ begin
   GirisKutusu^.FSadeceRakam := False;
 
   GirisKutusu^.FSilmeDugmesi := GirisKutusu^.FSilmeDugmesi^.Olustur(ktBilesen, GirisKutusu,
-    AGenislik - 13, 3, 10, 16, 'x');
+    AGenislik - 12, 2, 10, 16, 'X');
   GirisKutusu^.FSilmeDugmesi^.CizimModelDegistir(False, RENK_BEYAZ, RENK_BEYAZ, RENK_SIYAH, RENK_KIRMIZI);
   GirisKutusu^.FSilmeDugmesi^.OlayYonlendirmeAdresi := @SilmeDugmeOlaylariniIsle;
 
@@ -246,11 +246,18 @@ begin
   // giriþ kutusunun çizim alan koordinatlarýný al
   Alan := GirisKutusu^.FCizimAlan;
 
-  // nesnenin içerik deðeri. #255 = klavye kursörü
+  // nesnenin içerik deðeri.
   if(GirisKutusu^.FYazilamaz) then
 
     GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik, RENK_SIYAH)
-  else GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik + #255, RENK_SIYAH);
+  else
+  begin
+
+    // nesne aktif ise sonuna #255 = klavye kursörü ekle
+    if(GAktifNesne^.Kimlik = GirisKutusu^.Kimlik) then
+      GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik + #255, RENK_SIYAH)
+    else GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik, RENK_SIYAH)
+  end;
 
   GirisKutusu^.FSilmeDugmesi^.Ciz;
 end;
@@ -278,7 +285,10 @@ begin
     Pencere := EnUstPencereNesnesiniAl(GirisKutusu);
 
     // en üstte olmamasý durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> AktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak iþaretle
+    GAktifNesne := GirisKutusu;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
@@ -385,6 +395,9 @@ begin
 
     GirisKutusu^.Baslik := '';
     GirisKutusu^.Ciz;
+
+    // nesneyi aktif nesne olarak iþaretle
+    GAktifNesne := GirisKutusu;
   end
 end;
 

@@ -6,7 +6,7 @@
   Dosya Adı: k_iletisim.pas
   Dosya İşlevi: ağ bağlantı (socket) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/01/2025
+  Güncelleme Tarihi: 25/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -51,7 +51,7 @@ begin
       s := PKarakterKatari(PSayi4(Degiskenler + 04)^ + CalisanGorevBellekAdresi)^;
       HedefPort := PSayi4(Degiskenler + 08)^;
 
-      IPAdres := StrToIP(s);
+      //SISTEM_MESAJ(RENK_KIRMIZI, 'IP Adresi: %s', [s]);
       //SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP Adresi: ', IPAdres);
 
       { TODO - udp yerel port ve uzak port eşitlenerek porta gelen verilerin alınması sağlanmakta.
@@ -61,7 +61,7 @@ begin
         YerelPort := YerelPortAl
       else YerelPort := HedefPort;
 
-      Bag := Bag^.Olustur(ProtokolTipi, IPAdres, YerelPort, HedefPort);
+      Bag := Bag^.Olustur2(ProtokolTipi, s, YerelPort, HedefPort);
       if not(Bag = nil) then
 
         Result := Bag^.FKimlik

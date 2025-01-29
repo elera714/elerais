@@ -6,7 +6,7 @@
   Dosya Adý: gn_renksecici.pas
   Dosya Ýþlevi: renk seçim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 27/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -226,7 +226,10 @@ begin
     Pencere := EnUstPencereNesnesiniAl(RenkSecici);
 
     // en üstte olmamasý durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> AktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak iþaretle
+    GAktifNesne := RenkSecici;
 
     // fare olaylarýný yakala
     OlayYakalamayaBasla(RenkSecici);

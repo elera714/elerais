@@ -58,11 +58,11 @@ const
   PencereAdi: string = 'Masaüstü Yöneticisi';
 
   Programlar: array[0..BASLATMENUSU_PSAYISI - 1] of string = (
+    ('tarayici.c'),
     ('dsyyntcs.c'),
     ('resimgor.c'),
     ('dskgor.c'),
     ('defter.c'),
-    ('saat.c'),
     ('iskelet.c'),
     ('grvyntcs.c'),
     ('pcibil.c'),
@@ -71,11 +71,11 @@ const
     ('calistir.c'));
 
   ProgramAciklamalari: array[0..BASLATMENUSU_PSAYISI - 1] of string = (
+    ('Ýnternet Tarayýcýsý'),
     ('Dosya Yöneticisi'),
     ('Resim Görüntüleyici'),
     ('Disk Ýçerik Görüntüleyisi'),
     ('Dijital Defter'),
-    ('Dijital Saat'),
     ('Ana Ýskelet Programý'),
     ('Görev Yöneticisi'),
     ('PCI Aygýt Bilgisi'),
@@ -170,11 +170,11 @@ begin
   begin
 
     case i of
-      0: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 01);
-      1: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 10);
-      2: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 06);
-      3: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 07);
-      4: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 08);
+      0: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 13);
+      1: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 01);
+      2: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 10);
+      3: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 06);
+      4: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 07);
       5: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 14);
       6: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 09);
       7: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 05);

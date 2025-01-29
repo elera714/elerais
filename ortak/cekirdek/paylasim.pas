@@ -153,7 +153,7 @@ const
 
   BELLEK_HARITA_ADRESI: PByte = PByte($510000);
 
-  SISTEM_ESP        = $300000 + $10000;
+  SISTEM_ESP        = $300000 + $100;
   CAGRI_ESP         = SISTEM_ESP + $10000;
   GRAFIK_ESP        = CAGRI_ESP + $10000;
 
@@ -967,7 +967,6 @@ var
   IPAdres255: TIPAdres = (255, 255, 255, 255);
   MACAdres0: TMACAdres = (0, 0, 0, 0, 0, 0);
   MACAdres255: TMACAdres = (255, 255, 255, 255, 255, 255);
-  //GenelDNS_IPAdres1: TIPAdres = (208, 67, 220, 220);
 
 procedure BellekDoldur(ABellekAdresi: Isaretci; AUzunluk: TSayi4; ADeger: TSayi1);
 procedure Tasi2(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4);
@@ -1236,8 +1235,7 @@ end;
 // karakterleri büyütür ve belirten uzunluða kadar sað tarafa boþluk karakteri ekler
 function BuyutVeTamala(AGrupAdi: string; AUzunluk: TSayi4): string;
 var
-  i: TSayi4;
-  j: Integer;
+  i, j: TSayi4;
 begin
 
   Result := '';

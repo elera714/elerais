@@ -6,7 +6,7 @@
   Dosya Adý: dhcp.pas
   Dosya Ýþlevi: DHCP protokol istemci iþlevlerini yönetir
 
-  Güncelleme Tarihi: 10/12/2024
+  Güncelleme Tarihi: 25/12/2024
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -250,6 +250,7 @@ var
   p1: PByte;
   pc: PChar;
   DHCPKayitUzunlugu: LongWord;
+  IPAdresi: string;
 begin
 
   DHCPKayit := GGercekBellek.Ayir(4095);
@@ -405,7 +406,8 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPKayitUzunlugu += 1;
 
-  Baglanti := GBaglanti^.Olustur(ptUDP, IPAdres255, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  IPAdresi := IP_KarakterKatari(IPAdres255);
+  Baglanti := GBaglanti^.Olustur2(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(Baglanti = nil) then
   begin
 

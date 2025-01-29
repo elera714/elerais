@@ -22,7 +22,7 @@ type
     destructor Destroy; override;
   end;
 
-type
+{type
   PNesne = ^TNesne;
   TNesne = object
   private
@@ -32,10 +32,11 @@ type
     function Olustur: TNesne;
     constructor Create;
   end;
-
+}
 var
   Sinif: TSinif;
-  Nesne: TNesne;
+  Degisken: LongWord = $12345678;
+//  Nesne: TNesne;
 
 { ------------------------------- SINIF -------------------------------------- }
 
@@ -53,7 +54,7 @@ end;
 
 { ------------------------------- NESNE -------------------------------------- }
 
-function TNesne.Olustur: TNesne;
+{function TNesne.Olustur: TNesne;
 begin
 
   Result := Self;
@@ -64,14 +65,17 @@ begin
 
   i := $5678;
 end;
-
+}
 begin
 
 {  Nesne := Nesne.Olustur;
   Nesne.s := 'merhaba';
-  Nesne.i := $12345678; }
+  Nesne.i := $12345678;
 
-  Sinif := Sinif.Create;
+  Sinif := TSinif.Create;
   Sinif.ii := $12345678;
-  Sinif.Destroy;
+  Sinif.Destroy;}
+
+
+  Degisken := $1234;
 end.

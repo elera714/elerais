@@ -68,7 +68,7 @@ var
   HedefBellek: ^TRenk;
 begin
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'Dosya: ' + ADosyaTamYol, []);
+  //SISTEM_MESAJ(RENK_KIRMIZI, 'Dosya: ' + ADosyaTamYol, []);
 
   Result.BellekAdresi := nil;
 
@@ -122,7 +122,7 @@ begin
       if(GoruntuYapi.BellekAdresi = nil) then Exit;
 
       // resim dosyasındaki her bir satırdaki byte sayısı
-      SatirdakiByteSayisi := (GoruntuYapi.Genislik * 3 + 3) and $FFFFFFFC;
+      SatirdakiByteSayisi := (GoruntuYapi.Genislik * 3) and $FFFFFFFC;
 
       Satir := -1;
 

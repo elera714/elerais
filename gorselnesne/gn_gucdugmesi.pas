@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 27/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -262,7 +262,10 @@ begin
     Pencere := EnUstPencereNesnesiniAl(GucDugmesi);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> AktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak işaretle
+    GAktifNesne := GucDugmesi;
 
     // fare olaylarını yakala
     OlayYakalamayaBasla(GucDugmesi);

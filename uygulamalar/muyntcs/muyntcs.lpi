@@ -38,7 +38,8 @@
       <Unit0>
         <Filename Value="muyntcs.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="24" Y="9"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="33" Y="21"/>
         <UsageCount Value="99"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -692,18 +693,15 @@
       <Unit120>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="18"/>
-        <CursorPos X="64" Y="35"/>
+        <CursorPos Y="126"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit120>
       <Unit121>
         <Filename Value="../../rtl_uygulama/linux/_forms.pp"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="71"/>
-        <CursorPos X="11" Y="70"/>
+        <CursorPos X="23" Y="19"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit121>
@@ -838,7 +836,6 @@
     <Linking>
       <Debugging>
         <GenerateDebugInfo Value="False"/>
-        <UseLineInfoUnit Value="False"/>
         <StripSymbols Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>

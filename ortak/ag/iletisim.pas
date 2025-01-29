@@ -6,7 +6,7 @@
   Dosya Adý: iletisim.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/01/2025
+  Güncelleme Tarihi: 25/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -56,7 +56,7 @@ type
     FBagli: Boolean;
     FBellek: Isaretci;
     FBellekUzunlugu: TSayi4;
-    function Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: TIPAdres; AYerelPort,
+    function Olustur2(AProtokolTipi: TProtokolTipi; ABaglantiAdresi: string; AYerelPort,
       AUzakPort: TSayi2): PBaglanti;
     function BaglantiOlustur: PBaglanti;
     function Baglan(ABaglantiTipi: TBaglantiTipi): TISayi4;
@@ -76,7 +76,7 @@ function YerelPortAl: TSayi2;
 
 implementation
 
-uses gercekbellek, genel, tcp, udp, arp, zamanlayici;
+uses gercekbellek, genel, tcp, udp, arp, zamanlayici, donusum;
 
 {==============================================================================
   baðlantý ana yükleme iþlevlerini içerir
@@ -110,11 +110,13 @@ end;
 {==============================================================================
   að baðlantýsý için baðlantý oluþturur
  ==============================================================================}
-function TBaglanti.Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: TIPAdres;
+function TBaglanti.Olustur2(AProtokolTipi: TProtokolTipi; ABaglantiAdresi: string;
   AYerelPort, AUzakPort: TSayi2): PBaglanti;
 var
   Bag: PBaglanti;
-  s: string;
+  s, SunucuAdi, Sayfa: string;
+  i: TSayi4;
+  IPAdresi: TIPAdres;
 begin
 
   Bag := nil;
@@ -122,9 +124,29 @@ begin
   Bag := BaglantiOlustur;
   if(Bag = nil) then Exit(Bag);
 
+  // ABaglantiAdresi içeriði aþaðýdaki biçimde gelmekte olup bu yapýnýn "/" sonrasý
+  // ne burada ne de çekirdeðin hiçbir yerinde kullanýlmamaktadýr.
+  { TODO - ileride http(s) protokolünde kullanýlma ihtimali mevcuttur }
+  // 192.168.1.1/search?q=elerais
+  i := Pos('/', ABaglantiAdresi);
+  if(i > 0) then
+  begin
+
+    SunucuAdi := Copy(ABaglantiAdresi, 1, i - 1);
+    Sayfa := Copy(ABaglantiAdresi, i, Length(ABaglantiAdresi) - i + 1);
+  end
+  else
+  begin
+
+    SunucuAdi := ABaglantiAdresi;
+    Sayfa := '/';
+  end;
+
+  IPAdresi := StrToIP(SunucuAdi);
+
   Bag^.FBagli := False;
   Bag^.FProtokolTipi := AProtokolTipi;
-  Bag^.FHedefIPAdres := AHedefIPAdres;
+  Bag^.FHedefIPAdres := IPAdresi;
   Bag^.FYerelPort := AYerelPort;
   Bag^.FUzakPort := AUzakPort;
 
@@ -157,7 +179,7 @@ begin
     s := ProtokolTipAdi(AProtokolTipi);
     SISTEM_MESAJ(RENK_KIRMIZI, 'ILETISIM.PAS: TBaglanti.Olustur', []);
     SISTEM_MESAJ(RENK_KIRMIZI, '  -> Bilinmeyen Protokol: %s ', [s]);
-    SISTEM_MESAJ_IP(RENK_ACIKMAVI, '  -> Hedef IP: ', AHedefIPAdres);
+    SISTEM_MESAJ_IP(RENK_ACIKMAVI, '  -> Hedef IP: ', IPAdresi);
     SISTEM_MESAJ_S16(RENK_ACIKMAVI, '  -> Hedef Port: ', AUzakPort, 4);
   end;
 

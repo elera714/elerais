@@ -10,7 +10,7 @@
 
   Önemli Bilgiler:
 
-    2. TPencere'nin alt nesnelerinden biri yeniden kýsmi olarak (TEtiket nesnesi gibi)
+    TPencere'nin alt nesnelerinden biri yeniden kýsmi olarak (TEtiket nesnesi gibi)
       çizilmek istendiðinde mutlaka üst nesne olan TPencere.Guncelle iþlevini çaðýrmalýdýr.
       Böylece pencere çizim tasarým gereði pencere öncelikle kendini çizecek daha
       sonra ise alt nesnelerinin çizilmesi için alt nesnenin Ciz iþlevini çaðýracaktýr.
@@ -185,7 +185,7 @@ begin
 
   // pencerenin ana pencere olup olmadýðýný tespit et
   Gorev := Gorev^.GorevBul(CalisanGorev);
-  if not(Gorev = nil) and (Gorev^.FAktifPencere = nil) then
+  if not(Gorev = nil) and (Gorev^.AktifPencere = nil) then
     AnaPencere := True
   else AnaPencere := False;
 
@@ -234,8 +234,8 @@ begin
   Pencere^.FTuvalNesne := Pencere;
 
   // görevin ata penceresini ve pencerenin aktif penceresini belirle
-  Pencere^.FAtaPencere := Gorev^.FAktifPencere;
-  Gorev^.FAktifPencere := Pencere;
+  Pencere^.FAtaPencere := Gorev^.AktifPencere;
+  Gorev^.AktifPencere := Pencere;
 
   Pencere^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -494,7 +494,7 @@ begin
   begin
 
     // aktif veya pasif çizimin belirlenmesi
-    PencereAktif := (Pencere = AktifPencere);
+    PencereAktif := (Pencere = GAktifPencere);
 
     if(PencereAktif) then
     begin
@@ -828,7 +828,7 @@ begin
   begin
 
     // APencere nesnesi aktif deðilse aktifleþtir
-    if(APencere <> AktifPencere) then EnUsteGetir(APencere);
+    if(APencere <> GAktifPencere) then EnUsteGetir(APencere);
 
     // sol tuþ basým iþlemi olay alanýnda gerçekleþtiyse
     if(APencere^.FareNesneOlayAlanindaMi(APencere)) then
@@ -903,7 +903,7 @@ begin
   begin
 
     // APencere nesnesi aktif deðilse aktifleþtir
-    if(APencere <> AktifPencere) then EnUsteGetir(APencere);
+    if(APencere <> GAktifPencere) then EnUsteGetir(APencere);
 
     // sol tuþ basým iþlemi olay alanýnda gerçekleþtiyse
     if(APencere^.FareNesneOlayAlanindaMi(APencere)) then
@@ -1073,7 +1073,7 @@ begin
   begin
 
     // APencere nesnesi aktif deðilse aktifleþtir
-    if(APencere <> AktifPencere) then EnUsteGetir(APencere);
+    if(APencere <> GAktifPencere) then EnUsteGetir(APencere);
 
     // fare olaylarýný APencere nesnesine yönlendir
     OlayYakalamayaBasla(APencere);
@@ -1445,13 +1445,13 @@ begin
 
     // pencere en üstte olsa da olmasa da aktif pencere olarak tanýmla
     // not: pencere en üstte olup görüntülenmiþ olmayabilir
-    AktifPencere := APencere;
+    GAktifPencere := APencere;
 
-    // bir önceki pencereyi yeniden çiz
+    // bir önceki pencere pasif olacaðý için yeniden çiz
     if(BirOncekiPencere^.Gorunum) then BirOncekiPencere^.Guncelle;
 
     // aktif pencereyi yeniden çiz
-    AktifPencere^.Guncelle;
+    GAktifPencere^.Guncelle;
 
     // görev bayrak deðerini artýr
     Inc(GorevBayrakDegeri);

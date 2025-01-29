@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 02/01/2025
+  Güncelleme Tarihi: 25/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -217,6 +217,7 @@ var
   K: Char;
   i, DNSAdresUzunluk, ToplamUzunluk: TSayi4;
   ParcaUzunluk: TSayi1;
+  IPAdresi: string;
 begin
 
   DNS := GDNSBaglantilari[ADNSKimlik];
@@ -275,8 +276,8 @@ begin
     Inc(B2);
     B2^ := ntohs(TSayi2(Class_IN));
 
-    DNS^.FBaglanti := DNS^.FBaglanti^.Olustur(ptUDP, GAgBilgisi.DNSSunucusu,
-      DNS^.FYerelPort, DNS_PORTNO);
+    IPAdresi := IP_KarakterKatari(GAgBilgisi.DNSSunucusu);
+    DNS^.FBaglanti := DNS^.FBaglanti^.Olustur2(ptUDP, IPAdresi, DNS^.FYerelPort, DNS_PORTNO);
     if not(DNS^.FBaglanti = nil) then
     begin
 

@@ -4,7 +4,7 @@ unit anasayfafrm;
 interface
 
 uses n_gorev, gn_pencere, n_zamanlayici, _forms, gn_panel, gn_dugme, gn_giriskutusu,
-  gn_durumcubugu, n_iletisim, gn_defter, gn_etiket, n_dns;
+  gn_durumcubugu, n_iletisim, gn_defter, gn_etiket, n_dns, n_sistemmesaj;
 
 type
   TfrmAnaSayfa = object(TForm)
@@ -37,15 +37,39 @@ const
 
 var
   BaglantiAdresi, IPAdresi,
-  SonDurum, s: string;
+  SunucuAdi, Sayfa,
+  SonDurum: string;
+  Port: TSayi4;
   VeriUzunlugu: TSayi4;
   SayfaIstendi: Boolean;
   Veriler: array[0..4095] of TSayi1;
 
+// bu iþlev rtl'de problem çýkardýðý için ilgili yere eklenmemiþtir
+function StrToInt(const ADeger: string): TSayi4;
+var
+  Carpan, i,
+  Deger: TSayi4;
+  C: Char;
+begin
+
+  Carpan := 1;
+
+  Deger := 0;
+  for i := Length(ADeger) downto 1 do
+  begin
+
+    C := ADeger[i];
+    Deger += (Ord(C) - 48) * Carpan;
+    Carpan *= 10;
+  end;
+
+  StrToInt := Deger;
+end;
+
 procedure TfrmAnaSayfa.Olustur;
 begin
 
-  BaglantiAdresi := 'www.google.com';
+  BaglantiAdresi := 'www.google.com:443/search?q=elerais';
   SonDurum := 'Baðlantý yok!';
 
   FPencere.Olustur(-1, 50, 50, 600, 480, ptBoyutlanabilir, PencereAdi, $FAF1E3);
@@ -88,6 +112,8 @@ begin
 end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
+var
+  s: string;
 begin
 
   if(AOlay.Olay = CO_ZAMANLAYICI) then
@@ -108,8 +134,8 @@ begin
 
           SonDurum := 'Sayfa bekleniyor...';
 
-          s := 'GET / HTTP/1.1' + #13#10;
-          s += 'Host: ' + IPAdresi + #13#10#13#10;
+          s := 'GET ' + Sayfa + ' HTTP/1.1' + #13#10;
+          s += 'Host: ' + IPAdresi + #13#10 + #13#10;
 
           FIletisim0.VeriYaz(@s[1], Length(s));
 
@@ -147,17 +173,53 @@ begin
 end;
 
 procedure TfrmAnaSayfa.SayfayiYukle;
+var
+  i: TSayi4;
+  s: string;
 begin
 
+  // çözümlenmesi gereken yapý: https://www.internetadresi.com:10443/merhaba?sorgu=kedi
+  //
+  // þu anda çözümlenmesi gereken baðlantý isteði aþaðýdaki gibidir
+  //
+  // internetadresi.com:80/merhaba
+  // 192.168.1.1:80/merhaba
   BaglantiAdresi := FgkBaglantiAdresi.IcerikAl;
+  i := Pos('/', BaglantiAdresi);
+  if(i > 0) then
+  begin
 
-  if(IPAdresiGecerliMi(BaglantiAdresi)) then
-
-    IPAdresi := BaglantiAdresi
+    SunucuAdi := Copy(BaglantiAdresi, 1, i - 1);
+    Sayfa := Copy(BaglantiAdresi, i, Length(BaglantiAdresi) - i + 1);
+  end
   else
   begin
 
-    if(Length(BaglantiAdresi) > 0) then
+    SunucuAdi := BaglantiAdresi;
+    Sayfa := '/';
+  end;
+
+  // port deðerinin alýnmasý
+  i := Pos(':', SunucuAdi);
+  if(i > 0) then
+  begin
+
+    s := Copy(SunucuAdi, i + 1, Length(SunucuAdi) - i);
+    SunucuAdi := Copy(SunucuAdi, 1, i - 1);
+  end else s := '80';
+
+  if(Length(s) > 0) then
+    Port := StrToInt(s)
+  else Port := 80;
+
+
+  if(IPAdresiGecerliMi(SunucuAdi)) then
+
+    IPAdresi := SunucuAdi
+  else
+  begin
+
+    if(Length(SunucuAdi) > 0) then
     begin
 
       DNS.Olustur;
@@ -165,7 +227,7 @@ begin
       if not(DNS.Kimlik = -1) then
       begin
 
-        if(DNS.Sorgula(BaglantiAdresi)) then
+        if(DNS.Sorgula(SunucuAdi)) then
         begin
 
           DNS.IcerikAl;
@@ -195,7 +257,7 @@ begin
 
     FDefter.Temizle;
 
-    FIletisim0.Olustur(ptTCP, IPAdresi, 80);
+    FIletisim0.Olustur(ptTCP, IPAdresi + Sayfa, Port);
     FIletisim0.Baglan;
   end;
 end;

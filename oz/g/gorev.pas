@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 29/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,7 +21,7 @@ const
   // bir görev için tanýmlanan üst sýnýr olay sayýsý
   // olay belleði 4K olarak tanýmlanmýþtýr. 4096 / SizeOf(TOlay)
   USTSINIR_OLAY         = 64;
-  PROGRAM_YIGIN_BELLEK  = 4096 * 4;           // program yýðýný (stack) için ayrýlacak bellek
+  PROGRAM_YIGIN_BELLEK  = 4096 * 5;           // program yýðýný (stack) için ayrýlacak bellek
   DEFTER_BELLEK_U       = TSayi4(4096 * 10);  // defter programý için program belleðinde ayrýlacak alan
 
 type
@@ -41,6 +41,7 @@ type
     FBellekUzunlugu: TSayi4;              // iþlemin kullandýðý bellek uzunluðu
     FKodBaslangicAdres: TSayi4;           // iþlemin bellek baþlangýç adresi
     FYiginBaslangicAdres: TSayi4;         // iþlemin yýðýn adresi
+    FAktifPencere: PPencere;              // görevin aktif penceresi
     procedure GorevSayaciYaz(ASayacDegeri: TSayi4);
     procedure OlaySayisiYaz(AOlaySayisi: TSayi4);
   protected
@@ -48,7 +49,6 @@ type
     function BosGorevBul: PGorev;
     procedure SecicileriOlustur;
   public
-    FAktifPencere: PPencere;              // görevin aktif penceresi
     FOlayBellekAdresi: POlay;             // olaylarýn yerleþtirileceði bellek bölgesi
     FOlaySayisi: TSayi4;                  // olay sayacý
 
@@ -56,7 +56,10 @@ type
     FGorevDurum: TGorevDurum;             // iþlem durumu
 
     // hata ile ilgili deðiþkenler
-    FHataKodu, FHataESP: TISayi4;
+    FHataKodu,
+    FHataCS, FHataEIP,                    // cs:eip
+    FHataESP,                             // esp
+    FHataBayrak: TISayi4;                 // flags
 
     FGorevSayaci: TSayi4;                 // görev deðiþim sayacý
     FBellekBaslangicAdresi: TSayi4;       // iþlemin yüklendiði bellek adresi
@@ -72,6 +75,7 @@ type
     function GorevBul(AGorevKimlik: TKimlik): PGorev;
     function GorevKimligiAl(AGorevAdi: string): TKimlik;
     property OlayBellekAdresi: POlay read FOlayBellekAdresi write FOlayBellekAdresi;
+    property AktifPencere: PPencere read FAktifPencere write FAktifPencere;
   published
     property GorevKimlik: TKimlik read FGorevKimlik;
     property BellekBaslangicAdresi: TSayi4 read FBellekBaslangicAdresi write FBellekBaslangicAdresi;
@@ -309,8 +313,8 @@ begin
 
     // iþlemin yýðýn adresi
     if(DosyaAdi = 'defter.c') then
-      Gorev^.FYiginBaslangicAdres := (ProgramBellekU - DEFTER_BELLEK_U) - 4096
-    else Gorev^.FYiginBaslangicAdres := ProgramBellekU - 4096;
+      Gorev^.FYiginBaslangicAdres := (ProgramBellekU - DEFTER_BELLEK_U) - 1024
+    else Gorev^.FYiginBaslangicAdres := ProgramBellekU - 1024;
 
     // dosyanýn çalýþtýrýlmasý için seçicileri oluþtur
     Gorev^.SecicileriOlustur;
@@ -610,20 +614,25 @@ var
   Gorev: PGorev = nil;
 begin
 
+  Gorev := GorevListesi[AGorevKimlik];
+
   // görevin sonlandýrýlma bilgisini ver
   if(ASonlanmaSebebi = -1) then
   begin
 
-    SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: ' + GorevListesi[AGorevKimlik]^.FDosyaAdi +
-      ' normal bir þekilde sonlandýrýldý.', []);
+    SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: ' + Gorev^.FDosyaAdi + ' normal bir þekilde sonlandýrýldý.', []);
   end
   else
   begin
 
-    SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: ' + GorevListesi[AGorevKimlik]^.FDosyaAdi +
+    SISTEM_MESAJ(RENK_MOR, 'GOREV.PAS: ' + Gorev^.FDosyaAdi +
       ' programý istenmeyen bir iþlem yaptýðýndan dolayý sonlandýrýldý', []);
     SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: Hata Kodu: ' + IntToStr(ASonlanmaSebebi) + ' - ' +
       IstisnaAciklamaListesi[ASonlanmaSebebi], []);
+    SISTEM_MESAJ_S16(RENK_LACIVERT, 'GOREV.PAS: CS: ', Gorev^.FHataCS, 8);
+    SISTEM_MESAJ_S16(RENK_LACIVERT, 'GOREV.PAS: EIP: ', Gorev^.FHataEIP, 8);
+    SISTEM_MESAJ_S16(RENK_LACIVERT, 'GOREV.PAS: ESP: ', Gorev^.FHataESP, 8);
+    SISTEM_MESAJ_S16(RENK_LACIVERT, 'GOREV.PAS: EFLAGS: ', Gorev^.FHataBayrak, 8);
   end;
 
   { TODO : aþaðýdaki iþlevlerin çalýþmasýnýn doðruluðu test edilecek }
@@ -770,9 +779,9 @@ end;
 function AktifProgramiAl: TISayi4;
 begin
 
-  if(AktifPencere = nil) then Exit(-1);
+  if(GAktifPencere = nil) then Exit(-1);
 
-  Result := AktifPencere^.Kimlik;
+  Result := GAktifPencere^.Kimlik;
 end;
 
 {==============================================================================

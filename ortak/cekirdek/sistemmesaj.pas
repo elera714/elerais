@@ -155,6 +155,7 @@ var
   i: TSayi4;
 begin
 
+  FMesajNo := 0;
   FToplamMesaj := 0;
 
   for i := 0 to USTSINIR_MESAJ - 1 do

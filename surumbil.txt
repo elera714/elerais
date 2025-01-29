@@ -1,9 +1,15 @@
 *******************************************************************************
   Sürüm: 0.3.8 - 10.01.2025 (R34) - Beta
 *******************************************************************************
+  + tarayýcýya port numarasý ve sayfa iþleme desteði eklendi (www.google.com:443/search?q=elerais)
+  + masaüstü / baþlat menüsüne internet tarayýcýsý menüsü eklendi
+  + GirisKutusu nesnesinin aktif/pasif durumunun göstergeye (kursör) göre belirtilmesi
+    saðlandý ve nesne içeriðinin tamamen silinmesi ile klavye giriþi almasý saðlandý
+
   + tcp/ip protokolünün tcp katmanýndaki problem çözümlendi
   + tarayici.c programýnýn http veri içeriði alýmýndaki problem giderildi
-
+  + türkçe klavye tablosuna deðiþtirme tuþu (shift) tablosu ve alt gr tuþ tablosu eklenerek,
+    tuþ tablolarýnýn ilgili tuþlarla (shift, alt gr) kullaným desteði eklendi
   + iletisim.c uygulamasý nesnelerin yeni özelliklerine göre yenilendi
   + TListeGorunum ve TDegerListesi nesnelerine renkli eleman ekleme desteði eklendi
   + netbios temel api iþlevi tamamlandý (çalýþmalar devam etmekte)
