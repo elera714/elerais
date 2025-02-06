@@ -32,7 +32,7 @@ begin
   FPencere.Olustur(-1, 150, 150, 250, 65, ptIletisim, PencereAdi, RENK_BEYAZ);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
-  FEtiket1.Olustur(FPencere.Kimlik, 4, 4, RENK_SIYAH, 'Tüm iþlemler tamamlandý...');
+  FEtiket1.Olustur(FPencere.Kimlik, 4, 4, 240, 16, RENK_SIYAH, 'Tüm iþlemler tamamlandý...');
 
   FDugme1.Olustur(FPencere.Kimlik, 100, 30, 50, 22, 'Tamam');
 end;

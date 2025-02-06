@@ -6,7 +6,7 @@
   Dosya Adı: ag.pas
   Dosya İşlevi: ağ (network) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/12/2024
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -50,20 +50,20 @@ begin
   // ağ bilgileri öndeğerlerle yükleniyor
   IlkAdresDegerleriniYukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Ethernet aygıtları yükleniyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Ethernet aygıtları yükleniyor...', []);
   AgAygitlariniYukle;
 
   // en az 1 ağ aygıtı yüklendi ise
   if(AgYuklendi) then
   begin
 
-    SISTEM_MESAJ(RENK_LACIVERT, '+ Bağlantı yapıları ilk değerlerle yükleniyor...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Bağlantı yapıları ilk değerlerle yükleniyor...', []);
     iletisim.Yukle;
 
-    SISTEM_MESAJ(RENK_LACIVERT, '+ ARP protokolü yükleniyor...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ARP protokolü yükleniyor...', []);
     arp.Yukle;
 
-    SISTEM_MESAJ(RENK_LACIVERT, '+ DNS protokolü yükleniyor...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DNS protokolü yükleniyor...', []);
     dns.Yukle;
   end;
 
@@ -163,9 +163,9 @@ begin
       begin
 
         // bilinmeyen protokol
-        SISTEM_MESAJ_S16(RENK_KIRMIZI, 'AG.PAS: bilinmeyen protokol: ', Protokol, 4);
-        SISTEM_MESAJ_MAC(RENK_MOR, '  -> Kaynak MAC Adresi: ', EthernetPaket^.KaynakMACAdres);
-        SISTEM_MESAJ_MAC(RENK_MOR, '  -> Hedef MAC Adresi: ', EthernetPaket^.HedefMACAdres);
+        SISTEM_MESAJ_S16(mtUyari, RENK_MAVI, 'AG.PAS: bilinmeyen protokol: ', Protokol, 4);
+        SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Kaynak MAC Adresi: ', EthernetPaket^.KaynakMACAdres);
+        SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Hedef MAC Adresi: ', EthernetPaket^.HedefMACAdres);
       end;
     end;
   end;

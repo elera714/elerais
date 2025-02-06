@@ -6,7 +6,7 @@
   Dosya Adı: fat16.pas
   Dosya İşlevi: fat16 dosya sistem yönetim işlevlerini yönetir
 
-  Güncelleme Tarihi: 09/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,16 +22,14 @@ function EOF(ADosyaKimlik: TKimlik): Boolean;
 function FileSize(ADosyaKimlik: TKimlik): TISayi4;
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 procedure CloseFile(ADosyaKimlik: TKimlik);
-function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
+function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
-function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
-  var ADosyaArama: TDosyaArama): TSayi1;
 
 implementation
 
-uses genel, donusum, gercekbellek, sistemmesaj;
+uses genel, donusum, gercekbellek, fat32, sistemmesaj;
 
 var
   DizinBellekAdresi: array[0..511] of TSayi1;
@@ -75,12 +73,12 @@ procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
   MD: PMantiksalDepolama;
   DosyaKayit: PDosyaKayit;
-  DATBellekAdresi: Isaretci;
-  Zincir: TSayi2;
-  YeniDATSiraNo: TSayi4;
+  DATBellekAdresi: array[0..511] of Byte;
   DATSiraNo: TSayi2;
-  OkunacakSektorSayisi, i: TSayi2;
-  OkunacakVeri: TISayi4;
+  OkunacakSektorSayisi,
+  Zincir, i: TSayi2;
+  OkunacakVeri, OkunacakFAT,
+  YeniDATSiraNo: TISayi4;
   OkumaSonuc: Boolean;
 begin
 
@@ -89,14 +87,6 @@ begin
 
   // üzerinde işlem yapılacak sürücü
   MD := DosyaKayit^.MantiksalDepolama;
-
-  // FAT tablosu için bellekte yer ayır
-  DATBellekAdresi := GGercekBellek.Ayir(
-    MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
-
-  // depolama aygıtının ilk FAT kopyasının tümünü belleğe yükle
-  MD^.FD^.SektorOku(MD^.FD, MD^.Acilis.DosyaAyirmaTablosu.IlkSektor,
-    MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor, DATBellekAdresi);
 
   OkunacakVeri := DosyaKayit^.Uzunluk;
 
@@ -138,17 +128,21 @@ begin
       // okunacak bilginin yerleştirileceği bir sonraki adresi belirle
       AHedefBellek += (OkunacakSektorSayisi * 512);
 
+      OkunacakFAT := (Zincir * 2) div 512;
+
+      // depolama aygıtının ilk FAT kopyasının tümünü belleğe yükle
+      MD^.FD^.SektorOku(MD^.FD, MD^.Acilis.DosyaAyirmaTablosu.IlkSektor + OkunacakFAT,
+        1, @DATBellekAdresi);
+
       // zincir değerini 2 ile çarp ve bir sonraki zincir değerini al
-      YeniDATSiraNo := (Zincir * 2) + TSayi4(DATBellekAdresi);
-      DATSiraNo := PSayi2(YeniDATSiraNo)^;
+      YeniDATSiraNo := (Zincir * 2) mod 512;
+      DATSiraNo := PSayi2(Isaretci(@DATBellekAdresi) + YeniDATSiraNo)^;
 
       Zincir := DATSiraNo;
     end;
 
   // eğer 0xFFF8..0xFFFF aralığındaysa bu dosyanın en son zinciridir
   until (Zincir >= $FFF8) or (OkumaSonuc);
-
-  GGercekBellek.YokEt(DATBellekAdresi, MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
 end;
 
 {==============================================================================
@@ -161,7 +155,7 @@ end;
 {==============================================================================
   dosya arama işlevini başlatır
  ==============================================================================}
-function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
+function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
  var ADosyaArama: TDosyaArama): TISayi4;
 var
   DizinGirisi: PDizinGirisi;
@@ -193,112 +187,6 @@ function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
 begin
 
   Result := 0;
-end;
-
-{==============================================================================
-  dizin girişinden ilgili bilgileri alır
-  bilgi: bu işlev iptal edilerek fat32'deki işlev kullanılacak
- ==============================================================================}
-function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
- var ADosyaArama: TDosyaArama): TSayi1;
-var
-  MD: PMantiksalDepolama;
-  DizinGirdisi: PDizinGirdisi;
-  TumGirislerOkundu: Boolean;
-begin
-
-  ADosyaArama.DosyaAdi := '';
-
-  // ilk değer atamaları
-  TumGirislerOkundu := False;
-
-  // aramanın yapılacağı sürücü
-  MD := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalDepolama;
-
-  // aramaya başla
-  repeat
-
-    if(ADizinGirisi^.DizinTablosuKayitNo = -1) then
-    begin
-
-      // okunacak başka sektör var mı ?
-      if(ADizinGirisi^.ToplamSektor > 0) then
-      begin
-
-        ADizinGirisi^.DizinTablosuKayitNo := 0;
-
-        // sektörü belleğe yükle ve değişkenleri güncelle
-        MD^.FD^.SektorOku(MD^.FD, ADizinGirisi^.IlkSektor, 1, @DizinBellekAdresi);
-        Inc(ADizinGirisi^.IlkSektor);
-        Dec(ADizinGirisi^.ToplamSektor);
-      end
-      else
-
-      // aksi durumda tüm sektörler okunmuştur. çıkış bayrağını aktifleştir
-      begin
-
-        Result := 1;
-        TumGirislerOkundu := True;
-      end;
-    end;
-
-    // tüm girişler okunmadı ise
-    if not(TumGirislerOkundu) then
-    begin
-
-      // dosya giriş tablosuna konumlan
-      DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi);
-      Inc(DizinGirdisi, ADizinGirisi^.DizinTablosuKayitNo);
-
-      // dosya girişinin ilk karakteri #0 ise girişler okunmuş demektir
-      if(DizinGirdisi^.DosyaAdi[0] = #0) then
-      begin
-
-        Result := 1;
-        TumGirislerOkundu := True;
-      end
-
-      // dosya silinmişse bir sonraki girişe bak
-      else if(DizinGirdisi^.DosyaAdi[0] = Char($E5)) then
-      begin
-
-        Inc(ADizinGirisi^.DizinTablosuKayitNo);
-        if(ADizinGirisi^.DizinTablosuKayitNo = 16) then ADizinGirisi^.DizinTablosuKayitNo := -1;
-      end
-
-      // dosya volume label ise bir sonraki girişe bak
-      else if(DizinGirdisi^.Ozellikler = 8) then
-      begin
-
-        Inc(ADizinGirisi^.DizinTablosuKayitNo);
-        if(ADizinGirisi^.DizinTablosuKayitNo = 16) then ADizinGirisi^.DizinTablosuKayitNo := -1;
-      end
-      else
-      begin
-
-        // dosya bulundu
-
-        // dosya adını dosya.uz biçimine çevir
-        ADosyaArama.DosyaAdi := HamDosyaAdiniDosyaAdinaCevir(DizinGirdisi);
-
-        // dosya uzunluğu ve zincir başlangıcını geri dönüş değerine ekle
-        ADosyaArama.DosyaUzunlugu := DizinGirdisi^.DosyaUzunlugu;
-        ADosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
-        ADosyaArama.OlusturmaSaati := DizinGirdisi^.OlusturmaSaati;
-        ADosyaArama.OlusturmaTarihi := DizinGirdisi^.OlusturmaTarihi;
-        ADosyaArama.SonErisimTarihi := DizinGirdisi^.SonErisimTarihi;
-        ADosyaArama.SonDegisimSaati := DizinGirdisi^.SonDegisimSaati;
-        ADosyaArama.SonDegisimTarihi := DizinGirdisi^.SonDegisimTarihi;
-        ADosyaArama.BaslangicKumeNo := DizinGirdisi^.BaslangicKumeNo;
-
-        Inc(ADizinGirisi^.DizinTablosuKayitNo);
-        if(ADizinGirisi^.DizinTablosuKayitNo = 16) then ADizinGirisi^.DizinTablosuKayitNo := -1;
-
-        if(AAranacakDeger = '*.*') then Exit(0);
-        if(ADosyaArama.DosyaAdi = AAranacakDeger) then Exit(0);
-      end
-    end;
-  until TumGirislerOkundu;
 end;
 
 end.

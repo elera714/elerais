@@ -53,7 +53,7 @@ begin
   FPanel.Hizala(hzUst);
   FPanel.Goster;
 
-  FEtkAy.Olustur(FPanel.Kimlik, 6, 8, RENK_MAVI, 'Ay:');
+  FEtkAy.Olustur(FPanel.Kimlik, 6, 8, 24, 16, RENK_MAVI, 'Ay:');
   FEtkAy.Goster;
 
   FKLAy.Olustur(FPanel.Kimlik, 36, 4, 90, 20);
@@ -73,7 +73,7 @@ begin
   FKLAy.ElemanEkle('Aralýk');
   FKLAy.BaslikSiraNo := BuAy - 1;
 
-  FEtkYil.Olustur(FPanel.Kimlik, 156, 8, RENK_MAVI, 'Yýl:');
+  FEtkYil.Olustur(FPanel.Kimlik, 156, 8, 32, 16, RENK_MAVI, 'Yýl:');
   FEtkYil.Goster;
 
   FKLYil.Olustur(FPanel.Kimlik, 194, 4, 90, 20);

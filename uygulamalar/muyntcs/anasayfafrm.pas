@@ -121,7 +121,7 @@ begin
   FMasaustu.Olustur(PencereAdi);
 
   // yeni masaüstünün duvar kaðýdý
-  FMasaustu.MasaustuResminiDegistir('disk1:\1.bmp');
+  FMasaustu.MasaustuResminiDegistir('disk1:\resimler\1.bmp');
 
   // görev yönetim ana paneli
   FGorevPenceresi.Olustur(FMasaustu.Kimlik, FEkran.A0, FEkran.Yukseklik0 - 40, FEkran.Genislik0,
@@ -143,13 +143,13 @@ begin
   FELERA.Olustur(FSolPanel.Kimlik, 4, 4, 56, 32, 'ELERA');
   FELERA.Goster;
 
-  FAgBilgisi.Olustur(FSagPanel.Kimlik, 0, 14, RENK_KIRMIZI, '[Að]');
+  FAgBilgisi.Olustur(FSagPanel.Kimlik, 0, 14, 35, 16, RENK_KIRMIZI, '[Að]');
   FAgBilgisi.Goster;
 
-  FSaatDegeri.Olustur(FSagPanel.Kimlik, 60, 5, $800000, '00:00:00');
+  FSaatDegeri.Olustur(FSagPanel.Kimlik, 60, 5, 64, 16, $800000, '00:00:00');
   FSaatDegeri.Goster;
 
-  FTarihDegeri.Olustur(FSagPanel.Kimlik, 42, 23, $800000, '00.00.0000 Aa');
+  FTarihDegeri.Olustur(FSagPanel.Kimlik, 42, 23, 104, 16, $800000, '00.00.0000 Aa');
   FTarihDegeri.Goster;
 
   // paneli (GorevPenceresi) görüntüle

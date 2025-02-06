@@ -39,7 +39,6 @@
       <Unit0>
         <Filename Value="dskgor.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="36" Y="22"/>
         <UsageCount Value="31"/>
         <Loaded Value="True"/>
@@ -64,8 +63,10 @@
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="27" Y="6"/>
+        <TopLine Value="60"/>
+        <CursorPos X="56" Y="78"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit3>

@@ -6,7 +6,7 @@
   Dosya Adý: uhci.pas
   Dosya Ýþlevi: usb uhci yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/09/2024
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -94,7 +94,7 @@ procedure Yukle(APCI: PPCI);
 begin
 
   UHCIAygit := APCI;
-  SISTEM_MESAJ(RENK_ZEYTINYESILI, '  -> USB:UHCI kontrol aygýtý bulundu...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '  -> USB:UHCI kontrol aygýtý bulundu...', []);
 end;
 
 procedure UHCIAygitBilgileriniGoster;
@@ -106,10 +106,10 @@ begin
   if not(UHCIAygit = nil) then
   begin
 
-    SISTEM_MESAJ(RENK_MAVI, 'USB-UHCI Genel Bilgiler:', []);
+    SISTEM_MESAJ(mtBilgi, RENK_MOR, 'USB-UHCI Genel Bilgiler:', []);
 
     PortNo := PCIOku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, $20) and $FFFC;
-    SISTEM_MESAJ_S16(RENK_ACIKMAVI, 'Giriþ/Çýkýþ Port No: ', PortNo, 4);
+    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Giriþ/Çýkýþ Port No: ', PortNo, 4);
 
     _Deger4 := PCIOku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, 4);
     _Deger4 := _Deger4 or $405;
@@ -211,7 +211,7 @@ begin
   if((_Durum and UHCI_PORT_BAGLAN) = 0) then
   begin
 
-    SISTEM_MESAJ(RENK_KIRMIZI, 'Baðlantý yok', []);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Baðlantý yok', []);
   end
   else
   begin
@@ -220,13 +220,13 @@ begin
     begin
 
       TamHiz := True;
-      SISTEM_MESAJ(RENK_MAVI, 'Tam hýz', []);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Tam hýz', []);
     end
     else
     begin
 
       TamHiz := False;
-      SISTEM_MESAJ(RENK_MAVI, 'Düþük hýz', []);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Düþük hýz', []);
     end;
   end;
 end;

@@ -6,7 +6,7 @@
   Dosya Adý: ohci.pas
   Dosya Ýþlevi: usb ohci yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/09/2024
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -30,13 +30,13 @@ procedure Yukle(APCI: PPCI);
 begin
 
   Yuklendi := 1;
-  SISTEM_MESAJ(RENK_ZEYTINYESILI, '  -> USB:OHCI kontrol aygýtý bulundu...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '  -> USB:OHCI kontrol aygýtý bulundu...', []);
 end;
 
 procedure Kontrol1;
 begin
 
-  SISTEM_MESAJ(RENK_ZEYTINYESILI, 'Deðer: %d', [Yuklendi]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer: %d', [Yuklendi]);
 end;
 
 end.

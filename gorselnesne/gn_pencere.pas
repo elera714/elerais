@@ -6,7 +6,7 @@
   Dosya Adý: gn_pencere.pas
   Dosya Ýþlevi: pencere (TForm) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
   Önemli Bilgiler:
 
@@ -1560,7 +1560,7 @@ begin
     if(ResimDugmesi^.Kimlik = Pencere^.FKucultmeDugmesi^.Kimlik) then
       Pencere^.FPencereDurum := pdKucultuldu
     else if(ResimDugmesi^.Kimlik = Pencere^.FBuyutmeDugmesi^.Kimlik) then
-      SISTEM_MESAJ(RENK_KIRMIZI, 'Bilgi: büyütme düðmesi iþlevi yapýlandýrýlacak', [])
+      SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'Bilgi: büyütme düðmesi iþlevi yapýlandýrýlacak', [])
     else if(ResimDugmesi^.Kimlik = Pencere^.FKapatmaDugmesi^.Kimlik) then
     begin
 

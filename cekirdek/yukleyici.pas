@@ -84,45 +84,45 @@ begin
 
   // Bilgi: SISTEM_MESAJ_'ler buradan itibaren kullanýlabilir
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Ýþlemci bilgileri alýnýyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Ýþlemci bilgileri alýnýyor...', []);
   GIslemciBilgisi.Satici := IslemciSaticisiniAl;
   IslemciOzellikleriniAl1(GIslemciBilgisi.Ozellik1_EAX, GIslemciBilgisi.Ozellik1_EDX,
     GIslemciBilgisi.Ozellik1_ECX);
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Zamanlayýcý yükleniyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Zamanlayýcý yükleniyor...', []);
   GZamanlayici.Yukle;
 
   // Bilgi: Delay iþlevleri buradan itibaren kullanýlabilir
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ PCI aygýtlarý aranýyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ PCI aygýtlarý aranýyor...', []);
   pci.Yukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ ACPI donanýmý yükleniyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ACPI donanýmý yükleniyor...', []);
   acpi.Yukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Klavye aygýtý yükleniyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Klavye aygýtý yükleniyor...', []);
   src_klavye.Yukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ PS2 fare sürücüsü yükleniyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ PS2 fare sürücüsü yükleniyor...', []);
   GFareSurucusu.Yukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ USB aygýtlarý yükleniyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ USB aygýtlarý yükleniyor...', []);
   usb.Yukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Depolama aygýtlarý yükleniyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Depolama aygýtlarý yükleniyor...', []);
   DepolamaAygitlariniYukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Mantýksal sürücü atamalarý gerçekleþtiriliyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Mantýksal sürücü atamalarý gerçekleþtiriliyor...', []);
   bolumleme.Yukle;
 
   {$IFDEF SRC_COM}
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Ýletiþim (COM) portu yükleniyor...', []);
+  SISTEM_MESAJ(RENK_MAVI, '+ Ýletiþim (COM) portu yükleniyor...', []);
   src_com.Yukle;
   {$ENDIF}
 
   // sound blaster ses aygýtýný yükle
   {$IFDEF SRC_SB}
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Ses kartý yükleniyor...', []);
+  SISTEM_MESAJ(RENK_MAVI, '+ Ses kartý yükleniyor...', []);
   src_sb.Yukle;
   {$ENDIF}
 
@@ -134,10 +134,10 @@ begin
   // olay nesnesini ilk deðerlerini yükle
   GOlayYonetim.Yukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Sistem içerisinde kullanýlacak görsel olmayan nesneler yükleniyor.', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Sistem içerisinde kullanýlacak görsel olmayan nesneler yükleniyor.', []);
   ListeleriIlkDegerlerleYukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Görsel nesne için bellek iþlemleri yapýlýyor.', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Görsel nesne için bellek iþlemleri yapýlýyor.', []);
   gn_islevler.Yukle;
 
   // çekirdek yükleme sonrasý iþlevleri gerçekleþtir
@@ -184,7 +184,7 @@ begin
   dosya.Yukle;
 
   // 24 x 24 sistem resimlerini yükle
-  GSistemResimler := BMPDosyasiYukle('disk1:\sistem.bmp');
+  GSistemResimler := BMPDosyasiYukle('disk1:\resimler\sistem.bmp');
 end;
 
 end.

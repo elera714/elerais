@@ -6,7 +6,7 @@
   Dosya Adý: src_sb.pas
   Dosya Ýþlevi: sound blaster ses kartý sürücüsü
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -41,7 +41,7 @@ var
   i: TSayi1;
 begin
 
-  SISTEM_MESAJ(RENK_MAVI, '+ Ses aygýtlarý yükleniyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Ses aygýtlarý yükleniyor...', []);
 
   for i := 1 to 8 do
   begin
@@ -64,7 +64,7 @@ begin
         _AygitAdi := 'Sound Blaster 16/ASP/AWE 32/AWE 64'
       else _AygitAdi := 'Bilinmeyen ses kartý';
 
-      SISTEM_MESAJ(RENK_ACIKMAVI, '  +-> Bulunan ses kartý: ' + _AygitAdi, []);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, '  +-> Bulunan ses kartý: ' + _AygitAdi, []);
 
       Exit;
     end;
@@ -131,7 +131,7 @@ begin
 
   if not(DSPSifirla($220)) then
 
-    SISTEM_MESAJ(RENK_KIRMIZI, 'Ses kartý sýfýrlama hatasý!', [])
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Ses kartý sýfýrlama hatasý!', [])
   else
   begin
 
@@ -146,14 +146,15 @@ begin
       // dosya uzunluðunu al
       _DosyaUzunluk := FileSize(_DosyaKimlik);
 
-      SISTEM_MESAJ_S16(RENK_MAVI, 'Ses dosya uzunluðu: ', _DosyaUzunluk, 8);
+      SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Ses dosya uzunluðu: ', _DosyaUzunluk, 8);
 
       // dosyanýn çalýþtýrýlmasý için bellekte yer ayýr
       _DosyaBellek := GGercekBellek.Ayir(_DosyaUzunluk);
       if(_DosyaBellek <> nil) then
       begin
 
-        SISTEM_MESAJ_S16(RENK_MAVI, 'Dosya için ayrýlan bellek adresi: ', Integer(_DosyaBellek), 8);
+        SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Dosya için ayrýlan bellek adresi: ',
+          Integer(_DosyaBellek), 8);
 
         // dosyayý hedef adrese kopyala
         Read(_DosyaKimlik, _DosyaBellek);

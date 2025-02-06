@@ -44,13 +44,13 @@ begin
   FPencere.Olustur(-1, 100, 100, 350, 210, ptIletisim, PencereAdi, RENK_BEYAZ);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
-  FetkSuruculer.Olustur(FPencere.Kimlik, 40, 16, RENK_MAVI, 'Fiziksel Disk Depolama Aygýtlarý');
+  FetkSuruculer.Olustur(FPencere.Kimlik, 40, 16, 260, 16, RENK_MAVI, 'Fiziksel Disk Depolama Aygýtlarý');
   FetkSuruculer.Goster;
 
-  FetkKaynak.Olustur(FPencere.Kimlik, 36, 50, RENK_MOR, 'Kaynak Disk');
+  FetkKaynak.Olustur(FPencere.Kimlik, 36, 50, 90, 16, RENK_MOR, 'Kaynak Disk');
   FetkKaynak.Goster;
 
-  FetkHedef.Olustur(FPencere.Kimlik, 195, 50, RENK_MOR, 'Hedef Disk');
+  FetkHedef.Olustur(FPencere.Kimlik, 195, 50, 80, 16, RENK_MOR, 'Hedef Disk');
   FetkHedef.Goster;
 
   FklKaynak.Olustur(FPencere.Kimlik, 40, 70, 110, 20);
@@ -59,7 +59,7 @@ begin
   FklHedef.Olustur(FPencere.Kimlik, 200, 70, 110, 20);
   FklHedef.Goster;
 
-  FetkBilgi.Olustur(FPencere.Kimlik, 10, 102, RENK_KIRMIZI, 'Bilgi: -                         ');
+  FetkBilgi.Olustur(FPencere.Kimlik, 10, 102, 260, 16, RENK_KIRMIZI, 'Bilgi: -');
   FetkBilgi.Goster;
 
   FIslemGostergesi.Olustur(FPencere.Kimlik, 10, 125, 330, 22);

@@ -6,7 +6,7 @@
   Dosya Adý: fat12.pas
   Dosya Ýþlevi: fat12 dosya sistem yönetim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 09/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,14 +22,14 @@ function EOF(ADosyaKimlik: TKimlik): Boolean;
 function FileSize(ADosyaKimlik: TKimlik): TISayi4;
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 procedure CloseFile(ADosyaKimlik: TKimlik);
-function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
+function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
 
 implementation
 
-uses genel, gercekbellek, sistemmesaj, fat16, src_com;
+uses genel, gercekbellek, sistemmesaj, fat32, src_com;
 
 {==============================================================================
   dosyalar ile ilgili iþlem yapmadan önce taným iþlevlerini gerçekleþtirir
@@ -91,7 +91,7 @@ begin
   OkumaSonuc := MD^.FD^.SektorOku(MD^.FD, MD^.Acilis.DosyaAyirmaTablosu.IlkSektor,
     MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor, DATBellekAdresi);
 
-  if(OkumaSonuc <> 0) then SISTEM_MESAJ(RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
+  if(OkumaSonuc <> 0) then SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
 
   OkunacakVeri := DosyaKayit^.Uzunluk;
 
@@ -100,6 +100,8 @@ begin
   OkunacakSektorSayisi := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor0;
 
   OkumaSonuc := 1;
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IlkVeriSektoru: %d', [MD^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru]);
 
   repeat
 
@@ -144,7 +146,7 @@ end;
 {==============================================================================
   dosya arama iþlevini baþlatýr
  ==============================================================================}
-function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
+function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 var
   DizinGirisi: PDizinGirisi;

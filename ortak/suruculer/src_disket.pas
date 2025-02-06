@@ -6,7 +6,7 @@
   Dosya Adý: src_disket.pas
   Dosya Ýþlevi: disket aygýt sürücüsü
 
-  Güncelleme Tarihi: 09/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -199,13 +199,13 @@ begin
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $1C);
-    SISTEM_MESAJ(RENK_MOR, 'Disket1->Motor açýldý...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket1->Motor açýldý...', []);
   end
   else
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $2D);
-    SISTEM_MESAJ(RENK_MOR, 'Disket2->Motor açýldý...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket2->Motor açýldý...', []);
   end;
 
   // CCR = 500kbits/s
@@ -225,13 +225,13 @@ begin
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $C);
-    SISTEM_MESAJ(RENK_MOR, 'Disket1->Motor kapatýldý...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket1->Motor kapatýldý...', []);
   end
   else
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $5);
-    SISTEM_MESAJ(RENK_MOR, 'Disket2->Motor kapatýldý...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket2->Motor kapatýldý...', []);
   end;
 end;
 
@@ -288,7 +288,7 @@ begin
     end;
   end;
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->DurumOku zaman aþýmý', []);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Disket->DurumOku zaman aþýmý', []);
 end;
 
 {==============================================================================
@@ -310,7 +310,7 @@ begin
     end;
   end;
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->DurumYaz zaman aþýmý', []);
+  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Disket->DurumYaz zaman aþýmý', []);
 end;
 
 {==============================================================================
@@ -604,7 +604,7 @@ begin
   // iþlem sonucunu oku
   DURUM0 := DurumOku;       // DURUM0
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'ST0 Deðer: %d', [DURUM0]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'ST0 Deðer: %d', [DURUM0]);
 
   DURUM1 := DurumOku;       // DURUM1
   DURUM2 := DurumOku;       // DURUM2

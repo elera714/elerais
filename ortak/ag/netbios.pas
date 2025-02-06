@@ -6,7 +6,7 @@
   Dosya Adý: netbios.pas
   Dosya Ýþlevi: netbios api iþlevlerini yönetir
 
-  Güncelleme Tarihi: 25/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -235,16 +235,16 @@ begin
 
     GGercekBellek.YokEt(NB2, 4095);
 
-    SISTEM_MESAJ(RENK_BORDO, 'NetBios yanýtý gönderildi...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'NetBios yanýtý gönderildi...', []);
   end
   else
   begin
 
-    SISTEM_MESAJ(RENK_BORDO, 'NetBios yanýtý gönderilmedi!', []);
-    SISTEM_MESAJ(RENK_MAVI, 'NetBios Bilgileri: ', []);
-    SISTEM_MESAJ(RENK_MOR, '-> Sorgulanan Ad: %s', [NetBIOSAdi]);
-    SISTEM_MESAJ(RENK_MOR, '-> Ýstek Tipi: %d', [IstekTipi]);
-    SISTEM_MESAJ(RENK_MOR, '-> Ýstek Sýnýfý: %d', [IstekSinifi]);
+    SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'NetBios yanýtý gönderilmedi!', []);
+    SISTEM_MESAJ(mtUyari, RENK_MAVI, 'NetBios Bilgileri: ', []);
+    SISTEM_MESAJ(mtUyari, RENK_SIYAH, '-> Sorgulanan Ad: %s', [NetBIOSAdi]);
+    SISTEM_MESAJ(mtUyari, RENK_SIYAH, '-> Ýstek Tipi: %d', [IstekTipi]);
+    SISTEM_MESAJ(mtUyari, RENK_SIYAH, '-> Ýstek Sýnýfý: %d', [IstekSinifi]);
   end;
 end;
 

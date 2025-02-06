@@ -75,7 +75,7 @@ begin
   end;
 
   // sektör no etiketi
-  FetiSektorNo.Olustur(FPencere.Kimlik, 0, 33, $000000, 'Sektör No: ');
+  FetiSektorNo.Olustur(FPencere.Kimlik, 0, 33, 88, 16, $000000, 'Sektör No: ');
   FetiSektorNo.Goster;
 
   // sektör no giriþ kutusu

@@ -6,7 +6,7 @@
   Dosya Adý: tcp.pas
   Dosya Ýþlevi: tcp katmaný veri iletiþimini gerçekleþtirir
 
-  Güncelleme Tarihi: 16/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -75,7 +75,7 @@ begin
   if(Bag = nil) then
   begin
 
-    SISTEM_MESAJ(RENK_KIRMIZI, 'TCP: eþleþen uzak port bulunamadý: %d', [YerelPort]);
+    SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'TCP: eþleþen uzak port bulunamadý: %d', [YerelPort]);
     Exit;
   end
   else

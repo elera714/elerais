@@ -46,7 +46,7 @@ begin
   FDurumCubugu.Olustur(FPencere.Kimlik, 0, 0, 100, 18, 'Beklemede.');
   FDurumCubugu.Goster;
 
-  FetDNSAdi.Olustur(FPencere.Kimlik, 10, 10, RENK_SIYAH, 'DNS Adres:');
+  FetDNSAdi.Olustur(FPencere.Kimlik, 10, 10, 80, 16, RENK_SIYAH, 'DNS Adres:');
   FetDNSAdi.Goster;
 
   FgkDNSAdi.Olustur(FPencere.Kimlik, 96, 7, 186, 22, DNSAdresSorgu);

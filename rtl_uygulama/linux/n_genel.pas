@@ -38,7 +38,7 @@ type
     procedure FarePozisyonunuAl(ANokta: PNokta); assembler;
 
     // dosya işlevleri
-    function _FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
+    function _FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
       var ADosyaArama: TDosyaArama): TISayi4; assembler;
     function _FindNext(var ADosyaArama: TDosyaArama): TISayi4; assembler;
     function _FindClose(var ADosyaArama: TDosyaArama): TISayi4; assembler;
@@ -152,7 +152,7 @@ asm
   add   esp,4
 end;
 
-function TGenel._FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
+function TGenel._FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4; assembler;
 asm
   push	DWORD ADosyaArama

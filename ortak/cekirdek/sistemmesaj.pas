@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 22/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,8 +20,12 @@ interface
 uses paylasim;
 
 type
-  PMesaj = ^TMesaj;
-  TMesaj = record
+  PMesajTipi = ^TMesajTipi;
+  TMesajTipi = (mtBilgi = 1, mtUyari, mtHata);
+
+  PMesajKayit = ^TMesajKayit;
+  TMesajKayit = record
+    MesajTipi: TMesajTipi;
     SiraNo: TISayi4;
     Saat: TSayi4;
     Renk: TRenk;
@@ -36,26 +40,32 @@ type
     FMesajNo, FToplamMesaj: TISayi4;
   public
     procedure Yukle;
-    procedure Ekle(ARenk: TRenk; AMesaj: string);
+    procedure Ekle(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string);
     procedure Temizle;
-    procedure MesajAl(ASiraNo: TISayi4; var AMesaj: PMesaj);
+    procedure MesajAl(ASiraNo: TISayi4; var AMesajKayit: PMesajKayit);
     property ServisCalisiyor: Boolean read FServisCalisiyor write FServisCalisiyor;
     property MesajNo: TISayi4 read FMesajNo;
     property ToplamMesaj: TISayi4 read FToplamMesaj;
   end;
 
 { TODO : // aşağıdaki tüm çağrılar iptal edilerek bu çağrının içerisine alınacak }
-procedure SISTEM_MESAJ(ARenk: TRenk; AMesaj: string; ASayisalDegerler: array of const);
+procedure SISTEM_MESAJ(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+    ASayisalDegerler: array of const);
 
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj: PWideChar);
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj: PChar; AMesajUz: TISayi4);
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj1: PChar; AMesajUz1: TISayi4;
-  AMesaj2: PChar; AMesajUz2: TISayi4);
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; ABellekAdres: Isaretci; ABellekUz: TSayi4);
-procedure SISTEM_MESAJ_S16(ARenk: TRenk; AMesaj: string; ASayi16, AHaneSayisi: TSayi4);
-procedure SISTEM_MESAJ2_S16(ARenk: TRenk; AMesaj: string; ASayi16: TSayi8; AHaneSayisi: TSayi4);
-procedure SISTEM_MESAJ_MAC(ARenk: TRenk; AMesaj: string; AMACAdres: TMACAdres);
-procedure SISTEM_MESAJ_IP(ARenk: TRenk; AMesaj: string; AIPAdres: TIPAdres);
+procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: PWideChar);
+procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: PChar; AMesajUz: TISayi4);
+procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj1: PChar;
+  AMesajUz1: TISayi4; AMesaj2: PChar; AMesajUz2: TISayi4);
+procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk;
+  ABellekAdres: Isaretci; ABellekUz: TSayi4);
+procedure SISTEM_MESAJ_S16(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  ASayi16, AHaneSayisi: TSayi4);
+procedure SISTEM_MESAJ2_S16(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  ASayi16: TSayi8; AHaneSayisi: TSayi4);
+procedure SISTEM_MESAJ_MAC(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  AMACAdres: TMACAdres);
+procedure SISTEM_MESAJ_IP(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  AIPAdres: TIPAdres);
 
 implementation
 
@@ -66,7 +76,7 @@ const
 
 var
   MesajBellekAdresi: Isaretci;
-  MesajListesi: array[0..USTSINIR_MESAJ - 1] of PMesaj;
+  MesajListesi: array[0..USTSINIR_MESAJ - 1] of PMesajKayit;
 
 {==============================================================================
   oluşturulacak mesajların ana yükleme işlevlerini içerir
@@ -77,14 +87,14 @@ var
 begin
 
   // mesajlar için bellek ayır
-  MesajBellekAdresi := GGercekBellek.Ayir(USTSINIR_MESAJ * SizeOf(TMesaj));
+  MesajBellekAdresi := GGercekBellek.Ayir(USTSINIR_MESAJ * SizeOf(TMesajKayit));
 
   // bellek girişlerini mesaj yapılarıyla eşleştir
   for i := 0 to USTSINIR_MESAJ - 1 do
   begin
 
     MesajListesi[i] := MesajBellekAdresi;
-    MesajBellekAdresi += SizeOf(TMesaj);
+    MesajBellekAdresi += SizeOf(TMesajKayit);
   end;
 
   // mesaj numarası
@@ -100,7 +110,7 @@ end;
 {==============================================================================
   mesajı sistem kayıtlarına ekler
  ==============================================================================}
-procedure TSistemMesaj.Ekle(ARenk: TRenk; AMesaj: string);
+procedure TSistemMesaj.Ekle(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string);
 var
   Saat, Dakika,
   Saniye: TSayi1;
@@ -121,6 +131,7 @@ begin
     for j := 1 to USTSINIR_MESAJ - 1 do
     begin
 
+      MesajListesi[j - 1]^.MesajTipi := MesajListesi[j]^.MesajTipi;
       MesajListesi[j - 1]^.SiraNo := MesajListesi[j]^.SiraNo;
       MesajListesi[j - 1]^.Saat := MesajListesi[j]^.Saat;
       MesajListesi[j - 1]^.Renk := MesajListesi[j]^.Renk;
@@ -129,6 +140,9 @@ begin
 
     Dec(i);
   end;
+
+  // mesaj tipi
+  MesajListesi[i]^.MesajTipi := AMesajTipi;
 
   // mesaj sıra numarası
   MesajListesi[i]^.SiraNo := MesajNo;
@@ -161,6 +175,7 @@ begin
   for i := 0 to USTSINIR_MESAJ - 1 do
   begin
 
+    MesajListesi[i]^.MesajTipi := mtBilgi;
     MesajListesi[i]^.SiraNo := -1;
     MesajListesi[i]^.Saat := 0;
     MesajListesi[i]^.Renk := RENK_SIYAH;
@@ -171,24 +186,26 @@ end;
 {==============================================================================
   mesaj kayıtlarından istenen sıradaki mesajı alır
  ==============================================================================}
-procedure TSistemMesaj.MesajAl(ASiraNo: TISayi4; var AMesaj: PMesaj);
+procedure TSistemMesaj.MesajAl(ASiraNo: TISayi4; var AMesajKayit: PMesajKayit);
 begin
 
   // istenen mesajın belirtilen aralıkta olup olmadığını kontrol et
   if(ASiraNo > -1) and (ASiraNo <= USTSINIR_MESAJ) then
   begin
 
-    AMesaj^.SiraNo := MesajListesi[ASiraNo]^.SiraNo;
-    AMesaj^.Saat := MesajListesi[ASiraNo]^.Saat;
-    AMesaj^.Renk := MesajListesi[ASiraNo]^.Renk;
-    AMesaj^.Mesaj := MesajListesi[ASiraNo]^.Mesaj;
+    AMesajKayit^.MesajTipi := MesajListesi[ASiraNo]^.MesajTipi;
+    AMesajKayit^.SiraNo := MesajListesi[ASiraNo]^.SiraNo;
+    AMesajKayit^.Saat := MesajListesi[ASiraNo]^.Saat;
+    AMesajKayit^.Renk := MesajListesi[ASiraNo]^.Renk;
+    AMesajKayit^.Mesaj := MesajListesi[ASiraNo]^.Mesaj;
   end;
 end;
 
 {==============================================================================
   sistem kayıtlarına mesaj ekle
  ==============================================================================}
-procedure SISTEM_MESAJ(ARenk: TRenk; AMesaj: string; ASayisalDegerler: array of const);
+procedure SISTEM_MESAJ(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  ASayisalDegerler: array of const);
 var
   DegerSiraNo,
   i, j: TSayi4;
@@ -254,13 +271,13 @@ begin
   end;
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
   sistem kayıtlarına mesaj ekle - sadece mesaj (her bir karakterin 2 byte olduğu)
  ==============================================================================}
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj: PWideChar);
+procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: PWideChar);
 var
   s: string;
 begin
@@ -268,13 +285,13 @@ begin
   // 16 bitlik UTF karakterini tek bytlık ascii değere çevir
   s := UTF16Ascii(AMesaj);
 
-  SISTEM_MESAJ(ARenk, s, []);
+  SISTEM_MESAJ(AMesajTipi, ARenk, s, []);
 end;
 
 {==============================================================================
   sistem kayıtlarına mesaj ekle - sadece mesaj (pchar türünde veri)
  ==============================================================================}
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj: PChar; AMesajUz: TISayi4);
+procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: PChar; AMesajUz: TISayi4);
 var
   i: Integer;
   p: PChar;
@@ -286,14 +303,14 @@ begin
   for i := 0 to AMesajUz - 1 do s := s + p[i];
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
   sistem kayıtlarına mesaj ekle - sadece mesaj (pchar türünde veri)
  ==============================================================================}
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; AMesaj1: PChar; AMesajUz1: TISayi4;
-  AMesaj2: PChar; AMesajUz2: TISayi4);
+procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj1: PChar;
+  AMesajUz1: TISayi4; AMesaj2: PChar; AMesajUz2: TISayi4);
 var
   i: Integer;
   p: PChar;
@@ -309,13 +326,14 @@ begin
   for i := 0 to AMesajUz2 - 1 do s := s + p[i];
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
   sistem kayıtlarına mesaj ekle - belirli bellek adresinden, belirli uzunlukta veri
  ==============================================================================}
-procedure SISTEM_MESAJ_YAZI(ARenk: TRenk; ABellekAdres: Isaretci; ABellekUz: TSayi4);
+procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk;
+  ABellekAdres: Isaretci; ABellekUz: TSayi4);
 var
   i: TSayi4;
   p: PChar;
@@ -327,13 +345,14 @@ begin
   for i := 0 to ABellekUz - 1 do s := s + p[i];
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
   sistem kayıtlarına mesaj ekle - mesaj + 16lı sayı sisteminde sayı birleşimi - 32 bit
  ==============================================================================}
-procedure SISTEM_MESAJ_S16(ARenk: TRenk; AMesaj: string; ASayi16, AHaneSayisi: TSayi4);
+procedure SISTEM_MESAJ_S16(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  ASayi16, AHaneSayisi: TSayi4);
 var
   Deger16: string[10];
   s: string;
@@ -344,13 +363,14 @@ begin
 
   s := AMesaj + Deger16;
 
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
   sistem kayıtlarına mesaj ekle - mesaj + 16lı sayı sisteminde sayı birleşimi - 64 bit
  ==============================================================================}
-procedure SISTEM_MESAJ2_S16(ARenk: TRenk; AMesaj: string; ASayi16: TSayi8; AHaneSayisi: TSayi4);
+procedure SISTEM_MESAJ2_S16(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  ASayi16: TSayi8; AHaneSayisi: TSayi4);
 var
   Deger16: string[18];
   s: string;
@@ -361,13 +381,14 @@ begin
 
   s := AMesaj + Deger16;
 
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
   sistem kayıtlarına mesaj ekle - mesaj + mac adres birleşimi
  ==============================================================================}
-procedure SISTEM_MESAJ_MAC(ARenk: TRenk; AMesaj: string; AMACAdres: TMACAdres);
+procedure SISTEM_MESAJ_MAC(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  AMACAdres: TMACAdres);
 var
   MACAdres: string[17];
   s: string;
@@ -378,13 +399,14 @@ begin
 
   s := AMesaj + MACAdres;
 
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
   sistem kayıtlarına mesaj ekle - mesaj + ip adres birleşimi
  ==============================================================================}
-procedure SISTEM_MESAJ_IP(ARenk: TRenk; AMesaj: string; AIPAdres: TIPAdres);
+procedure SISTEM_MESAJ_IP(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  AIPAdres: TIPAdres);
 var
   IPAdres: string[15];
   s: string;
@@ -395,7 +417,7 @@ begin
 
   s := AMesaj + IPAdres;
 
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 end.

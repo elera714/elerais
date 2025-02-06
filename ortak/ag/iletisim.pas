@@ -6,7 +6,7 @@
   Dosya Adý: iletisim.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -159,7 +159,7 @@ begin
 
     Bag^.FBellekUzunlugu := 0;
     Bag^.FBellek := GGercekBellek.Ayir(4095); //Bag^.FPencereU);
-    if(Bag^.FBellek = nil) then SISTEM_MESAJ(RENK_KIRMIZI, 'ILETISIM.PAS: Bellek yok', []);
+    if(Bag^.FBellek = nil) then SISTEM_MESAJ(mtHata, RENK_SIYAH, 'ILETISIM.PAS: Bellek yok', []);
   end
   else if(AProtokolTipi = ptUDP) then
   begin
@@ -177,10 +177,10 @@ begin
   begin
 
     s := ProtokolTipAdi(AProtokolTipi);
-    SISTEM_MESAJ(RENK_KIRMIZI, 'ILETISIM.PAS: TBaglanti.Olustur', []);
-    SISTEM_MESAJ(RENK_KIRMIZI, '  -> Bilinmeyen Protokol: %s ', [s]);
-    SISTEM_MESAJ_IP(RENK_ACIKMAVI, '  -> Hedef IP: ', IPAdresi);
-    SISTEM_MESAJ_S16(RENK_ACIKMAVI, '  -> Hedef Port: ', AUzakPort, 4);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'ILETISIM.PAS: TBaglanti.Olustur', []);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> Bilinmeyen Protokol: %s ', [s]);
+    SISTEM_MESAJ_IP(mtHata, RENK_SIYAH, '  -> Hedef IP: ', IPAdresi);
+    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> Hedef Port: ', AUzakPort, 4);
   end;
 
   Result := Bag;

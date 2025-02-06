@@ -6,7 +6,7 @@
   Dosya Adı: ip.pas
   Dosya İşlevi: ip paket yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 02/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -86,9 +86,9 @@ begin
     begin
 
       Inc(GAEPaketSayisi);
-      SISTEM_MESAJ(RENK_KIRMIZI, 'IP.PAS: bilinmeyen IP paketi:', []);
-      SISTEM_MESAJ_IP(RENK_MOR, '  -> Hedef IP adresi: ', AIPPaket^.HedefIP);
-      SISTEM_MESAJ(RENK_MOR, '  -> Hedef protokol: %d', [AIPPaket^.Protokol]);
+      SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'IP.PAS: bilinmeyen IP paketi:', []);
+      SISTEM_MESAJ_IP(mtUyari, RENK_SIYAH, '  -> Hedef IP adresi: ', AIPPaket^.HedefIP);
+      SISTEM_MESAJ(mtUyari, RENK_SIYAH, '  -> Hedef protokol: %d', [AIPPaket^.Protokol]);
     end;
   end;
 end;

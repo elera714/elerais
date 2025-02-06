@@ -6,7 +6,7 @@
   Dosya Adý: dosya.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 09/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,7 +17,7 @@ interface
 uses paylasim;
 
 procedure Yukle;
-function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
+function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
@@ -35,7 +35,7 @@ procedure DosyaKaydiniYokEt(ADosyaKimlik: TKimlik);
 
 implementation
 
-uses bolumleme, fat12, fat16, fat32, sistemmesaj, islevler;
+uses bolumleme, fat12, fat16, fat32, sistemmesaj, islevler, donusum;
 
 {==============================================================================
   dosya sistem iþlevlerinin kullanacaðý deðiþkenleri ilk deðerlerle yükle
@@ -66,16 +66,23 @@ end;
 {==============================================================================
   dosya arama iþlevini baþlatýr
  ==============================================================================}
-function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi2;
+function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 var
   MD: PMantiksalDepolama;
   AramaKimlik: TKimlik;
   DST: TSayi4;
-  AranacakDeger: string;
+  AramaSuzgeci, AranacakDizin, Surucu, s: string;
   KalinanSira, UTamAramaYolu,
   AramaSonuc: TISayi4;
+  i, SektorNo,
+  AyrilmisSektor: TSayi4;
 begin
+
+  // AAramaSuzgec
+  // örnek: disket1:\dizin1\dizin2\*.*
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AAramaSuzgec: %s', [AAramaSuzgec]);
 
   // arama için arama bilgilerinin saklanacaðý bellek bölgesi tahsis et
   AramaKimlik := AramaKaydiOlustur;
@@ -100,43 +107,130 @@ begin
     Exit;
   end;
 
-  if not(AAramaSuzgec[KalinanSira] = '\') then
+  s := AAramaSuzgec;
+
+  i := Pos(':', s);
+  if(i > 0) then
   begin
 
-    SISTEM_MESAJ(RENK_KIRMIZI, 'DOSYA.PAS: AranacakDeger hatalý!', []);
+    Surucu := Copy(AramaSuzgeci, 1, i - 1);
+    s := Copy(s, i + 1, Length(s) - i);
+  end;
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Sürücü: ''%s''', [Surucu]);
+
+  if not(s[1] = '\') then
+  begin
+
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: Arama süzgeç söz dizilimi hatalý!', []);
     Result := 1;
     Exit;
   end;
+  s := Copy(s, 2, Length(s) - 1);
 
-  AranacakDeger := '';
-  Inc(KalinanSira);
-  UTamAramaYolu := Length(AAramaSuzgec);
-  while (AAramaSuzgec[KalinanSira] <> '\') and (KalinanSira <= UTamAramaYolu) do
+  // sürücüyü arama bellek bölgesine ekle
+  GAramaKayitListesi[AramaKimlik].MantiksalDepolama := MD;
+
+  SektorNo := MD^.Acilis.DizinGirisi.IlkSektor;
+  AyrilmisSektor := MD^.Acilis.DizinGirisi.IlkSektor + MD^.Acilis.DizinGirisi.ToplamSektor - 2;
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SektorNo: ''%d''', [SektorNo]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AyrilmisSektor: ''%d''', [AyrilmisSektor]);
+
+
+  repeat
+
+    i := Pos('\', s);
+    if(i > 0) then
+    begin
+
+      AranacakDizin := Copy(s, 1, i - 1);
+      AramaSuzgeci := '';
+      s := Copy(s, i + 1, Length(s) - i);
+    end
+    else
+    begin
+
+      AranacakDizin := '';
+      AramaSuzgeci := s;
+    end;
+
+    if(Length(AranacakDizin) > 0) then
+    begin
+
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AranacakDizin: ''%s''', [AranacakDizin]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
+
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := SektorNo;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
+
+      SektorNo := DizinGirisindeAra(GAramaKayitListesi[AramaKimlik], AranacakDizin);
+      if(SektorNo = 0) then
+      begin
+
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: %s dizini dosya tablosunda mevcut deðil!', [AranacakDizin]);
+        Exit(1);
+      end else SektorNo += AyrilmisSektor;
+    end;
+  until Length(AranacakDizin) = 0;
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ýlk Dizin Küme No: %d', [SektorNo]);
+
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'XXYYTT: %d', [MD^.Acilis.DizinGirisi.IlkSektor + MD^.Acilis.DizinGirisi.ToplamSektor]);
+
+  if(AramaSuzgeci = '*.*') then
   begin
 
-    AranacakDeger += AAramaSuzgec[KalinanSira];
-    Inc(KalinanSira);
+    // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := SektorNo;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := MD^.Acilis.DizinGirisi.GirdiSayisi;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
+
+    // dosya sistem tipine göre iþlevi yönlendir
+    DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
+    case DST of
+      DST_FAT12     : Result := fat12.FindFirst(AramaSuzgeci, ADosyaOzellik, ADosyaArama);
+      DST_FAT16     : Result := fat16.FindFirst(AramaSuzgeci, ADosyaOzellik, ADosyaArama);
+      DST_FAT32,
+      DST_FAT32LBA  : Result := fat32.FindFirst(AramaSuzgeci, ADosyaOzellik, ADosyaArama);
+      else Result := 1;
+    end;
+  end
+  else
+  begin
+
+
   end;
 
-  if(AranacakDeger = '*.*') then
+  Exit;
+
+
+
+  if(AAramaSuzgec = 'disket1:\bt\*.*') then
   begin
+
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AAramaSuzgec: Tamam', []);
 
     // sürücüyü arama bellek bölgesine ekle
     GAramaKayitListesi[AramaKimlik].MantiksalDepolama := MD;
 
     // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := MD^.Acilis.DizinGirisi.IlkSektor;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := 965; //MD^.Acilis.DizinGirisi.IlkSektor;
     GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
     GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := MD^.Acilis.DizinGirisi.GirdiSayisi;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
 
     // dosya sistem tipine göre iþlevi yönlendir
     DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
     case DST of
-      DST_FAT12     : Result := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
-      DST_FAT16     : Result := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DST_FAT12     : Result := fat12.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
+      DST_FAT16     : Result := fat16.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
       DST_FAT32,
-      DST_FAT32LBA  : Result := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DST_FAT32LBA  : Result := fat32.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
       else Result := 1;
     end;
   end
@@ -151,23 +245,24 @@ begin
     GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := MD^.Acilis.DizinGirisi.IlkSektor;
     GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
     GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := MD^.Acilis.DizinGirisi.GirdiSayisi;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
+    GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
 
     // dosya sistem tipine göre iþlevi yönlendir
     DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
     case DST of
-      DST_FAT12     : AramaSonuc := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
-      DST_FAT16     : AramaSonuc := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DST_FAT12     : AramaSonuc := fat12.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
+      DST_FAT16     : AramaSonuc := fat16.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
       DST_FAT32,
-      DST_FAT32LBA  : AramaSonuc := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+      DST_FAT32LBA  : AramaSonuc := fat32.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
       else AramaSonuc := 1;
     end;
     // <- yukarýdaki yapý ile ayný
 
-    if not(AranacakDeger = '*.*') and (AramaSonuc = 0) then
+    if not(AranacakDizin = '*.*') and (AramaSonuc = 0) then
     begin
 
-      {SISTEM_MESAJ(RENK_SIYAH, 'Aranacak Deðer: ', AranacakDeger, []);
+      {SISTEM_MESAJ(RENK_SIYAH, 'Aranacak Deðer: ', AranacakDizin, []);
       SISTEM_MESAJ_S16(RENK_SIYAH, 'BaslangicKumeNo: ', ADosyaArama.BaslangicKumeNo, 8);
       SISTEM_MESAJ(RENK_SIYAH, 'Dosya Adý: ', ADosyaArama.DosyaAdi, []);
       SISTEM_MESAJ_S16(RENK_SIYAH, 'DosyaUzunlugu: ', ADosyaArama.DosyaUzunlugu, 8);
@@ -184,18 +279,19 @@ begin
         ADosyaArama.BaslangicKumeNo + 622;
       GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := 1;
       GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := 16;
-      GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := -1;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
 
-      AranacakDeger := '*.*';
+      AranacakDizin := '*.*';
       GAramaKayitListesi[AramaKimlik].Aranan := '*.*';
 
       // dosya sistem tipine göre iþlevi yönlendir
       DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
       case DST of
-        DST_FAT12     : AramaSonuc := fat12.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
-        DST_FAT16     : AramaSonuc := fat16.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+        DST_FAT12     : AramaSonuc := fat12.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
+        DST_FAT16     : AramaSonuc := fat16.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
         DST_FAT32,
-        DST_FAT32LBA  : AramaSonuc := fat32.FindFirst(AranacakDeger, ADosyaOzellik, ADosyaArama);
+        DST_FAT32LBA  : AramaSonuc := fat32.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
         else AramaSonuc := 1;
       end;
       // <- yukarýdaki yapý ile ayný
@@ -242,7 +338,7 @@ var
   MD: PMantiksalDepolama;
   DosyaKayit: PDosyaKayit;
   DosyaKimlik: TKimlik;
-  Surucu, Dizin, DosyaAdi: string;
+  Surucu, Klasor, DosyaAdi: string;
   KalinanSira: TISayi4;
 begin
 
@@ -277,9 +373,10 @@ begin
   DosyaKayit^.MantiksalDepolama := MD;
 
   // dosya yolunu ayrýþtýr
-  DosyaYolunuParcala(ADosyaAdi, Surucu, Dizin, DosyaAdi);
+  DosyaYolunuParcala2(ADosyaAdi, Surucu, Klasor, DosyaAdi);
 
-  // dosya adý
+  // klasör ve dosya adý
+  DosyaKayit^.Klasor := Klasor;
   DosyaKayit^.DosyaAdi := DosyaAdi;
 
   // diðer deðerleri sýfýrla
@@ -308,7 +405,7 @@ begin
   DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   // tam dosya adýný al
-  TamAramaYolu := DosyaKayit^.MantiksalDepolama^.MD3.AygitAdi + ':\*.*';
+  TamAramaYolu := DosyaKayit^.MantiksalDepolama^.MD3.AygitAdi + ':' + DosyaKayit^.Klasor + '*.*';
 
   // dosyayý dosya tablosunda bul
   Bulundu := False;
@@ -327,6 +424,8 @@ begin
   // dosyanýn ilk dizi ve uzunluðunu al
   if(Bulundu) then
   begin
+
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Reset: %d', [DosyaArama.DosyaUzunlugu]);
 
     DosyaKayit^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
     DosyaKayit^.Uzunluk := DosyaArama.DosyaUzunlugu;

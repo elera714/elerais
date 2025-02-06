@@ -6,7 +6,7 @@
   Dosya Adı: k_sistemmesaj.pas
   Dosya İşlevi: hata ayıklama (debug) amaçlı mesaj yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,7 +27,7 @@ uses genel, sistemmesaj;
  ==============================================================================}
 function SistemMesajCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  p: PMesaj;
+  p: PMesajKayit;
   IslevNo: TSayi4;
 begin
 
@@ -45,7 +45,7 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    p := PMesaj(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+    p := PMesajKayit(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
     GSistemMesaj.MesajAl(PISayi4(ADegiskenler + 00)^, p);
     Result := GSistemMesaj.ToplamMesaj;
   end
@@ -54,15 +54,17 @@ begin
   else if(IslevNo = 3) then
   begin
 
-    SISTEM_MESAJ(PRenk(ADegiskenler + 00)^, PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi))^, []);
+    SISTEM_MESAJ(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
+      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi))^, []);
   end
 
   // programdan karakter katarı + sayısal değer türünde gelen mesajı sistem mesajlarına ekle
   else if(IslevNo = 4) then
   begin
 
-    SISTEM_MESAJ_S16(PRenk(ADegiskenler + 00)^, PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi))^,
-      PSayi4(ADegiskenler + 08)^, PSayi4(ADegiskenler + 12)^);
+    SISTEM_MESAJ_S16(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
+      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi))^,
+      PSayi4(ADegiskenler + 12)^, PSayi4(ADegiskenler + 16)^);
   end
 
   // toplam sistem mesaj sayısını al

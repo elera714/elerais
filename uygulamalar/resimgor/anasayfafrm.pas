@@ -98,7 +98,7 @@ begin
     begin
 
       i := FlkDosyaListesi.SeciliSiraNoAl;
-      GoruntulenecekDosya := 'disk1:\' + DosyaAramaListesi[i].DosyaAdi;
+      GoruntulenecekDosya := 'disk1:\resimler\' + DosyaAramaListesi[i].DosyaAdi;
       FResim.Degistir(GoruntulenecekDosya);
       FDurumCubugu.DurumYazisiDegistir('Dosya: ' + GoruntulenecekDosya);
     end
@@ -153,7 +153,7 @@ begin
 
   j := 0;
 
-  AramaSonuc := FGenel._FindFirst('disk1:\*.*', 0, DosyaArama);
+  AramaSonuc := FGenel._FindFirst('disk1:\resimler\*.*', 0, DosyaArama);
 
   while (AramaSonuc = 0) do
   begin

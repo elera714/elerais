@@ -6,7 +6,7 @@
   Dosya Adý: udp.pas
   Dosya Ýþlevi: udp protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 04/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -82,9 +82,9 @@ begin
     if(Baglanti = nil) then
     begin
 
-      SISTEM_MESAJ(RENK_KIRMIZI, 'UDP.PAS: eþleþen UDP portu bulunamadý: %d', [HedefPort]);
-      SISTEM_MESAJ_IP(RENK_MOR, '  -> Kaynak IP: ', AIPPaket^.KaynakIP);
-      SISTEM_MESAJ_IP(RENK_MOR, '  -> Hedef IP: ', AIPPaket^.HedefIP);
+      SISTEM_MESAJ(mtUyari, RENK_MAVI, 'UDP.PAS: eþleþen UDP portu bulunamadý: %d', [HedefPort]);
+      SISTEM_MESAJ_IP(mtUyari, RENK_SIYAH, '  -> Kaynak IP: ', AIPPaket^.KaynakIP);
+      SISTEM_MESAJ_IP(mtUyari, RENK_SIYAH, '  -> Hedef IP: ', AIPPaket^.HedefIP);
     end
     else
     begin
@@ -143,12 +143,12 @@ end;
 procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 begin
 
-  SISTEM_MESAJ(RENK_MOR, '-------------------------', []);
-  SISTEM_MESAJ(RENK_LACIVERT, 'UDP Kaynak Port: %d', [ntohs(AUDPBaslik^.KaynakPort)]);
-  SISTEM_MESAJ(RENK_LACIVERT, 'UDP Hedef Port: %d', [ntohs(AUDPBaslik^.HedefPort)]);
-  SISTEM_MESAJ(RENK_LACIVERT, 'UDP Veri Uzunluðu: %d', [ntohs(AUDPBaslik^.Uzunluk)]);
-  SISTEM_MESAJ(RENK_LACIVERT, 'UDP Saðlama Toplamý: %x', [ntohs(AUDPBaslik^.SaglamaToplami)]);
-  //SISTEM_MESAJ(RENK_LACIVERT, 'UDP Veri: ' + s, []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '-------------------------', []);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Kaynak Port: %d', [ntohs(AUDPBaslik^.KaynakPort)]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Hedef Port: %d', [ntohs(AUDPBaslik^.HedefPort)]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Veri Uzunluðu: %d', [ntohs(AUDPBaslik^.Uzunluk)]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Saðlama Toplamý: %x', [ntohs(AUDPBaslik^.SaglamaToplami)]);
+  //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Veri: ' + s, []);
 end;
 
 end.

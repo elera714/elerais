@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 29/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -120,17 +120,22 @@ const
     ('Hata No: 15 - Tanýmlanmamýþ'));
 
 const
-  ILISKILI_UYGULAMA_SAYISI = 9;
+  ILISKILI_UYGULAMA_SAYISI = 10;
   IliskiliUygulamaListesi: array[0..ILISKILI_UYGULAMA_SAYISI - 1] of TDosyaIliskisi = (
-    (Uzanti: '';     Uygulama: 'dsybil.c';     DosyaTip: dtDiger),
     (Uzanti: 'c';    Uygulama: '';             DosyaTip: dtCalistirilabilir),
+
     (Uzanti: 's';    Uygulama: '';             DosyaTip: dtSurucu),
-    (Uzanti: 'bmp';  Uygulama: 'resimgor.c';   DosyaTip: dtResim),
+
     (Uzanti: 'bat';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'lpr';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'md';   Uygulama: 'defter.c';     DosyaTip: dtBelge),
+    (Uzanti: 'pas';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
+    (Uzanti: 'sh';   Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'txt';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
-    (Uzanti: 'pas';  Uygulama: 'defter.c';     DosyaTip: dtBelge));
+
+    (Uzanti: 'bmp';  Uygulama: 'resimgor.c';   DosyaTip: dtResim),
+
+    (Uzanti: '';     Uygulama: 'dsybil.c';     DosyaTip: dtDiger));
 
 {==============================================================================
   çalýþtýrýlacak görevlerin ana yükleme iþlevlerini içerir
@@ -171,7 +176,7 @@ var
   DosyaBellek: Isaretci;
   Olay: POlay;
   DosyaU, i, ProgramBellekU: TSayi4;
-  Surucu, Dizin,
+  Surucu, Klasor,
   DosyaAdi: string;
   DosyaKimlik: TKimlik;
   ELFBaslik: PELFBaslik;
@@ -182,12 +187,14 @@ var
   AygitSurucusu: PAygitSurucusu;
 begin
 
+  asm cli end;
+
   if(CalistirGorevNo <> 0) then while CalistirGorevNo <> 0 do;
 
   CalistirGorevNo := CalisanGorev;
 
-  // dosyayý, sürücü + dizin + dosya adý parçalarýna ayýr
-  DosyaYolunuParcala(ATamDosyaYolu, Surucu, Dizin, DosyaAdi);
+  // dosyayý, sürücü + Klasor + dosya adý parçalarýna ayýr
+  DosyaYolunuParcala2(ATamDosyaYolu, Surucu, Klasor, DosyaAdi);
 
   // dosya adýnýn uzunluðunu al
   DosyaU := Length(DosyaAdi);
@@ -204,7 +211,12 @@ begin
   IliskiliProgram := IliskiliProgramAl(DosyaUzanti);
 
   Degiskenler := '';
-  TamDosyaYolu := Surucu + ':\' + DosyaAdi;
+  TamDosyaYolu := Surucu + ':' + Klasor + DosyaAdi;
+
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'TamDosyaYolu: %s', [TamDosyaYolu]);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Surucu: %s', [Surucu]);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Klasor: %s', [Klasor]);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DosyaAdi: %s', [DosyaAdi]);
 
   // dosya çalýþtýrýlabilir bir dosya deðil ise dosyanýn birlikte açýlacaðý
   // öndeðer olarak tanýmlanan programý bul
@@ -214,7 +226,7 @@ begin
 
     // eðer dosya çalýþtýrýlabilir deðil ise dosyayý, öndeðer olarak tanýmlanan
     // program ile çalýþtýr
-    Degiskenler := Surucu + ':\' + DosyaAdi;     // çalýþtýrýlacak dosya
+    Degiskenler := Surucu + ':' + Klasor + DosyaAdi;     // çalýþtýrýlacak dosya
     DosyaAdi := IliskiliProgram.Uygulama;         // çalýþtýrýlacak dosyayý çalýþtýracak program
     TamDosyaYolu := AcilisSurucuAygiti + ':\' + DosyaAdi;
   end;
@@ -240,9 +252,10 @@ begin
     if(DosyaBellek = nil) then
     begin
 
-      SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
+      SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
       Result := nil;
       CalistirGorevNo := 0;
+      asm sti end;
       Exit;
     end;
 
@@ -252,9 +265,10 @@ begin
 
       // dosyayý kapat
       CloseFile(DosyaKimlik);
-      SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: ' + TamDosyaYolu + ' dosyasý okunamýyor!', []);
+      SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + TamDosyaYolu + ' dosyasý okunamýyor!', []);
       Result := nil;
       CalistirGorevNo := 0;
+      asm sti end;
       Exit;
     end;
 
@@ -266,9 +280,10 @@ begin
     if(Gorev = nil) then
     begin
 
-      SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için görev oluþturulamýyor!', []);
+      SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için görev oluþturulamýyor!', []);
       Result := nil;
       CalistirGorevNo := 0;
+      asm sti end;
       Exit;
     end;
 
@@ -281,13 +296,14 @@ begin
     begin
 
       AygitSurucusu := PAygitSurucusu(DosyaBellek + PSayi4(DosyaBellek + $100 + 8)^);
-      SISTEM_MESAJ(RENK_ZEYTINYESILI, 'Aygýt sürücüsü / açýklama', []);
-      SISTEM_MESAJ(RENK_ZEYTINYESILI, AygitSurucusu^.AygitAdi, []);
-      SISTEM_MESAJ(RENK_ZEYTINYESILI, AygitSurucusu^.Aciklama, []);
-      SISTEM_MESAJ_S16(RENK_ZEYTINYESILI, 'Deðer-1: ', AygitSurucusu^.Deger1, 8);
-      SISTEM_MESAJ_S16(RENK_ZEYTINYESILI, 'Deðer-2: ', AygitSurucusu^.Deger2, 8);
-      SISTEM_MESAJ_S16(RENK_ZEYTINYESILI, 'Deðer-3: ', AygitSurucusu^.Deger3, 8);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Aygýt sürücüsü / açýklama', []);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, AygitSurucusu^.AygitAdi, []);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, AygitSurucusu^.Aciklama, []);
+      SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Deðer-1: ', AygitSurucusu^.Deger1, 8);
+      SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Deðer-2: ', AygitSurucusu^.Deger2, 8);
+      SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Deðer-3: ', AygitSurucusu^.Deger3, 8);
       CalistirGorevNo := 0;
+      asm sti end;
       Exit;
     end;
 
@@ -296,9 +312,10 @@ begin
     if(Olay = nil) then
     begin
 
-      SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: olay bilgisi için bellek ayrýlamýyor!', []);
+      SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: olay bilgisi için bellek ayrýlamýyor!', []);
       Result := nil;
       CalistirGorevNo := 0;
+      asm sti end;
       Exit;
     end;
 
@@ -313,8 +330,8 @@ begin
 
     // iþlemin yýðýn adresi
     if(DosyaAdi = 'defter.c') then
-      Gorev^.FYiginBaslangicAdres := (ProgramBellekU - DEFTER_BELLEK_U) - 1024
-    else Gorev^.FYiginBaslangicAdres := ProgramBellekU - 1024;
+      Gorev^.FYiginBaslangicAdres := (ProgramBellekU - DEFTER_BELLEK_U) - 512
+    else Gorev^.FYiginBaslangicAdres := ProgramBellekU - 512;
 
     // dosyanýn çalýþtýrýlmasý için seçicileri oluþtur
     Gorev^.SecicileriOlustur;
@@ -379,10 +396,12 @@ begin
   begin
 
     CloseFile(DosyaKimlik);
-    SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: ' + TamDosyaYolu + ' dosya okuma hatasý!', []);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + TamDosyaYolu + ' dosya okuma hatasý!', []);
   end;
 
   CalistirGorevNo := 0;
+
+  asm sti end;
 end;
 
 {==============================================================================
@@ -620,19 +639,19 @@ begin
   if(ASonlanmaSebebi = -1) then
   begin
 
-    SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: ' + Gorev^.FDosyaAdi + ' normal bir þekilde sonlandýrýldý.', []);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'GOREV.PAS: ' + Gorev^.FDosyaAdi + ' normal bir þekilde sonlandýrýldý.', []);
   end
   else
   begin
 
-    SISTEM_MESAJ(RENK_MOR, 'GOREV.PAS: ' + Gorev^.FDosyaAdi +
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + Gorev^.FDosyaAdi +
       ' programý istenmeyen bir iþlem yaptýðýndan dolayý sonlandýrýldý', []);
-    SISTEM_MESAJ(RENK_KIRMIZI, 'GOREV.PAS: Hata Kodu: ' + IntToStr(ASonlanmaSebebi) + ' - ' +
+    SISTEM_MESAJ(mtHata, RENK_MAVI, '  -> Hata Kodu: ' + IntToStr(ASonlanmaSebebi) + ' - ' +
       IstisnaAciklamaListesi[ASonlanmaSebebi], []);
-    SISTEM_MESAJ_S16(RENK_LACIVERT, 'GOREV.PAS: CS: ', Gorev^.FHataCS, 8);
-    SISTEM_MESAJ_S16(RENK_LACIVERT, 'GOREV.PAS: EIP: ', Gorev^.FHataEIP, 8);
-    SISTEM_MESAJ_S16(RENK_LACIVERT, 'GOREV.PAS: ESP: ', Gorev^.FHataESP, 8);
-    SISTEM_MESAJ_S16(RENK_LACIVERT, 'GOREV.PAS: EFLAGS: ', Gorev^.FHataBayrak, 8);
+    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> CS: ', Gorev^.FHataCS, 8);
+    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> EIP: ', Gorev^.FHataEIP, 8);
+    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> ESP: ', Gorev^.FHataESP, 8);
+    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> EFLAGS: ', Gorev^.FHataBayrak, 8);
   end;
 
   { TODO : aþaðýdaki iþlevlerin çalýþmasýnýn doðruluðu test edilecek }

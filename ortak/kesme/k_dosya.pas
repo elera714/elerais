@@ -6,7 +6,7 @@
   Dosya Adý: k_dosya.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 12/10/2019
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,38 +16,37 @@ interface
 
 uses paylasim;
 
-function DosyaCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
+function DosyaCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses dosya;
+uses dosya, sistemmesaj;
 
 {==============================================================================
   dosya (file) kesme çaðrýlarýný yönetir
  ==============================================================================}
-function DosyaCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
+function DosyaCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  _Islev: TSayi4;
+  IslevNo: TSayi4;
 begin
 
-  _Islev := (IslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
-  case _Islev of
+  case IslevNo of
 
     // dosya aramayý baþlat
     2:
     begin
 
-      Result := FindFirst(PKarakterKatari(Isaretci(PSayi4(Degiskenler + 00)^ +
-        CalisanGorevBellekAdresi))^, PSayi2(Degiskenler + 04)^,
-        PDosyaArama(PSayi4(Degiskenler + 06)^ + CalisanGorevBellekAdresi)^);
+      Result := FindFirst(PKarakterKatari(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi)^,
+        PSayi4(ADegiskenler + 04)^, PDosyaArama(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi)^);
     end;
 
     // dosya aramayý devam ettir
     3:
     begin
 
-      Result := FindNext(PDosyaArama(PSayi4(Degiskenler + 00)^ +
+      Result := FindNext(PDosyaArama(PSayi4(ADegiskenler + 00)^ +
         CalisanGorevBellekAdresi)^);
     end;
 
@@ -55,7 +54,7 @@ begin
     4:
     begin
 
-      Result := FindClose(PDosyaArama(PSayi4(Degiskenler + 00)^ +
+      Result := FindClose(PDosyaArama(PSayi4(ADegiskenler + 00)^ +
         CalisanGorevBellekAdresi)^);
     end;
 
@@ -63,15 +62,15 @@ begin
     5:
     begin
 
-      AssignFile(PKimlik(PSayi4(Degiskenler + 00)^ + CalisanGorevBellekAdresi)^,
-        PKarakterKatari(Isaretci(PSayi4(Degiskenler + 04)^ + CalisanGorevBellekAdresi))^);
+      AssignFile(PKimlik(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi)^,
+        PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi))^);
     end;
 
     // dosyayý aç
     6:
     begin
 
-      Reset(PKimlik(Degiskenler + 00)^);
+      Reset(PKimlik(ADegiskenler + 00)^);
     end;
 
     // dosyanýn en son iþlem durumunu al
@@ -85,21 +84,21 @@ begin
     8:
     begin
 
-      Result := Integer(EOF(PKimlik(Degiskenler + 00)^));
+      Result := Integer(EOF(PKimlik(ADegiskenler + 00)^));
     end;
 
     // dosya uzunluðunu al
     9:
     begin
 
-      Result := FileSize(PKimlik(Degiskenler + 00)^);
+      Result := FileSize(PKimlik(ADegiskenler + 00)^);
     end;
 
     // dosya içeriðini oku
     10:
     begin
 
-      Read(PKimlik(Degiskenler + 00)^, Isaretci(PSayi4(Degiskenler + 04)^ +
+      Read(PKimlik(ADegiskenler + 00)^, Isaretci(PSayi4(ADegiskenler + 04)^ +
         CalisanGorevBellekAdresi));
     end;
 
@@ -107,7 +106,7 @@ begin
     11:
     begin
 
-      CloseFile(PKimlik(Degiskenler + 00)^);
+      CloseFile(PKimlik(ADegiskenler + 00)^);
     end
 
     else Result := HATA_ISLEV;

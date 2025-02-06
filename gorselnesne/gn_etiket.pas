@@ -21,7 +21,7 @@ type
   TEtiket = object(TPanel)
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-      ASol, AUst: TSayi4; AYaziRenk: TRenk; ABaslik: string): PEtiket;
+      ASol, AUst, AGenislik, AYukseklik: TSayi4; AYaziRenk: TRenk; ABaslik: string): PEtiket;
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
@@ -31,8 +31,8 @@ type
   end;
 
 function EtiketCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TSayi4; AYaziRenk: TRenk;
-  ABaslik: string): TKimlik;
+function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TSayi4;
+  AYaziRenk: TRenk; ABaslik: string): TKimlik;
 
 implementation
 
@@ -55,9 +55,9 @@ begin
     begin
 
       GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^,
-        PISayi4(ADegiskenler + 08)^, PRenk(ADegiskenler + 12)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 16)^ + CalisanGorevBellekAdresi)^);
+      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+        PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PRenk(ADegiskenler + 20)^,
+        PKarakterKatari(PSayi4(ADegiskenler + 24)^ + CalisanGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:
@@ -99,13 +99,13 @@ end;
 {==============================================================================
   etiket nesnesini oluşturur
  ==============================================================================}
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TSayi4; AYaziRenk: TRenk;
-  ABaslik: string): TKimlik;
+function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TSayi4;
+  AYaziRenk: TRenk; ABaslik: string): TKimlik;
 var
   Etiket: PEtiket;
 begin
 
-  Etiket := Etiket^.Olustur(ktNesne, AAtaNesne, ASol, AUst, AYaziRenk, ABaslik);
+  Etiket := Etiket^.Olustur(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik, AYaziRenk, ABaslik);
 
   if(Etiket = nil) then
 
@@ -118,15 +118,13 @@ end;
   etiket nesnesini oluşturur
  ==============================================================================}
 function TEtiket.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-  ASol, AUst: TSayi4; AYaziRenk: TRenk; ABaslik: string): PEtiket;
+  ASol, AUst, AGenislik, AYukseklik: TSayi4; AYaziRenk: TRenk; ABaslik: string): PEtiket;
 var
   Etiket: PEtiket;
-  Genislik: TSayi4;
 begin
 
-  Genislik := Length(ABaslik) * 8;
-  Etiket := PEtiket(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst, Genislik,
-    16, 1, RENK_BEYAZ, RENK_BEYAZ, AYaziRenk, ABaslik));
+  Etiket := PEtiket(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst, AGenislik,
+    AYukseklik, 1, RENK_BEYAZ, RENK_BEYAZ, AYaziRenk, ABaslik));
 
   // nesnenin ad değeri
   Etiket^.NesneTipi := gntEtiket;

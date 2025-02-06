@@ -35,8 +35,6 @@ const
 
 var
   DosyaAramaListesi: array[0..15] of TDosyaArama;
-
-var
   GiysiAdi: string;
   i, j: TISayi4;
 
@@ -46,13 +44,13 @@ begin
   FPencere.Olustur(-1, 100, 100, 200, 240, ptIletisim, PencereAdi, $F9FAF9);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
-  FetiBilgi[0].Olustur(FPencere.Kimlik, 5, 0, $FF0000, 'Masaüstü Renkleri:');
+  FetiBilgi[0].Olustur(FPencere.Kimlik, 5, 0, 160, 16, $FF0000, 'Masaüstü Renkleri:');
   FetiBilgi[0].Goster;
 
   FRenkSecici.Olustur(FPencere.Kimlik, 5, 19, 190, 32);
   FRenkSecici.Goster;
 
-  FetiBilgi[1].Olustur(FPencere.Kimlik, 5, 60, $FF0000, 'Masaüstü Resimleri:');
+  FetiBilgi[1].Olustur(FPencere.Kimlik, 5, 60, $FF0000, 160, 16, 'Masaüstü Resimleri:');
   FetiBilgi[1].Goster;
 
   // liste kutusu oluþtur
@@ -61,7 +59,7 @@ begin
 
   DosyalariListele;
 
-  FetiBilgi[2].Olustur(FPencere.Kimlik, 5, 192, $FF0000, 'Giysiler:');
+  FetiBilgi[2].Olustur(FPencere.Kimlik, 5, 192, 80, 16, $FF0000, 'Giysiler:');
   FetiBilgi[2].Goster;
 
   FGiysiListesi.Olustur(FPencere.Kimlik, 5, 210, 190, 25);
@@ -103,7 +101,7 @@ begin
     begin
 
       i := FlkDosyaListesi.SeciliSiraNoAl;
-      FmasELERA.MasaustuResminiDegistir('disk1:\' + DosyaAramaListesi[i].DosyaAdi);
+      FmasELERA.MasaustuResminiDegistir('disk1:\resimler\' + DosyaAramaListesi[i].DosyaAdi);
       FmasELERA.Guncelle;
     end
     else if(AOlay.Kimlik = FRenkSecici.Kimlik) then
@@ -132,7 +130,7 @@ begin
 
   j := 0;
 
-  AramaSonuc := FGenel._FindFirst('disk1:\*.*', 0, DosyaArama);
+  AramaSonuc := FGenel._FindFirst('disk1:\resimler\*.*', 0, DosyaArama);
 
   while (AramaSonuc = 0) do
   begin

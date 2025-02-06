@@ -79,7 +79,7 @@ begin
   FUstMesajPaneli.Olustur(FPencere.Kimlik, 10, 10, 250, 40, 2, RENK_SIYAH, $FAF1E3, RENK_SIYAH, '');
   FUstMesajPaneli.Hizala(hzUst);
 
-  FetAdres.Olustur(FUstMesajPaneli.Kimlik, 4, 12, RENK_SIYAH, 'Adres');
+  FetAdres.Olustur(FUstMesajPaneli.Kimlik, 4, 12, 40, 16, RENK_SIYAH, 'Adres');
   FetAdres.Goster;
 
   FgkBaglantiAdresi.Olustur(FUstMesajPaneli.Kimlik, 50, 9, 456, 22, BaglantiAdresi);

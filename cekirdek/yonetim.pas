@@ -309,7 +309,7 @@ begin
           else
           begin
 
-            SISTEM_MESAJ(RENK_KIRMIZI, 'Að yüklü olmadýðý için DHCP''den IP adresi alýnamýyor!', []);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Að yüklü olmadýðý için DHCP''den IP adresi alýnamýyor!', []);
           end;
         end
         // test amaçlý
@@ -329,7 +329,7 @@ begin
           end;
           FindClose(AramaKaydi);}
           //Gorev^.Calistir('disk1:\6.bmp');
-          Gorev^.Calistir('disket1:\tarayici.c');
+          Gorev^.Calistir('disket1:\dsyyntcs.c');
           //Gorev^.Calistir('disket1:\bharita.c');
           //Gorev^.Calistir('disket1:\mustudk.c');
           //Gorev^.Calistir('disk1:\sisbilgi.c');
@@ -654,15 +654,15 @@ procedure TTestSinif.Artir;
 begin
 
   Inc(FDeger1);
-  SISTEM_MESAJ(RENK_SIYAH, 'TTest1.Artir: %d', [FDeger1]);
-  //SISTEM_MESAJ_YAZI(RENK_SIYAH, 'Birim: ', UnitName);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'TTest1.Artir: %d', [FDeger1]);
+  //SISTEM_MESAJ_YAZI(mtBilgi, RENK_SIYAH, 'Birim: ', UnitName);
 end;
 
 procedure TTestSinif.Eksilt;
 begin
 
   Dec(FDeger1);
-  SISTEM_MESAJ(RENK_SIYAH, 'TTestSinif.Eksilt: %d', [FDeger1]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'TTestSinif.Eksilt: %d', [FDeger1]);
 end;
 
 procedure TArGe.Olustur;
@@ -791,7 +791,8 @@ begin
     else if(SonSecim = 3) then
     begin
 
-      P3Etiket := P3Etiket^.Olustur(ktNesne, P2Pencere, SonKonumY, SonKonumD, RENK_KIRMIZI, 'TEtiket');
+      P3Etiket := P3Etiket^.Olustur(ktNesne, P2Pencere, SonKonumY, SonKonumD, 30, 16,
+        RENK_KIRMIZI, 'TEtiket');
       P3Etiket^.Goster;
     end
     else if(SonSecim = 4) then

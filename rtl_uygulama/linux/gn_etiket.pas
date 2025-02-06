@@ -6,7 +6,7 @@
   Dosya Adı: gn_etiket.pas
   Dosya İşlevi: etiket (TLabel) nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 04/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,8 +21,8 @@ type
   private
     FKimlik: TKimlik;
   public
-    function Olustur(AAtaKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk;
-      ABaslik: string): TKimlik;
+    function Olustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+      ARenk: TRenk; ABaslik: string): TKimlik;
     procedure Goster;
     procedure BaslikDegistir(ABaslik: string);
     procedure RenkDegistir(ARenk: TRenk);
@@ -30,19 +30,19 @@ type
     property Kimlik: TKimlik read FKimlik;
   end;
 
-function _EtiketOlustur(AAtaKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk;
-  ABaslik: string): TKimlik; assembler;
+function _EtiketOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+  ARenk: TRenk; ABaslik: string): TKimlik; assembler;
 procedure _EtiketGoster(AKimlik: TKimlik); assembler;
 procedure _BaslikDegistir(AKimlik: TKimlik; ABaslik: string); assembler;
 procedure _RenkDegistir(AKimlik: TKimlik; ARenk: TRenk); assembler;
 
 implementation
 
-function TEtiket.Olustur(AAtaKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk;
-  ABaslik: string): TKimlik;
+function TEtiket.Olustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+  ARenk: TRenk; ABaslik: string): TKimlik;
 begin
 
-  FKimlik := _EtiketOlustur(AAtaKimlik, ASol, AUst, ARenk, ABaslik);
+  FKimlik := _EtiketOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik, ARenk, ABaslik);
   Result := FKimlik;
 end;
 
@@ -64,17 +64,19 @@ begin
   _RenkDegistir(FKimlik, ARenk);
 end;
 
-function _EtiketOlustur(AAtaKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk;
-  ABaslik: string): TKimlik;
+function _EtiketOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+  ARenk: TRenk; ABaslik: string): TKimlik;
 asm
   push  DWORD ABaslik
   push  DWORD ARenk
+  push  DWORD AYukseklik
+  push  DWORD AGenislik
   push  DWORD AUst
   push  DWORD ASol
   push  DWORD AAtaKimlik
   mov   eax,ETIKET_OLUSTUR
   int   $34
-  add   esp,20
+  add   esp,28
 end;
 
 procedure _EtiketGoster(AKimlik: TKimlik);

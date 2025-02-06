@@ -54,19 +54,19 @@ begin
   FUstMesajPaneli.Olustur(FPencere.Kimlik, 10, 10, 250, 40, 2, RENK_SIYAH, $E6E6E6, RENK_SIYAH, '');
   FUstMesajPaneli.Hizala(hzUst);
 
-  FetIPAdresi.Olustur(FUstMesajPaneli.Kimlik, 10, 12, RENK_SIYAH, 'IP Adresi');
+  FetIPAdresi.Olustur(FUstMesajPaneli.Kimlik, 10, 12, 80, 16, RENK_SIYAH, 'IP Adresi');
   FetIPAdresi.Goster;
 
   FgkIPAdresi.Olustur(FUstMesajPaneli.Kimlik, 88, 10, 140, 22, '192.168.1.1');
   FgkIPAdresi.Goster;
 
-  FetPort.Olustur(FUstMesajPaneli.Kimlik, 244, 12, RENK_SIYAH, 'Port');
+  FetPort.Olustur(FUstMesajPaneli.Kimlik, 244, 12, 40, 16, RENK_SIYAH, 'Port');
   FetPort.Goster;
 
   FgkPort.Olustur(FUstMesajPaneli.Kimlik, 280, 10, 60, 22, '80');
   FgkPort.Goster;
 
-  FetBagTip.Olustur(FUstMesajPaneli.Kimlik, 356, 12, RENK_SIYAH, 'Bað.Tip');
+  FetBagTip.Olustur(FUstMesajPaneli.Kimlik, 356, 12, 56, 16, RENK_SIYAH, 'Bað.Tip');
   FetBagTip.Goster;
 
   FklBaglanti.Olustur(FUstMesajPaneli.Kimlik, 418, 8, 70, 22);
@@ -88,7 +88,7 @@ begin
   FAltMesajPaneli.Olustur(FPencere.Kimlik, 10, 10, 250, 40, 2, RENK_SIYAH, $E6E6E6, RENK_SIYAH, '');
   FAltMesajPaneli.Hizala(hzAlt);
 
-  FetMesaj.Olustur(FAltMesajPaneli.Kimlik, 10, 12, RENK_SIYAH, 'Mesaj');
+  FetMesaj.Olustur(FAltMesajPaneli.Kimlik, 10, 12, 40, 16, RENK_SIYAH, 'Mesaj');
   FetMesaj.Goster;
 
   FgkMesaj.Olustur(FAltMesajPaneli.Kimlik, 56, 10, 435, 22, 'Mesaj');

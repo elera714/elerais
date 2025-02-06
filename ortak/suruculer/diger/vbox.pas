@@ -6,7 +6,7 @@
   Dosya Adý: vbox.pas
   Dosya Ýþlevi: virtualbox sanal aygýt yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 06/10/2024
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -104,22 +104,22 @@ begin
   KesmeAktif := PCIOku2(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $4);
   VBKesmeNo := PCIOku1(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $3C);
 
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'VBox Yol: ', PCIAygit.Yol, 2);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'VBox Aygýt: ', PCIAygit.Aygit, 2);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'VBox Ýþlev: ', PCIAygit.Islev, 2);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'VBox Satýcý Kimlik: ', PCIAygit.SaticiKimlik, 4);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'VBox Aygýt Kimlik: ', PCIAygit.AygitKimlik, 4);
+  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Yol: ', PCIAygit.Yol, 2);
+  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Aygýt: ', PCIAygit.Aygit, 2);
+  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Ýþlev: ', PCIAygit.Islev, 2);
+  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Satýcý Kimlik: ', PCIAygit.SaticiKimlik, 4);
+  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Aygýt Kimlik: ', PCIAygit.AygitKimlik, 4);
 
   if((VBPort and 1) = 1) then
-    SISTEM_MESAJ_S16(RENK_KIRMIZI, 'VBox Port: ', VBPort and $FFFFFFFC, 4)
-  else SISTEM_MESAJ_S16(RENK_KIRMIZI, 'VBox Bellek: ', VBPort and $FFFFFFFC, 8);
+    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Port: ', VBPort and $FFFFFFFC, 4)
+  else SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Bellek: ', VBPort and $FFFFFFFC, 8);
 
   // 10. bitin 1 olmasý kesmenin pasif olduðu anlamýna gelir
   if(KesmeAktif and (1 shl 10) = 0) then
-    SISTEM_MESAJ(RENK_KIRMIZI, 'INT Aktif', [])
-  else SISTEM_MESAJ(RENK_KIRMIZI, 'INT Pasif', []);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'INT Aktif', [])
+  else SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'INT Pasif', []);
 
-  SISTEM_MESAJ_S16(RENK_KIRMIZI, 'Kesme No: ', VBKesmeNo, 2);
+  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Kesme No: ', VBKesmeNo, 2);
 
   // vbox kesmesini aktifleþtir
   IRQIsleviAta(VBKesmeNo, @VBoxKesmeCagrisi);
@@ -148,10 +148,10 @@ begin
   //PSayi4(Isaretci(VBBellek) + 08)^ := $FFFFFFFF;
   PSayi4(Isaretci(VBBellek) + 12)^ := $FFFFFFFF;
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 8)^]);
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 8)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
 
 //  asm int $25 end;
 end;
@@ -170,19 +170,19 @@ begin
 	VBoxFare.Y := 0;
 	PortYaz4(VBPort, TSayi4(@VBoxFare));
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox X: %d', [VBoxFare.X]);
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Y: %d', [VBoxFare.Y]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox X: %d', [VBoxFare.X]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Y: %d', [VBoxFare.Y]);
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 8)^]);
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 8)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
 end;
 
 procedure VBoxKesmeCagrisi;
 begin
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'VBox Kesme Çaðrýsý: ', []);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Kesme Çaðrýsý: ', []);
 end;
 
 end.

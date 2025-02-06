@@ -47,7 +47,7 @@ end;
 procedure TfrmAnaSayfa.Goster;
 begin
 
-  FDurum.Olustur(FPencere.Kimlik, 92, 330, RENK_LACIVERT, 'Týklama Sayýsý: 0  ');
+  FDurum.Olustur(FPencere.Kimlik, 92, 330, 160, 16, RENK_LACIVERT, 'Týklama Sayýsý: 0');
   FDurum.Goster;
 
   IlkDegerAtamalari;

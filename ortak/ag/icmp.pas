@@ -6,7 +6,7 @@
   Dosya Adý: icmp.pas
   Dosya Ýþlevi: ICMP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -65,7 +65,8 @@ begin
     // yanýt gönder
     ICMPPaketGonder(AICMPBaslik, APaketUzunlugu, AHedefIPAdres);
   end
-  else SISTEM_MESAJ_S16(RENK_KIRMIZI, 'ICMP.PAS: bilinmeyen mesaj tipi: ', AICMPBaslik^.MesajTipi, 2);
+  else SISTEM_MESAJ_S16(mtUyari, RENK_SIYAH, 'ICMP.PAS: bilinmeyen mesaj tipi: ',
+    AICMPBaslik^.MesajTipi, 2);
 end;
 
 // icmp protokol paketi hazýrlayýp gönderme iþlevini gerçekleþtirir

@@ -6,13 +6,12 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-01-29T16:35:23Z">
+  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-02-06T14:00:05Z">
     <Description>ELERA &#x130;&#x15F;letim Sistemi (32 Bit)</Description>
     <MediaRegistry>
       <HardDisks>
-        <HardDisk uuid="{1e27e64c-a296-4134-8007-e857d0218c69}" location="disk32MB.vhd" format="VHD" type="Normal"/>
-        <HardDisk uuid="{ee78d56a-85e5-4166-b964-9a569ef45bb4}" location="disk32MB_2.vhd" format="VHD" type="Normal"/>
         <HardDisk uuid="{6fd6e465-bd5e-4267-b67c-9161595fa4b6}" location="D:/calismalar/elerais/araclar/elerais-araclar/eleraos2GB.vhd" format="VHD" type="Normal"/>
+        <HardDisk uuid="{1e27e64c-a296-4134-8007-e857d0218c69}" location="disk32MB.vhd" format="VHD" type="Normal"/>
       </HardDisks>
       <FloppyImages>
         <Image uuid="{cefa122d-813d-44b5-9fba-613b866e45cb}" location="disket144.img"/>
@@ -22,7 +21,7 @@
       <ExtraDataItem name="GUI/InformationWindowGeometry" value="507,249,598,332"/>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
       <ExtraDataItem name="GUI/LastGuestSizeHint" value="800,600"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="693,107,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="817,93,1024,808"/>
       <ExtraDataItem name="GUI/LastScaleWindowPosition" value="189,230,1096,595"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeDevicesMenuActions" value="HardDrives"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeMachineMenuActions" value="SaveState,PowerOff"/>
@@ -112,7 +111,7 @@
       <AudioAdapter driver="DirectSound" enabled="true" enabledIn="true" enabledOut="true"/>
       <Clipboard mode="Bidirectional"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1738168362244492700" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1738850311823401200" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="Floppy Controller" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">
@@ -128,7 +127,7 @@
             <Image uuid="{1e27e64c-a296-4134-8007-e857d0218c69}"/>
           </AttachedDevice>
           <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="1">
-            <Image uuid="{6fd6e465-bd5e-4267-b67c-9161595fa4b6}"/>
+            <Image uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}"/>
           </AttachedDevice>
         </StorageController>
       </StorageControllers>

@@ -16,7 +16,7 @@ type
     FdugTemizle: TDugme;
     FSistemMesaj: TSistemMesaj;
     FZamanlayici: TZamanlayici;
-    FMesaj: TMesaj;
+    FMesajKayit: TMesajKayit;
   public
     procedure Olustur;
     procedure Goster;
@@ -113,11 +113,23 @@ begin
       for i := IlkMesajNo to ToplamMesaj - 1 do
       begin
 
-        FSistemMesaj.Al(i, @FMesaj);
-        FPencere.Tuval.KalemRengi := FMesaj.Renk;
-        FPencere.Tuval.SayiYaz16(0, UstBosluk + SatirNo * 16, True, 2, FMesaj.SiraNo);
-        FPencere.Tuval.SaatYaz(5 * 8, UstBosluk + SatirNo * 16, FMesaj.Saat);
-        FPencere.Tuval.YaziYaz(14 * 8, UstBosluk + SatirNo * 16, FMesaj.Mesaj);
+        FSistemMesaj.Al(i, @FMesajKayit);
+
+        // veri içeriðine göre sýra no ve saat bilgisinin ekrana yazýlmasý
+        if(FMesajKayit.MesajTipi = mtBilgi) then
+          FPencere.Tuval.KalemRengi := RENK_YESIL
+        else if(FMesajKayit.MesajTipi = mtUyari) then
+          FPencere.Tuval.KalemRengi := $FF8000
+        else if(FMesajKayit.MesajTipi = mtHata) then
+          FPencere.Tuval.KalemRengi := RENK_KIRMIZI;
+
+        FPencere.Tuval.SayiYaz16(0, UstBosluk + SatirNo * 16, True, 2, FMesajKayit.SiraNo);
+        FPencere.Tuval.SaatYaz(5 * 8, UstBosluk + SatirNo * 16, FMesajKayit.Saat);
+
+        // belirtilen renge göre mesajýn yazýlmasý
+        FPencere.Tuval.KalemRengi := FMesajKayit.Renk;
+        FPencere.Tuval.YaziYaz(14 * 8, UstBosluk + SatirNo * 16, FMesajKayit.Mesaj);
+
         Inc(SatirNo);
       end;
     end;

@@ -6,7 +6,7 @@
   Dosya Adý: acpi.pas
   Dosya Ýþlevi: geliþmiþ ayar ve güç arabirim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 03/09/2024
+  Güncelleme Tarihi: 30/01/2025
 
   https://wiki.osdev.org/RSDP
 
@@ -100,18 +100,18 @@ begin
 
   if(RSDPTanimlayici.RSDTAdres = 0) then
 
-    SISTEM_MESAJ(RENK_KIRMIZI, 'Hata: sistemde ACPI mevcut deðil!', [])
+    SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'Hata: sistemde ACPI mevcut deðil!', [])
   else
   begin
 
-    SISTEM_MESAJ(RENK_BORDO, 'ACPI Donaným Bilgileri:', []);
-    SISTEM_MESAJ_S16(RENK_ZEYTINYESILI, 'Adres: ', TSayi4(_RSDP), 8);
-    SISTEM_MESAJ_YAZI(RENK_ZEYTINYESILI, PChar('Ýmza: '), 5, PChar(RSDPTanimlayici.Imza), 8);
-    SISTEM_MESAJ_S16(RENK_ZEYTINYESILI, 'Kontrol: ', RSDPTanimlayici.Kontrol, 2);
-    SISTEM_MESAJ_YAZI(RENK_ZEYTINYESILI, PChar('Kimlik: '), 8, PChar(RSDPTanimlayici.OEMKimlik), 6);
-    SISTEM_MESAJ_S16(RENK_ZEYTINYESILI, 'Deðiþim: ', RSDPTanimlayici.Degisim, 2);
-    SISTEM_MESAJ_S16(RENK_ZEYTINYESILI, 'RSDT Adres: ', RSDPTanimlayici.RSDTAdres, 8);
-    SISTEM_MESAJ_S16(RENK_ZEYTINYESILI, 'RSDT Sayýsý: ', RSDTSayisi, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'ACPI Donaným Bilgileri:', []);
+    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Adres: ', TSayi4(_RSDP), 8);
+    SISTEM_MESAJ_YAZI(mtBilgi, RENK_SIYAH, PChar('Ýmza: '), 5, PChar(RSDPTanimlayici.Imza), 8);
+    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Kontrol: ', RSDPTanimlayici.Kontrol, 2);
+    SISTEM_MESAJ_YAZI(mtBilgi, RENK_SIYAH, PChar('Kimlik: '), 8, PChar(RSDPTanimlayici.OEMKimlik), 6);
+    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Deðiþim: ', RSDPTanimlayici.Degisim, 2);
+    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'RSDT Adres: ', RSDPTanimlayici.RSDTAdres, 8);
+    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'RSDT Sayýsý: ', RSDTSayisi, 8);
   end;
 end;
 

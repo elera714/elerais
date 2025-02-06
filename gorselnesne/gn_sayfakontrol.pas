@@ -6,7 +6,7 @@
   Dosya Adý: gn_sayfakontrol.pas
   Dosya Ýþlevi: sayfa kontrol (TPageControl) nesne yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 04/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -398,6 +398,7 @@ var
   SayfaKontrol: PSayfaKontrol = nil;
   Panel: PPanel = nil;
   Etiket: PEtiket = nil;
+  Genislik: TSayi4;
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
@@ -411,7 +412,9 @@ begin
   else //if(ASayfaNo = 2) then
     Panel := SayfaKontrol^.FPaneller[2];
 
-  Etiket := Etiket^.Olustur(ktBilesen, Panel, ASol, AUst, RENK_SIYAH, ABaslik);
+  Genislik := Length(ABaslik) * 8;
+
+  Etiket := Etiket^.Olustur(ktBilesen, Panel, ASol, AUst, Genislik, 16, RENK_SIYAH, ABaslik);
   Etiket^.Gorunum := True;
 end;
 

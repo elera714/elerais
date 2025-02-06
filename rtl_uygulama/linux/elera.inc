@@ -309,8 +309,12 @@ type
   end;
 
 type
-  PMesaj = ^TMesaj;
-  TMesaj = record
+  PMesajTipi = ^TMesajTipi;
+  TMesajTipi = (mtBilgi = 1, mtUyari, mtHata);
+
+  PMesajKayit = ^TMesajKayit;
+  TMesajKayit = record
+    MesajTipi: TMesajTipi;
     SiraNo: TISayi4;
     Saat: TSayi4;
     Renk: TRenk;

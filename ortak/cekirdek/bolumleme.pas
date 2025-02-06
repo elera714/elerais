@@ -6,7 +6,7 @@
   Dosya Adý: bolumleme.pas
   Dosya Ýþlevi: depolama aygýtý bölüm yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 09/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -194,7 +194,7 @@ begin
                         AcilisKayit32^.DATSayisi) + AcilisKayit32^.AyrilmisSektor1 +
                         AcilisKayit32^.BolumOncesiSektorSayisi;
                       DizinGirisi^.GirdiSayisi := 16;    // 512 / 32 = 16
-                      DizinGirisi^.ToplamSektor := 100; // geçici deðer  (AcilisKayit32^.AzamiDizinGirisi div DizinGirisi^.GirdiSayisi);
+                      DizinGirisi^.ToplamSektor := AcilisKayit32^.AzamiDizinGirisi div DizinGirisi^.GirdiSayisi;
 
                       // DosyaAyirmaTablosu bilgileri
                       DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
@@ -243,7 +243,7 @@ begin
               end else if not(DiskBolum^.BolumTipi = DST_BELIRSIZ) then
               begin
 
-                SISTEM_MESAJ_S16(RENK_KIRMIZI, '  ! Bilinmeyen DAT Tipi: ', DiskBolum^.BolumTipi, 2);
+                SISTEM_MESAJ_S16(mtUyari, RENK_SIYAH, '  ! Bilinmeyen DAT Tipi: ', DiskBolum^.BolumTipi, 2);
               end;
 
               Inc(DiskBolum);

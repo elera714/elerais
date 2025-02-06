@@ -39,7 +39,7 @@ begin
   FPencere.Olustur(-1, 0, FEkran.Yukseklik - (40 + 30 + 32), 365, 30, ptIletisim, PencereAdi, RENK_BEYAZ);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
-  FEtiket.Olustur(FPencere.Kimlik, 4, 7, RENK_SIYAH, 'Dosya Adý:');
+  FEtiket.Olustur(FPencere.Kimlik, 4, 7, 80, 16, RENK_SIYAH, 'Dosya Adý:');
   FEtiket.Goster;
 
   FGirisKutusu.Olustur(FPencere.Kimlik, 85, 5, 200, 20, 'disk1:\');

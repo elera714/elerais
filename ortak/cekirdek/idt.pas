@@ -6,7 +6,7 @@
   Dosya Adý: idt.pas
   Dosya Ýþlevi: kesme servis rutinlerini (isr) içerir
 
-  Güncelleme Tarihi: 29/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -1414,15 +1414,15 @@ end;
 procedure YazmacGoruntuleHY(AYazmaclar0: PYazmaclar0);
 begin
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'Görev: %d, Kesme: %d', [CalisanGorev, AYazmaclar0^.ISRNo]);
-  SISTEM_MESAJ(RENK_BORDO, '  EIP: %x, ESP: %x', [AYazmaclar0^.EIP, AYazmaclar0^.ESP]);
-  SISTEM_MESAJ(RENK_BORDO, '   CS: %x,  DS: %x', [AYazmaclar0^.CS, AYazmaclar0^.DS]);
-  SISTEM_MESAJ(RENK_BORDO, '   ES: %x,  SS: %x', [AYazmaclar0^.ES, AYazmaclar0^.SS]);
-  SISTEM_MESAJ(RENK_BORDO, '   FS: %x,  GS: %x', [AYazmaclar0^.FS, AYazmaclar0^.GS]);
-  SISTEM_MESAJ(RENK_BORDO, '  EAX: %x, EBX: %x', [AYazmaclar0^.EAX, AYazmaclar0^.EBX]);
-  SISTEM_MESAJ(RENK_BORDO, '  ECX: %x, EDX: %x', [AYazmaclar0^.ECX, AYazmaclar0^.EDX]);
-  SISTEM_MESAJ(RENK_BORDO, '  ESI: %x, EDI: %x', [AYazmaclar0^.ESI, AYazmaclar0^.EDI]);
-  SISTEM_MESAJ(RENK_BORDO, '  EBP: %x, FLG: %x', [AYazmaclar0^.EBP, AYazmaclar0^.EFLAGS]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Görev: %d, Kesme: %d', [CalisanGorev, AYazmaclar0^.ISRNo]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EIP: %x, ESP: %x', [AYazmaclar0^.EIP, AYazmaclar0^.ESP]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '   CS: %x,  DS: %x', [AYazmaclar0^.CS, AYazmaclar0^.DS]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '   ES: %x,  SS: %x', [AYazmaclar0^.ES, AYazmaclar0^.SS]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '   FS: %x,  GS: %x', [AYazmaclar0^.FS, AYazmaclar0^.GS]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EAX: %x, EBX: %x', [AYazmaclar0^.EAX, AYazmaclar0^.EBX]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  ECX: %x, EDX: %x', [AYazmaclar0^.ECX, AYazmaclar0^.EDX]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  ESI: %x, EDI: %x', [AYazmaclar0^.ESI, AYazmaclar0^.EDI]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EBP: %x, FLG: %x', [AYazmaclar0^.EBP, AYazmaclar0^.EFLAGS]);
 //  asm @@abc: jmp @@abc end;
 end;
 
@@ -1432,16 +1432,16 @@ end;
 procedure YazmacGoruntuleHV(AYazmaclar1: PYazmaclar1);
 begin
 
-  SISTEM_MESAJ(RENK_KIRMIZI, 'Görev: %d, Kesme: %d, Hata Kodu: %d', [CalisanGorev,
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Görev: %d, Kesme: %d, Hata Kodu: %d', [CalisanGorev,
     AYazmaclar1^.ISRNo, AYazmaclar1^.HataKodu]);
-  SISTEM_MESAJ(RENK_BORDO, '  EIP: %x, ESP: %x', [AYazmaclar1^.EIP, AYazmaclar1^.ESP]);
-  SISTEM_MESAJ(RENK_BORDO, '   CS: %x,  DS: %x', [AYazmaclar1^.CS, AYazmaclar1^.DS]);
-  SISTEM_MESAJ(RENK_BORDO, '   ES: %x,  SS: %x', [AYazmaclar1^.ES, AYazmaclar1^.SS]);
-  SISTEM_MESAJ(RENK_BORDO, '   FS: %x,  GS: %x', [AYazmaclar1^.FS, AYazmaclar1^.GS]);
-  SISTEM_MESAJ(RENK_BORDO, '  EAX: %x, EBX: %x', [AYazmaclar1^.EAX, AYazmaclar1^.EBX]);
-  SISTEM_MESAJ(RENK_BORDO, '  ECX: %x, EDX: %x', [AYazmaclar1^.ECX, AYazmaclar1^.EDX]);
-  SISTEM_MESAJ(RENK_BORDO, '  ESI: %x, EDI: %x', [AYazmaclar1^.ESI, AYazmaclar1^.EDI]);
-  SISTEM_MESAJ(RENK_BORDO, '  EBP: %x, FLG: %x', [AYazmaclar1^.EBP, AYazmaclar1^.EFLAGS]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EIP: %x, ESP: %x', [AYazmaclar1^.EIP, AYazmaclar1^.ESP]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '   CS: %x,  DS: %x', [AYazmaclar1^.CS, AYazmaclar1^.DS]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '   ES: %x,  SS: %x', [AYazmaclar1^.ES, AYazmaclar1^.SS]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '   FS: %x,  GS: %x', [AYazmaclar1^.FS, AYazmaclar1^.GS]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EAX: %x, EBX: %x', [AYazmaclar1^.EAX, AYazmaclar1^.EBX]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  ECX: %x, EDX: %x', [AYazmaclar1^.ECX, AYazmaclar1^.EDX]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  ESI: %x, EDI: %x', [AYazmaclar1^.ESI, AYazmaclar1^.EDI]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EBP: %x, FLG: %x', [AYazmaclar1^.EBP, AYazmaclar1^.EFLAGS]);
   //asm @@abc: jmp @@abc end;
 end;
 

@@ -35,7 +35,6 @@
       <Unit0>
         <Filename Value="takvim.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="16" Y="13"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
@@ -57,8 +56,10 @@
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos Y="112"/>
+        <TopLine Value="57"/>
+        <CursorPos X="50" Y="76"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit3>

@@ -24,7 +24,8 @@ const
 
 var
   { TODO : öndeðer açýlýþ aygýtý. Otomatikleþtirilecek }
-  AcilisSurucuAygiti: string = 'disk1';      // disk1:\dizin1
+  AcilisSurucuAygiti: string = 'disk1';           // disk1:\dizin1
+  KLASOR_PROGRAM: string = 'progrmlr';            // programlarýn bulunduðu dizin
   OnDegerMasaustuProgram: string = 'muyntcs.c';
 
 type
@@ -438,8 +439,14 @@ type
     GirdiSayisi: TSayi2;
 
     // her bir dizin tablosu okunduðunda, o sektörde okunan kaydýn sýra numarasý
-    // 0 = ilk kayýt numarasý, 1 = ikinci kayýt, 15 = sektördeki sonuncu kayýt
+    // 0 = dizin tablosu okundu, bir sonraki dizin tablosunu oku
+    // 1 = ilk kayýt numarasý okundu
+    // 2 = ikinci kayýt numarasý okundu
+    // 16 = sonuncu kayýt numarasý okundu
     DizinTablosuKayitNo: TISayi4;
+
+    // dizin giriþinin okunan sektörü: 0 = ilk dizin giriþi 1, 2, .. sonraki dizin giriþleri
+    OkunanSektor: TSayi4;
   end;
 
 type
@@ -584,7 +591,7 @@ type
   TDosyaKayit = record
     Kullanilabilir: Boolean;
     MantiksalDepolama: PMantiksalDepolama;
-    DosyaAdi: string;
+    Klasor, DosyaAdi: string;
     DATBellekAdresi: Isaretci;    // Dosya Ayýrma Tablosu bellek adresi
     IlkZincirSektor: Word;
     Uzunluk: TISayi4;
@@ -862,6 +869,9 @@ var
   UDPPaketSayisi: TSayi4 = 0;
   GAEPaketSayisi: TSayi4 = 0;     // GözArdýEdilen paket sayýsý
 
+var
+  UzunDosyaAdi: array[0..511] of Char;
+
 const
   TSS_UZUNLUK = 104 + 8192;   // 104 byte TSS, 8192 byte giriþ / çýkýþ port izin haritasý
 
@@ -983,6 +993,8 @@ procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
 procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
 function BuyutVeTamala(AGrupAdi: string; AUzunluk: TSayi4): string;
 function Trim(const S: string): string;
+procedure DosyaParcalariniBirlestir(ADizinGirisi: Isaretci);
+procedure DosyaParcasiniBasaEkle(AEklenecekVeri, AHedefBellek: Isaretci);
 
 implementation
 
@@ -1276,6 +1288,193 @@ begin
   while (Ofs<=Len) and (S[Ofs]<=' ') do
     Inc(Ofs);
   result := Copy(S, Ofs, 1 + Len - Ofs);
+end;
+
+// fat32 dosya sistemindeki widechar türündeki dosya ad parçalarýný birleþtirir
+procedure DosyaParcalariniBirlestir(ADizinGirisi: Isaretci);
+var
+  BellekU, i: TISayi4;
+  p: PChar;
+  K1, K2: Char;
+  Bellek: array[0..27] of Char;     // azami bellek: 13 * 2 = 26 karakter + 2 byte #0 karakter
+  Tamamlandi: Boolean;
+begin
+
+  Tamamlandi := False;
+
+  // 1. parça - (5 (widechar) * 2 = 10 byte)
+  BellekU := 0;
+  p := PChar(ADizinGirisi + 1);
+  for i := 0 to 4 do
+  begin
+
+    K1 := p^;
+    Inc(p);
+    K2 := p^;
+    Inc(p);
+
+    if(K1 <> #0) or (K2 <> #0) then
+    begin
+
+      Bellek[BellekU + 0] := K1;
+      Bellek[BellekU + 1] := K2;
+      Inc(BellekU, 2);
+    end
+    else
+    begin
+
+      Tamamlandi := True;
+      Break;
+    end;
+  end;
+
+  // 2. parça - (6 (widechar) * 2 = 12 byte)
+  if not(Tamamlandi) then
+  begin
+
+    p := PChar(ADizinGirisi + 14);
+    for i := 0 to 5 do
+    begin
+
+      K1 := p^;
+      Inc(p);
+      K2 := p^;
+      Inc(p);
+
+      if(K1 <> #0) or (K2 <> #0) then
+      begin
+
+        Bellek[BellekU + 0] := K1;
+        Bellek[BellekU + 1] := K2;
+        Inc(BellekU, 2);
+      end
+      else
+      begin
+
+        Tamamlandi := True;
+        Break;
+      end;
+    end;
+  end;
+
+  // 3. parça - (2 (widechar) * 2 = 4 byte)
+  if not(Tamamlandi) then
+  begin
+
+    p := PChar(ADizinGirisi + 28);
+    for i := 0 to 1 do
+    begin
+
+      K1 := p^;
+      Inc(p);
+      K2 := p^;
+      Inc(p);
+
+      if(K1 <> #0) or (K2 <> #0) then
+      begin
+
+        Bellek[BellekU + 0] := K1;
+        Bellek[BellekU + 1] := K2;
+        Inc(BellekU, 2);
+      end
+      else
+      begin
+
+        Tamamlandi := True;
+        Break;
+      end;
+    end;
+  end;
+
+  // çift 0 sonlandýrma
+  Bellek[BellekU + 0] := #0;
+  Bellek[BellekU + 1] := #0;
+  Inc(BellekU, 2);
+
+  // parçayý bir önceki parçalarýn önüne ekle
+  DosyaParcasiniBasaEkle(@Bellek[0], @UzunDosyaAdi[0]);
+end;
+
+// dosya ad parçasýný diðer parçalarýn önüne ekler
+// AEklenecekVeri = baþa eklenecek bellek bölgesi
+// AHedefBellek = verilerin birleþtirileceði bellek bölgesi
+procedure DosyaParcasiniBasaEkle(AEklenecekVeri, AHedefBellek: Isaretci);
+var
+  p1, p2: PChar;
+  K1, K2: Char;
+  Bellek: array[0..511] of Char;    // azami dosya ad uzunluðu
+  BellekSiraNo, Bellek2SiraNo, i: TISayi4;
+begin
+
+  // 1. hedef bellek bölgesindeki mevcut verileri yedekle
+  p1 := PChar(AHedefBellek);
+
+  K1 := p1^;
+  Inc(p1);
+  K2 := p1^;
+  Inc(p1);
+
+  BellekSiraNo := 0;
+  while (K1 <> #0) or (K2 <> #0) do
+  begin
+
+    Bellek[BellekSiraNo] := K1;
+    Inc(BellekSiraNo);
+    Bellek[BellekSiraNo] := K2;
+    Inc(BellekSiraNo);
+
+    K1 := p1^;
+    Inc(p1);
+    K2 := p1^;
+    Inc(p1);
+  end;
+
+  // 2. baþa eklenecek verileri yükle
+  p1 := PChar(AEklenecekVeri);
+
+  K1 := p1^;
+  Inc(p1);
+  K2 := p1^;
+  Inc(p1);
+
+  p2 := PChar(AHedefBellek);
+  Bellek2SiraNo := 0;
+  while (K1 <> #0) or (K2 <> #0) do
+  begin
+
+    p2^ := K1;
+    Inc(p2);
+    Inc(Bellek2SiraNo);
+
+    p2^ := K2;
+    Inc(p2);
+    Inc(Bellek2SiraNo);
+
+    K1 := p1^;
+    Inc(p1);
+    K2 := p1^;
+    Inc(p1);
+  end;
+
+  // yedeklenmiþ veriyi sona ekle
+  if(BellekSiraNo > 0) then
+  begin
+
+    for i := 0 to BellekSiraNo - 1 do
+    begin
+
+      K1 := Bellek[i];
+      p2^ := K1;
+
+      Inc(p2);
+      Inc(Bellek2SiraNo);
+    end;
+  end;
+
+  // çift sonlandýrma iþareti
+  p2^ := #0;
+  Inc(p2);
+  p2^ := #0;
 end;
 
 end.

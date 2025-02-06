@@ -35,7 +35,6 @@
       <Unit0>
         <Filename Value="kopyala.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="17" Y="13"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
@@ -87,9 +86,10 @@
       <Unit7>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="28"/>
-        <CursorPos X="18" Y="7"/>
+        <TopLine Value="44"/>
+        <CursorPos X="56" Y="62"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit7>

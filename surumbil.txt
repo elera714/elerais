@@ -1,11 +1,19 @@
 *******************************************************************************
   Sürüm: 0.3.8 - 10.01.2025 (R34) - Beta
 *******************************************************************************
+  + fat12, fat16, fat32 ana dizin giriþlerindeki okuma iþlem hatalarý giderildi, alt klasörleri
+    listeleme ve tüm dosya sistemlerine uzun dosya okuma desteði eklendi
+  + dsyyntcs.c programýna alt klasörleri / dosyalarý; listeleme, çalýþtýrma, açma
+    desteði eklendi
+  + tüm sistem sistem resimleri, "disk1:\resimler\" klasörü altýna alýndý ve sistem içerisinde çalýþabilirliði saðlandý
+  + tüm programlar "disk1:\progrmlr\" klasörü altýna alýndý ve sistem içerisinde çalýþabilirliði saðlandý
+  + belgeler, gecici, kisiler, suruculr klasörleri sistem yapýsallýðý dahilinde oluþturuldu
+  + kodlar klasörü oluþturuldu ve tüm sistem/program kodlarý bu klasör içerisine alýndý
+
   + tarayýcýya port numarasý ve sayfa iþleme desteði eklendi (www.google.com:443/search?q=elerais)
   + masaüstü / baþlat menüsüne internet tarayýcýsý menüsü eklendi
   + GirisKutusu nesnesinin aktif/pasif durumunun göstergeye (kursör) göre belirtilmesi
     saðlandý ve nesne içeriðinin tamamen silinmesi ile klavye giriþi almasý saðlandý
-
   + tcp/ip protokolünün tcp katmanýndaki problem çözümlendi
   + tarayici.c programýnýn http veri içeriði alýmýndaki problem giderildi
   + türkçe klavye tablosuna deðiþtirme tuþu (shift) tablosu ve alt gr tuþ tablosu eklenerek,

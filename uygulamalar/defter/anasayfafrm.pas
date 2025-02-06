@@ -53,7 +53,7 @@ begin
   FPanel.Hizala(hzUst);
   FPanel.Goster;
 
-  FetiDosyaAdi.Olustur(FPanel.Kimlik, 2, 9, $000000, 'Dosya Adý:');
+  FetiDosyaAdi.Olustur(FPanel.Kimlik, 2, 9, 80, 16, $000000, 'Dosya Adý:');
   FetiDosyaAdi.Goster;
 
   FgkDosyaAdi.Olustur(FPanel.Kimlik, 11 * 8, 6, 24 * 8, 22, '');

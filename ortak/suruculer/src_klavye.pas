@@ -6,7 +6,7 @@
   Dosya Adý: src_klavye.pas
   Dosya Ýþlevi: standart klavye sürücüsü
 
-  Güncelleme Tarihi: 23/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -235,7 +235,7 @@ begin
         SagAltTusDurumu := TusDurumu
       else SolAltTusDurumu := TusDurumu;
 
-      SISTEM_MESAJ(RENK_KIRMIZI, 'Alt Tuþ: ?', []);
+      //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Alt Tuþ: ?', []);
 
       ATus := 0;
       Result := tdYok;

@@ -71,8 +71,8 @@ begin
   // çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
   yukleyici.Yukle;
 
-  SISTEM_MESAJ(RENK_LACIVERT, '+ Masaüstü yönetim programý yükleniyor...', []);
-  MUGorev^.Calistir(AcilisSurucuAygiti + ':\' + OnDegerMasaustuProgram);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Masaüstü yönetim programý yükleniyor...', []);
+  MUGorev^.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + OnDegerMasaustuProgram);
 
   // sistem ana kontrol kýsmýna geçiþ yap
   SistemAnaKontrol;

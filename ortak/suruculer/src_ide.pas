@@ -6,7 +6,7 @@
   Dosya Adý: src_ide.pas
   Dosya Ýþlevi: ide aygýt sürücüsü
 
-  Güncelleme Tarihi: 09/01/2025
+  Güncelleme Tarihi: 30/01/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -198,7 +198,7 @@ end;
 procedure IRQ14KesmeIslevi;
 begin
 
-  SISTEM_MESAJ(RENK_MAVI, 'IRQ14 tetiklendi', []);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'IRQ14 tetiklendi', []);
 end;
 
 {==============================================================================
@@ -207,7 +207,7 @@ end;
 procedure IRQ15KesmeIslevi;
 begin
 
-  SISTEM_MESAJ(RENK_MAVI, 'IRQ15 tetiklendi', []);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'IRQ15 tetiklendi', []);
 end;
 
 {==============================================================================
