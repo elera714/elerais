@@ -223,7 +223,7 @@ procedure DHCPPaketleriniIsle(ADHCPKayit: PDHCPKayit);
 
 implementation
 
-uses genel, iletisim, donusum;
+uses genel, iletisim, donusum, islevler;
 
 var
   DHCPYanit: TAgBilgisi;

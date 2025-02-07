@@ -59,7 +59,7 @@ procedure Goruntule;
 
 implementation
 
-uses sistemmesaj;
+uses islevler, sistemmesaj;
 
 procedure Yukle;
 var

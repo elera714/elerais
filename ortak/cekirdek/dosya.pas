@@ -72,17 +72,17 @@ var
   MD: PMantiksalDepolama;
   AramaKimlik: TKimlik;
   DST: TSayi4;
-  AramaSuzgeci, AranacakDizin, Surucu, s: string;
-  KalinanSira, UTamAramaYolu,
+  AramaSuzgeci, AranacakKlasor, Surucu, s: string;
+  UTamAramaYolu,
   AramaSonuc: TISayi4;
   i, SektorNo,
   AyrilmisSektor: TSayi4;
 begin
 
   // AAramaSuzgec
-  // örnek: disket1:\dizin1\dizin2\*.*
+  // örnek: disk1:\klasör1\dizin1\*.*
 
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AAramaSuzgec: %s', [AAramaSuzgec]);
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AAramaSuzgec: %s', [AAramaSuzgec]);
 
   // arama için arama bilgilerinin saklanacaðý bellek bölgesi tahsis et
   AramaKimlik := AramaKaydiOlustur;
@@ -97,7 +97,7 @@ begin
   ADosyaArama.Kimlik := AramaKimlik;
 
   // arama iþlevinin yapýlacaðý sürücüyü al
-  MD := SurucuAl(AAramaSuzgec, KalinanSira);
+  MD := SurucuAl(AAramaSuzgec);
   if(MD = nil) then
   begin
 
@@ -113,7 +113,7 @@ begin
   if(i > 0) then
   begin
 
-    Surucu := Copy(AramaSuzgeci, 1, i - 1);
+    Surucu := Copy(s, 1, i - 1);
     s := Copy(s, i + 1, Length(s) - i);
   end;
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Sürücü: ''%s''', [Surucu]);
@@ -131,11 +131,12 @@ begin
   GAramaKayitListesi[AramaKimlik].MantiksalDepolama := MD;
 
   SektorNo := MD^.Acilis.DizinGirisi.IlkSektor;
-  AyrilmisSektor := MD^.Acilis.DizinGirisi.IlkSektor + MD^.Acilis.DizinGirisi.ToplamSektor - 2;
+
+  // AyrilmisSektor = zincir deðerine eklenecek deðer
+  AyrilmisSektor := MD^.Acilis.DizinGirisi.IlkSektor + MD^.Acilis.DizinGirisi.ToplamSektor;
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SektorNo: ''%d''', [SektorNo]);
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AyrilmisSektor: ''%d''', [AyrilmisSektor]);
-
 
   repeat
 
@@ -143,36 +144,41 @@ begin
     if(i > 0) then
     begin
 
-      AranacakDizin := Copy(s, 1, i - 1);
+      AranacakKlasor := Copy(s, 1, i - 1);
       AramaSuzgeci := '';
       s := Copy(s, i + 1, Length(s) - i);
     end
     else
     begin
 
-      AranacakDizin := '';
+      AranacakKlasor := '';
       AramaSuzgeci := s;
     end;
 
-    if(Length(AranacakDizin) > 0) then
+    if(Length(AranacakKlasor) > 0) then
     begin
 
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AranacakDizin: ''%s''', [AranacakDizin]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AranacakDizin: ''%s''', [AranacakKlasor]);
       SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
 
       GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := SektorNo;
       GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
       GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
 
-      SektorNo := DizinGirisindeAra(GAramaKayitListesi[AramaKimlik], AranacakDizin);
+      SektorNo := DizinGirisindeAra(GAramaKayitListesi[AramaKimlik], AranacakKlasor);
       if(SektorNo = 0) then
       begin
 
-        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: %s dizini dosya tablosunda mevcut deðil!', [AranacakDizin]);
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: %s dizini dosya tablosunda mevcut deðil!', [AranacakKlasor]);
         Exit(1);
-      end else SektorNo += AyrilmisSektor;
+      end
+      else
+      begin
+
+        SektorNo := ((SektorNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
+      end;
     end;
-  until Length(AranacakDizin) = 0;
+  until Length(AranacakKlasor) = 0;
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ýlk Dizin Küme No: %d', [SektorNo]);
@@ -185,7 +191,6 @@ begin
     // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
     GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := SektorNo;
     GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := MD^.Acilis.DizinGirisi.GirdiSayisi;
     GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
     GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
 
@@ -198,106 +203,6 @@ begin
       DST_FAT32LBA  : Result := fat32.FindFirst(AramaSuzgeci, ADosyaOzellik, ADosyaArama);
       else Result := 1;
     end;
-  end
-  else
-  begin
-
-
-  end;
-
-  Exit;
-
-
-
-  if(AAramaSuzgec = 'disket1:\bt\*.*') then
-  begin
-
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AAramaSuzgec: Tamam', []);
-
-    // sürücüyü arama bellek bölgesine ekle
-    GAramaKayitListesi[AramaKimlik].MantiksalDepolama := MD;
-
-    // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := 965; //MD^.Acilis.DizinGirisi.IlkSektor;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := MD^.Acilis.DizinGirisi.GirdiSayisi;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
-
-    // dosya sistem tipine göre iþlevi yönlendir
-    DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
-    case DST of
-      DST_FAT12     : Result := fat12.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
-      DST_FAT16     : Result := fat16.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
-      DST_FAT32,
-      DST_FAT32LBA  : Result := fat32.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
-      else Result := 1;
-    end;
-  end
-  else
-  begin
-
-    // -> yukarýdaki yapý ile ayný
-    // sürücüyü arama bellek bölgesine ekle
-    GAramaKayitListesi[AramaKimlik].MantiksalDepolama := MD;
-
-    // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := MD^.Acilis.DizinGirisi.IlkSektor;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := MD^.Acilis.DizinGirisi.GirdiSayisi;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
-    GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
-
-    // dosya sistem tipine göre iþlevi yönlendir
-    DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
-    case DST of
-      DST_FAT12     : AramaSonuc := fat12.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
-      DST_FAT16     : AramaSonuc := fat16.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
-      DST_FAT32,
-      DST_FAT32LBA  : AramaSonuc := fat32.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
-      else AramaSonuc := 1;
-    end;
-    // <- yukarýdaki yapý ile ayný
-
-    if not(AranacakDizin = '*.*') and (AramaSonuc = 0) then
-    begin
-
-      {SISTEM_MESAJ(RENK_SIYAH, 'Aranacak Deðer: ', AranacakDizin, []);
-      SISTEM_MESAJ_S16(RENK_SIYAH, 'BaslangicKumeNo: ', ADosyaArama.BaslangicKumeNo, 8);
-      SISTEM_MESAJ(RENK_SIYAH, 'Dosya Adý: ', ADosyaArama.DosyaAdi, []);
-      SISTEM_MESAJ_S16(RENK_SIYAH, 'DosyaUzunlugu: ', ADosyaArama.DosyaUzunlugu, 8);
-      SISTEM_MESAJ_S16(RENK_SIYAH, 'IlkSektor: ', AramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor, 8);}
-
-      //AramaSonuc := 1;
-
-      // -> yukarýdaki yapý ile ayný
-      // sürücüyü arama bellek bölgesine ekle
-      GAramaKayitListesi[AramaKimlik].MantiksalDepolama := MD;
-
-      // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-      GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor :=
-        ADosyaArama.BaslangicKumeNo + 622;
-      GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := 1;
-      GAramaKayitListesi[AramaKimlik].DizinGirisi.GirdiSayisi := 16;
-      GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
-      GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
-
-      AranacakDizin := '*.*';
-      GAramaKayitListesi[AramaKimlik].Aranan := '*.*';
-
-      // dosya sistem tipine göre iþlevi yönlendir
-      DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
-      case DST of
-        DST_FAT12     : AramaSonuc := fat12.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
-        DST_FAT16     : AramaSonuc := fat16.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
-        DST_FAT32,
-        DST_FAT32LBA  : AramaSonuc := fat32.FindFirst(AranacakDizin, ADosyaOzellik, ADosyaArama);
-        else AramaSonuc := 1;
-      end;
-      // <- yukarýdaki yapý ile ayný
-    end;
-
-    Result := AramaSonuc;
   end;
 end;
 
@@ -339,7 +244,6 @@ var
   DosyaKayit: PDosyaKayit;
   DosyaKimlik: TKimlik;
   Surucu, Klasor, DosyaAdi: string;
-  KalinanSira: TISayi4;
 begin
 
   // öndeðer dosya iþlem dönüþ deðeri
@@ -356,7 +260,7 @@ begin
   DosyaKayit := @GDosyaKayitListesi[DosyaKimlik];
 
   // sürücünün iþaret ettiði bellek bölgesine konumlan
-  MD := SurucuAl(ADosyaAdi, KalinanSira);
+  MD := SurucuAl(ADosyaAdi);
   if(MD = nil) then
   begin
 

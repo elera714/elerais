@@ -65,7 +65,7 @@ function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi
 
 implementation
 
-uses irq, zamanlayici, aygityonetimi, sistemmesaj;
+uses irq, zamanlayici, aygityonetimi, islevler, sistemmesaj;
 
 {==============================================================================
   disket sürücü ilk yükleme iþlevlerini içerir

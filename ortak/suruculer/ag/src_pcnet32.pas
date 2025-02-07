@@ -59,7 +59,7 @@ function DWIOKontrol: Boolean;
 
 implementation
 
-uses pci, gercekbellek, irq, genel, sistemmesaj;
+uses pci, gercekbellek, irq, genel, islevler, sistemmesaj;
 
 const
   PCNET32_WIO_RDP         = $10;

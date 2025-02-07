@@ -76,7 +76,7 @@ function YerelPortAl: TSayi2;
 
 implementation
 
-uses gercekbellek, genel, tcp, udp, arp, zamanlayici, donusum;
+uses gercekbellek, genel, tcp, udp, arp, zamanlayici, islevler, donusum;
 
 {==============================================================================
   baðlantý ana yükleme iþlevlerini içerir

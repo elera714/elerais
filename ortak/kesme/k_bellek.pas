@@ -20,7 +20,7 @@ function BellekCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel;
+uses genel, islevler;
 
 {==============================================================================
   bellek kesme çağrılarını yönetir

@@ -57,7 +57,7 @@ type
 
 implementation
 
-uses genel;
+uses genel, islevler;
 
 {==============================================================================
   yazı liste nesnesini oluşturur

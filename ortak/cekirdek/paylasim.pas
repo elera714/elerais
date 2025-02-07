@@ -27,6 +27,7 @@ var
   AcilisSurucuAygiti: string = 'disk1';           // disk1:\dizin1
   KLASOR_PROGRAM: string = 'progrmlr';            // programlarýn bulunduðu dizin
   OnDegerMasaustuProgram: string = 'muyntcs.c';
+  //GeciciDeger: string;
 
 type
   PProtokolTipi = ^TProtokolTipi;
@@ -416,12 +417,11 @@ type
 type
   PDiskBolum = ^TDiskBolum;
   TDiskBolum = packed record
-    Ozellikler: Byte;                             // bit 7 = aktif veya boot edebilir
-    CHSIlkSektor: array[0..2] of Byte;
-    BolumTipi: Byte;
-    CHSSonSektor: array[0..2] of Byte;
-    LBAIlkSektor,
-    BolumSektorSayisi: TSayi4;
+    Ozellikler: TSayi1;                           // bit 7 = aktif veya boot edebilir
+    CHSIlkSektor: array[0..2] of TSayi1;
+    BolumTipi: TSayi1;
+    CHSSonSektor: array[0..2] of TSayi1;
+    LBAIlkSektor, BolumSektorSayisi: TSayi4;
   end;
 
 type
@@ -436,7 +436,6 @@ type
   TDizinGirisi = record
     IlkSektor: TSayi4;
     ToplamSektor: TSayi4;
-    GirdiSayisi: TSayi2;
 
     // her bir dizin tablosu okunduðunda, o sektörde okunan kaydýn sýra numarasý
     // 0 = dizin tablosu okundu, bir sonraki dizin tablosunu oku
@@ -467,12 +466,12 @@ type
   end;
 
 type
+  // dosya ayýrma tablosu (file allocation table = FAT)
   PDosyaAyirmaTablosu = ^TDosyaAyirmaTablosu;
-  TDosyaAyirmaTablosu = record         // dosya ayýrma tablosu (file allocation table)
+  TDosyaAyirmaTablosu = record
     IlkSektor: TSayi2;
     ToplamSektor: TSayi2;
-    KumeBasinaSektor0: TSayi1;
-    IlkVeriSektoru: TSayi4;
+    ZincirBasinaSektor: TSayi1;
   end;
 
 type
@@ -480,13 +479,14 @@ type
   TAcilis = record
     DizinGirisi: TDizinGirisi;
     DosyaAyirmaTablosu: TDosyaAyirmaTablosu;
+    IlkVeriSektorNo: TSayi4;
   end;
 
 type
   PIDEDisk = ^TIDEDisk;
   TIDEDisk = record
-    AnaPort, KontrolPort: Word;
-    Kanal: Byte;
+    AnaPort, KontrolPort: TSayi2;
+    Kanal: TSayi1;
   end;
 
 type
@@ -978,12 +978,6 @@ var
   MACAdres0: TMACAdres = (0, 0, 0, 0, 0, 0);
   MACAdres255: TMACAdres = (255, 255, 255, 255, 255, 255);
 
-procedure BellekDoldur(ABellekAdresi: Isaretci; AUzunluk: TSayi4; ADeger: TSayi1);
-procedure Tasi2(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4);
-function Karsilastir(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4): TSayi4;
-function IPKarsilastir(IP1, IP2: TIPAdres): Boolean;
-function IPKarsilastir2(AGonderenIP, ABenimIP: TIPAdres): Boolean;
-function IPAdresiAyniAgdaMi(AGonderenIP: TIPAdres): Boolean;
 function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
   ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;
@@ -991,105 +985,8 @@ function ProtokolTipAdi(AProtokolTipi: TProtokolTipi): string;
 procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
 procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
 procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
-function BuyutVeTamala(AGrupAdi: string; AUzunluk: TSayi4): string;
-function Trim(const S: string): string;
-procedure DosyaParcalariniBirlestir(ADizinGirisi: Isaretci);
-procedure DosyaParcasiniBasaEkle(AEklenecekVeri, AHedefBellek: Isaretci);
 
 implementation
-
-procedure BellekDoldur(ABellekAdresi: Isaretci; AUzunluk: TSayi4; ADeger: TSayi1); assembler;
-asm
-  pushad
-  mov edi,ABellekAdresi
-  mov ecx,AUzunluk
-  mov al,ADeger
-  cld
-  rep stosb
-  popad
-end;
-
-procedure Tasi2(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4); assembler;
-asm
-  pushad
-  mov esi,AKaynak
-  mov edi,AHedef
-  mov ecx,AUzunluk
-  cld
-  rep movsb
-  popad
-end;
-
-// 0 = eþit, 1 = eþit deðil
-function Karsilastir(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4): TSayi4;
-var
-  Sonuc: TSayi4;
-begin
-asm
-  pushfd
-  pushad
-
-  mov esi,AKaynak
-  mov edi,AHedef
-  mov ecx,AUzunluk
-  cld
-  repe cmpsb
-
-  popad
-  mov Sonuc,0
-
-  je  @@exit
-
-  mov Sonuc,1
-@@exit:
-
-  popfd
-end;
-
-  Result := Sonuc;
-end;
-
-function IPKarsilastir(IP1, IP2: TIPAdres): Boolean;
-var
-  i: TISayi4;
-begin
-
-  Result := False;
-
-  for i := 0 to 3 do if(IP1[i] <> IP2[i]) then Exit;
-
-  Result := True;
-end;
-
-// ip adresinin aða baðlý bilgisayarlara yayýn olarak gönderilip
-// gönderilmediðini test eder. örn: 192.168.1.1 -> 192.168.1.255
-function IPKarsilastir2(AGonderenIP, ABenimIP: TIPAdres): Boolean;
-var
-  i: TISayi4;
-begin
-
-  Result := False;
-
-  for i := 0 to 2 do if(AGonderenIP[i] <> ABenimIP[i]) then Exit;
-
-  if(AGonderenIP[3] <> 255) then Exit;
-
-  Result := True;
-end;
-
-// xxx.xxx.xxx.yyy - xxx deðerlerinin ayný olup olmadýðýný test eder
-// bilgi: 0 ve 255 deðerleri ayný aðda kabul edilmektedir
-function IPAdresiAyniAgdaMi(AGonderenIP: TIPAdres): Boolean;
-var
-  i: TISayi4;
-begin
-
-  Result := False;
-
-  for i := 0 to 2 do if(AGonderenIP[i] <> GAgBilgisi.IP4Adres[i]) then Exit;
-
-  Result := True;
-end;
 
 function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 begin
@@ -1242,239 +1139,6 @@ begin
   EkleByte(AHedef + 1, Byte(ADeger shr 16));
   EkleByte(AHedef + 2, Byte(ADeger shr 8));
   EkleByte(AHedef + 3, Byte(ADeger and $FF));
-end;
-
-// karakterleri büyütür ve belirten uzunluða kadar sað tarafa boþluk karakteri ekler
-function BuyutVeTamala(AGrupAdi: string; AUzunluk: TSayi4): string;
-var
-  i, j: TSayi4;
-begin
-
-  Result := '';
-
-  i := Length(AGrupAdi);
-  if(i > AUzunluk) then i := AUzunluk;
-
-  if(i > 0) then
-  begin
-
-    for j := 1 to i do
-    begin
-
-      Result += UpCase(AGrupAdi[j]);
-    end;
-  end;
-
-  if(i < AUzunluk) then
-  begin
-
-    for j := i to AUzunluk - 1 do
-    begin
-
-      Result += ' ';
-    end;
-  end;
-end;
-
-{TODO - lazarus'tan buraya eklendi. lazarus birimi eklenince kaldýrýlacak }
-function Trim(const S: string): string;
-var
-  Ofs, Len: sizeint;
-begin
-  len := Length(S);
-  while (Len>0) and (S[Len]<=' ') do
-   dec(Len);
-  Ofs := 1;
-  while (Ofs<=Len) and (S[Ofs]<=' ') do
-    Inc(Ofs);
-  result := Copy(S, Ofs, 1 + Len - Ofs);
-end;
-
-// fat32 dosya sistemindeki widechar türündeki dosya ad parçalarýný birleþtirir
-procedure DosyaParcalariniBirlestir(ADizinGirisi: Isaretci);
-var
-  BellekU, i: TISayi4;
-  p: PChar;
-  K1, K2: Char;
-  Bellek: array[0..27] of Char;     // azami bellek: 13 * 2 = 26 karakter + 2 byte #0 karakter
-  Tamamlandi: Boolean;
-begin
-
-  Tamamlandi := False;
-
-  // 1. parça - (5 (widechar) * 2 = 10 byte)
-  BellekU := 0;
-  p := PChar(ADizinGirisi + 1);
-  for i := 0 to 4 do
-  begin
-
-    K1 := p^;
-    Inc(p);
-    K2 := p^;
-    Inc(p);
-
-    if(K1 <> #0) or (K2 <> #0) then
-    begin
-
-      Bellek[BellekU + 0] := K1;
-      Bellek[BellekU + 1] := K2;
-      Inc(BellekU, 2);
-    end
-    else
-    begin
-
-      Tamamlandi := True;
-      Break;
-    end;
-  end;
-
-  // 2. parça - (6 (widechar) * 2 = 12 byte)
-  if not(Tamamlandi) then
-  begin
-
-    p := PChar(ADizinGirisi + 14);
-    for i := 0 to 5 do
-    begin
-
-      K1 := p^;
-      Inc(p);
-      K2 := p^;
-      Inc(p);
-
-      if(K1 <> #0) or (K2 <> #0) then
-      begin
-
-        Bellek[BellekU + 0] := K1;
-        Bellek[BellekU + 1] := K2;
-        Inc(BellekU, 2);
-      end
-      else
-      begin
-
-        Tamamlandi := True;
-        Break;
-      end;
-    end;
-  end;
-
-  // 3. parça - (2 (widechar) * 2 = 4 byte)
-  if not(Tamamlandi) then
-  begin
-
-    p := PChar(ADizinGirisi + 28);
-    for i := 0 to 1 do
-    begin
-
-      K1 := p^;
-      Inc(p);
-      K2 := p^;
-      Inc(p);
-
-      if(K1 <> #0) or (K2 <> #0) then
-      begin
-
-        Bellek[BellekU + 0] := K1;
-        Bellek[BellekU + 1] := K2;
-        Inc(BellekU, 2);
-      end
-      else
-      begin
-
-        Tamamlandi := True;
-        Break;
-      end;
-    end;
-  end;
-
-  // çift 0 sonlandýrma
-  Bellek[BellekU + 0] := #0;
-  Bellek[BellekU + 1] := #0;
-  Inc(BellekU, 2);
-
-  // parçayý bir önceki parçalarýn önüne ekle
-  DosyaParcasiniBasaEkle(@Bellek[0], @UzunDosyaAdi[0]);
-end;
-
-// dosya ad parçasýný diðer parçalarýn önüne ekler
-// AEklenecekVeri = baþa eklenecek bellek bölgesi
-// AHedefBellek = verilerin birleþtirileceði bellek bölgesi
-procedure DosyaParcasiniBasaEkle(AEklenecekVeri, AHedefBellek: Isaretci);
-var
-  p1, p2: PChar;
-  K1, K2: Char;
-  Bellek: array[0..511] of Char;    // azami dosya ad uzunluðu
-  BellekSiraNo, Bellek2SiraNo, i: TISayi4;
-begin
-
-  // 1. hedef bellek bölgesindeki mevcut verileri yedekle
-  p1 := PChar(AHedefBellek);
-
-  K1 := p1^;
-  Inc(p1);
-  K2 := p1^;
-  Inc(p1);
-
-  BellekSiraNo := 0;
-  while (K1 <> #0) or (K2 <> #0) do
-  begin
-
-    Bellek[BellekSiraNo] := K1;
-    Inc(BellekSiraNo);
-    Bellek[BellekSiraNo] := K2;
-    Inc(BellekSiraNo);
-
-    K1 := p1^;
-    Inc(p1);
-    K2 := p1^;
-    Inc(p1);
-  end;
-
-  // 2. baþa eklenecek verileri yükle
-  p1 := PChar(AEklenecekVeri);
-
-  K1 := p1^;
-  Inc(p1);
-  K2 := p1^;
-  Inc(p1);
-
-  p2 := PChar(AHedefBellek);
-  Bellek2SiraNo := 0;
-  while (K1 <> #0) or (K2 <> #0) do
-  begin
-
-    p2^ := K1;
-    Inc(p2);
-    Inc(Bellek2SiraNo);
-
-    p2^ := K2;
-    Inc(p2);
-    Inc(Bellek2SiraNo);
-
-    K1 := p1^;
-    Inc(p1);
-    K2 := p1^;
-    Inc(p1);
-  end;
-
-  // yedeklenmiþ veriyi sona ekle
-  if(BellekSiraNo > 0) then
-  begin
-
-    for i := 0 to BellekSiraNo - 1 do
-    begin
-
-      K1 := Bellek[i];
-      p2^ := K1;
-
-      Inc(p2);
-      Inc(Bellek2SiraNo);
-    end;
-  end;
-
-  // çift sonlandýrma iþareti
-  p2^ := #0;
-  Inc(p2);
-  p2^ := #0;
 end;
 
 end.

@@ -47,7 +47,7 @@ function KlavyedenTusAl(var ATus: TSayi2): TTusDurum;
 
 implementation
 
-uses irq, sistemmesaj;
+uses irq, islevler, sistemmesaj;
 
 const
   USTLIMIT_KLAVYE_BELLEK = 128;

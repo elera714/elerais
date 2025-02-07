@@ -33,7 +33,7 @@ procedure OlayYakalamayiBirak(AGorselNesne: PGorselNesne);
 
 implementation
 
-uses sistemmesaj;
+uses islevler, sistemmesaj;
 
 {==============================================================================
   görsel nesne yükleme işlevlerini gerçekleştirir

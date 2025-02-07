@@ -6,7 +6,7 @@
   Dosya Adý: gn_masaustu.pas
   Dosya Ýþlevi: masaüstü yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 07/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -473,6 +473,14 @@ begin
 
   // resim dosyasýný masaüstü yapýsýna yükle
   Masaustu^.FGoruntuYapi := BMPDosyasiYukle(ADosyaYolu);
+
+  // arka plan resminin yüklenememesi durumunda arka plan rengini siyah yap
+  if(Masaustu^.FGoruntuYapi.BellekAdresi = nil) then
+  begin
+
+    Masaustu^.FMasaustuArkaPlan := 1;
+    Masaustu^.FMasaustuRenk := RENK_SIYAH;
+  end;
 
   if(Masaustu^.Gorunum) then Masaustu^.Ciz;
 end;

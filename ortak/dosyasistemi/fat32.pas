@@ -14,7 +14,7 @@ unit fat32;
 
 interface
 
-uses paylasim;
+uses paylasim, islevler;
 
 procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
 procedure Reset(ADosyaKimlik: TKimlik);
@@ -95,7 +95,7 @@ begin
 
   Zincir := DosyaKayit^.IlkZincirSektor;
 
-  ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor0;
+  ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
   OkumaSonuc := False;
 
@@ -119,7 +119,7 @@ begin
 
     // okunacak cluster numarasý
     i := (Zincir - 2) * ZincirBasinaSektor;
-    i += MD^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru;
+    i += MD^.Acilis.IlkVeriSektorNo;
 
     // sektörü belleðe oku
     MD^.FD^.SektorOku(MD^.FD, i, OkunacakSektorSayisi, AHedefBellek);

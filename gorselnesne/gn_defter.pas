@@ -54,7 +54,7 @@ function DefterCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses gn_pencere, genel, temelgorselnesne, sistemmesaj;
+uses gn_pencere, genel, temelgorselnesne, islevler, sistemmesaj;
 
 {==============================================================================
   defter kesme çaðrýlarýný yönetir

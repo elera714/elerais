@@ -6,7 +6,7 @@
   Dosya Adı: donusum.pas
   Dosya İşlevi: değer dönüşüm (convert) işlevlerini içerir
 
-  Güncelleme Tarihi: 04/01/2025
+  Güncelleme Tarihi: 07/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,6 +46,8 @@ function HamDosyaAdiniDosyaAdinaCevir(ADizinGirdisi: PDizinGirdisi): string;
 function RGB24CevirRGB16(Color: TRenk): Word;
 
 implementation
+
+uses islevler;
 
 const
   SayiSistemi16: PChar = ('0123456789ABCDEF');

@@ -48,7 +48,7 @@ procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIPAdres;
 
 implementation
 
-uses genel, donusum, ip, sistemmesaj;
+uses genel, donusum, ip, islevler, sistemmesaj;
 
 procedure TCPPaketleriniIsle(AIPPaket: PIPPaket);
 var

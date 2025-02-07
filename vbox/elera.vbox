@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-02-06T14:00:05Z">
+  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-02-07T17:18:31Z">
     <Description>ELERA &#x130;&#x15F;letim Sistemi (32 Bit)</Description>
     <MediaRegistry>
       <HardDisks>
@@ -21,7 +21,7 @@
       <ExtraDataItem name="GUI/InformationWindowGeometry" value="507,249,598,332"/>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
       <ExtraDataItem name="GUI/LastGuestSizeHint" value="800,600"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="817,93,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="767,103,1024,808"/>
       <ExtraDataItem name="GUI/LastScaleWindowPosition" value="189,230,1096,595"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeDevicesMenuActions" value="HardDrives"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeMachineMenuActions" value="SaveState,PowerOff"/>
@@ -111,7 +111,7 @@
       <AudioAdapter driver="DirectSound" enabled="true" enabledIn="true" enabledOut="true"/>
       <Clipboard mode="Bidirectional"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1738850311823401200" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1738947938385614200" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="Floppy Controller" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">
@@ -124,10 +124,10 @@
         </StorageController>
         <StorageController name="IDE" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">
           <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="0">
-            <Image uuid="{1e27e64c-a296-4134-8007-e857d0218c69}"/>
+            <Image uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}"/>
           </AttachedDevice>
           <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="1">
-            <Image uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}"/>
+            <Image uuid="{1e27e64c-a296-4134-8007-e857d0218c69}"/>
           </AttachedDevice>
         </StorageController>
       </StorageControllers>

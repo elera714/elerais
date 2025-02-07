@@ -120,13 +120,15 @@ const
     ('Hata No: 15 - Tanýmlanmamýþ'));
 
 const
-  ILISKILI_UYGULAMA_SAYISI = 10;
+  ILISKILI_UYGULAMA_SAYISI = 12;
   IliskiliUygulamaListesi: array[0..ILISKILI_UYGULAMA_SAYISI - 1] of TDosyaIliskisi = (
     (Uzanti: 'c';    Uygulama: '';             DosyaTip: dtCalistirilabilir),
 
     (Uzanti: 's';    Uygulama: '';             DosyaTip: dtSurucu),
 
+    (Uzanti: 'asm';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'bat';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
+    (Uzanti: 'inc';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'lpr';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'md';   Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'pas';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
@@ -228,7 +230,7 @@ begin
     // program ile çalýþtýr
     Degiskenler := Surucu + ':' + Klasor + DosyaAdi;     // çalýþtýrýlacak dosya
     DosyaAdi := IliskiliProgram.Uygulama;         // çalýþtýrýlacak dosyayý çalýþtýracak program
-    TamDosyaYolu := AcilisSurucuAygiti + ':\' + DosyaAdi;
+    TamDosyaYolu := AcilisSurucuAygiti + ':\' + KLASOR_PROGRAM + '\' + DosyaAdi;
   end;
 
   // çalýþtýrýlacak dosyayý tanýmla ve aç

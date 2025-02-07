@@ -39,7 +39,7 @@ procedure ICMPPaketGonder(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
 
 implementation
 
-uses genel, donusum, ip, sistemmesaj;
+uses genel, donusum, ip, islevler, sistemmesaj;
 
 // icmp protokolü üzerinden gelen paketleri iþler
 procedure ICMPPaketleriniIsle(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;

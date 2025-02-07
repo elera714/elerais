@@ -18,7 +18,7 @@ interface
 uses paylasim, gn_pencere, gn_etiket, zamanlayici, dns, gn_panel, gorselnesne,
   gn_gucdugmesi, gn_resim, gn_karmaliste, gn_degerlistesi, gn_dugme, gn_izgara,
   gn_araccubugu, gn_durumcubugu, gn_giriskutusu, gn_onaykutusu, gn_sayfakontrol,
-  gn_defter, gn_kaydirmacubugu, islemci, pic, arp, dosya, src_pcnet32;
+  gn_defter, gn_kaydirmacubugu, islemci, pic, arp, dosya, src_pcnet32, bolumleme;
 
 type
   // gerçek moddan gelen veri yapýsý
@@ -244,6 +244,7 @@ var
   Belk: array[0..511] of TSayi1;
   DosyaKimlik: TKimlik;
   DosyaAdi: string;
+  Disk: PMantiksalDepolama;
 begin
 
 {  if(CalisanGorevSayisi = 1) then
@@ -380,9 +381,13 @@ begin
           //BellekI := GGercekBellek.Ayir(4095);
           //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
           //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
-          vbox.IcerigiGoruntule;
+          //vbox.IcerigiGoruntule;
           //TestSinif.Artir;
           //Gorev^.Calistir('disk1:\arpbilgi.c');
+
+          Disk := SurucuAl('disk2:');
+          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-1: %d', [Disk^.Acilis.DizinGirisi.IlkSektor]);
+          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-2: %d', [Disk^.Acilis.DizinGirisi.ToplamSektor]);
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then
@@ -395,17 +400,17 @@ begin
         else if(Tus = 'c') then
 
           //ohci.Kontrol1
-          Gorev^.Calistir('disk1:\calistir.c')
+          Gorev^.Calistir('calistir.c')
 
         // dosya yöneticisi programýný çalýþtýr
         else if(Tus = 'd') then
 
-          Gorev^.Calistir('disk1:\dsyyntcs.c')
+          Gorev^.Calistir('dsyyntcs.c')
 
         // görev yöneticisi programýný çalýþtýr
         else if(Tus = 'g') then
 
-          Gorev^.Calistir('disk1:\grvyntcs.c')
+          Gorev^.Calistir('grvyntcs.c')
 
         // bilgisayarý kapat
         else if(Tus = 'k') then
@@ -417,12 +422,12 @@ begin
         // mesaj görüntüleme programýný çalýþtýr
         else if(Tus = 'm') then
 
-          Gorev^.Calistir('disk1:\smsjgor.c')
+          Gorev^.Calistir('smsjgor.c')
 
         // resim görüntüleme programýný çalýþtýr
         else if(Tus = 'r') then
 
-          Gorev^.Calistir('disk1:\resimgor.c')
+          Gorev^.Calistir('resimgor.c')
 
         // bilgisayarý yeniden baþlat
         else if(Tus = 'y') then

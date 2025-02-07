@@ -20,7 +20,7 @@ function GorevCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel, gorev, sistemmesaj;
+uses genel, gorev, islevler, sistemmesaj;
 
 {==============================================================================
   uygulama kesme çağrılarını yönetir

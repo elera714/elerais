@@ -42,7 +42,7 @@ begin
   FEtiket.Olustur(FPencere.Kimlik, 4, 7, 80, 16, RENK_SIYAH, 'Dosya Adý:');
   FEtiket.Goster;
 
-  FGirisKutusu.Olustur(FPencere.Kimlik, 85, 5, 200, 20, 'disk1:\');
+  FGirisKutusu.Olustur(FPencere.Kimlik, 85, 5, 200, 20, '');
   FGirisKutusu.Goster;
 
   FCalistir.Olustur(FPencere.Kimlik, 290, 5, 70, 20, 'Çalýþtýr');

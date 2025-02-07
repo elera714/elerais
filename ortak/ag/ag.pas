@@ -39,7 +39,7 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi
 
 implementation
 
-uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, genel;
+uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, islevler, genel;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir

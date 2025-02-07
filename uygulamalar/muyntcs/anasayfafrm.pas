@@ -190,7 +190,6 @@ begin
   FAcilirMenu.ElemanEkle('Nesne Görüntüleyicisi', 12);
   FAcilirMenu.ElemanEkle('Ekran Koruyucuyu', 12);
   FAcilirMenu.ElemanEkle('Sistem Bilgisi', 12);
-
 end;
 
 procedure TfrmAnaSayfa.Goster;

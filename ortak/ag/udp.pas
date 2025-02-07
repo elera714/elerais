@@ -38,7 +38,7 @@ procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 
 implementation
 
-uses donusum, sistemmesaj, dhcp, iletisim, dns, netbios, genel;
+uses donusum, sistemmesaj, dhcp, iletisim, dns, netbios, genel, islevler;
 
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir

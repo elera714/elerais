@@ -57,7 +57,7 @@ begin
   FetiDosyaAdi.Goster;
 
   FgkDosyaAdi.Olustur(FPanel.Kimlik, 11 * 8, 6, 24 * 8, 22, '');
-  FgkDosyaAdi.IcerikYaz('disket1:\haklar.txt');
+  FgkDosyaAdi.IcerikYaz('disk1:\belgeler\haklar.txt');
   FgkDosyaAdi.Goster;
 
   FdugYukle.Olustur(FPanel.Kimlik, 36 * 8, 5, 60, 22, 'Yükle');

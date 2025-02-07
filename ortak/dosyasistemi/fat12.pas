@@ -97,19 +97,19 @@ begin
 
   Zincir := DosyaKayit^.IlkZincirSektor;
 
-  OkunacakSektorSayisi := MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor0;
+  OkunacakSektorSayisi := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
   OkumaSonuc := 1;
 
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IlkVeriSektoru: %d', [MD^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IlkVeriSektoru: %d', [MD^.Acilis.IlkVeriSektorNo]);
 
   repeat
 
     // okunacak sektör zincir numarasý
-    i := (Zincir - 2) * MD^.Acilis.DosyaAyirmaTablosu.KumeBasinaSektor0;
+    i := (Zincir - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
     // sektörü belleðe oku
-    MD^.FD^.SektorOku(MD^.FD, i + MD^.Acilis.DosyaAyirmaTablosu.IlkVeriSektoru,
+    MD^.FD^.SektorOku(MD^.FD, i + MD^.Acilis.IlkVeriSektorNo,
       OkunacakSektorSayisi, AHedefBellek);
 
     //src_com.Yaz(1, AHedefBellek, OkunacakSektorSayisi * 512);

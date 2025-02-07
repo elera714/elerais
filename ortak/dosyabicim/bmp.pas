@@ -6,7 +6,7 @@
   Dosya Adı: bmp.pas
   Dosya İşlevi: bmp dosya işlevlerini içerir
 
-  Güncelleme Tarihi: 11/06/2020
+  Güncelleme Tarihi: 06/02/2025
 
   Not-1: şu an itibariyle sadece 24 bitlik resim görüntüleme desteği vardır
   Not-2: tüm renkler 32 bitlik değerlerle işlenmektedir
@@ -58,7 +58,7 @@ var
   DosyaUzunlugu: TISayi4;
   DosyaKimlik: TKimlik;
   DosyaTamYol, DosyaUzantisi,
-  Surucu, Dizin, DosyaAdi: string;
+  Surucu, Klasor, DosyaAdi: string;
   BMPBicim: PBMPBicim;
   GoruntuYapi: TGoruntuYapi;
   SatirdakiByteSayisi, Satir,
@@ -68,12 +68,12 @@ var
   HedefBellek: ^TRenk;
 begin
 
-  //SISTEM_MESAJ(RENK_KIRMIZI, 'Dosya: ' + ADosyaTamYol, []);
+  //SISTEM_MESAJ(mtBilgi, RENK_MOR, 'Dosya: ' + ADosyaTamYol, []);
 
   Result.BellekAdresi := nil;
 
-  // dosyayı sürücü + dizin + dosya parçalarına ayır
-  DosyaYolunuParcala(ADosyaTamYol, Surucu, Dizin, DosyaAdi);
+  // dosyayı sürücü + Klasor + dosya parçalarına ayır
+  DosyaYolunuParcala2(ADosyaTamYol, Surucu, Klasor, DosyaAdi);
 
   // dosya adının uzunluğunu al
   DosyaUzunlugu := Length(DosyaAdi);
@@ -87,7 +87,7 @@ begin
   if(DosyaUzantisi = 'bmp') then
   begin
 
-    DosyaTamYol := Surucu + ':\' + DosyaAdi;
+    DosyaTamYol := Surucu + ':' + Klasor + DosyaAdi;
 
     AssignFile(DosyaKimlik, DosyaTamYol);
     Reset(DosyaKimlik);

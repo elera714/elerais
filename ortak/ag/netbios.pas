@@ -6,7 +6,7 @@
   Dosya Adý: netbios.pas
   Dosya Ýþlevi: netbios api iþlevlerini yönetir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 07/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,7 +32,7 @@ procedure DNSSorgulariniYanitla(AIPPaket: PIPPaket; AUDPBaslik: PUDPPaket);
 
 implementation
 
-uses sistemmesaj, donusum, genel;
+uses sistemmesaj, donusum, genel, islevler;
 
 {==============================================================================
   dns sorgularýný yanýtlar
@@ -139,25 +139,25 @@ begin
     EkleByte(@Veri[VeriSN], $04); Inc(VeriSN);
 
     // aktif
-    s := BuyutVeTamala(GMakineAdi, 15);
+    s := BuyutVeTamamla(GMakineAdi, 15);
     Tasi2(@s[1], @Veri[VeriSN], 15); Inc(VeriSN, 15);
     EkleByte(@Veri[VeriSN], $00); Inc(VeriSN);
     Ekle2Byte(@Veri[VeriSN], $0400); Inc(VeriSN, 2);
 
     // grup adý / aktif
-    s := BuyutVeTamala(GGrupAdi, 15);
+    s := BuyutVeTamamla(GGrupAdi, 15);
     Tasi2(@s[1], @Veri[VeriSN], 15); Inc(VeriSN, 15);
     EkleByte(@Veri[VeriSN], $00); Inc(VeriSN);
     Ekle2Byte(@Veri[VeriSN], $8400); Inc(VeriSN, 2);
 
     // aktif
-    s := BuyutVeTamala(GMakineAdi, 15);
+    s := BuyutVeTamamla(GMakineAdi, 15);
     Tasi2(@s[1], @Veri[VeriSN], 15); Inc(VeriSN, 15);
     EkleByte(@Veri[VeriSN], $20); Inc(VeriSN);
     Ekle2Byte(@Veri[VeriSN], $0400); Inc(VeriSN, 2);
 
     // grup adý / aktif
-    s := BuyutVeTamala(GGrupAdi, 15);
+    s := BuyutVeTamamla(GGrupAdi, 15);
     Tasi2(@s[1], @Veri[VeriSN], 15); Inc(VeriSN, 15);
     EkleByte(@Veri[VeriSN], $1E); Inc(VeriSN);
     Ekle2Byte(@Veri[VeriSN], $8400); Inc(VeriSN, 2);

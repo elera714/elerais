@@ -65,7 +65,7 @@ procedure DNSPaketleriniIsle(AUDPPaket: PUDPPaket);
 
 implementation
 
-uses genel, donusum, sistemmesaj;
+uses genel, donusum, islevler, sistemmesaj;
 
 {==============================================================================
   dns protokol değişken / yapı ilk yükleme işlevlerini içerir
