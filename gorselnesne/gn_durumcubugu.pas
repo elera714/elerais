@@ -6,7 +6,7 @@
   Dosya Adı: gn_durumcubugu.pas
   Dosya İşlevi: durum çubuğu (TStatusBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -120,6 +120,9 @@ begin
 
   DurumCubugu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
+  DurumCubugu^.Odaklanilabilir := False;
+  DurumCubugu^.Odaklanildi := False;
+
   DurumCubugu^.OlayCagriAdresi := @OlaylariIsle;
 
   DurumCubugu^.FHiza := hzAlt;                        // alta hizala
@@ -227,9 +230,6 @@ begin
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
-
-    // ve pencerenin aktif nesnesini nil olarak işaretle
-    GAktifNesne := nil;
 
     if(FareNesneOlayAlanindaMi(DurumCubugu)) then
     begin

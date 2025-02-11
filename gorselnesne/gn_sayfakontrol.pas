@@ -6,7 +6,7 @@
   Dosya Adý: gn_sayfakontrol.pas
   Dosya Ýþlevi: sayfa kontrol (TPageControl) nesne yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 04/02/2025
+  Güncelleme Tarihi: 07/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,7 +17,7 @@ interface
 uses gorselnesne, paylasim, gn_panel, gn_dugme, gn_etiket;
 
 const
-  AZAMI_SEKMESAYISI = 3;
+  AZAMI_SEKMESAYISI = 4;
 
 type
   PSayfaKontrol = ^TSayfaKontrol;
@@ -176,6 +176,7 @@ begin
     SayfaKontrol^.FPaneller[0]^.Goster;
     SayfaKontrol^.FPaneller[1]^.Gizle;
     SayfaKontrol^.FPaneller[2]^.Gizle;
+    SayfaKontrol^.FPaneller[3]^.Gizle;
   end
   else if(SayfaKontrol^.FAktifSayfa = 1) then
   begin
@@ -183,6 +184,7 @@ begin
     SayfaKontrol^.FPaneller[0]^.Gizle;
     SayfaKontrol^.FPaneller[1]^.Goster;
     SayfaKontrol^.FPaneller[2]^.Gizle;
+    SayfaKontrol^.FPaneller[3]^.Gizle;
   end
   else if(SayfaKontrol^.FAktifSayfa = 2) then
   begin
@@ -190,6 +192,15 @@ begin
     SayfaKontrol^.FPaneller[0]^.Gizle;
     SayfaKontrol^.FPaneller[1]^.Gizle;
     SayfaKontrol^.FPaneller[2]^.Goster;
+    SayfaKontrol^.FPaneller[3]^.Gizle;
+  end
+  else if(SayfaKontrol^.FAktifSayfa = 3) then
+  begin
+
+    SayfaKontrol^.FPaneller[0]^.Gizle;
+    SayfaKontrol^.FPaneller[1]^.Gizle;
+    SayfaKontrol^.FPaneller[2]^.Gizle;
+    SayfaKontrol^.FPaneller[3]^.Goster;
   end;
 
   inherited Goster;
@@ -236,6 +247,7 @@ begin
     SayfaKontrol^.FPaneller[0]^.Goster;
     SayfaKontrol^.FPaneller[1]^.Gizle;
     SayfaKontrol^.FPaneller[2]^.Gizle;
+    SayfaKontrol^.FPaneller[3]^.Gizle;
   end
   else if(SayfaKontrol^.FAktifSayfa = 1) then
   begin
@@ -243,6 +255,7 @@ begin
     SayfaKontrol^.FPaneller[0]^.Gizle;
     SayfaKontrol^.FPaneller[1]^.Goster;
     SayfaKontrol^.FPaneller[2]^.Gizle;
+    SayfaKontrol^.FPaneller[3]^.Gizle;
   end
   else if(SayfaKontrol^.FAktifSayfa = 2) then
   begin
@@ -250,6 +263,15 @@ begin
     SayfaKontrol^.FPaneller[0]^.Gizle;
     SayfaKontrol^.FPaneller[1]^.Gizle;
     SayfaKontrol^.FPaneller[2]^.Goster;
+    SayfaKontrol^.FPaneller[3]^.Gizle;
+  end
+  else if(SayfaKontrol^.FAktifSayfa = 3) then
+  begin
+
+    SayfaKontrol^.FPaneller[0]^.Gizle;
+    SayfaKontrol^.FPaneller[1]^.Gizle;
+    SayfaKontrol^.FPaneller[2]^.Gizle;
+    SayfaKontrol^.FPaneller[3]^.Goster;
   end;
 
   // öncelikle kendini çiz
@@ -293,7 +315,10 @@ begin
       SayfaKontrol^.FAktifSayfa := 0
     else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[1]^.Kimlik) then
       SayfaKontrol^.FAktifSayfa := 1
-    else SayfaKontrol^.FAktifSayfa := 2;
+    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[2]^.Kimlik) then
+      SayfaKontrol^.FAktifSayfa := 2
+    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[3]^.Kimlik) then
+      SayfaKontrol^.FAktifSayfa := 3;
 
     SayfaKontrol^.Ciz;
   end
@@ -362,7 +387,7 @@ begin
 
     Result := SayfaKontrol^.FPaneller[1]^.Kimlik;
   end
-  else //if(i = 2) then
+  else if(i = 2) then
   begin
 
     // sekme düðme baþlýk geniþliði
@@ -386,6 +411,31 @@ begin
     SayfaKontrol^.FAktifSayfa := 0;
 
     Result := SayfaKontrol^.FPaneller[2]^.Kimlik;
+  end
+  else //if(i = 3) then
+  begin
+
+    // sekme düðme baþlýk geniþliði
+    FBaslikG[3] := Length(ABaslik) * 8 + 10;
+
+    // sekme düðmesi
+    SayfaKontrol^.FDugmeler[3] := SayfaKontrol^.FDugmeler[3]^.Olustur(ktBilesen,
+      SayfaKontrol, FBaslikG[0] + FBaslikG[1] + FBaslikG[2], 0, FBaslikG[3], 20, ABaslik);
+    SayfaKontrol^.FDugmeler[3]^.CizimModelDegistir(False, RENK_GRI, RENK_GUMUS, RENK_SIYAH, RENK_KIRMIZI);
+    SayfaKontrol^.FDugmeler[3]^.OlayYonlendirmeAdresi := @SekmeOlaylariniIsle;
+    SayfaKontrol^.FDugmeler[3]^.Goster;
+
+    // sekme paneli
+    SayfaKontrol^.FPaneller[3] := SayfaKontrol^.FPaneller[3]^.Olustur(ktBilesen,
+      SayfaKontrol, 0, 20, SayfaKontrol^.FBoyut.Genislik, SayfaKontrol^.FBoyut.Yukseklik - 20,
+      3, RENK_SIYAH, RENK_BEYAZ, 0, '');
+    //SayfaKontrol^.FPaneller[i]^.FHiza := hzTum;
+    SayfaKontrol^.FPaneller[3]^.Gorunum := True;
+
+    SayfaKontrol^.FSayfaSayisi := 4;
+    SayfaKontrol^.FAktifSayfa := 0;
+
+    Result := SayfaKontrol^.FPaneller[3]^.Kimlik;
   end;
 end;
 
@@ -409,8 +459,10 @@ begin
     Panel := SayfaKontrol^.FPaneller[0]
   else if(ASayfaNo = 1) then
     Panel := SayfaKontrol^.FPaneller[1]
-  else //if(ASayfaNo = 2) then
-    Panel := SayfaKontrol^.FPaneller[2];
+  else if(ASayfaNo = 2) then
+    Panel := SayfaKontrol^.FPaneller[2]
+  else //if(ASayfaNo = 3) then
+    Panel := SayfaKontrol^.FPaneller[3];
 
   Genislik := Length(ABaslik) * 8;
 

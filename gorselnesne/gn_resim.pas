@@ -6,7 +6,7 @@
   Dosya Adı: gn_resim.pas
   Dosya İşlevi: resim (TImage) nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -144,6 +144,9 @@ begin
 
   Resim^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
+  Resim^.Odaklanilabilir := False;
+  Resim^.Odaklanildi := False;
+
   Resim^.OlayCagriAdresi := @OlaylariIsle;
 
   Resim^.FTuvaleSigdir := False;
@@ -245,9 +248,6 @@ begin
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
-
-    // ve pencerenin aktif nesnesini nil olarak işaretle
-    GAktifNesne := nil;
 
     // fare olaylarını yakala
     OlayYakalamayaBasla(Resim);

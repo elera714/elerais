@@ -79,6 +79,9 @@ type
     // sistem işlevleri
     procedure SistemBilgisiAl(ABellekAdresi: Isaretci); assembler;
     procedure IslemciBilgisiAl(ABellekAdresi: Isaretci); assembler;
+
+    // sistem sürücü / klasör / dosya bilgi işlevleri
+    procedure SistemYapiBilgisiAl(ABilgiSN: TSayi4; var ABellek: string); assembler;
   end;
 
 implementation
@@ -413,6 +416,15 @@ procedure TGenel.IslemciBilgisiAl(ABellekAdresi: Isaretci); assembler;
 asm
   push  DWORD ABellekAdresi
   mov	  eax,ISLEMCIBILGISI_AL
+  int	  $34
+  add	  esp,4
+end;
+
+procedure TGenel.SistemYapiBilgisiAl(ABilgiSN: TSayi4; var ABellek: string); assembler;
+asm
+  push  DWORD ABellek
+  push  DWORD ABilgiSN
+  mov	  eax,SISTEM_YAPIBILGISI_AL
   int	  $34
   add	  esp,4
 end;

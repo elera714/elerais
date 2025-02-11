@@ -6,7 +6,7 @@
   Dosya Adý: temelgorselnesne.pas
   Dosya Ýþlevi: temel görsel nesne yapýsýný içerir
 
-  Güncelleme Tarihi: 28/12/2024
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,6 +32,11 @@ type
     FBaslik: string;
     // nesnenin görünüm özelliði
     FGorunum: Boolean;
+    // nesneye odaklanýlýp odaklanýlmadýðý
+    // örnek: TGirisKutusu nesnesine farenin sol tuþu ile basýldýðýnda odak kazanýr,
+    //        kavye tuþlarýna basýldýðýnda olaylar bu nesneye gider
+    FOdaklanilabilir: Boolean;
+    FOdaklanildi: Boolean;
   public
     // nesnenin kullaným tipi
     FKullanimTipi: TKullanimTipi;
@@ -74,6 +79,8 @@ type
     property NesneAdi: string read FNesneAdi;
     property Baslik: string read FBaslik write BaslikYaz;
     property Gorunum: Boolean read FGorunum write FGorunum;
+    property Odaklanilabilir: Boolean read FOdaklanilabilir write FOdaklanilabilir;
+    property Odaklanildi: Boolean read FOdaklanildi write FOdaklanildi;
   end;
 
 var

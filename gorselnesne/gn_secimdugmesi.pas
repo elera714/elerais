@@ -6,7 +6,7 @@
   Dosya Adı: gn_secimdugmesi.pas
   Dosya İşlevi: seçim düğmesi (TRadioButton) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -148,6 +148,9 @@ begin
 
   SecimDugmesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
+  SecimDugmesi^.Odaklanilabilir := True;
+  SecimDugmesi^.Odaklanildi := False;
+
   SecimDugmesi^.OlayCagriAdresi := @OlaylariIsle;
 
   SecimDugmesi^.FSecimDurumu := sdNormal;
@@ -268,7 +271,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    GAktifNesne := SecimDugmesi;
+    Pencere^.FAktifNesne := SecimDugmesi;
+    SecimDugmesi^.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(SecimDugmesi^.FareNesneOlayAlanindaMi(SecimDugmesi)) then

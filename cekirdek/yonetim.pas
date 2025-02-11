@@ -99,6 +99,7 @@ var
   sssss: string;
   ppppp: pchar;
   TestSinif: TTestSinif;
+  xyz: PSayi4;
 
 procedure Yukle;
 procedure SistemAnaKontrol;
@@ -108,6 +109,7 @@ procedure ProgramCagrilariniYanitla;
 procedure GrafikYonetimi;
 procedure SistemDegerleriBasla;
 procedure SistemDegerleriOlayIsle;
+function GMem(Size:ptruint):Pointer;
 
 implementation
 
@@ -245,6 +247,8 @@ var
   DosyaKimlik: TKimlik;
   DosyaAdi: string;
   Disk: PMantiksalDepolama;
+  Bellek: Isaretci;
+  m: TMemoryManager;
 begin
 
 {  if(CalisanGorevSayisi = 1) then
@@ -393,6 +397,16 @@ begin
         else if(Tus = '5') then
         begin
 
+          GetMemoryManager(m);
+          m.Getmem := @GMem;
+          {if(m.Getmem = nil) then
+            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'nil', [])
+          else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '!nil', []);}
+          m.GetMem(1000);
+
+          //Getmem(TestAdres, 100);
+
+          //new(xyz);
           //IRR := pic.ISRDegeriniOku;
           //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'IRR Deðeri: ', IRR, 4);
         end
@@ -622,6 +636,7 @@ procedure SistemDegerleriOlayIsle;
 var
   Gorev: PGorev;
   Olay: TOlay;
+  CizimAlan: TAlan;
 begin
 
   Gorev := GorevListesi[0];
@@ -639,6 +654,12 @@ begin
     begin
 
       //SISTEM_MESAJ(RENK_KIRMIZI, 'CO_CIZIM olayý', []);
+      CizimAlan := SDPencere^.FCizimAlan;
+      CizimAlan.Sol += 1;
+      CizimAlan.Ust += 1;
+      CizimAlan.Sag -= 1;
+      CizimAlan.Alt -= 1;
+      SDPencere^.Dikdortgen(SDPencere, ctNokta, CizimAlan, RENK_SIYAH);
       SDPencere^.YaziYaz(SDPencere, 12, 10, 'ÇKRDK:', RENK_LACIVERT);
       SDPencere^.SayiYaz16(SDPencere, 64, 10, True, 8, SistemSayaci, RENK_LACIVERT);
       SDPencere^.YaziYaz(SDPencere, 12, 26, 'ÇAÐRI:', RENK_LACIVERT);
@@ -647,6 +668,12 @@ begin
       SDPencere^.SayiYaz16(SDPencere, 64, 42, True, 8, GrafikSayaci, RENK_LACIVERT);
     end;
   end;
+end;
+
+function GMem(Size: ptruint): Pointer;
+begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'GetMem', []);
 end;
 
 constructor TTestSinif.Create;

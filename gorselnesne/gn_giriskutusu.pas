@@ -6,7 +6,7 @@
   Dosya Adý: gn_giriskutusu.pas
   Dosya Ýþlevi: giriþ kutusu (TEdit) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -109,6 +109,26 @@ begin
       GirisKutusu^.FSadeceRakam := p2^;
     end;
 
+    // giriþ kutusuna odaklan. (klavye giriþlerini almasýný saðla)
+    $040F:
+    begin
+
+      GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+
+      if(GirisKutusu <> nil) and (GirisKutusu^.NesneTipi = gntGirisKutusu) then
+      begin
+
+        // bir önceki odak alan nesneyi odaktan çýkar
+        GorselNesne := PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne;
+        if(GorselNesne <> nil) and (GorselNesne^.Odaklanilabilir) then
+          GorselNesne^.Odaklanildi := False;
+
+        // nelirtilen nesneyi odaklanýlan nesne olarak belirle
+        PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne := GirisKutusu;
+        GirisKutusu^.Odaklanildi := True;
+      end;
+    end;
+
     else Result := HATA_ISLEV;
   end;
 end;
@@ -151,6 +171,9 @@ begin
   GirisKutusu^.Baslik := ABaslik;
 
   GirisKutusu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+
+  GirisKutusu^.Odaklanilabilir := True;
+  GirisKutusu^.Odaklanildi := False;
 
   GirisKutusu^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -253,8 +276,8 @@ begin
   else
   begin
 
-    // nesne aktif ise sonuna #255 = klavye kursörü ekle
-    if(GAktifNesne^.Kimlik = GirisKutusu^.Kimlik) then
+    // nesne odak kazanmýþsa sonuna #255 = klavye kursörü ekle
+    if(GirisKutusu^.Odaklanildi) then
       GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik + #255, RENK_SIYAH)
     else GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik, RENK_SIYAH)
   end;
@@ -288,7 +311,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak iþaretle
-    GAktifNesne := GirisKutusu;
+    Pencere^.FAktifNesne := GirisKutusu;
+    GirisKutusu^.Odaklanildi := True;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
@@ -397,7 +421,8 @@ begin
     GirisKutusu^.Ciz;
 
     // nesneyi aktif nesne olarak iþaretle
-    GAktifNesne := GirisKutusu;
+    PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne := GirisKutusu;
+    GirisKutusu^.Odaklanildi := True;
   end
 end;
 

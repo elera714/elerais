@@ -6,7 +6,7 @@
   Dosya Adý: gn_kaydirmacubugu.pp
   Dosya Ýþlevi: kaydýrma çubuðu (TScrollBar) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -149,6 +149,10 @@ begin
   KaydirmaCubugu^.Baslik := '';
 
   KaydirmaCubugu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+
+  // þu aþamada bu nesne odaklanýlabilir bir nesne deðil
+  KaydirmaCubugu^.Odaklanilabilir := False;
+  KaydirmaCubugu^.Odaklanildi := False;
 
   KaydirmaCubugu^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -333,7 +337,9 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak iþaretle
-    GAktifNesne := KaydirmaCubugu;
+    // bilgi: þu aþamada bu nesne odaklanýlabilir bir nesne deðil
+    //Pencere^.FAktifNesne := KaydirmaCubugu;
+    //KaydirmaCubugu^.Odaklanildi := False;
   end;
 
   // geçerli fare göstergesini güncelle

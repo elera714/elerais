@@ -6,7 +6,7 @@
   Dosya Adı: gn_resimdugmesi.pas
   Dosya İşlevi: resim düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -130,6 +130,9 @@ begin
 
   ResimDugmesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
+  ResimDugmesi^.Odaklanilabilir := False;
+  ResimDugmesi^.Odaklanildi := False;
+
   ResimDugmesi^.OlayCagriAdresi := @OlaylariIsle;
 
   ResimDugmesi^.FDeger := AResimSiraNo;
@@ -236,8 +239,8 @@ begin
   begin
 
     if(ResimDugmesi^.FDurum = ddNormal) then
-      Dikdortgen(ResimDugmesi, Alan, RENK_GUMUS)
-    else Dikdortgen(ResimDugmesi, Alan, RENK_SIYAH);
+      Dikdortgen(ResimDugmesi, ctDuz, Alan, RENK_GUMUS)
+    else Dikdortgen(ResimDugmesi, ctDuz, Alan, RENK_SIYAH);
   end;
 end;
 
@@ -264,7 +267,9 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    GAktifNesne := ResimDugmesi;
+    // bilgi: şu aşamada bu nesne odaklanılabilir bir nesne değil
+    //Pencere^.FAktifNesne := ResimDugmesi;
+    //ResimDugmesi^.Odaklanildi := False;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(ResimDugmesi^.FareNesneOlayAlanindaMi(ResimDugmesi)) then

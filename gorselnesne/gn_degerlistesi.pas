@@ -6,7 +6,7 @@
   Dosya Adı: gn_degerlistesi.pas
   Dosya İşlevi: değer listesi (TValueListeEditor) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -195,6 +195,9 @@ begin
   DegerListesi^.Baslik := '';
 
   DegerListesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+
+  DegerListesi^.Odaklanilabilir := True;
+  DegerListesi^.Odaklanildi := False;
 
   DegerListesi^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -441,7 +444,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    GAktifNesne := DegerListesi;
+    Pencere^.FAktifNesne := DegerListesi;
+    DegerListesi^.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(DegerListesi^.FareNesneOlayAlanindaMi(DegerListesi)) then

@@ -6,7 +6,7 @@
   Dosya Adı: gn_dugme.pas
   Dosya İşlevi: düğme (TButton) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,19 +28,21 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
+    procedure Odaklan;
     procedure BaslikDegistir(ABaslik: string);
     procedure Hizala(AHiza: THiza);
     property Kimlik: TKimlik read FKimlik;
     property Etiket: TISayi4 read FEtiket write FEtiket;
   end;
 
-function _DugmeOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+function DugmeOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   ABaslik: string): TKimlik; assembler;
-procedure _DugmeYokEt(AKimlik: TKimlik); assembler;
-procedure _DugmeGoster(AKimlik: TKimlik); assembler;
-procedure _DugmeGizle(AKimlik: TKimlik); assembler;
-procedure _DugmeBaslikDegistir(AKimlik: TKimlik; ABaslik: string); assembler;
-procedure _DugmeHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
+procedure DugmeYokEt(AKimlik: TKimlik); assembler;
+procedure DugmeGoster(AKimlik: TKimlik); assembler;
+procedure DugmeGizle(AKimlik: TKimlik); assembler;
+procedure DugmeBaslikDegistir(AKimlik: TKimlik; ABaslik: string); assembler;
+procedure DugmeHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
+procedure DugmeOdaklan(AKimlik: TKimlik); assembler;
 
 implementation
 
@@ -50,7 +52,7 @@ begin
 
   FBaslik := ABaslik;
 
-  FKimlik := _DugmeOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik, ABaslik);
+  FKimlik := DugmeOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik, ABaslik);
 
   Result := FKimlik;
 end;
@@ -58,19 +60,25 @@ end;
 procedure TDugme.YokEt;
 begin
 
-  _DugmeYokEt(FKimlik);
+  DugmeYokEt(FKimlik);
 end;
 
 procedure TDugme.Goster;
 begin
 
-  _DugmeGoster(FKimlik);
+  DugmeGoster(FKimlik);
 end;
 
 procedure TDugme.Gizle;
 begin
 
-  _DugmeGizle(FKimlik);
+  DugmeGizle(FKimlik);
+end;
+
+procedure TDugme.Odaklan;
+begin
+
+  DugmeOdaklan(FKimlik);
 end;
 
 procedure TDugme.BaslikDegistir(ABaslik: string);
@@ -80,17 +88,17 @@ begin
 
   FBaslik := ABaslik;
 
-  _DugmeBaslikDegistir(FKimlik, FBaslik);
+  DugmeBaslikDegistir(FKimlik, FBaslik);
 end;
 
 procedure TDugme.Hizala(AHiza: THiza);
 begin
 
-  _DugmeHizala(FKimlik, AHiza);
+  DugmeHizala(FKimlik, AHiza);
 end;
 
-function _DugmeOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
-  ABaslik: string): TKimlik;
+function DugmeOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+  ABaslik: string): TKimlik; assembler;
 asm
   push  DWORD ABaslik
   push  DWORD AYukseklik
@@ -103,7 +111,7 @@ asm
   add   esp,24
 end;
 
-procedure _DugmeYokEt(AKimlik: TKimlik);
+procedure DugmeYokEt(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,DUGME_YOKET
@@ -111,7 +119,7 @@ asm
   add   esp,4
 end;
 
-procedure _DugmeGoster(AKimlik: TKimlik);
+procedure DugmeGoster(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,DUGME_GOSTER
@@ -119,7 +127,7 @@ asm
   add   esp,4
 end;
 
-procedure _DugmeGizle(AKimlik: TKimlik);
+procedure DugmeGizle(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,DUGME_GIZLE
@@ -127,7 +135,7 @@ asm
   add   esp,4
 end;
 
-procedure _DugmeBaslikDegistir(AKimlik: TKimlik; ABaslik: string);
+procedure DugmeBaslikDegistir(AKimlik: TKimlik; ABaslik: string); assembler;
 asm
   push  DWORD ABaslik
   push  DWORD AKimlik
@@ -136,13 +144,21 @@ asm
   add   esp,8
 end;
 
-procedure _DugmeHizala(AKimlik: TKimlik; AHiza: THiza);
+procedure DugmeHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
 asm
   push  DWORD AHiza
   push  DWORD AKimlik
   mov   eax,DUGME_HIZALA
   int   $34
   add   esp,8
+end;
+
+procedure DugmeOdaklan(AKimlik: TKimlik); assembler;
+asm
+  push  DWORD AKimlik
+  mov   eax,DUGME_YAZ_ODAK
+  int   $34
+  add   esp,4
 end;
 
 end.

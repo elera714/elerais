@@ -6,7 +6,7 @@
   Dosya Adı: gn_panel.pas
   Dosya İşlevi: panel (TPanel) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -143,6 +143,9 @@ begin
   if(AKullanimTipi = ktTuvalNesne) then
     Panel^.FTuvalNesne := Panel
   else Panel^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+
+  Panel^.Odaklanilabilir := False;
+  Panel^.Odaklanildi := False;
 
   Panel^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -336,9 +339,6 @@ begin
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
-
-    // ve pencerenin aktif nesnesini nil olarak işaretle
-    GAktifNesne := nil;
 
     // sol tuş basım işlemi olay alanında gerçekleştiyse
     if(Panel^.FareNesneOlayAlanindaMi(Panel)) then

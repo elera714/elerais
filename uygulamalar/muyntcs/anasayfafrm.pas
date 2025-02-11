@@ -85,7 +85,7 @@ const
 
   MasaustuMenuProgramAdi: array[0..4] of string = (
     ('mustudk.c'),
-    ('haklar.txt'),
+    ('disk1:\belgeler\haklar.txt'),
     ('nesnegor.c'),
     ('grafik3.c'),
     ('sisbilgi.c'));

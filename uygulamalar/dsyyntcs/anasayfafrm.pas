@@ -45,7 +45,9 @@ var
 
 procedure TfrmAnaSayfa.Olustur;
 var
+  SeciliSurucu,
   i: TSayi4;
+  SistemKuruluSurucu: string;
 begin
 
   // geçerli sürücü atamasý
@@ -70,7 +72,11 @@ begin
 
   FPanel.Goster;
 
+  // sistemin kurulu olduðu sürücüyü al
+  FGenel.SistemYapiBilgisiAl(0, SistemKuruluSurucu);
+
   // her mantýksal sürücü için bir adet düðme oluþtur
+  SeciliSurucu := 0;
   AygitSayisi := FDepolama.MantiksalDepolamaAygitSayisiAl;
   if(AygitSayisi > 0) then
   begin
@@ -79,10 +85,15 @@ begin
     begin
 
       if(FDepolama.MantiksalDepolamaAygitBilgisiAl(i, @MantiksalDepolama)) then
+      begin
+
+        if(MantiksalDepolama.AygitAdi = SistemKuruluSurucu) then SeciliSurucu := i;
+
         FklSurucu.ElemanEkle(MantiksalDepolama.AygitAdi);
+      end;
     end;
 
-    if(FklSurucu.ElemanSayisi > 0) then FklSurucu.BaslikSiraNo := 0;
+    if(FklSurucu.ElemanSayisi > 0) then FklSurucu.BaslikSiraNo := SeciliSurucu;
   end;
 
   FDurumCubugu.Olustur(FPencere.Kimlik, 0, 0, 100, 20, 'Toplam Klasör: 0 - Toplam Dosya: 0');
@@ -103,8 +114,7 @@ procedure TfrmAnaSayfa.Goster;
 begin
 
   // pencereyi görüntüle
-  FPencere.Gorunum := True;
-end;
+  FPencere.Gorunum := True;end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
 var

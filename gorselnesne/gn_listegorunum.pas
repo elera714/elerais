@@ -6,7 +6,7 @@
   Dosya Adý: gn_listegorunum.pas
   Dosya Ýþlevi: liste görünüm (TListView) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -211,6 +211,9 @@ begin
   ListeGorunum^.Baslik := '';
 
   ListeGorunum^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+
+  ListeGorunum^.Odaklanilabilir := True;
+  ListeGorunum^.Odaklanildi := False;
 
   ListeGorunum^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -444,7 +447,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak iþaretle
-    GAktifNesne := ListeGorunum;
+    Pencere^.FAktifNesne := ListeGorunum;
+    ListeGorunum^.Odaklanildi := True;
 
     // sol tuþa basým iþlemi nesnenin olay alanýnda mý gerçekleþti ?
     if(ListeGorunum^.FareNesneOlayAlanindaMi(ListeGorunum)) then

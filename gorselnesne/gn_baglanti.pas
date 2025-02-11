@@ -6,7 +6,7 @@
   Dosya Adı: gn_baglanti.pas
   Dosya İşlevi: bağlantı nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -112,6 +112,11 @@ begin
 
   Baglanti^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
+  Baglanti^.FOdakMevcut := False;
+
+  Baglanti^.Odaklanilabilir := False;
+  Baglanti^.Odaklanildi := False;
+
   Baglanti^.OlayCagriAdresi := @OlaylariIsle;
 
   Baglanti^.FFareImlecTipi := fitEl;
@@ -209,7 +214,9 @@ begin
     if(Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    GAktifNesne := Baglanti;
+    // bilgi: şu aşamada bu nesne odaklanılabilir bir nesne değil
+    //Pencere^.FAktifNesne := Baglanti;
+    //Baglanti^.Odaklanildi := False;
 
     // fare olaylarını yakala
     OlayYakalamayaBasla(Baglanti);
@@ -249,7 +256,7 @@ begin
     Baglanti^.FOdakMevcut := True;
 
     // bağlantı nesnesini yeniden çiz
-    Pencere^.Guncelle;
+    Baglanti^.Ciz;
   end
   else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
   begin
@@ -257,11 +264,7 @@ begin
     Baglanti^.FOdakMevcut := False;
 
     // bağlantı nesnesini yeniden çiz
-    Pencere^.Guncelle;
-  end
-  else if(AOlay.Olay = FO_HAREKET) then
-  begin
-
+    Baglanti^.Ciz;
   end;
 
   // geçerli fare göstergesini güncelle

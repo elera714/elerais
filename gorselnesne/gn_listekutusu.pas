@@ -6,7 +6,7 @@
   Dosya Adı: gn_listekutusu.pas
   Dosya İşlevi: liste kutusu (TListBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -203,6 +203,9 @@ begin
 
   ListeKutusu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
+  ListeKutusu^.Odaklanilabilir := True;
+  ListeKutusu^.Odaklanildi := False;
+
   ListeKutusu^.OlayCagriAdresi := @OlaylariIsle;
 
   ListeKutusu^.FCizimBaslangic.Sol := ListeKutusu^.AtaNesne^.FCizimBaslangic.Sol +
@@ -392,7 +395,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    GAktifNesne := ListeKutusu;
+    Pencere^.FAktifNesne := ListeKutusu;
+    ListeKutusu^.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(ListeKutusu^.FareNesneOlayAlanindaMi(ListeKutusu)) then

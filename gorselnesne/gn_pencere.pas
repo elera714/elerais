@@ -6,7 +6,7 @@
   Dosya Adý: gn_pencere.pas
   Dosya Ýþlevi: pencere (TForm) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
   Önemli Bilgiler:
 
@@ -39,6 +39,7 @@ type
     FAtaPencere: PPencere;          // pencerenin (varsa) bir üst penceresi
     FPencereDurum: TPencereDurum;
     FPencereTipi: TPencereTipi;
+    FAktifNesne: PGorselNesne;
     FKucultmeDugmesi, FBuyutmeDugmesi, FKapatmaDugmesi: PResimDugmesi;
     function Olustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
       APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk): PPencere;
@@ -237,6 +238,9 @@ begin
   Pencere^.FAtaPencere := Gorev^.AktifPencere;
   Gorev^.AktifPencere := Pencere;
 
+  Pencere^.Odaklanilabilir := False;
+  Pencere^.Odaklanildi := False;
+
   Pencere^.OlayCagriAdresi := @OlaylariIsle;
 
   Pencere^.FPencereTipi := APencereTipi;
@@ -321,6 +325,9 @@ begin
   // sol ve üst deðerlerini sýfýr olarak ayarla
   Pencere^.FCizimBaslangic.Sol := 0;
   Pencere^.FCizimBaslangic.Ust := 0;
+
+  // penceenin içerisindeki aktif nesne
+  Pencere^.FAktifNesne := nil;
 
   // pencere çizimi için gereken bellek uzunluðu
   Pencere^.FCizimBellekUzunlugu := (Pencere^.FBoyut.Genislik *

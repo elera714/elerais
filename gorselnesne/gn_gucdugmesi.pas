@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -109,6 +109,26 @@ begin
 
     end;
 
+    // güç düğmesi nesnesine odaklan. (klavye girişlerini almasını sağla)
+    $030F:
+    begin
+
+      GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
+
+      if(GucDugmesi <> nil) and (GucDugmesi^.NesneTipi = gntGucDugmesi) then
+      begin
+
+        // bir önceki odak alan nesneyi odaktan çıkar
+        GorselNesne := PPencere(GucDugmesi^.AtaNesne)^.FAktifNesne;
+        if(GorselNesne <> nil) and (GorselNesne^.Odaklanilabilir) then
+          GorselNesne^.Odaklanildi := False;
+
+        // nelirtilen nesneyi odaklanılan nesne olarak belirle
+        PPencere(GucDugmesi^.AtaNesne)^.FAktifNesne := GucDugmesi;
+        GucDugmesi^.Odaklanildi := True;
+      end;
+    end;
+
     // güç düğmesini yeniden boyutlandır
     $0804:
     begin
@@ -166,6 +186,9 @@ begin
   GucDugmesi^.Baslik := ABaslik;
 
   GucDugmesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+
+  GucDugmesi^.Odaklanilabilir := True;
+  GucDugmesi^.Odaklanildi := False;
 
   GucDugmesi^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -229,6 +252,7 @@ end;
 procedure TGucDugmesi.Ciz;
 var
   GucDugmesi: PGucDugmesi;
+  CizimAlan: TAlan;
 begin
 
   GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(Kimlik));
@@ -240,6 +264,18 @@ begin
   else GucDugmesi^.FYaziRenk := FYaziRenkBasili;
 
   inherited Ciz;
+
+  // nesne odaklanılmış ise nesnenin kenarlarını işaretle
+  if(GucDugmesi^.Odaklanildi) then
+  begin
+
+    CizimAlan := GucDugmesi^.FCizimAlan;
+    CizimAlan.Sol += 2;
+    CizimAlan.Ust += 2;
+    CizimAlan.Sag -= 2;
+    CizimAlan.Alt -= 2;
+    GucDugmesi^.Dikdortgen(GucDugmesi, ctNokta, CizimAlan, RENK_SIYAH);
+  end;
 end;
 
 {==============================================================================
@@ -265,7 +301,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    GAktifNesne := GucDugmesi;
+    Pencere^.FAktifNesne := GucDugmesi;
+    GucDugmesi^.Odaklanildi := True;
 
     // fare olaylarını yakala
     OlayYakalamayaBasla(GucDugmesi);

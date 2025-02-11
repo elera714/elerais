@@ -53,6 +53,8 @@ procedure TfrmAnaSayfa.Goster;
 begin
 
   FPencere.Gorunum := True;
+
+  FGirisKutusu.Odaklan;
 end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
@@ -63,8 +65,13 @@ begin
     ProgramCalistir
 
   else if(AOlay.Olay = CO_TUSBASILDI) then
+  begin
 
-    if(AOlay.Deger1 = 10) then ProgramCalistir;
+    if(AOlay.Deger1 = 10) then
+      ProgramCalistir
+    else if(AOlay.Deger1 = 27) then
+      FGorev.Sonlandir(-1);
+  end;
 
   Result := 1;
 end;

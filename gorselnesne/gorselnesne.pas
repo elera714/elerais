@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 25/01/2025
+  Güncelleme Tarihi: 10/02/2025
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -17,6 +17,9 @@ unit gorselnesne;
 interface
 
 uses paylasim, temelgorselnesne;
+
+const
+  NOKTA_BOSLUKSAYISI = 3;
 
 type
   PGorselNesne = ^TGorselNesne;
@@ -93,7 +96,8 @@ type
       AMACAdres: TMACAdres; ARenk: TRenk);
     procedure IPAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4; AIPAdres: TIPAdres;
       ARenk: TRenk);
-    procedure Dikdortgen(AGorselNesne: PGorselNesne; AAlan: TAlan; ACizgiRengi: TRenk);
+    procedure Dikdortgen(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+      AAlan: TAlan; ACizgiRengi: TRenk);
     procedure DikdortgenDoldur(AGorselNesne: PGorselNesne; ASol, AUst,
       ASag, AAlt: TISayi4; ACizgiRengi, ADolguRengi: TRenk);
     procedure DikdortgenDoldur(AGorselNesne: PGorselNesne; AAlan: TAlan;
@@ -107,10 +111,10 @@ type
     procedure Daire(ASol, AUst, AYariCap: TISayi4; ARenk: TRenk);
     procedure DaireDoldur(AGorselNesne: PGorselNesne; ASol, AUst,
       AYariCap: TISayi4; ARenk: TRenk);
-    procedure YatayCizgi(AGorselNesne: PGorselNesne; ASol, AUst, ASag: TISayi4;
-      ARenk: TRenk);
-    procedure DikeyCizgi(AGorselNesne: PGorselNesne; ASol, AUst, AAlt: TISayi4;
-      ARenk: TRenk);
+    procedure YatayCizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+      ASol, AUst, ASag: TISayi4; ARenk: TRenk);
+    procedure DikeyCizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+      ASol, AUst, AAlt: TISayi4; ARenk: TRenk);
     procedure EgimliDoldur(AGorselNesne: PGorselNesne; AAlan: TAlan;
       ARenk1, ARenk2: TRenk);
     procedure EgimliDoldur2(AGorselNesne: PGorselNesne; AAlan: TAlan;
@@ -1151,20 +1155,21 @@ end;
 {==============================================================================
   nesneye belirtilen renkte dikdörtgen çizer
  ==============================================================================}
-procedure TGorselNesne.Dikdortgen(AGorselNesne: PGorselNesne; AAlan: TAlan; ACizgiRengi: TRenk);
+procedure TGorselNesne.Dikdortgen(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+  AAlan: TAlan; ACizgiRengi: TRenk);
 begin
 
   // üst yatay çizgiyi çiz
-  YatayCizgi(AGorselNesne, AAlan.Sol, AAlan.Ust, AAlan.Sag, ACizgiRengi);
+  YatayCizgi(AGorselNesne, ACizgiTipi, AAlan.Sol, AAlan.Ust, AAlan.Sag, ACizgiRengi);
 
   // sol dikey çizgiyi çiz
-  DikeyCizgi(AGorselNesne, AAlan.Sol, AAlan.Ust, AAlan.Alt, ACizgiRengi);
+  DikeyCizgi(AGorselNesne, ACizgiTipi, AAlan.Sol, AAlan.Ust, AAlan.Alt, ACizgiRengi);
 
   // alt yatay çizgiyi çiz
-  YatayCizgi(AGorselNesne, AAlan.Sag, AAlan.Alt, AAlan.Sol, ACizgiRengi);
+  YatayCizgi(AGorselNesne, ACizgiTipi, AAlan.Sag, AAlan.Alt, AAlan.Sol, ACizgiRengi);
 
   // sað dikey çizgiyi çiz
-  DikeyCizgi(AGorselNesne, AAlan.Sag, AAlan.Alt, AAlan.Ust, ACizgiRengi);
+  DikeyCizgi(AGorselNesne, ACizgiTipi, AAlan.Sag, AAlan.Alt, AAlan.Ust, ACizgiRengi);
 end;
 
 {==============================================================================
@@ -1200,7 +1205,7 @@ begin
   Alan.Ust := Ust;
   Alan.Sag := Sag;
   Alan.Alt := Alt;
-  Dikdortgen(AGorselNesne, Alan, ACizgiRengi);
+  Dikdortgen(AGorselNesne, ctDuz, Alan, ACizgiRengi);
 
   // iç kenarlýk
   Inc(Sol);
@@ -1245,7 +1250,7 @@ var
 begin
 
   // dýþ kenarlýk
-  Dikdortgen(AGorselNesne, AAlan, ACizgiRengi);
+  Dikdortgen(AGorselNesne, ctDuz, AAlan, ACizgiRengi);
 
   // iç kenarlýk
   Inc(AAlan.Sol);
@@ -1353,7 +1358,7 @@ begin
     begin
 
       Inc(AdimSayisi);
-      if(AdimSayisi = 3) then
+      if(AdimSayisi = NOKTA_BOSLUKSAYISI) then
       begin
 
         Isaretle := not Isaretle;
@@ -1442,10 +1447,11 @@ end;
 {==============================================================================
   nesneye belirtilen renkte yatay çizgi çizer
  ==============================================================================}
-procedure TGorselNesne.YatayCizgi(AGorselNesne: PGorselNesne; ASol, AUst, ASag: TISayi4;
-  ARenk: TRenk);
+procedure TGorselNesne.YatayCizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+  ASol, AUst, ASag: TISayi4; ARenk: TRenk);
 var
-  i: TISayi4;
+  AdimSayisi, i: TISayi4;
+  Isaretle: Boolean;
 begin
 
   // eðer ASol > ASag ise ASag ile ASol deðerlerini yer deðiþtir.
@@ -1457,17 +1463,40 @@ begin
     ASol := i;
   end;
 
-  // pixel'in nesneye ait olup olmadýðýný kontrol ederek iþaretleme yap
-  for i := ASol to ASag do GEkranKartSurucusu.NoktaYaz(AGorselNesne, i, AUst, ARenk, True);
+  AdimSayisi := 0;
+
+  if(ACizgiTipi = ctDuz) then
+    Isaretle := True
+  else Isaretle := False;
+
+  // çizgi tipine göre ilgili konumu iþaretle
+  for i := ASol to ASag do
+  begin
+
+    if(ACizgiTipi = ctNokta) then
+    begin
+
+      Inc(AdimSayisi);
+      if(AdimSayisi = NOKTA_BOSLUKSAYISI) then
+      begin
+
+        Isaretle := not Isaretle;
+        AdimSayisi := 0;
+      end;
+    end;
+
+    if(Isaretle) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, i, AUst, ARenk, True);
+  end;
 end;
 
 {==============================================================================
   nesneye belirtilen renkte dikey çizgi çizer
  ==============================================================================}
-procedure TGorselNesne.DikeyCizgi(AGorselNesne: PGorselNesne; ASol, AUst, AAlt: TISayi4;
-  ARenk: TRenk);
+procedure TGorselNesne.DikeyCizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+  ASol, AUst, AAlt: TISayi4; ARenk: TRenk);
 var
-  i: TISayi4;
+  AdimSayisi, i: TISayi4;
+  Isaretle: Boolean;
 begin
 
   // eðer AUst > AAlt ise AAlt ile AUst deðerlerini yer deðiþtir.
@@ -1479,8 +1508,30 @@ begin
     AUst := i;
   end;
 
-  // pixel'in nesneye ait olup olmadýðýný kontrol ederek iþaretleme yap
-  for i := AUst to AAlt do GEkranKartSurucusu.NoktaYaz(AGorselNesne, ASol, i, ARenk, True);
+  AdimSayisi := 0;
+
+  if(ACizgiTipi = ctDuz) then
+    Isaretle := True
+  else Isaretle := False;
+
+  // çizgi tipine göre ilgili konumu iþaretle
+  for i := AUst to AAlt do
+  begin
+
+    if(ACizgiTipi = ctNokta) then
+    begin
+
+      Inc(AdimSayisi);
+      if(AdimSayisi = NOKTA_BOSLUKSAYISI) then
+      begin
+
+        Isaretle := not Isaretle;
+        AdimSayisi := 0;
+      end;
+    end;
+
+    if(Isaretle) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, ASol, i, ARenk, True);
+  end;
 end;
 
 // yukarýdan aþaðýya eðimli doldurma iþlemi
@@ -1636,12 +1687,12 @@ begin
   begin
 
     // ilk üst ve sol çizgiyi çiz
-    YatayCizgi(AGorselNesne, AAlan.Sol, AAlan.Ust, AAlan.Sag-1, $808080);
-    DikeyCizgi(AGorselNesne, AAlan.Sol, AAlan.Ust, AAlan.Alt-1, $808080);
+    YatayCizgi(AGorselNesne, ctDuz, AAlan.Sol, AAlan.Ust, AAlan.Sag-1, $808080);
+    DikeyCizgi(AGorselNesne, ctDuz, AAlan.Sol, AAlan.Ust, AAlan.Alt-1, $808080);
 
     // ilk alt ve sað çizgiyi çiz
-    YatayCizgi(AGorselNesne, AAlan.Sag, AAlan.Alt, AAlan.Sol, $EFEFEF);
-    DikeyCizgi(AGorselNesne, AAlan.Sag, AAlan.Alt, AAlan.Ust, $EFEFEF);
+    YatayCizgi(AGorselNesne, ctDuz, AAlan.Sag, AAlan.Alt, AAlan.Sol, $EFEFEF);
+    DikeyCizgi(AGorselNesne, ctDuz, AAlan.Sag, AAlan.Alt, AAlan.Ust, $EFEFEF);
 
     if(AKalinlik > 1) then
     begin
@@ -1650,12 +1701,12 @@ begin
       begin
 
         // içe doðru diðer üst ve sol çizgiyi çiz
-        YatayCizgi(AGorselNesne, AAlan.Sol + i, AAlan.Ust + i, AAlan.Sag - i - 1, $404040);
-        DikeyCizgi(AGorselNesne, AAlan.Sol + i, AAlan.Ust + i, AAlan.Alt - i - 1, $404040);
+        YatayCizgi(AGorselNesne, ctDuz, AAlan.Sol + i, AAlan.Ust + i, AAlan.Sag - i - 1, $404040);
+        DikeyCizgi(AGorselNesne, ctDuz, AAlan.Sol + i, AAlan.Ust + i, AAlan.Alt - i - 1, $404040);
 
         // içe doðru diðer alt ve sað çizgiyi çiz
-        YatayCizgi(AGorselNesne, AAlan.Sag - i, AAlan.Alt - i, AAlan.Sol + i, $D4D0C8);
-        DikeyCizgi(AGorselNesne, AAlan.Sag - i, AAlan.Alt - i, AAlan.Ust + i, $D4D0C8);
+        YatayCizgi(AGorselNesne, ctDuz, AAlan.Sag - i, AAlan.Alt - i, AAlan.Sol + i, $D4D0C8);
+        DikeyCizgi(AGorselNesne, ctDuz, AAlan.Sag - i, AAlan.Alt - i, AAlan.Ust + i, $D4D0C8);
       end;
     end;
   end;

@@ -31,19 +31,19 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <Units Count="8">
+    <Units Count="14">
       <Unit0>
         <Filename Value="calistir.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="9" Y="26"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="calistir.ld"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit1>
       <Unit2>
@@ -51,36 +51,36 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="152"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
         <DefaultSyntaxHighlighter Value="Bat"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\rtl_uygulama\linux\n_genel.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="7"/>
         <CursorPos X="20" Y="18"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\rtl_uygulama\linux\linux.pp"/>
         <UnitName Value="Linux"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="13"/>
-        <UsageCount Value="11"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="30"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\rtl_uygulama\linux\system.pp"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="21"/>
         <CursorPos X="37" Y="41"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\..\rtl_uygulama\linux\n_gorev.pas"/>
-        <EditorIndex Value="5"/>
-        <UsageCount Value="11"/>
+        <EditorIndex Value="8"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
@@ -88,9 +88,54 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="51"/>
+        <CursorPos X="22" Y="71"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="..\..\rtl_uygulama\linux\elera.inc"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="29"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\..\rtl_uygulama\linux\n_ekran.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="27"/>
+        <CursorPos X="11" Y="57"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\..\rtl_uygulama\linux\paylasim.inc"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="117"/>
+        <CursorPos X="75" Y="133"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\..\rtl_uygulama\linux\gn_dugme.pas"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="12"/>
+        <CursorPos X="23" Y="31"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\..\rtl_uygulama\linux\gn_giriskutusu.pas"/>
+        <EditorIndex Value="10"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\..\rtl_uygulama\linux\gn_gucdugmesi.pas"/>
+        <EditorIndex Value="11"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit13>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

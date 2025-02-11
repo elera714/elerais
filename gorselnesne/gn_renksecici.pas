@@ -6,7 +6,7 @@
   Dosya Adý: gn_renksecici.pas
   Dosya Ýþlevi: renk seçim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -116,6 +116,9 @@ begin
 
   RenkSecici^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
+  RenkSecici^.Odaklanilabilir := True;
+  RenkSecici^.Odaklanildi := False;
+
   RenkSecici^.OlayCagriAdresi := @OlaylariIsle;
 
   // renk kutu geniþlik & yükseklik deðerlerini belirle
@@ -200,7 +203,7 @@ begin
         SecimRenkleri[(i * 8) + j]);
 
       if(k = FSeciliRenkSiraNo) then
-        RenkSecici^.Dikdortgen(RenkSecici, Alan, KenarRenkleri[FSeciliRenkSiraNo]);
+        RenkSecici^.Dikdortgen(RenkSecici, ctDuz, Alan, KenarRenkleri[FSeciliRenkSiraNo]);
 
       Inc(k);
     end;
@@ -229,7 +232,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak iþaretle
-    GAktifNesne := RenkSecici;
+    Pencere^.FAktifNesne := RenkSecici;
+    RenkSecici^.Odaklanildi := True;
 
     // fare olaylarýný yakala
     OlayYakalamayaBasla(RenkSecici);

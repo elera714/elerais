@@ -3,7 +3,7 @@ unit anasayfafrm;
 
 interface
 
-uses n_gorev, gn_pencere, _forms, gn_sayfakontrol, gn_dugme;
+uses n_gorev, gn_pencere, _forms, gn_sayfakontrol, gn_dugme, n_genel;
 
 type
   TfrmAnaSayfa = object(TForm)
@@ -12,6 +12,7 @@ type
     FPencere: TPencere;
     FSayfaKontrol: TSayfaKontrol;
     FdugKapat: TDugme;
+    FGenel: TGenel;
   public
     procedure Olustur;
     procedure Goster;
@@ -29,6 +30,9 @@ const
 var
   SistemBilgisi: TSistemBilgisi;
   IslemciBilgisi: TIslemciBilgisi;
+  ToplamRAMBlok, AyrilmisRAMBlok,
+  KullanilmisRAMBlok, BosRAMBlok,
+  BlokUzunlugu: TSayi4;
 
 procedure TfrmAnaSayfa.Olustur;
 begin
@@ -39,6 +43,7 @@ begin
   FSayfaKontrol.Olustur(FPencere.Kimlik, 5, 5, 365, 120);
   FSayfaKontrol.SayfaEkle('Sistem');
   FSayfaKontrol.SayfaEkle('Ýþlemci');
+  FSayfaKontrol.SayfaEkle('Bellek');
   FSayfaKontrol.SayfaEkle('Ekran');
 
   FSayfaKontrol.Goster;
@@ -55,6 +60,8 @@ begin
   // sistem bilgilerini al
   FGorev.SistemBilgisiAl(@SistemBilgisi);
   FGorev.IslemciBilgisiAl(@IslemciBilgisi);
+  FGenel.GenelBellekBilgisiAl(@ToplamRAMBlok, @AyrilmisRAMBlok, @KullanilmisRAMBlok,
+    @BosRAMBlok, @BlokUzunlugu);
 
   // 1. sayfa
   FSayfaKontrol.EtiketEkle(0, 8, 8, 'Sistem: ' + SistemBilgisi.SistemAdi);
@@ -69,8 +76,14 @@ begin
   FSayfaKontrol.EtiketEkle(1, 8, 72, 'CPUID = 1 [ECX]: ' + HexToStr(IslemciBilgisi.Ozellik1_ECX, True, 8));
 
   // 3. sayfa
-  FSayfaKontrol.EtiketEkle(2, 8, 8,  'Yatay Çözünürlük: ' + IntToStr(SistemBilgisi.YatayCozunurluk));
-  FSayfaKontrol.EtiketEkle(2, 8, 24, 'Dikey Çözünürlük: ' + IntToStr(SistemBilgisi.DikeyCozunurluk));
+  FSayfaKontrol.EtiketEkle(2, 8, 8,  'Toplam RAM    : ' + IntToStr(ToplamRAMBlok * BlokUzunlugu));
+  FSayfaKontrol.EtiketEkle(2, 8, 24, 'Ayrýlmýþ RAM  : ' + IntToStr(AyrilmisRAMBlok * BlokUzunlugu));
+  FSayfaKontrol.EtiketEkle(2, 8, 40, 'Kullanýlan RAM: ' + IntToStr(KullanilmisRAMBlok * BlokUzunlugu));
+  FSayfaKontrol.EtiketEkle(2, 8, 56, 'Boþ RAM       : ' + IntToStr(BosRAMBlok * BlokUzunlugu));
+
+  // 4. sayfa
+  FSayfaKontrol.EtiketEkle(3, 8, 8,  'Yatay Çözünürlük: ' + IntToStr(SistemBilgisi.YatayCozunurluk));
+  FSayfaKontrol.EtiketEkle(3, 8, 24, 'Dikey Çözünürlük: ' + IntToStr(SistemBilgisi.DikeyCozunurluk));
 end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;

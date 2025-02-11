@@ -6,7 +6,7 @@
   Dosya Adı: gn_izgara.pas
   Dosya İşlevi: ızgara nesnesi (TStringGrid) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -212,6 +212,9 @@ begin
   Izgara^.Baslik := '';
 
   Izgara^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+
+  Izgara^.Odaklanilabilir := True;
+  Izgara^.Odaklanildi := False;
 
   Izgara^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -440,7 +443,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    GAktifNesne := Izgara;
+    Pencere^.FAktifNesne := Izgara;
+    Izgara^.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(Izgara^.FareNesneOlayAlanindaMi(Izgara)) then

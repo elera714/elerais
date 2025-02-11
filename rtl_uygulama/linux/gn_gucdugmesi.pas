@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,6 +28,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
+    procedure Odaklan;
     procedure BaslikDegistir(ABaslik: string);
     procedure DurumDegistir(ADurum: TSayi4);
     procedure Boyutlandir(AKonum: TKonum; ABoyut: TBoyut);
@@ -35,14 +36,15 @@ type
     property Etiket: TSayi4 read FEtiket write FEtiket;
   end;
 
-function _GucDugmesiOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+function GucDugmesiOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   ABaslik: string): TKimlik; assembler;
-procedure _GucDugmesiYokEt(AKimlik: TKimlik); assembler;
-procedure _GucDugmesiGoster(AKimlik: TKimlik); assembler;
-procedure _GucDugmesiGizle(AKimlik: TKimlik); assembler;
-procedure _GucDugmesiBaslikDegistir(AKimlik: TKimlik; ABaslik: string); assembler;
-procedure _GucDugmesiDurumDegistir(AKimlik: TKimlik; ADurum: TSayi4); assembler;
-procedure _GucDugmesiBoyutlandir(AKimlik: TKimlik; AKonum: TKonum; ABoyut: TBoyut); assembler;
+procedure GucDugmesiYokEt(AKimlik: TKimlik); assembler;
+procedure GucDugmesiGoster(AKimlik: TKimlik); assembler;
+procedure GucDugmesiGizle(AKimlik: TKimlik); assembler;
+procedure GucDugmesiBaslikDegistir(AKimlik: TKimlik; ABaslik: string); assembler;
+procedure GucDugmesiDurumDegistir(AKimlik: TKimlik; ADurum: TSayi4); assembler;
+procedure GucDugmesiBoyutlandir(AKimlik: TKimlik; AKonum: TKonum; ABoyut: TBoyut); assembler;
+procedure GucDugmesiOdaklan(AKimlik: TKimlik); assembler;
 
 implementation
 
@@ -52,26 +54,32 @@ begin
 
   FBaslik := ABaslik;
 
-  FKimlik := _GucDugmesiOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik, ABaslik);
+  FKimlik := GucDugmesiOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik, ABaslik);
   Result := FKimlik;
 end;
 
 procedure TGucDugmesi.YokEt;
 begin
 
-  _GucDugmesiYokEt(FKimlik);
+  GucDugmesiYokEt(FKimlik);
 end;
 
 procedure TGucDugmesi.Goster;
 begin
 
-  _GucDugmesiGoster(FKimlik);
+  GucDugmesiGoster(FKimlik);
 end;
 
 procedure TGucDugmesi.Gizle;
 begin
 
-  _GucDugmesiGizle(FKimlik);
+  GucDugmesiGizle(FKimlik);
+end;
+
+procedure TGucDugmesi.Odaklan;
+begin
+
+  GucDugmesiOdaklan(FKimlik);
 end;
 
 procedure TGucDugmesi.BaslikDegistir(ABaslik: string);
@@ -81,23 +89,23 @@ begin
 
   FBaslik := ABaslik;
 
-  _GucDugmesiBaslikDegistir(FKimlik, FBaslik);
+  GucDugmesiBaslikDegistir(FKimlik, FBaslik);
 end;
 
 procedure TGucDugmesi.DurumDegistir(ADurum: TSayi4);
 begin
 
-  _GucDugmesiDurumDegistir(FKimlik, ADurum);
+  GucDugmesiDurumDegistir(FKimlik, ADurum);
 end;
 
 procedure TGucDugmesi.Boyutlandir(AKonum: TKonum; ABoyut: TBoyut);
 begin
 
-  _GucDugmesiBoyutlandir(FKimlik, AKonum, ABoyut);
+  GucDugmesiBoyutlandir(FKimlik, AKonum, ABoyut);
 end;
 
-function _GucDugmesiOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
-  ABaslik: string): TKimlik;
+function GucDugmesiOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+  ABaslik: string): TKimlik; assembler;
 asm
   push  DWORD ABaslik
   push  DWORD AYukseklik
@@ -110,7 +118,7 @@ asm
   add   esp,24
 end;
 
-procedure _GucDugmesiYokEt(AKimlik: TKimlik);
+procedure GucDugmesiYokEt(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,GUCDUGMESI_YOKET
@@ -118,7 +126,7 @@ asm
   add   esp,4
 end;
 
-procedure _GucDugmesiGoster(AKimlik: TKimlik);
+procedure GucDugmesiGoster(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,GUCDUGMESI_GOSTER
@@ -126,7 +134,7 @@ asm
   add   esp,4
 end;
 
-procedure _GucDugmesiGizle(AKimlik: TKimlik);
+procedure GucDugmesiGizle(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,GUCDUGMESI_GIZLE
@@ -134,7 +142,7 @@ asm
   add   esp,4
 end;
 
-procedure _GucDugmesiBaslikDegistir(AKimlik: TKimlik; ABaslik: string);
+procedure GucDugmesiBaslikDegistir(AKimlik: TKimlik; ABaslik: string); assembler;
 asm
   push  DWORD ABaslik
   push  DWORD AKimlik
@@ -143,7 +151,7 @@ asm
   add   esp,8
 end;
 
-procedure _GucDugmesiDurumDegistir(AKimlik: TKimlik; ADurum: TSayi4);
+procedure GucDugmesiDurumDegistir(AKimlik: TKimlik; ADurum: TSayi4); assembler;
 asm
   push  DWORD ADurum
   push  DWORD AKimlik
@@ -152,7 +160,7 @@ asm
   add   esp,8
 end;
 
-procedure _GucDugmesiBoyutlandir(AKimlik: TKimlik; AKonum: TKonum; ABoyut: TBoyut);
+procedure GucDugmesiBoyutlandir(AKimlik: TKimlik; AKonum: TKonum; ABoyut: TBoyut); assembler;
 asm
   push  DWORD ABoyut
   push  DWORD AKonum
@@ -160,6 +168,14 @@ asm
   mov   eax,GUCDUGMESI_BOYUTLANDIR
   int   $34
   add   esp,12
+end;
+
+procedure GucDugmesiOdaklan(AKimlik: TKimlik); assembler;
+asm
+  push  DWORD AKimlik
+  mov   eax,GUCDUGMESI_YAZ_ODAK
+  int   $34
+  add   esp,4
 end;
 
 end.

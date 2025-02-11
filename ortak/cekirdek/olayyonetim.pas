@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit olayyonetim;
 
 interface
 
-uses gorselnesne, paylasim, gn_menu, gn_acilirmenu, sistemmesaj;
+uses gorselnesne, paylasim, gn_menu, gn_acilirmenu, sistemmesaj, gn_pencere;
 
 type
   TOlayYonetim = object
@@ -158,8 +158,13 @@ end;
 {==============================================================================
   tüm fare olaylarýný iþler, olaylarý ilgili nesnelere yönlendirir
  ==============================================================================}
+var
+  SolTusOncekiOdaklanilanPencere: PPencere = nil;   // pencere nesnesi
+  SolTusOncekiOdaklanilanGN: PGorselNesne = nil;    // pencere nesnesinin alt Görsel Nesnesi
+
 procedure TOlayYonetim.FareOlaylariniIsle;
 var
+  Pencere: PPencere;
   GorselNesne: PGorselNesne;
   Olay, Olay2: TOlay;
   Konum: TKonum;
@@ -189,6 +194,40 @@ begin
     if(GorselNesne <> nil) then
     begin
 
+      // sol tuþa basýlmasýyla, ayný pencerede olan:
+      // 1. bir önceki odaklanan nesnenin odaðýný kaybetmesi
+      // 2. sol tuþ ile basýlan nesnenin odaðýný kaybetmesi
+      // iþlevleri burada gerçekleþmektedir
+      // ---------------------------------------------------------------------->
+      if(Olay2.Olay = FO_SOLTUS_BASILDI) then
+      begin
+
+        if(GorselNesne^.AtaNesne^.NesneTipi = gntPencere) then
+          Pencere := PPencere(GorselNesne^.AtaNesne)
+        else Pencere := nil;
+
+        if(Pencere = SolTusOncekiOdaklanilanPencere) and (GorselNesne <> SolTusOncekiOdaklanilanGN) then
+        begin
+
+          if(GorselNesne^.Odaklanilabilir) then
+          begin
+
+            if(SolTusOncekiOdaklanilanGN <> nil) then SolTusOncekiOdaklanilanGN^.Odaklanildi := False;
+
+            Pencere^.FAktifNesne := GorselNesne;
+            GorselNesne^.Odaklanildi := True;
+          end;
+        end;
+
+        if(GorselNesne^.Odaklanilabilir) then
+        begin
+
+          SolTusOncekiOdaklanilanPencere := Pencere;
+          SolTusOncekiOdaklanilanGN := GorselNesne;
+        end;
+      end;
+      // <----------------------------------------------------------------------
+
       // bulunan nesne bir önceki nesne deðil ise
       if(FOdaklanilanGorselNesne <> GorselNesne) then
       begin
@@ -197,9 +236,13 @@ begin
         if(FOdaklanilanGorselNesne <> nil) then
         begin
 
-          // odaklanýlan nesneye odaðý kaybettiðine dair mesaj gönder
-          Olay2.Olay := CO_ODAKKAYBEDILDI;
-          OlaylariYonlendir(FOdaklanilanGorselNesne, Olay2);
+          //if(Olay2.Olay = FO_SOLTUS_BASILDI) and (FOdaklanilanGorselNesne^.AtaNesne^.NesneTipi = gntPencere) then
+          begin
+
+            // odaklanýlan nesneye odaðý kaybettiðine dair mesaj gönder
+            Olay2.Olay := CO_ODAKKAYBEDILDI;
+            OlaylariYonlendir(FOdaklanilanGorselNesne, Olay2);
+          end;
         end;
 
         // odak kazanan nesneyi yeniden ata
@@ -242,18 +285,22 @@ begin
   if(ATus <> #0) then
   begin
 
-    // aktif nesne belirli mi?
-    if(GAktifNesne <> nil) then
+    if(GAktifPencere <> nil) then
     begin
 
-      // aktif nesne giriþ kutusu nesnesi mi?
-      //if(GAktifNesne^.GorselNesneTipi = gntGirisKutusu) then
+      // aktif nesne belirli mi?
+      if(GAktifPencere^.FAktifNesne <> nil) then
       begin
 
-        // odaklanan nesneye CO_TUSBASILDI mesajý gönder
-        Olay.Deger1 := TISayi4(ATus);
-        Olay.Olay := CO_TUSBASILDI;
-        OlaylariYonlendir(GAktifNesne, Olay);
+        // aktif nesne giriþ kutusu nesnesi mi?
+        //if(GAktifNesne^.GorselNesneTipi = gntGirisKutusu) then
+        begin
+
+          // odaklanan nesneye CO_TUSBASILDI mesajý gönder
+          Olay.Deger1 := TISayi4(ATus);
+          Olay.Olay := CO_TUSBASILDI;
+          OlaylariYonlendir(GAktifPencere^.FAktifNesne, Olay);
+        end;
       end;
     end;
   end;
@@ -276,7 +323,11 @@ begin
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
-    GAktifNesne := AGorselNesne;
+    // nesne pencereye ait bir görsel nesne ise
+    if(AGorselNesne^.AtaNesne <> nil) and (AGorselNesne^.AtaNesne^.NesneTipi = gntPencere) then
+      PPencere(AGorselNesne^.AtaNesne)^.FAktifNesne := AGorselNesne;
+
+    AGorselNesne^.Odaklanildi := True;
   end;
 
   if not(AGorselNesne^.OlayCagriAdresi = nil) then

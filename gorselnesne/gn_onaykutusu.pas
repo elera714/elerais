@@ -6,7 +6,7 @@
   Dosya Adı: gn_onaykutusu.pas
   Dosya İşlevi: onay kutusu (TCheckBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -121,6 +121,9 @@ begin
   OnayKutusu^.Baslik := ABaslik;
 
   OnayKutusu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+
+  OnayKutusu^.Odaklanilabilir := True;
+  OnayKutusu^.Odaklanildi := False;
 
   OnayKutusu^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -243,7 +246,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    GAktifNesne := OnayKutusu;
+    Pencere^.FAktifNesne := OnayKutusu;
+    OnayKutusu^.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(OnayKutusu^.FareNesneOlayAlanindaMi(OnayKutusu)) then

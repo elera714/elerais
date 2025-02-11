@@ -6,7 +6,7 @@
   Dosya Adı: k_cizim.pas
   Dosya İşlevi: grafiksel ekrana çizim işlevlerini içerir
 
-  Güncelleme Tarihi: 05/08/2020
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -85,7 +85,7 @@ begin
       Alan.Ust := Ust;
       Alan.Sag := Sag;
       Alan.Alt := Alt;
-      GorselNesne^.Dikdortgen(GorselNesne, Alan, PRenk(ADegiskenler + 20)^);
+      GorselNesne^.Dikdortgen(GorselNesne, ctDuz, Alan, PRenk(ADegiskenler + 20)^);
 
       Result := 1;
     end;

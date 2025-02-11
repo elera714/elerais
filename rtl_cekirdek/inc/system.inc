@@ -859,38 +859,37 @@ var
 {$endif FPC_HAS_INDIRECT_MAIN_INFORMATION}
 
 
-procedure fpc_InitializeUnits;[public,alias:'FPC_INITIALIZEUNITS']; compilerproc; assembler;
-asm ret end;
-//var
-//  i : ObjpasInt;
-//{$ifdef DEBUG}
-//  pt : PInitFinalTable;
-//{$endif}
-//begin
-//  { call cpu/fpu initialisation routine }
-//  fpc_cpuinit;
-//{$ifdef FPC_HAS_INDIRECT_MAIN_INFORMATION}
-//{$ifdef DEBUG}
-//  pt := PInitFinalTable(EntryInformation.InitFinalTable);
-//{$endif}
-//  with PInitFinalTable(EntryInformation.InitFinalTable)^ do
-//{$else FPC_HAS_INDIRECT_MAIN_INFORMATION}
-//{$ifdef DEBUG}
-//  pt := @InitFinalTable;
-//{$endif}
-//  with InitFinalTable do
-//{$endif FPC_HAS_INDIRECT_MAIN_INFORMATION}
-//   begin
-//     for i:=1 to TableCount do
-//      begin
-//        if assigned(Procs[i].InitProc) then
-//         Procs[i].InitProc();
-//        InitCount:=i;
-//      end;
-//   end;
-//  if assigned(InitProc) then
-//    TProcedure(InitProc)();
-//end;
+procedure fpc_InitializeUnits;[public,alias:'FPC_INITIALIZEUNITS']; compilerproc;// assembler;
+var
+  i : ObjpasInt;
+{$ifdef DEBUG}
+  pt : PInitFinalTable;
+{$endif}
+begin
+  { call cpu/fpu initialisation routine }
+  fpc_cpuinit;
+{$ifdef FPC_HAS_INDIRECT_MAIN_INFORMATION}
+{$ifdef DEBUG}
+  pt := PInitFinalTable(EntryInformation.InitFinalTable);
+{$endif}
+  with PInitFinalTable(EntryInformation.InitFinalTable)^ do
+{$else FPC_HAS_INDIRECT_MAIN_INFORMATION}
+{$ifdef DEBUG}
+  pt := @InitFinalTable;
+{$endif}
+  with InitFinalTable do
+{$endif FPC_HAS_INDIRECT_MAIN_INFORMATION}
+   {begin
+     for i:=1 to TableCount do
+      begin
+        if assigned(Procs[i].InitProc) then
+         Procs[i].InitProc();
+        InitCount:=i;
+      end;
+   end;
+  if assigned(InitProc) then
+    TProcedure(InitProc)();}
+end;
 
 
 procedure internal_initializeunits; external name 'FPC_INITIALIZEUNITS';

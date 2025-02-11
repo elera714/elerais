@@ -6,7 +6,7 @@
   Dosya Adý: gn_dugme.pas
   Dosya Ýþlevi: düðme (TButton) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/01/2025
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -42,7 +42,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, giysi_mac;
+uses genel, gn_pencere, gn_islevler, temelgorselnesne, giysi_mac, sistemmesaj;
 
 {==============================================================================
   düðme kesme çaðrýlarýný yönetir
@@ -113,7 +113,27 @@ begin
         Dugme^.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^;
 
       Dugme^.Ciz;
-    end
+    end;
+
+    // düðme nesnesine odaklan. (klavye giriþlerini almasýný saðla)
+    $020F:
+    begin
+
+      Dugme := PDugme(Dugme^.NesneAl(PKimlik(ADegiskenler + 00)^));
+
+      if(Dugme <> nil) and (Dugme^.NesneTipi = gntDugme) then
+      begin
+
+        // bir önceki odak alan nesneyi odaktan çýkar
+        GorselNesne := PPencere(Dugme^.AtaNesne)^.FAktifNesne;
+        if(GorselNesne <> nil) and (GorselNesne^.Odaklanilabilir) then
+          GorselNesne^.Odaklanildi := False;
+
+        // nelirtilen nesneyi odaklanýlan nesne olarak belirle
+        PPencere(Dugme^.AtaNesne)^.FAktifNesne := Dugme;
+        Dugme^.Odaklanildi := True;
+      end;
+    end;
 
     else Result := HATA_ISLEV;
   end;
@@ -156,6 +176,9 @@ begin
   Dugme^.Baslik := ABaslik;
 
   Dugme^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+
+  Dugme^.Odaklanilabilir := True;
+  Dugme^.Odaklanildi := False;
 
   Dugme^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -219,6 +242,7 @@ end;
 procedure TDugme.Ciz;
 var
   Dugme: PDugme = nil;
+  CizimAlan: TAlan;
 begin
 
   Dugme := PDugme(Dugme^.NesneAl(Kimlik));
@@ -230,6 +254,18 @@ begin
   else Dugme^.FYaziRenk := FYaziRenkBasili;
 
   inherited Ciz;
+
+  // nesne odaklanýlmýþ ise nesnenin kenarlarýný iþaretle
+  if(Dugme^.Odaklanildi) then
+  begin
+
+    CizimAlan := Dugme^.FCizimAlan;
+    CizimAlan.Sol += 2;
+    CizimAlan.Ust += 2;
+    CizimAlan.Sag -= 2;
+    CizimAlan.Alt -= 2;
+    Dugme^.Dikdortgen(Dugme, ctNokta, CizimAlan, RENK_SIYAH);
+  end;
 end;
 
 {==============================================================================
@@ -255,7 +291,8 @@ begin
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak iþaretle
-    GAktifNesne := Dugme;
+    Pencere^.FAktifNesne := Dugme;
+    Dugme^.Odaklanildi := True;
 
     // sol tuþa basým iþlemi nesnenin olay alanýnda mý gerçekleþti ?
     if(Dugme^.FareNesneOlayAlanindaMi(Dugme)) then

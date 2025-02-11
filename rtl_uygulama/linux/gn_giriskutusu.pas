@@ -6,7 +6,7 @@
   Dosya Adı: gn_giriskutusu.pas
   Dosya İşlevi: giriş kutusu (TEdit) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 11/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,6 +28,7 @@ type
     function Olustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
       AIcerikDeger: string): TKimlik;
     procedure Goster;
+    procedure Odaklan;
     function IcerikAl: string;
     procedure IcerikYaz(AIcerikDeger: string);
     property Kimlik: TKimlik read FKimlik;
@@ -35,13 +36,14 @@ type
     property SadeceRakam: LongBool read FSadeceRakam write SadeceRakam0;
   end;
 
-function _GirisKutusuOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik,
+function GirisKutusuOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik,
   AYukseklik: TISayi4; AIcerikDeger: string): TKimlik; assembler;
-procedure _GirisKutusuGoster(AKimlik: TKimlik); assembler;
-procedure _GirisKutusuIcerikAl(AKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
-procedure _GirisKutusuIcerikYaz(AKimlik: TKimlik; AIcerikDeger: string); assembler;
-procedure _GirisKutusuYazilamaz0(AKimlik: TKimlik; AYazilamaz: LongBool); assembler;
-procedure _GirisKutusuSadeceRakam0(AKimlik: TKimlik; ASadeceSayi: LongBool); assembler;
+procedure GirisKutusuGoster(AKimlik: TKimlik); assembler;
+procedure GirisKutusuIcerikAl(AKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
+procedure GirisKutusuIcerikYaz(AKimlik: TKimlik; AIcerikDeger: string); assembler;
+procedure GirisKutusuYazilamaz0(AKimlik: TKimlik; AYazilamaz: LongBool); assembler;
+procedure GirisKutusuSadeceRakam0(AKimlik: TKimlik; ASadeceSayi: LongBool); assembler;
+procedure GirisKutusuOdaklan(AKimlik: TKimlik); assembler;
 
 implementation
 
@@ -49,7 +51,7 @@ function TGirisKutusu.Olustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukse
   AIcerikDeger: string): TKimlik;
 begin
 
-  FKimlik := _GirisKutusuOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik, AIcerikDeger);
+  FKimlik := GirisKutusuOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik, AIcerikDeger);
 
   FYazilamaz := False;
   FSadeceRakam := False;
@@ -60,7 +62,13 @@ end;
 procedure TGirisKutusu.Goster;
 begin
 
-  _GirisKutusuGoster(FKimlik);
+  GirisKutusuGoster(FKimlik);
+end;
+
+procedure TGirisKutusu.Odaklan;
+begin
+
+  GirisKutusuOdaklan(FKimlik);
 end;
 
 function TGirisKutusu.IcerikAl: string;
@@ -68,14 +76,14 @@ var
   s: string;
 begin
 
-  _GirisKutusuIcerikAl(FKimlik, Isaretci(@s[0]));
+  GirisKutusuIcerikAl(FKimlik, Isaretci(@s[0]));
   Result := s;
 end;
 
 procedure TGirisKutusu.IcerikYaz(AIcerikDeger: string);
 begin
 
-  _GirisKutusuIcerikYaz(FKimlik, AIcerikDeger);
+  GirisKutusuIcerikYaz(FKimlik, AIcerikDeger);
 end;
 
 procedure TGirisKutusu.Yazilamaz0(ADeger: LongBool);
@@ -84,7 +92,7 @@ begin
   if(FYazilamaz = ADeger) then Exit;
 
   FYazilamaz := ADeger;
-  _GirisKutusuYazilamaz0(FKimlik, FYazilamaz);
+  GirisKutusuYazilamaz0(FKimlik, FYazilamaz);
 end;
 
 procedure TGirisKutusu.SadeceRakam0(ADeger: LongBool);
@@ -93,11 +101,11 @@ begin
   if(FSadeceRakam = ADeger) then Exit;
 
   FSadeceRakam := ADeger;
-  _GirisKutusuSadeceRakam0(FKimlik, FSadeceRakam);
+  GirisKutusuSadeceRakam0(FKimlik, FSadeceRakam);
 end;
 
-function _GirisKutusuOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik,
-  AYukseklik: TISayi4; AIcerikDeger: string): TKimlik;
+function GirisKutusuOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik,
+  AYukseklik: TISayi4; AIcerikDeger: string): TKimlik; assembler;
 asm
   push  DWORD AIcerikDeger
   push  DWORD AYukseklik
@@ -110,7 +118,7 @@ asm
   add   esp,24
 end;
 
-procedure _GirisKutusuGoster(AKimlik: TKimlik);
+procedure GirisKutusuGoster(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,GIRISKUTUSU_GOSTER
@@ -118,7 +126,7 @@ asm
   add   esp,4
 end;
 
-procedure _GirisKutusuIcerikAl(AKimlik: TKimlik; AHedefBellek: Isaretci);
+procedure GirisKutusuIcerikAl(AKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
 asm
   push  DWORD AHedefBellek
   push  DWORD AKimlik
@@ -127,7 +135,7 @@ asm
   add   esp,8
 end;
 
-procedure _GirisKutusuIcerikYaz(AKimlik: TKimlik; AIcerikDeger: string);
+procedure GirisKutusuIcerikYaz(AKimlik: TKimlik; AIcerikDeger: string); assembler;
 asm
   push  DWORD AIcerikDeger
   push  DWORD AKimlik
@@ -136,7 +144,7 @@ asm
   add   esp,8
 end;
 
-procedure _GirisKutusuYazilamaz0(AKimlik: TKimlik; AYazilamaz: LongBool);
+procedure GirisKutusuYazilamaz0(AKimlik: TKimlik; AYazilamaz: LongBool); assembler;
 asm
   push  DWORD AYazilamaz
   push  DWORD AKimlik
@@ -145,13 +153,21 @@ asm
   add   esp,8
 end;
 
-procedure _GirisKutusuSadeceRakam0(AKimlik: TKimlik; ASadeceSayi: LongBool);
+procedure GirisKutusuSadeceRakam0(AKimlik: TKimlik; ASadeceSayi: LongBool); assembler;
 asm
   push  DWORD ASadeceSayi
   push  DWORD AKimlik
   mov   eax,GIRISKUTUSU_YAZ_SADECESAYI
   int   $34
   add   esp,8
+end;
+
+procedure GirisKutusuOdaklan(AKimlik: TKimlik); assembler;
+asm
+  push  DWORD AKimlik
+  mov   eax,GIRISKUTUSU_YAZ_ODAK
+  int   $34
+  add   esp,4
 end;
 
 end.

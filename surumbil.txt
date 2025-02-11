@@ -1,9 +1,16 @@
 *******************************************************************************
   Sürüm: 0.3.8 - 10.01.2025 (R34) - Beta
 *******************************************************************************
+  +
+
+  + dsyyntcs.c programýnýn ilk açýldýðýnda sistemin kurulu sürücü dosyalarýný listelemesi saðlandý
+  + tüm görsel nesnelere Odaklanilabilir, Odaklanildi özellikleri eklendi
+  + TGirisKutusu, TDugme, TGucDugmesi nesnelerine odaklanýlma yetenekleri eklendi
+  + Daha önce çekirdek içerisindeki aktif nesne yapýsý TPencere nesnesine alýnarak
+    her bir pencerenin tek bir aktif nesnesi olmasý saðlandý
+  + calistir.c programý tamamen klavye ile kullanýlabilir bir program olma yeteneðine kavuþtu
   + çalýþtýrýlabilir dosyalarýn sadece adlarý yazýlarak (uzantý olmadan) çalýþtýrýlmasý desteði eklendi
   + masaüstü duvar kaðýdý belirtilen konumda olmadýðýnda sistem kilitlenme problemi çözümlendi
-
   + fat12, fat16, fat32 ana dizin giriþlerindeki okuma iþlem hatalarý giderildi, alt klasörleri
     listeleme ve tüm dosya sistemlerine uzun dosya okuma desteði eklendi
   + dsyyntcs.c programýna alt klasörleri / dosyalarý; listeleme, çalýþtýrma, açma

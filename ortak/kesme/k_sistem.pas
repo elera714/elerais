@@ -6,7 +6,7 @@
   Dosya Adı: k_sistem.pas
   Dosya İşlevi: sistem kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 06/08/2020
+  Güncelleme Tarihi: 10/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -26,14 +26,16 @@ function SistemCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 var
   SB: PSistemBilgisi;
   IB: PIslemciBilgisi;
-  Islev: TSayi4;
+  IslevNo, i: TSayi4;
+  s: string;
+  p: Isaretci;
 begin
 
   // işlev no
-  Islev := (AIslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
   // sistem bilgilerini al
-  if(Islev = 1) then
+  if(IslevNo = 1) then
   begin
 
     SB := PSistemBilgisi(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
@@ -45,7 +47,7 @@ begin
     SB^.DikeyCozunurluk := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
   end
   // işlemci bilgisini al
-  else if(Islev = 2) then
+  else if(IslevNo = 2) then
   begin
 
     IB := PIslemciBilgisi(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
@@ -53,6 +55,23 @@ begin
     IB^.Ozellik1_EAX := GIslemciBilgisi.Ozellik1_EAX;
     IB^.Ozellik1_EDX := GIslemciBilgisi.Ozellik1_EDX;
     IB^.Ozellik1_ECX := GIslemciBilgisi.Ozellik1_ECX;
+  end
+  // sistem sürücü / klasör / dosya bilgisini al
+  // sistem ile ilgili tüm sürücü / klasör / dosya bilgileri bu işlev yoluyla alınacaktır
+  else if(IslevNo = 3) then
+  begin
+
+    i := PSayi4(ADegiskenler + 00)^;
+    case i of
+      // sistem açılış sürücüsü
+      0: s := AcilisSurucuAygiti;
+      // sistem programlarının bulunduğu klasör
+      1: s := KLASOR_PROGRAM;
+      else s := '';
+    end;
+
+    p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+    PKarakterKatari(p)^ := s;
   end
 
   // işlev belirtilen aralıkta değilse hata kodunu geri döndür
