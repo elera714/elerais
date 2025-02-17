@@ -43,7 +43,6 @@ type
 
     function CalisanProgramSayisiniAl: TSayi4; assembler;
     procedure CalisanProgramBilgisiAl(ASiraNo: TSayi4; var AProgramKayit: TProgramKayit); assembler;
-    function AktifProgramiAl: TSayi4; assembler;
     function GorevBayrakDegeriniAl: TSayi4; assembler;
   published
     property Ad: string read FAd write AdYaz;
@@ -174,12 +173,6 @@ asm
   mov	  eax,GOREV_CALISANPBILGISIAL
   int	  $34
   add   esp,8
-end;
-
-function TGorev.AktifProgramiAl: TSayi4; assembler;
-asm
-  mov	  eax,GOREV_AKTIFPROGRAMIAL
-  int	  $34
 end;
 
 function _GorevCalistir(ADosyaTamYol: string): TKimlik;

@@ -74,14 +74,14 @@ begin
   begin
 
     // nesne ve nesnenin işleyeceği veriler için 4K bellek bölgesi ayır
-    p2 := GGercekBellek.Ayir(4096);
+    p2 := GGercekBellek.Ayir(4095);
     if not(p2 = nil) then
     begin
 
       // nesne değişkenlerini ilk değerlerle yükle.
       p^.BellekBaslangicAdresi := p2;
       p^.MevcutBellekAdresi := p2;
-      p^.BellekUzunlugu := 4096;
+      p^.BellekUzunlugu := 4095;
       p^.ElemanSayisi := 0;
 
       Result := p;
@@ -105,7 +105,7 @@ begin
 
   // bellek tahsis edilmişse öncelikle belleği bırak
   if not(BellekBaslangicAdresi = nil) then
-    GGercekBellek.YokEt(FBellekBaslangicAdresi, 4096);
+    GGercekBellek.YokEt(FBellekBaslangicAdresi, 4095);
 
   // nesnenin kullanılabilir özelliğini aktifleştir
   GYaziListesi[Tanimlayici]^.NesneKullanilabilir := True;

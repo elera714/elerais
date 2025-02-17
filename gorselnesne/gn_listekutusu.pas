@@ -30,7 +30,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     function SeciliYaziyiAl: string;
@@ -275,21 +275,21 @@ begin
   if(ListeKutusu^.AtaNesne^.NesneTipi = gntPencere) then
   begin
 
-    PPencere(ListeKutusu^.AtaNesne)^.Boyutlandir;
+    PPencere(ListeKutusu^.AtaNesne)^.Hizala;
     PPencere(ListeKutusu^.AtaNesne)^.Ciz;
   end
   else if(ListeKutusu^.AtaNesne^.NesneTipi = gntPanel) then
   begin
 
-    PPanel(ListeKutusu^.AtaNesne)^.Boyutlandir;
+    PPanel(ListeKutusu^.AtaNesne)^.Hizala;
     PPanel(ListeKutusu^.AtaNesne)^.Ciz;
   end;
 end;
 
 {==============================================================================
-  liste kutusu nesnesini boyutlandırır
+  liste kutusu nesnesini hizalandırır
  ==============================================================================}
-procedure TListeKutusu.Boyutlandir;
+procedure TListeKutusu.Hizala;
 var
   ListeKutusu: PListeKutusu = nil;
 begin
@@ -297,7 +297,7 @@ begin
   ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(Kimlik));
   if(ListeKutusu = nil) then Exit;
 
-  ListeKutusu^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================

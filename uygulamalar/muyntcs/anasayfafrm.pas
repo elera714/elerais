@@ -13,7 +13,16 @@ const
 type
   // tüm pencereye sahip programlarýn kayýtlarýnýn tutulduðu deðiþken yapý
   TCalisanProgramlar = record
+    // denetim sonucunda pencereye ait düðmenin (Dugme) görev çubuðundan kaldýrýlacak
+    // olup olmayacaðý
+    Silinecek: Boolean;
+    DugmeSN: TISayi4;
     ProgramKayit: TProgramKayit;
+  end;
+
+type
+  TDugmeler = record
+    Kullanimda: Boolean;
     Dugme: TGucDugmesi;
   end;
 
@@ -21,10 +30,12 @@ type
   TfrmAnaSayfa = object(TForm)
   private
     procedure TarihSaatBilgileriniGuncelle;
-    procedure CalisanProgramListesineEkle(ASiraNo: TSayi4; AProgramKayit: TProgramKayit);
+    procedure CalisanProgramListesineEkle(AProgramKayit: TProgramKayit);
     procedure GorevCubugunuGuncelle;
     procedure AgDurumunuGuncelle;
     function PencereKimliginiAl(ABasilanDugme: TKimlik): TKimlik;
+    function GCDugmesiOlustur(AProgramAdi: string): TISayi4;
+    function PencereBilgisiAl(APencereKimlik: TKimlik): TProgramKayit;
   public
     procedure Olustur;
     procedure Goster;
@@ -41,6 +52,7 @@ var
   FGorevPenceresi: TPencere;
   FSolPanel, FSagPanel, FOrtaPanel: TPanel;
   FCalisanProgramlar: array[0..CALISAN_PROGRAM_SAYISI - 1] of TCalisanProgramlar;
+  GucDugmeleri: array[0..CALISAN_PROGRAM_SAYISI - 1] of TDugmeler;
   FBaslatMenusu: TMenu;
   FAcilirMenu: TAcilirMenu;
   FELERA: TGucDugmesi;
@@ -91,25 +103,28 @@ const
     ('sisbilgi.c'));
 
 var
-  AktifProgram: TISayi4;
-  CalisanProgramSayisi,
-  GDGenislik: TSayi4;                 // görev düðmesi geniþliði
   ProgramKayit: TProgramKayit;
-  Konum: TKonum;
-  Boyut: TBoyut;
+  AktifPencereKimlik,
   PencereKimlik: TKimlik;
-  GCdeMevcutDugmeSayisi: TSayi4;      // görev çubuðunda mevcut düðme sayýsý
-  GBD, OncekiGBD, i: TSayi4;          // görev bayrak deðerleri
+  GCdeMevcutDugmeSayisi: TSayi4;        // görev çubuðunda mevcut / çalýþan düðme sayýsý
+  GBD, OncekiGBD: TSayi4;               // görev bayrak deðerleri
   s: string;
 
 procedure TfrmAnaSayfa.Olustur;
+var
+  i: TSayi4;
 begin
 
-  GCdeMevcutDugmeSayisi := 0;
   OncekiGBD := 0;
 
   for i := 0 to CALISAN_PROGRAM_SAYISI - 1 do
+  begin
+
+    FCalisanProgramlar[i].DugmeSN := -1;
     FCalisanProgramlar[i].ProgramKayit.PencereKimlik := -1;
+
+    GucDugmeleri[i].Kullanimda := False;
+  end;
 
   // ekran çözünürlüðünü al
   FEkran.CozunurlukAl;
@@ -198,6 +213,9 @@ begin
 end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
+var
+  i: TISayi4;
+  ProgramBilgisi: TProgramKayit;
 begin
 
   if(AOlay.Olay = FO_TIKLAMA) then
@@ -260,9 +278,32 @@ begin
 
       PencereKimlik := PencereKimliginiAl(AOlay.Kimlik);
       if(PencereKimlik > -1) then
-        if(AOlay.Deger1 = 1) then
-          FGorevPenceresi.PencereDurumuDegistir(PencereKimlik, pdNormal)
-        else FGorevPenceresi.PencereDurumuDegistir(PencereKimlik, pdKucultuldu);
+      begin
+
+        ProgramBilgisi := PencereBilgisiAl(PencereKimlik);
+        if(ProgramBilgisi.PencereKimlik > -1) then
+        begin
+
+          // aktif / normal pencere -> küçült
+          if(ProgramBilgisi.PencereKimlik = AktifPencereKimlik) and (ProgramBilgisi.PencereDurum = pdNormal) then
+          begin
+
+            FGorevPenceresi.DurumuDegistir(PencereKimlik, pdKucultuldu);
+          end
+          // aktif olmayan
+          else if(ProgramBilgisi.PencereKimlik <> AktifPencereKimlik) then
+          begin
+
+            // küçültülmüþ pencere -> normal + aktifleþtir
+            if(ProgramBilgisi.PencereDurum = pdKucultuldu) then
+
+              FGorevPenceresi.DurumuDegistir(PencereKimlik, pdNormal);
+
+            // (diðer durumlar) normal pencere -> aktifleþtir
+            FGorevPenceresi.AktifPencereyiYaz(PencereKimlik);
+          end;
+        end;
+      end;
     end;
   end
   // baþlat menüsü olaylarý
@@ -301,36 +342,61 @@ begin
   FTarihDegeri.BaslikDegistir(s);
 end;
 
-// programý çalýþan program listesine ekler, gerekirse aktifliðini günceller
-procedure TfrmAnaSayfa.CalisanProgramListesineEkle(ASiraNo: TSayi4; AProgramKayit: TProgramKayit);
+// programý çalýþan program listesine ekler, programýn listeye ekli olmasý durumunda
+// programýn silinecek özelliðini kaldýrýr
+procedure TfrmAnaSayfa.CalisanProgramListesineEkle(AProgramKayit: TProgramKayit);
+var
+  IlkBosSN, i: TISayi4;
+  GCDugmeSN: TISayi4;
 begin
 
-  // programý listeye ekle
-  FCalisanProgramlar[ASiraNo].ProgramKayit.PencereKimlik := AProgramKayit.PencereKimlik;
-  FCalisanProgramlar[ASiraNo].ProgramKayit.GorevKimlik := AProgramKayit.GorevKimlik;
-  FCalisanProgramlar[ASiraNo].ProgramKayit.PencereTipi := AProgramKayit.PencereTipi;
-  FCalisanProgramlar[ASiraNo].ProgramKayit.PencereDurum := AProgramKayit.PencereDurum;
-  FCalisanProgramlar[ASiraNo].ProgramKayit.ProgramAdi := AProgramKayit.ProgramAdi;
+  // 1. program listede mevcut ise silinecek özelliðini kaldýr
+  IlkBosSN := -1;
+  for i := 0 to CALISAN_PROGRAM_SAYISI - 1 do
+  begin
 
-  FCalisanProgramlar[ASiraNo].Dugme.Olustur(FOrtaPanel.Kimlik, (ASiraNo * GDGenislik) + 5, 4,
-    GDGenislik - 5, 32, AProgramKayit.ProgramAdi);
-  FCalisanProgramlar[ASiraNo].Dugme.Goster;
+    if(FCalisanProgramlar[i].ProgramKayit.PencereKimlik = AProgramKayit.PencereKimlik) then
+    begin
 
-  if(AProgramKayit.PencereKimlik = AktifProgram) then FCalisanProgramlar[ASiraNo].Dugme.DurumDegistir(1);
+      FCalisanProgramlar[i].Silinecek := False;
+      Inc(GCdeMevcutDugmeSayisi);
+      Exit;
+    end else if(IlkBosSN = -1) then
+    begin
 
-  Inc(GCdeMevcutDugmeSayisi);
+      if(FCalisanProgramlar[i].ProgramKayit.PencereKimlik = -1) then IlkBosSN := i;
+    end;
+  end;
+
+  // 2. program listede mevcut deðil ve listede boþ yer var ise listeye ekle
+  if(IlkBosSN > -1) then
+  begin
+
+    FCalisanProgramlar[IlkBosSN].Silinecek := False;
+
+    FCalisanProgramlar[IlkBosSN].ProgramKayit.PencereKimlik := AProgramKayit.PencereKimlik;
+    FCalisanProgramlar[IlkBosSN].ProgramKayit.GorevKimlik := AProgramKayit.GorevKimlik;
+    FCalisanProgramlar[IlkBosSN].ProgramKayit.PencereTipi := AProgramKayit.PencereTipi;
+    FCalisanProgramlar[IlkBosSN].ProgramKayit.PencereDurum := AProgramKayit.PencereDurum;
+    FCalisanProgramlar[IlkBosSN].ProgramKayit.ProgramAdi := AProgramKayit.ProgramAdi;
+
+    // düðmeyi gözükmeyecek þekilde oluþtur (güncelleme sonunda düðme görünür olacaktýr)
+    GCDugmeSN := GCDugmesiOlustur(AProgramKayit.ProgramAdi);
+    FCalisanProgramlar[IlkBosSN].DugmeSN := GCDugmeSN;
+
+    Inc(GCdeMevcutDugmeSayisi);
+  end;
 end;
 
 // görev çubuðunu en son çalýþan programlara göre günceller
 procedure TfrmAnaSayfa.GorevCubugunuGuncelle;
 var
-  i: TSayi4;
+  Dugme: TGucDugmesi;
+  Konum: TKonum;
+  Boyut: TBoyut;
+  CalisanProgramSayisi,
+  GDGenislik, i, j: TSayi4;
 begin
-
-  // 1. GC'de mevcut programlarý pasif olarak iþaretle
-  // 2. çalýþan program listesini sistemden alarak GC'de pasif olanlarý aktif olarak iþaretle
-  // 3. GC'de pasif kalan programlarý yok et
-  // 4. GC'de en son programa ait kalan tüm düðmeleri yeniden boyutlandýr
 
   GBD := FGorev.GorevBayrakDegeriniAl;
 
@@ -340,45 +406,141 @@ begin
   // aksi durumda görev çubuðundaki görevleri güncelle
   OncekiGBD := GBD;
 
-  // görev çubuðunda pencerelere ait düðmelerin tümünü yok et
-  if(GCdeMevcutDugmeSayisi > 0) then
+  // Görev Çubuðu güncelleme aþamalarý
+  // ---------------------------------------------------------------------------
+  // 1. GC'de mevcut programlarý silinecek olarak iþaretle
+  // 2. çalýþan program listesini sistemden alarak GC'ye ekle, daha önce GC'de silinecek
+  //    olarak iþaretlenen çalýþan programlarý silinmeyecek olarak iþaretle
+  // 3. GC'de pasif kalan programlarý yok et
+  // 4. programýn yok edilmesinden kaynaklý deðiþken yapýlarýnda oluþan boþluklarý,
+  //    saðda kalan uygulamalarý sola kaydýrarak doldur
+  // 5. tüm düðmeleri yeniden boyutlandýr ve görünür yap
+
+
+  // 1. GC'de olabilecek tüm programlarý silinecek olarak iþaretle
+  for i := 0 to CALISAN_PROGRAM_SAYISI - 1 do FCalisanProgramlar[i].Silinecek := True;
+
+  // 2. çalýþan program listesini sistemden alarak GC'ye ekle, daha önce GC'de silinecek
+  // olarak iþaretlenen çalýþan programlarý silinmeyecek olarak iþaretle
+  CalisanProgramSayisi := FGorev.CalisanProgramSayisiniAl;
+
+  // çalýþan programlarý güncelle
+  GCdeMevcutDugmeSayisi := 0;
+
+  if(CalisanProgramSayisi > 0) then
   begin
 
-    i := 0;
-    while i < CALISAN_PROGRAM_SAYISI do
+    for i := 0 to CalisanProgramSayisi - 1 do
     begin
 
-      if(FCalisanProgramlar[i].ProgramKayit.PencereKimlik <> -1) then
-      begin
-
-        FCalisanProgramlar[i].Dugme.YokEt;
-        FCalisanProgramlar[i].ProgramKayit.PencereKimlik := -1;
-      end;
-
-      Inc(i);
+      FGorev.CalisanProgramBilgisiAl(i, ProgramKayit);
+      CalisanProgramListesineEkle(ProgramKayit);
     end;
   end;
 
-  GCdeMevcutDugmeSayisi := 0;
-
-  CalisanProgramSayisi := FGorev.CalisanProgramSayisiniAl;
-  if(CalisanProgramSayisi = 0) then Exit;
-
-  AktifProgram := FGorev.AktifProgramiAl;
-
-  // her liste alým öncesinde görev çubuðunun (orta panelin) geniþliðini al
-  FOrtaPanel.BoyutAl(Konum, Boyut);
-
-  if(CalisanProgramSayisi * GOREVDUGMESI_G > Boyut.Genislik) then
-    GDGenislik := Boyut.Genislik div CalisanProgramSayisi
-  else GDGenislik := GOREVDUGMESI_G;
-
-  // çalýþan programlarý güncelle
-  for i := 0 to CalisanProgramSayisi - 1 do
+  // 3. GC'den silinen programlarý yok et
+  i := 0;
+  while i < CALISAN_PROGRAM_SAYISI do
   begin
 
-    FGorev.CalisanProgramBilgisiAl(i, ProgramKayit);
-    CalisanProgramListesineEkle(i, ProgramKayit);
+    if(FCalisanProgramlar[i].Silinecek) and (FCalisanProgramlar[i].ProgramKayit.PencereKimlik <> -1) then
+    begin
+
+      //FCalisanProgramlar[i].Silinecek := False;
+      GucDugmeleri[FCalisanProgramlar[i].DugmeSN].Dugme.YokEt;
+      GucDugmeleri[FCalisanProgramlar[i].DugmeSN].Kullanimda := False;
+      FCalisanProgramlar[i].ProgramKayit.PencereKimlik := -1;
+      FCalisanProgramlar[i].DugmeSN := -1;
+    end;
+
+    Inc(i);
+  end;
+
+  // bu aþamada görev çubuðunda hiç bir program yoksa çýk
+  if(GCdeMevcutDugmeSayisi = 0) then
+  begin
+
+    FMasaustu.Guncelle;
+    Exit;
+  end;
+
+  // 4. programýn yok edilmesinden kaynaklý deðiþken yapýlarýnda oluþan boþluklarý,
+  // saðda kalan uygulamalarý sola kaydýrarak doldur
+  i := 0;
+  while i < CALISAN_PROGRAM_SAYISI do
+  begin
+
+    // kullanýlmayan ilk bellek bölgesi ara
+    if(FCalisanProgramlar[i].ProgramKayit.PencereKimlik = -1) then
+    begin
+
+      // bölgeye taþýnacak veri var mý
+      j := i + 1;
+      while j < CALISAN_PROGRAM_SAYISI do
+      begin
+
+        // varsa ilk boþ bölgeye taþý
+        if(FCalisanProgramlar[j].ProgramKayit.PencereKimlik <> -1) then
+        begin
+
+          // verileri taþý
+          //FCalisanProgramlar[i].Silinecek := False;
+          FCalisanProgramlar[i].DugmeSN := FCalisanProgramlar[j].DugmeSN;
+          FCalisanProgramlar[i].ProgramKayit.PencereKimlik := FCalisanProgramlar[j].ProgramKayit.PencereKimlik;
+          FCalisanProgramlar[i].ProgramKayit.GorevKimlik := FCalisanProgramlar[j].ProgramKayit.GorevKimlik;
+          FCalisanProgramlar[i].ProgramKayit.PencereTipi := FCalisanProgramlar[j].ProgramKayit.PencereTipi;
+          FCalisanProgramlar[i].ProgramKayit.PencereDurum := FCalisanProgramlar[j].ProgramKayit.PencereDurum;
+          FCalisanProgramlar[i].ProgramKayit.ProgramAdi := FCalisanProgramlar[j].ProgramKayit.ProgramAdi;
+
+          // taþýnan bellek bölgesinin içeriðini boþalt
+          //FCalisanProgramlar[j].Silinecek := False;
+          //FCalisanProgramlar[j].Dugme := nil;
+          FCalisanProgramlar[j].ProgramKayit.PencereKimlik := -1;
+          FCalisanProgramlar[j].DugmeSN := -1;
+          Break;
+        end;
+
+        Inc(j);
+      end;
+    end;
+
+    Inc(i);
+  end;
+
+  // 5. tüm düðmeleri yeniden boyutlandýr ve görünür yap
+  FOrtaPanel.BoyutAl(Konum, Boyut);
+  Boyut.Genislik := Boyut.Genislik - 10;
+
+  if(GCdeMevcutDugmeSayisi * GOREVDUGMESI_G > Boyut.Genislik) then
+    GDGenislik := Boyut.Genislik div GCdeMevcutDugmeSayisi
+  else GDGenislik := GOREVDUGMESI_G;
+
+  AktifPencereKimlik := FGorevPenceresi.AktifPencereyiAl;
+
+  i := 0;
+  while i < CALISAN_PROGRAM_SAYISI do
+  begin
+
+    // kullanýlmayan ilk bellek bölgesi ara
+    if(FCalisanProgramlar[i].ProgramKayit.PencereKimlik <> -1) then
+    begin
+
+      Dugme := GucDugmeleri[FCalisanProgramlar[i].DugmeSN].Dugme;
+
+      Konum.Sol := (i * GDGenislik) + 5;
+      Konum.Ust := 4;
+      Boyut.Genislik := GDGenislik - 5;
+      Boyut.Yukseklik := 32;
+
+      Dugme.Boyutlandir(Konum, Boyut);
+      Dugme.Goster;
+
+      if(FCalisanProgramlar[i].ProgramKayit.PencereKimlik = AktifPencereKimlik) then
+        Dugme.DurumDegistir(1)
+      else Dugme.DurumDegistir(0);
+    end;
+
+    Inc(i);
   end;
 
   FMasaustu.Guncelle;
@@ -409,12 +571,52 @@ begin
     if not(FCalisanProgramlar[i].ProgramKayit.PencereKimlik = -1) then
     begin
 
-      if not(FCalisanProgramlar[i].Dugme.Kimlik = ABasilanDugme) then
+      if(GucDugmeleri[FCalisanProgramlar[i].DugmeSN].Dugme.Kimlik = ABasilanDugme) then
         Exit(FCalisanProgramlar[i].ProgramKayit.PencereKimlik);
     end;
   end;
 
   Result := -1;
+end;
+
+function TfrmAnaSayfa.GCDugmesiOlustur(AProgramAdi: string): TISayi4;
+var
+  i: TSayi4;
+begin
+
+  i := 0;
+  while i < CALISAN_PROGRAM_SAYISI do
+  begin
+
+    if not(GucDugmeleri[i].Kullanimda) then
+    begin
+
+      GucDugmeleri[i].Dugme.Olustur(FOrtaPanel.Kimlik, 5, 4, 32, 32, AProgramAdi);
+      GucDugmeleri[i].Dugme.Gizle;
+      GucDugmeleri[i].Kullanimda := True;
+
+      Exit(i);
+    end;
+
+    Inc(i);
+  end;
+
+  Result := -1;
+end;
+
+function TfrmAnaSayfa.PencereBilgisiAl(APencereKimlik: TKimlik): TProgramKayit;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to CALISAN_PROGRAM_SAYISI - 1 do
+  begin
+
+    if(FCalisanProgramlar[i].ProgramKayit.PencereKimlik = APencereKimlik) then
+      Exit(FCalisanProgramlar[i].ProgramKayit);
+  end;
+
+  Result.PencereKimlik := -1;
 end;
 
 end.

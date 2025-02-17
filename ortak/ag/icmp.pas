@@ -6,7 +6,7 @@
   Dosya Adý: icmp.pas
   Dosya Ýþlevi: ICMP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 14/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -45,7 +45,7 @@ uses genel, donusum, ip, islevler, sistemmesaj;
 procedure ICMPPaketleriniIsle(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
   AHedefIPAdres: TIPAdres);
 var
-  s: array[0..128] of Byte;
+  s: array[0..128] of TSayi1;
   i: TSayi4;
 begin
 
@@ -74,8 +74,8 @@ procedure ICMPPaketGonder(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
   AHedefIPAdres: TIPAdres);
 var
   ICMPBaslik: PICMPBaslik;
-  s: array[0..128] of Byte;
-  p: PByte;
+  s: array[0..128] of TSayi1;
+  p: PSayi1;
   i: TSayi4;
   SaglamaToplami: TSayi2;
 begin

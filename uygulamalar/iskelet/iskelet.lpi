@@ -34,11 +34,11 @@
         </Mode0>
       </Modes>
     </RunParams>
-    <Units Count="131">
+    <Units Count="133">
       <Unit0>
         <Filename Value="iskelet.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="18" Y="15"/>
+        <CursorPos X="19" Y="29"/>
         <UsageCount Value="44"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -83,8 +83,10 @@
       <Unit10>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="43" Y="17"/>
+        <TopLine Value="43"/>
+        <CursorPos X="22" Y="58"/>
         <UsageCount Value="39"/>
         <Loaded Value="True"/>
       </Unit10>
@@ -721,7 +723,7 @@
       </Unit118>
       <Unit119>
         <Filename Value="../../rtl_uygulama/linux/system.pp"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="20"/>
         <CursorPos X="5" Y="33"/>
         <UsageCount Value="14"/>
@@ -730,15 +732,14 @@
       <Unit120>
         <Filename Value="islemfrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="5"/>
         <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit120>
       <Unit121>
         <Filename Value="onayfrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="16"/>
         <CursorPos X="52" Y="35"/>
         <UsageCount Value="31"/>
@@ -746,7 +747,7 @@
       </Unit121>
       <Unit122>
         <Filename Value="../../rtl_uygulama/linux/n_sistemmesaj.pas"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="9"/>
         <CursorPos Y="14"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
@@ -754,7 +755,7 @@
       <Unit123>
         <Filename Value="../../rtl_uygulama/linux/linux.pp"/>
         <UnitName Value="Linux"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="10"/>
         <TopLine Value="2"/>
         <CursorPos X="9" Y="35"/>
         <UsageCount Value="13"/>
@@ -767,7 +768,7 @@
       </Unit124>
       <Unit125>
         <Filename Value="../../rtl_uygulama/linux/elera.inc"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="12"/>
         <TopLine Value="120"/>
         <CursorPos Y="141"/>
         <UsageCount Value="13"/>
@@ -775,7 +776,7 @@
       </Unit125>
       <Unit126>
         <Filename Value="../../rtl_uygulama/linux/n_genel.pas"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="14"/>
         <TopLine Value="356"/>
         <CursorPos X="10" Y="372"/>
         <UsageCount Value="10"/>
@@ -783,7 +784,7 @@
       </Unit126>
       <Unit127>
         <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="13"/>
         <TopLine Value="117"/>
         <CursorPos X="3" Y="119"/>
         <UsageCount Value="13"/>
@@ -791,143 +792,160 @@
       </Unit127>
       <Unit128>
         <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="284"/>
-        <CursorPos X="40" Y="302"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="110"/>
+        <CursorPos X="52" Y="121"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit128>
       <Unit129>
         <Filename Value="../../rtl_uygulama/linux/_forms.pp"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="71"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="59"/>
         <CursorPos X="3" Y="101"/>
         <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit129>
       <Unit130>
         <Filename Value="../../rtl_uygulama/linux/gn_pencere.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="8"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit130>
+      <Unit131>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="131"/>
+        <CursorPos X="65" Y="153"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit131>
+      <Unit132>
+        <Filename Value="../../rtl_uygulama/linux/gn_gucdugmesi.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="101"/>
+        <CursorPos Y="106"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit132>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="58" Column="4" TopLine="40"/>
+        <Filename Value="onayfrm.pas"/>
       </Position1>
       <Position2>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="70" Column="24" TopLine="49"/>
+        <Filename Value="islemfrm.pas"/>
+        <Caret Line="48" Column="6"/>
       </Position2>
       <Position3>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="72" Column="12" TopLine="54"/>
       </Position3>
       <Position4>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="26" Column="5" TopLine="8"/>
+        <Filename Value="iskelet.lpr"/>
+        <Caret Line="18" Column="6"/>
       </Position4>
       <Position5>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="73" Column="8" TopLine="55"/>
+        <Filename Value="iskelet.lpr"/>
+        <Caret Line="12" Column="69"/>
       </Position5>
       <Position6>
-        <Filename Value="anasayfafrm.pas"/>
+        <Filename Value="iskelet.lpr"/>
+        <Caret Line="15" Column="18"/>
       </Position6>
       <Position7>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="71" Column="51" TopLine="56"/>
+        <Caret Line="59" Column="21" TopLine="37"/>
       </Position7>
       <Position8>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="33" Column="3" TopLine="13"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_gucdugmesi.pas"/>
+        <Caret Line="34" Column="46" TopLine="7"/>
       </Position8>
       <Position9>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="43" Column="3" TopLine="25"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_gucdugmesi.pas"/>
+        <Caret Line="103" Column="3" TopLine="101"/>
       </Position9>
       <Position10>
-        <Filename Value="islemfrm.pas"/>
-        <Caret Line="24" Column="6"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_gucdugmesi.pas"/>
+        <Caret Line="46" Column="11" TopLine="27"/>
       </Position10>
       <Position11>
-        <Filename Value="islemfrm.pas"/>
-        <Caret Line="44" Column="33" TopLine="26"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_gucdugmesi.pas"/>
+        <Caret Line="163" Column="11" TopLine="143"/>
       </Position11>
       <Position12>
-        <Filename Value="islemfrm.pas"/>
-        <Caret Line="46" Column="20" TopLine="28"/>
+        <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
+        <Caret Line="129" Column="3" TopLine="110"/>
       </Position12>
       <Position13>
-        <Filename Value="islemfrm.pas"/>
-        <Caret Line="55" Column="4" TopLine="34"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_gucdugmesi.pas"/>
+        <Caret Line="172" TopLine="143"/>
       </Position13>
       <Position14>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="74" Column="42" TopLine="54"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="31" Column="15"/>
       </Position14>
       <Position15>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="25" Column="6"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="143" Column="21" TopLine="109"/>
       </Position15>
       <Position16>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="43" Column="4" TopLine="25"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="135" TopLine="109"/>
       </Position16>
       <Position17>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="44" Column="33" TopLine="26"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="43" Column="11" TopLine="23"/>
       </Position17>
       <Position18>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="46" Column="21" TopLine="28"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="139" Column="11" TopLine="124"/>
       </Position18>
       <Position19>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="48" Column="20" TopLine="30"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_gucdugmesi.pas"/>
+        <Caret Line="34" Column="23"/>
       </Position19>
       <Position20>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="54" Column="3" TopLine="36"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="42" Column="11" TopLine="24"/>
       </Position20>
       <Position21>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="56" Column="4" TopLine="36"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="131" Column="11" TopLine="115"/>
       </Position21>
       <Position22>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="64" Column="4" TopLine="43"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="30" Column="11" TopLine="24"/>
       </Position22>
       <Position23>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="70" Column="52" TopLine="43"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="73" Column="14" TopLine="62"/>
       </Position23>
       <Position24>
-        <Filename Value="onayfrm.pas"/>
-        <Caret Line="40" Column="50" TopLine="13"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="69" TopLine="54"/>
       </Position24>
       <Position25>
-        <Filename Value="onayfrm.pas"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="30" Column="15" TopLine="10"/>
       </Position25>
       <Position26>
-        <Filename Value="islemfrm.pas"/>
-        <Caret Line="48" Column="6"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="77" Column="19" TopLine="58"/>
       </Position26>
       <Position27>
-        <Filename Value="anasayfafrm.pas"/>
+        <Filename Value="../../rtl_uygulama/linux/gn_dugme.pas"/>
+        <Caret Line="44" Column="11" TopLine="25"/>
       </Position27>
       <Position28>
-        <Filename Value="iskelet.lpr"/>
-        <Caret Line="18" Column="6"/>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="61" Column="7" TopLine="45"/>
       </Position28>
       <Position29>
-        <Filename Value="iskelet.lpr"/>
-        <Caret Line="12" Column="69"/>
+        <Filename Value="anasayfafrm.pas"/>
       </Position29>
       <Position30>
-        <Filename Value="iskelet.lpr"/>
-        <Caret Line="15" Column="18"/>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="51" TopLine="44"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

@@ -6,7 +6,7 @@
   Dosya Adý: dhcp.pas
   Dosya Ýþlevi: DHCP protokol istemci iþlevlerini yönetir
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 14/02/2025
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -17,6 +17,25 @@ unit dhcp;
 interface
 
 uses paylasim;
+
+type
+  PDHCPKayit = ^TDHCPKayit;
+  TDHCPKayit = packed record
+  	Islem, DonanimTip, DonanimUz,
+    RelayIcin: TSayi1;
+  	GonderenKimlik: TSayi4;
+  	Sure, Bayraklar: Word;
+  	IstemciIPAdres, BenimIPAdresim, SunucuIPAdres,
+    AgGecidiIPAdres: TIPAdres;
+  	IstemciMACAdres: TMACAdres;
+  	AYRLDI1: TSayi4;
+  	AYRLDI2: TSayi4;
+  	AYRLDI3: TSayi2;
+  	SunucuEvSahibiAdi: array[0..63] of Char;
+  	AcilisDosyaAdi: array[0..127] of Char;
+  	SihirliCerez: TSayi4;
+  	DigerSecenekler: Isaretci;
+  end;
 
 const
   DHCP_SUNUCU_PORT                        = Byte(67);

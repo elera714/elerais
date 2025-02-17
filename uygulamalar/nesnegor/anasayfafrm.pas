@@ -33,7 +33,7 @@ var
 procedure TfrmAnaSayfa.Olustur;
 begin
 
-  FPencere.Olustur(-1, 110, 110, 250, 130, ptBoyutlanabilir, PencereAdi, $906AD1);
+  FPencere.Olustur(-1, 110, 110, 250, 130, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 end;
 
@@ -68,17 +68,19 @@ begin
     GorselNesneKimlik := FGorev.GorselNesneKimlikAl(FarePozisyonu);
     FGorev.GorselNesneAdiAl(FarePozisyonu, @NesneAdi[0]);
 
-    FPencere.Tuval.KalemRengi := RENK_BEYAZ;
-    FPencere.Tuval.FircaRengi := RENK_BEYAZ;
+    FPencere.Tuval.KalemRengi := RENK_KIRMIZI;
+    FPencere.Tuval.FircaRengi := RENK_KIRMIZI;
+    FPencere.Tuval.YaziYaz(18, 20, 'Nesne Adý: ');
+    FPencere.Tuval.YaziYaz(106, 20, NesneAdi);
+    FPencere.Tuval.YaziYaz(18, 36, 'Kimlik   : ');
+    FPencere.Tuval.SayiYaz10(106, 36, GorselNesneKimlik);
 
-    FPencere.Tuval.YaziYaz(18, 20, 'Yatay    : ');
-    FPencere.Tuval.SayiYaz16(106, 20, True, 4, FarePozisyonu.A1);
-    FPencere.Tuval.YaziYaz(18, 36, 'Dikey    : ');
-    FPencere.Tuval.SayiYaz16(106, 36, True, 4, FarePozisyonu.B1);
-    FPencere.Tuval.YaziYaz(18, 52, 'Kimlik   : ');
-    FPencere.Tuval.SayiYaz16(106, 52, True, 8, GorselNesneKimlik);
-    FPencere.Tuval.YaziYaz(18, 68, 'Nesne Adý: ');
-    FPencere.Tuval.YaziYaz(106, 68, NesneAdi);
+    FPencere.Tuval.KalemRengi := RENK_SIYAH;
+    FPencere.Tuval.FircaRengi := RENK_SIYAH;
+    FPencere.Tuval.YaziYaz(18, 52, 'Yatay    : ');
+    FPencere.Tuval.SayiYaz10(106, 52, FarePozisyonu.A1);
+    FPencere.Tuval.YaziYaz(18, 68, 'Dikey    : ');
+    FPencere.Tuval.SayiYaz10(106, 68, FarePozisyonu.B1);
 
     FZamanlayici.Baslat;
   end;

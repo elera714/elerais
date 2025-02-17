@@ -47,7 +47,7 @@ begin
   FetiBilgi[0].Olustur(FPencere.Kimlik, 5, 0, 160, 16, $FF0000, 'Masaüstü Renkleri:');
   FetiBilgi[0].Goster;
 
-  FRenkSecici.Olustur(FPencere.Kimlik, 5, 19, 190, 32);
+  FRenkSecici.Olustur(FPencere.Kimlik, 5, 19, 184, 32);
   FRenkSecici.Goster;
 
   FetiBilgi[1].Olustur(FPencere.Kimlik, 5, 60, $FF0000, 160, 16, 'Masaüstü Resimleri:');

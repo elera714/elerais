@@ -33,7 +33,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure SekmeOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -222,12 +222,12 @@ begin
 end;
 
 {==============================================================================
-  sayfa kontrol nesnesini boyutlandýrýr
+  sayfa kontrol nesnesini hizalandýrýr
  ==============================================================================}
-procedure TSayfaKontrol.Boyutlandir;
+procedure TSayfaKontrol.Hizala;
 begin
 
-  inherited Boyutlandir;
+  inherited Hizala;
 end;
 
 {==============================================================================

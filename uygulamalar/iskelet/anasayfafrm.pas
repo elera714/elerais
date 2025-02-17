@@ -54,6 +54,7 @@ begin
   begin
 
     if(AOlay.Kimlik = FDugme2.Kimlik) then
+
       frmIslem.Goster
     else
     begin

@@ -6,7 +6,7 @@
   Dosya Adı: gn_pencere.pas
   Dosya İşlevi: pencere (TPencere) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 17/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -30,18 +30,22 @@ type
     procedure Olustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
       APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk);
     procedure Ciz;
-    procedure PencereDurumuDegistir(AKimlik: TKimlik; APencereDurum: TPencereDurum);
+    procedure DurumuDegistir(AKimlik: TKimlik; APencereDurum: TPencereDurum);
+    function AktifPencereyiAl: TSayi4;
+    procedure AktifPencereyiYaz(AKimlik: TKimlik);
     property Kimlik: TKimlik read FKimlik;
     property Tuval: TTuval read FTuval;
     property Gorunum: Boolean write GorunumDegistir;
   end;
 
-function _PencereOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+function PencereOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk): TKimlik; assembler;
-procedure _PencereGoster(AKimlik: TKimlik); assembler;
-procedure _PencereGizle(AKimlik: TKimlik); assembler;
-procedure _PencereCiz(AKimlik: TKimlik); assembler;
-procedure _PencereDurumuDegistir(AKimlik: TKimlik; APencereDurum: TPencereDurum); assembler;
+procedure PencereGoster(AKimlik: TKimlik); assembler;
+procedure PencereGizle(AKimlik: TKimlik); assembler;
+procedure PencereCiz(AKimlik: TKimlik); assembler;
+procedure PencereDurumuDegistir(AKimlik: TKimlik; APencereDurum: TPencereDurum); assembler;
+function PencereAktifAl: TSayi4; assembler;
+procedure PencereAktifYaz(AKimlik: TKimlik); assembler;
 
 implementation
 
@@ -49,7 +53,7 @@ procedure TPencere.Olustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYuksekli
   APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk);
 begin
 
-  FKimlik := _PencereOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik,
+  FKimlik := PencereOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik,
     APencereTipi, ABaslik, AGovdeRenk);
 
   FTuval.Olustur(FKimlik);
@@ -66,29 +70,41 @@ end;
 procedure TPencere.Goster;
 begin
 
-  _PencereGoster(FKimlik);
+  PencereGoster(FKimlik);
 end;
 
 procedure TPencere.Gizle;
 begin
 
-  _PencereGizle(FKimlik);
+  PencereGizle(FKimlik);
 end;
 
 procedure TPencere.Ciz;
 begin
 
-  _PencereCiz(FKimlik);
+  PencereCiz(FKimlik);
 end;
 
-procedure TPencere.PencereDurumuDegistir(AKimlik: TKimlik; APencereDurum: TPencereDurum);
+procedure TPencere.DurumuDegistir(AKimlik: TKimlik; APencereDurum: TPencereDurum);
 begin
 
-  _PencereDurumuDegistir(AKimlik, APencereDurum);
+  PencereDurumuDegistir(AKimlik, APencereDurum);
 end;
 
-function _PencereOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
-  APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk): TKimlik;
+function TPencere.AktifPencereyiAl: TSayi4;
+begin
+
+  Result := PencereAktifAl;
+end;
+
+procedure TPencere.AktifPencereyiYaz(AKimlik: TKimlik);
+begin
+
+  PencereAktifYaz(AKimlik);
+end;
+
+function PencereOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+  APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk): TKimlik; assembler;
 asm
   push  DWORD AGovdeRenk
   push  DWORD ABaslik
@@ -103,7 +119,7 @@ asm
   add   esp,32
 end;
 
-procedure _PencereGoster(AKimlik: TKimlik);
+procedure PencereGoster(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,PENCERE_GOSTER
@@ -111,7 +127,7 @@ asm
   add   esp,4
 end;
 
-procedure _PencereGizle(AKimlik: TKimlik); assembler;
+procedure PencereGizle(AKimlik: TKimlik); assembler; assembler;
 asm
   push  DWORD AKimlik
   mov   eax,PENCERE_GIZLE
@@ -119,7 +135,7 @@ asm
   add   esp,4
 end;
 
-procedure _PencereCiz(AKimlik: TKimlik);
+procedure PencereCiz(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,PENCERE_CIZ
@@ -127,13 +143,27 @@ asm
   add   esp,4
 end;
 
-procedure _PencereDurumuDegistir(AKimlik: TKimlik; APencereDurum: TPencereDurum);
+procedure PencereDurumuDegistir(AKimlik: TKimlik; APencereDurum: TPencereDurum); assembler;
 asm
   push  DWORD APencereDurum
   push  DWORD AKimlik
   mov   eax,PENCERE_YAZ_PENCEREDURUMU
   int   $34
   add   esp,8
+end;
+
+function PencereAktifAl: TSayi4; assembler;
+asm
+  mov	  eax,PENCERE_AKTIFAL
+  int	  $34
+end;
+
+procedure PencereAktifYaz(AKimlik: TKimlik); assembler;
+asm
+  push  DWORD AKimlik
+  mov	  eax,PENCERE_AKTIFYAZ
+  int	  $34
+  add   esp,4
 end;
 
 end.

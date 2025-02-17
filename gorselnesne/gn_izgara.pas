@@ -36,7 +36,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     function SeciliSatirDegeriniAl: string;
@@ -297,9 +297,9 @@ begin
 end;
 
 {==============================================================================
-  ızgara nesnesini boyutlandırır
+  ızgara nesnesini hizalandırır
  ==============================================================================}
-procedure TIzgara.Boyutlandir;
+procedure TIzgara.Hizala;
 var
   Izgara: PIzgara = nil;
 begin
@@ -307,7 +307,7 @@ begin
   Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
   if(Izgara = nil) then Exit;
 
-  Izgara^.Hizala;
+  inherited Hizala;
 
   if(Izgara^.FYatayKCGoster) then
   begin
@@ -325,7 +325,7 @@ begin
 
     Izgara^.FYatayKCubugu^.FCizimBaslangic.Sol := Izgara^.FCizimBaslangic.Sol + Izgara^.FYatayKCubugu^.FKonum.Sol;
     Izgara^.FYatayKCubugu^.FCizimBaslangic.Ust := Izgara^.FCizimBaslangic.Ust + Izgara^.FYatayKCubugu^.FKonum.Ust;
-    Izgara^.FYatayKCubugu^.Boyutlandir;
+    Izgara^.FYatayKCubugu^.Hizala;
   end;
 
   if(Izgara^.FDikeyKCGoster) then
@@ -344,7 +344,7 @@ begin
 
     Izgara^.FDikeyKCubugu^.FCizimBaslangic.Sol := Izgara^.FCizimBaslangic.Sol + Izgara^.FDikeyKCubugu^.FKonum.Sol;
     Izgara^.FDikeyKCubugu^.FCizimBaslangic.Ust := Izgara^.FCizimBaslangic.Ust + Izgara^.FDikeyKCubugu^.FKonum.Ust;
-    Izgara^.FDikeyKCubugu^.Boyutlandir;
+    Izgara^.FDikeyKCubugu^.Hizala;
   end;
 end;
 

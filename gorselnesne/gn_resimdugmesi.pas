@@ -33,7 +33,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   published
@@ -173,19 +173,19 @@ begin
 end;
 
 {==============================================================================
-  resim düğmesi nesnesini boyutlandırır
+  resim düğmesi nesnesini hizalandırır
  ==============================================================================}
-procedure TResimDugmesi.Boyutlandir;
+procedure TResimDugmesi.Hizala;
 {var
-  ResimDugmesi: PResimDugmesi = nil;}
+  ResimDugmesi: PResimDugmesi;}
 begin
 
-  { TODO - pasifleştirilen kodlar aktifleştiğinde pencere kontrol düğmeleri hatalı etkilenmektedir }
+  { TODO - aşağıdaki pasifleştirilen kodlar aktifleştiğinde pencere kontrol düğmeleri hatalı etkilenmektedir }
 
 {  ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl(Kimlik));
   if(ResimDugmesi = nil) then Exit;
 
-  ResimDugmesi^.Hizala;}
+  inherited Hizala;}
 end;
 
 {==============================================================================

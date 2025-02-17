@@ -31,7 +31,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure ResimDugmeOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -190,12 +190,12 @@ begin
 end;
 
 {==============================================================================
-  araç çubuðu nesnesini boyutlandýrýr
+  araç çubuðu nesnesini hizalandýrýr
  ==============================================================================}
-procedure TAracCubugu.Boyutlandir;
+procedure TAracCubugu.Hizala;
 begin
 
-  inherited Boyutlandir;
+  inherited Hizala;
 end;
 
 {==============================================================================

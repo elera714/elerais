@@ -6,7 +6,7 @@
   Dosya Adı: gn_onaykutusu.pas
   Dosya İşlevi: onay kutusu (TCheckBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 12/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -41,7 +41,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   end;
@@ -161,9 +161,9 @@ begin
 end;
 
 {==============================================================================
-  onay kutusu nesnesini boyutlandırır
+  onay kutusu nesnesini hizalandırır
  ==============================================================================}
-procedure TOnayKutusu.Boyutlandir;
+procedure TOnayKutusu.Hizala;
 var
   OnayKutusu: POnayKutusu = nil;
 begin
@@ -171,7 +171,7 @@ begin
   OnayKutusu := POnayKutusu(OnayKutusu^.NesneAl(Kimlik));
   if(OnayKutusu = nil) then Exit;
 
-  OnayKutusu^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================
@@ -221,6 +221,14 @@ begin
   // onay kutusu başlığı
   if(Length(OnayKutusu^.Baslik) > 0) then
     YaziYaz(OnayKutusu, Alan.Sag + 3, Alan.Ust + 1, OnayKutusu^.Baslik, RENK_SIYAH);
+
+  // nesne odaklanılmış ise nesnenin kenarlarını işaretle
+  if(OnayKutusu^.Odaklanildi) then
+  begin
+
+    Alan := OnayKutusu^.FCizimAlan;
+    OnayKutusu^.Dikdortgen(OnayKutusu, ctNokta, Alan, RENK_SIYAH);
+  end;
 end;
 
 {==============================================================================

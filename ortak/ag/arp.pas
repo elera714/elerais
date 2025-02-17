@@ -16,6 +16,20 @@ interface
 
 uses paylasim;
 
+type
+  PARPPaket = ^TARPPaket;
+  TARPPaket = packed record
+    DonanimTip: Word;             // donaným tipi
+    ProtokolTip: Word;            // protokol tipi
+    DonanimAdresU: Byte;          // donaným adres uzunluðu
+    ProtokolAdresU: Byte;         // protokol adres uzunluðu
+    Islem: Word;                  // iþlem
+    GonderenMACAdres: TMACAdres;  // paketi gönderen donaným adresi
+    GonderenIPAdres: TIPAdres;    // paketi gönderen ip adresi
+    HedefMACAdres: TMACAdres;     // paketin gönderildiði donaným adresi
+    HedefIPAdres: TIPAdres;       // paketin gönderildiði ip adresi
+  end;
+
 const
   // dikkat: deðerler network byte sýralýdýr
   ARPISLEM_ISTEK = TSayi2($0001);

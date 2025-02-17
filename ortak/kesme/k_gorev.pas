@@ -161,7 +161,7 @@ begin
   else if(IslevNo = 8) then
   begin
 
-    Result := AktifProgramiAl;
+    // gn_pencere nesnesine taşındı
   end
 
   // görev adından görev kimliğini al

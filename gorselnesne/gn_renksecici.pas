@@ -6,7 +6,7 @@
   Dosya Adý: gn_renksecici.pas
   Dosya Ýþlevi: renk seçim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 12/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -40,7 +40,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   end;
@@ -160,9 +160,9 @@ begin
 end;
 
 {==============================================================================
-  renk seçici nesnesini boyutlandýrýr
+  renk seçici nesnesini hizalandýrýr
  ==============================================================================}
-procedure TRenkSecici.Boyutlandir;
+procedure TRenkSecici.Hizala;
 var
   RenkSecici: PRenkSecici = nil;
 begin
@@ -170,7 +170,7 @@ begin
   RenkSecici := PRenkSecici(RenkSecici^.NesneAl(Kimlik));
   if(RenkSecici = nil) then Exit;
 
-  RenkSecici^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================
@@ -207,6 +207,14 @@ begin
 
       Inc(k);
     end;
+  end;
+
+  // nesne odaklanýlmýþ ise nesnenin kenarlarýný iþaretle
+  if(RenkSecici^.Odaklanildi) then
+  begin
+
+    Alan := RenkSecici^.FCizimAlan;
+    RenkSecici^.Dikdortgen(RenkSecici, ctNokta, Alan, RENK_SIYAH);
   end;
 end;
 

@@ -28,6 +28,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
+    procedure Hizala;
     procedure Boyutlandir;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -294,6 +295,14 @@ procedure TMasaustu.Gizle;
 begin
 
   inherited Gizle;
+end;
+
+{==============================================================================
+  masaüstünü hizalandýrýr
+ ==============================================================================}
+procedure TMasaustu.Hizala;
+begin
+
 end;
 
 {==============================================================================

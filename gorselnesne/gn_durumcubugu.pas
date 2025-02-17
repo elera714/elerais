@@ -25,7 +25,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   end;
@@ -159,9 +159,9 @@ begin
 end;
 
 {==============================================================================
-  durum çubuğu nesnesini boyutlandırır
+  durum çubuğu nesnesini hizalandırır
  ==============================================================================}
-procedure TDurumCubugu.Boyutlandir;
+procedure TDurumCubugu.Hizala;
 var
   DurumCubugu: PDurumCubugu;
 begin
@@ -169,7 +169,7 @@ begin
   DurumCubugu := PDurumCubugu(DurumCubugu^.NesneAl(Kimlik));
   if(DurumCubugu = nil) then Exit;
 
-  DurumCubugu^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================

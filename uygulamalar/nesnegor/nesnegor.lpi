@@ -38,7 +38,6 @@
       <Unit0>
         <Filename Value="nesnegor.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="35" Y="17"/>
         <UsageCount Value="64"/>
         <Loaded Value="True"/>
@@ -63,8 +62,10 @@
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="42" Y="6"/>
+        <TopLine Value="52"/>
+        <CursorPos X="44" Y="79"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit3>

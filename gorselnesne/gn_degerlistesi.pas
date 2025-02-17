@@ -33,7 +33,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     function SeciliSatirDegeriniAl: string;
@@ -266,9 +266,9 @@ begin
 end;
 
 {==============================================================================
-  değer listesi nesnesini boyutlandırır
+  değer listesi nesnesini hizalandırır
  ==============================================================================}
-procedure TDegerListesi.Boyutlandir;
+procedure TDegerListesi.Hizala;
 var
   DegerListesi: PDegerListesi;
   Kolon1U: TSayi4;
@@ -277,7 +277,7 @@ begin
   DegerListesi := PDegerListesi(DegerListesi^.NesneAl(Kimlik));
   if(DegerListesi = nil) then Exit;
 
-  DegerListesi^.Hizala;
+  inherited Hizala;
 
   // 2. kolonun uzunluğu nesnenin uzunluğuna göre yeniden hesaplanıyor
   if(DegerListesi^.FKolonUzunluklari^.ElemanSayisi = 2) then

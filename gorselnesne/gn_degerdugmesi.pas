@@ -29,7 +29,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   end;
@@ -126,7 +126,16 @@ end;
   artýrma / eksiltme düðme nesnesini yok eder
  ==============================================================================}
 procedure TDegerDugmesi.YokEt;
+var
+  DegerDugmesi: PDegerDugmesi;
 begin
+
+  // nesnenin kimlik, tip deðerlerini denetle.
+  DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(Kimlik));
+  if(DegerDugmesi = nil) then Exit;
+
+  DegerDugmesi^.FArtirmaDugmesi^.YokEt;
+  DegerDugmesi^.FEksiltmeDugmesi^.YokEt;
 
   inherited YokEt;
 end;
@@ -159,9 +168,9 @@ begin
 end;
 
 {==============================================================================
-  artýrma / eksiltme düðme nesnesini boyutlandýrýr
+  artýrma / eksiltme düðme nesnesini hizalandýrýr
  ==============================================================================}
-procedure TDegerDugmesi.Boyutlandir;
+procedure TDegerDugmesi.Hizala;
 var
   DegerDugmesi: PDegerDugmesi;
 begin
@@ -169,7 +178,7 @@ begin
   DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(Kimlik));
   if(DegerDugmesi = nil) then Exit;
 
-  DegerDugmesi^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================

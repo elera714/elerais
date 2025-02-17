@@ -30,7 +30,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   end;
@@ -233,9 +233,9 @@ begin
 end;
 
 {==============================================================================
-  giriþ kutusu nesnesini boyutlandýrýr
+  giriþ kutusu nesnesini hizalandýrýr
  ==============================================================================}
-procedure TGirisKutusu.Boyutlandir;
+procedure TGirisKutusu.Hizala;
 var
   GirisKutusu: PGirisKutusu;
 begin
@@ -249,7 +249,7 @@ begin
   GirisKutusu^.FSilmeDugmesi^.FBoyut.Yukseklik := 16;
   GirisKutusu^.FSilmeDugmesi^.BoyutlariYenidenHesapla;
 
-  GirisKutusu^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================

@@ -194,7 +194,7 @@ begin
   Gorev := GorevListesi[0];
   Gorev^.OlaySayisi := 0;
 
-  Olay := POlay(GGercekBellek.Ayir(4096));
+  Olay := POlay(GGercekBellek.Ayir(4095));
   if not(Olay = nil) then
   begin
 
@@ -333,9 +333,7 @@ begin
             i := FindNext(AramaKaydi);
           end;
           FindClose(AramaKaydi);}
-          //Gorev^.Calistir('disk1:\6.bmp');
-          Gorev^.Calistir('disket1:\dsyyntcs.c');
-          //Gorev^.Calistir('disket1:\bharita.c');
+          //Gorev^.Calistir('disk1:\progrmlr\bharita.c');
           //Gorev^.Calistir('disket1:\mustudk.c');
           //Gorev^.Calistir('disk1:\sisbilgi.c');
           //Gorev^.Calistir('disket1:\yzmcgor2.c');
@@ -369,6 +367,7 @@ begin
         else if(Tus = '4') then
         begin
 
+          Gorev^.Calistir('disk1:\progrmlr\saat.c');
 {          pic.Maskele(0);
           IRR := pic.ISRDegeriniOku;
           SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'IRR Deðeri: ', IRR, 4);
@@ -389,9 +388,9 @@ begin
           //TestSinif.Artir;
           //Gorev^.Calistir('disk1:\arpbilgi.c');
 
-          Disk := SurucuAl('disk2:');
+          {Disk := SurucuAl('disk2:');
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-1: %d', [Disk^.Acilis.DizinGirisi.IlkSektor]);
-          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-2: %d', [Disk^.Acilis.DizinGirisi.ToplamSektor]);
+          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-2: %d', [Disk^.Acilis.DizinGirisi.ToplamSektor]);}
         end
         // test iþlev tuþu-2
         else if(Tus = '5') then
@@ -655,10 +654,6 @@ begin
 
       //SISTEM_MESAJ(RENK_KIRMIZI, 'CO_CIZIM olayý', []);
       CizimAlan := SDPencere^.FCizimAlan;
-      CizimAlan.Sol += 1;
-      CizimAlan.Ust += 1;
-      CizimAlan.Sag -= 1;
-      CizimAlan.Alt -= 1;
       SDPencere^.Dikdortgen(SDPencere, ctNokta, CizimAlan, RENK_SIYAH);
       SDPencere^.YaziYaz(SDPencere, 12, 10, 'ÇKRDK:', RENK_LACIVERT);
       SDPencere^.SayiYaz16(SDPencere, 64, 10, True, 8, SistemSayaci, RENK_LACIVERT);

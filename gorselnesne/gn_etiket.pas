@@ -25,7 +25,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   end;
@@ -176,9 +176,9 @@ begin
 end;
 
 {==============================================================================
-  etiket nesnesini boyutlandırır
+  etiket nesnesini hizalandırır
  ==============================================================================}
-procedure TEtiket.Boyutlandir;
+procedure TEtiket.Hizala;
 var
   Etiket: PEtiket = nil;
 begin
@@ -186,7 +186,7 @@ begin
   Etiket := PEtiket(Etiket^.NesneAl(Kimlik));
   if(Etiket = nil) then Exit;
 
-  Etiket^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================

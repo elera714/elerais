@@ -28,7 +28,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure AcilirMenuOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -246,9 +246,9 @@ begin
 end;
 
 {==============================================================================
-  karma liste nesnesini boyutlandýrýr
+  karma liste nesnesini hizalandýrýr
  ==============================================================================}
-procedure TKarmaListe.Boyutlandir;
+procedure TKarmaListe.Hizala;
 var
   KarmaListe: PKarmaListe = nil;
 begin
@@ -256,7 +256,7 @@ begin
   KarmaListe := PKarmaListe(KarmaListe^.NesneAl(Kimlik));
   if(KarmaListe = nil) then Exit;
 
-  KarmaListe^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================

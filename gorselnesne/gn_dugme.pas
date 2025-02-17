@@ -6,7 +6,7 @@
   Dosya Adý: gn_dugme.pas
   Dosya Ýþlevi: düðme (TButton) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 12/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -29,7 +29,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure CizimModelDegistir(ADolguluCizim: Boolean; AGovdeRenk1, AGovdeRenk2,
@@ -53,6 +53,8 @@ var
   Pencere: PPencere = nil;
   Dugme: PDugme = nil;
   Hiza: THiza;
+  Konum: PKonum;
+  Boyut: PBoyut;
 begin
 
   case AIslevNo of
@@ -81,6 +83,26 @@ begin
 
       Dugme^.Gizle;
       Pencere^.Ciz;
+    end;
+
+    // yeniden boyutlandýr
+    ISLEV_BOYUTLANDIR:
+    begin
+
+      Dugme := PDugme(Dugme^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      if(Dugme <> nil) then
+      begin
+
+        Konum := PKonum(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+        Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
+        Dugme^.FIlkKonum.Sol := Konum^.Sol;
+        Dugme^.FIlkKonum.Ust := Konum^.Ust;
+        Dugme^.FIlkBoyut.Genislik := Boyut^.Genislik;
+        Dugme^.FIlkBoyut.Yukseklik := Boyut^.Yukseklik;
+
+        Pencere := PPencere(Dugme^.AtaNesne);
+        Pencere^.Ciz;
+      end;
     end;
 
     ISLEV_YOKET:
@@ -225,7 +247,7 @@ end;
 {==============================================================================
   düðme nesnesini boyutlandýrýr
  ==============================================================================}
-procedure TDugme.Boyutlandir;
+procedure TDugme.Hizala;
 var
   Dugme: PDugme = nil;
 begin
@@ -233,7 +255,7 @@ begin
   Dugme := PDugme(Dugme^.NesneAl(Kimlik));
   if(Dugme = nil) then Exit;
 
-  Dugme^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================
@@ -260,10 +282,6 @@ begin
   begin
 
     CizimAlan := Dugme^.FCizimAlan;
-    CizimAlan.Sol += 2;
-    CizimAlan.Ust += 2;
-    CizimAlan.Sag -= 2;
-    CizimAlan.Alt -= 2;
     Dugme^.Dikdortgen(Dugme, ctNokta, CizimAlan, RENK_SIYAH);
   end;
 end;

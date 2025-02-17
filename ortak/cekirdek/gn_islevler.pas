@@ -6,7 +6,7 @@
   Dosya Adı: gn_islevler.pas
   Dosya İşlevi: görsel nesne (visual object) işlevlerini içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 14/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,7 +17,6 @@ interface
 uses gorselnesne, genel, paylasim, gn_masaustu, gn_pencere;
 
 var
-  GAktifPencere: PPencere = nil;        // aktif olan pencere
   YakalananGorselNesne: PGorselNesne;   // farenin, üzerine sol tuş ile basılıp seçildiği nesne
 
 procedure Yukle;
@@ -171,11 +170,14 @@ begin
 
             // pencere nesnesinin alt nesne için ayrılan bellek bloğunu iptal et
             { TODO : bu işlev buradan çıkarılarak nesnenin yoketme işlevine eklenecektir }
-            GGercekBellek.YokEt(Pencere^.FAltNesneBellekAdresi, 4096);
+            GGercekBellek.YokEt(Pencere^.FAltNesneBellekAdresi, 4095);
           end;
 
           // bulunan pencereyi masaüstü listesinden çıkart
           MasaustuGNBellekAdresi[PencereSiraNo] := nil;
+
+          // pencere ve alt görsel nesneler için ayrılan çizim bellek alanının yok et
+          GGercekBellek.YokEt(Pencere^.FCizimBellekAdresi, Pencere^.FCizimBellekUzunlugu);
 
           // pencereyi yok et
           Pencere^.YokEt;
@@ -199,7 +201,7 @@ begin
           end
 
           // aksi durumda masaüstü alt nesne bellek bölgesini iptal et
-          else GGercekBellek.YokEt(Masaustu^.FAltNesneBellekAdresi, 4096);
+          else GGercekBellek.YokEt(Masaustu^.FAltNesneBellekAdresi, 4095);
 
           // bir sonraki döngüye devam etmeden çık
           Exit;

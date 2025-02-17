@@ -6,7 +6,7 @@
   Dosya Adı: bmp.pas
   Dosya İşlevi: bmp dosya işlevlerini içerir
 
-  Güncelleme Tarihi: 06/02/2025
+  Güncelleme Tarihi: 14/02/2025
 
   Not-1: şu an itibariyle sadece 24 bitlik resim görüntüleme desteği vardır
   Not-2: tüm renkler 32 bitlik değerlerle işlenmektedir
@@ -63,9 +63,9 @@ var
   GoruntuYapi: TGoruntuYapi;
   SatirdakiByteSayisi, Satir,
   Sol, Ust, i: TISayi4;
-  PRenk: PRGBRenk;
-  Renk: TRenk;
-  HedefBellek: ^TRenk;
+  Renk2: PRGBRenk;
+  Renk1: TRenk;
+  HedefBellek: PRenk;
 begin
 
   //SISTEM_MESAJ(mtBilgi, RENK_MOR, 'Dosya: ' + ADosyaTamYol, []);
@@ -132,14 +132,14 @@ begin
         HedefBellek := GoruntuYapi.BellekAdresi + (Ust * (GoruntuYapi.Genislik * 4));
 
         Inc(Satir);
-        PRenk := DosyaBellek + BMPBicim^.VeriAdres + (SatirdakiByteSayisi * Satir);
+        Renk2 := DosyaBellek + BMPBicim^.VeriAdres + (SatirdakiByteSayisi * Satir);
 
         for Sol := 0 to GoruntuYapi.Genislik - 1 do
         begin
 
-          Renk := (PRenk^.B shl 16) + (PRenk^.G shl 8) + (PRenk^.R);
-          HedefBellek^ := Renk;
-          Inc(PRenk);
+          Renk1 := (Renk2^.B shl 16) + (Renk2^.G shl 8) + (Renk2^.R);
+          HedefBellek^ := Renk1;
+          Inc(Renk2);
           Inc(HedefBellek);
         end;
       end;
@@ -159,7 +159,7 @@ var
   Masaustu: PMasaustu;
   Pencere: PPencere;
   Resim: PResim;
-  Renk, _Renk: ^TRenk;
+  Renk1, Renk2: PRenk;
   Alan: TAlan;
   Yukseklik, Genislik, SatirdakiByteSayisi,
   TuvalA1, TuvalB1: TISayi4;
@@ -183,14 +183,14 @@ begin
     for TuvalB1 := 0 to Yukseklik - 1 do
     begin
 
-      Renk := (TuvalB1 * SatirdakiByteSayisi) + AGoruntuYapi.BellekAdresi;
+      Renk1 := (TuvalB1 * SatirdakiByteSayisi) + AGoruntuYapi.BellekAdresi;
 
       for TuvalA1 := 0 to Genislik - 1 do
       begin
 
         GEkranKartSurucusu.NoktaYaz(Masaustu, Alan.Sol + TuvalA1, Alan.Ust + TuvalB1,
-          Renk^, True);
-        Inc(Renk);
+          Renk1^, True);
+        Inc(Renk1);
       end;
     end;
   end
@@ -230,18 +230,18 @@ begin
     for TuvalB1 := 0 to Yukseklik - 1 do
     begin
 
-      Renk := (Round((TuvalB1 * DikeyArtis)) * SatirdakiByteSayisi) + AGoruntuYapi.BellekAdresi;
+      Renk1 := (Round((TuvalB1 * DikeyArtis)) * SatirdakiByteSayisi) + AGoruntuYapi.BellekAdresi;
 
       Sol := 0.0;
       for TuvalA1 := 0 to Genislik - 1 do
       begin
 
         Sol := Sol + YatayArtis;
-        _Renk := Renk;
-        Inc(_Renk, Round(Sol));
+        Renk2 := Renk1;
+        Inc(Renk2, Round(Sol));
 
         GEkranKartSurucusu.NoktaYaz(Resim, Alan.Sol + TuvalA1, Alan.Ust + TuvalB1,
-          _Renk^, True);
+          Renk2^, True);
       end;
     end;
   end;

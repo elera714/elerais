@@ -6,7 +6,7 @@
   Dosya Adı: genel8x16.pas
   Dosya İşlevi: sistem öndeğer yazı tipi karakter setini içerir
 
-  Güncelleme Tarihi: 10/10/2019
+  Güncelleme Tarihi: 14/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,6 +22,16 @@ unit genel8x16;
 interface
 
 uses paylasim;
+
+type
+  PKarakter = ^TKarakter;
+  TKarakter = record
+    Genislik,                   // karakter genişliği
+    Yukseklik,                  // karakter yüksekliği
+    YT,                         // yatay +/- tolerans değeri
+    DT: TISayi1;                // dikey +/- tolerans değeri
+    Adres: Isaretci;            // karakter resim başlangıç adresi
+  end;
 
 const
   WW = 1;   // işaretlenecek

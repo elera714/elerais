@@ -27,7 +27,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure ResimYaz(ADosyaYolu: string);
@@ -193,9 +193,9 @@ begin
 end;
 
 {==============================================================================
-  resim nesnesini boyutlandırır
+  resim nesnesini hizalandırır
  ==============================================================================}
-procedure TResim.Boyutlandir;
+procedure TResim.Hizala;
 var
   Resim: PResim;
 begin
@@ -203,7 +203,7 @@ begin
   Resim := PResim(Resim^.NesneAl(Kimlik));
   if(Resim = nil) then Exit;
 
-  Resim^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================

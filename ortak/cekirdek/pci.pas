@@ -57,7 +57,7 @@ begin
   ToplamPCIAygitSayisi := 0;
 
   // pci aygıtları için bellek talep et (1 blok = 4K)
-  _PCIAygitBellekAdresi := GGercekBellek.Ayir(4096);
+  _PCIAygitBellekAdresi := GGercekBellek.Ayir(4095);
 
   // bellek girişlerini pci yapılarıyla eşleştir
   _BellekAdresi := _PCIAygitBellekAdresi;

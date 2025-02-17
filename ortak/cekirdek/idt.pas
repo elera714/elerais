@@ -6,7 +6,7 @@
   Dosya Adý: idt.pas
   Dosya Ýþlevi: kesme servis rutinlerini (isr) içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 14/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,6 +16,13 @@ unit idt;
 interface
 
 uses paylasim;
+
+type
+  PIDTYazmac = ^TIDTYazmac;
+  TIDTYazmac = packed record
+    Uzunluk: TSayi2;
+    Baslangic: TSayi4;
+  end;
 
 const
   USTSINIR_IDT = $35;

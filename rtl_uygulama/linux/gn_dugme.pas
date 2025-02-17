@@ -27,6 +27,7 @@ type
       ABaslik: string): TKimlik;
     procedure YokEt;
     procedure Goster;
+    procedure Boyutlandir(AKonum: TKonum; ABoyut: TBoyut);
     procedure Gizle;
     procedure Odaklan;
     procedure BaslikDegistir(ABaslik: string);
@@ -40,6 +41,7 @@ function DugmeOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TI
 procedure DugmeYokEt(AKimlik: TKimlik); assembler;
 procedure DugmeGoster(AKimlik: TKimlik); assembler;
 procedure DugmeGizle(AKimlik: TKimlik); assembler;
+procedure DugmeBoyutlandir(AKimlik: TKimlik; AKonum: TKonum; ABoyut: TBoyut); assembler;
 procedure DugmeBaslikDegistir(AKimlik: TKimlik; ABaslik: string); assembler;
 procedure DugmeHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
 procedure DugmeOdaklan(AKimlik: TKimlik); assembler;
@@ -67,6 +69,12 @@ procedure TDugme.Goster;
 begin
 
   DugmeGoster(FKimlik);
+end;
+
+procedure TDugme.Boyutlandir(AKonum: TKonum; ABoyut: TBoyut);
+begin
+
+  DugmeBoyutlandir(FKimlik, AKonum, ABoyut);
 end;
 
 procedure TDugme.Gizle;
@@ -133,6 +141,16 @@ asm
   mov   eax,DUGME_GIZLE
   int   $34
   add   esp,4
+end;
+
+procedure DugmeBoyutlandir(AKimlik: TKimlik; AKonum: TKonum; ABoyut: TBoyut); assembler;
+asm
+  push  DWORD ABoyut
+  push  DWORD AKonum
+  push  DWORD AKimlik
+  mov   eax,DUGME_BOYUTLANDIR
+  int   $34
+  add   esp,12
 end;
 
 procedure DugmeBaslikDegistir(AKimlik: TKimlik; ABaslik: string); assembler;

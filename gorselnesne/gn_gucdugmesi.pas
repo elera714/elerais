@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 12/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -29,7 +29,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure CizimModelDegistir(ADolguluCizim: Boolean; AGovdeRenk1, AGovdeRenk2,
@@ -51,6 +51,7 @@ uses genel, gn_islevler, temelgorselnesne, giysi_mac, gn_pencere, sistemmesaj;
 function GucDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
   GorselNesne: PGorselNesne;
+  Pencere: PPencere;
   GucDugmesi: PGucDugmesi;
   Konum: PKonum;
   Boyut: PBoyut;
@@ -79,6 +80,26 @@ begin
 
       GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
       GucDugmesi^.Gizle;
+    end;
+
+    // yeniden boyutlandır
+    ISLEV_BOYUTLANDIR:
+    begin
+
+      GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      if(GucDugmesi <> nil) then
+      begin
+
+        Konum := PKonum(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+        Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
+        GucDugmesi^.FIlkKonum.Sol := Konum^.Sol;
+        GucDugmesi^.FIlkKonum.Ust := Konum^.Ust;
+        GucDugmesi^.FIlkBoyut.Genislik := Boyut^.Genislik;
+        GucDugmesi^.FIlkBoyut.Yukseklik := Boyut^.Yukseklik;
+
+        Pencere := PPencere(GucDugmesi^.AtaNesne);
+        Pencere^.Ciz;
+      end;
     end;
 
     ISLEV_YOKET:
@@ -128,23 +149,6 @@ begin
         GucDugmesi^.Odaklanildi := True;
       end;
     end;
-
-    // güç düğmesini yeniden boyutlandır
-    $0804:
-    begin
-
-      GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
-      if(GucDugmesi <> nil) then
-      begin
-
-        Konum := PKonum(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
-        Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
-        GucDugmesi^.FIlkKonum.Sol := Konum^.Sol;
-        GucDugmesi^.FIlkKonum.Ust := Konum^.Ust;
-        GucDugmesi^.FIlkBoyut.Genislik := Boyut^.Genislik;
-        GucDugmesi^.FIlkBoyut.Yukseklik := Boyut^.Yukseklik;
-      end;
-    end
 
     else Result := HATA_ISLEV;
   end;
@@ -233,9 +237,9 @@ begin
 end;
 
 {==============================================================================
-  güç düğme nesnesini boyutlandırır
+  güç düğme nesnesini hizalandırır
  ==============================================================================}
-procedure TGucDugmesi.Boyutlandir;
+procedure TGucDugmesi.Hizala;
 var
   GucDugmesi: PGucDugmesi;
 begin
@@ -243,7 +247,7 @@ begin
   GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(Kimlik));
   if(GucDugmesi = nil) then Exit;
 
-  GucDugmesi^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================
@@ -270,10 +274,6 @@ begin
   begin
 
     CizimAlan := GucDugmesi^.FCizimAlan;
-    CizimAlan.Sol += 2;
-    CizimAlan.Ust += 2;
-    CizimAlan.Sag -= 2;
-    CizimAlan.Alt -= 2;
     GucDugmesi^.Dikdortgen(GucDugmesi, ctNokta, CizimAlan, RENK_SIYAH);
   end;
 end;

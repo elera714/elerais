@@ -276,20 +276,6 @@ type
     Veri: Isaretci;
   end;
 
-type
-  PARPPaket = ^TARPPaket;
-  TARPPaket = packed record
-    DonanimTip: Word;             // donaným tipi
-    ProtokolTip: Word;            // protokol tipi
-    DonanimAdresU: Byte;          // donaným adres uzunluðu
-    ProtokolAdresU: Byte;         // protokol adres uzunluðu
-    Islem: Word;                  // iþlem
-    GonderenMACAdres: TMACAdres;  // paketi gönderen donaným adresi
-    GonderenIPAdres: TIPAdres;    // paketi gönderen ip adresi
-    HedefMACAdres: TMACAdres;     // paketin gönderildiði donaným adresi
-    HedefIPAdres: TIPAdres;       // paketin gönderildiði ip adresi
-  end;
-
 {Not1: [0..3] bit = versiyon Ipv4 = 4
        [4..7] baþlýk uzunluðu = baþlýk uzunluðu * 4 (kaç tane 4 byte olduðu)
 
@@ -308,25 +294,6 @@ type
     KaynakIP,
     HedefIP: TIPAdres;
     Veri: Isaretci;
-  end;
-
-type
-  PDHCPKayit = ^TDHCPKayit;
-  TDHCPKayit = packed record
-  	Islem, DonanimTip, DonanimUz,
-    RelayIcin: TSayi1;
-  	GonderenKimlik: TSayi4;
-  	Sure, Bayraklar: Word;
-  	IstemciIPAdres, BenimIPAdresim, SunucuIPAdres,
-    AgGecidiIPAdres: TIPAdres;
-  	IstemciMACAdres: TMACAdres;
-  	AYRLDI1: TSayi4;
-  	AYRLDI2: TSayi4;
-  	AYRLDI3: TSayi2;
-  	SunucuEvSahibiAdi: array[0..63] of Char;
-  	AcilisDosyaAdi: array[0..127] of Char;
-  	SihirliCerez: TSayi4;
-  	DigerSecenekler: Isaretci;
   end;
 
 type
@@ -879,13 +846,6 @@ var
   GorevTSSListesi: array[0..USTSINIR_GOREVSAYISI - 1] of PTSS;
 
 type
-  PIDTYazmac = ^TIDTYazmac;
-  TIDTYazmac = packed record
-    Uzunluk: TSayi2;
-    Baslangic: TSayi4;
-  end;
-
-type
   TGorevDurum = (gdBos, gdOlusturuldu, gdCalisiyor, gdDurduruldu, gdSonlandiriliyor);
 
 type
@@ -926,16 +886,6 @@ type
     SistemAdi, DerlemeBilgisi,
     FPCMimari, FPCSurum: string;
     YatayCozunurluk, DikeyCozunurluk: TSayi4;
-  end;
-
-type
-  PKarakter = ^TKarakter;
-  TKarakter = record
-    Genislik,                   // karakter geniþliði
-    Yukseklik,                  // karakter yüksekliði
-    YT,                         // yatay +/- tolerans deðeri
-    DT: TISayi1;                // dikey +/- tolerans deðeri
-    Adres: Isaretci;            // karakter resim baþlangýç adresi
   end;
 
 type

@@ -293,7 +293,7 @@ end;
  ==============================================================================}
 procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: PChar; AMesajUz: TISayi4);
 var
-  i: Integer;
+  i: TSayi4;
   p: PChar;
   s: string;
 begin
@@ -312,7 +312,7 @@ end;
 procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj1: PChar;
   AMesajUz1: TISayi4; AMesaj2: PChar; AMesajUz2: TISayi4);
 var
-  i: Integer;
+  i: TSayi4;
   p: PChar;
   s: string;
 begin

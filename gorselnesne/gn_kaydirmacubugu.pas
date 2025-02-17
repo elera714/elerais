@@ -30,7 +30,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure DegerleriBelirle(AAltDeger, AUstDeger: TISayi4);
@@ -229,9 +229,9 @@ begin
 end;
 
 {==============================================================================
-  kaydýrma çubuðu nesnesini boyutlandýrýr
+  kaydýrma çubuðu nesnesini hizalandýrýr
  ==============================================================================}
-procedure TKaydirmaCubugu.Boyutlandir;
+procedure TKaydirmaCubugu.Hizala;
 var
   KaydirmaCubugu: PKaydirmaCubugu = nil;
 begin

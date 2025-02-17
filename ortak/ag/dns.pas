@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 25/01/2025
+  Güncelleme Tarihi: 14/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -50,7 +50,7 @@ type
     FYerelPort: TSayi4;
     FYanitUzunluk: TSayi4;
     FBaglantiDurum: TDNSDurum;
-    FBellekAdresi: Pointer;
+    FBellekAdresi: Isaretci;
     function Olustur: PDNS;
     procedure Sorgula(ADNSKimlik: TKimlik; ADNSAdresi: string);
     function DNSBaglantiAl(AYerelPort: TSayi2): PDNS;

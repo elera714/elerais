@@ -1,14 +1,14 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÃ‡
-  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
+  Kodlayan: Fatih KILIÇ
+  Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya AdÄ±: gercekbellek.pas
-  Dosya Ä°ÅŸlevi: gerÃ§ek (fiziksel) bellek yÃ¶netim iÅŸlevlerini iÃ§erir
+  Dosya Adı: gercekbellek.pas
+  Dosya İşlevi: gerçek (fiziksel) bellek yönetim işlevlerini içerir
 
-  GÃ¼ncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 14/02/2025
 
-  Bilgi: Bellek rezervasyonlarÄ± 4K blok ve katlarÄ± halinde yÃ¶netilmektedir
+  Bilgi: Bellek rezervasyonları 4K blok ve katları halinde yönetilmektedir
 
  ==============================================================================}
 {$mode objfpc}
@@ -39,10 +39,10 @@ type
 
 implementation
 
-uses genel;
+uses genel, sistemmesaj;
 
 {==============================================================================
-  bellek yÃ¼kleme / haritalama iÅŸlevlerini gerÃ§ekleÅŸtirir
+  bellek yükleme / haritalama işlevlerini gerçekleştirir
  ==============================================================================}
 procedure TGercekBellek.Yukle;
 var
@@ -52,18 +52,18 @@ begin
 
   ToplamBellekMiktari := ToplamBellekMiktariniAl;
 
-  // sistemdeki toplam RAM miktarÄ±
+  // sistemdeki toplam RAM miktarı
   FToplamRAM := ToplamBellekMiktari;
 
-  // RAM miktarÄ±nÄ± blok sayÄ±sÄ±na Ã§evir. (1 blok = 4K)
+  // RAM miktarını blok sayısına çevir. (1 blok = 4K)
   FToplamBlok := (FToplamRAM shr 12);
 
-  // Ã§ekirdek iÃ§in bellek ayrÄ±mÄ±nÄ± gerÃ§ekleÅŸtir
+  // çekirdek için bellek ayrımını gerçekleştir
   i := (SISTEME_AYRILMIS_RAM shr 12);
   FAyrilmisBlok := i;
   FKullanilmisBlok := i;
 
-  // tÃ¼m belleÄŸi boÅŸ olarak iÅŸaretle
+  // tüm belleği boş olarak işaretle
   Bellek := BELLEK_HARITA_ADRESI;
   for i := 0 to FToplamBlok - 1 do
   begin
@@ -72,7 +72,7 @@ begin
     Inc(Bellek);
   end;
 
-  // sisteme ayrÄ±lan belleÄŸi kullanÄ±lÄ±yor olarak iÅŸaretle
+  // sisteme ayrılan belleği kullanılıyor olarak işaretle
   Bellek := BELLEK_HARITA_ADRESI;
   for i := 0 to AyrilmisBlok - 1 do
   begin
@@ -90,7 +90,7 @@ begin
 asm
   pushad
 
-  // Ã¶nbellek iÅŸlemini durdur
+  // önbellek işlemini durdur
   mov   eax,cr0
   and   eax,not($40000000 + $20000000)
   or    eax,$40000000
@@ -106,7 +106,7 @@ asm
   xchg  ebx,DWORD[edi]
   je    @tekrar
 
-  // Ã¶nbellek iÅŸlemine devam et
+  // önbellek işlemine devam et
   and   eax,not($40000000 + $20000000)
   mov   cr0,eax
 
@@ -119,10 +119,10 @@ end;
 end;
 
 {==============================================================================
-  boÅŸ bellek alanÄ±nÄ± rezerv eder ve bellek bÃ¶lgesini sÄ±fÄ±rlar
-  bilgi: istenen bellek miktarÄ± 4096 byte ve katlarÄ± olarak tahsis edilir
-  1    byte..4096 byte arasÄ± 1 blok
-  4097 byte..8192 byte arasÄ± 2 blok tahsis edilir
+  boş bellek alanını rezerv eder ve bellek bölgesini sıfırlar
+  bilgi: istenen bellek miktarı 4096 byte ve katları olarak tahsis edilir
+  0    byte..4095 byte arası 1 blok
+  4096 byte..8191 byte arası 2 blok tahsis edilir
  ==============================================================================}
 function TGercekBellek.Ayir(AIstenenBellek: TSayi4): Isaretci;
 var
@@ -132,22 +132,20 @@ var
   Bellek: PByte;
 begin
 
-  if(AIstenenBellek = 0) then Exit(nil);
-
-  // AIstenenBellek = byte tÃ¼rÃ¼nden istenen bellek miktarÄ±
-  // 1..4096 arasÄ± 1 blok tasarÄ±mÄ±
-  IstenenBellek := AIstenenBellek - 1;
+  // AIstenenBellek = byte türünden istenen bellek miktarı
+  // 0..4095 arası 1 blok tasarımı
+  IstenenBellek := AIstenenBellek;
 
   BlokSayisi := (IstenenBellek shr 12) + 1;
 
-  // boÅŸ bellek alanÄ± bul
+  // boş bellek alanı bul
   IlkBlok := BosBellekBul(BlokSayisi);
   if(IlkBlok < 0) then Exit(nil);
 
   Bellek := BELLEK_HARITA_ADRESI;
   Inc(Bellek, IlkBlok);
 
-  // bellek bloÄŸunu kullanÄ±lÄ±yor olarak iÅŸaretle
+  // bellek bloğunu kullanılıyor olarak işaretle
   for i := 0 to BlokSayisi - 1 do
   begin
 
@@ -155,17 +153,20 @@ begin
     Inc(Bellek);
   end;
 
-  // bellek bÃ¶lgesini sÄ±fÄ±r ile doldur
+  // bellek bölgesini sıfır ile doldur
   i := (IlkBlok shl 12);
   FillByte(Isaretci(i)^, BlokSayisi shl 12, 0);
 
   Inc(FKullanilmisBlok, BlokSayisi);
 
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ayrılan: Blok Sayısı: %d', [BlokSayisi]);
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ayrılan: İlk Blok: %d', [IlkBlok]);
+
   Result := Isaretci(i);
 end;
 
 {==============================================================================
-  ayrÄ±lmÄ±ÅŸ belleÄŸi iptal eder
+  ayrılmış belleği iptal eder
  ==============================================================================}
 procedure TGercekBellek.YokEt(ABellekAdresi: Isaretci; ABellekUzunlugu: TSayi4);
 var
@@ -174,14 +175,14 @@ var
   Bellek: PByte;
 begin
 
-  // bellek adresini ve uzunluÄŸunu blok numarasÄ±na Ã§evir
+  // bellek adresini ve uzunluğunu blok numarasına çevir
   IlkBlok := (TSayi4(ABellekAdresi) shr 12);
   BlokSayisi := (ABellekUzunlugu shr 12) + 1;
 
   Bellek := BELLEK_HARITA_ADRESI;
   Inc(Bellek, IlkBlok);
 
-  // belirtilen blok sayÄ±sÄ± kadar iptal iÅŸlemi gerÃ§ekleÅŸtir
+  // belirtilen blok sayısı kadar iptal işlemi gerçekleştir
   for i := 0 to BlokSayisi - 1 do
   begin
 
@@ -190,10 +191,13 @@ begin
   end;
 
   Dec(FKullanilmisBlok, BlokSayisi);
+
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Yokedilen: Blok Sayısı: %d', [BlokSayisi]);
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Yokedilen: İlk Blok: %d', [IlkBlok]);
 end;
 
 {==============================================================================
-  boÅŸ bellek alanÄ± bulur (not : bulunan boÅŸ alan ayrÄ±lmaz)
+  boş bellek alanı bulur (not : bulunan boş alan ayrılmaz)
  ==============================================================================}
 function TGercekBellek.BosBellekBul(AIstenenBlokSayisi: TSayi4): TISayi4;
 var
@@ -209,15 +213,15 @@ begin
   Bellek := BELLEK_HARITA_ADRESI;
   Inc(Bellek, AranacakIlkBlok);
 
-  // ayrÄ±lmÄ±ÅŸ bloktan toplam blok sayÄ±sÄ±na kadar tÃ¼m bellek bloklarÄ±nÄ± ara
+  // ayrılmış bloktan toplam blok sayısına kadar tüm bellek bloklarını ara
   while (AranacakIlkBlok < AranacakSonBlok) do
   begin
 
-    // eÄŸer boÅŸ blok var ise ...
+    // eğer boş blok var ise ...
     if(Bellek^ = 0) then
     begin
 
-      // bulunan blok numarasÄ±nÄ± kaydet
+      // bulunan blok numarasını kaydet
       BulunanIlkBlok := AranacakIlkBlok;
       BellekBulundu := True;
 
@@ -225,7 +229,7 @@ begin
       for i := 0 to AIstenenBlokSayisi - 1 do
       begin
 
-        // eÄŸer aranan blok daha Ã¶nce ayrÄ±ldÄ±ysa arama iÅŸlemini durdur
+        // eğer aranan blok daha önce ayrıldıysa arama işlemini durdur
         if(Bellek^ = 1) then
         begin
 
@@ -235,7 +239,7 @@ begin
         else
         begin
 
-          // aksi halde bir sonraki bloÄŸa bak
+          // aksi halde bir sonraki bloğa bak
           Inc(Bellek);
           Inc(AranacakIlkBlok);
         end;
@@ -244,8 +248,8 @@ begin
       if(BellekBulundu) then
       begin
 
-        // istenen bloklar ardÄ±ÅŸÄ±k olarak boÅŸ ise
-        // ilk blok numarasÄ±nÄ± geri dÃ¶ndÃ¼r ve Ã§Ä±k
+        // istenen bloklar ardışık olarak boş ise
+        // ilk blok numarasını geri döndür ve çık
         Result := BulunanIlkBlok;
         Exit;
       end;

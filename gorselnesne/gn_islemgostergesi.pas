@@ -26,7 +26,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure DegerleriBelirle(AAltDeger, AUstDeger: TISayi4);
@@ -169,9 +169,9 @@ begin
 end;
 
 {==============================================================================
-  işlem göstergesi nesnesini boyutlandırır
+  işlem göstergesi nesnesini hizalandırır
  ==============================================================================}
-procedure TIslemGostergesi.Boyutlandir;
+procedure TIslemGostergesi.Hizala;
 var
   IslemGostergesi: PIslemGostergesi;
 begin
@@ -179,7 +179,7 @@ begin
   IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneAl(Kimlik));
   if(IslemGostergesi = nil) then Exit;
 
-  IslemGostergesi^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================

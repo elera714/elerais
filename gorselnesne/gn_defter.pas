@@ -40,7 +40,7 @@ type
     procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure Temizle;
     procedure YaziEkle(AYaziBellekAdresi: Isaretci);
@@ -214,7 +214,7 @@ begin
   Defter^.FDikeyKCubugu^.OlayYonlendirmeAdresi := @KaydirmaCubuguOlaylariniIsle;
 
   // defter nesnesinin içeriði için bellek ayýr
-  YaziBellekAdresi := GGercekBellek.Ayir(4096 * 10);
+  YaziBellekAdresi := GGercekBellek.Ayir((4096 * 10) - 1);
   Defter^.FYaziBellekAdresi := YaziBellekAdresi;
 
   Defter^.FYaziUzunlugu := 0;
@@ -241,7 +241,7 @@ begin
   if(Defter = nil) then Exit;
 
   if(Defter^.FYaziBellekAdresi <> nil) then
-    GGercekBellek.YokEt(Defter^.FYaziBellekAdresi, 4096 * 10);
+    GGercekBellek.YokEt(Defter^.FYaziBellekAdresi, (4096 * 10) - 1);
 
   inherited YokEt;
 end;
@@ -273,9 +273,9 @@ begin
 end;
 
 {==============================================================================
-  defter nesnesini boyulandýrýr
+  defter nesnesini hizalandýrýr
  ==============================================================================}
-procedure TDefter.Boyutlandir;
+procedure TDefter.Hizala;
 var
   Defter: PDefter;
 begin
@@ -283,7 +283,7 @@ begin
   Defter := PDefter(Defter^.NesneAl(Kimlik));
   if(Defter = nil) then Exit;
 
-  Defter^.Hizala;
+  inherited Hizala;
 
   // yatay kaydýrma çubuðunu elle yeniden konumlandýr
   Defter^.FYatayKCubugu^.FKonum.Sol := 0;
@@ -298,7 +298,7 @@ begin
 
   Defter^.FYatayKCubugu^.FCizimBaslangic.Sol := Defter^.FCizimBaslangic.Sol + Defter^.FYatayKCubugu^.FKonum.Sol;
   Defter^.FYatayKCubugu^.FCizimBaslangic.Ust := Defter^.FCizimBaslangic.Ust + Defter^.FYatayKCubugu^.FKonum.Ust;
-  Defter^.FYatayKCubugu^.Boyutlandir;
+  Defter^.FYatayKCubugu^.Hizala;
 
   // dikey kaydýrma çubuðunu elle yeniden konumlandýr
   Defter^.FDikeyKCubugu^.FKonum.Sol := Defter^.FBoyut.Genislik - 16;
@@ -313,7 +313,7 @@ begin
 
   Defter^.FDikeyKCubugu^.FCizimBaslangic.Sol := Defter^.FCizimBaslangic.Sol + Defter^.FDikeyKCubugu^.FKonum.Sol;
   Defter^.FDikeyKCubugu^.FCizimBaslangic.Ust := Defter^.FCizimBaslangic.Ust + Defter^.FDikeyKCubugu^.FKonum.Ust;
-  Defter^.FDikeyKCubugu^.Boyutlandir;
+  Defter^.FDikeyKCubugu^.Hizala;
 end;
 
 {==============================================================================

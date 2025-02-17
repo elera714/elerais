@@ -1,8 +1,8 @@
 ================================================================================
                         Gerçekleþtirilecek Çalýþmalar
 ================================================================================
+- program baþlama/bitiþ arasýndaki fazla/eksik bellek durumlarý pencere bazýnda çözümlendi, diðer nesneler de kontrol edilecek
 - listegorunum nesnesine eleman sayýsý, seçili eleman oku / yaz iþlevi eklenecek (görev yöneticisi için)
-
 - çekirdek içeriðinin yeniden özelleþtirilebilmesi için ayarlar sayfasý oluþturulacak
 - API alt iþlevlerinden olan AL, YAZ, AL_YAZ sayýsal deðer olarak gözdn geçirilerek yapýsallaþtýrýlacak
 - usb uhci kod çalýþmalarý (usb / uhci)
@@ -27,9 +27,7 @@
 ================================================================================
                              Test Edilecek Ýþlevler
 ================================================================================
-- program sonlandýrma iþleminde bellek azaltýlmasý kontrol edilecek
 - masaüstü uygulamasý çöktüðünde baðlý tüm nesnelerin yok edildiði kontrol edilecek
 - 4 ve 5. fare düðmeleri test edilecek
-- sonlandýrýlan iþlemlerin bellekten güvenli bir þekilde yol edilmesi saðlanacak
 - ParamStr (rtl_prog: System.pp, systemh.inc, system.inc) iþlevi dsybil programý üzerinden kontrol edilecek
 - floppy sürücü okumalarý test edilecek

@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 10/02/2025
+  Güncelleme Tarihi: 14/02/2025
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -42,8 +42,8 @@ type
     FTuvalNesne: PGorselNesne;                  // nesnenin çizim yapýlacaðý en üst çizim nesnesi
     FAtaNesne: PGorselNesne;                    // nesnenin atasý
     FAltNesneBellekAdresi: PPGorselNesne;       // ata nesnenin alt nesneleri yerleþtireceði bellek adresi
-    FCizimBellekAdresi: Isaretci;
-    FCizimBellekUzunlugu: TSayi4;
+    FCizimBellekAdresi: Isaretci;               // pencere ve alt görsel nesnelerin çizileceði bellek adresi
+    FCizimBellekUzunlugu: TSayi4;               // FCizimBellekAdresi deðiþkeninin iþaret ettiði belleðin uzunluðu
 
     OlayCagriAdresi: TOlaylariIsle;             // olaylarýn yönlendirildiði nesne olay çaðrý adresi
     OlayYonlendirmeAdresi: TOlaylariIsle;       // görsel nesneler tarafýndan bileþenlerin olaylarýnýn yönlendirileceði olay adresi
@@ -661,7 +661,7 @@ begin
   begin
 
     // ata nesne için bellek oluþtur
-    AltNesneBellekAdresi := GGercekBellek.Ayir(4096);
+    AltNesneBellekAdresi := GGercekBellek.Ayir(4095);
     AAtaNesne^.FAltNesneBellekAdresi := AltNesneBellekAdresi;
   end;
 

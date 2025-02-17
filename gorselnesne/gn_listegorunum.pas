@@ -33,7 +33,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     function SeciliSatirDegeriniAl: string;
@@ -285,9 +285,9 @@ begin
 end;
 
 {==============================================================================
-  liste görünüm nesnesini boyutlandýrýr
+  liste görünüm nesnesini hizalandýrýr
  ==============================================================================}
-procedure TListeGorunum.Boyutlandir;
+procedure TListeGorunum.Hizala;
 var
   ListeGorunum: PListeGorunum;
 begin
@@ -295,7 +295,7 @@ begin
   ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(Kimlik));
   if(ListeGorunum = nil) then Exit;
 
-  ListeGorunum^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================
@@ -404,8 +404,11 @@ begin
         if(SatirNo = ListeGorunum^.FSeciliSiraNo) then
         begin
 
-          ListeGorunum^.DikdortgenDoldur(ListeGorunum, Alan2.Sol - 1, Alan2.Ust - 1,
-            Alan2.Sag, Alan2.Alt, $3EC5FF, $3EC5FF);
+          if(ListeGorunum^.Odaklanildi) then
+            ListeGorunum^.DikdortgenDoldur(ListeGorunum, Alan2.Sol - 1, Alan2.Ust - 1,
+              Alan2.Sag, Alan2.Alt, $3EC5FF, $3EC5FF)
+          else ListeGorunum^.DikdortgenDoldur(ListeGorunum, Alan2.Sol - 1, Alan2.Ust - 1,
+            Alan2.Sag, Alan2.Alt, RENK_GRI, RENK_GRI);
         end
         else
         begin

@@ -98,9 +98,13 @@ begin
     begin
 
       i := FlkDosyaListesi.SeciliSiraNoAl;
-      GoruntulenecekDosya := 'disk1:\resimler\' + DosyaAramaListesi[i].DosyaAdi;
-      FResim.Degistir(GoruntulenecekDosya);
-      FDurumCubugu.DurumYazisiDegistir('Dosya: ' + GoruntulenecekDosya);
+      if(i > -1) then
+      begin
+
+        GoruntulenecekDosya := 'disk1:\resimler\' + DosyaAramaListesi[i].DosyaAdi;
+        FResim.Degistir(GoruntulenecekDosya);
+        FDurumCubugu.DurumYazisiDegistir('Dosya: ' + GoruntulenecekDosya);
+      end;
     end
     // dosya listesini göster / gizle
     else if(AOlay.Kimlik = Dugmeler[0]) then

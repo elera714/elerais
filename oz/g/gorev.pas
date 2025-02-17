@@ -21,8 +21,8 @@ const
   // bir görev için tanýmlanan üst sýnýr olay sayýsý
   // olay belleði 4K olarak tanýmlanmýþtýr. 4096 / SizeOf(TOlay)
   USTSINIR_OLAY         = 64;
-  PROGRAM_YIGIN_BELLEK  = 4096 * 5;           // program yýðýný (stack) için ayrýlacak bellek
-  DEFTER_BELLEK_U       = TSayi4(4096 * 10);  // defter programý için program belleðinde ayrýlacak alan
+  PROGRAM_YIGIN_BELLEK  = (4096 * 5) - 1;             // program yýðýný (stack) için ayrýlacak bellek
+  DEFTER_BELLEK_U       = TSayi4((4096 * 10) - 1);    // defter programý için program belleðinde ayrýlacak alan
 
 type
   TDosyaTip = (dtDiger, dtCalistirilabilir, dtSurucu, dtResim, dtBelge);
@@ -90,7 +90,6 @@ function GorevBilgisiAl(AGorevSiraNo: TISayi4): PGorev;
 function CalisanProgramSayisiniAl: TSayi4;
 function GorevBayrakDegeriniAl: TSayi4;
 function CalisanProgramBilgisiAl(AGorevSiraNo: TISayi4): TProgramKayit;
-function AktifProgramiAl: TISayi4;
 function GorevSiraNumarasiniAl(AGorevSiraNo: TISayi4): TKimlik;
 function CalistirilacakBirSonrakiGoreviBul: TKimlik;
 function IliskiliProgramAl(ADosyaUzanti: string): TDosyaIliskisi;
@@ -248,7 +247,7 @@ begin
       ProgramBellekU := DosyaU + PROGRAM_YIGIN_BELLEK + DEFTER_BELLEK_U
     else ProgramBellekU := DosyaU + PROGRAM_YIGIN_BELLEK;
 
-    ProgramBellekU := ((ProgramBellekU shr 12) + 1) shl 12;
+    //ProgramBellekU := ((ProgramBellekU shr 12) + 1) shl 12;
 
     DosyaBellek := GGercekBellek.Ayir(ProgramBellekU);
     if(DosyaBellek = nil) then
@@ -310,7 +309,7 @@ begin
     end;
 
     // olay iþlemleri için bellekte yer ayýr
-    Olay := POlay(GGercekBellek.Ayir(4096));
+    Olay := POlay(GGercekBellek.Ayir(4095));
     if(Olay = nil) then
     begin
 
@@ -670,7 +669,7 @@ begin
   // göreve ait olay bellek bölgesini iptal et
   { TODO : 1. bu iþlev olay yönetim sistem nesnesinin içerisine dahil edilecek
            2. olay bellek bölgesi iptal edilmeden önce önceden oluþturulan olaylar da kayýtlardan çýkarýlacak }
-  GGercekBellek.YokEt(OlayBellekAdresi, 4096);
+  GGercekBellek.YokEt(OlayBellekAdresi, 4095);
 
   // görev için ayrýlan bellek bölgesini serbest býrak
   GGercekBellek.YokEt(Isaretci(BellekBaslangicAdresi), BellekUzunlugu);
@@ -795,14 +794,6 @@ begin
       Exit;
     end;
   end;
-end;
-
-function AktifProgramiAl: TISayi4;
-begin
-
-  if(GAktifPencere = nil) then Exit(-1);
-
-  Result := GAktifPencere^.Kimlik;
 end;
 
 {==============================================================================

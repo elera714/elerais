@@ -29,6 +29,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
+    procedure Hizala;
     procedure Boyutlandir;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -222,6 +223,15 @@ begin
   if not(AcilirMenu^.FMenuOlayGeriDonusAdresi = nil) then
     AcilirMenu^.FMenuOlayGeriDonusAdresi(AcilirMenu, Olay)
   else GorevListesi[AcilirMenu^.GorevKimlik]^.OlayEkle(AcilirMenu^.GorevKimlik, Olay);
+end;
+
+{==============================================================================
+  açýlýr menü nesnesini hizalandýrýr
+ ==============================================================================}
+procedure TAcilirMenu.Hizala;
+begin
+
+  //inherited Hizala;
 end;
 
 {==============================================================================

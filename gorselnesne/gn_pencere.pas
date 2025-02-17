@@ -45,6 +45,7 @@ type
       APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk): PPencere;
     procedure Goster;
     procedure Gizle;
+    procedure Hizala;
     procedure Boyutlandir;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -55,6 +56,9 @@ type
 function PencereCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk): TKimlik;
+
+var
+  GAktifPencere: PPencere = nil;        // aktif olan pencere
 
 implementation
 
@@ -131,10 +135,30 @@ begin
 
       // nesnenin kimlik, tip deðerlerini denetle.
       Pencere := PPencere(Pencere^.NesneAl(PKimlik(ADegiskenler + 00)^));
-      if(Pencere <> nil) then Pencere^.FPencereDurum := TPencereDurum(PKimlik(ADegiskenler + 04)^);
+      if(Pencere <> nil) then
+      begin
 
-      //SISTEM_MESAJ(RENK_KIRMIZI, 'Pencere: %d', [Pencere^.Kimlik]);
-      //SISTEM_MESAJ(RENK_KIRMIZI, 'Durum: %d', [Ord(Pencere^.FPencereDurum)]);
+        Pencere^.FPencereDurum := TPencereDurum(PKimlik(ADegiskenler + 04)^);
+        Pencere^.Guncelle;
+
+      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Pencere: %d', [Pencere^.Kimlik]);
+      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Durum: %d', [Ord(Pencere^.FPencereDurum)]);
+      end;
+    end;
+
+    // aktif pencereyi al
+    $020E:
+    begin
+
+      Result := GAktifPencere^.Kimlik;
+    end;
+
+    // aktif pencereyi yaz
+    $020F:
+    begin
+
+      Pencere := PPencere(Pencere^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      if(Pencere <> nil) then Pencere^.EnUsteGetir(Pencere);
     end
 
     else Result := HATA_ISLEV;
@@ -376,6 +400,14 @@ begin
 end;
 
 {==============================================================================
+  pencere nesnesini hizalandýrýr
+ ==============================================================================}
+procedure TPencere.Hizala;
+begin
+
+end;
+
+{==============================================================================
   pencere nesnesini boyutlandýrýr
  ==============================================================================}
 procedure TPencere.Boyutlandir;
@@ -424,32 +456,32 @@ begin
         // yeni eklenecek görsel nesne - görsel nesneyi buraya ekle...
         case GorunurNesne^.NesneTipi of
           //gntAcilirMenu     :
-          gntAracCubugu     : PAracCubugu(GorunurNesne)^.Boyutlandir;
-          gntBaglanti       : PBaglanti(GorunurNesne)^.Boyutlandir;
-          gntDefter         : PDefter(GorunurNesne)^.Boyutlandir;
-          gntDegerDugmesi   : PDegerDugmesi(GorunurNesne)^.Boyutlandir;
-          gntDegerListesi   : PDegerListesi(GorunurNesne)^.Boyutlandir;
-          gntDugme          : PDugme(GorunurNesne)^.Boyutlandir;
-          gntDurumCubugu    : PDurumCubugu(GorunurNesne)^.Boyutlandir;
-          gntEtiket         : PEtiket(GorunurNesne)^.Boyutlandir;
-          gntGirisKutusu    : PGirisKutusu(GorunurNesne)^.Boyutlandir;
-          gntGucDugmesi     : PGucDugmesi(GorunurNesne)^.Boyutlandir;
-          gntIslemGostergesi: PIslemGostergesi(GorunurNesne)^.Boyutlandir;
-          gntIzgara         : PIzgara(GorunurNesne)^.Boyutlandir;
-          gntKarmaListe     : PKarmaListe(GorunurNesne)^.Boyutlandir;
-          gntKaydirmaCubugu : PKaydirmaCubugu(GorunurNesne)^.Boyutlandir;
-          gntListeGorunum   : PListeGorunum(GorunurNesne)^.Boyutlandir;
-          gntListeKutusu    : PListeKutusu(GorunurNesne)^.Boyutlandir;
+          gntAracCubugu     : PAracCubugu(GorunurNesne)^.Hizala;
+          gntBaglanti       : PBaglanti(GorunurNesne)^.Hizala;
+          gntDefter         : PDefter(GorunurNesne)^.Hizala;
+          gntDegerDugmesi   : PDegerDugmesi(GorunurNesne)^.Hizala;
+          gntDegerListesi   : PDegerListesi(GorunurNesne)^.Hizala;
+          gntDugme          : PDugme(GorunurNesne)^.Hizala;
+          gntDurumCubugu    : PDurumCubugu(GorunurNesne)^.Hizala;
+          gntEtiket         : PEtiket(GorunurNesne)^.Hizala;
+          gntGirisKutusu    : PGirisKutusu(GorunurNesne)^.Hizala;
+          gntGucDugmesi     : PGucDugmesi(GorunurNesne)^.Hizala;
+          gntIslemGostergesi: PIslemGostergesi(GorunurNesne)^.Hizala;
+          gntIzgara         : PIzgara(GorunurNesne)^.Hizala;
+          gntKarmaListe     : PKarmaListe(GorunurNesne)^.Hizala;
+          gntKaydirmaCubugu : PKaydirmaCubugu(GorunurNesne)^.Hizala;
+          gntListeGorunum   : PListeGorunum(GorunurNesne)^.Hizala;
+          gntListeKutusu    : PListeKutusu(GorunurNesne)^.Hizala;
           //gntMasaustu;
           //gntMenu;
-          gntOnayKutusu     : POnayKutusu(GorunurNesne)^.Boyutlandir;
-          gntPanel          : PPanel(GorunurNesne)^.Boyutlandir;
+          gntOnayKutusu     : POnayKutusu(GorunurNesne)^.Hizala;
+          gntPanel          : PPanel(GorunurNesne)^.Hizala;
           //gntPencere;
-          gntRenkSecici     : PRenkSecici(GorunurNesne)^.Boyutlandir;
-          gntResim          : PResim(GorunurNesne)^.Boyutlandir;
-          gntResimDugmesi   : PResimDugmesi(GorunurNesne)^.Boyutlandir;
-          gntSayfaKontrol   : PSayfaKontrol(GorunurNesne)^.Boyutlandir;
-          gntSecimDugmesi   : PSecimDugmesi(GorunurNesne)^.Boyutlandir;
+          gntRenkSecici     : PRenkSecici(GorunurNesne)^.Hizala;
+          gntResim          : PResim(GorunurNesne)^.Hizala;
+          gntResimDugmesi   : PResimDugmesi(GorunurNesne)^.Hizala;
+          gntSayfaKontrol   : PSayfaKontrol(GorunurNesne)^.Hizala;
+          gntSecimDugmesi   : PSecimDugmesi(GorunurNesne)^.Hizala;
         end;
       end;
     end;

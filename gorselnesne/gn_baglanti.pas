@@ -27,7 +27,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   end;
@@ -163,9 +163,9 @@ begin
 end;
 
 {==============================================================================
-  bağlantı nesnesini boyutlandırır
+  bağlantı nesnesini hizalandırır
  ==============================================================================}
-procedure TBaglanti.Boyutlandir;
+procedure TBaglanti.Hizala;
 var
   Baglanti: PBaglanti;
 begin
@@ -173,7 +173,7 @@ begin
   Baglanti := PBaglanti(Baglanti^.NesneAl(Kimlik));
   if(Baglanti = nil) then Exit;
 
-  Baglanti^.Hizala;
+  inherited Hizala;
 end;
 
 {==============================================================================

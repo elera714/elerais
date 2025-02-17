@@ -56,7 +56,7 @@ type
     procedure YokEt;
     procedure Goster;
     procedure Gizle;
-    procedure Boyutlandir;
+    procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   end;
@@ -187,9 +187,9 @@ begin
 end;
 
 {==============================================================================
-  seçim düğmesi nesnesini boyutlandırır
+  seçim düğmesi nesnesini hizalandırır
  ==============================================================================}
-procedure TSecimDugmesi.Boyutlandir;
+procedure TSecimDugmesi.Hizala;
 begin
 
 end;
