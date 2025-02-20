@@ -41,8 +41,8 @@ type
     procedure GorselNesneAdiAl(ANokta: TNokta; ANesneAdi: Isaretci);
     function GorselNesneBilgisiAl(AKimlik: TKimlik; AHedefBellek: Isaretci): TISayi4;
 
-    function CalisanProgramSayisiniAl: TSayi4; assembler;
-    procedure CalisanProgramBilgisiAl(ASiraNo: TSayi4; var AProgramKayit: TProgramKayit); assembler;
+    function CalisanProgramSayisiniAl(AMasaustuKimlik: TKimlik): TSayi4; assembler;
+    procedure CalisanProgramBilgisiAl(AGorevSN, AMasaustuKimlik: TSayi4; var AProgramKayit: TProgramKayit); assembler;
     function GorevBayrakDegeriniAl: TSayi4; assembler;
   published
     property Ad: string read FAd write AdYaz;
@@ -159,20 +159,23 @@ begin
   // bu işlevin alt yapı çalışması yapılacak
 end;
 
-function TGorev.CalisanProgramSayisiniAl: TSayi4; assembler;
+function TGorev.CalisanProgramSayisiniAl(AMasaustuKimlik: TKimlik): TSayi4; assembler;
 asm
+  push  DWORD AMasaustuKimlik
   mov	  eax,GOREV_CALISANPSAYISINIAL
   int	  $34
+  add   esp,4
 end;
 
-procedure TGorev.CalisanProgramBilgisiAl(ASiraNo: TSayi4;
+procedure TGorev.CalisanProgramBilgisiAl(AGorevSN, AMasaustuKimlik: TSayi4;
   var AProgramKayit: TProgramKayit); assembler;
 asm
   push  DWORD AProgramKayit
-  push  DWORD ASiraNo
+  push  DWORD AMasaustuKimlik
+  push  DWORD AGorevSN
   mov	  eax,GOREV_CALISANPBILGISIAL
   int	  $34
-  add   esp,8
+  add   esp,12
 end;
 
 function _GorevCalistir(ADosyaTamYol: string): TKimlik;

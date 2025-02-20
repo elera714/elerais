@@ -6,7 +6,7 @@
   Dosya Adý: src_klavye.pas
   Dosya Ýþlevi: standart klavye sürücüsü
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,6 +28,17 @@ const
   TUS_KBT     = Chr($3A);                           // karakter büyütme tuþu (capslock)
   TUS_SYT     = Chr($45);                           // sayý yazma tuþu (numlock)
   TUS_KT      = Chr($46);                           // kaydýrma tuþu (scrolllock)
+
+  TUS_F1      = Chr(129);
+  TUS_F2      = Chr(130);
+  TUS_F3      = Chr(131);
+  TUS_F4      = Chr(132);
+  TUS_F5      = Chr(133);
+  TUS_F6      = Chr(134);
+  TUS_F7      = Chr(135);
+  TUS_F8      = Chr(136);
+  TUS_F9      = Chr(137);
+  TUS_F10     = Chr(138);
 
 var
   SolKontrolTusDurumu: TTusDurum = tdYok;
@@ -59,8 +70,8 @@ const
     {24} 'o', 'p', Chr($F0) {ð}, Chr($FC) {ü}, #10 {Enter}, TUS_KONTROL, 'a', 's', 'd',
     'f', 'g', 'h', 'j', 'k', 'l', Chr($FE) {þ}, 'i', '"', TUS_DEGISIM {Left Shift},
     ',', 'z', 'x', 'c', 'v', 'b', 'n', 'm', Chr($F6) {ö}, Chr($E7) {ç}, '.',
-    TUS_DEGISIM {Right Shift}, '*', TUS_ALT, ' ', TUS_KBT {Caps Lock}, #33, #34,
-    #0, #0, #0, #0, #0, #0, #0, #0, //F1 - F10  // geçici deðer
+    TUS_DEGISIM {Right Shift}, '*', TUS_ALT, ' ', TUS_KBT {Caps Lock},
+    TUS_F1, TUS_F2, TUS_F3, TUS_F4, TUS_F5, TUS_F6, TUS_F7, TUS_F8, TUS_F9, TUS_F10,
     TUS_SYT,   // Num Lock
     TUS_KT,   // Scroll Lock
     {71} '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', ',',
@@ -77,8 +88,8 @@ const
     {24} 'O', 'P', Chr($D0) {Ð}, Chr($DC) {Ü}, #10 {Enter}, TUS_KONTROL, 'A', 'S', 'D',
     'F', 'G', 'H', 'J', 'K', 'L', Chr($DE) {Þ}, Chr($DD) {'Ý'}, '"', TUS_DEGISIM {Left Shift},
     ',', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', Chr($D6) {Ö}, Chr($C7) {Ç}, '.',
-    TUS_DEGISIM {Right Shift}, '*', TUS_ALT, ' ', TUS_KBT {Caps Lock}, #33, #34,
-    #0, #0, #0, #0, #0, #0, #0, #0, //F1 - F10  // geçici deðer
+    TUS_DEGISIM {Right Shift}, '*', TUS_ALT, ' ', TUS_KBT {Caps Lock},
+    TUS_F1, TUS_F2, TUS_F3, TUS_F4, TUS_F5, TUS_F6, TUS_F7, TUS_F8, TUS_F9, TUS_F10,
     TUS_SYT,   // Num Lock
     TUS_KT,   // Scroll Lock
     {71} '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', ',',

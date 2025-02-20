@@ -6,7 +6,7 @@
   Dosya Adý: gn_karmaliste.pas
   Dosya Ýþlevi: karma liste (açýlýr / kapanýr liste kutusu (TComboBox)) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}

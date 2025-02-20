@@ -34,7 +34,7 @@ var
   p2: PSayi4;
   p4: Isaretci;
   IslevNo: TSayi4;
-  i: TISayi4;
+  i, j: TISayi4;
   TSS: PTSS;
   ProgramKayit: TProgramKayit;
   ProgramKayit2: PProgramKayit;
@@ -139,7 +139,9 @@ begin
   else if(IslevNo = 6) then
   begin
 
-    Result := CalisanProgramSayisiniAl;
+    // masaüstü kimlik numarası
+    i := PISayi4(ADegiskenler + 00)^;
+    Result := CalisanProgramSayisiniAl(i);
   end
 
   // program hakkında bilgi al
@@ -147,9 +149,10 @@ begin
   begin
 
     i := PISayi4(ADegiskenler + 00)^;
-    ProgramKayit := CalisanProgramBilgisiAl(i);
+    j := PISayi4(ADegiskenler + 04)^;
+    ProgramKayit := CalisanProgramBilgisiAl(i, j);
 
-    ProgramKayit2 := PProgramKayit(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+    ProgramKayit2 := PProgramKayit(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
     ProgramKayit2^.PencereKimlik := ProgramKayit.PencereKimlik;
     ProgramKayit2^.GorevKimlik := ProgramKayit.GorevKimlik;
     ProgramKayit2^.PencereTipi := ProgramKayit.PencereTipi;

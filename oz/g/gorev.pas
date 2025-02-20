@@ -15,7 +15,7 @@ unit gorev;
 
 interface
 
-uses paylasim, gn_pencere;
+uses paylasim, gn_masaustu, gn_pencere;
 
 const
   // bir görev için tanýmlanan üst sýnýr olay sayýsý
@@ -41,6 +41,7 @@ type
     FBellekUzunlugu: TSayi4;              // iþlemin kullandýðý bellek uzunluðu
     FKodBaslangicAdres: TSayi4;           // iþlemin bellek baþlangýç adresi
     FYiginBaslangicAdres: TSayi4;         // iþlemin yýðýn adresi
+    FAktifMasaustu: PMasaustu;            // görevin aktif masaüstü
     FAktifPencere: PPencere;              // görevin aktif penceresi
     procedure GorevSayaciYaz(ASayacDegeri: TSayi4);
     procedure OlaySayisiYaz(AOlaySayisi: TSayi4);
@@ -75,6 +76,7 @@ type
     function GorevBul(AGorevKimlik: TKimlik): PGorev;
     function GorevKimligiAl(AGorevAdi: string): TKimlik;
     property OlayBellekAdresi: POlay read FOlayBellekAdresi write FOlayBellekAdresi;
+    property AktifMasaustu: PMasaustu read FAktifMasaustu write FAktifMasaustu;
     property AktifPencere: PPencere read FAktifPencere write FAktifPencere;
   published
     property GorevKimlik: TKimlik read FGorevKimlik;
@@ -87,9 +89,9 @@ type
   end;
 
 function GorevBilgisiAl(AGorevSiraNo: TISayi4): PGorev;
-function CalisanProgramSayisiniAl: TSayi4;
+function CalisanProgramSayisiniAl(AMasaustuKimlik: TKimlik = -1): TSayi4;
 function GorevBayrakDegeriniAl: TSayi4;
-function CalisanProgramBilgisiAl(AGorevSiraNo: TISayi4): TProgramKayit;
+function CalisanProgramBilgisiAl(AGorevSiraNo: TISayi4; AMasaustuKimlik: TKimlik = -1): TProgramKayit;
 function GorevSiraNumarasiniAl(AGorevSiraNo: TISayi4): TKimlik;
 function CalistirilacakBirSonrakiGoreviBul: TKimlik;
 function IliskiliProgramAl(ADosyaUzanti: string): TDosyaIliskisi;
@@ -159,6 +161,7 @@ begin
     // görevi boþ olarak belirle
     Gorev^.FGorevDurum := gdBos;
     Gorev^.FGorevKimlik := i;
+    Gorev^.FAktifMasaustu := nil;
     Gorev^.FAktifPencere := nil;
 
     Inc(Gorev);
@@ -729,7 +732,7 @@ end;
 {==============================================================================
   pencereye sahip görev sayýsýný alýr
  ==============================================================================}
-function CalisanProgramSayisiniAl: TSayi4;
+function CalisanProgramSayisiniAl(AMasaustuKimlik: TKimlik = -1): TSayi4;
 var
   i: TISayi4;
 begin
@@ -744,7 +747,14 @@ begin
     // 3. pencere tipi baþlýksýz deðilse
     if not(GorevListesi[i]^.FGorevDurum = gdBos) and
       not(GorevListesi[i]^.FAktifPencere = nil) and
-      not(GorevListesi[i]^.FAktifPencere^.FPencereTipi = ptBasliksiz) then Inc(Result);
+      not(GorevListesi[i]^.FAktifPencere^.FPencereTipi = ptBasliksiz) then
+    begin
+
+      if(AMasaustuKimlik = -1) then
+        Inc(Result)
+      else if(GorevListesi[i]^.AktifMasaustu^.Kimlik = AMasaustuKimlik) then
+        Inc(Result);
+    end;
   end;
 end;
 
@@ -763,7 +773,7 @@ end;
 {==============================================================================
   pencereye sahip görev ile ilgili bilgi alýr
  ==============================================================================}
-function CalisanProgramBilgisiAl(AGorevSiraNo: TISayi4): TProgramKayit;
+function CalisanProgramBilgisiAl(AGorevSiraNo: TISayi4; AMasaustuKimlik: TKimlik = -1): TProgramKayit;
 var
   i, ArananGorev: TISayi4;
 begin
@@ -780,7 +790,14 @@ begin
     // 3. pencere tipi baþlýksýz deðilse
     if not(GorevListesi[i]^.FGorevDurum = gdBos) and
       not(GorevListesi[i]^.FAktifPencere = nil) and
-      not(GorevListesi[i]^.FAktifPencere^.FPencereTipi = ptBasliksiz) then Inc(ArananGorev);
+      not(GorevListesi[i]^.FAktifPencere^.FPencereTipi = ptBasliksiz) then
+    begin
+
+      if(AMasaustuKimlik = -1) then
+        Inc(ArananGorev)
+      else if(GorevListesi[i]^.AktifMasaustu^.Kimlik = AMasaustuKimlik) then
+        Inc(ArananGorev);
+    end;
 
     // görev sýra no aranan görev ise iþlem bellek bölgesini geri döndür
     if(AGorevSiraNo = ArananGorev) then

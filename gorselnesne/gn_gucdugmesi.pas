@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 12/02/2025
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}

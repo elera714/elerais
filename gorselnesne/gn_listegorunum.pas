@@ -6,7 +6,7 @@
   Dosya Adý: gn_listegorunum.pas
   Dosya Ýþlevi: liste görünüm (TListView) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}

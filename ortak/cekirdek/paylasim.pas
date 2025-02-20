@@ -11,6 +11,7 @@
  ==============================================================================}
 {$mode objfpc}
 {$asmmode intel}
+{$modeswitch advancedrecords}
 unit paylasim;
 
 interface
@@ -52,12 +53,12 @@ const
   GERCEKBELLEK_TABLOADRESI = $610000;
 
   // sistem için ayrýlmýþ görev sayýsý
-  AYRILMIS_GOREV_SAYISI = 3;
+  AYRILMIS_GOREV_SAYISI = 4;
 
   // seçici (selector) sabitleri
   // ayrýlmýþ seçici sayýsý
   // aþaðýdaki seçiciler (tss) sistem için ayrýlmýþtýr
-  AYRILMIS_SECICISAYISI = 13;
+  AYRILMIS_SECICISAYISI = 16;
 
   // boþ seçici
   SECICI_SISTEM_BOS     = 0;
@@ -76,9 +77,13 @@ const
   SECICI_GRAFIK_VERI    = 8;
   SECICI_GRAFIK_TSS     = 9;
 
-  SECICI_GRAFIK_LFB     = 10;
-  SECICI_AYRILDI1       = 11;
-  SECICI_AYRILDI2       = 12;
+  SECICI_KONTROL_KOD    = 10;
+  SECICI_KONTROL_VERI   = 11;
+  SECICI_KONTROL_TSS    = 12;
+
+  SECICI_GRAFIK_LFB     = 13;
+  SECICI_AYRILDI1       = 14;
+  SECICI_AYRILDI2       = 15;
 
 {==============================================================================
   Data Type     Bytes   Range
@@ -155,9 +160,10 @@ const
 
   BELLEK_HARITA_ADRESI: PByte = PByte($510000);
 
-  SISTEM_ESP        = $300000 + $100;
-  CAGRI_ESP         = SISTEM_ESP + $10000;
-  GRAFIK_ESP        = CAGRI_ESP + $10000;
+  SISTEM_ESP        = $300000 + $1000;
+  CAGRI_ESP         = SISTEM_ESP + $1000;
+  GRAFIK_ESP        = CAGRI_ESP + $1000;
+  KONTROL_ESP       = GRAFIK_ESP + $1000;
 
   // program için ESP bellek adresi ve ESP uzunluðu
   // $2000 (GOREV3_ESP_U) * $20 (USTSINIR_GOREVSAYISI) = $40000
@@ -196,6 +202,15 @@ const
   HATA_KAYNAKLARKULLANIMDA    = TISayi4(-16);
   HATA_BILINMEYENUZANTI       = TISayi4(-17);
   HATA_NESNEOLUSTURMA         = TISayi4(-18);
+
+type
+  TTarihSaat = record
+    Gun, Ay: TSayi1;
+    Yil: TSayi2;
+    Saat, Dakika,
+    Saniye: TSayi1;
+    class operator = (const A, B: TTarihSaat): Boolean;
+  end;
 
 var
   // GN_UZUNLUK deðiþkeni, görsel nesne yapýlarý içerisinde en uzun yapýlý nesne olan
@@ -836,6 +851,11 @@ var
   UDPPaketSayisi: TSayi4 = 0;
   GAEPaketSayisi: TSayi4 = 0;     // GözArdýEdilen paket sayýsý
 
+  // sistem açýlýþýnda çekirdeðin yüklendiði tarih + saat
+  // bilgi: bu deðiþken yapýsý, çekirdek dosyasýnýn (cekirdek.bin) sistemin yükleme
+  // sonrasýnda deðiþimini takip içindir
+  CekirdekYuklemeTS: TTarihSaat;
+
 var
   UzunDosyaAdi: array[0..511] of Char;
 
@@ -927,6 +947,9 @@ var
   IPAdres255: TIPAdres = (255, 255, 255, 255);
   MACAdres0: TMACAdres = (0, 0, 0, 0, 0, 0);
   MACAdres255: TMACAdres = (255, 255, 255, 255, 255, 255);
+
+  // TGirisKutusu nesnesinden Ctrl + C ile alýnan içerik verisi
+  PanoDegeri: string = '';
 
 function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
@@ -1089,6 +1112,15 @@ begin
   EkleByte(AHedef + 1, Byte(ADeger shr 16));
   EkleByte(AHedef + 2, Byte(ADeger shr 8));
   EkleByte(AHedef + 3, Byte(ADeger and $FF));
+end;
+
+class operator TTarihSaat.=(const A, B: TTarihSaat): Boolean;
+begin
+
+  if(A.Gun = B.Gun) and (A.Ay = B.Ay) and (A.Yil = B.Yil) and
+    (A.Saat = B.Saat) and (A.Dakika = B.Dakika) and (A.Saniye = B.Saniye) then
+    Result := True
+  else Result := False;
 end;
 
 end.

@@ -1,7 +1,10 @@
 *******************************************************************************
   Sürüm: 0.3.8 - 10.01.2025 (R34) - Beta
 *******************************************************************************
-  +
+  + masaüstü programýna yeniden baþlat ve bilgisayarý kapat menüleri eklendi, çekirdekte ilgili
+    iþlevlerin kodlarý yazýldý
+  + Pano iþlevlerinden Ctrl + K(opyala) ve Ctrl + Y(apýþtýr) kýsayol tuþlarý sisteme eklendi
+  + masaüstü ikonlarý yenilendi
 
   + dsyyntcs.c programýnýn ilk açýldýðýnda sistemin kurulu sürücü dosyalarýný listelemesi saðlandý
   + tüm görsel nesnelere Odaklanilabilir, Odaklanildi özellikleri eklendi

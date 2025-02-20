@@ -6,7 +6,7 @@
   Dosya Adı: gn_listekutusu.pas
   Dosya İşlevi: liste kutusu (TListBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}

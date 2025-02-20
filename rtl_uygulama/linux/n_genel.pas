@@ -82,6 +82,8 @@ type
 
     // sistem sürücü / klasör / dosya bilgi işlevleri
     procedure SistemYapiBilgisiAl(ABilgiSN: TSayi4; var ABellek: string); assembler;
+    procedure YenidenBaslat; assembler;
+    procedure BilgisayariKapat; assembler;
   end;
 
 implementation
@@ -427,6 +429,18 @@ asm
   mov	  eax,SISTEM_YAPIBILGISI_AL
   int	  $34
   add	  esp,4
+end;
+
+procedure TGenel.YenidenBaslat; assembler;
+asm
+  mov	  eax,SISTEM_YENIDENBASLAT
+  int	  $34
+end;
+
+procedure TGenel.BilgisayariKapat; assembler;
+asm
+  mov	  eax,SISTEM_BILGISAYARIKAPAT
+  int	  $34
 end;
 
 end.

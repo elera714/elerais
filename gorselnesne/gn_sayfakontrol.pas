@@ -6,7 +6,7 @@
   Dosya Adý: gn_sayfakontrol.pas
   Dosya Ýþlevi: sayfa kontrol (TPageControl) nesne yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 07/02/2025
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}

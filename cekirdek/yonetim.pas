@@ -103,10 +103,13 @@ var
 
 procedure Yukle;
 procedure SistemAnaKontrol;
+procedure CekirdekDosyaTSDegeriniKaydet;
 procedure CagriYanitlayiciyiOlustur;
 procedure GrafikYoneticiGorevOlustur;
+procedure SistemKontrolGoreviOlustur;
 procedure ProgramCagrilariniYanitla;
 procedure GrafikYonetimi;
+procedure KontrolYonetimi;
 procedure SistemDegerleriBasla;
 procedure SistemDegerleriOlayIsle;
 function GMem(Size:ptruint):Pointer;
@@ -115,7 +118,7 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, donusum, gn_islevler, giysi_normal, giysi_mac, depolama,
-  src_disket, vbox, usb, ohci, port;
+  src_disket, vbox, usb, ohci, port, gn_islemgostergesi;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -185,6 +188,7 @@ begin
   GorevListesi[0]^.BellekUzunlugu := CekirdekUzunlugu;
   GorevListesi[0]^.OlaySayisi := 0;
   GorevListesi[0]^.OlayBellekAdresi := nil;
+  GorevListesi[0]^.AktifMasaustu := nil;
   GorevListesi[0]^.AktifPencere := nil;
 
   GorevListesi[0]^.FDosyaAdi := 'cekirdek.bin';
@@ -220,6 +224,9 @@ begin
 
   // grafik iþlevlerini yönetecek görevi oluþtur
   GrafikYoneticiGorevOlustur;
+
+  // sistem kontrol görevi oluþtur
+  SistemKontrolGoreviOlustur;
 end;
 
 {==============================================================================
@@ -249,7 +256,12 @@ var
   Disk: PMantiksalDepolama;
   Bellek: Isaretci;
   m: TMemoryManager;
+  Masaustu: PMasaustu;
+  AramaKaydi: TDosyaArama;
+  GN: PGorselNesne;
 begin
+
+  CekirdekDosyaTSDegeriniKaydet;
 
 {  if(CalisanGorevSayisi = 1) then
   repeat
@@ -293,7 +305,7 @@ begin
     begin
 
       //SISTEM_MESAJ(RENK_KIRMIZI, 'Basýlan Tuþ Deðeri: %d', [Ord(Tus)]);
-      //SISTEM_MESAJ(RENK_KIRMIZI, 'Basýlan Tuþ: %c', [Tus]);
+      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Basýlan Tuþ: %d', [Ord(Tus)]);
 
       if(SolKontrolTusDurumu = tdBasildi) or (SagKontrolTusDurumu = tdBasildi) then
       begin
@@ -429,7 +441,16 @@ begin
         else if(Tus = 'k') then
         begin
 
-          asm cli; hlt; end;
+          if(GAktifPencere <> nil) then
+          begin
+
+            GN := GAktifPencere^.FAktifNesne;
+            if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
+            begin
+
+              PanoDegeri := GN^.Baslik;
+            end;
+          end;
         end
 
         // mesaj görüntüleme programýný çalýþtýr
@@ -446,17 +467,37 @@ begin
         else if(Tus = 'y') then
         begin
 
-          repeat
+          if(GAktifPencere <> nil) then
+          begin
 
-            B1 := PortAl1($64);
-            if((B1 and 1) = 0) then PortAl1($60);     // = 1 = veri mevcut olduðu müddetçe porttan veriyi al
-          until ((B1 and 2) = 0);                     // = 0 = veri yazýlabilir olmadýðý müddetçe tekrarla
+            GN := GAktifPencere^.FAktifNesne;
+            if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
+            begin
 
-          // porta veriyi yaz - yeniden baþlat
-          PortYaz1($64, $FE);
-
-          asm @@1: hlt; jmp @@1; end;
+              if(Length(PanoDegeri) > 0) then GN^.Baslik := PanoDegeri;
+            end;
+          end;
         end
+        else if(Tus >= TUS_F1) and (Tus <= TUS_F4) then
+        begin
+
+          i := (Ord(Tus) - Ord(TUS_F1)) + 1;
+
+          //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Aktif Masaüstü: %d', [i])
+
+          // aktif masaüstünü deðiþtir
+          Masaustu := GMasaustuListesi[i - 1];
+          if not(Masaustu = nil) then
+          begin
+
+            // masaüstünü aktif olarak iþaretle
+            GAktifMasaustu := Masaustu;
+            GAktifMasaustu^.Aktiflestir;
+
+            // masaüstünü çiz
+            GAktifMasaustu^.Ciz;
+          end;
+        end;
       end
       else
       begin
@@ -522,6 +563,7 @@ begin
   GorevListesi[1]^.BellekUzunlugu := $FFFFFFFF;
   GorevListesi[1]^.OlaySayisi := 0;
   GorevListesi[1]^.OlayBellekAdresi := nil;
+  GorevListesi[1]^.AktifMasaustu := nil;
   GorevListesi[1]^.AktifPencere := nil;
 
   // sistem görev adý (dosya adý)
@@ -579,6 +621,7 @@ begin
   GorevListesi[2]^.BellekUzunlugu := $FFFFFFFF;
   GorevListesi[2]^.OlaySayisi := 0;
   GorevListesi[2]^.OlayBellekAdresi := nil;
+  GorevListesi[2]^.AktifMasaustu := nil;
   GorevListesi[2]^.AktifPencere := nil;
 
   // sistem görev adý (dosya adý)
@@ -593,6 +636,64 @@ begin
   CalisanGorevSayisi := 3;
 end;
 
+{==============================================================================
+  sistem kontrol iþlevlerini yönetecek görevi oluþturur
+ ==============================================================================}
+procedure SistemKontrolGoreviOlustur;
+var
+  Gorev: PGorev;
+begin
+
+  // kod seçicisi (CS)
+  // Eriþim  : 1 = mevcut, 00 = DPL0, 11 = kod yazmaç, 0 = dallanýlamaz, 1 = okunabilir, 0 = eriþilmedi
+  // Esneklik: 1 = gran = 4K çözünürlük, 1 = 32 bit, 0, 1 = bana tahsis edildi, 1111 = uzunluk 16..19 bit
+  GDTRGirdisiEkle(SECICI_KONTROL_KOD, 0, $FFFFFFFF, %10011010, %11011111);
+  // veri seçicisi (DS)
+  // Eriþim  : 1 = mevcut, 00 = DPL0, 10 = veri yazmaç, 0 = artarak büyüyen, 1 = yazýlabilir, 0 = eriþilmedi
+  // Esneklik: 1 = gran = 4K çözünürlük, 1 = 32 bit, 0, 1 = bana tahsis edildi, 1111 = uzunluk 16..19 bit
+  GDTRGirdisiEkle(SECICI_KONTROL_VERI, 0, $FFFFFFFF, %10010010, %11011111);
+  // görev seçicisi (TSS)
+  // Eriþim  : 1 = mevcut, 00 = DPL0, 010 = 32 bit kullanýlabilir TSS, 0 = meþgul biti (meþgul deðil), 1
+  // Esneklik: 1 = gran = 1Byte çözünürlük, 00, 1 = bana tahsis edildi, 0000 = uzunluk 16..19 bit
+  GDTRGirdisiEkle(SECICI_KONTROL_TSS, TSayi4(GorevTSSListesi[3]), 104,
+    %10001001, %00010000);
+
+  // denetçinin kullanacaðý TSS'nin içeriðini sýfýrla
+  FillByte(GorevTSSListesi[3]^, 104, $00);
+
+  GorevTSSListesi[3]^.EIP := TSayi4(@KontrolYonetimi);    // DPL 0
+  GorevTSSListesi[3]^.EFLAGS := $202;
+  GorevTSSListesi[3]^.ESP := KONTROL_ESP;
+  GorevTSSListesi[3]^.CS := SECICI_KONTROL_KOD * 8;
+  GorevTSSListesi[3]^.DS := SECICI_KONTROL_VERI * 8;
+  GorevTSSListesi[3]^.ES := SECICI_KONTROL_VERI * 8;
+  GorevTSSListesi[3]^.SS := SECICI_KONTROL_VERI * 8;
+  GorevTSSListesi[3]^.FS := SECICI_KONTROL_VERI * 8;
+  GorevTSSListesi[3]^.GS := SECICI_KONTROL_VERI * 8;
+  GorevTSSListesi[3]^.SS0 := SECICI_KONTROL_VERI * 8;
+  GorevTSSListesi[3]^.ESP0 := KONTROL_ESP;
+
+  // sistem görev deðerlerini belirle
+  GorevListesi[3]^.GorevSayaci := 0;
+  GorevListesi[3]^.BellekBaslangicAdresi := TSayi4(@KontrolYonetimi);
+  GorevListesi[3]^.BellekUzunlugu := $FFFFFFFF;
+  GorevListesi[3]^.OlaySayisi := 0;
+  GorevListesi[3]^.OlayBellekAdresi := nil;
+  GorevListesi[3]^.AktifMasaustu := nil;
+  GorevListesi[3]^.AktifPencere := nil;
+
+  // sistem görev adý (dosya adý)
+  GorevListesi[3]^.FDosyaAdi := 'skontrol.bin';
+  GorevListesi[3]^.FProgramAdi := 'Sistem Kontrol';
+
+  // sistem görevini çalýþýyor olarak iþaretle
+  Gorev := GorevListesi[3];
+  Gorev^.DurumDegistir(3, gdCalisiyor);
+
+  // çalýþan ve oluþturulan görev deðerlerini belirle
+  CalisanGorevSayisi := 4;
+end;
+
 procedure ProgramCagrilariniYanitla;
 begin
 
@@ -603,6 +704,7 @@ begin
   end;
 end;
 
+// tüm masaüstü ve alt nesne çizimlerinin ekran kartýna aktarýldýðý nokta burasýdýr
 procedure GrafikYonetimi;
 begin
 
@@ -614,6 +716,104 @@ begin
     SistemDegerleriOlayIsle;
 
     GEkranKartSurucusu.EkranBelleginiGuncelle;
+  end;
+end;
+
+// rutin kontrol denetimlerin yapýldýðý nokta
+procedure KontrolYonetimi;
+var
+  Pencere: PPencere = nil;
+  IslemGostergesi: PIslemGostergesi = nil;
+  AramaKaydi: TDosyaArama;
+  i, G: TISayi4;
+  j: TSayi2;
+  TarihSaat: TTarihSaat;
+  DosyaBulundu: Boolean;
+  Sayac: TSayi4;
+begin
+
+  while True do
+  begin
+
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '1', []);
+
+    // 10 saniye bekle
+    //BekleMS(1000);
+    Sayac := ZamanlayiciSayaci + 1000;
+    while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
+
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-Y: %d', [GFareSurucusu.DikeyKonum]);
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '2', []);
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-Y: %d', [GFareSurucusu.DikeyKonum]);
+
+    DosyaBulundu := False;
+
+    i := FindFirst('disket1:\*.*', 0, AramaKaydi);
+    while i = 0 do
+    begin
+
+      if(AramaKaydi.DosyaAdi = 'cekirdek.bin') then
+      begin
+
+        DosyaBulundu := True;
+
+        j := AramaKaydi.SonDegisimTarihi;
+        TarihSaat.Gun := j and 31;
+        TarihSaat.Ay := (j shr 5) and 15;
+        TarihSaat.Yil := ((j shr 9) and 127) + 1980;
+
+        j := AramaKaydi.SonDegisimSaati;
+        TarihSaat.Saniye := (j and 31) * 2;
+        TarihSaat.Dakika := (j shr 5) and 63;
+        TarihSaat.Saat := (j shr 11) and 31;
+
+        Break;
+      end;
+
+      i := FindNext(AramaKaydi);
+    end;
+    FindClose(AramaKaydi);
+
+    if(DosyaBulundu) then
+    begin
+
+      if(CekirdekYuklemeTS <> TarihSaat) then
+      begin
+
+        G := GAktifMasaustu^.FBoyut.Genislik;
+
+        if(Pencere = nil) then
+          Pencere := Pencere^.Olustur(GAktifMasaustu, G - 166, 85, 156, 16,
+          ptBasliksiz, '', RENK_KIRMIZI);
+
+        if(IslemGostergesi = nil) then
+          IslemGostergesi := IslemGostergesi^.Olustur(ktNesne, Pencere, 1, 1, 154, 14);
+
+        IslemGostergesi^.DegerleriBelirle(0, 20);
+        IslemGostergesi^.Goster;
+
+        Pencere^.Goster;
+
+        for i := 20 downto 0 do
+        begin
+
+          IslemGostergesi^.MevcutDegerYaz(i);
+          //BekleMS(100);
+
+          Sayac := ZamanlayiciSayaci + 100;
+          while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
+        end;
+
+        Pencere^.Gizle;
+
+        //BekleMS(500);
+        Sayac := ZamanlayiciSayaci + 500;
+        while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
+
+      end;
+    end;
   end;
 end;
 
@@ -876,6 +1076,40 @@ begin
 
     //SISTEM_MESAJ(RENK_SIYAH, 'Kimlik: %d', [AOlay.Kimlik]);
   end;
+end;
+
+// sistemin yüklenme esnasýnda çekirdeðin tarih + saat deðerini kaydeder
+procedure CekirdekDosyaTSDegeriniKaydet;
+var
+  i: TISayi4;
+  AramaKaydi: TDosyaArama;
+  j: TSayi2;
+begin
+
+  i := FindFirst('disket1:\*.*', 0, AramaKaydi);
+  while i = 0 do
+  begin
+
+    if(AramaKaydi.DosyaAdi = 'cekirdek.bin') then
+    begin
+
+      j := AramaKaydi.SonDegisimTarihi;
+      CekirdekYuklemeTS.Gun := j and 31;
+      CekirdekYuklemeTS.Ay := (j shr 5) and 15;
+      CekirdekYuklemeTS.Yil := ((j shr 9) and 127) + 1980;
+
+      j := AramaKaydi.SonDegisimSaati;
+      CekirdekYuklemeTS.Saniye := (j and 31) * 2;
+      CekirdekYuklemeTS.Dakika := (j shr 5) and 63;
+      CekirdekYuklemeTS.Saat := (j shr 11) and 31;
+
+      Break;
+    end;
+
+    i := FindNext(AramaKaydi);
+  end;
+
+  FindClose(AramaKaydi);
 end;
 
 end.

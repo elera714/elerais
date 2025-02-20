@@ -6,7 +6,7 @@
   Dosya Adı: k_sistem.pas
   Dosya İşlevi: sistem kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 10/02/2025
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ function SistemCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses genel;
+uses genel, sistem;
 
 function SistemCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -72,6 +72,20 @@ begin
 
     p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
     PKarakterKatari(p)^ := s;
+  end
+
+  // bilgisayarı yeniden başlat
+  else if(IslevNo = 4) then
+  begin
+
+    YenidenBaslat;
+  end
+
+  // bilgisayarı kapat
+  else if(IslevNo = 5) then
+  begin
+
+    BilgisayariKapat;
   end
 
   // işlev belirtilen aralıkta değilse hata kodunu geri döndür

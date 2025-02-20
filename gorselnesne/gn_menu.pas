@@ -6,7 +6,7 @@
   Dosya Adı: gn_menu.pas
   Dosya İşlevi: menü yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -376,19 +376,7 @@ begin
       begin
 
         // menü resmini çiz
-        case SiraNo of
-          0: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-          1: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-          2: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-          3: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-          4: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-          5: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-          6: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-          7: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-          8: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-          9: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-         10: KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
-        end;
+        if(SiraNo >= 0) and (SiraNo <= 15) then KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
       end;
 
       // bir sonraki eleman...

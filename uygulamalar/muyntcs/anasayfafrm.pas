@@ -63,7 +63,7 @@ var
 implementation
 
 const
-  BASLATMENUSU_PSAYISI = 11;    // baþlat menüsündeki program sayýsý
+  BASLATMENUSU_PSAYISI = 13;    // baþlat menüsündeki menü sayýsý
   GOREVDUGMESI_G = 125;         // her bir görev düðmesinin geniþlik öndeðeri
 
 const
@@ -80,7 +80,9 @@ const
     ('pcibil.c'),
     ('yzmcgor.c'),
     ('smsjgor.c'),
-    ('calistir.c'));
+    ('calistir.c'),
+    (''),
+    (''));
 
   ProgramAciklamalari: array[0..BASLATMENUSU_PSAYISI - 1] of string = (
     ('Ýnternet Tarayýcýsý'),
@@ -93,7 +95,9 @@ const
     ('PCI Aygýt Bilgisi'),
     ('Program Yazmaç Bilgileri'),
     ('Sistem Mesaj Görüntüleyicisi'),
-    ('Program Çalýþtýr'));
+    ('Program Çalýþtýr'),
+    ('Yeniden Baþlat'),
+    ('Bilgisayarý Kapat'));
 
   MasaustuMenuProgramAdi: array[0..4] of string = (
     ('mustudk.c'),
@@ -178,7 +182,7 @@ begin
 
   // masaüstü için ELERA düðmesine baðlý menü oluþtur
   FBaslatMenusu.Olustur(0, FEkran.Yukseklik0 - 40 - ((BASLATMENUSU_PSAYISI * 26) + 8),
-    300, (BASLATMENUSU_PSAYISI * 26) + 8, 26);
+    250, (BASLATMENUSU_PSAYISI * 26) + 8, 26);
 
   // programlarý listeye ekle
   for i := 0 to BASLATMENUSU_PSAYISI - 1 do
@@ -190,12 +194,14 @@ begin
       2: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 10);
       3: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 06);
       4: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 07);
-      5: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 14);
+      5: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 11);
       6: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 09);
       7: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 05);
-      8: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 15);
+      8: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 12);
       9: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 04);
-     10: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 16);
+     10: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 12);
+     11: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 14);
+     12: FBaslatMenusu.ElemanEkle(ProgramAciklamalari[i], 15);
     end;
   end;
 
@@ -227,7 +233,12 @@ begin
 
       FELERA.DurumDegistir(0);
       i := FBaslatMenusu.SeciliSiraNoAl;
-      FGorev.Calistir(Programlar[i]);
+
+      if(i = 11) then
+        FGenel.YenidenBaslat
+      else if(i = 12) then
+        FGenel.BilgisayariKapat
+      else FGorev.Calistir(Programlar[i]);
     end
     // masaüstü menüsüne týklandýðýnda
     else if(AOlay.Kimlik = FAcilirMenu.Kimlik) then
@@ -285,10 +296,16 @@ begin
         begin
 
           // aktif / normal pencere -> küçült
-          if(ProgramBilgisi.PencereKimlik = AktifPencereKimlik) and (ProgramBilgisi.PencereDurum = pdNormal) then
+          if(ProgramBilgisi.PencereKimlik = AktifPencereKimlik) then
           begin
 
-            FGorevPenceresi.DurumuDegistir(PencereKimlik, pdKucultuldu);
+            if(ProgramBilgisi.PencereDurum = pdNormal) then
+
+              FGorevPenceresi.DurumuDegistir(PencereKimlik, pdKucultuldu)
+
+            else if(ProgramBilgisi.PencereDurum = pdKucultuldu) then
+
+              FGorevPenceresi.DurumuDegistir(PencereKimlik, pdNormal);
           end
           // aktif olmayan
           else if(ProgramBilgisi.PencereKimlik <> AktifPencereKimlik) then
@@ -422,7 +439,7 @@ begin
 
   // 2. çalýþan program listesini sistemden alarak GC'ye ekle, daha önce GC'de silinecek
   // olarak iþaretlenen çalýþan programlarý silinmeyecek olarak iþaretle
-  CalisanProgramSayisi := FGorev.CalisanProgramSayisiniAl;
+  CalisanProgramSayisi := FGorev.CalisanProgramSayisiniAl(FMasaustu.Kimlik);
 
   // çalýþan programlarý güncelle
   GCdeMevcutDugmeSayisi := 0;
@@ -433,7 +450,7 @@ begin
     for i := 0 to CalisanProgramSayisi - 1 do
     begin
 
-      FGorev.CalisanProgramBilgisiAl(i, ProgramKayit);
+      FGorev.CalisanProgramBilgisiAl(i, FMasaustu.Kimlik, ProgramKayit);
       CalisanProgramListesineEkle(ProgramKayit);
     end;
   end;

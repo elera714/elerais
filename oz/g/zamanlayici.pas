@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -388,6 +388,8 @@ asm
   je    @@TSS_CAGRI
   cmp   ecx,2
   je    @@TSS_GRAFIK
+  cmp   ecx,3
+  je    @@TSS_KONTROL
 
 @@TSS_UYGULAMA:
   sub   ecx,AYRILMIS_GOREV_SAYISI
@@ -413,6 +415,13 @@ asm
   mov   ecx,SECICI_GRAFIK_TSS * 8         // DPL0 - sistem
 //  add   ecx,3
   mov   @@SECICI,cx
+  jmp   @@son
+
+@@TSS_KONTROL:
+  mov   ecx,SECICI_KONTROL_TSS * 8         // DPL0 - sistem
+//  add   ecx,3
+  mov   @@SECICI,cx
+//  jmp   @@son
 
 @@son:
 
@@ -497,6 +506,8 @@ asm
   je    @@TSS_CAGRI
   cmp   ecx,2
   je    @@TSS_GRAFIK
+  cmp   ecx,3
+  je    @@TSS_KONTROL
 
 @@TSS_UYGULAMA:
   sub   ecx,AYRILMIS_GOREV_SAYISI
@@ -522,6 +533,13 @@ asm
   mov   ecx,SECICI_GRAFIK_TSS * 8         // DPL0 - sistem
 //  add   ecx,3
   mov   @@SECICI,cx
+  jmp   @@son
+
+@@TSS_KONTROL:
+  mov   ecx,SECICI_KONTROL_TSS * 8         // DPL0 - sistem
+//  add   ecx,3
+  mov   @@SECICI,cx
+//  jmp   @@son
 
 @@son:
   popfd

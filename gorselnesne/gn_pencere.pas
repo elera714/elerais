@@ -141,8 +141,10 @@ begin
         Pencere^.FPencereDurum := TPencereDurum(PKimlik(ADegiskenler + 04)^);
         Pencere^.Guncelle;
 
-      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Pencere: %d', [Pencere^.Kimlik]);
-      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Durum: %d', [Ord(Pencere^.FPencereDurum)]);
+        //PencereleriYenidenCiz;
+
+        //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Pencere: %d', [Pencere^.Kimlik]);
+        //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Durum: %d', [Ord(Pencere^.FPencereDurum)]);
       end;
     end;
 
@@ -258,8 +260,11 @@ begin
 
   Pencere^.FTuvalNesne := Pencere;
 
-  // görevin ata penceresini ve pencerenin aktif penceresini belirle
+  // ana pencerenin aktif penceresini belirle (alt penceresi olan ana pencere için)
   Pencere^.FAtaPencere := Gorev^.AktifPencere;
+
+  // görevin aktif masaüstü ve penceresini belirle
+  Gorev^.AktifMasaustu := Masaustu;
   Gorev^.AktifPencere := Pencere;
 
   Pencere^.Odaklanilabilir := False;

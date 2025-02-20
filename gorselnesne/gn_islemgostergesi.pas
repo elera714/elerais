@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 30/12/2024
+  Güncelleme Tarihi: 19/02/2025
 
  ==============================================================================}
 {$mode objfpc}

@@ -29,46 +29,46 @@ type
     property Kimlik: TKimlik read FKimlik;
   end;
 
-function _MenuOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISayi4): TKimlik; assembler;
-procedure _MenuGoster(AKimlik: TKimlik); assembler;
-procedure _MenuGizle(AKimlik: TKimlik); assembler;
-procedure _MenuElemanEkle(AKimlik: TKimlik; AElemanAdi: string; AResimSiraNo: TISayi4); assembler;
-function _MenuSeciliSiraNoAl(AKimlik: TKimlik): TISayi4; assembler;
+function MenuOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISayi4): TKimlik; assembler;
+procedure MenuGoster(AKimlik: TKimlik); assembler;
+procedure MenuGizle(AKimlik: TKimlik); assembler;
+procedure MenuElemanEkle(AKimlik: TKimlik; AElemanAdi: string; AResimSiraNo: TISayi4); assembler;
+function MenuSeciliSiraNoAl(AKimlik: TKimlik): TISayi4; assembler;
 
 implementation
 
 function TMenu.Olustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISayi4): TKimlik;
 begin
 
-  FKimlik := _MenuOlustur(ASol, AUst, AYukseklik, AYukseklik, AElemanYukseklik);
+  FKimlik := MenuOlustur(ASol, AUst, AYukseklik, AYukseklik, AElemanYukseklik);
   Result := FKimlik;
 end;
 
 procedure TMenu.Goster;
 begin
 
-  _MenuGoster(FKimlik);
+  MenuGoster(FKimlik);
 end;
 
 procedure TMenu.Gizle;
 begin
 
-  _MenuGizle(FKimlik);
+  MenuGizle(FKimlik);
 end;
 
 procedure TMenu.ElemanEkle(AElemanAdi: string; AResimSiraNo: TISayi4);
 begin
 
-  _MenuElemanEkle(FKimlik, AElemanAdi, AResimSiraNo);
+  MenuElemanEkle(FKimlik, AElemanAdi, AResimSiraNo);
 end;
 
 function TMenu.SeciliSiraNoAl: TISayi4;
 begin
 
-  Result := _MenuSeciliSiraNoAl(FKimlik);
+  Result := MenuSeciliSiraNoAl(FKimlik);
 end;
 
-function _MenuOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISayi4): TKimlik;
+function MenuOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISayi4): TKimlik;
 asm
   push  DWORD AElemanYukseklik
   push  DWORD AYukseklik
@@ -80,7 +80,7 @@ asm
   add   esp,20
 end;
 
-procedure _MenuGoster(AKimlik: TKimlik);
+procedure MenuGoster(AKimlik: TKimlik);
 asm
   push  DWORD AKimlik
   mov   eax,MENU_GOSTER
@@ -88,7 +88,7 @@ asm
   add   esp,4
 end;
 
-procedure _MenuGizle(AKimlik: TKimlik);
+procedure MenuGizle(AKimlik: TKimlik);
 asm
   push  DWORD AKimlik
   mov   eax,MENU_GIZLE
@@ -96,7 +96,7 @@ asm
   add   esp,4
 end;
 
-procedure _MenuElemanEkle(AKimlik: TKimlik; AElemanAdi: string; AResimSiraNo: TISayi4);
+procedure MenuElemanEkle(AKimlik: TKimlik; AElemanAdi: string; AResimSiraNo: TISayi4);
 asm
   push  DWORD AResimSiraNo
   push  DWORD AElemanAdi
@@ -106,7 +106,7 @@ asm
   add   esp,12
 end;
 
-function _MenuSeciliSiraNoAl(AKimlik: TKimlik): TISayi4;
+function MenuSeciliSiraNoAl(AKimlik: TKimlik): TISayi4;
 asm
   push  DWORD AKimlik
   mov   eax,MENU_AL_SECILISN
