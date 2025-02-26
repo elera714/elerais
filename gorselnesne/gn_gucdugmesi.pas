@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -50,7 +50,7 @@ uses genel, gn_islevler, temelgorselnesne, giysi_mac, gn_pencere, sistemmesaj;
  ==============================================================================}
 function GucDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   Pencere: PPencere;
   GucDugmesi: PGucDugmesi;
   Konum: PKonum;
@@ -62,8 +62,8 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur( GorselNesne, PISayi4(ADegiskenler + 04)^,
+      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + CalisanGorevBellekAdresi)^);
     end;
@@ -127,7 +127,6 @@ begin
       GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(GucDugmesi <> nil) then
         GucDugmesi^.DurumYaz(PKimlik(ADegiskenler + 00)^, PISayi4(ADegiskenler + 04)^);
-
     end;
 
     // güç düğmesi nesnesine odaklan. (klavye girişlerini almasını sağla)
@@ -140,9 +139,8 @@ begin
       begin
 
         // bir önceki odak alan nesneyi odaktan çıkar
-        GorselNesne := PPencere(GucDugmesi^.AtaNesne)^.FAktifNesne;
-        if(GorselNesne <> nil) and (GorselNesne^.Odaklanilabilir) then
-          GorselNesne^.Odaklanildi := False;
+        GN := PPencere(GucDugmesi^.AtaNesne)^.FAktifNesne;
+        if(GN <> nil) and (GN^.Odaklanilabilir) then GN^.Odaklanildi := False;
 
         // nelirtilen nesneyi odaklanılan nesne olarak belirle
         PPencere(GucDugmesi^.AtaNesne)^.FAktifNesne := GucDugmesi;

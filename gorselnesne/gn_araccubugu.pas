@@ -6,7 +6,7 @@
   Dosya Adý: gn_araccubugu.pas
   Dosya Ýþlevi: araç çubuðu (TToolBar) nesne yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -36,6 +36,7 @@ type
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure ResimDugmeOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     function DugmeEkle(AResimSiraNo: TSayi4): TKimlik;
+    function DugmeEkle2(AResimSiraNo: TSayi4): TKimlik;
   end;
 
 function AracCubuguCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -50,7 +51,7 @@ uses genel, temelgorselnesne;
  ==============================================================================}
 function AracCubuguCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne = nil;
+  GN: PGorselNesne = nil;
   AracCubugu: PAracCubugu = nil;
 begin
 
@@ -59,8 +60,8 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GorselNesne);
+      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := NesneOlustur(GN);
     end;
 
     ISLEV_GOSTER:
@@ -262,6 +263,7 @@ begin
   end;
 end;
 
+// araç çubuðuna düðme ekler - programlar için
 function TAracCubugu.DugmeEkle(AResimSiraNo: TSayi4): TKimlik;
 var
   AracCubugu: PAracCubugu = nil;
@@ -276,6 +278,31 @@ begin
 
   ResimDugmesi := ResimDugmesi^.Olustur(ktBilesen, AracCubugu,
     (FDugmeSayisi * 30) + 4, 1, 24, 24, $10000000 + AResimSiraNo, False);
+  ResimDugmesi^.OlayYonlendirmeAdresi := @ResimDugmeOlaylariniIsle;
+  ResimDugmesi^.Gorunum := True;
+
+  FDugmeler[FDugmeSayisi] := ResimDugmesi;
+
+  Inc(FDugmeSayisi);
+
+  Result := ResimDugmesi^.Kimlik;
+end;
+
+// araç çubuðuna düðme ekler - çekirdek grafiksel programlama çalýþmasý için
+function TAracCubugu.DugmeEkle2(AResimSiraNo: TSayi4): TKimlik;
+var
+  AracCubugu: PAracCubugu = nil;
+  ResimDugmesi: PResimDugmesi = nil;
+begin
+
+  // nesnenin kimlik, tip deðerlerini denetle.
+  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(Kimlik));
+  if(AracCubugu = nil) then Exit;
+
+  if(AracCubugu^.FDugmeSayisi > AZAMI_DUGME_SAYISI) then Exit;
+
+  ResimDugmesi := ResimDugmesi^.Olustur(ktBilesen, AracCubugu,
+    (FDugmeSayisi * 30) + 4, 1, 24, 24, $30000000 + AResimSiraNo, False);
   ResimDugmesi^.OlayYonlendirmeAdresi := @ResimDugmeOlaylariniIsle;
   ResimDugmesi^.Gorunum := True;
 

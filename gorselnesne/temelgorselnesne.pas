@@ -6,7 +6,7 @@
   Dosya Adý: temelgorselnesne.pas
   Dosya Ýþlevi: temel görsel nesne yapýsýný içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,7 +22,7 @@ type
   private
     // nesnenin sahibi olan görev / program
     FGorevKimlik: TKimlik;
-    // nesne kimliði. kimlik deðeri, nesnenin GorselNesneListesi dizisinin içerisindeki sýra numarasýdýr.
+    // nesne kimliði. kimlik deðeri
     FKimlik: TKimlik;
     // nesnenin tipi
     FNesneTipi: TGNTip;

@@ -6,7 +6,7 @@
   Dosya Adı: gn_secimdugmesi.pas
   Dosya İşlevi: seçim düğmesi (TRadioButton) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -73,7 +73,7 @@ uses genel, gn_pencere, gn_islevler, temelgorselnesne;
  ==============================================================================}
 function SecimDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   Pencere: PPencere;
   SecimDugmesi: PSecimDugmesi;
 begin
@@ -83,10 +83,9 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^,
-        PISayi4(ADegiskenler + 08)^, PKarakterKatari(PSayi4(ADegiskenler + 12)^ +
-        CalisanGorevBellekAdresi)^);
+      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+        PKarakterKatari(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:

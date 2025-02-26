@@ -6,7 +6,7 @@
   Dosya Adý: gn_giriskutusu.pas
   Dosya Ýþlevi: giriþ kutusu (TEdit) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -48,7 +48,7 @@ uses gn_islevler, gn_pencere, genel, temelgorselnesne;
  ==============================================================================}
 function GirisKutusuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   GirisKutusu: PGirisKutusu;
   p1: PKarakterKatari;
   p2: PLongBool;
@@ -58,8 +58,8 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^,
+      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + CalisanGorevBellekAdresi)^);
     end;
@@ -119,9 +119,8 @@ begin
       begin
 
         // bir önceki odak alan nesneyi odaktan çýkar
-        GorselNesne := PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne;
-        if(GorselNesne <> nil) and (GorselNesne^.Odaklanilabilir) then
-          GorselNesne^.Odaklanildi := False;
+        GN := PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne;
+        if(GN <> nil) and (GN^.Odaklanilabilir) then GN^.Odaklanildi := False;
 
         // nelirtilen nesneyi odaklanýlan nesne olarak belirle
         PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne := GirisKutusu;

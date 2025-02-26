@@ -6,7 +6,7 @@
   Dosya Adý: gn_defter.pas
   Dosya Ýþlevi: defter nesnesi (TMemo) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     40K ve çekirdek bölümüne eklenen 40K bellek kullanmaktadýr.
@@ -54,14 +54,14 @@ function DefterCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses gn_pencere, genel, temelgorselnesne, islevler, sistemmesaj;
+uses gn_pencere, gn_islevler, genel, temelgorselnesne, islevler, sistemmesaj;
 
 {==============================================================================
   defter kesme çaðrýlarýný yönetir
  ==============================================================================}
 function DefterCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   Pencere: PPencere;
   Defter: PDefter;
   Hiza: THiza;
@@ -72,10 +72,10 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^,
-        PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
-        PRenk(ADegiskenler + 20)^, PRenk(ADegiskenler + 24)^, PBoolean(ADegiskenler + 28)^);
+      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+        PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PRenk(ADegiskenler + 20)^,
+        PRenk(ADegiskenler + 24)^, PBoolean(ADegiskenler + 28)^);
     end;
 
     ISLEV_GOSTER:
@@ -535,6 +535,7 @@ end;
  ==============================================================================}
 procedure TDefter.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
+  Pencere: PPencere;
   Defter: PDefter;
   i: TISayi4;
 begin
@@ -542,7 +543,21 @@ begin
   Defter := PDefter(AGonderici);
   if(Defter = nil) then Exit;
 
-  if(AOlay.Olay = FO_KAYDIRMA) then
+  // farenin sol tuþuna basým iþlemi
+  if(AOlay.Olay = FO_SOLTUS_BASILDI) then
+  begin
+
+    // defter'in sahibi olan pencere en üstte mi ? kontrol et
+    Pencere := EnUstPencereNesnesiniAl(Defter);
+
+    // en üstte olmamasý durumunda en üste getir
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak iþaretle
+    Pencere^.FAktifNesne := Defter;
+    Defter^.Odaklanildi := True;
+  end
+  else if(AOlay.Olay = FO_KAYDIRMA) then
   begin
 
     // metni yukarý kaydýrma iþlevi

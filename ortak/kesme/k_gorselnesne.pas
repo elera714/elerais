@@ -6,7 +6,7 @@
   Dosya Adı: k_gorselnesne.pas
   Dosya İşlevi: görsel nesne işlevlerini içerir
 
-  Güncelleme Tarihi: 13/07/2020
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,16 +46,16 @@ uses gn_islevler;
  ==============================================================================}
 function GorselNesneCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  Islev: TSayi4;
+  IslevNo: TSayi4;
 begin
 
-  Islev := (AIslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
-  if(Islev >= 1) and (Islev <= MEVCUT_GN_SAYISI) then
+  if(IslevNo >= 1) and (IslevNo <= MEVCUT_GN_SAYISI) then
 
-    Result := GorselNesneListesi[Islev](((AIslevNo shr 8) and $FFFF), ADegiskenler)
+    Result := GorselNesneListesi[IslevNo](((AIslevNo shr 8) and $FFFF), ADegiskenler)
 
-  else if(Islev = $FF) then
+  else if(IslevNo = $FF) then
   begin
 
     Result := GorselNesneIslevCagriIslevleri((AIslevNo shr 8) and $FFFF, ADegiskenler);

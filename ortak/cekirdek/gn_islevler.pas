@@ -6,7 +6,7 @@
   Dosya Adı: gn_islevler.pas
   Dosya İşlevi: görsel nesne (visual object) işlevlerini içerir
 
-  Güncelleme Tarihi: 14/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -40,14 +40,22 @@ procedure Yukle;
 var
   GNBellekAdresi: Isaretci;
   i: TSayi4;
+  j: TKimlik;
 begin
 
   { TODO : 64 Byte = fazladan ayrılan ve şu an hesaplanamadığı için en üst değer
     olarak ayrılan temkin değeri. gereken değer teyit edilip otomatikleştirilecek }
-  GN_UZUNLUK := Align(SizeOf(TPencere) + 64, 16);
+  // üstteki açıklama durumu değişkenin 1024 olarak değiştirilmesiyle pasifleştirilmiştir
+  GN_UZUNLUK := 1024; //Align(SizeOf(TPencere) + 64, 16);
 
   // görsel nesneler için bellekte yer tahsis et
   GNBellekAdresi := GGercekBellek.Ayir(USTSINIR_GORSELNESNE * GN_UZUNLUK);
+
+  // 0. bit    : 1 = nesne Kullanılıyor, 0 = nesne kullanılmıyor
+  // 1..9 bit  : düşük 12 bit sistem kontrol amacıyla sürekli 1 olacak
+  // 10..31 bit: nesne kimlik numarası. (kimlik sıralaması: 0, 1, 2 ...)
+  // 00000000 00000000 00000010 1010101K
+  j := %1010101010;
 
   // nesneye ait işaretçileri bellek bölgeleriyle eşleştir
   for i := 0 to USTSINIR_GORSELNESNE - 1 do
@@ -55,8 +63,9 @@ begin
 
     GGorselNesneListesi[i] := GNBellekAdresi;
 
-    // nesneyi kullanılmadı olarak işaretle
-    GGorselNesneListesi[i]^.Kimlik := HATA_KIMLIK;
+    GGorselNesneListesi[i]^.Kimlik := j;
+
+    j += GN_UZUNLUK;
 
     GNBellekAdresi += GN_UZUNLUK;
   end;
@@ -75,7 +84,7 @@ end;
  ==============================================================================}
 function GorselNesneIslevCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   Kimlik: TKimlik;
   BellekAdresi: Isaretci;
   Konum: TKonum;
@@ -87,8 +96,8 @@ begin
 
     Konum.Sol := PISayi4(ADegiskenler + 00)^;
     Konum.Ust := PISayi4(ADegiskenler + 04)^;
-    GorselNesne := GorselNesneBul(Konum);
-    Result := GorselNesne^.Kimlik;
+    GN := GorselNesneBul(Konum);
+    Result := GN^.Kimlik;
   end
 
   // görsel nesne bilgilerini hedef bellek bölgesine kopyala
@@ -100,9 +109,9 @@ begin
     if(Kimlik >= 0) and (Kimlik < USTSINIR_GORSELNESNE) then
     begin
 
-      GorselNesne := GGorselNesneListesi[Kimlik];
+      GN := GGorselNesneListesi[Kimlik];
       BellekAdresi := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
-      Tasi2(GorselNesne, BellekAdresi, SizeOf(TGorselNesne));
+      Tasi2(GN, BellekAdresi, GN_UZUNLUK);
 
       Result := 1;
     end else Result := 0;
@@ -114,9 +123,9 @@ begin
 
     Konum.Sol := PISayi4(ADegiskenler + 00)^;
     Konum.Ust := PISayi4(ADegiskenler + 04)^;
-    GorselNesne := GorselNesneBul(Konum);
+    GN := GorselNesneBul(Konum);
     BellekAdresi := Isaretci(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
-    Tasi2(@GorselNesne^.NesneAdi[0], BellekAdresi, Length(GorselNesne^.NesneAdi) + 1);
+    Tasi2(@GN^.NesneAdi[0], BellekAdresi, Length(GN^.NesneAdi) + 1);
   end;
 end;
 

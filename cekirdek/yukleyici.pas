@@ -185,6 +185,7 @@ begin
 
   // 24 x 24 sistem resimlerini yükle
   GSistemResimler := BMPDosyasiYukle('disk1:\resimler\sistem.bmp');
+  GSistemResimler2 := BMPDosyasiYukle('disk1:\resimler\sistem2.bmp');
 end;
 
 end.

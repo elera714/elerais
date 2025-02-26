@@ -6,7 +6,7 @@
   Dosya Adý: gn_degerdugmesi.pp
   Dosya Ýþlevi: artýrma / eksiltme (TUpDown) düðme yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2024
+  Güncelleme Tarihi: 26/02/2024
 
  ==============================================================================}
 {$mode objfpc}

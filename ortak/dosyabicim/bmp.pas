@@ -6,7 +6,7 @@
   Dosya Adı: bmp.pas
   Dosya İşlevi: bmp dosya işlevlerini içerir
 
-  Güncelleme Tarihi: 14/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
   Not-1: şu an itibariyle sadece 24 bitlik resim görüntüleme desteği vardır
   Not-2: tüm renkler 32 bitlik değerlerle işlenmektedir

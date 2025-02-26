@@ -6,7 +6,7 @@
   Dosya Adý: k_zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý kesme iþlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,39 +27,39 @@ uses zamanlayici;
  ==============================================================================}
 function ZamanlayiciCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  Zamanlayici: PZamanlayici;
-  Islev: TSayi4;
+  Z: PZamanlayici;
+  IslevNo: TSayi4;
 begin
 
   // iþlev no
-  Islev := (AIslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
   // zamanlayýcý nesnesi oluþtur
-  if(Islev = ISLEV_OLUSTUR) then
+  if(IslevNo = ISLEV_OLUSTUR) then
   begin
 
-    Zamanlayici := Zamanlayici^.Olustur(PISayi4(ADegiskenler)^);
+    Z := Z^.Olustur(PISayi4(ADegiskenler)^);
 
-    if(Zamanlayici <> nil) then
-      Result := Zamanlayici^.Kimlik
+    if(Z <> nil) then
+      Result := Z^.Kimlik
     else Result := -1;
   end
 
   // zamanlayýcý nesnesini baþlatýr
-  else if(Islev = 2) then
+  else if(IslevNo = 2) then
   begin
 
-    Zamanlayici := GZamanlayiciListesi[PKimlik(ADegiskenler)^];
-    if(Zamanlayici <> nil) then Zamanlayici^.Durum := zdCalisiyor;
+    Z := GZamanlayiciListesi[PKimlik(ADegiskenler)^];
+    if(Z <> nil) then Z^.Durum := zdCalisiyor;
   end
 
   // zamanlayýcý nesnesini durdurur
-  else if(Islev = 3) then
+  else if(IslevNo = 3) then
   begin
 
-    Zamanlayici := GZamanlayiciListesi[PKimlik(ADegiskenler)^];
+    Z := GZamanlayiciListesi[PKimlik(ADegiskenler)^];
 
-    if(Zamanlayici <> nil) then Zamanlayici^.Durum := zdDurduruldu;
+    if(Z <> nil) then Z^.Durum := zdDurduruldu;
   end
 
   // iþlev belirtilen aralýkta deðilse hata kodunu geri döndür

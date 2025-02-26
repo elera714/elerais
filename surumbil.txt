@@ -5,6 +5,7 @@
     iþlevlerin kodlarý yazýldý
   + Pano iþlevlerinden Ctrl + K(opyala) ve Ctrl + Y(apýþtýr) kýsayol tuþlarý sisteme eklendi
   + masaüstü ikonlarý yenilendi
+  + görsel nesnelerin kimlikleri yeniden tasarlandý
 
   + dsyyntcs.c programýnýn ilk açýldýðýnda sistemin kurulu sürücü dosyalarýný listelemesi saðlandý
   + tüm görsel nesnelere Odaklanilabilir, Odaklanildi özellikleri eklendi

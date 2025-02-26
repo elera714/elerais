@@ -6,7 +6,7 @@
   Dosya Adý: gn_pencere.pas
   Dosya Ýþlevi: pencere (TForm) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
   Önemli Bilgiler:
 
@@ -85,7 +85,7 @@ var
  ==============================================================================}
 function PencereCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   Pencere: PPencere;
   AtaNesneKimlik: TISayi4;
 begin
@@ -97,10 +97,10 @@ begin
 
       AtaNesneKimlik := PKimlik(ADegiskenler + 00)^;
       if(AtaNesneKimlik = -1) then
-        GorselNesne := nil
-      else GorselNesne := GorselNesne^.NesneAl(AtaNesneKimlik);
+        GN := nil
+      else GN := GN^.NesneAl(AtaNesneKimlik);
 
-      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^,
+      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
       PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^,
       PISayi4(ADegiskenler + 16)^, PPencereTipi(ADegiskenler + 20)^,
       PKarakterKatari(PSayi4(ADegiskenler + 24)^ + CalisanGorevBellekAdresi)^,
@@ -793,7 +793,7 @@ begin
     begin
 
       GorunurNesne := AltNesneler[i];
-      if(GorunurNesne^.Gorunum) and not(GorunurNesne^.Kimlik = HATA_KIMLIK) then
+      if(GorunurNesne^.Gorunum) and ((GorunurNesne^.Kimlik and 1) = 1) then
       begin
 
         // yeni eklenecek görsel nesne - görsel nesneyi buraya ekle...
@@ -1441,7 +1441,7 @@ var
   Masaustu: PMasaustu;
   BirOncekiPencere: PPencere;
   AltNesneBellekAdresi: PPGorselNesne;
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   i, j: TISayi4;
 begin
 
@@ -1481,9 +1481,9 @@ begin
       for j := i to Masaustu^.FAltNesneSayisi - 2 do
       begin
 
-        GorselNesne := AltNesneBellekAdresi[j + 0];
+        GN := AltNesneBellekAdresi[j + 0];
         AltNesneBellekAdresi[j + 0] := AltNesneBellekAdresi[j + 1];
-        AltNesneBellekAdresi[j + 1] := GorselNesne;
+        AltNesneBellekAdresi[j + 1] := GN;
       end;
     end;
 

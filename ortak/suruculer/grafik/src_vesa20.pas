@@ -6,7 +6,7 @@
   Dosya Adı: src_vesa20.pas
   Dosya İşlevi: genel vesa 2.0 grafik kartı sürücüsü
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -298,7 +298,7 @@ var
   Masaustu: PMasaustu;
   Pencere: PPencere;
   BaslatMenu: PMenu;
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   MasaustuMenu: PAcilirMenu;
   PencereBellekAdresi: PPGorselNesne;
   KaynakBellek, HedefBellek, CizimBellekAdresi: Isaretci;
@@ -351,11 +351,11 @@ begin
     for i := 0 to Masaustu^.FAltNesneSayisi - 1 do
     begin
 
-      GorselNesne := PencereBellekAdresi[i];
-      if not(GorselNesne^.NesneTipi = gntMenu) and not(GorselNesne^.NesneTipi = gntAcilirMenu) then
+      GN := PencereBellekAdresi[i];
+      if not(GN^.NesneTipi = gntMenu) and not(GN^.NesneTipi = gntAcilirMenu) then
       begin
 
-        Pencere := PPencere(GorselNesne);
+        Pencere := PPencere(GN);
         if(Pencere^.Gorunum) and not(Pencere^.FPencereDurum = pdKucultuldu) then
         begin
 

@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 11/02/2025
+  Güncelleme Tarihi: 25/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -165,7 +165,7 @@ var
 procedure TOlayYonetim.FareOlaylariniIsle;
 var
   Pencere: PPencere;
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   Olay, Olay2: TOlay;
   Konum: TKonum;
 begin
@@ -187,11 +187,11 @@ begin
     // fare yatay & dikey koordinatýnda bulunan nesneyi al
     // bilgi: yakalanan nesnenin önceliði vardýr
     if(YakalananGorselNesne <> nil) then
-      GorselNesne := YakalananGorselNesne
-    else GorselNesne := GorselNesneBul(Konum);
+      GN := YakalananGorselNesne
+    else GN := GorselNesneBul(Konum);
 
     // farenin bulunduðu noktada görsel nesne var ise ...
-    if(GorselNesne <> nil) then
+    if(GN <> nil) then
     begin
 
       // sol tuþa basýlmasýyla, ayný pencerede olan:
@@ -202,34 +202,34 @@ begin
       if(Olay2.Olay = FO_SOLTUS_BASILDI) then
       begin
 
-        if(GorselNesne^.AtaNesne^.NesneTipi = gntPencere) then
-          Pencere := PPencere(GorselNesne^.AtaNesne)
+        if(GN^.AtaNesne^.NesneTipi = gntPencere) then
+          Pencere := PPencere(GN^.AtaNesne)
         else Pencere := nil;
 
-        if(Pencere = SolTusOncekiOdaklanilanPencere) and (GorselNesne <> SolTusOncekiOdaklanilanGN) then
+        if(Pencere = SolTusOncekiOdaklanilanPencere) and (GN <> SolTusOncekiOdaklanilanGN) then
         begin
 
-          if(GorselNesne^.Odaklanilabilir) then
+          if(GN^.Odaklanilabilir) then
           begin
 
             if(SolTusOncekiOdaklanilanGN <> nil) then SolTusOncekiOdaklanilanGN^.Odaklanildi := False;
 
-            Pencere^.FAktifNesne := GorselNesne;
-            GorselNesne^.Odaklanildi := True;
+            Pencere^.FAktifNesne := GN;
+            GN^.Odaklanildi := True;
           end;
         end;
 
-        if(GorselNesne^.Odaklanilabilir) then
+        if(GN^.Odaklanilabilir) then
         begin
 
           SolTusOncekiOdaklanilanPencere := Pencere;
-          SolTusOncekiOdaklanilanGN := GorselNesne;
+          SolTusOncekiOdaklanilanGN := GN;
         end;
       end;
       // <----------------------------------------------------------------------
 
       // bulunan nesne bir önceki nesne deðil ise
-      if(FOdaklanilanGorselNesne <> GorselNesne) then
+      if(FOdaklanilanGorselNesne <> GN) then
       begin
 
         // daha önceden odaklanan nesne var ise
@@ -246,7 +246,7 @@ begin
         end;
 
         // odak kazanan nesneyi yeniden ata
-        FOdaklanilanGorselNesne := GorselNesne;
+        FOdaklanilanGorselNesne := GN;
 
         // nesneye odak kazandýðýna dair mesaj gönder
         Olay2.Olay := CO_ODAKKAZANILDI;
@@ -254,7 +254,7 @@ begin
       end;
 
       // nesneye yönlendirilecek parametreleri hazýrla
-      Olay.Kimlik := GorselNesne^.Kimlik;
+      Olay.Kimlik := GN^.Kimlik;
       if(Olay.Olay <> FO_KAYDIRMA) then
         Olay.Deger1 := Konum.Sol;
       Olay.Deger2 := Konum.Ust;
@@ -268,7 +268,7 @@ begin
       SISTEM_MESAJ(RENK_SIYAH, 'Yükseklik: %d', [GorselNesne^.FBoyut.Yukseklik]);}
 
       // olayý nesneye yönlendir
-      OlaylariYonlendir(GorselNesne, Olay);
+      OlaylariYonlendir(GN, Olay);
     end;
   end;
 end;

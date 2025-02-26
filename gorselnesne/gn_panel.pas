@@ -6,7 +6,7 @@
   Dosya Adı: gn_panel.pas
   Dosya İşlevi: panel (TPanel) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -48,7 +48,7 @@ uses genel, gorev, gn_islevler, temelgorselnesne, gn_pencere, gn_resimdugmesi,
  ==============================================================================}
 function PanelCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne = nil;
+  GN: PGorselNesne = nil;
   Pencere: PPencere = nil;
   Panel: PPanel = nil;
   Hiza: THiza;
@@ -61,12 +61,11 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^,
-      PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^,
-      PISayi4(ADegiskenler + 16)^, PSayi4(ADegiskenler + 20)^, PRenk(ADegiskenler + 24)^,
-      PRenk(ADegiskenler + 28)^, PRenk(ADegiskenler + 32)^,
-      PKarakterKatari(PSayi4(ADegiskenler + 36)^ + CalisanGorevBellekAdresi)^);
+      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+        PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PSayi4(ADegiskenler + 20)^,
+        PRenk(ADegiskenler + 24)^, PRenk(ADegiskenler + 28)^, PRenk(ADegiskenler + 32)^,
+        PKarakterKatari(PSayi4(ADegiskenler + 36)^ + CalisanGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:
@@ -251,24 +250,24 @@ end;
  ==============================================================================}
 procedure TPanel.Ciz;
 var
-  GorselNesne: PGorselNesne = nil;
+  GN: PGorselNesne = nil;
   AltGorselNesne: PGorselNesne = nil;
   AltNesneBellekAdresi: PPGorselNesne;
   i: TISayi4;
 begin
 
-  GorselNesne := GorselNesne^.NesneAl(Kimlik);
-  if(GorselNesne = nil) then Exit;
+  GN := GN^.NesneAl(Kimlik);
+  if(GN = nil) then Exit;
 
   inherited Ciz;
 
-  if(GorselNesne^.FAltNesneSayisi = 0) then Exit;
+  if(GN^.FAltNesneSayisi = 0) then Exit;
 
   // mevcut görsel nesneyi kaydet
-  for i := 0 to GorselNesne^.FAltNesneSayisi - 1 do
+  for i := 0 to GN^.FAltNesneSayisi - 1 do
   begin
 
-    AltNesneBellekAdresi := GorselNesne^.FAltNesneBellekAdresi;
+    AltNesneBellekAdresi := GN^.FAltNesneBellekAdresi;
     AltGorselNesne := AltNesneBellekAdresi[i];
 
     if(AltGorselNesne^.Gorunum) then

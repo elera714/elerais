@@ -6,7 +6,7 @@
   Dosya Adı: genel.pas
   Dosya İşlevi: sistem genelinde kullanılan sabit, değişken ve yapıları içerir
 
-  Güncelleme Tarihi: 05/01/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -34,7 +34,8 @@ var
   GBaglanti: PBaglanti;                 // dhcp.pas dosyası tarafından kullanılmaktadır. (iptal edilecek)
 
   // 24 x 24 sistemler. yukleyici.pas dosyasından yükleme işlemi yapılır
-  GSistemResimler: TGoruntuYapi;
+  GSistemResimler,
+  GSistemResimler2: TGoruntuYapi;
 
   // fare ile sağ veya sol tuş ile basılan son görsel nesne
   // TGucDugme ve benzeri görsel nesnelerin normal duruma (basılı olmayan) gelmesi için

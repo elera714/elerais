@@ -282,6 +282,11 @@ begin
     RAPOku  := @WIORAPOku;
     RAPYaz  := @WIORAPYaz;
     Sifirla := @WIOSifirla;
+
+    { TODO - yeniden baþlatýldýðýnda GeciciDeger := '3'; alanýna düþülmektedir }
+    // ilk çalýþtýrmada 16 bitlik olarak yükleniyor
+    // vm yeniden baþlatýldýðýnda aygýt yeniden yüklenemiyor
+    // GeciciDeger := '1';
   end
 
   // eðer 32 bit ise iþlevleri belirle
@@ -304,9 +309,13 @@ begin
       RAPOku  := @DWIORAPOku;
       RAPYaz  := @DWIORAPYaz;
       Sifirla := @DWIOSifirla;
+
+      //GeciciDeger := '2';
     end
     else
     begin
+
+      //GeciciDeger := '3';
 
       {$IFDEF PCNET32_BILGI}
       SISTEM_MESAJ(RENK_KIRMIZI, 'PCNET32: aygýt mevcut deðil(1)!', []);
@@ -314,6 +323,8 @@ begin
       Exit;
     end;
   end;
+
+  GeciciDeger := '4';
 
   // çip sürüm bilgisini al
   AygitPCNet32.CipSurum := (CSROku(CIP_KIMLIK_UST) shl 16);

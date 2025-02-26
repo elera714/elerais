@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -65,7 +65,7 @@ uses genel, gorev, src_disket, arp, idt, irq, pit, pic;
  ==============================================================================}
 procedure TZamanlayici.Yukle;
 var
-  Zamanlayici: PZamanlayici;
+  Z: PZamanlayici;
   BellekAdresi: Isaretci;
   ZamanlayiciU, i: TSayi4;
 begin
@@ -92,12 +92,12 @@ begin
   for i := 0 to AZAMI_ZAMANLAYICI_SAYISI - 1 do
   begin
 
-    Zamanlayici := BellekAdresi;
-    GZamanlayiciListesi[i] := Zamanlayici;
+    Z := BellekAdresi;
+    GZamanlayiciListesi[i] := Z;
 
-    Zamanlayici^.FZamanlayiciDurum := zdBos;
-    Zamanlayici^.FKimlik := i;
-    Zamanlayici^.FOlayYonlendirmeAdresi := nil;
+    Z^.FZamanlayiciDurum := zdBos;
+    Z^.FKimlik := i;
+    Z^.FOlayYonlendirmeAdresi := nil;
 
     BellekAdresi += ZamanlayiciU;
   end;
@@ -117,22 +117,22 @@ end;
  ==============================================================================}
 function TZamanlayici.Olustur(AMiliSaniye: TISayi4): PZamanlayici;
 var
-  Zamanlayici: PZamanlayici;
+  Z: PZamanlayici;
 begin
 
   // boþ bir zamanlayýcý nesnesi bul
-  Zamanlayici := BosZamanlayiciBul;
-  if(Zamanlayici <> nil) then
+  Z := BosZamanlayiciBul;
+  if(Z <> nil) then
   begin
 
-    Zamanlayici^.FGorevKimlik := CalisanGorev;
-    Zamanlayici^.FTetiklemeSuresi := AMiliSaniye;
-    Zamanlayici^.FGeriSayimSayaci := AMiliSaniye;
-    Zamanlayici^.FOlayYonlendirmeAdresi := nil;
+    Z^.FGorevKimlik := CalisanGorev;
+    Z^.FTetiklemeSuresi := AMiliSaniye;
+    Z^.FGeriSayimSayaci := AMiliSaniye;
+    Z^.FOlayYonlendirmeAdresi := nil;
 
     Inc(OlusturulanZamanlayiciSayisi);
 
-    Exit(Zamanlayici);
+    Exit(Z);
   end;
 
   // geri dönüþ deðeri
@@ -240,7 +240,7 @@ end;
  ==============================================================================}
 procedure ZamanlayicilariYokEt(AGorevKimlik: TKimlik);
 var
-  Zamanlayici: PZamanlayici = nil;
+  Z: PZamanlayici = nil;
   i: TSayi4;
 begin
 
@@ -248,14 +248,14 @@ begin
   for i := 0 to AZAMI_ZAMANLAYICI_SAYISI - 1 do
   begin
 
-    Zamanlayici := GZamanlayiciListesi[i];
+    Z := GZamanlayiciListesi[i];
 
     // zamanlayýcý nesnesi aranan iþleme mi ait
-    if(Zamanlayici^.GorevKimlik = AGorevKimlik) then
+    if(Z^.GorevKimlik = AGorevKimlik) then
     begin
 
       // nesneyi yok et
-      Zamanlayici^.YokEt;
+      Z^.YokEt;
     end;
   end;
 end;
@@ -351,6 +351,7 @@ asm
   jg  @@yenigorev
 
   // ARP tablosunu güüncelle
+  { TODO - ARPTablosunuGuncelle iþlevi ana iþlemden (main thread) alýnacak }
   call  ARPTablosunuGuncelle
 
 @@yenigorev:

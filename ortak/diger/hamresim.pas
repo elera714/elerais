@@ -6,7 +6,7 @@
   Dosya Adı: hamresim.pas
   Dosya İşlevi: renk değerleriyle kodlanmış, biçimlendirilmemiş ham resimleri içerir
 
-  Güncelleme Tarihi: 05/08/2020
+  Güncelleme Tarihi: 22/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,7 +17,7 @@ interface
 uses paylasim;
 
 const
-  HAMRESIM_SAYISI = 17;
+  HAMRESIM_SAYISI = 9;
 
 const
   // genel program resmi
@@ -387,15 +387,7 @@ var
     (Genislik: 12; Yukseklik: 12; BellekAdresi: @DurumCubuguResim),
     (Genislik: 24; Yukseklik: 24; BellekAdresi: @Klasor),
     (Genislik: 24; Yukseklik: 24; BellekAdresi: @BirOnceki),
-    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BirSonraki),
-    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BilesenYeni),
-    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BilesenSecim),
-    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BilesenDugme),
-    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BilesenEtiket),
-    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BilesenGirisKutusu),
-    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BilesenDefter),
-    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BilesenOnayKutusu),
-    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BilesenKaydirmaCubugu));
+    (Genislik: 24; Yukseklik: 24; BellekAdresi: @BirSonraki));
 
 implementation
 

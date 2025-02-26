@@ -6,7 +6,7 @@
   Dosya Adı: gn_resimdugmesi.pas
   Dosya İşlevi: resim düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -53,7 +53,7 @@ uses genel, gn_pencere, gn_islevler, temelgorselnesne;
  ==============================================================================}
 function ResimDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   Pencere: PPencere;
   ResimDugmesi: PResimDugmesi;
   Hiza: THiza;
@@ -64,10 +64,9 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^,
-        PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
-        PISayi4(ADegiskenler + 20)^);
+      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+        PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PISayi4(ADegiskenler + 20)^);
     end;
 
     ISLEV_GOSTER:
@@ -182,7 +181,7 @@ begin
 
   { TODO - aşağıdaki pasifleştirilen kodlar aktifleştiğinde pencere kontrol düğmeleri hatalı etkilenmektedir }
 
-{  ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl(Kimlik));
+{  ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl2(Kimlik));
   if(ResimDugmesi = nil) then Exit;
 
   inherited Hizala;}
@@ -220,6 +219,14 @@ begin
     ResimSiraNo := ResimDugmesi^.FDeger and $FFFFFF;
 
     KaynaktanResimCiz(2, ResimDugmesi, Alan, ResimSiraNo);
+  end
+  // resim düğmesi içeriğinin çizilmesi - çekirdek içi çalışma için
+  else if(CizimTipi = $30) then
+  begin
+
+    ResimSiraNo := ResimDugmesi^.FDeger and $FFFFFF;
+
+    KaynaktanResimCiz21(ResimDugmesi, Alan.Sol, Alan.Ust, ResimSiraNo);
   end
   // resim düğmesi içeriğinin bitmap resim ile çizilmesi
   else if(CizimTipi = $80) then

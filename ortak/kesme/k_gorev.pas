@@ -6,7 +6,7 @@
   Dosya Adı: k_gorev.pas
   Dosya İşlevi: görev (program) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,7 +27,7 @@ uses genel, gorev, islevler, sistemmesaj;
  ==============================================================================}
 function GorevCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorevKimlik: TKimlik;
+  GK: TKimlik;
   s: string;
   GorevKayit: PGorevKayit;
   p: PGorev;
@@ -122,12 +122,12 @@ begin
     if(i >= 0) and (i < USTSINIR_GOREVSAYISI) then
     begin
 
-      GorevKimlik := GorevSiraNumarasiniAl(i);
-      if(GorevKimlik >= 0) then
+      GK := GorevSiraNumarasiniAl(i);
+      if(GK >= 0) then
       begin
 
         p4 := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
-        TSS := GorevTSSListesi[GorevKimlik];
+        TSS := GorevTSSListesi[GK];
         Tasi2(TSS, p4, 104);
 
         Result := HATA_YOK;

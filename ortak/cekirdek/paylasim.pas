@@ -6,7 +6,7 @@
   Dosya Adý: paylasim.pas
   Dosya Ýþlevi: tüm birimler için ortak paylaþýlan iþlevleri içerir
 
-  Güncelleme Tarihi: 09/01/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,7 +28,7 @@ var
   AcilisSurucuAygiti: string = 'disk1';           // disk1:\dizin1
   KLASOR_PROGRAM: string = 'progrmlr';            // programlarýn bulunduðu dizin
   OnDegerMasaustuProgram: string = 'muyntcs.c';
-  //GeciciDeger: string;
+  GeciciDeger: string = '';
 
 type
   PProtokolTipi = ^TProtokolTipi;
@@ -220,7 +220,7 @@ var
 
 const
   // GN_UZUNLUK uzunluðunda tanýmlanacak toplam görsel nesne sayýsý
-  USTSINIR_GORSELNESNE  = 128; //255;
+  USTSINIR_GORSELNESNE  = 256;
   USTSINIR_MASAUSTU     = 4;
 
 var
