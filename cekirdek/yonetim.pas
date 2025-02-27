@@ -99,7 +99,6 @@ var
   SonKonumY, SonKonumD, SonSecim: TSayi4;
   TestAdres: Isaretci;
 
-  iiiii: Integer;
   sssss: string;
   ppppp: pchar;
   TestSinif: TTestSinif;
@@ -108,6 +107,7 @@ var
 procedure Yukle;
 procedure SistemAnaKontrol;
 procedure CekirdekDosyaTSDegeriniKaydet;
+procedure KaydedilenProgramlariYenidenYukle;
 function GMem(Size:ptruint):Pointer;
 
 implementation
@@ -239,17 +239,18 @@ var
   m: TMemoryManager;
   Masaustu: PMasaustu;
   GN: PGorselNesne;
+  FD: TFizikselDepolama;
 begin
 
+  // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
+  BekleMS(100);
+
+  // çekirdek deðiþim kontrol için cekirdek.bin dosyasýnýn yðklenme aþamasýndaki
+  // tarih + saat deðerlerini kaydet
   CekirdekDosyaTSDegeriniKaydet;
 
-{  if(CalisanGorevSayisi = 1) then
-  repeat
+  KaydedilenProgramlariYenidenYukle;
 
-    Gorev^.Calistir(AcilisSurucuAygiti + ':\' + OnDegerMasaustuProgram);
-    ElleGorevDegistir;
-  until CalisanGorevSayisi > 1;
-}
   SolKontrolTusDurumu := tdYok;
   SagKontrolTusDurumu := tdYok;
   SolAltTusDurumu := tdYok;
@@ -329,6 +330,7 @@ begin
           //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek U3: %d', [TSayi4(TestAdres)]);
 
           //TestSinif := TTestSinif.Create;
+
 
 
           {DosyaAdi := 'disk1:\harfler.txt';
@@ -790,6 +792,83 @@ begin
   end;
 
   FindClose(AramaKaydi);
+end;
+
+procedure KaydedilenProgramlariYenidenYukle;
+var
+  i: TSayi4;
+  FD: TFizikselDepolama;
+  GN: PGorselNesne;
+  Bellek: PChar;
+  s: string;
+  MUGorev: PGorev;
+  P4: PSayi4;
+  Konum: TKonum;
+  Boyut: TBoyut;
+begin
+
+  for i := 0 to 5 do
+  begin
+
+    FD := FizikselDepolamaAygitListesi[i];
+    if(FD.Mevcut0) and (FD.FD3.SurucuTipi = SURUCUTIP_DISK) then
+    begin
+
+      FD.SektorOku(@FD, 10, 1, Isaretci($3200000));
+      Break;
+    end;
+  end;
+
+  Bellek := Isaretci($3200000);
+
+  s := '';
+  while Bellek^ <> #0 do
+  begin
+
+    while Bellek^ <> #0 do
+    begin
+
+      s += Bellek^;
+      Inc(Bellek);
+    end;
+
+    Inc(Bellek);
+    P4 := PSayi4(Bellek);
+
+    Konum.Sol := P4^;
+    Inc(P4);
+    Konum.Ust := P4^;
+    Inc(P4);
+    Boyut.Genislik := P4^;
+    Inc(P4);
+    Boyut.Yukseklik := P4^;
+    Inc(P4);
+
+    Bellek := PChar(P4);
+
+    if(Length(s) > 0) then
+    begin
+
+      MUGorev := MUGorev^.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + s);
+      BekleMS(50);
+
+      GN := GN^.NesneAl(MUGorev^.AktifPencere^.Kimlik);
+
+      PPencere(GN)^.FKonum.Sol := Konum.Sol;
+      PPencere(GN)^.FKonum.Ust := Konum.Ust;
+      PPencere(GN)^.FBoyut.Genislik := Boyut.Genislik;
+      PPencere(GN)^.FBoyut.Yukseklik := Boyut.Yukseklik;
+      PPencere(GN)^.Guncelle;
+
+      PMasaustu(GN^.AtaNesne)^.Ciz;
+
+      //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'NesneAdi: %s', [PPencere(GN)^.NesneAdi]);
+      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Konum.Ust: %d', [Konum.Ust]);
+    end;
+
+    //Inc(Bellek);
+    s := '';
+  end;
 end;
 
 end.

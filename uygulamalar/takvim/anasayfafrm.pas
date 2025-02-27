@@ -117,7 +117,7 @@ var
   AyinGunleri: array[1..12] of TSayi1;
   SeciliYil, SeciliAy, D1, D2, D3,
   SeciliYilinIlkGunu, SeciliAyinIlkGunu: TISayi4;
-  i: TISayi4;
+  i, NEleman: TISayi4;
 begin
 
   AyinGunleri[01] := 31;
@@ -160,16 +160,26 @@ begin
   SeciliAyinIlkGunu := SeciliAyinIlkGunu mod 7;
   if(SeciliAyinIlkGunu = 0) then SeciliAyinIlkGunu := 7;
 
+  NEleman := 7;     // takvime eklenen eleman sayýsý (baþlýklar)
   if(SeciliAyinIlkGunu > 1) then
-    for i := 2 to SeciliAyinIlkGunu do FIzgara.ElemanEkle(' ');
+  begin
+
+    for i := 2 to SeciliAyinIlkGunu do
+    begin
+
+      FIzgara.ElemanEkle(' ');
+      Inc(NEleman);
+    end;
+  end;
 
   FIzgara.SeciliHucreyiYaz(-1, -1);
   for i := 1 to AyinGunleri[SeciliAy] do
   begin
 
     FIzgara.ElemanEkle(IntToStr(i));
+    Inc(NEleman);
     if(AYil = BuYil) and (AAy = BuAy) and (i = ABuGun) then
-      FIzgara.SeciliHucreyiYaz((i + 1) mod 7, ((i + 1) div 7) + 1);
+      FIzgara.SeciliHucreyiYaz((NEleman - 1) div 7, (NEleman - 1) mod 7);
   end;
 
   FIzgara.Ciz;

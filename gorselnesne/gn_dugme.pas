@@ -49,7 +49,7 @@ uses genel, gn_pencere, gn_islevler, temelgorselnesne, giysi_mac, sistemmesaj;
  ==============================================================================}
 function DugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne = nil;
+  GN: PGorselNesne = nil;
   Pencere: PPencere = nil;
   Dugme: PDugme = nil;
   Hiza: THiza;
@@ -62,9 +62,9 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^,
-        PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
+      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+        PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + CalisanGorevBellekAdresi)^);
     end;
 
@@ -147,9 +147,8 @@ begin
       begin
 
         // bir önceki odak alan nesneyi odaktan çýkar
-        GorselNesne := PPencere(Dugme^.AtaNesne)^.FAktifNesne;
-        if(GorselNesne <> nil) and (GorselNesne^.Odaklanilabilir) then
-          GorselNesne^.Odaklanildi := False;
+        GN := PPencere(Dugme^.AtaNesne)^.FAktifNesne;
+        if(GN <> nil) and (GN^.Odaklanilabilir) then GN^.Odaklanildi := False;
 
         // nelirtilen nesneyi odaklanýlan nesne olarak belirle
         PPencere(Dugme^.AtaNesne)^.FAktifNesne := Dugme;

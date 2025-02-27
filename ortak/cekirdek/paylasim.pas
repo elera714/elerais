@@ -18,7 +18,7 @@ interface
 
 const
   ProjeBaslangicTarihi: string = '30.07.2005';
-  SistemAdi: string = 'ELERA Ýþletim Sistemi - 0.3.7 - R33';
+  SistemAdi: string = 'ELERA Ýþletim Sistemi - 0.3.8 - R34';
   DerlemeTarihi: string = {$i %DATE%};
   FPCMimari: string = {$i %FPCTARGET%};
   FPCSurum: string = {$i %FPCVERSION%};

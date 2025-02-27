@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÃ‡
-  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
+  Kodlayan: Fatih KILIÇ
+  Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya AdÄ±: gn_izgara.pas
-  Dosya Ä°ÅŸlevi: Ä±zgara nesnesi (TStringGrid) yÃ¶netim iÅŸlevlerini iÃ§erir
+  Dosya Adı: gn_izgara.pas
+  Dosya İşlevi: ızgara nesnesi (TStringGrid) yönetim işlevlerini içerir
 
-  GÃ¼ncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 26/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,14 +21,14 @@ type
   TIzgara = object(TPanel)
   private
     FYatayKCubugu, FDikeyKCubugu: PKaydirmaCubugu;
-    FYatayKCGoster, FDikeyKCGoster: Boolean;
+    FYatayKCGoster, FDikeyKCGoster: LongBool;
     FSabitSutunSayisi, FSabitSatirSayisi: TISayi4;
     FSutunSayisi, FSatirSayisi,
     FSutunGenislik, FSatirYukseklik: TISayi4;
-    FSeciliSatir, FSeciliSutun: TISayi4;  // seÃ§ili satÄ±r ve sÃ¼tun
-    FGorunenIlkSiraNo: TISayi4;           // Ä±zgara nesnesinde en Ã¼stte gÃ¶rÃ¼ntÃ¼lenen elemanÄ±n sÄ±ra deÄŸeri
-    FGorunenElemanSayisi: TISayi4;        // kullanÄ±cÄ±ya nesne iÃ§erisinde gÃ¶sterilen eleman sayÄ±sÄ±
-    FDegerler: PYaziListesi;              // kolon deÄŸerleri
+    FSeciliSatir, FSeciliSutun: TISayi4;  // seçili satır ve sütun
+    FGorunenIlkSiraNo: TISayi4;           // ızgara nesnesinde en üstte görüntülenen elemanın sıra değeri
+    FGorunenElemanSayisi: TISayi4;        // kullanıcıya nesne içerisinde gösterilen eleman sayısı
+    FDegerler: PYaziListesi;              // kolon değerleri
     procedure KaydirmaCubuguOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
@@ -59,7 +59,7 @@ implementation
 uses genel, gn_islevler, gn_pencere, temelgorselnesne, sistemmesaj;
 
 {==============================================================================
-  Ä±zgara nesnesi kesme Ã§aÄŸrÄ±larÄ±nÄ± yÃ¶netir
+  ızgara nesnesi kesme çağrılarını yönetir
  ==============================================================================}
 function IzgaraCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -71,7 +71,7 @@ begin
 
   case AIslevNo of
 
-    // nesne oluÅŸtur
+    // nesne oluştur
     ISLEV_OLUSTUR:
     begin
 
@@ -101,7 +101,7 @@ begin
       Izgara^.Ciz;
     end;
 
-    // gÃ¶rsel nesneyi hizala
+    // görsel nesneyi hizala
     ISLEV_HIZALA:
     begin
 
@@ -113,7 +113,7 @@ begin
       Pencere^.Guncelle;
     end;
 
-    // deÄŸer iÃ§eriklerini temizle
+    // değer içeriklerini temizle
     $010F:
     begin
 
@@ -121,7 +121,7 @@ begin
       if(Izgara <> nil) then Izgara^.DegerIceriginiTemizle;
     end;
 
-    // deÄŸer listesine deÄŸer ekle
+    // değer listesine değer ekle
     $020F:
     begin
 
@@ -130,7 +130,7 @@ begin
         PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^));
     end;
 
-    // sabit satÄ±r ve sutun hÃ¼cre sayÄ±sÄ±nÄ± belirle
+    // sabit satır ve sutun hücre sayısını belirle
     $030F:
     begin
 
@@ -139,7 +139,7 @@ begin
         PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^);
     end;
 
-    // hÃ¼cre sayÄ±sÄ±nÄ± belirle
+    // hücre sayısını belirle
     $040F:
     begin
 
@@ -148,7 +148,7 @@ begin
         PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^);
     end;
 
-    // hÃ¼cre boyutu belirle
+    // hücre boyutu belirle
     $050F:
     begin
 
@@ -157,7 +157,7 @@ begin
         PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^);
     end;
 
-    // kaydÄ±rma Ã§ubuÄŸu gÃ¶rÃ¼nÃ¼m belirle
+    // kaydırma çubuğu görünüm belirle
     $060F:
     begin
 
@@ -166,7 +166,7 @@ begin
         PLongBool(ADegiskenler + 04)^, PLongBool(ADegiskenler + 08)^);
     end;
 
-    // seÃ§ili hÃ¼creyi belirle
+    // seçili hücreyi belirle
     $070F:
     begin
 
@@ -180,7 +180,7 @@ begin
 end;
 
 {==============================================================================
-  Ä±zgara nesnesi oluÅŸturur
+  ızgara nesnesi oluşturur
  ==============================================================================}
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik;
 var
@@ -196,7 +196,7 @@ begin
 end;
 
 {==============================================================================
-  Ä±zgara nesnesi oluÅŸturur
+  ızgara nesnesi oluşturur
  ==============================================================================}
 function TIzgara.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
   ASol, AUst, AGenislik, AYukseklik: TISayi4): PIzgara;
@@ -221,13 +221,13 @@ begin
   Izgara^.FYatayKCGoster := False;
   Izgara^.FDikeyKCGoster := False;
 
-  // yatay kaydÄ±rma Ã§ubuÄŸu
+  // yatay kaydırma çubuğu
   Izgara^.FYatayKCubugu := Izgara^.FYatayKCubugu^.Olustur(ktBilesen, Izgara,
     0, AYukseklik - 16, AGenislik - 16, 16, yYatay);
   Izgara^.FYatayKCubugu^.DegerleriBelirle(0, 10);
   Izgara^.FYatayKCubugu^.OlayYonlendirmeAdresi := @KaydirmaCubuguOlaylariniIsle;
 
-  // dikey kaydÄ±rma Ã§ubuÄŸu
+  // dikey kaydırma çubuğu
   Izgara^.FDikeyKCubugu := Izgara^.FDikeyKCubugu^.Olustur(ktBilesen, Izgara,
     AGenislik - 16, 0, 16, AYukseklik - 16, yDikey);
   Izgara^.FDikeyKCubugu^.DegerleriBelirle(0, 10);
@@ -235,12 +235,12 @@ begin
 
   Izgara^.FDegerler := Izgara^.FDegerler^.Olustur;
 
-  // nesnenin kullanacaÄŸÄ± diÄŸer deÄŸerler
+  // nesnenin kullanacağı diğer değerler
   Izgara^.FGorunenIlkSiraNo := 0;
   Izgara^.FSeciliSatir := -1;
   Izgara^.FSeciliSutun := -1;
 
-  // Ä±zgara nesnesinde gÃ¶rÃ¼ntÃ¼lenecek eleman sayÄ±sÄ±
+  // ızgara nesnesinde görüntülenecek eleman sayısı
   Izgara^.FGorunenElemanSayisi := (AYukseklik - 24) div 21;
 
   Izgara^.FSabitSatirSayisi := 1;
@@ -250,12 +250,12 @@ begin
   Izgara^.FSatirYukseklik := 18;
   Izgara^.FSutunGenislik := 40;
 
-  // nesne adresini geri dÃ¶ndÃ¼r
+  // nesne adresini geri döndür
   Result := Izgara;
 end;
 
 {==============================================================================
-  Ä±zgara nesnesini yok eder
+  ızgara nesnesini yok eder
  ==============================================================================}
 procedure TIzgara.YokEt;
 var
@@ -271,7 +271,7 @@ begin
 end;
 
 {==============================================================================
-  Ä±zgara nesnesini gÃ¶rÃ¼ntÃ¼ler
+  ızgara nesnesini görüntüler
  ==============================================================================}
 procedure TIzgara.Goster;
 var
@@ -288,7 +288,7 @@ begin
 end;
 
 {==============================================================================
-  Ä±zgara nesnesini gizler
+  ızgara nesnesini gizler
  ==============================================================================}
 procedure TIzgara.Gizle;
 begin
@@ -297,7 +297,7 @@ begin
 end;
 
 {==============================================================================
-  Ä±zgara nesnesini hizalandÄ±rÄ±r
+  ızgara nesnesini hizalandırır
  ==============================================================================}
 procedure TIzgara.Hizala;
 var
@@ -312,7 +312,7 @@ begin
   if(Izgara^.FYatayKCGoster) then
   begin
 
-    // yatay kaydÄ±rma Ã§ubuÄŸunu elle yeniden konumlandÄ±r
+    // yatay kaydırma çubuğunu elle yeniden konumlandır
     Izgara^.FYatayKCubugu^.FKonum.Sol := 0;
     Izgara^.FYatayKCubugu^.FKonum.Ust := Izgara^.FBoyut.Yukseklik - 16;
     Izgara^.FYatayKCubugu^.FBoyut.Genislik := Izgara^.FBoyut.Genislik - 16;
@@ -331,7 +331,7 @@ begin
   if(Izgara^.FDikeyKCGoster) then
   begin
 
-    // dikey kaydÄ±rma Ã§ubuÄŸunu elle yeniden konumlandÄ±r
+    // dikey kaydırma çubuğunu elle yeniden konumlandır
     Izgara^.FDikeyKCubugu^.FKonum.Sol := Izgara^.FBoyut.Genislik - 16;
     Izgara^.FDikeyKCubugu^.FKonum.Ust := 0;
     Izgara^.FDikeyKCubugu^.FBoyut.Genislik := 16;
@@ -349,7 +349,7 @@ begin
 end;
 
 {==============================================================================
-  Ä±zgara nesnesini Ã§izer
+  ızgara nesnesini çizer
  ==============================================================================}
 procedure TIzgara.Ciz;
 var
@@ -364,14 +364,14 @@ begin
 
   inherited Ciz;
 
-  // kaydÄ±rma Ã§ubuÄŸunun Ã§izim alan koordinatlarÄ±nÄ± al
+  // kaydırma çubuğunun çizim alan koordinatlarını al
   Alan := Izgara^.FCizimAlan;
 
   // ata nesne bir pencere mi?
   Pencere := EnUstPencereNesnesiniAl(Izgara);
   if(Pencere = nil) then Exit;
 
-  // tanÄ±mlanmÄ±ÅŸ hiÃ§bir kolon yok ise, Ã§Ä±k
+  // tanımlanmış hiçbir kolon yok ise, çık
   if(FDegerler^.ElemanSayisi = 0) then Exit;
 
   if(Izgara^.FYatayKCGoster) then
@@ -385,7 +385,7 @@ begin
   Alan.Sol := 1;
   Alan.Ust := 1;
 
-  // veriye gÃ¶re yapÄ±lan dÃ¶ngÃ¼
+  // veriye göre yapılan döngü
   for i := UstIlk to FSatirSayisi - 1 do
   begin
 
@@ -404,7 +404,7 @@ begin
         Izgara^.DikdortgenDoldur(Izgara, Alan, RENK_KIRMIZI, RENK_BEYAZ)
       else Izgara^.DikdortgenDoldur(Izgara, Alan, RENK_BEYAZ, RENK_BEYAZ);
 
-      // baÅŸlÄ±k
+      // başlık
       Izgara^.AlanaYaziYaz(Izgara, Alan, 4, 3, FDegerler^.Eleman[(i * (Izgara^.FSutunSayisi)) + j],
         RENK_LACIVERT);
 
@@ -415,13 +415,13 @@ begin
     Alan.Ust += Izgara^.FSatirYukseklik + 1;
   end;
 
-  // kaydÄ±rma Ã§ubuklarÄ±nÄ± en son Ã§iz
+  // kaydırma çubuklarını en son çiz
   if(Izgara^.FYatayKCGoster) then Izgara^.FYatayKCubugu^.Ciz;
   if(Izgara^.FDikeyKCGoster) then Izgara^.FDikeyKCubugu^.Ciz;
 end;
 
 {==============================================================================
-  Ä±zgara nesnesi olaylarÄ±nÄ± iÅŸler
+  ızgara nesnesi olaylarını işler
  ==============================================================================}
 procedure TIzgara.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -432,28 +432,28 @@ begin
 
   Izgara := PIzgara(AGonderici);
 
-  // sol fare tuÅŸ basÄ±mÄ±
+  // sol fare tuş basımı
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
-    // Ä±zgara nesnesinin sahibi olan pencere en Ã¼stte mi ? kontrol et
+    // ızgara nesnesinin sahibi olan pencere en üstte mi ? kontrol et
     Pencere := EnUstPencereNesnesiniAl(Izgara);
 
-    // en Ã¼stte olmamasÄ± durumunda en Ã¼ste getir
+    // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
-    // ve nesneyi aktif nesne olarak iÅŸaretle
+    // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := Izgara;
     Izgara^.Odaklanildi := True;
 
-    // sol tuÅŸa basÄ±m iÅŸlemi nesnenin olay alanÄ±nda mÄ± gerÃ§ekleÅŸti ?
+    // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(Izgara^.FareNesneOlayAlanindaMi(Izgara)) then
     begin
 
-      // fare olaylarÄ±nÄ± yakala
+      // fare olaylarını yakala
       OlayYakalamayaBasla(Izgara);
 
-      // seÃ§ili sÃ¼tÃ¼n ve satÄ±r deÄŸerini yeniden belirle
+      // seçili sütün ve satır değerini yeniden belirle
       i := (AOlay.Deger1 + (Izgara^.FYatayKCubugu^.FMevcutDeger * Izgara^.FSutunGenislik)) div Izgara^.FSutunGenislik;
       j := (AOlay.Deger2 + (Izgara^.FDikeyKCubugu^.FMevcutDeger * Izgara^.FSatirYukseklik)) div Izgara^.FSatirYukseklik;
       if(i >= Izgara^.FSabitSutunSayisi) and (j >= Izgara^.FSabitSatirSayisi) then
@@ -463,43 +463,43 @@ begin
         Izgara^.FSeciliSatir := j;
       end;
 
-      // Ä±zgara nesnesini yeniden Ã§iz
+      // ızgara nesnesini yeniden çiz
       Izgara^.Ciz;
 
-      // uygulamaya veya efendi nesneye mesaj gÃ¶nder
+      // uygulamaya veya efendi nesneye mesaj gönder
       if not(Izgara^.OlayYonlendirmeAdresi = nil) then
         Izgara^.OlayYonlendirmeAdresi(Izgara, AOlay)
       else GorevListesi[Izgara^.GorevKimlik]^.OlayEkle(Izgara^.GorevKimlik, AOlay);
     end;
   end
 
-  // sol fare tuÅŸ bÄ±rakÄ±m iÅŸlemi
+  // sol fare tuş bırakım işlemi
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
 
-    // fare olaylarÄ±nÄ± almayÄ± bÄ±rak
+    // fare olaylarını almayı bırak
     OlayYakalamayiBirak(Izgara);
 
-    // fare bÄ±rakma iÅŸlemi nesnenin olay alanÄ±nda mÄ± gerÃ§ekleÅŸti ?
+    // fare bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
     if(Izgara^.FareNesneOlayAlanindaMi(Izgara)) then
     begin
 
-      // yakalama & bÄ±rakma iÅŸlemi bu nesnede olduÄŸu iÃ§in
-      // nesneye FO_TIKLAMA mesajÄ± gÃ¶nder
+      // yakalama & bırakma işlemi bu nesnede olduğu için
+      // nesneye FO_TIKLAMA mesajı gönder
       AOlay.Olay := FO_TIKLAMA;
       if not(Izgara^.OlayYonlendirmeAdresi = nil) then
         Izgara^.OlayYonlendirmeAdresi(Izgara, AOlay)
       else GorevListesi[Izgara^.GorevKimlik]^.OlayEkle(Izgara^.GorevKimlik, AOlay);
     end;
 
-    // uygulamaya veya efendi nesneye mesaj gÃ¶nder
+    // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Izgara^.OlayYonlendirmeAdresi = nil) then
       Izgara^.OlayYonlendirmeAdresi(Izgara, AOlay)
     else GorevListesi[Izgara^.GorevKimlik]^.OlayEkle(Izgara^.GorevKimlik, AOlay);
   end;
 
-  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
+  // geçerli fare göstergesini güncelle
   GecerliFareGostegeTipi := Izgara^.FFareImlecTipi;
 end;
 
@@ -516,7 +516,7 @@ begin
 
   if(AOlay.Olay = FO_TIKLAMA) then Izgara^.Ciz;
 
-  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
+  // geçerli fare göstergesini güncelle
   GecerliFareGostegeTipi := Izgara^.FFareImlecTipi;
 end;
 
@@ -589,22 +589,18 @@ begin
   Izgara^.FSeciliSatir := ASatir;
   Izgara^.FSeciliSutun := ASutun;
 
-  { TODO : sÃ¼tun deÄŸeri programdan hatalÄ± geliyor }
-//  SISTEM_MESAJ(RENK_BORDO, 'SatÄ±r: %d', [ASatir]);
-//  SISTEM_MESAJ(RENK_BORDO, 'SÃ¼tun: %d', [ASutun]);
-
   Izgara^.Ciz;
 end;
 
 {==============================================================================
-  seÃ§ili elemanÄ±n yazÄ± (text) deÄŸerini geri dÃ¶ndÃ¼rÃ¼r
+  seçili elemanın yazı (text) değerini geri döndürür
  ==============================================================================}
 function TIzgara.SeciliSatirDegeriniAl: string;
 var
   Izgara: PIzgara = nil;
 begin
 
-  // nesnenin kimlik, tip deÄŸerlerini denetle.
+  // nesnenin kimlik, tip değerlerini denetle.
   Izgara := PIzgara(Izgara^.NesneTipiniKontrolEt(Kimlik, gntIzgara));
   if(Izgara = nil) then Exit;
 
@@ -614,7 +610,7 @@ begin
 end;
 
 {==============================================================================
-  | ayÄ±racÄ±yla gelen karakter katarÄ±nÄ± bÃ¶lÃ¼mler
+  | ayıracıyla gelen karakter katarını bölümler
  ==============================================================================}
 procedure TIzgara.Bolumle(ABicimlenmisDeger: string; AAyiracDeger: Char;
   ADegerDizisi: PYaziListesi);
@@ -657,7 +653,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  // nesnenin kimlik, tip deÄŸerlerini denetle.
+  // nesnenin kimlik, tip değerlerini denetle.
   Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
   if(Izgara = nil) then Exit;
 
@@ -671,7 +667,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  // nesnenin kimlik, tip deÄŸerlerini denetle.
+  // nesnenin kimlik, tip değerlerini denetle.
   Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
   if(Izgara = nil) then Exit;
 

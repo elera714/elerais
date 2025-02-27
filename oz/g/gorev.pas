@@ -217,10 +217,10 @@ begin
   Degiskenler := '';
   TamDosyaYolu := Surucu + ':' + Klasor + DosyaAdi;
 
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'TamDosyaYolu: %s', [TamDosyaYolu]);
+  {SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'TamDosyaYolu: %s', [TamDosyaYolu]);
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Surucu: %s', [Surucu]);
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Klasor: %s', [Klasor]);
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DosyaAdi: %s', [DosyaAdi]);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DosyaAdi: %s', [DosyaAdi]);}
 
   // dosya çalýþtýrýlabilir bir dosya deðil ise dosyanýn birlikte açýlacaðý
   // öndeðer olarak tanýmlanan programý bul

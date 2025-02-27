@@ -199,13 +199,13 @@ begin
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $1C);
-    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket1->Motor açýldý...', []);
+    //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket1->Motor açýldý...', []);
   end
   else
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $2D);
-    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket2->Motor açýldý...', []);
+    //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket2->Motor açýldý...', []);
   end;
 
   // CCR = 500kbits/s
@@ -225,13 +225,13 @@ begin
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $C);
-    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket1->Motor kapatýldý...', []);
+    //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket1->Motor kapatýldý...', []);
   end
   else
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $5);
-    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket2->Motor kapatýldý...', []);
+    //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket2->Motor kapatýldý...', []);
   end;
 end;
 

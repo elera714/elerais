@@ -6,7 +6,7 @@
   Dosya Adý: prg_grafik.pas
   Dosya Ýþlevi: dahili çekirdek programý: nesnelerin grafik kartýna çizimi için
 
-  Güncelleme Tarihi: 21/02/2025
+  Güncelleme Tarihi: 27/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -25,7 +25,6 @@ uses gdt, gorev, paylasim, genel, zamanlayici, gn_pencere;
 
 var
   SDPencere: PPencere = nil;
-  SDZamanlayici: PZamanlayici;
 
 {==============================================================================
   grafik iþlevlerini yönetecek görevi oluþturur
@@ -111,43 +110,21 @@ begin
   SDPencere := SDPencere^.Olustur(nil, Sol, 10, 156, 70, ptBasliksiz,
     'Sistem Durumu', 0);
   SDPencere^.Goster;
-
-  SDZamanlayici := SDZamanlayici^.Olustur(100);
-  SDZamanlayici^.Durum := zdCalisiyor;
 end;
 
 procedure SistemDegerleriOlayIsle;
 var
-  Gorev: PGorev;
-  Olay: TOlay;
   CizimAlan: TAlan;
 begin
 
-  Gorev := GorevListesi[0];
-
-  if(Gorev^.OlayAl(Olay)) then
-  begin
-
-    if(Olay.Olay = CO_ZAMANLAYICI) then
-    begin
-
-      //SISTEM_MESAJ(RENK_KIRMIZI, 'CO_ZAMANLAYICI olayý', []);
-      if(Olay.Kimlik = SDZamanlayici^.Kimlik) then SDPencere^.Ciz;
-    end
-    else if(Olay.Olay = CO_CIZIM) then
-    begin
-
-      //SISTEM_MESAJ(RENK_KIRMIZI, 'CO_CIZIM olayý', []);
-      CizimAlan := SDPencere^.FCizimAlan;
-      SDPencere^.Dikdortgen(SDPencere, ctNokta, CizimAlan, RENK_SIYAH);
-      SDPencere^.YaziYaz(SDPencere, 12, 10, 'ÇKRDK:', RENK_LACIVERT);
-      SDPencere^.SayiYaz16(SDPencere, 64, 10, True, 8, SistemSayaci, RENK_LACIVERT);
-      SDPencere^.YaziYaz(SDPencere, 12, 26, 'ÇAÐRI:', RENK_LACIVERT);
-      SDPencere^.SayiYaz16(SDPencere, 64, 26, True, 8, CagriSayaci, RENK_LACIVERT);
-      SDPencere^.YaziYaz(SDPencere, 12, 42, 'GRAFK:', RENK_LACIVERT);
-      SDPencere^.SayiYaz16(SDPencere, 64, 42, True, 8, GrafikSayaci, RENK_LACIVERT);
-    end;
-  end;
+  CizimAlan := SDPencere^.FCizimAlan;
+  SDPencere^.DikdortgenDoldur(SDPencere, CizimAlan, RENK_SIYAH, $CCFFFF);
+  SDPencere^.YaziYaz(SDPencere, 12, 10, 'ÇKRDK:', RENK_LACIVERT);
+  SDPencere^.SayiYaz16(SDPencere, 64, 10, True, 8, SistemSayaci, RENK_LACIVERT);
+  SDPencere^.YaziYaz(SDPencere, 12, 26, 'ÇAÐRI:', RENK_LACIVERT);
+  SDPencere^.SayiYaz16(SDPencere, 64, 26, True, 8, CagriSayaci, RENK_LACIVERT);
+  SDPencere^.YaziYaz(SDPencere, 12, 42, 'GRAFK:', RENK_LACIVERT);
+  SDPencere^.SayiYaz16(SDPencere, 64, 42, True, 8, GrafikSayaci, RENK_LACIVERT);
 end;
 
 end.

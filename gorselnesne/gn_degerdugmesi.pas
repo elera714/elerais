@@ -46,7 +46,7 @@ uses genel, temelgorselnesne;
  ==============================================================================}
 function DegerDugmesiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GorselNesne: PGorselNesne;
+  GN: PGorselNesne;
   DegerDugmesi: PDegerDugmesi;
 begin
 
@@ -55,9 +55,9 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GorselNesne := GorselNesne^.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GorselNesne, PISayi4(ADegiskenler + 04)^,
-        PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
+      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+        PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
     end;
 
     ISLEV_GOSTER:

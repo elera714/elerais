@@ -6,7 +6,7 @@
   Dosya Adı: gn_izgara.pas
   Dosya İşlevi: ızgara nesnesi (TStringGrid) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 27/02/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -31,23 +31,23 @@ type
     procedure SabitHucreSayisiYaz(ASabitSatirSayisi, ASabitSutunSayisi: TSayi4);
     procedure HucreSayisiYaz(ASatirSayisi, ASutunSayisi: TSayi4);
     procedure HucreBoyutuYaz(ASatirYukseklik, ASutunGenislik: TSayi4);
-    procedure KaydirmaCubuguGorunumYaz(AYatayKCGoster, ADikeyKCGoster: Boolean);
+    procedure KaydirmaCubuguGorunumYaz(AYatayKCGoster, ADikeyKCGoster: LongBool);
     procedure SeciliHucreyiYaz(ASatir, ASutun: TISayi4);
     property Kimlik: TKimlik read FKimlik;
   end;
 
-function _IzgaraOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik; assembler;
-procedure _IzgaraGoster(AKimlik: TKimlik); assembler;
-procedure _IzgaraGizle(AKimlik: TKimlik); assembler;
-procedure _IzgaraCiz(AKimlik: TKimlik); assembler;
-procedure _IzgaraHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
-procedure _IzgaraTemizle(AKimlik: TKimlik); assembler;
-procedure _IzgaraElemanEkle(AKimlik: TKimlik; AElemanAdi: string); assembler;
-procedure _IzgaraSabitHucreSayisiYaz(ASabitSatirSayisi, ASabitSutunSayisi: TSayi4); assembler;
-procedure _IzgaraHucreSayisiYaz(ASatirSayisi, ASutunSayisi: TSayi4); assembler;
-procedure _IzgaraHucreBoyutuYaz(ASatirYukseklik, ASutunGenislik: TSayi4); assembler;
-procedure _IzgaraKaydirmaCubuguGorunumYaz(AYatayKCGoster, ADikeyKCGoster: LongBool); assembler;
-procedure _IzgaraSeciliHucreyiYaz(ASatir, ASutun: TISayi4); assembler;
+function IzgaraOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik; assembler;
+procedure IzgaraGoster(AKimlik: TKimlik); assembler;
+procedure IzgaraGizle(AKimlik: TKimlik); assembler;
+procedure IzgaraCiz(AKimlik: TKimlik); assembler;
+procedure IzgaraHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
+procedure IzgaraTemizle(AKimlik: TKimlik); assembler;
+procedure IzgaraElemanEkle(AKimlik: TKimlik; AElemanAdi: string); assembler;
+procedure IzgaraSabitHucreSayisiYaz(AKimlik: TKimlik; ASabitSatirSayisi, ASabitSutunSayisi: TSayi4); assembler;
+procedure IzgaraHucreSayisiYaz(AKimlik: TKimlik; ASatirSayisi, ASutunSayisi: TSayi4); assembler;
+procedure IzgaraHucreBoyutuYaz(AKimlik: TKimlik; ASatirYukseklik, ASutunGenislik: TSayi4); assembler;
+procedure IzgaraKaydirmaCubuguGorunumYaz(AKimlik: TKimlik; AYatayKCGoster, ADikeyKCGoster: LongBool); assembler;
+procedure IzgaraSeciliHucreyiYaz(AKimlik: TKimlik; ASatir, ASutun: TISayi4); assembler;
 
 implementation
 
@@ -55,77 +55,77 @@ function TIzgara.Olustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik,
   AYukseklik: TISayi4): TKimlik;
 begin
 
-  FKimlik := _IzgaraOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik);
+  FKimlik := IzgaraOlustur(AAtaKimlik, ASol, AUst, AGenislik, AYukseklik);
   Result := FKimlik;
 end;
 
 procedure TIzgara.Goster;
 begin
 
-  _IzgaraGoster(FKimlik);
+  IzgaraGoster(FKimlik);
 end;
 
 procedure TIzgara.Gizle;
 begin
 
-  _IzgaraGizle(FKimlik);
+  IzgaraGizle(FKimlik);
 end;
 
 procedure TIzgara.Ciz;
 begin
 
-  _IzgaraCiz(FKimlik);
+  IzgaraCiz(FKimlik);
 end;
 
 procedure TIzgara.Hizala(AHiza: THiza);
 begin
 
-  _IzgaraHizala(FKimlik, AHiza);
+  IzgaraHizala(FKimlik, AHiza);
 end;
 
 procedure TIzgara.Temizle;
 begin
 
-  _IzgaraTemizle(FKimlik);
+  IzgaraTemizle(FKimlik);
 end;
 
 procedure TIzgara.ElemanEkle(AElemanAdi: string);
 begin
 
-  _IzgaraElemanEkle(FKimlik, AElemanAdi);
+  IzgaraElemanEkle(FKimlik, AElemanAdi);
 end;
 
 procedure TIzgara.SabitHucreSayisiYaz(ASabitSatirSayisi, ASabitSutunSayisi: TSayi4);
 begin
 
-  _IzgaraSabitHucreSayisiYaz(ASabitSatirSayisi, ASabitSutunSayisi);
+  IzgaraSabitHucreSayisiYaz(FKimlik, ASabitSatirSayisi, ASabitSutunSayisi);
 end;
 
 procedure TIzgara.HucreSayisiYaz(ASatirSayisi, ASutunSayisi: TSayi4);
 begin
 
-  _IzgaraHucreSayisiYaz(ASatirSayisi, ASutunSayisi);
+  IzgaraHucreSayisiYaz(FKimlik, ASatirSayisi, ASutunSayisi);
 end;
 
 procedure TIzgara.HucreBoyutuYaz(ASatirYukseklik, ASutunGenislik: TSayi4);
 begin
 
-  _IzgaraHucreBoyutuYaz(ASatirYukseklik, ASutunGenislik);
+  IzgaraHucreBoyutuYaz(FKimlik, ASatirYukseklik, ASutunGenislik);
 end;
 
-procedure TIzgara.KaydirmaCubuguGorunumYaz(AYatayKCGoster, ADikeyKCGoster: Boolean);
+procedure TIzgara.KaydirmaCubuguGorunumYaz(AYatayKCGoster, ADikeyKCGoster: LongBool);
 begin
 
-  _IzgaraKaydirmaCubuguGorunumYaz(AYatayKCGoster, ADikeyKCGoster);
+  IzgaraKaydirmaCubuguGorunumYaz(FKimlik, AYatayKCGoster, ADikeyKCGoster);
 end;
 
 procedure TIzgara.SeciliHucreyiYaz(ASatir, ASutun: TISayi4);
 begin
 
-  _IzgaraSeciliHucreyiYaz(ASatir, ASutun);
+  IzgaraSeciliHucreyiYaz(FKimlik, ASatir, ASutun);
 end;
 
-function _IzgaraOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik;
+function IzgaraOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik; assembler;
 asm
   push  DWORD AYukseklik
   push  DWORD AGenislik
@@ -137,7 +137,7 @@ asm
   add   esp,20
 end;
 
-procedure _IzgaraGoster(AKimlik: TKimlik);
+procedure IzgaraGoster(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,IZGARA_GOSTER
@@ -145,7 +145,7 @@ asm
   add   esp,4
 end;
 
-procedure _IzgaraGizle(AKimlik: TKimlik);
+procedure IzgaraGizle(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,IZGARA_GIZLE
@@ -153,7 +153,7 @@ asm
   add   esp,4
 end;
 
-procedure _IzgaraCiz(AKimlik: TKimlik);
+procedure IzgaraCiz(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,IZGARA_CIZ
@@ -161,7 +161,7 @@ asm
   add   esp,4
 end;
 
-procedure _IzgaraHizala(AKimlik: TKimlik; AHiza: THiza);
+procedure IzgaraHizala(AKimlik: TKimlik; AHiza: THiza); assembler;
 asm
   push  DWORD AHiza
   push  DWORD AKimlik
@@ -170,7 +170,7 @@ asm
   add   esp,8
 end;
 
-procedure _IzgaraTemizle(AKimlik: TKimlik);
+procedure IzgaraTemizle(AKimlik: TKimlik); assembler;
 asm
   push  DWORD AKimlik
   mov   eax,IZGARA_YAZ_TEMIZLE
@@ -178,7 +178,7 @@ asm
   add   esp,4
 end;
 
-procedure _IzgaraElemanEkle(AKimlik: TKimlik; AElemanAdi: string);
+procedure IzgaraElemanEkle(AKimlik: TKimlik; AElemanAdi: string); assembler;
 asm
   push  DWORD AElemanAdi
   push  DWORD AKimlik
@@ -187,49 +187,54 @@ asm
   add   esp,8
 end;
 
-procedure _IzgaraSabitHucreSayisiYaz(ASabitSatirSayisi, ASabitSutunSayisi: TSayi4);
+procedure IzgaraSabitHucreSayisiYaz(AKimlik: TKimlik; ASabitSatirSayisi, ASabitSutunSayisi: TSayi4); assembler;
 asm
   push  DWORD ASabitSutunSayisi
   push  DWORD ASabitSatirSayisi
+  push  DWORD AKimlik
   mov   eax,IZGARA_YAZ_SABITHUCRESAYISI
   int   $34
-  add   esp,8
+  add   esp,12
 end;
 
-procedure _IzgaraHucreSayisiYaz(ASatirSayisi, ASutunSayisi: TSayi4);
+procedure IzgaraHucreSayisiYaz(AKimlik: TKimlik; ASatirSayisi, ASutunSayisi: TSayi4); assembler;
 asm
   push  DWORD ASutunSayisi
   push  DWORD ASatirSayisi
+  push  DWORD AKimlik
   mov   eax,IZGARA_YAZ_HUCRESAYISI
   int   $34
-  add   esp,8
+  add   esp,12
 end;
 
-procedure _IzgaraHucreBoyutuYaz(ASatirYukseklik, ASutunGenislik: TSayi4);
+procedure IzgaraHucreBoyutuYaz(AKimlik: TKimlik; ASatirYukseklik, ASutunGenislik: TSayi4); assembler;
 asm
   push  DWORD ASutunGenislik
   push  DWORD ASatirYukseklik
+  push  DWORD AKimlik
   mov   eax,IZGARA_YAZ_HUCREBOYUTU
   int   $34
-  add   esp,8
+  add   esp,12
 end;
 
-procedure _IzgaraKaydirmaCubuguGorunumYaz(AYatayKCGoster, ADikeyKCGoster: LongBool);
+procedure IzgaraKaydirmaCubuguGorunumYaz(AKimlik: TKimlik; AYatayKCGoster, ADikeyKCGoster: LongBool); assembler;
 asm
   push  DWORD ADikeyKCGoster
   push  DWORD AYatayKCGoster
+  push  DWORD AKimlik
   mov   eax,IZGARA_YAZ_KCUBUGUGORUNUM
   int   $34
-  add   esp,8
+  add   esp,12
 end;
 
-procedure _IzgaraSeciliHucreyiYaz(ASatir, ASutun: TISayi4);
+procedure IzgaraSeciliHucreyiYaz(AKimlik: TKimlik; ASatir, ASutun: TISayi4); assembler;
 asm
   push  DWORD ASutun
   push  DWORD ASatir
+  push  DWORD AKimlik
   mov   eax,IZGARA_YAZ_SECILIHUCRE
   int   $34
-  add   esp,8
+  add   esp,12
 end;
 
 end.

@@ -34,7 +34,7 @@
         </Mode0>
       </Modes>
     </RunParams>
-    <Units Count="123">
+    <Units Count="124">
       <Unit0>
         <Filename Value="muyntcs.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -600,7 +600,7 @@
       </Unit106>
       <Unit107>
         <Filename Value="../../rtl_uygulama/linux/n_gorev.pas"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="10"/>
         <TopLine Value="148"/>
         <CursorPos X="15" Y="178"/>
         <UsageCount Value="17"/>
@@ -615,7 +615,7 @@
       </Unit108>
       <Unit109>
         <Filename Value="../../rtl_uygulama/linux/n_genel.pas"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="54"/>
         <CursorPos X="40" Y="69"/>
         <UsageCount Value="10"/>
@@ -623,7 +623,7 @@
       </Unit109>
       <Unit110>
         <Filename Value="../../rtl_uygulama/linux/n_ekran.pas"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="27"/>
         <CursorPos X="3" Y="47"/>
         <UsageCount Value="15"/>
@@ -631,7 +631,7 @@
       </Unit110>
       <Unit111>
         <Filename Value="../../rtl_uygulama/linux/gn_pencere.pas"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="130"/>
         <CursorPos X="11" Y="146"/>
         <UsageCount Value="16"/>
@@ -644,7 +644,7 @@
       </Unit112>
       <Unit113>
         <Filename Value="../../rtl_uygulama/linux/gn_masaustu.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="13"/>
         <CursorPos X="32" Y="131"/>
         <UsageCount Value="15"/>
@@ -657,7 +657,7 @@
       </Unit114>
       <Unit115>
         <Filename Value="../../rtl_uygulama/linux/gn_gucdugmesi.pas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="11"/>
         <CursorPos X="15" Y="30"/>
         <UsageCount Value="13"/>
@@ -665,7 +665,7 @@
       </Unit115>
       <Unit116>
         <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="14"/>
         <TopLine Value="295"/>
         <CursorPos X="40" Y="316"/>
         <UsageCount Value="16"/>
@@ -673,7 +673,7 @@
       </Unit116>
       <Unit117>
         <Filename Value="../../rtl_uygulama/linux/gn_etiket.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="65"/>
         <CursorPos X="11" Y="80"/>
         <UsageCount Value="15"/>
@@ -681,7 +681,7 @@
       </Unit117>
       <Unit118>
         <Filename Value="../../rtl_uygulama/linux/elera.inc"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="12"/>
         <TopLine Value="238"/>
         <CursorPos X="16" Y="257"/>
         <UsageCount Value="16"/>
@@ -690,14 +690,13 @@
       <Unit119>
         <Filename Value="../../rtl_uygulama/linux/linux.pp"/>
         <UnitName Value="Linux"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="13"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit119>
       <Unit120>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <CursorPos X="11" Y="185"/>
         <UsageCount Value="31"/>
@@ -705,7 +704,7 @@
       </Unit120>
       <Unit121>
         <Filename Value="../../rtl_uygulama/linux/_forms.pp"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <CursorPos X="23" Y="19"/>
         <UsageCount Value="15"/>
         <Loaded Value="True"/>
@@ -718,6 +717,14 @@
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit122>
+      <Unit123>
+        <Filename Value="../../rtl_uygulama/linux/n_zamanlayici.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="35" Y="55"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit123>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>

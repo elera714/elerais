@@ -76,7 +76,8 @@ begin
     begin
 
       AracCubugu := PAracCubugu(AracCubugu^.NesneAl(PKimlik(ADegiskenler + 00)^));
-      Result := AracCubugu^.DugmeEkle(PISayi4(ADegiskenler + 04)^);
+      if not(AracCubugu = nil) then
+        Result := AracCubugu^.DugmeEkle(PISayi4(ADegiskenler + 04)^);
     end
 
     else Result := HATA_ISLEV;

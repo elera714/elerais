@@ -20,8 +20,11 @@ uses gdt, gorev, paylasim, genel, zamanlayici, gn_pencere, gn_islemgostergesi,
 procedure SistemKontrolGoreviOlustur;
 procedure KontrolYonetimi;
 procedure NesneKontrol;
+procedure CalisanUygulamalariKaydet;
 
 implementation
+
+uses sistem;
 
 {==============================================================================
   sistem kontrol iþlevlerini yönetecek görevi oluþturur
@@ -100,17 +103,17 @@ begin
     NesneKontrol;
 
     SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '1', []);
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareX: %d', [GFareSurucusu.YatayKonum]);
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareY: %d', [GFareSurucusu.DikeyKonum]);
 
     // 10 saniye bekle
     //BekleMS(1000);
     Sayac := ZamanlayiciSayaci + 1000;
     while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
 
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-Y: %d', [GFareSurucusu.DikeyKonum]);
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-Y: %d', [GFareSurucusu.DikeyKonum]);
     SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '2', []);
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-Y: %d', [GFareSurucusu.DikeyKonum]);
 
     DosyaBulundu := False;
 
@@ -140,6 +143,11 @@ begin
     end;
     FindClose(AramaKaydi);
 
+{    SISTEM_MESAJ(mtHata, RENK_MAVI, 'Masaüstü Sol: %d', [GAktifMasaustu^.FKonum.Sol]);
+    SISTEM_MESAJ(mtHata, RENK_MAVI, 'Masaüstü Üst: %d', [GAktifMasaustu^.FKonum.Ust]);
+    SISTEM_MESAJ(mtHata, RENK_MAVI, 'Masaüstü Sol: %d', [GAktifMasaustu^.FCizimBaslangic.Sol]);
+    SISTEM_MESAJ(mtHata, RENK_MAVI, 'Masaüstü Üst: %d', [GAktifMasaustu^.FCizimBaslangic.Ust]);
+}
     if(DosyaBulundu) then
     begin
 
@@ -160,15 +168,19 @@ begin
 
         Pencere^.Goster;
 
-        for i := 20 downto 0 do
+        for i := 10 downto 0 do
         begin
 
           IslemGostergesi^.MevcutDegerYaz(i);
           //BekleMS(100);
 
-          Sayac := ZamanlayiciSayaci + 100;
+          Sayac := ZamanlayiciSayaci + 30;
           while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
         end;
+
+        CalisanUygulamalariKaydet;
+
+        YenidenBaslat;
 
         Pencere^.Gizle;
 
@@ -181,6 +193,8 @@ begin
   end;
 end;
 
+// görsel nesne bellek bölgesine baþka iþlemlerin hatayla veri yazmasýna karþýn
+// denetim iþlemlerini gerçekleþtirir
 procedure NesneKontrol;
 var
   G: PGorselNesne;
@@ -198,6 +212,72 @@ begin
     begin
 
       SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%d. nesne giriþi hatalý: %d', [i, G^.Kimlik]);
+      Break;
+    end;
+  end;
+end;
+
+// sistem yeniden baþlamadan önce çalýþan tüm pencereye sahip uygulamalarýn
+// diske kaydedilme iþlemini gerçekleþtirir
+procedure CalisanUygulamalariKaydet;
+var
+  GN: PGorselNesne;
+  Bellek: PChar;
+  i, j, CalisanPSayisi: TISayi4;
+  P: TProgramKayit;
+  FD: TFizikselDepolama;
+  P4: PSayi4;
+begin
+
+  Bellek := Isaretci($3200000);
+  FillByte(Isaretci(Bellek)^, 512, 0);
+
+  CalisanPSayisi := CalisanProgramSayisiniAl(GAktifMasaustu^.Kimlik);
+
+  for i := 0 to CalisanPSayisi - 1 do
+  begin
+
+    P := CalisanProgramBilgisiAl(i, GAktifMasaustu^.Kimlik);
+
+    for j := 1 to Length(P.DosyaAdi) do
+    begin
+
+      Bellek^ := P.DosyaAdi[j];
+      Inc(Bellek);
+    end;
+
+    Bellek^ := #0;
+    Inc(Bellek);
+
+    P4 := PSayi4(Bellek);
+
+    GN := GN^.NesneAl(P.PencereKimlik);
+    if not(GN = nil) then
+    begin
+
+      P4^ := GN^.FKonum.Sol;
+      Inc(P4);
+      P4^ := GN^.FKonum.Ust;
+      Inc(P4);
+      P4^ := GN^.FBoyut.Genislik;
+      Inc(P4);
+      P4^ := GN^.FBoyut.Yukseklik;
+      Inc(P4);
+    end;
+
+    Bellek := PChar(P4);
+  end;
+
+  Bellek^ := #0;
+
+  for i := 0 to 5 do
+  begin
+
+    FD := FizikselDepolamaAygitListesi[i];
+    if(FD.Mevcut0) and (FD.FD3.SurucuTipi = SURUCUTIP_DISK) then
+    begin
+
+      FD.SektorYaz(@FD, 10, 1, Isaretci($3200000));
       Break;
     end;
   end;

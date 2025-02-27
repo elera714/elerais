@@ -1,4 +1,4 @@
-ELERA İşletim Sistemi (elerais) - 0.3.7 [R33]
+ELERA İşletim Sistemi (elerais) - 0.3.8 [R34]
 
 ---
 Kullanılan Yazılım Araçları:
