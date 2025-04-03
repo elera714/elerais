@@ -6,7 +6,7 @@
   Dosya Adý: gn_listegorunum.pas
   Dosya Ýþlevi: liste görünüm (TListView) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 03/04/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -439,8 +439,8 @@ begin
 
   ListeGorunum := PListeGorunum(AGonderici);
 
-  // sol fare tuþ basýmý
-  if(AOlay.Olay = FO_SOLTUS_BASILDI) then
+  // sol / sað fare tuþ basýmý
+  if(AOlay.Olay = FO_SOLTUS_BASILDI) or (AOlay.Olay = FO_SAGTUS_BASILDI) then
   begin
 
     // liste görünümün sahibi olan pencere en üstte mi ? kontrol et
@@ -458,7 +458,7 @@ begin
     begin
 
       // fare olaylarýný yakala
-      OlayYakalamayaBasla(ListeGorunum);
+      if(AOlay.Olay = FO_SOLTUS_BASILDI) then OlayYakalamayaBasla(ListeGorunum);
 
       // seçilen sýrayý yeniden belirle
       j := (AOlay.Deger2 - 24) div 21;
@@ -469,10 +469,14 @@ begin
       // liste görünüm nesnesini yeniden çiz
       ListeGorunum^.Ciz;
 
-      // uygulamaya veya efendi nesneye mesaj gönder
-      if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
-        ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-      else GorevListesi[ListeGorunum^.GorevKimlik]^.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+      if(AOlay.Olay = FO_SOLTUS_BASILDI) then
+      begin
+
+        // uygulamaya veya efendi nesneye mesaj gönder
+        if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
+          ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
+        else GorevListesi[ListeGorunum^.GorevKimlik]^.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+      end;
     end;
   end
 

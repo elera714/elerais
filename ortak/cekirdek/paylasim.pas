@@ -24,7 +24,6 @@ const
   FPCSurum: string = {$i %FPCVERSION%};
 
 var
-  { TODO : öndeðer açýlýþ aygýtý. Otomatikleþtirilecek }
   AcilisSurucuAygiti: string = 'disk1';           // disk1:\dizin1
   KLASOR_PROGRAM: string = 'progrmlr';            // programlarýn bulunduðu dizin
   OnDegerMasaustuProgram: string = 'muyntcs.c';
@@ -73,12 +72,12 @@ const
   SECICI_CAGRI_VERI     = 5;
   SECICI_CAGRI_TSS      = 6;
 
-  SECICI_GRAFIK_KOD     = 7;
-  SECICI_GRAFIK_VERI    = 8;
+  //SECICI_GRAFIK_KOD     = 7;
+  //SECICI_GRAFIK_VERI    = 8;
   SECICI_GRAFIK_TSS     = 9;
 
-  SECICI_KONTROL_KOD    = 10;
-  SECICI_KONTROL_VERI   = 11;
+  //SECICI_KONTROL_KOD    = 10;
+  //SECICI_KONTROL_VERI   = 11;
   SECICI_KONTROL_TSS    = 12;
 
   SECICI_GRAFIK_LFB     = 13;
@@ -154,6 +153,9 @@ type
     Yatay: TYatayHizalar;
     Dikey: TDikeyHizalar;
   end;
+
+type
+  TTusDurum = (tdYok, tdBasildi, tdBirakildi);
 
 const
   SISTEME_AYRILMIS_RAM  = $0A00000;             // sistem için ayrýlmýþ RAM = 10MB
@@ -327,11 +329,12 @@ const
   SURUCUTIP_DISK    = 2;
 
 const   // DST = dosya sistem tipi (FAT)
-  DST_BELIRSIZ      = $0;
-  DST_FAT12         = $1;
-  DST_FAT16         = $4;
-  DST_FAT32         = $B;
-  DST_FAT32LBA      = $C;
+  DST_BELIRSIZ      = Byte($00);
+  DST_FAT12         = Byte($01);
+  DST_FAT16         = Byte($04);
+  DST_FAT32         = Byte($0B);
+  DST_FAT32LBA      = Byte($0C);
+  DST_ELR1          = Byte($40);
 
 type
   // 12 & 16 bitlik boot kayýt yapýsý
@@ -621,7 +624,7 @@ type
   end;
 
 type
-  TIRQIslevi = procedure;
+  TIslev = procedure;
 
 type
   PKonum = ^TKonum;
@@ -673,6 +676,14 @@ type
   TDugmeDurumu = (ddNormal, ddBasili);
   TFareImlecTipi = (fitOK, fitGiris, fitEl, fitBoyutKBGD, fitBoyutKG,
     fitIslem, fitBekle, fitYasak, fitBoyutBD, fitBoyutKDGB, fitBoyutTum);
+
+var
+  SistemTusDurumuKontrolSol: TTusDurum;
+  SistemTusDurumuKontrolSag: TTusDurum;
+  SistemTusDurumuAltSol    : TTusDurum;
+  SistemTusDurumuAltSag    : TTusDurum;
+  SistemTusDurumuDegisimSol: TTusDurum;
+  SistemTusDurumuDegisimSag: TTusDurum;
 
 const
   // çekirdeðin ürettiði genel olaylar - çekirdek olay (CO)
@@ -960,6 +971,8 @@ procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
 procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
 
 implementation
+
+uses src_klavye;
 
 function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 begin

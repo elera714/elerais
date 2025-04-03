@@ -19,7 +19,7 @@ uses paylasim, gn_pencere, gn_etiket, zamanlayici, dns, gn_panel, gorselnesne,
   gn_gucdugmesi, gn_resim, gn_karmaliste, gn_degerlistesi, gn_dugme, gn_izgara,
   gn_araccubugu, gn_durumcubugu, gn_giriskutusu, gn_onaykutusu, gn_sayfakontrol,
   gn_defter, gn_kaydirmacubugu, islemci, pic, arp, dosya, src_pcnet32, bolumleme,
-  gn_listekutusu;
+  gn_listekutusu, irq;
 
 type
   // gerçek moddan gelen veri yapýsý
@@ -114,7 +114,8 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, donusum, gn_islevler, giysi_normal, giysi_mac, depolama, src_disket,
-  vbox, usb, ohci, port, gn_islemgostergesi, prg_cagri, prg_grafik, prg_kontrol;
+  vbox, usb, ohci, port, gn_islemgostergesi, prg_cagri, prg_grafik, prg_kontrol,
+  islevler;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -207,6 +208,18 @@ begin
   CalisanGorevSayisi := 1;
   CalisanGorev := 0;
 
+  { TODO - aþaðýdaki 3 iþlev ve ileride eklenebilinecek diðer iþlevler
+    sistemin parçasý (thread) olacak þekilde tek bir iþlevden oluþturulacak }
+
+  // program çaðrýlarýna yanýt verecek görevi oluþtur
+  CagriYanitlayiciyiOlustur(1, 'Sistem Çaðrýlarý', @ProgramCagrilariniYanitla);
+
+  // grafik iþlevlerini yönetecek görevi oluþtur
+  GrafikYoneticiGorevOlustur(2, 'Grafik Yöneticisi', @GrafikYonetimi);
+
+  // sistem kontrol görevi oluþtur
+  SistemKontrolGoreviOlustur(3, 'Sistem Kontrol', @KontrolYonetimi);
+
   // ilk TSS'yi yükle
   // not : tss'nin yükleme iþlevi görev geçiþini gerçekleþtirmez. sadece
   // TSS'yi meþgul olarak ayarlar.
@@ -214,15 +227,6 @@ begin
     mov   ax,SECICI_SISTEM_TSS * 8;
     ltr   ax
   end;
-
-  // program çaðrýlarýna yanýt verecek görevi oluþtur
-  CagriYanitlayiciyiOlustur;
-
-  // grafik iþlevlerini yönetecek görevi oluþtur
-  GrafikYoneticiGorevOlustur;
-
-  // sistem kontrol görevi oluþtur
-  SistemKontrolGoreviOlustur;
 end;
 
 {==============================================================================
@@ -231,15 +235,16 @@ end;
 procedure SistemAnaKontrol;
 var
   Gorev: PGorev = nil;
-  Tus2: TSayi2;
-  Kontrol: TSayi1;
-  Tus: Char;
+  TusDegeri: TSayi2;
+  TusKontrolDegeri: TSayi1;
+  TusKarakterDegeri: Char;
   TusDurum: TTusDurum;
-  i: Integer;
+  i: TSayi4;
   m: TMemoryManager;
   Masaustu: PMasaustu;
   GN: PGorselNesne;
-  FD: TFizikselDepolama;
+  DosyaKimlik: TKimlik;
+  DosyaNo: TSayi4 = 0;
 begin
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
@@ -251,12 +256,12 @@ begin
 
   KaydedilenProgramlariYenidenYukle;
 
-  SolKontrolTusDurumu := tdYok;
-  SagKontrolTusDurumu := tdYok;
-  SolAltTusDurumu := tdYok;
-  SagAltTusDurumu := tdYok;
-  SolDegisimTusDurumu := tdYok;
-  SagDegisimTusDurumu := tdYok;
+  SistemTusDurumuKontrolSol := tdYok;
+  SistemTusDurumuKontrolSag := tdYok;
+  SistemTusDurumuAltSol := tdYok;
+  SistemTusDurumuAltSag := tdYok;
+  SistemTusDurumuDegisimSol := tdYok;
+  SistemTusDurumuDegisimSag := tdYok;
 
   // masaüstü aktif olana kadar bekle
   while GAktifMasaustu = nil do;
@@ -277,214 +282,263 @@ begin
     Inc(SistemSayaci);
 
     // klavyeden basýlan tuþu al
-    // 2 bytelýk Tus deðerinin üst byte'ý kontrol deðeri, alt byte'ý ise karakter deðeridir
-    TusDurum := KlavyedenTusAl(Tus2);
-    Kontrol := (Tus2 shr 8);
-    Tus := Char(Tus2 and $FF);
-    if(TusDurum = tdBasildi) and (Tus <> #0) then
+    // 2 bytelýk TusDegeri deðiþken deðerinin üst byte'ý kontrol deðeri, alt byte'ý ise karakter deðeridir
+    TusDurum := KlavyedenTusAl(TusDegeri);
+    TusKontrolDegeri := (TusDegeri shr 8);
+    TusKarakterDegeri := Char(TusDegeri and $FF);
+
+    if(TusDegeri <> 0) then
     begin
 
-      //SISTEM_MESAJ(RENK_KIRMIZI, 'Basýlan Tuþ Deðeri: %d', [Ord(Tus)]);
-      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Basýlan Tuþ: %d', [Ord(Tus)]);
-
-      if(SolKontrolTusDurumu = tdBasildi) or (SagKontrolTusDurumu = tdBasildi) then
+      if(TusDurum = tdBasildi) then
       begin
 
-        // DHCP sunucusundan IP adresi al
-        // bilgi: agbilgi.c programýnýn seçeneðine baðlýdýr
-        if(Tus = '2') then
+        SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Basýlan Tuþ Deðeri: %x', [TusDegeri]);
+
+        if(TusDegeri = TUS_KONTROL_SOL) then
+          SistemTusDurumuKontrolSol := tdBasildi
+        else if(TusDegeri = TUS_KONTROL_SAG) then
+          SistemTusDurumuKontrolSag := tdBasildi
+        else if(TusDegeri = TUS_ALT_SOL) then
+          SistemTusDurumuAltSol := tdBasildi
+        else if(TusDegeri = TUS_ALT_SAG) then
+          SistemTusDurumuAltSag := tdBasildi
+        else if(TusDegeri = TUS_DEGISIM_SOL) then
+          SistemTusDurumuDegisimSol := tdBasildi
+        else if(TusDegeri = TUS_DEGISIM_SAG) then
+          SistemTusDurumuDegisimSag := tdBasildi;
+
+        if(SistemTusDurumuKontrolSol = tdBasildi) or (SistemTusDurumuKontrolSag = tdBasildi) then
         begin
 
-          if(AgYuklendi) then
+          // DHCP sunucusundan IP adresi al
+          // bilgi: agbilgi.c programýnýn seçeneðine baðlýdýr
+          if(TusKarakterDegeri = '2') then
           begin
 
-            // að bilgileri öndeðerlerle yükleniyor
-            IlkAdresDegerleriniYukle;
+            if(AgYuklendi) then
+            begin
 
-            DHCPIpAdresiAl;
+              // að bilgileri öndeðerlerle yükleniyor
+              IlkAdresDegerleriniYukle;
+
+              DHCPIpAdresiAl;
+            end
+            else
+            begin
+
+              SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Að yüklü olmadýðý için DHCP''den IP adresi alýnamýyor!', []);
+            end;
           end
-          else
+          // test amaçlý
+          else if(TusKarakterDegeri = '3') then
           begin
 
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Að yüklü olmadýðý için DHCP''den IP adresi alýnamýyor!', []);
-          end;
-        end
-        // test amaçlý
-        else if(Tus = '3') then
-        begin
 
-{          SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Deðer: %s', [GeciciDeger]);
+            dosya.AssignFile(DosyaKimlik, 'disk1:\klasor\dosya' + IntToStr(DosyaNo));
+            dosya.ReWrite(DosyaKimlik);
 
-          SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-TemelAdres: %x', [AygitPCNet32.TemelAdres]);
-          SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Yol: %d', [AygitPCNet32.Yol]);
-          SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Aygit: %d', [AygitPCNet32.Aygit]);
-          SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Islev: %d', [AygitPCNet32.Islev]);
-}
+            Inc(DosyaNo);
 
-          //Gorev^.Calistir('disket1:\mustudk.c');
-          //Gorev^.Calistir('disk1:\sisbilgi.c');
-          //Gorev^.Calistir('disket1:\yzmcgor2.c');
-          //vbox.Listele;
+            dosya.CloseFile(DosyaKimlik);
 
-          //TestAdres := Isaretci($10000);
-          //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek U3: %d', [TSayi4(TestAdres)]);
+  {          SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Deðer: %s', [GeciciDeger]);
 
-          //TestSinif := TTestSinif.Create;
+            SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-TemelAdres: %x', [AygitPCNet32.TemelAdres]);
+            SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Yol: %d', [AygitPCNet32.Yol]);
+            SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Aygit: %d', [AygitPCNet32.Aygit]);
+            SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Islev: %d', [AygitPCNet32.Islev]);
+  }
 
+            //Gorev^.Calistir('disket1:\mustudk.c');
+            //Gorev^.Calistir('disk1:\sisbilgi.c');
+            //Gorev^.Calistir('disket1:\yzmcgor2.c');
+            //vbox.Listele;
 
+            //TestAdres := Isaretci($10000);
+            //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek U3: %d', [TSayi4(TestAdres)]);
 
-          {DosyaAdi := 'disk1:\harfler.txt';
-          dosya.AssignFile(DosyaKimlik, DosyaAdi);
-          dosya.Reset(DosyaKimlik);
-
-          DosyaUzunluk := dosya.FileSize(DosyaKimlik);
-
-          //if(DosyaUzunluk <= DOSYA_BELLEK_KAPASITESI) then
-          begin
-
-            //_IOResult;
-
-            //_EOF(DosyaKimlik);
-
-            dosya.Read(DosyaKimlik, Isaretci($3000000));
-          end;
-
-          dosya.CloseFile(DosyaKimlik); }
-        end
-        // test iþlev tuþu-1
-        else if(Tus = '4') then
-        begin
-
-          //Gorev^.Calistir('disk1:\progrmlr\saat.c');
-          //iiiii := Align(SizeOf(TIzgara) + 64, 16);
-          //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %d', [iiiii]);
+            //TestSinif := TTestSinif.Create;
 
 
 
-{          pic.Maskele(0);
-          IRR := pic.ISRDegeriniOku;
-          SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'IRR Deðeri: ', IRR, 4);
-}
+            {DosyaAdi := 'disk1:\harfler.txt';
+            dosya.AssignFile(DosyaKimlik, DosyaAdi);
+            dosya.Reset(DosyaKimlik);
 
-          //BekleMS(10000);
+            DosyaUzunluk := dosya.FileSize(DosyaKimlik);
 
-//          pic.MaskeKaldir(0);
-
-          // aþaðýdaki programlar üzerinden fdc iþlemleri tamamlanacak
-          //Gorev^.Calistir('disket1:\kopyala.c');
-          //Gorev^.Calistir('disket1:\dskgor.c');
-
-          //BellekI := GGercekBellek.Ayir(4095);
-          //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
-          //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
-          //vbox.IcerigiGoruntule;
-          //TestSinif.Artir;
-          //Gorev^.Calistir('disk1:\arpbilgi.c');
-
-          {Disk := SurucuAl('disk2:');
-          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-1: %d', [Disk^.Acilis.DizinGirisi.IlkSektor]);
-          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-2: %d', [Disk^.Acilis.DizinGirisi.ToplamSektor]);}
-        end
-        // test iþlev tuþu-2
-        else if(Tus = '5') then
-        begin
-
-          GetMemoryManager(m);
-          m.Getmem := @GMem;
-          {if(m.Getmem = nil) then
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'nil', [])
-          else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '!nil', []);}
-          m.GetMem(1000);
-
-          //Getmem(TestAdres, 100);
-
-          //new(xyz);
-          //IRR := pic.ISRDegeriniOku;
-          //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'IRR Deðeri: ', IRR, 4);
-        end
-        // program çalýþtýrma programýný çalýþtýr
-        else if(Tus = 'c') then
-
-          //ohci.Kontrol1
-          Gorev^.Calistir('calistir.c')
-
-        // dosya yöneticisi programýný çalýþtýr
-        else if(Tus = 'd') then
-
-          Gorev^.Calistir('dsyyntcs.c')
-
-        // görev yöneticisi programýný çalýþtýr
-        else if(Tus = 'g') then
-
-          Gorev^.Calistir('grvyntcs.c')
-
-        // bilgisayarý kapat
-        else if(Tus = 'k') then
-        begin
-
-          if(GAktifPencere <> nil) then
-          begin
-
-            GN := GAktifPencere^.FAktifNesne;
-            if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
+            //if(DosyaUzunluk <= DOSYA_BELLEK_KAPASITESI) then
             begin
 
-              PanoDegeri := GN^.Baslik;
+              //_IOResult;
+
+              //_EOF(DosyaKimlik);
+
+              dosya.Read(DosyaKimlik, Isaretci($3000000));
+            end;
+
+            dosya.CloseFile(DosyaKimlik); }
+          end
+          // test iþlev tuþu-1
+          else if(TusKarakterDegeri = '4') then
+          begin
+
+            dosya.AssignFile(DosyaKimlik, 'disk1:\klasor\klsr' + IntToStr(DosyaNo));
+            dosya.CreateDir(DosyaKimlik);
+
+            Inc(DosyaNo);
+
+            dosya.CloseFile(DosyaKimlik);
+
+
+            //Gorev^.Calistir('disk1:\progrmlr\saat.c');
+            //iiiii := Align(SizeOf(TIzgara) + 64, 16);
+            //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %d', [iiiii]);
+
+
+
+  {          pic.Maskele(0);
+            IRR := pic.ISRDegeriniOku;
+            SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'IRR Deðeri: ', IRR, 4);
+  }
+
+            //BekleMS(10000);
+
+  //          pic.MaskeKaldir(0);
+
+            // aþaðýdaki programlar üzerinden fdc iþlemleri tamamlanacak
+            //Gorev^.Calistir('disket1:\kopyala.c');
+            //Gorev^.Calistir('disket1:\dskgor.c');
+
+            //BellekI := GGercekBellek.Ayir(4095);
+            //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
+            //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
+            //vbox.IcerigiGoruntule;
+            //TestSinif.Artir;
+            //Gorev^.Calistir('disk1:\arpbilgi.c');
+
+            {Disk := SurucuAl('disk2:');
+            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-1: %d', [Disk^.Acilis.DizinGirisi.IlkSektor]);
+            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-2: %d', [Disk^.Acilis.DizinGirisi.ToplamSektor]);}
+          end
+          // test iþlev tuþu-2
+          else if(TusKarakterDegeri = '5') then
+          begin
+
+            GetMemoryManager(m);
+            m.Getmem := @GMem;
+            {if(m.Getmem = nil) then
+              SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'nil', [])
+            else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '!nil', []);}
+            m.GetMem(1000);
+
+            //Getmem(TestAdres, 100);
+
+            //new(xyz);
+            //IRR := pic.ISRDegeriniOku;
+            //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'IRR Deðeri: ', IRR, 4);
+          end
+          // program çalýþtýrma programýný çalýþtýr
+          else if(TusKarakterDegeri = 'c') then
+
+            //ohci.Kontrol1
+            Gorev^.Calistir('calistir.c')
+
+          // dosya yöneticisi programýný çalýþtýr
+          else if(TusKarakterDegeri = 'd') then
+
+            Gorev^.Calistir('dsyyntcs.c')
+
+          // görev yöneticisi programýný çalýþtýr
+          else if(TusKarakterDegeri = 'g') then
+
+            Gorev^.Calistir('grvyntcs.c')
+
+          // bilgisayarý kapat
+          else if(TusKarakterDegeri = 'k') then
+          begin
+
+            if(GAktifPencere <> nil) then
+            begin
+
+              GN := GAktifPencere^.FAktifNesne;
+              if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
+              begin
+
+                PanoDegeri := GN^.Baslik;
+              end;
+            end;
+          end
+
+          // mesaj görüntüleme programýný çalýþtýr
+          else if(TusKarakterDegeri = 'm') then
+
+            Gorev^.Calistir('smsjgor.c')
+
+          // resim görüntüleme programýný çalýþtýr
+          else if(TusKarakterDegeri = 'r') then
+
+            Gorev^.Calistir('resimgor.c')
+
+          // bilgisayarý yeniden baþlat
+          else if(TusKarakterDegeri = 'y') then
+          begin
+
+            if(GAktifPencere <> nil) then
+            begin
+
+              GN := GAktifPencere^.FAktifNesne;
+              if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
+              begin
+
+                if(Length(PanoDegeri) > 0) then GN^.Baslik := PanoDegeri;
+              end;
+            end;
+          end
+          else if(TusDegeri >= TUS_F1) and (TusDegeri <= TUS_F4) then
+          begin
+
+            i := (TusDegeri - TUS_F1);
+
+            //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Aktif Masaüstü: %d', [i])
+
+            // aktif masaüstünü deðiþtir
+            Masaustu := GMasaustuListesi[i];
+            if not(Masaustu = nil) then
+            begin
+
+              // masaüstünü aktif olarak iþaretle
+              GAktifMasaustu := Masaustu;
+              GAktifMasaustu^.Aktiflestir;
+
+              // masaüstünü çiz
+              GAktifMasaustu^.Ciz;
             end;
           end;
         end
-
-        // mesaj görüntüleme programýný çalýþtýr
-        else if(Tus = 'm') then
-
-          Gorev^.Calistir('smsjgor.c')
-
-        // resim görüntüleme programýný çalýþtýr
-        else if(Tus = 'r') then
-
-          Gorev^.Calistir('resimgor.c')
-
-        // bilgisayarý yeniden baþlat
-        else if(Tus = 'y') then
+        else
         begin
 
-          if(GAktifPencere <> nil) then
-          begin
-
-            GN := GAktifPencere^.FAktifNesne;
-            if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
-            begin
-
-              if(Length(PanoDegeri) > 0) then GN^.Baslik := PanoDegeri;
-            end;
-          end;
-        end
-        else if(Tus >= TUS_F1) and (Tus <= TUS_F4) then
-        begin
-
-          i := (Ord(Tus) - Ord(TUS_F1)) + 1;
-
-          //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Aktif Masaüstü: %d', [i])
-
-          // aktif masaüstünü deðiþtir
-          Masaustu := GMasaustuListesi[i - 1];
-          if not(Masaustu = nil) then
-          begin
-
-            // masaüstünü aktif olarak iþaretle
-            GAktifMasaustu := Masaustu;
-            GAktifMasaustu^.Aktiflestir;
-
-            // masaüstünü çiz
-            GAktifMasaustu^.Ciz;
-          end;
+          // klavye olaylarýný iþle
+          GOlayYonetim.KlavyeOlaylariniIsle(TusKarakterDegeri);
         end;
       end
-      else
+      else if(TusDurum = tdBirakildi) then
       begin
 
-        // klavye olaylarýný iþle
-        GOlayYonetim.KlavyeOlaylariniIsle(Tus);
+        if(TusDegeri = TUS_KONTROL_SOL) then
+          SistemTusDurumuKontrolSol := tdBirakildi
+        else if(TusDegeri = TUS_KONTROL_SAG) then
+          SistemTusDurumuKontrolSag := tdBirakildi
+        else if(TusDegeri = TUS_ALT_SOL) then
+          SistemTusDurumuAltSol := tdBirakildi
+        else if(TusDegeri = TUS_ALT_SAG) then
+          SistemTusDurumuAltSag := tdBirakildi
+        else if(TusDegeri = TUS_DEGISIM_SOL) then
+          SistemTusDurumuDegisimSol := tdBirakildi
+        else if(TusDegeri = TUS_DEGISIM_SAG) then
+          SistemTusDurumuDegisimSag := tdBirakildi;
       end;
     end;
 
@@ -811,7 +865,7 @@ begin
   begin
 
     FD := FizikselDepolamaAygitListesi[i];
-    if(FD.Mevcut0) and (FD.FD3.SurucuTipi = SURUCUTIP_DISK) then
+    if(FD.Mevcut0) and (FD.FD3.SurucuTipi = SURUCUTIP_DISK) and (FD.FD3.AygitAdi = 'fda4') then
     begin
 
       FD.SektorOku(@FD, 10, 1, Isaretci($3200000));

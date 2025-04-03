@@ -114,7 +114,8 @@ procedure TfrmAnaSayfa.Goster;
 begin
 
   // pencereyi görüntüle
-  FPencere.Gorunum := True;end;
+  FPencere.Gorunum := True;
+end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
 var

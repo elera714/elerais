@@ -73,10 +73,10 @@ begin
     Kaynak := PSayi4(ADegiskenler + 00)^;
     Hedef := PSayi4(ADegiskenler + 04)^;
     Uzunluk := PSayi4(ADegiskenler + 08)^;
-    if(Kaynak + Uzunluk > GGercekBellek.ToplamRAM) then
+    {if(Kaynak + Uzunluk > GGercekBellek.ToplamRAM) then
 
       Result := HATA_BELLEKOKUMA
-    else
+    else}
     begin
 
       Tasi2(Isaretci(Kaynak), Isaretci(Hedef + CalisanGorevBellekAdresi), Uzunluk);

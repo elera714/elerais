@@ -22,6 +22,8 @@ function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
 procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+procedure CreateDir(ADosyaKimlik: TKimlik);
+procedure ReWrite(ADosyaKimlik: TKimlik);
 procedure Reset(ADosyaKimlik: TKimlik);
 function IOResult: TISayi4;
 function EOF(ADosyaKimlik: TKimlik): Boolean;
@@ -33,9 +35,11 @@ procedure AramaKaydiniYokEt(ADosyaKimlik: TKimlik);
 function DosyaKaydiOlustur: TKimlik;
 procedure DosyaKaydiniYokEt(ADosyaKimlik: TKimlik);
 
+function HamDosyaAdiniDosyaAdinaCevir2(ADizinGirdisi: PDizinGirdisi): string;
+
 implementation
 
-uses bolumleme, fat12, fat16, fat32, sistemmesaj, islevler, donusum;
+uses bolumleme, elr1, fat12, fat16, fat32, sistemmesaj, islevler, donusum;
 
 {==============================================================================
   dosya sistem iþlevlerinin kullanacaðý deðiþkenleri ilk deðerlerle yükle
@@ -196,7 +200,19 @@ begin
 
     // dosya sistem tipine göre iþlevi yönlendir
     DST := GAramaKayitListesi[AramaKimlik].MantiksalDepolama^.MD3.DST;
+
+    // geçici
+    if(DST = DST_ELR1) then
+    begin
+
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.IlkSektor := 5222; //SektorNo;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.ToplamSektor := 4; //MD^.Acilis.DizinGirisi.ToplamSektor;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
+      GAramaKayitListesi[AramaKimlik].DizinGirisi.OkunanSektor := 0;
+    end;
+
     case DST of
+      DST_ELR1      : Result := elr1.FindFirst(AramaSuzgeci, ADosyaOzellik, ADosyaArama);
       DST_FAT12     : Result := fat12.FindFirst(AramaSuzgeci, ADosyaOzellik, ADosyaArama);
       DST_FAT16     : Result := fat16.FindFirst(AramaSuzgeci, ADosyaOzellik, ADosyaArama);
       DST_FAT32,
@@ -215,12 +231,19 @@ var
 begin
 
   DST := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalDepolama^.MD3.DST;
-  if(DST = DST_FAT12) then
+
+  if(DST = DST_ELR1) then
+
+    Result := elr1.FindNext(ADosyaArama)
+
+  else if(DST = DST_FAT12) then
 
     Result := fat12.FindNext(ADosyaArama)
+
   else if(DST = DST_FAT16) then
 
     Result := fat16.FindNext(ADosyaArama)
+
   else if(DST = DST_FAT32) or (DST = DST_FAT32LBA) then
 
     Result := fat32.FindNext(ADosyaArama);
@@ -289,6 +312,434 @@ begin
   DosyaKayit^.Uzunluk := 0;
   DosyaKayit^.Konum := 0;
   DosyaKayit^.VeriBellekAdresi := nil;
+end;
+
+{==============================================================================
+  dosya oluþturma iþlevini gerçekleþtirir
+ ==============================================================================}
+procedure CreateDir(ADosyaKimlik: TKimlik);
+var
+  DosyaKayit: PDosyaKayit;
+  DosyaArama: TDosyaArama;
+  TamAramaYolu: string;
+  Bulundu: Boolean;
+  FD: TFizikselDepolama;
+  Bellek: array[0..511] of TSayi1;
+  Bellek2: array[0..31] of TSayi1 = (
+    $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $10, $08, $2D, $31, $66,
+    $46, $5A, $56, $5A, $00, $00, $60, $A1, $56, $5A, $E5, $12, $00, $00, $00, $00);
+  SektorNo, i, ZincirNo, ZincirSektorSayisi: TSayi4;
+  MD: PMantiksalDepolama;
+  DizinGirdisi: PDizinGirdisi;
+  TumGirislerOkundu,
+  UzunDosyaAdiBulundu, DosyaBulundu: Boolean;
+  DizinGirisi: TDizinGirisi;
+begin
+
+  DosyaBulundu := False;
+
+  // her bir cluster'in 4 sektör olarak tasarlandýðý elr-1 dosya sistemi
+
+  SektorNo := $1466; //5222;
+
+  // en son iþlem hatalý ise çýk
+  if(FileResult > 0) then Exit;
+
+  //ADosyaArama.DosyaAdi := '';
+
+  // ilk deðer atamalarý
+  TumGirislerOkundu := False;
+
+  //UzunDosyaAdiBulundu := False;
+
+  // aramanýn yapýlacaðý sürücü
+  //MD := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalDepolama;
+  //DizinGirisi := @GAramaKayitListesi[ADosyaKimlik].DizinGirisi;
+
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
+
+  DizinGirisi.DizinTablosuKayitNo := 0;
+  DizinGirisi.OkunanSektor := 0;
+  ZincirSektorSayisi := 4;  // geçici deðer
+  ZincirNo := 0;
+
+  FD := FizikselDepolamaAygitListesi[3];  // fda4
+
+  // aramaya baþla
+  repeat
+
+    if(DizinGirisi.DizinTablosuKayitNo = 0) then
+    begin
+
+      // bir sonraki dizin giriþini oku
+      FD.SektorOku(@FD, SektorNo + ZincirNo, 1, Isaretci(@Bellek));
+
+      // DizinGirisi.OkunanSektor deðiþkeni elr dosya sisteminde anlamsýz
+      // Inc(DizinGirisi.OkunanSektor);
+    end;
+
+    // dosya giriþ tablosuna konumlan
+    DizinGirdisi := PDizinGirdisi(@Bellek);
+    Inc(DizinGirdisi, DizinGirisi.DizinTablosuKayitNo);
+
+    // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
+    if(DizinGirdisi^.DosyaAdi[0] = #00) then
+    begin
+
+      //Result := 1;
+      TumGirislerOkundu := True;
+      //Exit;
+    end
+    // silinmiþ dosya / dizin
+    else if(DizinGirdisi^.DosyaAdi[0] = Chr($E5)) then
+    begin
+
+      // bir sonraki giriþle devam et
+    end
+    // mantýksal depolama aygýtý etiket (volume label)
+    else if(DizinGirdisi^.Ozellikler = $08) then
+    begin
+
+      // bir sonraki giriþle devam et
+    end
+    // dizin girdisi uzun ada sahip bir ad ise, uzun dosya adýný al
+    {else if(DizinGirdisi^.Ozellikler = $0F) then
+    begin
+
+      UzunDosyaAdiBulundu := True;
+      DosyaParcalariniBirlestir(Isaretci(DizinGirdisi));
+    end}
+    // dizin girdisinin uzun ad haricinde olmasý durumunda
+    else //if(DizinGirdisi^.Ozellikler <> $0F) then
+    begin
+
+      // girdinin uzun ad dosya adý OLMAMASI durumunda
+
+      // 1. bir önceki girdi uzun dosya adý ise, ad ve diðer özellikleri geri döndür
+      {if(UzunDosyaAdiBulundu) then
+      begin
+
+        DosyaArama.DosyaAdi := WideChar2String(@UzunDosyaAdi);
+        DosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
+        DosyaArama.OlusturmaSaati := DizinGirdisi^.OlusturmaSaati;
+        DosyaArama.OlusturmaTarihi := DizinGirdisi^.OlusturmaTarihi;
+        DosyaArama.SonErisimTarihi := DizinGirdisi^.SonErisimTarihi;
+        DosyaArama.SonDegisimSaati := DizinGirdisi^.SonDegisimSaati;
+        DosyaArama.SonDegisimTarihi := DizinGirdisi^.SonDegisimTarihi;
+
+        // deðiþken içeriklerini sýfýrla
+        UzunDosyaAdi[0] := #0;
+        UzunDosyaAdi[1] := #0;
+        UzunDosyaAdiBulundu := False;
+      end
+      else}
+      // 2. bir önceki girdi uzun dosya adý deðilse, 8 + 3 dosya ad + uzantý ve
+      // diðer özellikleri geri döndür
+      begin
+
+        DosyaArama.DosyaAdi := HamDosyaAdiniDosyaAdinaCevir2(DizinGirdisi);
+        DosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
+        DosyaArama.OlusturmaSaati := DizinGirdisi^.OlusturmaSaati;
+        DosyaArama.OlusturmaTarihi := DizinGirdisi^.OlusturmaTarihi;
+        DosyaArama.SonErisimTarihi := DizinGirdisi^.SonErisimTarihi;
+        DosyaArama.SonDegisimSaati := DizinGirdisi^.SonDegisimSaati;
+        DosyaArama.SonDegisimTarihi := DizinGirdisi^.SonDegisimTarihi;
+      end;
+
+      // dosya uzunluðu ve cluster baþlangýcýný geri dönüþ deðerine ekle
+      DosyaArama.DosyaUzunlugu := DizinGirdisi^.DosyaUzunlugu;
+      DosyaArama.BaslangicKumeNo := DizinGirdisi^.BaslangicKumeNo;
+
+      // gözardý edilecek giriþler
+      if(DosyaArama.DosyaAdi = '.') then
+      begin
+
+      end
+      else
+      begin
+
+        //Result := 0;
+        //TumGirislerOkundu := True;
+      end;
+
+      if(DosyaArama.DosyaAdi = DosyaKayit^.DosyaAdi) then
+      begin
+
+        DosyaBulundu := True;
+        TumGirislerOkundu := True;
+        SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Dosya Adý: %s, Sýra No: %d',
+          [DosyaArama.DosyaAdi, DizinGirisi.DizinTablosuKayitNo]);
+      end;
+    end;
+
+    if not(TumGirislerOkundu) then
+    begin
+
+      // bir sonraki girdiye konumlan
+      Inc(DizinGirisi.DizinTablosuKayitNo);
+      if(DizinGirisi.DizinTablosuKayitNo = 16) then
+      begin
+
+        Inc(ZincirNo);
+        if(ZincirNo = ZincirSektorSayisi - 1) then
+        begin
+
+          TumGirislerOkundu := True;
+          DosyaBulundu := True;     // çýkýþ için, aþaðýdaki kodlarýn devreye girmemesi için
+
+          { TODO - fat tablosundan bir sonraki alýnan giriþle devaö edilecektir, kodlamayý yap }
+        end else DizinGirisi.DizinTablosuKayitNo := 0
+      end else Inc(DizinGirdisi);
+    end;
+
+  until TumGirislerOkundu;
+
+  // dosya oluþturma iþlemi
+  if not(DosyaBulundu) then
+  begin
+
+    if(DizinGirisi.DizinTablosuKayitNo >= 0) and (DizinGirisi.DizinTablosuKayitNo < 16) then
+    begin
+
+      FillChar(Bellek2, Length(DosyaKayit^.DosyaAdi), $20);
+
+      for i := 1 to Length(DosyaKayit^.DosyaAdi) do
+      begin
+
+        Bellek2[i - 1] := Ord(DosyaKayit^.DosyaAdi[i]);
+      end;
+
+      Tasi2(@Bellek2, @Bellek[DizinGirisi.DizinTablosuKayitNo * 32], 32);
+
+      //FillChar(Bellek, 512, $0);
+      FD.SektorYaz(@FD, SektorNo + ZincirNo, 1, Isaretci(@Bellek));
+    end;
+  end;
+end;
+
+{==============================================================================
+  dosya oluþturma iþlevini gerçekleþtirir
+ ==============================================================================}
+procedure ReWrite(ADosyaKimlik: TKimlik);
+var
+  DosyaKayit: PDosyaKayit;
+  DosyaArama: TDosyaArama;
+  TamAramaYolu: string;
+  Bulundu: Boolean;
+  FD: TFizikselDepolama;
+  Bellek: array[0..511] of TSayi1;
+  Bellek2: array[0..31] of TSayi1 = (
+    $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $20, $08, $2D, $31, $66,
+    $46, $5A, $56, $5A, $00, $00, $60, $A1, $56, $5A, $E5, $12, $00, $00, $00, $00);
+  SektorNo, i, ZincirNo, ZincirSektorSayisi: TSayi4;
+  MD: PMantiksalDepolama;
+  DizinGirdisi: PDizinGirdisi;
+  TumGirislerOkundu,
+  UzunDosyaAdiBulundu, DosyaBulundu: Boolean;
+  DizinGirisi: TDizinGirisi;
+begin
+
+  DosyaBulundu := False;
+
+  // her bir cluster'in 4 sektör olarak tasarlandýðý elr-1 dosya sistemi
+
+  SektorNo := $1466; //5222;
+
+  // en son iþlem hatalý ise çýk
+  if(FileResult > 0) then Exit;
+
+  //ADosyaArama.DosyaAdi := '';
+
+  // ilk deðer atamalarý
+  TumGirislerOkundu := False;
+
+  //UzunDosyaAdiBulundu := False;
+
+  // aramanýn yapýlacaðý sürücü
+  //MD := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalDepolama;
+  //DizinGirisi := @GAramaKayitListesi[ADosyaKimlik].DizinGirisi;
+
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
+
+  DizinGirisi.DizinTablosuKayitNo := 0;
+  DizinGirisi.OkunanSektor := 0;
+  ZincirSektorSayisi := 4;  // geçici deðer
+  ZincirNo := 0;
+
+  FD := FizikselDepolamaAygitListesi[3];  // fda4
+
+  // aramaya baþla
+  repeat
+
+    if(DizinGirisi.DizinTablosuKayitNo = 0) then
+    begin
+
+      // bir sonraki dizin giriþini oku
+      FD.SektorOku(@FD, SektorNo + ZincirNo, 1, Isaretci(@Bellek));
+
+      // DizinGirisi.OkunanSektor deðiþkeni elr dosya sisteminde anlamsýz
+      // Inc(DizinGirisi.OkunanSektor);
+    end;
+
+    // dosya giriþ tablosuna konumlan
+    DizinGirdisi := PDizinGirdisi(@Bellek);
+    Inc(DizinGirdisi, DizinGirisi.DizinTablosuKayitNo);
+
+    // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
+    if(DizinGirdisi^.DosyaAdi[0] = #00) then
+    begin
+
+      //Result := 1;
+      TumGirislerOkundu := True;
+      //Exit;
+    end
+    // silinmiþ dosya / dizin
+    else if(DizinGirdisi^.DosyaAdi[0] = Chr($E5)) then
+    begin
+
+      // bir sonraki giriþle devam et
+    end
+    // mantýksal depolama aygýtý etiket (volume label)
+    else if(DizinGirdisi^.Ozellikler = $08) then
+    begin
+
+      // bir sonraki giriþle devam et
+    end
+    // dizin girdisi uzun ada sahip bir ad ise, uzun dosya adýný al
+    {else if(DizinGirdisi^.Ozellikler = $0F) then
+    begin
+
+      UzunDosyaAdiBulundu := True;
+      DosyaParcalariniBirlestir(Isaretci(DizinGirdisi));
+    end}
+    // dizin girdisinin uzun ad haricinde olmasý durumunda
+    else //if(DizinGirdisi^.Ozellikler <> $0F) then
+    begin
+
+      // girdinin uzun ad dosya adý OLMAMASI durumunda
+
+      // 1. bir önceki girdi uzun dosya adý ise, ad ve diðer özellikleri geri döndür
+      {if(UzunDosyaAdiBulundu) then
+      begin
+
+        DosyaArama.DosyaAdi := WideChar2String(@UzunDosyaAdi);
+        DosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
+        DosyaArama.OlusturmaSaati := DizinGirdisi^.OlusturmaSaati;
+        DosyaArama.OlusturmaTarihi := DizinGirdisi^.OlusturmaTarihi;
+        DosyaArama.SonErisimTarihi := DizinGirdisi^.SonErisimTarihi;
+        DosyaArama.SonDegisimSaati := DizinGirdisi^.SonDegisimSaati;
+        DosyaArama.SonDegisimTarihi := DizinGirdisi^.SonDegisimTarihi;
+
+        // deðiþken içeriklerini sýfýrla
+        UzunDosyaAdi[0] := #0;
+        UzunDosyaAdi[1] := #0;
+        UzunDosyaAdiBulundu := False;
+      end
+      else}
+      // 2. bir önceki girdi uzun dosya adý deðilse, 8 + 3 dosya ad + uzantý ve
+      // diðer özellikleri geri döndür
+      begin
+
+        DosyaArama.DosyaAdi := HamDosyaAdiniDosyaAdinaCevir2(DizinGirdisi);
+        DosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
+        DosyaArama.OlusturmaSaati := DizinGirdisi^.OlusturmaSaati;
+        DosyaArama.OlusturmaTarihi := DizinGirdisi^.OlusturmaTarihi;
+        DosyaArama.SonErisimTarihi := DizinGirdisi^.SonErisimTarihi;
+        DosyaArama.SonDegisimSaati := DizinGirdisi^.SonDegisimSaati;
+        DosyaArama.SonDegisimTarihi := DizinGirdisi^.SonDegisimTarihi;
+      end;
+
+      // dosya uzunluðu ve cluster baþlangýcýný geri dönüþ deðerine ekle
+      DosyaArama.DosyaUzunlugu := DizinGirdisi^.DosyaUzunlugu;
+      DosyaArama.BaslangicKumeNo := DizinGirdisi^.BaslangicKumeNo;
+
+      // gözardý edilecek giriþler
+      if(DosyaArama.DosyaAdi = '.') then
+      begin
+
+      end
+      else
+      begin
+
+        //Result := 0;
+        //TumGirislerOkundu := True;
+      end;
+
+      if(DosyaArama.DosyaAdi = DosyaKayit^.DosyaAdi) then
+      begin
+
+        DosyaBulundu := True;
+        TumGirislerOkundu := True;
+        SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Dosya Adý: %s, Sýra No: %d',
+          [DosyaArama.DosyaAdi, DizinGirisi.DizinTablosuKayitNo]);
+      end;
+    end;
+
+    if not(TumGirislerOkundu) then
+    begin
+
+      // bir sonraki girdiye konumlan
+      Inc(DizinGirisi.DizinTablosuKayitNo);
+      if(DizinGirisi.DizinTablosuKayitNo = 16) then
+      begin
+
+        Inc(ZincirNo);
+        if(ZincirNo = ZincirSektorSayisi - 1) then
+        begin
+
+          TumGirislerOkundu := True;
+          DosyaBulundu := True;     // çýkýþ için, aþaðýdaki kodlarýn devreye girmemesi için
+
+          { TODO - fat tablosundan bir sonraki alýnan giriþle devaö edilecektir, kodlamayý yap }
+        end else DizinGirisi.DizinTablosuKayitNo := 0
+      end else Inc(DizinGirdisi);
+    end;
+
+  until TumGirislerOkundu;
+
+  // dosya oluþturma iþlemi
+  if not(DosyaBulundu) then
+  begin
+
+    if(DizinGirisi.DizinTablosuKayitNo >= 0) and (DizinGirisi.DizinTablosuKayitNo < 16) then
+    begin
+
+      FillChar(Bellek2, Length(DosyaKayit^.DosyaAdi), $20);
+
+      for i := 1 to Length(DosyaKayit^.DosyaAdi) do
+      begin
+
+        Bellek2[i - 1] := Ord(DosyaKayit^.DosyaAdi[i]);
+      end;
+
+      Tasi2(@Bellek2, @Bellek[DizinGirisi.DizinTablosuKayitNo * 32], 32);
+
+      //FillChar(Bellek, 512, $0);
+      FD.SektorYaz(@FD, SektorNo + ZincirNo, 1, Isaretci(@Bellek));
+    end;
+  end;
+end;
+
+function HamDosyaAdiniDosyaAdinaCevir2(ADizinGirdisi: PDizinGirdisi): string;
+var
+  NoktaEklendi: Boolean;
+  i: TSayi4;
+begin
+
+  // hedef bellek bölgesini sýfýrla
+  // hedef bellek alaný þu an 8+1+3+1 (dosya+.+uz+null) olmalýdýr
+  Result := '';
+
+  // dosya adýný çevir
+  i := 0;
+  while (i < 8) and (ADizinGirdisi^.DosyaAdi[i] <> ' ') do
+  begin
+
+    Result := Result + LowerCase(ADizinGirdisi^.DosyaAdi[i]);
+    Inc(i);
+  end;
 end;
 
 {==============================================================================
@@ -381,13 +832,19 @@ begin
   DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
 
   DST := DosyaKayit^.MantiksalDepolama^.MD3.DST;
-  if(DST = DST_FAT12) then
+
+  if(DST = DST_ELR1) then
+
+    elr1.Read(ADosyaKimlik, AHedefBellek)
+
+  else if(DST = DST_FAT12) then
 
     fat12.Read(ADosyaKimlik, AHedefBellek)
 
   else if(DST = DST_FAT16) then
 
     fat16.Read(ADosyaKimlik, AHedefBellek)
+
   else if(DST = DST_FAT32) or (DST = DST_FAT32LBA) then
 
     fat32.Read(ADosyaKimlik, AHedefBellek);

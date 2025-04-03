@@ -1,6 +1,9 @@
 *******************************************************************************
   Sürüm: 0.3.9 - 27.02.2025 (R35) - Alfa
 *******************************************************************************
+  + yeni dosya sistemi çalýþmalarý (elr-1) baþladý
+  + TListeGorunum nesnesine sað tuþ seçim iþlevi eklendi
+  + klavye sürücüsünün (kontrol / görüntülenen tuþ biçiminde 2 aþamalý olarak) tasarýmý tamamlandý
 
 *******************************************************************************
   Sürüm: 0.3.8 - 27.02.2025 (R35) - Alfa

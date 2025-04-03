@@ -300,9 +300,7 @@
       </Unit48>
       <Unit49>
         <Filename Value="../../rtl_uygulama/linux/system.pp"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="188"/>
         <CursorPos X="3" Y="201"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
@@ -366,8 +364,10 @@
       <Unit60>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="184"/>
+        <TopLine Value="245"/>
+        <CursorPos X="60" Y="116"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit60>
@@ -393,7 +393,7 @@
         <Loaded Value="True"/>
       </Unit63>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="anasayfafrm.pas"/>
         <Caret Line="226" Column="17" TopLine="195"/>
@@ -505,13 +505,9 @@
         <Caret Line="45" Column="10" TopLine="26"/>
       </Position28>
       <Position29>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret TopLine="184"/>
-      </Position29>
-      <Position30>
         <Filename Value="../../rtl_uygulama/linux/system.pp"/>
         <Caret Line="45" Column="10" TopLine="26"/>
-      </Position30>
+      </Position29>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

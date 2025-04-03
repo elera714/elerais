@@ -6,7 +6,7 @@
   Dosya Adý: src_klavye.pas
   Dosya Ýþlevi: standart klavye sürücüsü
 
-  Güncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 03/04/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,45 +16,52 @@ interface
 
 uses paylasim, port;
 
-type
-  TTusDurum = (tdYok, tdBasildi, tdBirakildi);
-
 const
-  { TODO - aþaðýdaki deðiþkenler yeni deðerlerle yüklenecek
-    tüm kontrol tuþlarý taným deðerlerine göre buraya eklenecek }
-  TUS_KONTROL = Chr($C0);
-  TUS_ALT     = Chr($C1);
-  TUS_DEGISIM = Chr($C2);
-  TUS_KBT     = Chr($3A);                           // karakter büyütme tuþu (capslock)
-  TUS_SYT     = Chr($45);                           // sayý yazma tuþu (numlock)
-  TUS_KT      = Chr($46);                           // kaydýrma tuþu (scrolllock)
+  // tuþ deðerleri
+  TUS_KONTROL_SOL   = TSayi2($0100);
+  TUS_KONTROL_SAG   = TSayi2($0200);
+  TUS_ALT_SOL       = TSayi2($0300);
+  TUS_ALT_SAG       = TSayi2($0400);
+  TUS_DEGISIM_SOL   = TSayi2($0500);
+  TUS_DEGISIM_SAG   = TSayi2($0600);
 
-  TUS_F1      = Chr(129);
-  TUS_F2      = Chr(130);
-  TUS_F3      = Chr(131);
-  TUS_F4      = Chr(132);
-  TUS_F5      = Chr(133);
-  TUS_F6      = Chr(134);
-  TUS_F7      = Chr(135);
-  TUS_F8      = Chr(136);
-  TUS_F9      = Chr(137);
-  TUS_F10     = Chr(138);
+  TUS_SIKISTIR      = TSayi2($0700);
+  TUS_SIL           = TSayi2($0800);
+  TUS_GIT_BASA      = TSayi2($0900);
+  TUS_GIT_SONA      = TSayi2($0A00);
+  TUS_SAYFA_YUKARI  = TSayi2($0B00);
+  TUS_SAYFA_ASAGI   = TSayi2($0C00);
+
+  TUS_KUBU          = TSayi2($0D00);          // karakter küçültme / büyütme tuþu (caps lock)
+  TUS_HESAP         = TSayi2($0E00);          // hesap makinesi açma / kapama tuþu (num lock)
+  TUS_KAYDIRMA      = TSayi2($0F00);          // kaydýrma açma / kapama tuþu (scroll lock)
+
+  TUS_F1            = TSayi2($1000);
+  TUS_F2            = TSayi2($1100);
+  TUS_F3            = TSayi2($1200);
+  TUS_F4            = TSayi2($1300);
+  TUS_F5            = TSayi2($1400);
+  TUS_F6            = TSayi2($1500);
+  TUS_F7            = TSayi2($1600);
+  TUS_F8            = TSayi2($1700);
+  TUS_F9            = TSayi2($1800);
+  TUS_F10           = TSayi2($1900);
 
 var
-  SolKontrolTusDurumu: TTusDurum = tdYok;
-  SagKontrolTusDurumu: TTusDurum = tdYok;
-  SolAltTusDurumu    : TTusDurum = tdYok;
-  SagAltTusDurumu    : TTusDurum = tdYok;
-  SolDegisimTusDurumu: TTusDurum = tdYok;
-  SagDegisimTusDurumu: TTusDurum = tdYok;
+  TusDurumSolKontrol  : TTusDurum = tdYok;
+  TusDurumSagKontrol  : TTusDurum = tdYok;
+  TusDurumSolAlt      : TTusDurum = tdYok;
+  TusDurumSagAlt      : TTusDurum = tdYok;
+  TusDurumSolDegisim  : TTusDurum = tdYok;
+  TusDurumSagDegisim  : TTusDurum = tdYok;
 
-  KBTDurum        : Boolean = False;                // karakter büyütme tuþu (capslock)
-  SYTDurum        : Boolean = False;                // sayý yazma tuþu (numlock)
-  KTDurum         : Boolean = False;                // kaydýrma tuþu (scrolllock)
+  TusDurumKUBUAcik    : Boolean = False;        // karakter küçültme / büyütme tuþu (caps lock)
+  TusDurumHesapAcik   : Boolean = False;        // hesap makinesi açma / kapama tuþu (num lock)
+  TusDurumKaydirmaAcik: Boolean = False;        // kaydýrma açma / kapama tuþu (scroll lock)
 
 procedure Yukle;
 procedure KlavyeKesmeCagrisi;
-function KlavyedenTusAl(var ATus: TSayi2): TTusDurum;
+function KlavyedenTusAl(var ATusDegeri: TSayi2): TTusDurum;
 
 implementation
 
@@ -67,13 +74,13 @@ const
   KlavyeTRKucuk: array[0..127] of Char = (
     #0, #27 {Esc}, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '*', '-',
     {14} #08 {Backspace}, #09 {Tab}, 'q', 'w', 'e', 'r', 't', 'y', 'u', Chr($FD) {ý},
-    {24} 'o', 'p', Chr($F0) {ð}, Chr($FC) {ü}, #10 {Enter}, TUS_KONTROL, 'a', 's', 'd',
-    'f', 'g', 'h', 'j', 'k', 'l', Chr($FE) {þ}, 'i', '"', TUS_DEGISIM {Left Shift},
+    {24} 'o', 'p', Chr($F0) {ð}, Chr($FC) {ü}, #10 {Enter}, #0 {sol kontrol}, 'a', 's', 'd',
+    'f', 'g', 'h', 'j', 'k', 'l', Chr($FE) {þ}, 'i', '"', #0 {Left Shift},
     ',', 'z', 'x', 'c', 'v', 'b', 'n', 'm', Chr($F6) {ö}, Chr($E7) {ç}, '.',
-    TUS_DEGISIM {Right Shift}, '*', TUS_ALT, ' ', TUS_KBT {Caps Lock},
-    TUS_F1, TUS_F2, TUS_F3, TUS_F4, TUS_F5, TUS_F6, TUS_F7, TUS_F8, TUS_F9, TUS_F10,
-    TUS_SYT,   // Num Lock
-    TUS_KT,   // Scroll Lock
+    #0 {Right Shift}, '*', #0 {TUS_ALT}, ' ', #0 {Caps Lock},
+    #0, #0, #0, #0, #0, #0, #0, #0, #0, #0,  {F1 - F10}
+    #0 {Num Lock},
+    #0 {Scroll Lock},
     {71} '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', ',',
     {84} #0, #0, '<',
     #0,   // F11 Key
@@ -85,13 +92,13 @@ const
   KlavyeTRBuyuk: array[0..127] of Char = (
     #0, #27 {Esc}, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '*', '-',
     {14} #08 {Backspace}, #09 {Tab}, 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',
-    {24} 'O', 'P', Chr($D0) {Ð}, Chr($DC) {Ü}, #10 {Enter}, TUS_KONTROL, 'A', 'S', 'D',
-    'F', 'G', 'H', 'J', 'K', 'L', Chr($DE) {Þ}, Chr($DD) {'Ý'}, '"', TUS_DEGISIM {Left Shift},
+    {24} 'O', 'P', Chr($D0) {Ð}, Chr($DC) {Ü}, #10 {Enter}, #0 {sol kontrol}, 'A', 'S', 'D',
+    'F', 'G', 'H', 'J', 'K', 'L', Chr($DE) {Þ}, Chr($DD) {'Ý'}, '"', #0 {Left Shift},
     ',', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', Chr($D6) {Ö}, Chr($C7) {Ç}, '.',
-    TUS_DEGISIM {Right Shift}, '*', TUS_ALT, ' ', TUS_KBT {Caps Lock},
-    TUS_F1, TUS_F2, TUS_F3, TUS_F4, TUS_F5, TUS_F6, TUS_F7, TUS_F8, TUS_F9, TUS_F10,
-    TUS_SYT,   // Num Lock
-    TUS_KT,   // Scroll Lock
+    #0 {Right Shift}, '*', #0 {TUS_ALT}, ' ', #0 {Caps Lock},
+    #0, #0, #0, #0, #0, #0, #0, #0, #0, #0,  {F1 - F10}
+    #0 {Num Lock},
+    #0 {Scroll Lock},
     {71} '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', ',',
     {84} #0, #0, '<',
     #0,   // F11 Key
@@ -177,17 +184,20 @@ begin
   end;
 end;
 
-{==============================================================================
-  klavye tuþlarýnýn anlamlý tuþlara çevrilme iþlevi
- ==============================================================================}
 var
   OlayTus: TSayi1;
-  OncekiOlayTus: TSayi1 = 0;
+  GenTusBasildi: Boolean = False;       // geniþletilmiþ tuþa {$E0} basýldý
+{==============================================================================
+  klavye tuþlarýný sistem tabanlý tuþlara çevirme iþlevi
 
-function KlavyedenTusAl(var ATus: TSayi2): TTusDurum;
+  bilgi: ATus[15..00] -> görüntülenebilir tuþ karakterleri
+         ATus[31..16] -> kontrol tuþlarýný içerir
+ ==============================================================================}
+function KlavyedenTusAl(var ATusDegeri: TSayi2): TTusDurum;
 var
   HamTus: TSayi1;
-  TusBirakildi: Boolean;
+  TusBirakildi,
+  KontrolTusunaBasildi: Boolean;
   TusDurumu: TTusDurum;
 begin
 
@@ -195,7 +205,7 @@ begin
   if(ToplamVeriUzunlugu = 0) then
   begin
 
-    ATus := 0;
+    ATusDegeri := 0;
     Result := tdYok;
     Exit(tdYok);
   end
@@ -214,8 +224,8 @@ begin
     if(HamTus = $E0) then
     begin
 
-      OncekiOlayTus := HamTus;
-      ATus := 0;
+      GenTusBasildi := True;
+      ATusDegeri := 0;
       Exit(tdYok);
     end;
 
@@ -225,172 +235,101 @@ begin
       TusDurumu := tdBirakildi
     else TusDurumu := tdBasildi;
 
-    //SISTEM_MESAJ(RENK_SIYAH, 'Tuþ: %x', [i]);
+    //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Alýnan Klavye Deðeri: %x', [HamTus]);
 
-    // kontrol tuþu
-    if(OlayTus = $1D) then
+    // geniþletilmiþ tuþ kontrolleri
+    if(GenTusBasildi) then
     begin
 
-      if(OncekiOlayTus = $E0) then
-        SagKontrolTusDurumu := TusDurumu
-      else SolKontrolTusDurumu := TusDurumu;
+      GenTusBasildi := False;
 
-      ATus := 0;
-      Result := tdYok;
-    end
-    // alt tuþu
-    else if(OlayTus = $38) then
-    begin
-
-      if(OncekiOlayTus = $E0) then
-        SagAltTusDurumu := TusDurumu
-      else SolAltTusDurumu := TusDurumu;
-
-      //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Alt Tuþ: ?', []);
-
-      ATus := 0;
-      Result := tdYok;
-    end
-    // deðiþim - sol shift tuþu
-    else if(OlayTus = $2A) then
-    begin
-
-      SolDegisimTusDurumu := TusDurumu;
-      ATus := 0;
-      Result := tdYok;
-    end
-    // deðiþim - sað shift tuþu
-    else if(OlayTus = $36) then
-    begin
-
-      SagDegisimTusDurumu := TusDurumu;
-      ATus := 0;
-      Result := tdYok;
-    end
-    // büyütme / küçültme tuþu - capslock
-    else if(OlayTus = $3A) then
-    begin
-
-      if(TusDurumu = tdBasildi) then KBTDurum := not KBTDurum;
-
-      ATus := 0;
-      Result := tdYok;
+      // sol kontrol tuþu
+      case OlayTus of
+        $1D: begin TusDurumSagKontrol := TusDurumu; ATusDegeri := TUS_KONTROL_SAG; Exit(TusDurumu); end;
+        $38: begin TusDurumSagAlt := TusDurumu; ATusDegeri := TUS_ALT_SAG; Exit(TusDurumu); end;
+        $52: begin ATusDegeri := TUS_SIKISTIR; Exit(TusDurumu); end;
+        $53: begin ATusDegeri := TUS_SIL; Exit(TusDurumu); end;
+        $47: begin ATusDegeri := TUS_GIT_BASA; Exit(TusDurumu); end;
+        $4F: begin ATusDegeri := TUS_GIT_SONA; Exit(TusDurumu); end;
+        $49: begin ATusDegeri := TUS_SAYFA_YUKARI; Exit(TusDurumu); end;
+        $51: begin ATusDegeri := TUS_SAYFA_ASAGI; Exit(TusDurumu); end;
+      end;
     end
     else
     begin
 
-      {if(SagAltTusDurumu = tdBasildi) then
-        SISTEM_MESAJ(RENK_KIRMIZI, 'Alt Tuþ: basýldý', [])
-      else if(SagAltTusDurumu = tdBirakildi) then
-        SISTEM_MESAJ(RENK_KIRMIZI, 'Alt Tuþ: býrakýldý', []);}
+      KontrolTusunaBasildi := False;
+
+      // sol kontrol tuþu
+      case OlayTus of
+        $1D: begin TusDurumSolKontrol := TusDurumu; ATusDegeri := TUS_KONTROL_SOL; KontrolTusunaBasildi := True; end;
+        $2A: begin TusDurumSolDegisim := TusDurumu; ATusDegeri := TUS_DEGISIM_SOL; KontrolTusunaBasildi := True; end;
+        $36: begin TusDurumSagDegisim := TusDurumu; ATusDegeri := TUS_DEGISIM_SAG; KontrolTusunaBasildi := True; end;
+        $38: begin TusDurumSolAlt := TusDurumu; ATusDegeri := TUS_ALT_SOL; KontrolTusunaBasildi := True; end;
+        // karakter küçültme / büyütme tuþu (caps lock)
+        $3A:
+        begin
+
+          if(TusDurumu = tdBasildi) then TusDurumKUBUAcik := not TusDurumKUBUAcik;
+          ATusDegeri := TUS_KUBU; KontrolTusunaBasildi := True;
+        end;
+        // hesap makinesi açma / kapama tuþu (num lock)
+        $45:
+        begin
+
+          if(TusDurumu = tdBasildi) then TusDurumHesapAcik := not TusDurumHesapAcik;
+          ATusDegeri := TUS_HESAP; KontrolTusunaBasildi := True;
+        end;
+        // kaydýrma açma / kapama tuþu (scroll lock)
+        $46:
+        begin
+
+          if(TusDurumu = tdBasildi) then TusDurumKaydirmaAcik := not TusDurumKaydirmaAcik;
+          ATusDegeri := TUS_KAYDIRMA; KontrolTusunaBasildi := True;
+        end;
+        // kaydýrma açma / kapama tuþu (scroll lock)
+        $3B..$44:
+        begin
+
+          ATusDegeri := TUS_F1 + (OlayTus - $3B); KontrolTusunaBasildi := True;
+        end;
+      end;
+
+      if(KontrolTusunaBasildi) then Exit(TusDurumu);
 
       // deðiþim tuþuna (shift) basýlmasý durumunda
-      if(SolDegisimTusDurumu = tdBasildi) or (SagDegisimTusDurumu = tdBasildi) then
+      if(TusDurumSolDegisim = tdBasildi) or (TusDurumSagDegisim = tdBasildi) then
       begin
 
         // deðiþim tablosunda tuþ olmamasý durumunda
         // küçük / büyük klavye tablosundan ilgili tuþu al
-        ATus := TSayi1(KlavyeTRShift[OlayTus and $7F]);
-        if(ATus = 0) then
+        ATusDegeri := TSayi1(KlavyeTRShift[OlayTus and $7F]);
+        if(ATusDegeri = 0) then
         begin
 
-          if(KBTDurum) then
-            ATus := TSayi1(KlavyeTRKucuk[OlayTus and $7F])
-          else ATus := TSayi1(KlavyeTRBuyuk[OlayTus and $7F]);
+          if(TusDurumKUBUAcik) then
+            ATusDegeri := TSayi1(KlavyeTRKucuk[OlayTus and $7F])
+          else ATusDegeri := TSayi1(KlavyeTRBuyuk[OlayTus and $7F]);
         end;
       end
       // sað alt tuþu ile gerçekleþtirilen tuþ olayý
-      else if(SagAltTusDurumu = tdBasildi) then
+      else if(TusDurumSagAlt = tdBasildi) then
 
-        ATus := TSayi1(KlavyeTRAlt[OlayTus and $7F])
+        ATusDegeri := TSayi1(KlavyeTRAlt[OlayTus and $7F])
       else
       // sadece tek bir normal tuþ olay iþlevi
       begin
 
-        if(KBTDurum) then
-          ATus := TSayi1(KlavyeTRBuyuk[OlayTus and $7F])
-        else ATus := TSayi1(KlavyeTRKucuk[OlayTus and $7F]);
+        if(TusDurumKUBUAcik) then
+          ATusDegeri := TSayi2(KlavyeTRBuyuk[OlayTus and $7F])
+        else ATusDegeri := TSayi2(KlavyeTRKucuk[OlayTus and $7F]);
       end;
 
       if(TusBirakildi) then
         Result := tdBirakildi
       else Result := tdBasildi;
     end;
-
-    OncekiOlayTus := HamTus;
   end;
-{
-  // tuþun býrakýlmasý
-  if(TusBirakildi) then
-  begin
-
-    else if(OlayTus = TUS_SYT) then
-    begin
-
-      OlayTus := #0;
-      SYTDurum := not SYTDurum;
-    end
-    else if(OlayTus = TUS_KT) then
-    begin
-
-      OlayTus := #0;
-      KTDurum := not KTDurum;
-    end
-    else if(OlayTus = TUS_KONTROL) then
-    begin
-
-      OlayTus := #0;
-      KONTROLTusDurumu := tdBirakildi;
-    end
-    else if(OlayTus = TUS_ALT) then
-    begin
-
-      OlayTus := #0;
-      ALTTusDurumu := tdBirakildi;
-    end
-    else if(OlayTus = TUS_DEGISIM) then
-    begin
-
-      OlayTus := #0;
-      DEGISIMTusDurumu := tdBirakildi;
-    end else OlayTus := OlayTus;
-
-    //Result := tdBirakildi;
-  end
-  else
-  begin
-
-    else if(OlayTus = TUS_SYT) then
-    begin
-
-      OlayTus := #0;
-    end
-    else if(OlayTus = TUS_KT) then
-    begin
-
-      OlayTus := #0;
-    end
-    else if(OlayTus = TUS_KONTROL) then
-    begin
-
-      OlayTus := #0;
-      KONTROLTusDurumu := tdBasildi;
-    end
-    else if(OlayTus = TUS_ALT) then
-    begin
-
-      OlayTus := #0;
-      ALTTusDurumu := tdBasildi;
-    end
-    else if(OlayTus = TUS_DEGISIM) then
-    begin
-
-      OlayTus := #0;
-      DEGISIMTusDurumu := tdBasildi;
-    end else OlayTus := OlayTus;
-
-    //Result := tdBasildi;
-  end;  }
 end;
 
 end.

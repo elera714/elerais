@@ -245,7 +245,6 @@
       </Unit33>
       <Unit34>
         <Filename Value="../../rtl_uygulama/linux/paylasim.inc"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <TopLine Value="71"/>
         <CursorPos X="18" Y="81"/>
@@ -262,9 +261,10 @@
       <Unit36>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="45"/>
-        <CursorPos X="14" Y="53"/>
+        <TopLine Value="145"/>
+        <CursorPos X="28" Y="161"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit36>

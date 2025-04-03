@@ -143,7 +143,8 @@ begin
             for BolumSayisi := 1 to 4 do
             begin
 
-              if(DiskBolum^.BolumTipi = DST_FAT12) or
+              if(DiskBolum^.BolumTipi = DST_ELR1) or
+                (DiskBolum^.BolumTipi = DST_FAT12) or
                 (DiskBolum^.BolumTipi = DST_FAT16) or
                 (DiskBolum^.BolumTipi = DST_FAT32) or
                 (DiskBolum^.BolumTipi = DST_FAT32LBA) then
@@ -180,7 +181,8 @@ begin
                     MD^.MD3.DST := DiskBolum^.BolumTipi;
                     MD^.MD3.SurucuTipi := FizikselDepolamaAygitListesi[i].FD3.SurucuTipi;
 
-                    if(DiskBolum^.BolumTipi = DST_FAT32) or
+                    if(DiskBolum^.BolumTipi = DST_ELR1) or
+                      (DiskBolum^.BolumTipi = DST_FAT32) or
                       (DiskBolum^.BolumTipi = DST_FAT32LBA) then
                     begin
 

@@ -187,12 +187,13 @@ const
   SURUCUTIP_DISKET  = Byte(1);
   SURUCUTIP_DISK    = Byte(2);
 
-const   // DATTIP = dosya ayýrma tablosu (FAT)
-  DATTIP_BELIRSIZ   = Byte($0);
-  DATTIP_FAT12      = Byte($1);
-  DATTIP_FAT16      = Byte($4);
-  DATTIP_FAT32      = Byte($B);
-  DATTIP_FAT32LBA   = Byte($C);
+const   // DST = dosya sistem tipi (FAT)
+  DST_BELIRSIZ      = Byte($00);
+  DST_FAT12         = Byte($01);
+  DST_FAT16         = Byte($04);
+  DST_FAT32         = Byte($0B);
+  DST_FAT32LBA      = Byte($0C);
+  DST_ELR1          = Byte($40);
 
 // fiziksel depolama aygýt yapýsý - program için
 type

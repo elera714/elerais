@@ -35,7 +35,8 @@ const
 //  #define VMM_SetPointerShape 3
 //  #define VMM_AcknowledgeEvents 41
   VMM_GUEST_BILGIAL           = 50;
-//  #define VMM_GetDisplayChangeRequest 51
+  VMM_KONUK_GORUNTU_DEGISIM   = 51;
+  VMM_KONUK_ONAY_OLAY         = 41;
   VMM_GUEST_YETENEKAL         = 55;
 //  #define VMM_VideoSetVisibleRegion 72
 
@@ -71,6 +72,20 @@ type
   	Yetenek: TSayi4;
   end;
 
+  PVBoxOnayOlay = ^TVBoxOnayOlay;
+  TVBoxOnayOlay = record
+    Baslik: TVBoxBaslik;
+  	Olaylar: TSayi4;
+  end;
+
+  PVBoxGoruntuDegisim = ^TVBoxGoruntuDegisim;
+  TVBoxGoruntuDegisim = record
+    Baslik: TVBoxBaslik;
+  	XCozunurluk,
+    YCozunurluk: TSayi4;
+    BPP, OlayOnay: TSayi4;
+  end;
+
 var
   PCIAygit: TPCI;
   VBPort: TSayi4;
@@ -81,6 +96,10 @@ var
   VBoxGuestBilgi: TVBoxGuestBilgi;
   {$CODEALIGN PROC=4}
   VBoxGuestYetenek: TVBoxGuestYetenek;
+  {$CODEALIGN PROC=4}
+  VBoxOnayOlay: TVBoxOnayOlay;
+  {$CODEALIGN PROC=4}
+  VBoxGoruntuDegisim: TVBoxGoruntuDegisim;
   {$CODEALIGN PROC=4}
   VBoxFare: TVBoxFare;
 
@@ -133,7 +152,7 @@ begin
 	VBoxGuestBilgi.Baslik.Ayrildi2 := 0;
 	VBoxGuestBilgi.Surum := VMMDEV_SURUM;
 	VBoxGuestBilgi.ISType := 0;
-	PortYaz4(VBPort, TSayi4(Isaretci(@VBoxGuestBilgi)));
+	PortYaz4(VBPort, TSayi4(@VBoxGuestBilgi));
 
 	VBoxGuestYetenek.Baslik.Uzunluk := SizeOf(TVBoxGuestYetenek);
 	VBoxGuestYetenek.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
@@ -141,18 +160,39 @@ begin
 	VBoxGuestYetenek.Baslik.RC := 0;
 	VBoxGuestYetenek.Baslik.Ayrildi1 := 0;
 	VBoxGuestYetenek.Baslik.Ayrildi2 := 0;
-	VBoxGuestYetenek.Yetenek := 4;
-	PortYaz4(VBPort, TSayi4(Isaretci(@VBoxGuestYetenek)));
+	VBoxGuestYetenek.Yetenek := 1 shl 2; //4;
+	PortYaz4(VBPort, TSayi4(@VBoxGuestYetenek));
+
+	VBoxOnayOlay.Baslik.Uzunluk := SizeOf(TVBoxOnayOlay);
+	VBoxOnayOlay.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
+	VBoxOnayOlay.Baslik.IstekTipi := VMM_KONUK_ONAY_OLAY;
+	VBoxOnayOlay.Baslik.RC := 0;
+	VBoxOnayOlay.Baslik.Ayrildi1 := 0;
+	VBoxOnayOlay.Baslik.Ayrildi2 := 0;
+	VBoxOnayOlay.Olaylar := 0;
+	PortYaz4(VBPort, TSayi4(@VBoxOnayOlay));
+
+	VBoxGoruntuDegisim.Baslik.Uzunluk := SizeOf(TVBoxGoruntuDegisim);
+	VBoxGoruntuDegisim.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
+	VBoxGoruntuDegisim.Baslik.IstekTipi := VMM_KONUK_GORUNTU_DEGISIM;
+	VBoxGoruntuDegisim.Baslik.RC := 0;
+	VBoxGoruntuDegisim.Baslik.Ayrildi1 := 0;
+	VBoxGoruntuDegisim.Baslik.Ayrildi2 := 0;
+	VBoxGoruntuDegisim.XCozunurluk := 0;
+	VBoxGoruntuDegisim.YCozunurluk := 0;
+	VBoxGoruntuDegisim.BPP := 0;
+	VBoxGoruntuDegisim.OlayOnay := 1;
+	PortYaz4(VBPort, TSayi4(@VBoxGoruntuDegisim));
 
   //PSayi4(Isaretci(VBBellek) + 04)^ := $FFFFFFFF;
   //PSayi4(Isaretci(VBBellek) + 08)^ := $FFFFFFFF;
   PSayi4(Isaretci(VBBellek) + 12)^ := $FFFFFFFF;
 
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
+{  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 8)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
-
+}
 //  asm int $25 end;
 end;
 
@@ -161,7 +201,7 @@ begin
 
 	VBoxFare.Baslik.Uzunluk := SizeOf(TVBoxFare);
 	VBoxFare.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
-	VBoxFare.Baslik.IstekTipi := VMM_FARE_DURUMYAZ;
+	VBoxFare.Baslik.IstekTipi := VMM_FARE_DURUMAL;
 	VBoxFare.Baslik.RC := 0;
 	VBoxFare.Baslik.Ayrildi1 := 0;
 	VBoxFare.Baslik.Ayrildi2 := 0;

@@ -6,7 +6,7 @@
   Dosya Adı: irq.pas
   Dosya İşlevi: donanım (irq) kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 26/09/2024
+  Güncelleme Tarihi: 04/03/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,12 +18,12 @@ interface
 uses paylasim, port;
 
 var
-  IRQIslevListesi: array[0..15] of TIRQIslevi = (
+  IRQIslevListesi: array[0..15] of TIslev = (
     nil, nil, nil, nil, nil, nil, nil, nil,
     nil, nil, nil, nil, nil, nil, nil, nil);
 
 procedure Yukle;
-procedure IRQIsleviAta(AIRQNo: TSayi4; AIslevAdres: TIRQIslevi);
+procedure IRQIsleviAta(AIRQNo: TSayi4; AIslevAdres: TIslev);
 procedure IRQIsleviIptal(AIRQNo: TSayi4);
 procedure IRQEtkinlestir(AIRQNo: TSayi4);
 procedure IRQPasiflestir(AIRQNo: TSayi4);
@@ -142,7 +142,7 @@ end;
 {==============================================================================
   donanım kesmesinin çağrı adresini belirler ve kesmeyi aktifleştirir
  ==============================================================================}
-procedure IRQIsleviAta(AIRQNo: TSayi4; AIslevAdres: TIRQIslevi);
+procedure IRQIsleviAta(AIRQNo: TSayi4; AIslevAdres: TIslev);
 begin
 
   cli;

@@ -141,13 +141,15 @@ begin
   // sürücü dosya sistemi
   FPencere.Tuval.KalemRengi := RENK_SIYAH;
   FPencere.Tuval.YaziYaz(0, 4 * 16, 'Dosya Sistemi :');
-  if(MD^.DosyaSistemTipi = DATTIP_FAT12) then
+  if(MD^.DosyaSistemTipi = DST_ELR1) then
+    FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'ELR-1')
+  else if(MD^.DosyaSistemTipi = DST_FAT12) then
     FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'FAT12')
-  else if(MD^.DosyaSistemTipi = DATTIP_FAT16) then
+  else if(MD^.DosyaSistemTipi = DST_FAT16) then
     FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'FAT16')
-  else if(MD^.DosyaSistemTipi = DATTIP_FAT32) then
+  else if(MD^.DosyaSistemTipi = DST_FAT32) then
     FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'FAT32')
-  else if(MD^.DosyaSistemTipi = DATTIP_FAT32LBA) then
+  else if(MD^.DosyaSistemTipi = DST_FAT32LBA) then
     FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'FAT32+LBA')
   else FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'Bilinmeyen Dosya Sistemi');
 
