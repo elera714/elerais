@@ -6,7 +6,7 @@
   Dosya Adý: k_dosya.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 04/04/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,6 +28,7 @@ uses dosya, sistemmesaj;
 function DosyaCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
   IslevNo: TSayi4;
+  s: string;
 begin
 
   IslevNo := (AIslevNo and $FF);
@@ -107,6 +108,22 @@ begin
     begin
 
       CloseFile(PKimlik(ADegiskenler + 00)^);
+    end;
+
+    // dosyayý sil
+    12:
+    begin
+
+      s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi)^;
+      DeleteFile(s);
+    end;
+
+    // klasör sil
+    13:
+    begin
+
+      s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi)^;
+      RemoveDir(s);
     end
 
     else Result := HATA_ISLEV;

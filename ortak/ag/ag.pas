@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 20/04/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -39,13 +39,23 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi
 
 implementation
 
-uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, islevler, genel;
+uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, islevler, genel,
+  dhcp, dhcp_s;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
  ==============================================================================}
 procedure Yukle;
 begin
+
+  // sistemin çalýþtýðý bilgisayarýn alan adý - (domain name)
+  {$IFDEF SISTEM_SUNUCU}
+  GTamBilgisayarAdi := GBilgisayarAdi + '.' + GAlanAdi;
+  IPAdresiniOtomatikAl := False;
+  {$ELSE}
+  GTamBilgisayarAdi := GBilgisayarAdi;
+  IPAdresiniOtomatikAl := True;
+  {$ENDIF}
 
   // að bilgileri öndeðerlerle yükleniyor
   IlkAdresDegerleriniYukle;
@@ -65,6 +75,29 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DNS protokolü yükleniyor...', []);
     dns.Yukle;
+
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DHCP protokolü yükleniyor...', []);
+    dhcp_s.Yukle;
+
+    // sistem için ip adresini yapýlandýr
+    if(GAgBilgisi.IPAdresiAlindi = False) then
+    begin
+
+      if(GAgBilgisi.OtomatikIP) then
+
+        DHCPIpAdresiAl
+      else
+      begin
+
+        GAgBilgisi.IP4Adres := OnDegerIPAdresi;
+        GAgBilgisi.AltAgMaskesi := OnDegerAltAgMaskesi;
+        GAgBilgisi.AgGecitAdresi := IPAdres0;
+        GAgBilgisi.DHCPSunucusu := IPAdres0;
+        GAgBilgisi.DNSSunucusu := OnDegerIPAdresi;
+        GAgBilgisi.IPKiraSuresi := 0;
+        GAgBilgisi.IPAdresiAlindi := True;
+      end;
+    end;
   end;
 
   AlinanByte := 0;
@@ -77,6 +110,7 @@ end;
 procedure IlkAdresDegerleriniYukle;
 begin
 
+  GAgBilgisi.OtomatikIP := IPAdresiniOtomatikAl;
   GAgBilgisi.MACAdres := MACAdres0;
   GAgBilgisi.IP4Adres := IPAdres0;
   GAgBilgisi.AltAgMaskesi := IPAdres0;
@@ -142,7 +176,9 @@ begin
 
       Protokol := htons(EthernetPaket^.PaketTipi);
 
-      //SISTEM_MESAJ2_S16(RENK_YESIL, 'Protokol: $', Protokol, 4);
+      SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthernetPaket^.KaynakMACAdres);
+      SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.HedefMACAdres: ', EthernetPaket^.HedefMACAdres);
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'EthernetPaket^.PaketTipi: %x', [EthernetPaket^.PaketTipi]);
 
       // ******* protokollerin iþlenmesi *******
 

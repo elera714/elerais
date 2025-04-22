@@ -296,6 +296,8 @@ const
   DOSYA_DOSYAUZUNLUGU         = $00000900 + SAC_DOSYA;
   DOSYA_OKU     	            = $00000A00 + SAC_DOSYA;
   DOSYA_KAPAT    	            = $00000B00 + SAC_DOSYA;
+  DOSYA_DOSYASIL    	        = $00000C00 + SAC_DOSYA;
+  DOSYA_KLASORSIL    	        = $00000D00 + SAC_DOSYA;
 
   HARF_YAZ		                = $00000100 + SAC_YAZIM;
   YAZI_YAZ		                = $00000200 + SAC_YAZIM;
@@ -401,9 +403,10 @@ const
   CO_ODAKKAZANILDI        = CO_ILKDEGER + 4;
   CO_ODAKKAYBEDILDI       = CO_ILKDEGER + 5;
   CO_TUSBASILDI           = CO_ILKDEGER + 6;
-  CO_MENUACILDI           = CO_ILKDEGER + 7;        // menünün açılması
-  CO_MENUKAPATILDI        = CO_ILKDEGER + 8;        // menünün kapatılması
-  CO_SECIMDEGISTI         = CO_ILKDEGER + 9;        // karma liste nesnesinde seçimin değişmesi olayı
+  CO_TUSBIRAKILDI         = CO_ILKDEGER + 7;
+  CO_MENUACILDI           = CO_ILKDEGER + 8;        // menünün açılması
+  CO_MENUKAPATILDI        = CO_ILKDEGER + 9;        // menünün kapatılması
+  CO_SECIMDEGISTI         = CO_ILKDEGER + 10;       // karma liste nesnesinde seçimin değişmesi olayı
 
   // fare aygıtının ürettiği olaylar - fare olayları (FO)
   FO_ILKDEGER             = $200;
@@ -444,3 +447,34 @@ const
   PROCESS_STATE_CREATED   = 1;
   PROCESS_STATE_RUNNING   = 2;
   PROCESS_STATE_STOPPED   = 3;
+
+const
+  // tuş değerleri
+  TUS_KONTROL_SOL   = TSayi2($0100);
+  TUS_KONTROL_SAG   = TSayi2($0200);
+  TUS_ALT_SOL       = TSayi2($0300);
+  TUS_ALT_SAG       = TSayi2($0400);
+  TUS_DEGISIM_SOL   = TSayi2($0500);
+  TUS_DEGISIM_SAG   = TSayi2($0600);
+
+  TUS_SIKISTIR      = TSayi2($0700);
+  TUS_SIL           = TSayi2($0800);
+  TUS_GIT_BASA      = TSayi2($0900);
+  TUS_GIT_SONA      = TSayi2($0A00);
+  TUS_SAYFA_YUKARI  = TSayi2($0B00);
+  TUS_SAYFA_ASAGI   = TSayi2($0C00);
+
+  TUS_KUBU          = TSayi2($0D00);          // karakter küçültme / büyütme tuşu (caps lock)
+  TUS_HESAP         = TSayi2($0E00);          // hesap makinesi açma / kapama tuşu (num lock)
+  TUS_KAYDIRMA      = TSayi2($0F00);          // kaydırma açma / kapama tuşu (scroll lock)
+
+  TUS_F1            = TSayi2($1000);
+  TUS_F2            = TSayi2($1100);
+  TUS_F3            = TSayi2($1200);
+  TUS_F4            = TSayi2($1300);
+  TUS_F5            = TSayi2($1400);
+  TUS_F6            = TSayi2($1500);
+  TUS_F7            = TSayi2($1600);
+  TUS_F8            = TSayi2($1700);
+  TUS_F9            = TSayi2($1800);
+  TUS_F10           = TSayi2($1900);

@@ -196,7 +196,7 @@ function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
  var ADosyaArama: TDosyaArama): TSayi1;
 var
   MD: PMantiksalDepolama;
-  DizinGirdisi: PDizinGirdisi;
+  DizinGirdisi: PDizinGirdisiELR;
   TumGirislerOkundu,
   UzunDosyaAdiBulundu: Boolean;
 begin
@@ -225,7 +225,7 @@ begin
     end;
 
     // dosya giriş tablosuna konumlan
-    DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi);
+    DizinGirdisi := PDizinGirdisiELR(@DizinBellekAdresi);
     Inc(DizinGirdisi, ADizinGirisi^.DizinTablosuKayitNo);
 
     // dosya girişinin ilk karakteri #0 ise girişler okunmuş demektir
@@ -236,24 +236,24 @@ begin
       TumGirislerOkundu := True;
     end
     // silinmiş dosya / dizin
-    else if(DizinGirdisi^.DosyaAdi[0] = Chr($E5)) then
+    else if(DizinGirdisi^.DosyaAdi[0] = Chr($FF)) then
     begin
 
       // bir sonraki girişle devam et
     end
     // mantıksal depolama aygıtı etiket (volume label)
-    else if(DizinGirdisi^.Ozellikler = $08) then
+{    else if(DizinGirdisi^.Ozellikler = $08) then
     begin
 
       // bir sonraki girişle devam et
-    end
+    end}
     // dizin girdisi uzun ada sahip bir ad ise, uzun dosya adını al
-    else if(DizinGirdisi^.Ozellikler = $0F) then
+{    else if(DizinGirdisi^.Ozellikler = $0F) then
     begin
 
       UzunDosyaAdiBulundu := True;
       DosyaParcalariniBirlestir(Isaretci(DizinGirdisi));
-    end
+    end}
     // dizin girdisinin uzun ad haricinde olması durumunda
     else //if(DizinGirdisi^.Ozellikler <> $0F) then
     begin
@@ -282,7 +282,7 @@ begin
       // diğer özellikleri geri döndür
       begin
 
-        ADosyaArama.DosyaAdi := HamDosyaAdiniDosyaAdinaCevir(DizinGirdisi);
+        ADosyaArama.DosyaAdi := HamDosyaAdiniDosyaAdinaCevir2(DizinGirdisi);
         ADosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
         ADosyaArama.OlusturmaSaati := DizinGirdisi^.OlusturmaSaati;
         ADosyaArama.OlusturmaTarihi := DizinGirdisi^.OlusturmaTarihi;
@@ -310,7 +310,7 @@ begin
 
     // bir sonraki girdiye konumlan
     Inc(ADizinGirisi^.DizinTablosuKayitNo);
-    if(ADizinGirisi^.DizinTablosuKayitNo = 16) then
+    if(ADizinGirisi^.DizinTablosuKayitNo = 8) then
       ADizinGirisi^.DizinTablosuKayitNo := 0
     else Inc(DizinGirdisi);
 

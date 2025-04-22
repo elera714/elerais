@@ -38,7 +38,8 @@ procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 
 implementation
 
-uses donusum, sistemmesaj, dhcp, iletisim, dns, netbios, genel, islevler;
+uses {$IFDEF SISTEM_SUNUCU} dhcp_s, {$ENDIF} dhcp_i, donusum, sistemmesaj, dhcp,
+  iletisim, dns, netbios, genel, islevler;
 
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir
@@ -65,10 +66,16 @@ begin
 
     DNSPaketleriniIsle(UDPPaket)
 
-  // dhcp protokol
+  // verileri dhcp sunucu protokolüne yönlendir
+  {$IFDEF SISTEM_SUNUCU}
+  else if(HedefPort = 67) then
+
+    DHCPSunucuPaketleriniIsle(@UDPPaket^.Veri)
+  {$ENDIF}
+  // verileri dhcp istemci protokolüne yönlendir
   else if(HedefPort = 68) then
 
-    DHCPPaketleriniIsle(@UDPPaket^.Veri)
+    DHCPIstemciPaketleriniIsle(@UDPPaket^.Veri)
 
   // netbios api
   else if(HedefPort = 137) then

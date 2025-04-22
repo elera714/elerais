@@ -16,9 +16,22 @@ unit paylasim;
 
 interface
 
+{$i veritipleri.inc}
+
+// ELERA Ýþletim Sistemi - çekirdek kod sistem tipleri
+const
+  SISTEM_TIPI_SUNUCU    = 1;
+  SISTEM_TIPI_ISTEMCI   = 2;
+
 const
   ProjeBaslangicTarihi: string = '30.07.2005';
-  SistemAdi: string = 'ELERA Ýþletim Sistemi - 0.3.8 - R34';
+  {$IFDEF SISTEM_SUNUCU}
+  SistemTipi: TSayi4 = SISTEM_TIPI_SUNUCU;
+  SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.3.8 - R34';
+  {$ELSE}
+  SistemTipi: TSayi4 = SISTEM_TIPI_ISTEMCI;
+  SistemAdi: string = 'ELERA ÝS (Ýstemci)- 0.3.8 - R34';
+  {$ENDIF}
   DerlemeTarihi: string = {$i %DATE%};
   FPCMimari: string = {$i %FPCTARGET%};
   FPCSurum: string = {$i %FPCVERSION%};
@@ -83,63 +96,6 @@ const
   SECICI_GRAFIK_LFB     = 13;
   SECICI_AYRILDI1       = 14;
   SECICI_AYRILDI2       = 15;
-
-{==============================================================================
-  Data Type     Bytes   Range
-  Byte	        1       0..255
-  ShortInt	    1       -128..127
-  Word	        2       0..65535
-  SmallInt	    2       -32767..32768
-  LongWord	    4       0..4294967295
-  LongInt	      4       -2147483648..2147483647
-  Cardinal      4       LongWord
-  Integer       4       SmallInt veya LongInt
-  QWord	        8       0..18446744073709551615
-  Int64	        8       -9223372036854775808 .. 9223372036854775807
- ==============================================================================}
-type
-  Sayi1 = Byte;
-  ISayi1 = ShortInt;
-  Sayi2 = Word;
-  ISayi2 = SmallInt;
-  Sayi4 = LongWord;
-  ISayi4 = LongInt;
-  Sayi8 = QWord;
-  ISayi8 = Int64;
-  Isaretci = Pointer;
-  TSayi1 = Sayi1;               // 1 byte'lýk iþaretsiz sayý
-  PSayi1 = ^Sayi1;              // 1 byte'lýk iþaretsiz sayýya iþaretçi
-  TISayi1 = ISayi1;             // 1 byte'lýk iþaretli sayý
-  PISayi1 = ^ISayi1;            // 1 byte'lýk iþaretli sayýya iþaretçi
-  TSayi2 = Sayi2;               // 2 byte'lýk iþaretsiz sayý
-  PSayi2 = ^Sayi2;              // 2 byte'lýk iþaretsiz sayýya iþaretçi
-  TISayi2 = ISayi2;             // 2 byte'lýk iþaretli sayý
-  PISayi2 = ^ISayi2;            // 2 byte'lýk iþaretli sayýya iþaretçi
-  TSayi4 = Sayi4;               // 4 byte'lýk iþaretsiz sayý
-  PSayi4 = ^Sayi4;              // 4 byte'lýk iþaretsiz sayýya iþaretçi
-  TISayi4 = ISayi4;             // 4 byte'lýk iþaretli sayý
-  PISayi4 = ^ISayi4;            // 4 byte'lýk iþaretli sayýya iþaretçi
-  TSayi8 = Sayi8;               // 8 byte'lýk iþaretsiz sayý
-  PSayi8 = ^Sayi8;              // 8 byte'lýk iþaretsiz sayýya iþaretçi
-  TISayi8 = ISayi8;             // 8 byte'lýk iþaretli sayý
-  PISayi8 = ^ISayi8;            // 8 byte'lýk iþaretli sayýya iþaretçi
-  TKarakterKatari = shortstring;
-  PKarakterKatari = ^shortstring;
-  TRenk = Sayi4;
-  PRenk = ^TRenk;
-  TTarih = Sayi4;
-  TSaat = Sayi4;
-  PSaat = ^TSaat;
-
-  HResult = ISayi4;
-  PChar = ^Char;
-  PByte = ^Byte;
-  PShortInt = ^ShortInt;
-  PWord = ^Word;
-  TKimlik = TISayi4;
-  PKimlik = ^TKimlik;
-  PSmallInt = ^SmallInt;
-  PBoolean = ^Boolean;
 
 type
   PHiza = ^THiza;
@@ -434,6 +390,22 @@ type
   end;
 
 type
+  PDizinGirdisiELR = ^TDizinGirdisiELR;
+  TDizinGirdisiELR = packed record
+    DosyaAdi: array[0..42] of Char;
+    Ozellikler: TSayi1;
+    Kullanilmiyor1: TSayi2;
+    OlusturmaSaati: TSayi2;
+    OlusturmaTarihi: TSayi2;
+    SonErisimTarihi: TSayi2;
+    Kullanilmiyor2: TSayi2;
+    SonDegisimSaati: TSayi2;
+    SonDegisimTarihi: TSayi2;
+    BaslangicKumeNo: TSayi2;
+    DosyaUzunlugu: TSayi4;
+  end;
+
+type
   PDizinGirdisi = ^TDizinGirdisi;
   TDizinGirdisi = packed record
     DosyaAdi: array[0..7] of Char;
@@ -695,9 +667,10 @@ const
   CO_ODAKKAZANILDI        = CO_ILKDEGER + 4;
   CO_ODAKKAYBEDILDI       = CO_ILKDEGER + 5;
   CO_TUSBASILDI           = CO_ILKDEGER + 6;
-  CO_MENUACILDI           = CO_ILKDEGER + 7;        // menünün açýlmasý
-  CO_MENUKAPATILDI        = CO_ILKDEGER + 8;        // menünün kapatýlmasý
-  CO_SECIMDEGISTI         = CO_ILKDEGER + 9;        // karma liste nesnesinde seçimin deðiþmesi olayý
+  CO_TUSBIRAKILDI         = CO_ILKDEGER + 7;
+  CO_MENUACILDI           = CO_ILKDEGER + 8;        // menünün açýlmasý
+  CO_MENUKAPATILDI        = CO_ILKDEGER + 9;        // menünün kapatýlmasý
+  CO_SECIMDEGISTI         = CO_ILKDEGER + 10;       // karma liste nesnesinde seçimin deðiþmesi olayý
 
   // fare aygýtýnýn ürettiði olaylar - fare olaylarý (FO)
   FO_ILKDEGER             = $200;
@@ -936,6 +909,10 @@ type
     AYRLD: TSayi1;    // ayrýldý
   end;
 
+var
+  // ip adresinin otomatik alýnýp alýnmamasý durumu bu deðiþkenler kontrol edilmektedir
+  IPAdresiniOtomatikAl: Boolean;
+
 type
   PAgBilgisi = ^TAgBilgisi;
   TAgBilgisi = record
@@ -944,15 +921,34 @@ type
     DHCPSunucusu, DNSSunucusu: TIPAdres;
     IPKiraSuresi: TSayi4;     // saniye cinsinden
 
+    { TODO - OtomatikIP deðeri üstteki yapýya eklenerek API'nýn bir parçasý olacaktýr }
+    OtomatikIP: Boolean;      // ip adresi dhcp sunucusundan otomatik alýnacak
+
     // yukarýdaki yapý için API iþlevi oluþturulmuþtur, sýralamanýn bozulmasý iþlevin bozulmasý demektir
     IPAdresiAlindi: Boolean;
   end;
 
 var
   // çekirdek genelinde kullanýlan ortak yapýlar / deðiþkenler
-  GMakineAdi: string = 'elera-bil';     // sistemin çalýþtýðý bilgisayarýn adý
-  GGrupAdi: string = 'programlama';     // sistemin grup olarak çalýþtýðý að adý
-  GAgBilgisi: TAgBilgisi;               // içerik ag.IlkAdresDegerleriniYukle iþlevi tarafýndan doldurulmaktadýr
+
+  // sistemin çalýþtýðý bilgisayarýn adý - bu bilgisayarýn adý
+  GBilgisayarAdi: string = 'elera';         // netbios için GBilgisayarAdi + GAlanAdi uzunluðu 15 byte'ý geçmemeli
+  GAlanAdi: string = 'elr.com';
+  GTamBilgisayarAdi: string;                // ag.Yukle tarafýndan atanmaktadýr
+
+  GGrupAdi: string = 'programlama';         // sistemin grup olarak çalýþtýðý að adý
+  // GAgBilgisi yapý içeriði ag.IlkAdresDegerleriniYukle iþlevi tarafýndan doldurulmaktadýr
+  GAgBilgisi: TAgBilgisi;
+
+  // otomatik atama olmadýðý durumda sistemin kullanacaðý ip adres deðerleri
+  OnDegerIPAdresi: TIPAdres = (10, 0, 0, 1);
+  OnDegerAltAgMaskesi: TIPAdres = (255, 255, 255, 0);
+
+  { TODO - dns sunucusu tarafýndan yapýlandýrýlacak, þu aþamada dhcp sunucu tarafýndan
+    gönderilecek deðer olarak belirlenmiþtir }
+  // aþaðýdaki 2 deðer þu aþamada dhcp sunucusu tarafýndan kullanýlmaktadýr
+  GDNSIPAdresi: TIPAdres = (127, 0, 0, 1);
+  GAgGecidi: TIPAdres = (127, 0, 0, 1);
 
   IPAdres0: TIPAdres = (0, 0, 0, 0);
   IPAdres255: TIPAdres = (255, 255, 255, 255);

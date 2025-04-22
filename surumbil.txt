@@ -1,6 +1,10 @@
 *******************************************************************************
-  Sürüm: 0.3.9 - 27.02.2025 (R35) - Alfa
+  Sürüm: 0.3.9 (sunucu / istemci) - 27.02.2025 (R35) - Alfa
 *******************************************************************************
+  + sistem kodlarý sunucu / istemci olarak 2 yapý olarak kodlanmaya baþlandý
+  + dhcp ip4 sunucusu kodlanarak sunucu sistemlerinin içerisine eklendi
+  + çekirdeðe CO_TUSBIRAKILDI olayý eklendi
+  + ip adresinin elle (manuel) alýnmasý iþlevinin alt yapýsý oluþturuldu
   + yeni dosya sistemi çalýþmalarý (elr-1) baþladý
   + TListeGorunum nesnesine sað tuþ seçim iþlevi eklendi
   + klavye sürücüsünün (kontrol / görüntülenen tuþ biçiminde 2 aþamalý olarak) tasarýmý tamamlandý

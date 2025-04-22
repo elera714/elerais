@@ -49,6 +49,8 @@ type
     function _FileSize(ADosyaKimlik: TKimlik): TISayi4; assembler;
     procedure _FileRead(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
     procedure _CloseFile(ADosyaKimlik: TKimlik); assembler;
+    procedure _DeleteFile(ADosyaAdi: string); assembler;
+    procedure _RemoveDir(AKlasorAdi: string); assembler;
 
     // görsel nesne işlevleri
     function GorselNesneKimlikAl(KonumA1, KonumB1: TISayi4): TISayi4; assembler;
@@ -240,6 +242,22 @@ asm
   mov	  eax,DOSYA_KAPAT
   int	  $34
   add	  esp,4
+end;
+
+procedure TGenel._DeleteFile(ADosyaAdi: string); assembler;
+asm
+  push  DWORD ADosyaAdi
+  mov   eax,DOSYA_DOSYASIL
+  int   $34
+  add   esp,4
+end;
+
+procedure TGenel._RemoveDir(AKlasorAdi: string); assembler;
+asm
+  push  DWORD AKlasorAdi
+  mov   eax,DOSYA_KLASORSIL
+  int   $34
+  add   esp,4
 end;
 
 function TGenel.GorselNesneKimlikAl(KonumA1, KonumB1: TISayi4): TISayi4; assembler;

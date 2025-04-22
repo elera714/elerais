@@ -181,8 +181,30 @@ begin
                     MD^.MD3.DST := DiskBolum^.BolumTipi;
                     MD^.MD3.SurucuTipi := FizikselDepolamaAygitListesi[i].FD3.SurucuTipi;
 
-                    if(DiskBolum^.BolumTipi = DST_ELR1) or
-                      (DiskBolum^.BolumTipi = DST_FAT32) or
+                    if(DiskBolum^.BolumTipi = DST_ELR1) then
+                    begin
+
+                      AcilisKayit32 := @Bellek2;
+
+                      // DosyaAyirmaTablosu bilgileri
+                      DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
+                      DosyaAyirmaTablosu^.IlkSektor := AcilisKayit32^.AyrilmisSektor1 +
+                        AcilisKayit32^.BolumOncesiSektorSayisi;
+                      DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit32^.DATBasinaSektor;
+                      DosyaAyirmaTablosu^.ZincirBasinaSektor := 4; //AcilisKayit32^.ZincirBasinaSektor;
+
+                      // DizinGirisi dizin giriþleri
+                      DizinGirisi := @MD^.Acilis.DizinGirisi;
+                      DizinGirisi^.IlkSektor := $1466; //5222; (AcilisKayit32^.DATBasinaSektor *
+                        //AcilisKayit32^.DATSayisi) + AcilisKayit32^.AyrilmisSektor1 +
+                        //AcilisKayit32^.BolumOncesiSektorSayisi;
+                      DizinGirisi^.ToplamSektor := AcilisKayit32^.AzamiDizinGirisi div 16;
+
+                      // fat32 dosya sisteminde dizin baþlangýcý da veri olarak kullanýlýr
+                      // fat32 dosya sisteminin dizin tablo bitiþ deðeri yoktur!
+                      MD^.Acilis.IlkVeriSektorNo := DizinGirisi^.IlkSektor;
+                    end
+                    else if(DiskBolum^.BolumTipi = DST_FAT32) or
                       (DiskBolum^.BolumTipi = DST_FAT32LBA) then
                     begin
 

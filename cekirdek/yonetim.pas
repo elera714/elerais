@@ -245,6 +245,8 @@ var
   GN: PGorselNesne;
   DosyaKimlik: TKimlik;
   DosyaNo: TSayi4 = 0;
+  FD: TFizikselDepolama;
+  Bellek: array[0..511] of TSayi1;
 begin
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
@@ -272,9 +274,6 @@ begin
   {TestAlani.Olustur;
   if not(TestAlani.FCalisanBirim = nil) then TestAlani.FCalisanBirim;}
 
-  // sistem için DHCP sunucusundan IP adresi al
-  if(AgYuklendi) and (GAgBilgisi.IPAdresiAlindi = False) then DHCPIpAdresiAl;
-
   while True do
   begin
 
@@ -293,7 +292,7 @@ begin
       if(TusDurum = tdBasildi) then
       begin
 
-        SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Basýlan Tuþ Deðeri: %x', [TusDegeri]);
+        //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Basýlan Tuþ Deðeri: %x', [TusDegeri]);
 
         if(TusDegeri = TUS_KONTROL_SOL) then
           SistemTusDurumuKontrolSol := tdBasildi
@@ -335,7 +334,7 @@ begin
           begin
 
 
-            dosya.AssignFile(DosyaKimlik, 'disk1:\klasor\dosya' + IntToStr(DosyaNo));
+            dosya.AssignFile(DosyaKimlik, 'disk1:\klasor\ELERA ÝS, ELR-1 dosya sistemi - ' + IntToStr(DosyaNo));
             dosya.ReWrite(DosyaKimlik);
 
             Inc(DosyaNo);
@@ -426,12 +425,19 @@ begin
           else if(TusKarakterDegeri = '5') then
           begin
 
-            GetMemoryManager(m);
-            m.Getmem := @GMem;
+            FillChar(Bellek, 512, 0);
+            FD := FizikselDepolamaAygitListesi[3];  // fda4
+            FD.SektorYaz(@FD, $1466 + 0, 1, Isaretci(@Bellek));
+            FD.SektorYaz(@FD, $1466 + 1, 1, Isaretci(@Bellek));
+            FD.SektorYaz(@FD, $1466 + 2, 1, Isaretci(@Bellek));
+            FD.SektorYaz(@FD, $1466 + 3, 1, Isaretci(@Bellek));
+
+            //GetMemoryManager(m);
+            //m.Getmem := @GMem;
             {if(m.Getmem = nil) then
               SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'nil', [])
             else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '!nil', []);}
-            m.GetMem(1000);
+            //m.GetMem(1000);
 
             //Getmem(TestAdres, 100);
 
@@ -521,7 +527,7 @@ begin
         begin
 
           // klavye olaylarýný iþle
-          GOlayYonetim.KlavyeOlaylariniIsle(TusKarakterDegeri);
+          GOlayYonetim.KlavyeOlaylariniIsle(TusDegeri, TusDurum);
         end;
       end
       else if(TusDurum = tdBirakildi) then

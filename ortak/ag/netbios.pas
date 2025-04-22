@@ -139,7 +139,7 @@ begin
     EkleByte(@Veri[VeriSN], $04); Inc(VeriSN);
 
     // aktif
-    s := BuyutVeTamamla(GMakineAdi, 15);
+    s := BuyutVeTamamla(GTamBilgisayarAdi, 15);
     Tasi2(@s[1], @Veri[VeriSN], 15); Inc(VeriSN, 15);
     EkleByte(@Veri[VeriSN], $00); Inc(VeriSN);
     Ekle2Byte(@Veri[VeriSN], $0400); Inc(VeriSN, 2);
@@ -151,7 +151,7 @@ begin
     Ekle2Byte(@Veri[VeriSN], $8400); Inc(VeriSN, 2);
 
     // aktif
-    s := BuyutVeTamamla(GMakineAdi, 15);
+    s := BuyutVeTamamla(GTamBilgisayarAdi, 15);
     Tasi2(@s[1], @Veri[VeriSN], 15); Inc(VeriSN, 15);
     EkleByte(@Veri[VeriSN], $20); Inc(VeriSN);
     Ekle2Byte(@Veri[VeriSN], $0400); Inc(VeriSN, 2);

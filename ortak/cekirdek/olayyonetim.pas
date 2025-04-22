@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/02/2025
+  Güncelleme Tarihi: 03/04/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,7 +28,7 @@ type
     procedure Yukle;
     function FareOlayiAl: TOlay;
     procedure FareOlaylariniIsle;
-    procedure KlavyeOlaylariniIsle(ATus: Char);
+    procedure KlavyeOlaylariniIsle(ATusDegeri: TSayi2; ATusDurum: TTusDurum);
   end;
 
 implementation
@@ -276,13 +276,13 @@ end;
 {==============================================================================
   tüm klavye olaylarýný iþler, olaylarý ilgili nesnelere yönlendirir
  ==============================================================================}
-procedure TOlayYonetim.KlavyeOlaylariniIsle(ATus: Char);
+procedure TOlayYonetim.KlavyeOlaylariniIsle(ATusDegeri: TSayi2; ATusDurum: TTusDurum);
 var
   Olay: TOlay;
 begin
 
   // klavyeden basýlan bir tuþ olayý var ise ...
-  if(ATus <> #0) then
+  if(ATusDegeri <> 0) then
   begin
 
     if(GAktifPencere <> nil) then
@@ -296,9 +296,11 @@ begin
         //if(GAktifNesne^.GorselNesneTipi = gntGirisKutusu) then
         begin
 
-          // odaklanan nesneye CO_TUSBASILDI mesajý gönder
-          Olay.Deger1 := TISayi4(ATus);
-          Olay.Olay := CO_TUSBASILDI;
+          // odaklanýlan nesneye mesajý gönder
+          if(ATusDurum = tdBasildi) then
+            Olay.Olay := CO_TUSBASILDI
+          else Olay.Olay := CO_TUSBIRAKILDI;
+          Olay.Deger1 := ATusDegeri;
           OlaylariYonlendir(GAktifPencere^.FAktifNesne, Olay);
         end;
       end;

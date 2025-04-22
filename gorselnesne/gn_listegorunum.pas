@@ -603,6 +603,15 @@ begin
     end;
 
     ListeGorunum^.Ciz;
+  end
+  // klavye tuþ basýmý
+  else if(AOlay.Olay = CO_TUSBASILDI) then
+  begin
+
+    // uygulamaya veya efendi nesneye mesaj gönder
+    if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
+      ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
+    else GorevListesi[ListeGorunum^.GorevKimlik]^.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle

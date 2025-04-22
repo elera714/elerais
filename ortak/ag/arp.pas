@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 16/01/2025
+  Güncelleme Tarihi: 12/04/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -67,14 +67,15 @@ uses genel, ag, islevler, zamanlayici, sistemmesaj, donusum;
 
 var
   ARPKayitSayisi: TISayi4;
-  GARPKayitListesi: array[0..USTLIMIT_KAYITSAYISI - 1] of PARPKayit;
+  ARPKayitListesi: array[0..USTLIMIT_KAYITSAYISI - 1] of PARPKayit;
 
 {==============================================================================
   ARP protokolünü ilk deðerlerle yükler
  ==============================================================================}
 procedure Yukle;
 var
-  ARPKayitBellekAdresi: Isaretci;
+  ARPKayitBellekAdresi,
+  Bellek: Isaretci;
   i: TISayi4;
 begin
 
@@ -82,15 +83,15 @@ begin
   ARPKayitBellekAdresi := GGercekBellek.Ayir(USTLIMIT_KAYITSAYISI * SizeOf(TARPKayit));
 
   // giriþlere ait iþaretçileri bellek bölgeleriyle eþleþtir
-  ARPKayitBellekAdresi := ARPKayitBellekAdresi;
+  Bellek := ARPKayitBellekAdresi;
 
   for i := 0 to USTLIMIT_KAYITSAYISI - 1 do
   begin
 
-    GARPKayitListesi[i] := ARPKayitBellekAdresi;
-    GARPKayitListesi[i]^.YasamSuresi := -1;       // -1 = girdi yok
+    ARPKayitListesi[i] := Bellek;
+    ARPKayitListesi[i]^.YasamSuresi := -1;       // -1 = girdi yok
 
-    ARPKayitBellekAdresi += SizeOf(TARPKayit);
+    Bellek += SizeOf(TARPKayit);
   end;
 
   // ARP kayýt sayýsýný sýfýrla
@@ -214,18 +215,18 @@ begin
   for i := 0 to USTLIMIT_KAYITSAYISI - 1 do
   begin
 
-    if(GARPKayitListesi[i]^.YasamSuresi > 0) then
+    if(ARPKayitListesi[i]^.YasamSuresi > 0) then
     begin
 
-      YasamSuresi := GARPKayitListesi[i]^.YasamSuresi;
+      YasamSuresi := ARPKayitListesi[i]^.YasamSuresi;
       Dec(YasamSuresi);
-      GARPKayitListesi[i]^.YasamSuresi := YasamSuresi;
+      ARPKayitListesi[i]^.YasamSuresi := YasamSuresi;
 
       // yaþam süresi 0 olduðunda girdi -1 yapýlarak baþka kayýtlarýn eklenmesi saðlanýyor
       if(YasamSuresi = 0) then
       begin
 
-        GARPKayitListesi[i]^.YasamSuresi := -1;
+        ARPKayitListesi[i]^.YasamSuresi := -1;
         Dec(ARPKayitSayisi);      // girdi sayýsýný azalt
       end;
     end;
@@ -250,11 +251,11 @@ begin
   begin
 
     // varsa güncelle ve çýk
-    if(IPAdresleriniKarsilastir(GARPKayitListesi[i]^.IPAdres, AARPKayit.IPAdres)) then
+    if(IPAdresleriniKarsilastir(ARPKayitListesi[i]^.IPAdres, AARPKayit.IPAdres)) then
     begin
 
-      GARPKayitListesi[i]^.MACAdres := AARPKayit.MACAdres;
-      GARPKayitListesi[i]^.YasamSuresi := AARPKayit.YasamSuresi;
+      ARPKayitListesi[i]^.MACAdres := AARPKayit.MACAdres;
+      ARPKayitListesi[i]^.YasamSuresi := AARPKayit.YasamSuresi;
       Exit;
     end;
   end;
@@ -268,12 +269,12 @@ begin
   begin
 
     // YasamSuresi = -1 = boþ demektir
-    if(GARPKayitListesi[i]^.YasamSuresi = -1) then
+    if(ARPKayitListesi[i]^.YasamSuresi = -1) then
     begin
 
-      GARPKayitListesi[i]^.IPAdres := AARPKayit.IPAdres;
-      GARPKayitListesi[i]^.MACAdres := AARPKayit.MACAdres;
-      GARPKayitListesi[i]^.YasamSuresi := AARPKayit.YasamSuresi;
+      ARPKayitListesi[i]^.IPAdres := AARPKayit.IPAdres;
+      ARPKayitListesi[i]^.MACAdres := AARPKayit.MACAdres;
+      ARPKayitListesi[i]^.YasamSuresi := AARPKayit.YasamSuresi;
       Inc(ARPKayitSayisi);
       Exit;
     end;
@@ -296,9 +297,9 @@ begin
     begin
 
       // ARP girdisi mevcut ise ( > -1)
-      if(GARPKayitListesi[i]^.YasamSuresi > -1) then
-        if(IPAdresleriniKarsilastir(GARPKayitListesi[i]^.IPAdres, AIPAdres)) then
-          Exit(GARPKayitListesi[i]^.MACAdres);
+      if(ARPKayitListesi[i]^.YasamSuresi > -1) then
+        if(IPAdresleriniKarsilastir(ARPKayitListesi[i]^.IPAdres, AIPAdres)) then
+          Exit(ARPKayitListesi[i]^.MACAdres);
     end;
   end;
 
@@ -320,9 +321,9 @@ begin
       begin
 
         // ARP girdisi mevcut ise ( > -1)
-        if(GARPKayitListesi[j]^.YasamSuresi > -1) then
-          if(IPAdresleriniKarsilastir(GARPKayitListesi[j]^.IPAdres, AIPAdres)) then
-            Exit(GARPKayitListesi[j]^.MACAdres);
+        if(ARPKayitListesi[j]^.YasamSuresi > -1) then
+          if(IPAdresleriniKarsilastir(ARPKayitListesi[j]^.IPAdres, AIPAdres)) then
+            Exit(ARPKayitListesi[j]^.MACAdres);
       end;
     end;
   end;
@@ -350,14 +351,14 @@ begin
     begin
 
       // ARP girdisi mevcut ise ( > -1)
-      if(GARPKayitListesi[i]^.YasamSuresi > -1) then Inc(SiraNo);
+      if(ARPKayitListesi[i]^.YasamSuresi > -1) then Inc(SiraNo);
 
       if(SiraNo = AARPSiraNo) then
       begin
 
-        AHedefBellek^.IPAdres := GARPKayitListesi[i]^.IPAdres;
-        AHedefBellek^.MACAdres := GARPKayitListesi[i]^.MACAdres;
-        AHedefBellek^.YasamSuresi := GARPKayitListesi[i]^.YasamSuresi;
+        AHedefBellek^.IPAdres := ARPKayitListesi[i]^.IPAdres;
+        AHedefBellek^.MACAdres := ARPKayitListesi[i]^.MACAdres;
+        AHedefBellek^.YasamSuresi := ARPKayitListesi[i]^.YasamSuresi;
         Result := HATA_YOK;
         Exit;
       end;

@@ -170,6 +170,24 @@ begin
     FetkYolDegeri.BaslikDegistir(GecerliKlasor + GecerliSuzgec);
 
     DosyalariListele;
+  end
+  else if(AOlay.Olay = CO_TUSBASILDI) and (AOlay.Deger1 = TUS_SIL) {and (AOlay.Kimlik = FlgDosyaListesi.Kimlik)} then
+  begin
+
+    SeciliYazi := FlgDosyaListesi.SeciliYaziAl;
+
+    // dosya bilgisinden dosya ad ve uzantý bilgisini al
+    VeriyiParcala(SeciliYazi, DosyaKlasorAdi, TarihSaat, GirdiTipi, Boyut);
+
+    if(Length(DosyaKlasorAdi) > 0) then
+    begin
+
+      if(GirdiTipi = 'Dosya') then
+        FGenel._DeleteFile(GecerliSurucu + ':' + GecerliKlasor + DosyaKlasorAdi)
+      else FGenel._RemoveDir(GecerliSurucu + ':' + GecerliKlasor + DosyaKlasorAdi);
+
+      DosyalariListele;
+    end;
   end;
 
   Result := 1;
