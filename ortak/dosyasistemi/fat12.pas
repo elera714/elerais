@@ -16,12 +16,14 @@ interface
 
 uses paylasim;
 
-procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+procedure Assign(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
 procedure Reset(ADosyaKimlik: TKimlik);
 function EOF(ADosyaKimlik: TKimlik): Boolean;
 function FileSize(ADosyaKimlik: TKimlik): TISayi4;
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
-procedure CloseFile(ADosyaKimlik: TKimlik);
+procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
+procedure ReWrite(ADosyaKimlik: TKimlik);
+procedure Close(ADosyaKimlik: TKimlik);
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
@@ -34,7 +36,7 @@ uses genel, gercekbellek, sistemmesaj, fat32, src_com;
 {==============================================================================
   dosyalar ile ilgili iþlem yapmadan önce taným iþlevlerini gerçekleþtirir
  ==============================================================================}
-procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+procedure Assign(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
 begin
 end;
 
@@ -137,9 +139,27 @@ begin
 end;
 
 {==============================================================================
+  dosyaya veri yazma iþlemini gerçekleþtirir
+ ==============================================================================}
+procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
+begin
+
+  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat12.Write: iþlev henüz yazýlmadý!', []);
+end;
+
+{==============================================================================
+  dosya oluþturma iþlevini gerçekleþtirir
+ ==============================================================================}
+procedure ReWrite(ADosyaKimlik: TKimlik);
+begin
+
+  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat12.ReWrite: iþlev henüz yazýlmadý!', []);
+end;
+
+{==============================================================================
   dosya üzerinde yapýlan iþlemi sonlandýrýr
  ==============================================================================}
-procedure CloseFile(ADosyaKimlik: TKimlik);
+procedure Close(ADosyaKimlik: TKimlik);
 begin
 end;
 

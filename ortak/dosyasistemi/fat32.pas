@@ -16,12 +16,14 @@ interface
 
 uses paylasim, islevler;
 
-procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+procedure Assign(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
 procedure Reset(ADosyaKimlik: TKimlik);
 function EOF(ADosyaKimlik: TKimlik): Boolean;
 function FileSize(ADosyaKimlik: TKimlik): TISayi4;
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
-procedure CloseFile(ADosyaKimlik: TKimlik);
+procedure ReWrite(ADosyaKimlik: TKimlik);
+procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
+procedure Close(ADosyaKimlik: TKimlik);
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
@@ -40,7 +42,7 @@ var
 {==============================================================================
   dosyalar ile ilgili iþlem yapmadan önce taným iþlevlerini gerçekleþtirir
  ==============================================================================}
-procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+procedure Assign(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
 begin
 end;
 
@@ -144,9 +146,27 @@ begin
 end;
 
 {==============================================================================
+  dosya oluþturma iþlevini gerçekleþtirir
+ ==============================================================================}
+procedure ReWrite(ADosyaKimlik: TKimlik);
+begin
+
+  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat32.ReWrite: iþlev henüz yazýlmadý!', []);
+end;
+
+{==============================================================================
+  dosyaya veri yazma iþlemini gerçekleþtirir
+ ==============================================================================}
+procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
+begin
+
+  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat32.Write: iþlev henüz yazýlmadý!', []);
+end;
+
+{==============================================================================
   dosya üzerinde yapýlan iþlemi sonlandýrýr
  ==============================================================================}
-procedure CloseFile(ADosyaKimlik: TKimlik);
+procedure Close(ADosyaKimlik: TKimlik);
 begin
 end;
 
@@ -267,11 +287,11 @@ begin
 
         ADosyaArama.DosyaAdi := WideChar2String(@UzunDosyaAdi);
         ADosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
-        ADosyaArama.OlusturmaSaati := DizinGirdisi^.OlusturmaSaati;
-        ADosyaArama.OlusturmaTarihi := DizinGirdisi^.OlusturmaTarihi;
-        ADosyaArama.SonErisimTarihi := DizinGirdisi^.SonErisimTarihi;
-        ADosyaArama.SonDegisimSaati := DizinGirdisi^.SonDegisimSaati;
-        ADosyaArama.SonDegisimTarihi := DizinGirdisi^.SonDegisimTarihi;
+        ADosyaArama.OlusturmaSaati := FatXSaat2ELRSaat(DizinGirdisi^.OlusturmaSaati);
+        ADosyaArama.OlusturmaTarihi := FatXTarih2ELRTarih(DizinGirdisi^.OlusturmaTarihi);
+        ADosyaArama.SonErisimTarihi := FatXTarih2ELRTarih(DizinGirdisi^.SonErisimTarihi);
+        ADosyaArama.SonDegisimSaati := FatXSaat2ELRSaat(DizinGirdisi^.SonDegisimSaati);
+        ADosyaArama.SonDegisimTarihi := FatXTarih2ELRTarih(DizinGirdisi^.SonDegisimTarihi);
 
         // deðiþken içeriklerini sýfýrla
         UzunDosyaAdi[0] := #0;
@@ -285,11 +305,11 @@ begin
 
         ADosyaArama.DosyaAdi := HamDosyaAdiniDosyaAdinaCevir(DizinGirdisi);
         ADosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
-        ADosyaArama.OlusturmaSaati := DizinGirdisi^.OlusturmaSaati;
-        ADosyaArama.OlusturmaTarihi := DizinGirdisi^.OlusturmaTarihi;
-        ADosyaArama.SonErisimTarihi := DizinGirdisi^.SonErisimTarihi;
-        ADosyaArama.SonDegisimSaati := DizinGirdisi^.SonDegisimSaati;
-        ADosyaArama.SonDegisimTarihi := DizinGirdisi^.SonDegisimTarihi;
+        ADosyaArama.OlusturmaSaati := FatXSaat2ELRSaat(DizinGirdisi^.OlusturmaSaati);
+        ADosyaArama.OlusturmaTarihi := FatXTarih2ELRTarih(DizinGirdisi^.OlusturmaTarihi);
+        ADosyaArama.SonErisimTarihi := FatXTarih2ELRTarih(DizinGirdisi^.SonErisimTarihi);
+        ADosyaArama.SonDegisimSaati := FatXSaat2ELRSaat(DizinGirdisi^.SonDegisimSaati);
+        ADosyaArama.SonDegisimTarihi := FatXTarih2ELRTarih(DizinGirdisi^.SonDegisimTarihi);
       end;
 
       // dosya uzunluðu ve cluster baþlangýcýný geri dönüþ deðerine ekle

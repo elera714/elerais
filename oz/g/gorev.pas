@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 01/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -121,7 +121,7 @@ const
     ('Hata No: 15 - Tanýmlanmamýþ'));
 
 const
-  ILISKILI_UYGULAMA_SAYISI = 12;
+  ILISKILI_UYGULAMA_SAYISI = 14;
   IliskiliUygulamaListesi: array[0..ILISKILI_UYGULAMA_SAYISI - 1] of TDosyaIliskisi = (
     (Uzanti: 'c';    Uygulama: '';             DosyaTip: dtCalistirilabilir),
 
@@ -130,12 +130,13 @@ const
     (Uzanti: 'asm';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'bat';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'inc';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
+    (Uzanti: 'ini';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
+    (Uzanti: 'log';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'lpr';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'md';   Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'pas';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'sh';   Uygulama: 'defter.c';     DosyaTip: dtBelge),
     (Uzanti: 'txt';  Uygulama: 'defter.c';     DosyaTip: dtBelge),
-
     (Uzanti: 'bmp';  Uygulama: 'resimgor.c';   DosyaTip: dtResim),
 
     (Uzanti: '';     Uygulama: 'dsybil.c';     DosyaTip: dtDiger));
@@ -181,7 +182,7 @@ var
   Olay: POlay;
   DosyaU, i, ProgramBellekU: TSayi4;
   Surucu, Klasor,
-  DosyaAdi: string;
+  DosyaAdi, IzKayitDosyaAdi: string;
   DosyaKimlik: TKimlik;
   ELFBaslik: PELFBaslik;
   TamDosyaYolu, Degiskenler,
@@ -230,13 +231,13 @@ begin
 
     // eðer dosya çalýþtýrýlabilir deðil ise dosyayý, öndeðer olarak tanýmlanan
     // program ile çalýþtýr
-    Degiskenler := Surucu + ':' + Klasor + DosyaAdi;     // çalýþtýrýlacak dosya
-    DosyaAdi := IliskiliProgram.Uygulama;         // çalýþtýrýlacak dosyayý çalýþtýracak program
+    Degiskenler := Surucu + ':' + Klasor + DosyaAdi;      // çalýþtýrýlacak dosya
+    DosyaAdi := IliskiliProgram.Uygulama;                 // çalýþtýrýlacak dosyayý çalýþtýracak program
     TamDosyaYolu := AcilisSurucuAygiti + ':\' + KLASOR_PROGRAM + '\' + DosyaAdi;
   end;
 
   // çalýþtýrýlacak dosyayý tanýmla ve aç
-  AssignFile(DosyaKimlik, TamDosyaYolu);
+  Assign(DosyaKimlik, TamDosyaYolu);
   Reset(DosyaKimlik);
   if(IOResult = 0) then
   begin
@@ -268,7 +269,7 @@ begin
     begin
 
       // dosyayý kapat
-      CloseFile(DosyaKimlik);
+      Close(DosyaKimlik);
       SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + TamDosyaYolu + ' dosyasý okunamýyor!', []);
       Result := nil;
       CalistirGorevNo := 0;
@@ -277,7 +278,7 @@ begin
     end;
 
     // dosyayý kapat
-    CloseFile(DosyaKimlik);
+    Close(DosyaKimlik);
 
     // boþ iþlem giriþi bul
     Gorev := Gorev^.Olustur;
@@ -391,6 +392,11 @@ begin
     // görev bayrak deðerini artýr
     Inc(GorevBayrakDegeri);
 
+    // programýn iz kayýt dosyasýný oluþtur
+    IzKayitDosyaAdi := DosyaAdiniAl(DosyaAdi);
+    IzKayitDosyaAdi += '.log'; //izkayit';
+    IzKaydiOlustur(IzKayitDosyaAdi, IzKayitDosyaAdi + ' uygulamasý çalýþtýrýldý');
+
     // görev bellek adresini geri döndür
     Result := Gorev;
 
@@ -399,7 +405,7 @@ begin
   else
   begin
 
-    CloseFile(DosyaKimlik);
+    Close(DosyaKimlik);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + TamDosyaYolu + ' dosya okuma hatasý!', []);
   end;
 

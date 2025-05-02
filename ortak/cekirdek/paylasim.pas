@@ -389,19 +389,21 @@ type
     OkunanSektor: TSayi4;
   end;
 
+const
+  ELR_DOSYA_U = 39;
+
 type
   PDizinGirdisiELR = ^TDizinGirdisiELR;
   TDizinGirdisiELR = packed record
-    DosyaAdi: array[0..42] of Char;
+    DosyaAdi: array[0..ELR_DOSYA_U - 1] of Char;
     Ozellikler: TSayi1;
-    Kullanilmiyor1: TSayi2;
-    OlusturmaSaati: TSayi2;
-    OlusturmaTarihi: TSayi2;
-    SonErisimTarihi: TSayi2;
-    Kullanilmiyor2: TSayi2;
-    SonDegisimSaati: TSayi2;
-    SonDegisimTarihi: TSayi2;
-    BaslangicKumeNo: TSayi2;
+
+    OlusturmaTarihi,
+    OlusturmaSaati,
+    DegisimTarihi,
+    DegisimSaati,
+
+    BaslangicKumeNo,
     DosyaUzunlugu: TSayi4;
   end;
 
@@ -507,13 +509,13 @@ type
     DosyaAdi: string;                 // 8.3 dosya adý veya uzun dosya adý
     DosyaUzunlugu: TSayi4;
     Kimlik: TKimlik;                  // arama kimliði
-    BaslangicKumeNo: TSayi2;          // geçici
+    BaslangicKumeNo: TSayi4;          // geçici
     Ozellikler: TSayi1;
-    OlusturmaSaati: TSayi2;
-    OlusturmaTarihi: TSayi2;
-    SonErisimTarihi: TSayi2;
-    SonDegisimSaati: TSayi2;
-    SonDegisimTarihi: TSayi2;
+    OlusturmaSaati: TSayi4;
+    OlusturmaTarihi: TSayi4;
+    SonErisimTarihi: TSayi4;
+    SonDegisimSaati: TSayi4;
+    SonDegisimTarihi: TSayi4;
   end;
 
 var
@@ -553,6 +555,14 @@ type
     IlkZincirSektor: Word;
     Uzunluk: TISayi4;
     Konum: TSayi4;
+
+    // bu deðiþkenler iþlevler arasý veri alýþveriþi içindir
+    SektorIcerigi: array[0..511] of TSayi1;
+    DizinGirdisi: array[0..63] of TSayi1;
+    SektorNo,
+    KayitSN,
+    KumeNo: TSayi4;
+
     VeriBellekAdresi: Isaretci;
   end;
 

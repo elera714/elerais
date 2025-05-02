@@ -1,6 +1,12 @@
 *******************************************************************************
   Sürüm: 0.3.9 (sunucu / istemci) - 27.02.2025 (R35) - Alfa
 *******************************************************************************
+  + elr-1 dosya sisteminin dosya-klasör oluþturma/okuma/yazma/listeleme/silme gibi
+    tüm temel iþlev ana prototip çalýþmalarý tamamlandý
+  + her bir program için sistem tarafýndan kayýt tutma (log) temel iþlevi eklendi
+  + sistemin kendine ait ayarlarý kaydetmesi ve mevcut kayýtlarý yeniden iþlemesi iþlevi eklendi
+  + elr-1 dosya sistemi için ELRTarih ve ELRSaat veri yapýlarý tasarlandý
+
   + sistem kodlarý sunucu / istemci olarak 2 yapý olarak kodlanmaya baþlandý
   + dhcp ip4 sunucusu kodlanarak sunucu sistemlerinin içerisine eklendi
   + çekirdeðe CO_TUSBIRAKILDI olayý eklendi
@@ -270,7 +276,7 @@
   + bazý hatalarý oluþturan programlarýn sonlandýrýlmasý ve sonlandýrma hakkýnda sisteme 
     bilgi verilmesi saðlandý
   + ONMOUSE_LOSTFOCUS, ONMOUSE_GOTFOCUS, ONMOUSE_SCROLL olaylarý ilgili nesnelere eklendi
-  + programlar için dosya iþlevleri eklendi. AssignFile, Reset, ReadFile, CloseFile gibi
+  + programlar için dosya iþlevleri eklendi. Assign, Reset, ReadFile, Close gibi
   + geliþtirilmiþ fare iþlevleri (4 ve 5. düðme, kaydýrma) eklendi
   + tüm nesneler yeniden görsel olarak tasarlandý
   + sýk kullanýlan programlar ana çubuða eklendi
@@ -286,8 +292,8 @@
   + virtualbox sanal ide disk desteði eklendi
   + disket FAT12, disk FAT16 dosya sistemleri otomatikleþtirildi
   + depolama sürücüleri çoklu kullanýma göre yeniden kodlandý ve hatalar giderildi
-  + ProcessPath, FindFirst, FindNext, FindClose, AssignFile, Reset, Eof, FileSize, 
-    Read, CloseFile RTL iþlevleri eklendi
+  + ProcessPath, FindFirst, FindNext, FindClose, Assign, Reset, Eof, FileSize,
+    Read, Close RTL iþlevleri eklendi
   + disket sürücü motor kapatma iþlevi otomatikleþtirildi
   + font hata düzenlemesi
   + delay iþlevi düzeltildi

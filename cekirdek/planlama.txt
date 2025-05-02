@@ -30,3 +30,4 @@
 - 4 ve 5. fare düðmeleri test edilecek
 - ParamStr (rtl_prog: System.pp, systemh.inc, system.inc) iþlevi dsybil programý üzerinden kontrol edilecek
 - floppy sürücü okumalarý test edilecek
+- sysutils birimi sisteme eklenecek

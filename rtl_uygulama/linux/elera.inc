@@ -90,13 +90,13 @@ type
     DosyaAdi: string;                 // 8.3 dosya adý veya uzun dosya adý
     DosyaUzunlugu: TSayi4;
     Kimlik: TKimlik;                  // arama kimliði
-    BaslangicKumeNo: TSayi2;          // geçici
+    BaslangicKumeNo: TSayi4;          // geçici
     Ozellikler: TSayi1;
-    OlusturmaSaati: TSayi2;
-    OlusturmaTarihi: TSayi2;
-    SonErisimTarihi: TSayi2;
-    SonDegisimSaati: TSayi2;
-    SonDegisimTarihi: TSayi2;
+    OlusturmaSaati: TSayi4;
+    OlusturmaTarihi: TSayi4;
+    SonErisimTarihi: TSayi4;
+    SonDegisimSaati: TSayi4;
+    SonDegisimTarihi: TSayi4;
   end;
 
 type

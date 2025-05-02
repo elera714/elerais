@@ -195,7 +195,7 @@ begin
 
                       // DizinGirisi dizin giriþleri
                       DizinGirisi := @MD^.Acilis.DizinGirisi;
-                      DizinGirisi^.IlkSektor := $1466; //5222; (AcilisKayit32^.DATBasinaSektor *
+                      DizinGirisi^.IlkSektor := $600; //1536; (AcilisKayit32^.DATBasinaSektor *
                         //AcilisKayit32^.DATSayisi) + AcilisKayit32^.AyrilmisSektor1 +
                         //AcilisKayit32^.BolumOncesiSektorSayisi;
                       DizinGirisi^.ToplamSektor := AcilisKayit32^.AzamiDizinGirisi div 16;

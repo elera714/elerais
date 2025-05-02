@@ -198,7 +198,7 @@ var
   DosyaArama: TDosyaArama;
   AramaSonuc, ToplamKlasor,
   ToplamDosya: TSayi4;
-  SonDegisimTarihi, SonDegisimSaati: TSayi2;
+  SonDegisimSaati: TSayi2;
   TarihDizi: array[0..2] of TSayi2;
   SaatDizi: array[0..2] of TSayi1;
   Tarih, Saat, GirdiTipi: string;
@@ -219,17 +219,17 @@ begin
     while (AramaSonuc = 0) do
     begin
 
-      SonDegisimTarihi := DosyaArama.SonDegisimTarihi;
+      {SonDegisimTarihi := DosyaArama.SonDegisimTarihi;
       TarihDizi[0] := SonDegisimTarihi and 31;
       TarihDizi[1] := (SonDegisimTarihi shr 5) and 15;
-      TarihDizi[2] := ((SonDegisimTarihi shr 9) and 127) + 1980;
-      Tarih := DateToStr(TarihDizi, False);
+      TarihDizi[2] := ((SonDegisimTarihi shr 9) and 127) + 1980;}
+      Tarih := Tarih2KK(DosyaArama.SonDegisimTarihi);
 
-      SonDegisimSaati := DosyaArama.SonDegisimSaati;
+      {SonDegisimSaati := DosyaArama.SonDegisimSaati;
       SaatDizi[2] := (SonDegisimSaati and 31) * 2;
       SaatDizi[1] := (SonDegisimSaati shr 5) and 63;
-      SaatDizi[0] := (SonDegisimSaati shr 11) and 31;
-      Saat := TimeToStr(SaatDizi);
+      SaatDizi[0] := (SonDegisimSaati shr 11) and 31;}
+      Saat := Saat2KK(DosyaArama.SonDegisimSaati);
 
       if((DosyaArama.Ozellikler and $10) = $10) then
       begin

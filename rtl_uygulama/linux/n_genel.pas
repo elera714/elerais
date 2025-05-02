@@ -42,13 +42,13 @@ type
       var ADosyaArama: TDosyaArama): TISayi4; assembler;
     function _FindNext(var ADosyaArama: TDosyaArama): TISayi4; assembler;
     function _FindClose(var ADosyaArama: TDosyaArama): TISayi4; assembler;
-    procedure _AssignFile(out ADosyaKimlik: TKimlik; const ADosyaAdi: string); assembler;
+    procedure _Assign(out ADosyaKimlik: TKimlik; const ADosyaAdi: string); assembler;
     procedure _Reset(ADosyaKimlik: TKimlik); assembler;
     function _IOResult: TISayi4; assembler;
     function _EOF(ADosyaKimlik: TKimlik): Boolean; assembler;
     function _FileSize(ADosyaKimlik: TKimlik): TISayi4; assembler;
     procedure _FileRead(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
-    procedure _CloseFile(ADosyaKimlik: TKimlik); assembler;
+    procedure _Close(ADosyaKimlik: TKimlik); assembler;
     procedure _DeleteFile(ADosyaAdi: string); assembler;
     procedure _RemoveDir(AKlasorAdi: string); assembler;
 
@@ -186,7 +186,7 @@ asm
   add	  esp,4
 end;
 
-procedure TGenel._AssignFile(out ADosyaKimlik: TKimlik; const ADosyaAdi: string); assembler;
+procedure TGenel._Assign(out ADosyaKimlik: TKimlik; const ADosyaAdi: string); assembler;
 asm
   push  DWORD ADosyaAdi
   push	DWORD ADosyaKimlik
@@ -236,7 +236,7 @@ asm
   add	  esp,8
 end;
 
-procedure TGenel._CloseFile(ADosyaKimlik: TKimlik); assembler;
+procedure TGenel._Close(ADosyaKimlik: TKimlik); assembler;
 asm
   push	DWORD ADosyaKimlik
   mov	  eax,DOSYA_KAPAT

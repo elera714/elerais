@@ -6,7 +6,7 @@
   Dosya Adı: islevler.pas
   Dosya İşlevi: genel işlevleri içerir
 
-  Güncelleme Tarihi: 07/02/2025
+  Güncelleme Tarihi: 02/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,6 +19,7 @@ uses paylasim;
 
 procedure DosyaYolunuParcala2(const ATamDosyaYolu: string; var ASurucu,
   AKlasor, ADosyaAdi: string);
+function DosyaAdiniAl(const ADosyaAdiVeUzanti: string): string;
 function IPAdresleriniKarsilastir(AIPAdres1, AIPAdres2: TIPAdres): Boolean;
 procedure DosyaParcalariniBirlestir(ADizinGirisi: Isaretci);
 procedure DosyaParcasiniBasaEkle(AEklenecekVeri, AHedefBellek: Isaretci);
@@ -30,6 +31,10 @@ function Karsilastir(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4): TSayi4;
 function IPKarsilastir(IP1, IP2: TIPAdres): Boolean;
 function IPKarsilastir2(AGonderenIP, ABenimIP: TIPAdres): Boolean;
 function IPAdresiAyniAgdaMi(AGonderenIP: TIPAdres): Boolean;
+function ELRTarih(AGun, AAy, AYil: TSayi2): TSayi4;
+function FatXTarih2ELRTarih(ATarih: TSayi2): TSayi4;
+function ELRSaat(ASaat, ADakika, ASaniye: TSayi1): TSayi4;
+function FatXSaat2ELRSaat(ASaat: TSayi2): TSayi4;
 
 implementation
 
@@ -75,6 +80,20 @@ begin
     // ADosyaAdi = dosya1.c
     ADosyaAdi := Copy(s, i + 1, Length(s) - i);
   end;
+end;
+
+// dosya adı + uzantı bileşiminden dosya adını alır
+function DosyaAdiniAl(const ADosyaAdiVeUzanti: string): string;
+var
+  i: TSayi4;
+begin
+
+  i := Pos('.', ADosyaAdiVeUzanti);
+
+  if(i = 0) then
+
+    Result := ADosyaAdiVeUzanti
+  else Result := Copy(ADosyaAdiVeUzanti, 1, i - 1);
 end;
 
 {==============================================================================
@@ -420,6 +439,48 @@ begin
   for i := 0 to 2 do if(AGonderenIP[i] <> GAgBilgisi.IP4Adres[i]) then Exit;
 
   Result := True;
+end;
+
+// gün + ay + yıl değerini elr dosya sistemi tarih değerine çevirir
+function ELRTarih(AGun, AAy, AYil: TSayi2): TSayi4;
+begin
+
+  Result := (AYil shl 16) or (AAy shl 8) or (AGun);
+end;
+
+// fat12/16/32 tarih değerini elr dosya sistemi tarih değerine çevirir
+function FatXTarih2ELRTarih(ATarih: TSayi2): TSayi4;
+var
+  j, Gun, Ay, Yil: TSayi2;
+begin
+
+  j := ATarih;
+  Gun := j and 31;
+  Ay := (j shr 5) and 15;
+  Yil := ((j shr 9) and 127) + 1980;
+
+  Result := (Yil shl 16) or (Ay shl 8) or (Gun);
+end;
+
+// saat + dakika + saniye değerini elr dosya sistemi saat değerine çevirir
+function ELRSaat(ASaat, ADakika, ASaniye: TSayi1): TSayi4;
+begin
+
+  Result := (ASaniye shl 16) or (ADakika shl 8) or (ASaat);
+end;
+
+// fat12/16/32 saat değerini elr dosya sistemi tarih değerine çevirir
+function FatXSaat2ELRSaat(ASaat: TSayi2): TSayi4;
+var
+  j, Saniye, Dakika, Saat: TSayi2;
+begin
+
+  j := ASaat;
+  Saniye := (j and 31) * 2;
+  Dakika := (j shr 5) and 63;
+  Saat := (j shr 11) and 31;
+
+  Result := (Saniye shl 16) or (Dakika shl 8) or (Saat);
 end;
 
 end.

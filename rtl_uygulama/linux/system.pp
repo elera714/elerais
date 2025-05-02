@@ -42,7 +42,9 @@ function Trim(const S: string): string;
 function IntToStr(ADeger: TISayi4): string;
 function HexToStr(Val: LongInt; WritePrefix: LongBool; DivNum: LongInt): string;
 function TimeToStr(Buffer: array of Byte): string;
+function Saat2KK(ADeger: TSayi4): string;
 function DateToStr(Buffer: array of Word; GunAdiEkle: Boolean): string;
+function Tarih2KK(ADeger: TSayi4): string;
 function StrToHex(Val: string): LongWord;
 function UpperCase(s: string): string;
 procedure Tasi2(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4);
@@ -192,7 +194,38 @@ begin
 end;
 
 {==============================================================================
-  saat deðerini string deðere dönüþtürür
+  dosya saat deðerini karakter katarýna çevirir
+ ==============================================================================}
+function Saat2KK(ADeger: TSayi4): string;
+var
+  s: string;
+begin
+
+  SetLength(Result, 8);
+
+  // saat deðerini karakter katarýna çevir
+  s := IntToStr(ADeger and $FF);
+  if(Length(s) = 1) then
+    Result := '0' + s
+  else Result := s;
+
+  // dakika deðerini karakter katarýna çevir
+  s := IntToStr((ADeger shr 8) and $FF);
+  if(Length(s) = 1) then
+    Result += ':0' + s
+  else Result += ':' + s;
+
+  // saniye deðerini karakter katarýna çevir
+  s := IntToStr((ADeger shr 16) and $FF);
+  if(Length(s) = 1) then
+    Result += ':0' + s
+  else Result += ':' + s;
+
+  // bilgi: salise deðeri sonuç deðerine eklenmiyor - eklenebilir
+end;
+
+{==============================================================================
+  tarih deðerini string deðere dönüþtürür
  ==============================================================================}
 function DateToStr(Buffer: array of Word; GunAdiEkle: Boolean): string;
 const
@@ -231,6 +264,32 @@ begin
     Result += '.';
     Result += IntToStr(Buffer[2]);
   end;
+end;
+
+{==============================================================================
+  dosya tarih deðerini karakter katarýna çevirir
+ ==============================================================================}
+function Tarih2KK(ADeger: TSayi4): string;
+var
+  s: string;
+begin
+
+  SetLength(Result, 10);
+
+  // gün deðerini karakter katarýna çevir
+  s := IntToStr(ADeger and $FF);
+  if(Length(s) = 1) then
+    Result := '0' + s
+  else Result := s;
+
+  // ay deðerini karakter katarýna çevir
+  s := IntToStr((ADeger shr 8) and $FF);
+  if(Length(s) = 1) then
+    Result += '.0' + s
+  else Result += '.' + s;
+
+  // yýl deðerini karakter katarýna çevir
+  Result += '.' + IntToStr((ADeger shr 16) and $FFFF);
 end;
 
 {==============================================================================

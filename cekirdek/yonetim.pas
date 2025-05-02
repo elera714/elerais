@@ -115,7 +115,7 @@ implementation
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, donusum, gn_islevler, giysi_normal, giysi_mac, depolama, src_disket,
   vbox, usb, ohci, port, gn_islemgostergesi, prg_cagri, prg_grafik, prg_kontrol,
-  islevler;
+  islevler, elr1, izleme;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -244,9 +244,11 @@ var
   Masaustu: PMasaustu;
   GN: PGorselNesne;
   DosyaKimlik: TKimlik;
-  DosyaNo: TSayi4 = 0;
+  DosyaNo: TSayi4 = 1;
   FD: TFizikselDepolama;
   Bellek: array[0..511] of TSayi1;
+  dt: TDateTime;
+  DosyaAdi, Veri: string;
 begin
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
@@ -333,13 +335,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-
-            dosya.AssignFile(DosyaKimlik, 'disk1:\klasor\ELERA ÝS, ELR-1 dosya sistemi - ' + IntToStr(DosyaNo));
-            dosya.ReWrite(DosyaKimlik);
-
-            Inc(DosyaNo);
-
-            dosya.CloseFile(DosyaKimlik);
+            IzKaydiOlustur('elera.ini', 'merhaba');
 
   {          SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Deðer: %s', [GeciciDeger]);
 
@@ -358,37 +354,19 @@ begin
             //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek U3: %d', [TSayi4(TestAdres)]);
 
             //TestSinif := TTestSinif.Create;
-
-
-
-            {DosyaAdi := 'disk1:\harfler.txt';
-            dosya.AssignFile(DosyaKimlik, DosyaAdi);
-            dosya.Reset(DosyaKimlik);
-
-            DosyaUzunluk := dosya.FileSize(DosyaKimlik);
-
-            //if(DosyaUzunluk <= DOSYA_BELLEK_KAPASITESI) then
-            begin
-
-              //_IOResult;
-
-              //_EOF(DosyaKimlik);
-
-              dosya.Read(DosyaKimlik, Isaretci($3000000));
-            end;
-
-            dosya.CloseFile(DosyaKimlik); }
           end
           // test iþlev tuþu-1
           else if(TusKarakterDegeri = '4') then
           begin
 
-            dosya.AssignFile(DosyaKimlik, 'disk1:\klasor\klsr' + IntToStr(DosyaNo));
+            dosya.Assign(DosyaKimlik, 'disk1:\klasor\klsr' + IntToStr(DosyaNo));
             dosya.CreateDir(DosyaKimlik);
 
             Inc(DosyaNo);
 
-            dosya.CloseFile(DosyaKimlik);
+            dosya.Close(DosyaKimlik);
+
+
 
 
             //Gorev^.Calistir('disk1:\progrmlr\saat.c');
@@ -427,10 +405,12 @@ begin
 
             FillChar(Bellek, 512, 0);
             FD := FizikselDepolamaAygitListesi[3];  // fda4
-            FD.SektorYaz(@FD, $1466 + 0, 1, Isaretci(@Bellek));
-            FD.SektorYaz(@FD, $1466 + 1, 1, Isaretci(@Bellek));
-            FD.SektorYaz(@FD, $1466 + 2, 1, Isaretci(@Bellek));
-            FD.SektorYaz(@FD, $1466 + 3, 1, Isaretci(@Bellek));
+            FD.SektorYaz(@FD, 1536 + 0, 1, Isaretci(@Bellek));    // $600 = 1536
+            FD.SektorYaz(@FD, 1536 + 1, 1, Isaretci(@Bellek));
+            FD.SektorYaz(@FD, 1536 + 2, 1, Isaretci(@Bellek));
+            FD.SektorYaz(@FD, 1536 + 3, 1, Isaretci(@Bellek));
+
+            SHTOlustur(256, 1280, 1536);
 
             //GetMemoryManager(m);
             //m.Getmem := @GMem;
@@ -461,7 +441,7 @@ begin
 
             Gorev^.Calistir('grvyntcs.c')
 
-          // bilgisayarý kapat
+          // giriþ kutusundaki veriyi panoya kopyala
           else if(TusKarakterDegeri = 'k') then
           begin
 
@@ -487,7 +467,7 @@ begin
 
             Gorev^.Calistir('resimgor.c')
 
-          // bilgisayarý yeniden baþlat
+            // panodaki veriyi giriþ kutusuna yapýþtýr
           else if(TusKarakterDegeri = 'y') then
           begin
 
@@ -828,7 +808,7 @@ var
   j: TSayi2;
 begin
 
-  i := FindFirst('disket1:\*.*', 0, AramaKaydi);
+  i := dosya.FindFirst('disket1:\*.*', 0, AramaKaydi);
   while i = 0 do
   begin
 
@@ -848,10 +828,10 @@ begin
       Break;
     end;
 
-    i := FindNext(AramaKaydi);
+    i := dosya.FindNext(AramaKaydi);
   end;
 
-  FindClose(AramaKaydi);
+  dosya.FindClose(AramaKaydi);
 end;
 
 procedure KaydedilenProgramlariYenidenYukle;

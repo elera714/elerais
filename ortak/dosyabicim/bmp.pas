@@ -6,7 +6,7 @@
   Dosya Adı: bmp.pas
   Dosya İşlevi: bmp dosya işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 01/05/2025
 
   Not-1: şu an itibariyle sadece 24 bitlik resim görüntüleme desteği vardır
   Not-2: tüm renkler 32 bitlik değerlerle işlenmektedir
@@ -89,7 +89,7 @@ begin
 
     DosyaTamYol := Surucu + ':' + Klasor + DosyaAdi;
 
-    AssignFile(DosyaKimlik, DosyaTamYol);
+    Assign(DosyaKimlik, DosyaTamYol);
     Reset(DosyaKimlik);
     if(IOResult = 0) then
     begin
@@ -103,7 +103,7 @@ begin
       begin
 
         // dosyayı kapat
-        CloseFile(DosyaKimlik);
+        Close(DosyaKimlik);
         Exit;
       end;
 
@@ -111,7 +111,7 @@ begin
       Read(DosyaKimlik, DosyaBellek);
 
       // dosyayı kapat
-      CloseFile(DosyaKimlik);
+      Close(DosyaKimlik);
 
       BMPBicim := DosyaBellek;
       GoruntuYapi.Genislik := BMPBicim^.Genislik;

@@ -6,7 +6,7 @@
   Dosya Adý: gn_defter.pas
   Dosya Ýþlevi: defter nesnesi (TMemo) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 27/04/2025
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     40K ve çekirdek bölümüne eklenen 40K bellek kullanmaktadýr.
@@ -456,12 +456,12 @@ begin
   if(i = 0) or (i > (4096 * 10)) then Exit;
 
   // karakter katarýný hedef bölgeye kopyala
-  p := PByte(Self.FYaziBellekAdresi + FYaziUzunlugu);
+  p := PByte(Self.FYaziBellekAdresi + Self.FYaziUzunlugu);
   Tasi2(AYaziBellekAdresi, p, i);
 
   // sýfýr sonlandýrma iþaretini ekle
-  FYaziUzunlugu += i;
-  p := PByte(Self.FYaziBellekAdresi + FYaziUzunlugu);
+  Self.FYaziUzunlugu += i;
+  p := PByte(Self.FYaziBellekAdresi + Self.FYaziUzunlugu);
   p^ := 0;
 
   YatayDikeyKarakterSayisiniAl;
@@ -505,12 +505,12 @@ var
   i: TSayi4;
 begin
 
-  FYatayKarSay := 0;
-  FDikeyKarSay := 0;
+  Self.FYatayKarSay := 0;
+  Self.FDikeyKarSay := 0;
 
-  if(FYaziUzunlugu = 0) then Exit;
+  if(Self.FYaziUzunlugu = 0) then Exit;
 
-  p := PChar(FYaziBellekAdresi);
+  p := PChar(Self.FYaziBellekAdresi);
   i := 0;
   while p^ <> #0 do
   begin
@@ -518,16 +518,26 @@ begin
     if(p^ = #10) then
     begin
 
-      Inc(FDikeyKarSay);
-      if(i > FYatayKarSay) then FYatayKarSay := i;
+      if(i > Self.FYatayKarSay) then Self.FYatayKarSay := i;
       i := 0;
-    end else Inc(i);
+      Inc(Self.FDikeyKarSay);
+    end
+    else
+    begin
+
+      Inc(i);
+      if(i > Self.FYatayKarSay) then Self.FYatayKarSay := i;
+    end;
 
     Inc(p);
   end;
 
-  FYatayKCubugu^.FUstDeger := FYatayKarSay;
-  FDikeyKCubugu^.FUstDeger := FDikeyKarSay;
+  // en düþük deðer 1 olmalý - en azýndan þu anda
+  if(Self.FYatayKarSay = 0) then Self.FYatayKarSay := 1;
+  if(Self.FDikeyKarSay = 0) then Self.FDikeyKarSay := 1;
+
+  Self.FYatayKCubugu^.FUstDeger := Self.FYatayKarSay;
+  Self.FDikeyKCubugu^.FUstDeger := Self.FDikeyKarSay;
 end;
 
 {==============================================================================

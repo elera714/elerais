@@ -6,7 +6,7 @@
   Dosya Adý: src_sb.pas
   Dosya Ýþlevi: sound blaster ses kartý sürücüsü
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 01/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -138,7 +138,7 @@ begin
     HoparloruAc;
     SesKuvvetiniAyarla($22);
 
-    AssignFile(_DosyaKimlik, 'disk1:\2.wav');
+    Assign(_DosyaKimlik, 'disk1:\2.wav');
     Reset(_DosyaKimlik);
     if(IOResult = 0) then
     begin
@@ -162,7 +162,7 @@ begin
         DMAAkis(_DosyaBellek + 44, _DosyaUzunluk - 44);
 
         // dosyayý kapat
-        CloseFile(_DosyaKimlik);
+        Close(_DosyaKimlik);
 
         GGercekBellek.YokEt(_DosyaBellek, _DosyaUzunluk);
       end;

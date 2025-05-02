@@ -186,7 +186,7 @@ begin
 
   //PSayi4(Isaretci(VBBellek) + 04)^ := $FFFFFFFF;
   //PSayi4(Isaretci(VBBellek) + 08)^ := $FFFFFFFF;
-  PSayi4(Isaretci(VBBellek) + 12)^ := $FFFFFFFF;
+  PSayi4(Isaretci(VBBellek + 12))^ := $FFFFFFFF;
 
 {  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);

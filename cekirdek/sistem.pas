@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÃ‡
-  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
+  Kodlayan: Fatih KILIÇ
+  Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya AdÄ±: sistem.pas
-  Dosya Ä°ÅŸlevi: sistem yÃ¶netim iÅŸlevlerini iÃ§erir
+  Dosya Adı: sistem.pas
+  Dosya İşlevi: sistem yönetim işlevlerini içerir
 
-  GÃ¼ncelleme Tarihi: 19/02/2025
+  Güncelleme Tarihi: 01/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,23 +19,27 @@ uses paylasim;
 
 procedure YenidenBaslat;
 procedure BilgisayariKapat;
+procedure SistemAyarlariniKaydet;
 
 implementation
 
-uses port;
+uses port, dosya;
 
 procedure YenidenBaslat;
 var
   B1: TSayi1;
 begin
 
+  // öncelikle sistem ayarlarını kaydet
+  SistemAyarlariniKaydet;
+
   repeat
 
     B1 := PortAl1($64);
-    if((B1 and 1) = 0) then PortAl1($60);     // = 1 = veri mevcut olduÄŸu mÃ¼ddetÃ§e porttan veriyi al
-  until ((B1 and 2) = 0);                     // = 0 = veri yazÄ±labilir olmadÄ±ÄŸÄ± mÃ¼ddetÃ§e tekrarla
+    if((B1 and 1) = 0) then PortAl1($60);     // = 1 = veri mevcut olduğu müddetçe porttan veriyi al
+  until ((B1 and 2) = 0);                     // = 0 = veri yazılabilir olmadığı müddetçe tekrarla
 
-  // porta veriyi yaz - yeniden baÅŸlat
+  // porta veriyi yaz - yeniden başlat
   PortYaz1($64, $FE);
 
   asm @@1: hlt; jmp @@1; end;
@@ -44,7 +48,19 @@ end;
 procedure BilgisayariKapat;
 begin
 
+  // öncelikle sistem ayarlarını kaydet
+  SistemAyarlariniKaydet;
+
   asm cli; hlt; end;
+end;
+
+procedure SistemAyarlariniKaydet;
+var
+  DosyaAdi: string;
+begin
+
+  DosyaAdi := 'elera.ini';
+  IzKaydiOlustur(DosyaAdi, 'sistem-adı=' + SistemAdi);
 end;
 
 end.

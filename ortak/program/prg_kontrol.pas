@@ -6,7 +6,7 @@
   Dosya Adý: prg_kontrol.pas
   Dosya Ýþlevi: dahili çekirdek programý: çekirdek içi kontrol iþlemleri için
 
-  Güncelleme Tarihi: 21/02/2025
+  Güncelleme Tarihi: 01/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -114,7 +114,7 @@ begin
 
     NesneKontrol;
 
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '1', []);
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '1', []);
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareX: %d', [GFareSurucusu.YatayKonum]);
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareY: %d', [GFareSurucusu.DikeyKonum]);
 
@@ -125,7 +125,7 @@ begin
 
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-Y: %d', [GFareSurucusu.DikeyKonum]);
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '2', []);
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '2', []);
 
     DosyaBulundu := False;
 

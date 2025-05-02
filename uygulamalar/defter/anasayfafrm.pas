@@ -158,7 +158,7 @@ begin
 
   FDefter0.Temizle;
 
-  FGenel._AssignFile(DosyaKimlik, DosyaAdi);
+  FGenel._Assign(DosyaKimlik, DosyaAdi);
   FGenel._Reset(DosyaKimlik);
 
   DosyaUzunluk := FGenel._FileSize(DosyaKimlik);
@@ -173,7 +173,7 @@ begin
     FGenel._FileRead(DosyaKimlik, DosyaBellek);
   end;
 
-  FGenel._CloseFile(DosyaKimlik);
+  FGenel._Close(DosyaKimlik);
 
   if(DosyaUzunluk > DOSYA_BELLEK_KAPASITESI) then
   begin
