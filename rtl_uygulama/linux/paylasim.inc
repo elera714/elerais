@@ -6,7 +6,7 @@
   Dosya Adı: paylasim.pas
   Dosya İşlevi: program arabiriminde kullanılacak sabit değerleri içerir
 
-  Güncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 03/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -407,6 +407,7 @@ const
   CO_MENUACILDI           = CO_ILKDEGER + 8;        // menünün açılması
   CO_MENUKAPATILDI        = CO_ILKDEGER + 9;        // menünün kapatılması
   CO_SECIMDEGISTI         = CO_ILKDEGER + 10;       // karma liste nesnesinde seçimin değişmesi olayı
+  CO_SONLANDIR            = CO_ILKDEGER + 11;       // çekirdek tarafından programa gönderilen sonlandırma talimatı
 
   // fare aygıtının ürettiği olaylar - fare olayları (FO)
   FO_ILKDEGER             = $200;

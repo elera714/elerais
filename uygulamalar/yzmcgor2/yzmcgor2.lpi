@@ -35,7 +35,6 @@
       <Unit0>
         <Filename Value="yzmcgor2.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="24" Y="9"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -57,7 +56,10 @@
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
+        <TopLine Value="75"/>
+        <CursorPos X="8" Y="86"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit3>

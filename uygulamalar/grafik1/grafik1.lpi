@@ -38,7 +38,6 @@
       <Unit0>
         <Filename Value="grafik1.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="33" Y="19"/>
         <UsageCount Value="73"/>
         <Loaded Value="True"/>
@@ -166,8 +165,10 @@
       <Unit22>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="33" Y="26"/>
+        <TopLine Value="49"/>
+        <CursorPos X="8" Y="63"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit22>
@@ -175,120 +176,120 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="61" Column="15" TopLine="38"/>
+        <Caret Line="63" Column="68" TopLine="46"/>
       </Position1>
       <Position2>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="63" Column="68" TopLine="46"/>
+        <Caret Line="26" Column="7" TopLine="12"/>
       </Position2>
       <Position3>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="26" Column="7" TopLine="12"/>
+        <Caret Line="64" Column="58" TopLine="47"/>
       </Position3>
       <Position4>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="64" Column="58" TopLine="47"/>
+        <Caret Line="18" Column="30"/>
       </Position4>
       <Position5>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="18" Column="30"/>
       </Position5>
       <Position6>
         <Filename Value="grafik1.lpr"/>
+        <Caret Line="38" Column="40" TopLine="19"/>
       </Position6>
       <Position7>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="38" Column="40" TopLine="19"/>
+        <Caret Line="48" Column="26" TopLine="35"/>
       </Position7>
       <Position8>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="48" Column="26" TopLine="35"/>
+        <Caret Line="15" Column="24"/>
       </Position8>
       <Position9>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="15" Column="24"/>
+        <Caret Line="14" Column="8"/>
       </Position9>
       <Position10>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="14" Column="8"/>
+        <Caret Line="20" Column="8"/>
       </Position10>
       <Position11>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="20" Column="8"/>
+        <Caret Line="21" Column="10"/>
       </Position11>
       <Position12>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="21" Column="10"/>
+        <Caret Line="22" Column="14"/>
       </Position12>
       <Position13>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="22" Column="14"/>
+        <Caret Line="10" Column="25"/>
       </Position13>
       <Position14>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="10" Column="25"/>
+        <Caret Line="25" Column="7" TopLine="7"/>
       </Position14>
       <Position15>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="25" Column="7" TopLine="7"/>
+        <Caret Line="33" Column="3" TopLine="22"/>
       </Position15>
       <Position16>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="33" Column="3" TopLine="22"/>
+        <Caret Line="10" Column="24" TopLine="4"/>
       </Position16>
       <Position17>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="10" Column="24" TopLine="4"/>
       </Position17>
       <Position18>
         <Filename Value="grafik1.lpr"/>
+        <Caret Line="73" Column="11" TopLine="50"/>
       </Position18>
       <Position19>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="73" Column="11" TopLine="50"/>
+        <Caret Line="10" Column="33"/>
       </Position19>
       <Position20>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="10" Column="33"/>
       </Position20>
       <Position21>
         <Filename Value="grafik1.lpr"/>
+        <Caret Line="37" Column="27" TopLine="19"/>
       </Position21>
       <Position22>
         <Filename Value="grafik1.lpr"/>
-        <Caret Line="37" Column="27" TopLine="19"/>
+        <Caret Line="9" Column="24"/>
       </Position22>
       <Position23>
-        <Filename Value="grafik1.lpr"/>
-        <Caret Line="9" Column="24"/>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="13" Column="6" TopLine="2"/>
       </Position23>
       <Position24>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="13" Column="6" TopLine="2"/>
+        <Caret Line="36" Column="33" TopLine="17"/>
       </Position24>
       <Position25>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="36" Column="33" TopLine="17"/>
+        <Caret Line="51" Column="4" TopLine="24"/>
       </Position25>
       <Position26>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="51" Column="4" TopLine="24"/>
+        <Caret Line="57" Column="7" TopLine="39"/>
       </Position26>
       <Position27>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="57" Column="7" TopLine="39"/>
+        <Caret Line="69" Column="6" TopLine="50"/>
       </Position27>
       <Position28>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="69" Column="6" TopLine="50"/>
+        <Caret Line="71" Column="12" TopLine="50"/>
       </Position28>
       <Position29>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="71" Column="12" TopLine="50"/>
+        <Caret Line="74" Column="50" TopLine="50"/>
       </Position29>
       <Position30>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="74" Column="50" TopLine="50"/>
+        <Caret Line="17" Column="21"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

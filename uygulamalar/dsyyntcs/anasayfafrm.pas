@@ -21,6 +21,7 @@ type
     FDurumCubugu: TDurumCubugu;
     FlgDosyaListesi: TListeGorunum;
     procedure DosyalariListele;
+    procedure AyarDosyasiniOku;
   public
     procedure Olustur;
     procedure Goster;
@@ -71,6 +72,8 @@ begin
   FetkYolDegeri.Goster;
 
   FPanel.Goster;
+
+  //AyarDosyasiniOku;
 
   // sistemin kurulu olduðu sürücüyü al
   FGenel.SistemYapiBilgisiAl(0, SistemKuruluSurucu);
@@ -124,8 +127,14 @@ var
   i: TSayi4;
 begin
 
+  // çekirdek tarafýndan gönderilen programýn kendisini sonlandýrma talimatý
+  if(AOlay.Olay = CO_SONLANDIR) then
+  begin
+
+    FGorev.Sonlandir(-1);
+  end
   // liste kutusuna týklanmasý halinde dosyayý çalýþtýr
-  if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = FlgDosyaListesi.Kimlik) then
+  else if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = FlgDosyaListesi.Kimlik) then
   begin
 
     SeciliYazi := FlgDosyaListesi.SeciliYaziAl;
@@ -219,16 +228,7 @@ begin
     while (AramaSonuc = 0) do
     begin
 
-      {SonDegisimTarihi := DosyaArama.SonDegisimTarihi;
-      TarihDizi[0] := SonDegisimTarihi and 31;
-      TarihDizi[1] := (SonDegisimTarihi shr 5) and 15;
-      TarihDizi[2] := ((SonDegisimTarihi shr 9) and 127) + 1980;}
       Tarih := Tarih2KK(DosyaArama.SonDegisimTarihi);
-
-      {SonDegisimSaati := DosyaArama.SonDegisimSaati;
-      SaatDizi[2] := (SonDegisimSaati and 31) * 2;
-      SaatDizi[1] := (SonDegisimSaati shr 5) and 63;
-      SaatDizi[0] := (SonDegisimSaati shr 11) and 31;}
       Saat := Saat2KK(DosyaArama.SonDegisimSaati);
 
       if((DosyaArama.Ozellikler and $10) = $10) then
@@ -294,6 +294,24 @@ begin
 
   // boyut
   ABoyut := s;
+end;
+
+procedure TfrmAnaSayfa.AyarDosyasiniOku;
+var
+  DosyaKimlik: TKimlik;
+  DosyaBellek: Isaretci;
+begin
+
+  FGenel._Assign(DosyaKimlik, 'disk2:\dsyyntcs.ini');
+  FGenel._Reset(DosyaKimlik);
+
+  if(FGenel._IOResult <> 0) then
+  begin
+
+    FGenel._FileRead(DosyaKimlik, DosyaBellek);
+  end;
+
+  FGenel._Close(DosyaKimlik);
 end;
 
 end.

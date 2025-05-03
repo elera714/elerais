@@ -681,6 +681,7 @@ const
   CO_MENUACILDI           = CO_ILKDEGER + 8;        // menünün açýlmasý
   CO_MENUKAPATILDI        = CO_ILKDEGER + 9;        // menünün kapatýlmasý
   CO_SECIMDEGISTI         = CO_ILKDEGER + 10;       // karma liste nesnesinde seçimin deðiþmesi olayý
+  CO_SONLANDIR            = CO_ILKDEGER + 11;       // çekirdek tarafýndan programa gönderilen sonlandýrma talimatý
 
   // fare aygýtýnýn ürettiði olaylar - fare olaylarý (FO)
   FO_ILKDEGER             = $200;

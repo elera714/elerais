@@ -1,12 +1,15 @@
 *******************************************************************************
   Sürüm: 0.3.9 (sunucu / istemci) - 27.02.2025 (R35) - Alfa
 *******************************************************************************
+  + daha önce pencerenin kapatma düðmesine týklandýðýnda çekirdek tarafýndan hemen
+    sonlandýrýlan uygulama, artýk çekirdek tarafýndan uygulamaya CO_SONLANDIR mesajý
+    gönderilerek uygulamanýn sonlanma öncesi son iþlevleri yapmasýna olanak saðlandý
+
   + elr-1 dosya sisteminin dosya-klasör oluþturma/okuma/yazma/listeleme/silme gibi
     tüm temel iþlev ana prototip çalýþmalarý tamamlandý
   + her bir program için sistem tarafýndan kayýt tutma (log) temel iþlevi eklendi
   + sistemin kendine ait ayarlarý kaydetmesi ve mevcut kayýtlarý yeniden iþlemesi iþlevi eklendi
   + elr-1 dosya sistemi için ELRTarih ve ELRSaat veri yapýlarý tasarlandý
-
   + sistem kodlarý sunucu / istemci olarak 2 yapý olarak kodlanmaya baþlandý
   + dhcp ip4 sunucusu kodlanarak sunucu sistemlerinin içerisine eklendi
   + çekirdeðe CO_TUSBIRAKILDI olayý eklendi

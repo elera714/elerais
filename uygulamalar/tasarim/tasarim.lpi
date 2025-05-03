@@ -39,7 +39,6 @@
       <Unit0>
         <Filename Value="tasarim.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="17" Y="13"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
@@ -239,8 +238,10 @@
       <Unit34>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="45" Y="20"/>
+        <TopLine Value="60"/>
+        <CursorPos X="8" Y="69"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit34>
@@ -248,121 +249,121 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="tasarim.lpr"/>
-        <Caret Line="36" Column="46" TopLine="15"/>
       </Position1>
       <Position2>
         <Filename Value="tasarim.lpr"/>
+        <Caret Line="10" Column="25"/>
       </Position2>
       <Position3>
         <Filename Value="tasarim.lpr"/>
-        <Caret Line="10" Column="25"/>
       </Position3>
       <Position4>
         <Filename Value="tasarim.lpr"/>
+        <Caret Line="24" Column="7" TopLine="6"/>
       </Position4>
       <Position5>
         <Filename Value="tasarim.lpr"/>
-        <Caret Line="24" Column="7" TopLine="6"/>
+        <Caret Line="30" Column="3" TopLine="12"/>
       </Position5>
       <Position6>
         <Filename Value="tasarim.lpr"/>
-        <Caret Line="30" Column="3" TopLine="12"/>
+        <Caret Line="10" Column="33"/>
       </Position6>
       <Position7>
         <Filename Value="tasarim.lpr"/>
-        <Caret Line="10" Column="33"/>
+        <Caret Line="52" Column="27" TopLine="34"/>
       </Position7>
       <Position8>
-        <Filename Value="tasarim.lpr"/>
-        <Caret Line="52" Column="27" TopLine="34"/>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="13" Column="26"/>
       </Position8>
       <Position9>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="13" Column="26"/>
+        <Caret Line="70" Column="5" TopLine="35"/>
       </Position9>
       <Position10>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="70" Column="5" TopLine="35"/>
+        <Caret Line="28" TopLine="5"/>
       </Position10>
       <Position11>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="28" TopLine="5"/>
+        <Filename Value="tasarim.lpr"/>
+        <Caret Line="10" Column="24"/>
       </Position11>
       <Position12>
         <Filename Value="tasarim.lpr"/>
-        <Caret Line="10" Column="24"/>
+        <Caret Line="20" Column="46"/>
       </Position12>
       <Position13>
         <Filename Value="tasarim.lpr"/>
-        <Caret Line="20" Column="46"/>
+        <Caret Line="13" Column="17"/>
       </Position13>
       <Position14>
-        <Filename Value="tasarim.lpr"/>
-        <Caret Line="13" Column="17"/>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="6" Column="67"/>
       </Position14>
       <Position15>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="6" Column="67"/>
+        <Caret Line="32" Column="72" TopLine="14"/>
       </Position15>
       <Position16>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="32" Column="72" TopLine="14"/>
+        <Caret Line="35" Column="20" TopLine="17"/>
       </Position16>
       <Position17>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="35" Column="20" TopLine="17"/>
+        <Caret Line="38" Column="20" TopLine="20"/>
       </Position17>
       <Position18>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="38" Column="20" TopLine="20"/>
+        <Caret Line="41" Column="20" TopLine="23"/>
       </Position18>
       <Position19>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="41" Column="20" TopLine="23"/>
+        <Caret Line="44" Column="20" TopLine="26"/>
       </Position19>
       <Position20>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="44" Column="20" TopLine="26"/>
+        <Caret Line="47" Column="25" TopLine="29"/>
       </Position20>
       <Position21>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="47" Column="25" TopLine="29"/>
+        <Caret Line="50" Column="28" TopLine="33"/>
       </Position21>
       <Position22>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="50" Column="28" TopLine="33"/>
+        <Caret Line="57" Column="4" TopLine="40"/>
       </Position22>
       <Position23>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="57" Column="4" TopLine="40"/>
+        <Caret Line="63" Column="7" TopLine="45"/>
       </Position23>
       <Position24>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="63" Column="7" TopLine="45"/>
+        <Caret Line="66" Column="24" TopLine="48"/>
       </Position24>
       <Position25>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="66" Column="24" TopLine="48"/>
+        <Caret Line="69" Column="8" TopLine="51"/>
       </Position25>
       <Position26>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="69" Column="8" TopLine="51"/>
+        <Caret Line="71" Column="29" TopLine="53"/>
       </Position26>
       <Position27>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="71" Column="29" TopLine="53"/>
+        <Caret Line="74" Column="8" TopLine="56"/>
       </Position27>
       <Position28>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="74" Column="8" TopLine="56"/>
+        <Caret Line="79" Column="8" TopLine="58"/>
       </Position28>
       <Position29>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="79" Column="8" TopLine="58"/>
+        <Caret Line="75" Column="69" TopLine="60"/>
       </Position29>
       <Position30>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="75" Column="69" TopLine="60"/>
+        <Caret Line="18" Column="20"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

@@ -38,7 +38,6 @@
       <Unit0>
         <Filename Value="sisbilgi.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="6" Y="15"/>
         <UsageCount Value="79"/>
         <Loaded Value="True"/>
@@ -319,8 +318,10 @@
       <Unit50>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="48"/>
+        <TopLine Value="68"/>
+        <CursorPos X="8" Y="98"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit50>
@@ -355,7 +356,7 @@
         <UsageCount Value="10"/>
       </Unit54>
     </Units>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="anasayfafrm.pas"/>
         <Caret Line="40" Column="26" TopLine="22"/>
@@ -467,6 +468,14 @@
         <Filename Value="../../rtl_uygulama/linux/n_genel.pas"/>
         <Caret Line="426" Column="23" TopLine="393"/>
       </Position28>
+      <Position29>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="61" Column="22" TopLine="48"/>
+      </Position29>
+      <Position30>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="19" Column="15"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

@@ -224,7 +224,13 @@ var
   ProgramBilgisi: TProgramKayit;
 begin
 
-  if(AOlay.Olay = FO_TIKLAMA) then
+  // çekirdek tarafýndan gönderilen programýn kendisini sonlandýrma talimatý
+  if(AOlay.Olay = CO_SONLANDIR) then
+  begin
+
+    FGorev.Sonlandir(-1);
+  end
+  else if(AOlay.Olay = FO_TIKLAMA) then
   begin
 
     // baþlat menüsüne týklandýðýnda

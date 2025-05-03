@@ -123,7 +123,12 @@ end;
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
-  Result := 1;
+  // çekirdek tarafýndan gönderilen programýn kendisini sonlandýrma talimatý
+  if(AOlay.Olay = CO_SONLANDIR) then
+  begin
+
+    FGorev.Sonlandir(-1);
+  end else Result := 1;
 end;
 
 end.

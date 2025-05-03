@@ -38,8 +38,6 @@
       <Unit0>
         <Filename Value="noktalar.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="noktalar"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="58" Y="19"/>
         <UsageCount Value="75"/>
         <Loaded Value="True"/>
@@ -276,8 +274,10 @@
       <Unit44>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="42" Y="6"/>
+        <TopLine Value="49"/>
+        <CursorPos X="8" Y="61"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit44>
@@ -285,123 +285,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="15" Column="8"/>
+        <Caret Line="24" Column="8"/>
       </Position1>
       <Position2>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="24" Column="8"/>
+        <Caret Line="25" Column="10"/>
       </Position2>
       <Position3>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="25" Column="10"/>
+        <Caret Line="26" Column="13"/>
       </Position3>
       <Position4>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="26" Column="13"/>
+        <Caret Line="27" Column="14"/>
       </Position4>
       <Position5>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="27" Column="14"/>
+        <Caret Line="32" Column="21" TopLine="12"/>
       </Position5>
       <Position6>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="32" Column="21" TopLine="12"/>
+        <Caret Line="63" Column="44" TopLine="36"/>
       </Position6>
       <Position7>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="63" Column="44" TopLine="36"/>
+        <Caret Line="9" Column="25"/>
       </Position7>
       <Position8>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="9" Column="25"/>
+        <Caret Line="28" Column="7" TopLine="10"/>
       </Position8>
       <Position9>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="28" Column="7" TopLine="10"/>
+        <Caret Line="51" Column="3" TopLine="40"/>
       </Position9>
       <Position10>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="51" Column="3" TopLine="40"/>
+        <Caret Line="9" Column="33"/>
       </Position10>
       <Position11>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="9" Column="33"/>
+        <Caret Line="58" Column="27" TopLine="40"/>
       </Position11>
       <Position12>
-        <Filename Value="noktalar.lpr"/>
-        <Caret Line="58" Column="27" TopLine="40"/>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="13" Column="18"/>
       </Position12>
       <Position13>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="13" Column="18"/>
+        <Caret Line="70" Column="5" TopLine="35"/>
       </Position13>
       <Position14>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="70" Column="5" TopLine="35"/>
+        <Caret Line="45" Column="26" TopLine="29"/>
       </Position14>
       <Position15>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="45" Column="26" TopLine="29"/>
+        <Caret Line="57" Column="37" TopLine="44"/>
       </Position15>
       <Position16>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="57" Column="37" TopLine="44"/>
+        <Caret Line="33"/>
       </Position16>
       <Position17>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="33"/>
+        <Filename Value="noktalar.lpr"/>
+        <Caret Line="9" Column="24"/>
       </Position17>
       <Position18>
         <Filename Value="noktalar.lpr"/>
-        <Caret Line="9" Column="24"/>
+        <Caret Line="19" Column="58"/>
       </Position18>
       <Position19>
-        <Filename Value="noktalar.lpr"/>
-        <Caret Line="19" Column="58"/>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="14" Column="6"/>
       </Position19>
       <Position20>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="14" Column="6"/>
+        <Caret Line="6" Column="72"/>
       </Position20>
       <Position21>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="6" Column="72"/>
+        <Caret Line="38" Column="33" TopLine="19"/>
       </Position21>
       <Position22>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="38" Column="33" TopLine="19"/>
+        <Caret Line="37" Column="71" TopLine="19"/>
       </Position22>
       <Position23>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="37" Column="71" TopLine="19"/>
+        <Caret Line="41" Column="4" TopLine="22"/>
       </Position23>
       <Position24>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="41" Column="4" TopLine="22"/>
+        <Caret Line="40" Column="24" TopLine="22"/>
       </Position24>
       <Position25>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="40" Column="24" TopLine="22"/>
+        <Caret Line="49" Column="4" TopLine="29"/>
       </Position25>
       <Position26>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="49" Column="4" TopLine="29"/>
+        <Caret Line="55" Column="7" TopLine="37"/>
       </Position26>
       <Position27>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="55" Column="7" TopLine="37"/>
+        <Caret Line="59" Column="12" TopLine="41"/>
       </Position27>
       <Position28>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="59" Column="12" TopLine="41"/>
+        <Caret Line="62" Column="32" TopLine="44"/>
       </Position28>
       <Position29>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="62" Column="32" TopLine="44"/>
+        <Caret Line="63" Column="37" TopLine="45"/>
       </Position29>
       <Position30>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="63" Column="37" TopLine="45"/>
+        <Caret Line="19" Column="41"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

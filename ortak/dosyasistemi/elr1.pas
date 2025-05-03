@@ -843,7 +843,7 @@ function SHTBosKumeSerbestBirak(AKumeNo: TSayi4): Boolean;
 var
   Bellek: array[0..511] of TSayi1;
   FD: TFizikselDepolama;
-  SektorNo, SiraNo, j: TSayi4;
+  SektorNo, SiraNo: TSayi4;
   Deger: PSayi4;
 begin
 
@@ -874,7 +874,6 @@ end;
 
 function HamDosyaAdiniDosyaAdinaCevir3(ADizinGirdisi: PDizinGirdisiELR): string;
 var
-  NoktaEklendi: Boolean;
   i: TSayi4;
 begin
 
@@ -884,7 +883,7 @@ begin
 
   // dosya adýný çevir
   i := 1;
-  while (i < 43) and (ADizinGirdisi^.DosyaAdi[i] <> #0) do
+  while (i <= ELR_DOSYA_U) and (ADizinGirdisi^.DosyaAdi[i] <> #0) do
   begin
 
     Result := Result + ADizinGirdisi^.DosyaAdi[i];

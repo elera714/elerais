@@ -89,7 +89,13 @@ end;
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
-  if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = FdugKapat.Kimlik) then
+  // çekirdek tarafýndan gönderilen programýn kendisini sonlandýrma talimatý
+  if(AOlay.Olay = CO_SONLANDIR) then
+  begin
+
+    FGorev.Sonlandir(-1);
+  end
+  else if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = FdugKapat.Kimlik) then
     FGorev.Sonlandir(-1);
 
   Result := 1;

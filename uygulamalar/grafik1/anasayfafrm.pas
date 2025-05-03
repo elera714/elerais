@@ -54,7 +54,13 @@ end;
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
-  if(AOlay.Olay = CO_ZAMANLAYICI) then
+  // çekirdek tarafýndan gönderilen programýn kendisini sonlandýrma talimatý
+  if(AOlay.Olay = CO_SONLANDIR) then
+  begin
+
+    FGorev.Sonlandir(-1);
+  end
+  else if(AOlay.Olay = CO_ZAMANLAYICI) then
   begin
 
     for i := 2 to 149 do

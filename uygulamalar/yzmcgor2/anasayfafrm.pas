@@ -77,7 +77,13 @@ var
   YaziRengi: TRenk;
 begin
 
-  if(AOlay.Olay = CO_ZAMANLAYICI) then
+  // çekirdek tarafından gönderilen programın kendisini sonlandırma talimatı
+  if(AOlay.Olay = CO_SONLANDIR) then
+  begin
+
+    FGorev.Sonlandir(-1);
+  end
+  else if(AOlay.Olay = CO_ZAMANLAYICI) then
   begin
 
     if(GorevNo > -1) then

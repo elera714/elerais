@@ -6,7 +6,7 @@
   Dosya Adý: gn_pencere.pas
   Dosya Ýþlevi: pencere (TForm) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 03/04/2025
 
   Önemli Bilgiler:
 
@@ -1590,7 +1590,7 @@ procedure TPencere.KontrolDugmesiOlaylariniIsle(AGonderici: PGorselNesne; AOlay:
 var
   ResimDugmesi: PResimDugmesi;
   Pencere: PPencere;
-  Gorev: PGorev;
+  Olay: TOlay;
 begin
 
   if(AOlay.Olay = FO_TIKLAMA) then
@@ -1608,7 +1608,14 @@ begin
     else if(ResimDugmesi^.Kimlik = Pencere^.FKapatmaDugmesi^.Kimlik) then
     begin
 
-      Gorev^.Isaretle(Pencere^.GorevKimlik);
+      // uygulamaya veya efendi nesneye mesaj gönder
+      Olay.Kimlik := Pencere^.Kimlik;
+      Olay.Olay := CO_SONLANDIR;
+      Olay.Deger1 := 0;
+      Olay.Deger2 := 0;
+      if not(Pencere^.OlayYonlendirmeAdresi = nil) then
+        Pencere^.OlayYonlendirmeAdresi(Pencere, Olay)
+      else GorevListesi[Pencere^.GorevKimlik]^.OlayEkle(Pencere^.GorevKimlik, Olay);
     end;
   end;
 end;

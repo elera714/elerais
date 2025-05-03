@@ -47,7 +47,14 @@ end;
 function TfrmIslem.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
-  if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = FDugme1.Kimlik) then
+  // çekirdek tarafýndan gönderilen programýn kendisini sonlandýrma talimatý
+  {if(AOlay.Olay = CO_SONLANDIR) then
+  begin
+
+    { TODO - aþaðýdaki iþlev programý kapatýr, sadece pencerenin kapatýlacaðý iþlev yazýlacak }
+    FGorev.Sonlandir(-1);
+  end
+  else} if(AOlay.Olay = FO_TIKLAMA) and (AOlay.Kimlik = FDugme1.Kimlik) then
   begin
 
     frmOnay.Goster;

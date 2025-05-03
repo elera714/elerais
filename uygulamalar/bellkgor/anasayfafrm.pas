@@ -86,7 +86,13 @@ end;
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
-  if(AOlay.Olay = CO_TUSBASILDI) then
+  // çekirdek tarafýndan gönderilen programýn kendisini sonlandýrma talimatý
+  if(AOlay.Olay = CO_SONLANDIR) then
+  begin
+
+    FGorev.Sonlandir(-1);
+  end
+  else if(AOlay.Olay = CO_TUSBASILDI) then
   begin
 
     if(AOlay.Deger1 = 10) then

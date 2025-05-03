@@ -169,8 +169,8 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="12"/>
-        <CursorPos X="20" Y="12"/>
+        <TopLine Value="65"/>
+        <CursorPos X="8" Y="75"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit22>
@@ -178,123 +178,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="bellkbil.lpr"/>
-        <Caret Line="87" Column="42" TopLine="59"/>
+        <Caret Line="36" Column="17" TopLine="19"/>
       </Position1>
       <Position2>
         <Filename Value="bellkbil.lpr"/>
-        <Caret Line="36" Column="17" TopLine="19"/>
+        <Caret Line="89" Column="13" TopLine="59"/>
       </Position2>
       <Position3>
         <Filename Value="bellkbil.lpr"/>
-        <Caret Line="89" Column="13" TopLine="59"/>
+        <Caret Line="41" Column="7" TopLine="23"/>
       </Position3>
       <Position4>
         <Filename Value="bellkbil.lpr"/>
-        <Caret Line="41" Column="7" TopLine="23"/>
+        <Caret Line="46" Column="27" TopLine="35"/>
       </Position4>
       <Position5>
         <Filename Value="bellkbil.lpr"/>
-        <Caret Line="46" Column="27" TopLine="35"/>
+        <Caret Line="10" Column="33"/>
       </Position5>
       <Position6>
-        <Filename Value="bellkbil.lpr"/>
-        <Caret Line="10" Column="33"/>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="13" Column="31"/>
       </Position6>
       <Position7>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="13" Column="31"/>
+        <Caret Line="59" Column="33" TopLine="35"/>
       </Position7>
       <Position8>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="59" Column="33" TopLine="35"/>
+        <Caret Line="85" Column="13" TopLine="31"/>
       </Position8>
       <Position9>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="85" Column="13" TopLine="31"/>
+        <Filename Value="bellkbil.lpr"/>
+        <Caret Line="27" Column="44"/>
       </Position9>
       <Position10>
         <Filename Value="bellkbil.lpr"/>
-        <Caret Line="27" Column="44"/>
+        <Caret Line="14" Column="8"/>
       </Position10>
       <Position11>
         <Filename Value="bellkbil.lpr"/>
-        <Caret Line="14" Column="8"/>
+        <Caret Line="18" Column="30"/>
       </Position11>
       <Position12>
-        <Filename Value="bellkbil.lpr"/>
-        <Caret Line="18" Column="30"/>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="6" Column="77"/>
       </Position12>
       <Position13>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="6" Column="77"/>
+        <Caret Line="72" Column="13" TopLine="54"/>
       </Position13>
       <Position14>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="72" Column="13" TopLine="54"/>
+        <Caret Line="15" Column="6"/>
       </Position14>
       <Position15>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="15" Column="6"/>
+        <Caret Line="52" Column="55" TopLine="35"/>
       </Position15>
       <Position16>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="52" Column="55" TopLine="35"/>
+        <Caret Line="28" Column="51" TopLine="22"/>
       </Position16>
       <Position17>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="28" Column="51" TopLine="22"/>
+        <Caret Line="49" Column="64" TopLine="23"/>
       </Position17>
       <Position18>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="49" Column="64" TopLine="23"/>
+        <Caret Line="54" Column="4" TopLine="34"/>
       </Position18>
       <Position19>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="54" Column="4" TopLine="34"/>
+        <Caret Line="52" Column="29" TopLine="34"/>
       </Position19>
       <Position20>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="52" Column="29" TopLine="34"/>
+        <Caret Line="63" Column="4" TopLine="42"/>
       </Position20>
       <Position21>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="63" Column="4" TopLine="42"/>
+        <Caret Line="72" Column="6" TopLine="51"/>
       </Position21>
       <Position22>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="72" Column="6" TopLine="51"/>
+        <Caret Line="77" Column="6" TopLine="55"/>
       </Position22>
       <Position23>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="77" Column="6" TopLine="55"/>
+        <Caret Line="84" Column="6" TopLine="61"/>
       </Position23>
       <Position24>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="84" Column="6" TopLine="61"/>
+        <Caret Line="91" Column="6" TopLine="69"/>
       </Position24>
       <Position25>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="91" Column="6" TopLine="69"/>
+        <Caret Line="93" Column="12" TopLine="73"/>
       </Position25>
       <Position26>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="93" Column="12" TopLine="73"/>
+        <Caret Line="96" Column="6" TopLine="73"/>
       </Position26>
       <Position27>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="96" Column="6" TopLine="73"/>
+        <Caret Line="98" Column="6" TopLine="73"/>
       </Position27>
       <Position28>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="98" Column="6" TopLine="73"/>
-      </Position28>
-      <Position29>
         <Filename Value="bellkbil.lpr"/>
         <Caret Line="26" Column="53"/>
+      </Position28>
+      <Position29>
+        <Filename Value="anasayfafrm.pas"/>
+        <Caret Line="12"/>
       </Position29>
       <Position30>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="12"/>
+        <Caret Line="19" Column="26" TopLine="11"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

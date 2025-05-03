@@ -58,7 +58,14 @@ begin
 
     NoktalariCiz
 
-  else} if(AOlay.Olay = CO_CIZIM) then
+  else}
+  // çekirdek tarafýndan gönderilen programýn kendisini sonlandýrma talimatý
+  if(AOlay.Olay = CO_SONLANDIR) then
+  begin
+
+    FGorev.Sonlandir(-1);
+  end
+  else if(AOlay.Olay = CO_CIZIM) then
 
     NoktalariCiz
 
