@@ -4,7 +4,7 @@ unit anasayfafrm;
 interface
 
 uses n_gorev, gn_pencere, n_genel, _forms, gn_listegorunum, gn_durumcubugu, gn_panel,
-  gn_etiket, gn_karmaliste, n_depolama, n_sistemmesaj;
+  gn_etiket, gn_karmaliste, n_depolama;
 
 type
   TfrmAnaSayfa = object(TForm)
@@ -17,10 +17,10 @@ type
     FetkYol,
     FetkYolDegeri: TEtiket;
     FklSurucu: TKarmaListe;
-    FSistemMesaj: TSistemMesaj;
     FDurumCubugu: TDurumCubugu;
     FlgDosyaListesi: TListeGorunum;
     procedure DosyalariListele;
+    procedure AyarlariDosyayaKaydet;
     procedure AyarDosyasiniOku;
   public
     procedure Olustur;
@@ -42,13 +42,13 @@ var
   MantiksalDepolama: TMantiksalDepolama3;
   AygitSayisi: TSayi4;
   GecerliSurucu, GecerliKlasor,
-  GecerliSuzgec, SeciliYazi: string;
+  GecerliSuzgec, SeciliYazi,
+  AyarSurucu: string;
 
 procedure TfrmAnaSayfa.Olustur;
 var
   SeciliSurucu,
   i: TSayi4;
-  SistemKuruluSurucu: string;
 begin
 
   // geçerli sürücü atamasý
@@ -73,10 +73,7 @@ begin
 
   FPanel.Goster;
 
-  //AyarDosyasiniOku;
-
-  // sistemin kurulu olduðu sürücüyü al
-  FGenel.SistemYapiBilgisiAl(0, SistemKuruluSurucu);
+  AyarDosyasiniOku;
 
   // her mantýksal sürücü için bir adet düðme oluþtur
   SeciliSurucu := 0;
@@ -90,7 +87,7 @@ begin
       if(FDepolama.MantiksalDepolamaAygitBilgisiAl(i, @MantiksalDepolama)) then
       begin
 
-        if(MantiksalDepolama.AygitAdi = SistemKuruluSurucu) then SeciliSurucu := i;
+        if(MantiksalDepolama.AygitAdi = AyarSurucu) then SeciliSurucu := i;
 
         FklSurucu.ElemanEkle(MantiksalDepolama.AygitAdi);
       end;
@@ -131,6 +128,7 @@ begin
   if(AOlay.Olay = CO_SONLANDIR) then
   begin
 
+    AyarlariDosyayaKaydet;
     FGorev.Sonlandir(-1);
   end
   // liste kutusuna týklanmasý halinde dosyayý çalýþtýr
@@ -207,9 +205,6 @@ var
   DosyaArama: TDosyaArama;
   AramaSonuc, ToplamKlasor,
   ToplamDosya: TSayi4;
-  SonDegisimSaati: TSayi2;
-  TarihDizi: array[0..2] of TSayi2;
-  SaatDizi: array[0..2] of TSayi1;
   Tarih, Saat, GirdiTipi: string;
   YaziRengi: TRenk;
 begin
@@ -296,19 +291,54 @@ begin
   ABoyut := s;
 end;
 
+// programýn ayarlarýnýn yazýldýðý dosyayý okur
 procedure TfrmAnaSayfa.AyarDosyasiniOku;
 var
   DosyaKimlik: TKimlik;
-  DosyaBellek: Isaretci;
+  DosyaBellek: array[0..511] of Char;
+  s: string;
+  i: TSayi4;
 begin
 
   FGenel._Assign(DosyaKimlik, 'disk2:\dsyyntcs.ini');
   FGenel._Reset(DosyaKimlik);
 
-  if(FGenel._IOResult <> 0) then
+  if(FGenel._IOResult = 0) then
   begin
 
-    FGenel._FileRead(DosyaKimlik, DosyaBellek);
+    FGenel._FileRead(DosyaKimlik, @DosyaBellek);
+
+    s := PChar(@DosyaBellek[0]);
+
+    i := Pos('=', s);
+    if(i > 0) then
+    begin
+
+      AyarSurucu := Copy(s, i + 1, Length(s) - i);
+    end else AyarSurucu := '';
+  end
+  else
+  begin
+
+    // sistemin kurulu olduðu sürücüyü al
+    FGenel.SistemYapiBilgisiAl(0, AyarSurucu);
+  end;
+
+  FGenel._Close(DosyaKimlik);
+end;
+
+// programýn ayarlarýný dosyayý yazar
+procedure TfrmAnaSayfa.AyarlariDosyayaKaydet;
+var
+  DosyaKimlik: TKimlik;
+begin
+
+  FGenel._Assign(DosyaKimlik, 'disk2:\dsyyntcs.ini');
+  FGenel._ReWrite(DosyaKimlik);
+  if(FGenel._IOResult = 0) then
+  begin
+
+    FGenel._Write(DosyaKimlik, 'sürücü=' + GecerliSurucu);
   end;
 
   FGenel._Close(DosyaKimlik);

@@ -36,6 +36,7 @@ type
     function PencereKimliginiAl(ABasilanDugme: TKimlik): TKimlik;
     function GCDugmesiOlustur(AProgramAdi: string): TISayi4;
     function PencereBilgisiAl(APencereKimlik: TKimlik): TProgramKayit;
+    procedure AyarDosyasiniOku;
   public
     procedure Olustur;
     procedure Goster;
@@ -112,7 +113,7 @@ var
   PencereKimlik: TKimlik;
   GCdeMevcutDugmeSayisi: TSayi4;        // görev çubuðunda mevcut / çalýþan düðme sayýsý
   GBD, OncekiGBD: TSayi4;               // görev bayrak deðerleri
-  s: string;
+  DuvarKagidiDosyaAdi, s: string;
 
 procedure TfrmAnaSayfa.Olustur;
 var
@@ -139,8 +140,10 @@ begin
   // yeni masaüstü oluþtur
   FMasaustu.Olustur(PencereAdi);
 
+  AyarDosyasiniOku;
+
   // yeni masaüstünün duvar kaðýdý
-  FMasaustu.MasaustuResminiDegistir('disk1:\resimler\1.bmp');
+  FMasaustu.MasaustuResminiDegistir(DuvarKagidiDosyaAdi);
 
   // görev yönetim ana paneli
   FGorevPenceresi.Olustur(FMasaustu.Kimlik, FEkran.A0, FEkran.Yukseklik0 - 40, FEkran.Genislik0,
@@ -640,6 +643,37 @@ begin
   end;
 
   Result.PencereKimlik := -1;
+end;
+
+// programýn ayarlarýnýn yazýldýðý dosyayý okur
+procedure TfrmAnaSayfa.AyarDosyasiniOku;
+var
+  DosyaKimlik: TKimlik;
+  DosyaBellek: array[0..511] of Char;
+  s: string;
+  i: TSayi4;
+begin
+
+  FGenel._Assign(DosyaKimlik, 'disk2:\muyntcs.ini');
+  FGenel._Reset(DosyaKimlik);
+
+  if(FGenel._IOResult = 0) then
+  begin
+
+    FGenel._FileRead(DosyaKimlik, @DosyaBellek);
+
+    s := PChar(@DosyaBellek[0]);
+
+    DuvarKagidiDosyaAdi := s;
+  end
+  else
+  begin
+
+    // sistemin kurulu olduðu sürücüyü al
+    DuvarKagidiDosyaAdi := 'disk1:\resimler\1.bmp';
+  end;
+
+  FGenel._Close(DosyaKimlik);
 end;
 
 end.

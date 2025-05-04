@@ -393,9 +393,9 @@ begin
     Inc(GorevBayrakDegeri);
 
     // programýn iz kayýt dosyasýný oluþtur
-    IzKayitDosyaAdi := DosyaAdiniAl(DosyaAdi);
+    {IzKayitDosyaAdi := DosyaAdiniAl(DosyaAdi);
     IzKayitDosyaAdi += '.log'; //izkayit';
-    IzKaydiOlustur(IzKayitDosyaAdi, IzKayitDosyaAdi + ' uygulamasý çalýþtýrýldý');
+    IzKaydiOlustur(IzKayitDosyaAdi, IzKayitDosyaAdi + ' uygulamasý çalýþtýrýldý');}
 
     // görev bellek adresini geri döndür
     Result := Gorev;

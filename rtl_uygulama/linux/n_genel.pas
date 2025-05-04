@@ -49,6 +49,8 @@ type
     function _FileSize(ADosyaKimlik: TKimlik): TISayi4; assembler;
     procedure _FileRead(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
     procedure _Close(ADosyaKimlik: TKimlik); assembler;
+    procedure _ReWrite(ADosyaKimlik: TKimlik); assembler;
+    procedure _Write(ADosyaKimlik: TKimlik; const AVeri: string); assembler;
     procedure _DeleteFile(ADosyaAdi: string); assembler;
     procedure _RemoveDir(AKlasorAdi: string); assembler;
 
@@ -242,6 +244,23 @@ asm
   mov	  eax,DOSYA_KAPAT
   int	  $34
   add	  esp,4
+end;
+
+procedure TGenel._ReWrite(ADosyaKimlik: TKimlik); assembler;
+asm
+  push	DWORD ADosyaKimlik
+  mov	  eax,DOSYA_OLUSTUR
+  int	  $34
+  add	  esp,4
+end;
+
+procedure TGenel._Write(ADosyaKimlik: TKimlik; const AVeri: string); assembler;
+asm
+  push  DWORD AVeri
+  push	DWORD ADosyaKimlik
+  mov	  eax,DOSYA_VERIYAZ
+  int	  $34
+  add	  esp,8
 end;
 
 procedure TGenel._DeleteFile(ADosyaAdi: string); assembler;

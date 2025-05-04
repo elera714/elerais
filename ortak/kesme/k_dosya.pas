@@ -6,7 +6,7 @@
   Dosya Adý: k_dosya.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 02/05/2025
+  Güncelleme Tarihi: 04/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -124,7 +124,22 @@ begin
 
       s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi)^;
       RemoveDir(s);
-    end
+    end;
+
+    // dosya oluþtur
+    14:
+    begin
+
+      ReWrite(PKimlik(ADegiskenler + 00)^);
+    end;
+
+    // dosyaya veri yaz
+    15:
+    begin
+
+      Write(PKimlik(ADegiskenler + 00)^,
+        PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi))^);
+    end;
 
     else Result := HATA_ISLEV;
   end;

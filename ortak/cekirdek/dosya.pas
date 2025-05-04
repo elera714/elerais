@@ -404,7 +404,7 @@ begin
   if(Bulundu) then
   begin
 
-    //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Reset: %d', [DosyaArama.DosyaUzunlugu]);
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Reset: %d', [DosyaArama.DosyaUzunlugu]);
 
     DosyaKayit^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
     DosyaKayit^.Uzunluk := DosyaArama.DosyaUzunlugu;
@@ -1228,8 +1228,6 @@ var
   DosyaKimlik: TKimlik;
 begin
 
-  asm cli end;
-
   DosyaAdi := 'disk2:\klasor\' + ADosyaAdi;
 
   dosya.Assign(DosyaKimlik, DosyaAdi);
@@ -1246,8 +1244,6 @@ begin
     SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Hata: %s dosyasý zaten mevcut!', [DosyaAdi]);
     dosya.Close(DosyaKimlik);
   end;
-
-  asm sti end;
 end;
 
 end.

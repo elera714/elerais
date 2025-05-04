@@ -19,6 +19,7 @@ type
     FGiysiListesi: TKarmaListe;
     FGiysi: TGiysi;
     procedure DosyalariListele;
+    procedure AyarlariDosyayaKaydet(ADuvarKagidiDosyaAdi: string);
   public
     procedure Olustur;
     procedure Goster;
@@ -109,6 +110,8 @@ begin
       i := FlkDosyaListesi.SeciliSiraNoAl;
       FmasELERA.MasaustuResminiDegistir('disk1:\resimler\' + DosyaAramaListesi[i].DosyaAdi);
       FmasELERA.Guncelle;
+
+      AyarlariDosyayaKaydet('disk1:\resimler\' + DosyaAramaListesi[i].DosyaAdi);
     end
     else if(AOlay.Kimlik = FRenkSecici.Kimlik) then
     begin
@@ -157,6 +160,23 @@ begin
   end;
 
   FGenel._FindClose(DosyaArama);
+end;
+
+// programýn ayarlarýný dosyayý yazar
+procedure TfrmAnaSayfa.AyarlariDosyayaKaydet(ADuvarKagidiDosyaAdi: string);
+var
+  DosyaKimlik: TKimlik;
+begin
+
+  FGenel._Assign(DosyaKimlik, 'disk2:\muyntcs.ini');
+  FGenel._ReWrite(DosyaKimlik);
+  if(FGenel._IOResult = 0) then
+  begin
+
+    FGenel._Write(DosyaKimlik, ADuvarKagidiDosyaAdi);
+  end;
+
+  FGenel._Close(DosyaKimlik);
 end;
 
 end.

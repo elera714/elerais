@@ -298,6 +298,8 @@ const
   DOSYA_KAPAT    	            = $00000B00 + SAC_DOSYA;
   DOSYA_DOSYASIL    	        = $00000C00 + SAC_DOSYA;
   DOSYA_KLASORSIL    	        = $00000D00 + SAC_DOSYA;
+  DOSYA_OLUSTUR    	          = $00000E00 + SAC_DOSYA;
+  DOSYA_VERIYAZ    	          = $00000F00 + SAC_DOSYA;
 
   HARF_YAZ		                = $00000100 + SAC_YAZIM;
   YAZI_YAZ		                = $00000200 + SAC_YAZIM;
