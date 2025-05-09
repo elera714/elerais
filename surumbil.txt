@@ -1,12 +1,12 @@
 *******************************************************************************
   Sürüm: 0.3.9 (sunucu / istemci) - 27.02.2025 (R35) - Alfa
 *******************************************************************************
+  + her bir irq için 4 adet giriþin / iþlevin çalýþtýrýlabilmesi desteði eklendi
   + elr-1 dosya sistemi Rewrite, Write API iþlevleri tamamlandý
   + dsyyntcs.c uygulamasýna en son sürücü ayar iþlevleri eklendi
     (böylece uygulama en son hangi sürücü içeriðini listelediyse ilk açýldýðýnda da o sürücüyü listelemektedir)
   + muyntcs.c uygulamasýna en son deðiþtirilen duvar kaðýdýný kaydetme/yükleme ayar iþlevleri eklendi
     (böylece uygulama en son hangi duvar kaðýdý seçildiyse o duvar kaðýdýný yükleyecek)
-
   + daha önce pencerenin kapatma düðmesine týklandýðýnda çekirdek tarafýndan hemen
     sonlandýrýlan uygulama, artýk çekirdek tarafýndan uygulamaya CO_SONLANDIR mesajý
     gönderilerek uygulamanýn sonlanma öncesi son iþlevleri yapmasýna olanak saðlandý

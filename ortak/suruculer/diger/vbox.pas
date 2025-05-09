@@ -28,7 +28,7 @@ uses irq, port;
 
 const
   VMMDEV_SURUM                = $00010003;
-  VBOX_ISTEK_BASLIK_SURUM     = $10001;
+  VBOX_ISTEK_BASLIK_SURUM     = $00010001;
 
   VMM_FARE_DURUMAL            = 1;
   VMM_FARE_DURUMYAZ           = 2;
@@ -142,9 +142,9 @@ begin
 
   // vbox kesmesini aktifleþtir
   IRQIsleviAta(VBKesmeNo, @VBoxKesmeCagrisi);
-  IRQEtkinlestir(VBKesmeNo);
+  //IRQEtkinlestir(VBKesmeNo);
 
-	VBoxGuestBilgi.Baslik.Uzunluk := SizeOf(TVBoxGuestBilgi);
+	{VBoxGuestBilgi.Baslik.Uzunluk := SizeOf(TVBoxGuestBilgi);
 	VBoxGuestBilgi.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
 	VBoxGuestBilgi.Baslik.IstekTipi := VMM_GUEST_BILGIAL;
 	VBoxGuestBilgi.Baslik.RC := 0;
@@ -152,7 +152,7 @@ begin
 	VBoxGuestBilgi.Baslik.Ayrildi2 := 0;
 	VBoxGuestBilgi.Surum := VMMDEV_SURUM;
 	VBoxGuestBilgi.ISType := 0;
-	PortYaz4(VBPort, TSayi4(@VBoxGuestBilgi));
+	PortYaz4(VBPort, TSayi4(@VBoxGuestBilgi));}
 
 	VBoxGuestYetenek.Baslik.Uzunluk := SizeOf(TVBoxGuestYetenek);
 	VBoxGuestYetenek.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
@@ -170,7 +170,7 @@ begin
 	VBoxOnayOlay.Baslik.Ayrildi1 := 0;
 	VBoxOnayOlay.Baslik.Ayrildi2 := 0;
 	VBoxOnayOlay.Olaylar := 0;
-	PortYaz4(VBPort, TSayi4(@VBoxOnayOlay));
+	//PortYaz4(VBPort, TSayi4(@VBoxOnayOlay));
 
 	VBoxGoruntuDegisim.Baslik.Uzunluk := SizeOf(TVBoxGoruntuDegisim);
 	VBoxGoruntuDegisim.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
@@ -182,11 +182,13 @@ begin
 	VBoxGoruntuDegisim.YCozunurluk := 0;
 	VBoxGoruntuDegisim.BPP := 0;
 	VBoxGoruntuDegisim.OlayOnay := 1;
-	PortYaz4(VBPort, TSayi4(@VBoxGoruntuDegisim));
+	//PortYaz4(VBPort, TSayi4(@VBoxGoruntuDegisim));
 
   //PSayi4(Isaretci(VBBellek) + 04)^ := $FFFFFFFF;
   //PSayi4(Isaretci(VBBellek) + 08)^ := $FFFFFFFF;
   PSayi4(Isaretci(VBBellek + 12))^ := $FFFFFFFF;
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'VBoxGuestBilgi: %x', [TSayi4(@VBoxGuestBilgi)]);
 
 {  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);

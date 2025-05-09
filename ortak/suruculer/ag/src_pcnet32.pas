@@ -4,9 +4,9 @@
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
   Dosya Adý: src_pcnet32.pas
-  Dosya Ýþlevi : PCNET32 að (network) sürücüsü
+  Dosya Ýþlevi: PCNET32 að (network) sürücüsü
 
-  Güncelleme Tarihi: 04/01/2025
+  Güncelleme Tarihi: 08/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,7 +21,8 @@ type
   TAygit = packed record
     Yol, Aygit,
     Islev: TSayi1;
-    TemelAdres: TSayi2;
+    PortDegeri: TSayi2;
+    BellekDegeri: TSayi4;
     IRQNo: TSayi1;
     CipSurum: TSayi4;
     CipAdi: PChar;
@@ -35,7 +36,6 @@ function Yukle(APCI: PPCI): TISayi4;
 procedure VeriAl(ABellek: Isaretci; var AVeriUzunlugu: TSayi2);
 procedure VeriGonder(AEthernetPaket: PEthernetPaket; AVeriUzunlugu: TSayi2);
 procedure PCNET32YukleniciIslev;
-function IlkIOPortNumarasiniAl(APCI: PPCI): TSayi2;
 function IRQNoAl(APCI: PPCI): TSayi1;
 procedure DMAErisiminiAktiflestir(APCI: PPCI);
 
@@ -238,9 +238,9 @@ begin
   AygitPCNet32.Aygit := APCI^.Aygit;
   AygitPCNet32.Islev := APCI^.Islev;
 
-  // aygýt temel port numarasýný al
-  AygitPCNet32.TemelAdres := IlkIOPortNumarasiniAl(APCI);
-  if(AygitPCNet32.TemelAdres = 0) then
+  // aygýt port deðerini al
+  AygitPCNet32.PortDegeri := IlkPortDegeriniAl(APCI);
+  if(AygitPCNet32.PortDegeri = 0) then
   begin
 
     {$IFDEF PCNET32_BILGI}
@@ -361,7 +361,7 @@ begin
   for i := 0 to 5 do
   begin
 
-    AygitPCNet32.MACAdres[i] := PortAl1(AygitPCNet32.TemelAdres + i);
+    AygitPCNet32.MACAdres[i] := PortAl1(AygitPCNet32.PortDegeri + i);
   end;
   GAgBilgisi.MACAdres := AygitPCNet32.MACAdres;
 
@@ -543,28 +543,6 @@ begin
 end;
 
 {==============================================================================
-  pci aygýtýnýn ilk giriþ / çýkýþ (IO) deðerini alýr
- ==============================================================================}
-function IlkIOPortNumarasiniAl(APCI: PPCI): TSayi2;
-var
-  Adres, i: TSayi1;
-  Deger: TSayi4;
-begin
-
-  Adres := $10;
-  for i := 1 to 6 do
-  begin
-
-    Deger := PCIOku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
-    if((Deger and 1) = 1) then Exit(Deger and (not 3));
-
-    Adres += 4;
-  end;
-
-  Result := 0;
-end;
-
-{==============================================================================
   pci aygýtýný DMA'yý direkt eriþim saðlayýcý (bus master) olarak ayarlar
  ==============================================================================}
 procedure DMAErisiminiAktiflestir(APCI: PPCI);
@@ -589,47 +567,47 @@ end;
 function WIOCSROku(ASiraNo: TSayi4): TSayi4;
 begin
 
-  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
-  Result := PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_RDP) and $FFFF;
+  PortYaz2(AygitPCNet32.PortDegeri + PCNET32_WIO_RAP, ASiraNo);
+  Result := PortAl2(AygitPCNet32.PortDegeri + PCNET32_WIO_RDP) and $FFFF;
 end;
 
 procedure WIOCSRYaz(ASiraNo, AVeri: TSayi4);
 begin
 
-  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
-  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RDP, AVeri);
+  PortYaz2(AygitPCNet32.PortDegeri + PCNET32_WIO_RAP, ASiraNo);
+  PortYaz2(AygitPCNet32.PortDegeri + PCNET32_WIO_RDP, AVeri);
 end;
 
 function WIOBCROku(ASiraNo: TSayi4): TSayi4;
 begin
 
-  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
-  Result := PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_BDP) and $FFFF;
+  PortYaz2(AygitPCNet32.PortDegeri + PCNET32_WIO_RAP, ASiraNo);
+  Result := PortAl2(AygitPCNet32.PortDegeri + PCNET32_WIO_BDP) and $FFFF;
 end;
 
 procedure WIOBCRYaz(ASiraNo, AVeri: TSayi4);
 begin
 
-  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, ASiraNo);
-  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_BDP, AVeri);
+  PortYaz2(AygitPCNet32.PortDegeri + PCNET32_WIO_RAP, ASiraNo);
+  PortYaz2(AygitPCNet32.PortDegeri + PCNET32_WIO_BDP, AVeri);
 end;
 
 function WIORAPOku: TSayi4;
 begin
 
-  Result := PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP) and $FFFF;
+  Result := PortAl2(AygitPCNet32.PortDegeri + PCNET32_WIO_RAP) and $FFFF;
 end;
 
 procedure WIORAPYaz(AVeri: TSayi4);
 begin
 
-  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, AVeri);
+  PortYaz2(AygitPCNet32.PortDegeri + PCNET32_WIO_RAP, AVeri);
 end;
 
 procedure WIOSifirla;
 begin
 
-  PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_RESET);
+  PortAl2(AygitPCNet32.PortDegeri + PCNET32_WIO_RESET);
 end;
 
 function WIOKontrol: Boolean;
@@ -637,55 +615,55 @@ var
   Deger: TSayi2;
 begin
 
-  PortYaz2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP, 88);
-  Deger := PortAl2(AygitPCNet32.TemelAdres + PCNET32_WIO_RAP);
+  PortYaz2(AygitPCNet32.PortDegeri + PCNET32_WIO_RAP, 88);
+  Deger := PortAl2(AygitPCNet32.PortDegeri + PCNET32_WIO_RAP);
   if(Deger = 88) then Result := True else Result := False;
 end;
 
 function DWIOCSROku(ASiraNo: TSayi4): TSayi4;
 begin
 
-  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
-  Result := PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RDP) and $FFFF;
+  PortYaz4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RAP, ASiraNo);
+  Result := PortAl4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RDP) and $FFFF;
 end;
 
 procedure DWIOCSRYaz(ASiraNo, AVeri: TSayi4);
 begin
 
-  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
-  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RDP, AVeri);
+  PortYaz4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RAP, ASiraNo);
+  PortYaz4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RDP, AVeri);
 end;
 
 function DWIOBCROku(ASiraNo: TSayi4): TSayi4;
 begin
 
-  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
-  Result := PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_BDP) and $FFFF;
+  PortYaz4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RAP, ASiraNo);
+  Result := PortAl4(AygitPCNet32.PortDegeri + PCNET32_DWIO_BDP) and $FFFF;
 end;
 
 procedure DWIOBCRYaz(ASiraNo, AVeri: TSayi4);
 begin
 
-  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, ASiraNo);
-  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_BDP, AVeri);
+  PortYaz4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RAP, ASiraNo);
+  PortYaz4(AygitPCNet32.PortDegeri + PCNET32_DWIO_BDP, AVeri);
 end;
 
 function DWIORAPOku: TSayi4;
 begin
 
-  Result := PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP) and $FFFF;
+  Result := PortAl4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RAP) and $FFFF;
 end;
 
 procedure DWIORAPYaz(AVeri: TSayi4);
 begin
 
-  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, AVeri);
+  PortYaz4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RAP, AVeri);
 end;
 
 procedure DWIOSifirla;
 begin
 
-  PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RESET);
+  PortAl4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RESET);
 end;
 
 function DWIOKontrol: Boolean;
@@ -693,8 +671,8 @@ var
   Deger: TSayi4;
 begin
 
-  PortYaz4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP, 88);
-  Deger := PortAl4(AygitPCNet32.TemelAdres + PCNET32_DWIO_RAP) and $FFFF;
+  PortYaz4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RAP, 88);
+  Deger := PortAl4(AygitPCNet32.PortDegeri + PCNET32_DWIO_RAP) and $FFFF;
   if(Deger = 88) then Result := True else Result := False;
 end;
 

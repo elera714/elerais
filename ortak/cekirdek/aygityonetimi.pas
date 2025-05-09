@@ -6,7 +6,7 @@
   Dosya Adý: aygityonetimi.pas
   Dosya Ýþlevi: aygýt (device) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 09/01/2025
+  Güncelleme Tarihi: 08/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -35,10 +35,10 @@ function FizikselDepolamaAygitiOlustur(AAygitTipi: TSayi4): PFizikselDepolama;
 
 implementation
 
-uses src_disket, src_pcnet32, src_ide, donusum, vbox;
+uses src_disket, src_pcnet32, src_e1000, src_ide, donusum, vbox;
 
 const
-  DESTEKLENEN_AGAYGIT_SAYISI  = 1;
+  DESTEKLENEN_AGAYGIT_SAYISI  = 2;
   USTSINIR_AGAYGITI           = 4;
 
 type
@@ -53,7 +53,8 @@ type
 
 var
   DesteklenenAgAygitlari: array[0..DESTEKLENEN_AGAYGIT_SAYISI - 1] of TAygit = (
-    (SaticiKimlik: $1022; AygitKimlik: $2000; Yukle: @src_pcnet32.Yukle));
+    (SaticiKimlik: $1022; AygitKimlik: $2000; Yukle: @src_pcnet32.Yukle),
+    (SaticiKimlik: $8086; AygitKimlik: $100E; Yukle: @src_e1000.Yukle));
 
   AgAygitListesi: array[0..USTSINIR_AGAYGITI - 1] of PPCI = (nil, nil, nil, nil);
 

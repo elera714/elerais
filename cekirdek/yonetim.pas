@@ -109,6 +109,7 @@ procedure SistemAnaKontrol;
 procedure CekirdekDosyaTSDegeriniKaydet;
 procedure KaydedilenProgramlariYenidenYukle;
 function GMem(Size:ptruint):Pointer;
+procedure Merhaba;
 
 implementation
 
@@ -239,7 +240,7 @@ var
   TusKontrolDegeri: TSayi1;
   TusKarakterDegeri: Char;
   TusDurum: TTusDurum;
-  i: TSayi4;
+  i, j: TSayi4;
   m: TMemoryManager;
   Masaustu: PMasaustu;
   GN: PGorselNesne;
@@ -335,7 +336,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            IzKaydiOlustur('elera.ini', 'merhaba');
+            //IzKaydiOlustur('elera.ini', 'merhaba');
 
   {          SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Deðer: %s', [GeciciDeger]);
 
@@ -348,7 +349,9 @@ begin
             //Gorev^.Calistir('disket1:\mustudk.c');
             //Gorev^.Calistir('disk1:\sisbilgi.c');
             //Gorev^.Calistir('disket1:\yzmcgor2.c');
-            //vbox.Listele;
+            IRQEtkinlestir(2);
+            IRQIsleviAta(11, @Merhaba);
+            vbox.Listele;
 
             //TestAdres := Isaretci($10000);
             //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek U3: %d', [TSayi4(TestAdres)]);
@@ -359,12 +362,12 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
-            dosya.Assign(DosyaKimlik, 'disk1:\klasor\klsr' + IntToStr(DosyaNo));
+            {dosya.Assign(DosyaKimlik, 'disk1:\klasor\klsr' + IntToStr(DosyaNo));
             dosya.CreateDir(DosyaKimlik);
 
             Inc(DosyaNo);
 
-            dosya.Close(DosyaKimlik);
+            dosya.Close(DosyaKimlik);}
 
 
 
@@ -391,7 +394,7 @@ begin
             //BellekI := GGercekBellek.Ayir(4095);
             //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
             //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
-            //vbox.IcerigiGoruntule;
+            vbox.IcerigiGoruntule;
             //TestSinif.Artir;
             //Gorev^.Calistir('disk1:\arpbilgi.c');
 
@@ -545,6 +548,12 @@ function GMem(Size: ptruint): Pointer;
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'GetMem', []);
+end;
+
+procedure Merhaba;
+begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Merhaba', []);
 end;
 
 constructor TTestSinif.Create;

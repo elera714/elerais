@@ -6,7 +6,7 @@
   Dosya Adı: pci.pas
   Dosya İşlevi: pci yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 09/11/2024
+  Güncelleme Tarihi: 08/05/2025
 
   Kaynaklar:
     http://wiki.osdev.org/PCI
@@ -38,6 +38,8 @@ function PCIOku4(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi4;
 procedure PCIYaz1(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi1);
 procedure PCIYaz2(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi2);
 procedure PCIYaz4(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi4);
+function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
+function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
 
 implementation
 
@@ -215,6 +217,50 @@ begin
 
   PortYaz4(PCI_ADRES, _Deger);
   PortYaz4(PCI_VERI, ADeger)
+end;
+
+{==============================================================================
+  pci aygıtının ilk iletişim port değerini alır
+ ==============================================================================}
+function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
+var
+  Adres, i: TSayi1;
+  Deger: TSayi4;
+begin
+
+  Adres := $10;
+  for i := 1 to 6 do
+  begin
+
+    Deger := PCIOku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
+    if((Deger and 1) = 1) then Exit(Deger and (not %11));
+
+    Adres += 4;
+  end;
+
+  Result := 0;
+end;
+
+{==============================================================================
+  pci aygıtının ilk iletişim bellek değerini alır
+ ==============================================================================}
+ function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
+var
+  Adres, i: TSayi1;
+  Deger: TSayi4;
+begin
+
+  Adres := $10;
+  for i := 1 to 6 do
+  begin
+
+    Deger := PCIOku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
+    if((Deger and 1) = 0) then Exit(Deger and (not %1111));
+
+    Adres += 4;
+  end;
+
+  Result := 0;
 end;
 
 end.

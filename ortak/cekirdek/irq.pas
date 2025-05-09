@@ -6,7 +6,7 @@
   Dosya Adı: irq.pas
   Dosya İşlevi: donanım (irq) kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 04/03/2025
+  Güncelleme Tarihi: 05/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,14 +17,18 @@ interface
 
 uses paylasim, port;
 
+const
+  IRQBASINA_ISLEVSAYISI = 4;
+
 var
-  IRQIslevListesi: array[0..15] of TIslev = (
-    nil, nil, nil, nil, nil, nil, nil, nil,
-    nil, nil, nil, nil, nil, nil, nil, nil);
+  // her bir irq için toplam 8 işlev girişi
+  IRQIslevListesi: array[0..15, 0..IRQBASINA_ISLEVSAYISI - 1] of TIslev;
 
 procedure Yukle;
 procedure IRQIsleviAta(AIRQNo: TSayi4; AIslevAdres: TIslev);
-procedure IRQIsleviIptal(AIRQNo: TSayi4);
+procedure IRQIsleviIptal(AIRQNo, AIRQSiraNo: TSayi4);
+function IRQIslevBoSiraNoBul(AIRQNo: TSayi4): TISayi4;
+function IRQDoluKanalSayisiniAl(AIRQNo: TSayi4): TISayi4;
 procedure IRQEtkinlestir(AIRQNo: TSayi4);
 procedure IRQPasiflestir(AIRQNo: TSayi4);
 procedure IRQ00Islevi;
@@ -52,8 +56,22 @@ uses idt, pic;
   sistem tarafından çalıştırılacak irq işlev girişlerini belirler
  ==============================================================================}
 procedure Yukle;
+var
+  IRQNo, SiraNo: TSayi4;
 begin
 
+  // çoklu irq işlevlerini ilk değerlerle yükle
+  for IRQNo := 0 to 15 do
+  begin
+
+    for SiraNo := 0 to IRQBASINA_ISLEVSAYISI - 1 do
+    begin
+
+      IRQIslevListesi[IRQNo, SiraNo] := nil;
+    end;
+  end;
+
+  // kesme işlevlerini sistem işlevleriyle eşleştir
   KesmeGirisiBelirle($20, @IRQ00Islevi, SECICI_SISTEM_KOD * 8, $8E);    // irq00
   KesmeGirisiBelirle($21, @IRQ01Islevi, SECICI_SISTEM_KOD * 8, $8E);    // irq01
   KesmeGirisiBelirle($22, @IRQ02Islevi, SECICI_SISTEM_KOD * 8, $8E);    // irq02
@@ -143,24 +161,71 @@ end;
   donanım kesmesinin çağrı adresini belirler ve kesmeyi aktifleştirir
  ==============================================================================}
 procedure IRQIsleviAta(AIRQNo: TSayi4; AIslevAdres: TIslev);
+var
+  IRQSiraNo: TISayi4;
 begin
 
   cli;
-  IRQIslevListesi[AIRQNo] := AIslevAdres;
-  IRQEtkinlestir(AIRQNo);
+
+  IRQSiraNo := IRQIslevBoSiraNoBul(AIRQNo);
+  if(IRQSiraNo > -1) then
+  begin
+
+    IRQIslevListesi[AIRQNo, IRQSiraNo] := AIslevAdres;
+    IRQEtkinlestir(AIRQNo);
+  end;
+
   sti;
 end;
 
 {==============================================================================
   donanım kesmesinin çağrı adresini iptal eder ve kesmeyi pasifleştirir
  ==============================================================================}
-procedure IRQIsleviIptal(AIRQNo: TSayi4);
+procedure IRQIsleviIptal(AIRQNo, AIRQSiraNo: TSayi4);
 begin
 
   cli;
-  IRQPasiflestir(AIRQNo);
-  IRQIslevListesi[AIRQNo] := nil;
+
+  IRQIslevListesi[AIRQNo, AIRQSiraNo] := nil;
+
+  // irq işlevine atanmış hiçbir işlev yoksa kesme tetiklemesini pasifleştir
+  if(IRQDoluKanalSayisiniAl(AIRQNo) = 0) then IRQPasiflestir(AIRQNo);
+
   sti;
+end;
+
+{==============================================================================
+  irq işlevi atamak için boş sıra numarası bulur (sıra numarasının tahsisini yapmaz)
+ ==============================================================================}
+function IRQIslevBoSiraNoBul(AIRQNo: TSayi4): TISayi4;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to IRQBASINA_ISLEVSAYISI - 1 do
+  begin
+
+    if(IRQIslevListesi[AIRQNo, i] = nil) then Exit(i);
+  end;
+
+  Result := -1;
+end;
+
+{==============================================================================
+  irq işlevine tahsis edilmiş toplam irq işlev sayısını alır
+ ==============================================================================}
+function IRQDoluKanalSayisiniAl(AIRQNo: TSayi4): TISayi4;
+var
+  i: TSayi4;
+begin
+
+  Result := 0;
+
+  for i := 0 to IRQBASINA_ISLEVSAYISI - 1 do
+  begin
+
+    if(IRQIslevListesi[AIRQNo, i] <> nil) then Inc(Result);
+  end;
 end;
 
 {==============================================================================
@@ -178,11 +243,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[0 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+  // toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,0 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[0 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -211,11 +286,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[1 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,1 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[1 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -244,11 +329,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[2 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,2 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[2 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -277,11 +372,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[3 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,3 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[3 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -310,11 +415,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[4 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,4 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[4 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -343,11 +458,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[5 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,5 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[5 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -376,11 +501,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[6 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,6 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[6 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -409,11 +544,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[7 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,7 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[7 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -442,11 +587,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[8 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,8 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[8 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -476,11 +631,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[9 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,9 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[9 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -510,11 +675,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[10 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,10 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[10 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -544,11 +719,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[11 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,11 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[11 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -578,11 +763,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[12 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,12 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[12 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -612,11 +807,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[13 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,13 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[13 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -646,11 +851,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[14 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,14 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[14 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
@@ -680,11 +895,21 @@ asm
   mov   ds,ax
   mov   es,ax
 
-  mov eax,IRQIslevListesi[15 * 4]
-  cmp eax,0
-  jz  @@islev_tamam
+// toplam işlev giriş sayısı + her biri 4 byte uzunluğunda
+  mov   ebx,15 * (IRQBASINA_ISLEVSAYISI * 4)
+  mov   ecx,0
 
-  call  IRQIslevListesi[15 * 4]
+@@islev_calistir:
+  mov   eax,IRQIslevListesi[ebx + ecx * 4]
+  cmp   eax,0
+  jz    @@bir_sonraki
+
+  call  eax
+
+@@bir_sonraki:
+  inc   ecx
+  cmp   ecx,7
+  jbe   @@islev_calistir
 
 @@islev_tamam:
   mov   al,$20
