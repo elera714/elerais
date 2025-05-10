@@ -6,7 +6,7 @@
   Dosya Adý: vbox.pas
   Dosya Ýþlevi: virtualbox sanal aygýt yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -123,22 +123,22 @@ begin
   KesmeAktif := PCIOku2(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $4);
   VBKesmeNo := PCIOku1(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $3C);
 
-  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Yol: ', PCIAygit.Yol, 2);
-  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Aygýt: ', PCIAygit.Aygit, 2);
-  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Ýþlev: ', PCIAygit.Islev, 2);
-  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Satýcý Kimlik: ', PCIAygit.SaticiKimlik, 4);
-  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Aygýt Kimlik: ', PCIAygit.AygitKimlik, 4);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Yol: %d', [PCIAygit.Yol]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt: %d', [PCIAygit.Aygit]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Ýþlev: %d', [PCIAygit.Islev]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Satýcý Kimlik: $%.4x', [PCIAygit.SaticiKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt Kimlik: $%.4x', [PCIAygit.AygitKimlik]);
 
   if((VBPort and 1) = 1) then
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Port: ', VBPort and $FFFFFFFC, 4)
-  else SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'VBox Bellek: ', VBPort and $FFFFFFFC, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Port: $%.4x', [VBPort and $FFFFFFFC])
+  else SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Bellek: $%.8x', [VBPort and $FFFFFFFC]);
 
   // 10. bitin 1 olmasý kesmenin pasif olduðu anlamýna gelir
   if(KesmeAktif and (1 shl 10) = 0) then
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'INT Aktif', [])
   else SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'INT Pasif', []);
 
-  SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Kesme No: ', VBKesmeNo, 2);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Kesme No: %d', [VBKesmeNo]);
 
   // vbox kesmesini aktifleþtir
   IRQIsleviAta(VBKesmeNo, @VBoxKesmeCagrisi);

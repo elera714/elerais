@@ -6,7 +6,7 @@
   Dosya Adı: k_sistemmesaj.pas
   Dosya İşlevi: hata ayıklama (debug) amaçlı mesaj yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -62,9 +62,10 @@ begin
   else if(IslevNo = 4) then
   begin
 
-    SISTEM_MESAJ_S16(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
+    SISTEM_MESAJ(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
       PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi))^,
-      PSayi4(ADegiskenler + 12)^, PSayi4(ADegiskenler + 16)^);
+      [PSayi4(ADegiskenler + 12)^]); //, PSayi4(ADegiskenler + 16)^);
+      { TODO - üstte iptal edilen ifadeyi api işlevinden çıkar }
   end
 
   // toplam sistem mesaj sayısını al

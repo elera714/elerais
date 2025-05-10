@@ -6,7 +6,7 @@
   Dosya Adı: pci.pas
   Dosya İşlevi: pci yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 08/05/2025
+  Güncelleme Tarihi: 10/05/2025
 
   Kaynaklar:
     http://wiki.osdev.org/PCI
@@ -40,6 +40,7 @@ procedure PCIYaz2(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi2);
 procedure PCIYaz4(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi4);
 function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
 function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
+function IRQNoAl(APCI: PPCI): TSayi1;
 
 implementation
 
@@ -261,6 +262,15 @@ begin
   end;
 
   Result := 0;
+end;
+
+ {==============================================================================
+  pci aygıtının IRQ istek numarasını alır
+ ==============================================================================}
+function IRQNoAl(APCI: PPCI): TSayi1;
+begin
+
+  Result := PCIOku1(APCI^.Yol, APCI^.Aygit, APCI^.Islev, $3C) and $FF;
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adý: acpi.pas
   Dosya Ýþlevi: geliþmiþ ayar ve güç arabirim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 10/05/2025
 
   https://wiki.osdev.org/RSDP
 
@@ -105,13 +105,13 @@ begin
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'ACPI Donaným Bilgileri:', []);
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Adres: ', TSayi4(_RSDP), 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Adres: $%.8x', [TSayi4(_RSDP)]);
     SISTEM_MESAJ_YAZI(mtBilgi, RENK_SIYAH, PChar('Ýmza: '), 5, PChar(RSDPTanimlayici.Imza), 8);
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Kontrol: ', RSDPTanimlayici.Kontrol, 2);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Kontrol: $%x', [RSDPTanimlayici.Kontrol]);
     SISTEM_MESAJ_YAZI(mtBilgi, RENK_SIYAH, PChar('Kimlik: '), 8, PChar(RSDPTanimlayici.OEMKimlik), 6);
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Deðiþim: ', RSDPTanimlayici.Degisim, 2);
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'RSDT Adres: ', RSDPTanimlayici.RSDTAdres, 8);
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'RSDT Sayýsý: ', RSDTSayisi, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðiþim: $%x', [RSDPTanimlayici.Degisim]);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'RSDT Adres: $%.8x', [RSDPTanimlayici.RSDTAdres]);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'RSDT Sayýsý: $%x', [RSDTSayisi]);
   end;
 end;
 

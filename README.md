@@ -1,4 +1,4 @@
-ELERA İşletim Sistemi (elerais - sunucu / istemci) - 0.3.8 [R34]
+ELERA İşletim Sistemi (elerais - sunucu / istemci) - 0.3.9 [R35]
 
 ---
 Kullanılan Yazılım Araçları:

@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 01/05/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -304,9 +304,9 @@ begin
       SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Aygýt sürücüsü / açýklama', []);
       SISTEM_MESAJ(mtBilgi, RENK_SIYAH, AygitSurucusu^.AygitAdi, []);
       SISTEM_MESAJ(mtBilgi, RENK_SIYAH, AygitSurucusu^.Aciklama, []);
-      SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Deðer-1: ', AygitSurucusu^.Deger1, 8);
-      SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Deðer-2: ', AygitSurucusu^.Deger2, 8);
-      SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Deðer-3: ', AygitSurucusu^.Deger3, 8);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer-1: $%.8x', [AygitSurucusu^.Deger1]);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer-2: $%.8x', [AygitSurucusu^.Deger2]);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer-3: $%.8x', [AygitSurucusu^.Deger3]);
       CalistirGorevNo := 0;
       asm sti end;
       Exit;
@@ -658,10 +658,10 @@ begin
       ' programý istenmeyen bir iþlem yaptýðýndan dolayý sonlandýrýldý', []);
     SISTEM_MESAJ(mtHata, RENK_MAVI, '  -> Hata Kodu: ' + IntToStr(ASonlanmaSebebi) + ' - ' +
       IstisnaAciklamaListesi[ASonlanmaSebebi], []);
-    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> CS: ', Gorev^.FHataCS, 8);
-    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> EIP: ', Gorev^.FHataEIP, 8);
-    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> ESP: ', Gorev^.FHataESP, 8);
-    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> EFLAGS: ', Gorev^.FHataBayrak, 8);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> CS: $%.8x', [Gorev^.FHataCS]);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> EIP: $%.8x', [Gorev^.FHataEIP]);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> ESP: $%.8x', [Gorev^.FHataESP]);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> EFLAGS: $%.8x', [Gorev^.FHataBayrak]);
   end;
 
   { TODO : aþaðýdaki iþlevlerin çalýþmasýnýn doðruluðu test edilecek }

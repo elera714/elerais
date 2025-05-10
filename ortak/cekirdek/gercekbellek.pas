@@ -6,7 +6,7 @@
   Dosya Adý: gercekbellek.pas
   Dosya Ýþlevi: gerçek (fiziksel) bellek yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 14/02/2025
+  Güncelleme Tarihi: 10/05/2025
 
   Bilgi: Bellek rezervasyonlarý 4K blok ve katlarý halinde yönetilmektedir
 
@@ -36,6 +36,12 @@ type
     property AyrilmisBlok: TSayi4 read FAyrilmisBlok write FAyrilmisBlok;
     property KullanilmisBlok: TSayi4 read FKullanilmisBlok write FKullanilmisBlok;
   end;
+
+var
+  BellekYonetimFPC: TMemoryManager;
+
+function ELRGetMem(AUzunluk: TSayi4): Isaretci;
+function ELRFreeMemSize(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
 
 implementation
 
@@ -80,6 +86,22 @@ begin
     Bellek^ := 1;
     Inc(Bellek);
   end;
+
+  // çekirdek bellek yönetim iþlevlerini yükle
+  BellekYonetimFPC.NeedLock := False;     // eski iþlev
+  BellekYonetimFPC.GetMem := @ELRGetMem;
+  BellekYonetimFPC.FreeMem := nil;
+  BellekYonetimFPC.FreeMemSize := @ELRFreeMemSize;
+  BellekYonetimFPC.AllocMem := nil;
+  BellekYonetimFPC.ReAllocMem := nil;
+  BellekYonetimFPC.MemSize := nil;
+  BellekYonetimFPC.InitThread := nil;
+  BellekYonetimFPC.DoneThread := nil;
+  BellekYonetimFPC.RelocateHeap := nil;
+  BellekYonetimFPC.GetHeapStatus := nil;
+  BellekYonetimFPC.GetFPCHeapStatus := nil;
+
+  SetMemoryManager(BellekYonetimFPC);
 end;
 
 {$asmmode intel}
@@ -263,6 +285,23 @@ begin
   end;
 
   Result := HATA_TUMBELLEKKULLANIMDA;
+end;
+
+// istenen miktarda bellek ayýr - fpc + çekirdek iþlevleri için
+function ELRGetMem(AUzunluk: TSayi4): Isaretci;
+begin
+
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem-U: %d', [AUzunluk]);
+  Result := GGercekBellek.Ayir(AUzunluk);
+end;
+
+// sistemden alýnan belleði serbest býrak - fpc + çekirdek iþlevleri için
+function ELRFreeMemSize(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
+begin
+
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize: %d', [AUzunluk]);
+  GGercekBellek.YokEt(ABellek, AUzunluk);
+  Result := 0;
 end;
 
 end.

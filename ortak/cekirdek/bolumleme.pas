@@ -6,7 +6,7 @@
   Dosya Adý: bolumleme.pas
   Dosya Ýþlevi: depolama aygýtý bölüm yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -264,7 +264,7 @@ begin
               end else if not(DiskBolum^.BolumTipi = DST_BELIRSIZ) then
               begin
 
-                SISTEM_MESAJ_S16(mtUyari, RENK_KIRMIZI, '  ! Bilinmeyen dosya sistem tipi: ', DiskBolum^.BolumTipi, 2);
+                SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, '  ! Bilinmeyen dosya sistem tipi: %d', [DiskBolum^.BolumTipi]);
               end;
 
               Inc(DiskBolum);

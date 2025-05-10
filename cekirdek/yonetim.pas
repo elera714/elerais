@@ -39,7 +39,8 @@ type
 type
   TTestSinif = class(TObject)
   public
-    FDeger1: TSayi4;
+    FDeger1,
+    FDeger2: TSayi4;
     constructor Create;
     procedure Artir;
     procedure Eksilt;
@@ -108,7 +109,6 @@ procedure Yukle;
 procedure SistemAnaKontrol;
 procedure CekirdekDosyaTSDegeriniKaydet;
 procedure KaydedilenProgramlariYenidenYukle;
-function GMem(Size:ptruint):Pointer;
 procedure Merhaba;
 
 implementation
@@ -236,12 +236,11 @@ end;
 procedure SistemAnaKontrol;
 var
   Gorev: PGorev = nil;
-  TusDegeri: TSayi2;
+  TusDegeri, IRR: TSayi2;
   TusKontrolDegeri: TSayi1;
   TusKarakterDegeri: Char;
   TusDurum: TTusDurum;
   i, j: TSayi4;
-  m: TMemoryManager;
   Masaustu: PMasaustu;
   GN: PGorselNesne;
   DosyaKimlik: TKimlik;
@@ -250,6 +249,7 @@ var
   Bellek: array[0..511] of TSayi1;
   dt: TDateTime;
   DosyaAdi, Veri: string;
+  BellekI: Isaretci;
 begin
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
@@ -336,6 +336,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
+            //Getmem(TestAdres, 100);
             //IzKaydiOlustur('elera.ini', 'merhaba');
 
   {          SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32-Deðer: %s', [GeciciDeger]);
@@ -349,14 +350,13 @@ begin
             //Gorev^.Calistir('disket1:\mustudk.c');
             //Gorev^.Calistir('disk1:\sisbilgi.c');
             //Gorev^.Calistir('disket1:\yzmcgor2.c');
-            IRQEtkinlestir(2);
-            IRQIsleviAta(11, @Merhaba);
-            vbox.Listele;
+            //IRQEtkinlestir(2);
+            //IRQIsleviAta(11, @Merhaba);
+            //vbox.Listele;
 
-            //TestAdres := Isaretci($10000);
-            //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek U3: %d', [TSayi4(TestAdres)]);
-
-            //TestSinif := TTestSinif.Create;
+            TestSinif := TTestSinif.Create;
+            TestSinif.Artir;
+            TestSinif.Eksilt;
           end
           // test iþlev tuþu-1
           else if(TusKarakterDegeri = '4') then
@@ -378,10 +378,10 @@ begin
 
 
 
-  {          pic.Maskele(0);
-            IRR := pic.ISRDegeriniOku;
-            SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'IRR Deðeri: ', IRR, 4);
-  }
+            //pic.Maskele(0);
+            {IRR := pic.ISRDegeriniOku;
+            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IRR Deðeri: %x', [IRR]);}
+
 
             //BekleMS(10000);
 
@@ -391,11 +391,7 @@ begin
             //Gorev^.Calistir('disket1:\kopyala.c');
             //Gorev^.Calistir('disket1:\dskgor.c');
 
-            //BellekI := GGercekBellek.Ayir(4095);
-            //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'Bellek: ', TSayi4(BellekI), 8);
-            //SISTEM_MESAJ(RENK_KIRMIZI, 'Bellek: %x', [GGercekBellek.ToplamRAM]);
             vbox.IcerigiGoruntule;
-            //TestSinif.Artir;
             //Gorev^.Calistir('disk1:\arpbilgi.c');
 
             {Disk := SurucuAl('disk2:');
@@ -414,19 +410,6 @@ begin
             FD.SektorYaz(@FD, 1536 + 3, 1, Isaretci(@Bellek));
 
             SHTOlustur(256, 1280, 1536);
-
-            //GetMemoryManager(m);
-            //m.Getmem := @GMem;
-            {if(m.Getmem = nil) then
-              SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'nil', [])
-            else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '!nil', []);}
-            //m.GetMem(1000);
-
-            //Getmem(TestAdres, 100);
-
-            //new(xyz);
-            //IRR := pic.ISRDegeriniOku;
-            //SISTEM_MESAJ2_S16(RENK_KIRMIZI, 'IRR Deðeri: ', IRR, 4);
           end
           // program çalýþtýrma programýný çalýþtýr
           else if(TusKarakterDegeri = 'c') then
@@ -542,12 +525,6 @@ begin
     // sonlandýrýlmýþ olarak iþaretlenen görevleri sonlandýr
     IsaretlenenGorevleriSonlandir;
   end;
-end;
-
-function GMem(Size: ptruint): Pointer;
-begin
-
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'GetMem', []);
 end;
 
 procedure Merhaba;

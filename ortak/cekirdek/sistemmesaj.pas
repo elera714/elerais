@@ -9,10 +9,11 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
+{$asmmode intel}
 unit sistemmesaj;
 
 interface
@@ -50,7 +51,7 @@ type
 
 { TODO : // aşağıdaki tüm çağrılar iptal edilerek bu çağrının içerisine alınacak }
 procedure SISTEM_MESAJ(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-    ASayisalDegerler: array of const);
+    ADegerler: array of const);
 
 procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: PWideChar);
 procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: PChar; AMesajUz: TISayi4);
@@ -58,14 +59,11 @@ procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj1: PChar
   AMesajUz1: TISayi4; AMesaj2: PChar; AMesajUz2: TISayi4);
 procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk;
   ABellekAdres: Isaretci; ABellekUz: TSayi4);
-procedure SISTEM_MESAJ_S16(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  ASayi16, AHaneSayisi: TSayi4);
-procedure SISTEM_MESAJ2_S16(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  ASayi16: TSayi8; AHaneSayisi: TSayi4);
 procedure SISTEM_MESAJ_MAC(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
   AMACAdres: TMACAdres);
 procedure SISTEM_MESAJ_IP(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
   AIPAdres: TIPAdres);
+function UzunlukAl16(ADeger: TSayi4): TSayi4;
 
 implementation
 
@@ -205,16 +203,22 @@ end;
   sistem kayıtlarına mesaj ekle
  ==============================================================================}
 procedure SISTEM_MESAJ(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  ASayisalDegerler: array of const);
+  ADegerler: array of const);
 var
-  DegerSiraNo,
-  i, j: TSayi4;
-  s, s2: string;
+  DegerSiraNo, i, j, k,
+  Uzunluk, Uzunluk2, Kod: TSayi4;
+  s, s2, sUzunluk: string;
   C: Char;
+  DegerOkunuyor,
+  UzunlukOkunuyor: Boolean;
 begin
 
+  DegerOkunuyor := False;
+  UzunlukOkunuyor := False;
   DegerSiraNo := 0;
   s := '';
+  sUzunluk := '';
+  Uzunluk := 0;
 
   i := Length(AMesaj);
   if(i > 0) then
@@ -224,49 +228,109 @@ begin
     while (j <= i) do
     begin
 
-      if(AMesaj[j] = '%') and (AMesaj[j + 1] = 'c') then
+      if(DegerOkunuyor) then
       begin
 
-        // sayısal değeri karaktere çevir
-        C := TVarRec(ASayisalDegerler[DegerSiraNo]).VChar;
-        Inc(DegerSiraNo);
-        s += C;
+        if(AMesaj[j] = '.') then
+        begin
 
-        Inc(j);
+          UzunlukOkunuyor := True;
+          sUzunluk := '';
+          Inc(j);
+          Continue;
+        end
+        else if(AMesaj[j] in ['0'..'9']) then
+        begin
+
+          if(UzunlukOkunuyor) then sUzunluk += AMesaj[j];
+          Inc(j);
+          Continue;
+        end
+        else if(AMesaj[j] = 'c') then
+        begin
+
+          // sayısal değeri karaktere çevir
+          C := TVarRec(ADegerler[DegerSiraNo]).VChar;
+          Inc(DegerSiraNo);
+          s += C;
+
+          Inc(j);
+          DegerOkunuyor := False;
+          Continue;
+        end
+        else if(AMesaj[j] = 's') then
+        begin
+
+          // sayısal değeri karaktere çevir
+          s2 := TVarRec(ADegerler[DegerSiraNo]).VString^;
+          Inc(DegerSiraNo);
+          s += s2;
+
+          Inc(j);
+          DegerOkunuyor := False;
+          Continue;
+        end
+        else if(AMesaj[j] = 'd') then
+        begin
+
+          // sayısal değeri karaktere çevir
+          //i := TVarRec(ADegerler[0]).VInteger;
+          s2 := IntToStr(TVarRec(ADegerler[DegerSiraNo]).VInteger);
+
+          // mevcut uzunluğun artmasına izin ver (azalmasına izin yok)
+          Uzunluk := Length(s2);
+          Val(sUzunluk, Uzunluk2, Kod);
+          if(Uzunluk2 > Uzunluk) then
+          begin
+
+            for k := 1 to Uzunluk2 - Uzunluk do
+            begin
+
+              s2 := '0' + s2;
+            end;
+          end;
+
+          s += s2;
+          Inc(DegerSiraNo);
+
+          Inc(j);
+          DegerOkunuyor := False;
+          UzunlukOkunuyor := False;
+          Continue;
+        end
+        else if(AMesaj[j] = 'x') then
+        begin
+
+          // mevcut uzunluğun artmasına izin ver (azalmasına izin yok)
+          Uzunluk := UzunlukAl16(TVarRec(ADegerler[DegerSiraNo]).VInteger);
+          Val(sUzunluk, Uzunluk2, Kod);
+          if(Uzunluk2 >= Uzunluk) then Uzunluk := Uzunluk2;
+
+          // sayısal değeri karaktere çevir
+          s2 := hexStr(TVarRec(ADegerler[DegerSiraNo]).VInteger, Uzunluk);
+
+          s += s2;
+          Inc(DegerSiraNo);
+
+          Inc(j);
+          DegerOkunuyor := False;
+          UzunlukOkunuyor := False;
+          Continue;
+        end
       end
-      else if(AMesaj[j] = '%') and (AMesaj[j + 1] = 's') then
+      else if(AMesaj[j] = '%') then
       begin
 
-        // sayısal değeri karaktere çevir
-        s2 := TVarRec(ASayisalDegerler[DegerSiraNo]).VString^;
-        Inc(DegerSiraNo);
-        s += s2;
-
+        DegerOkunuyor := True;
         Inc(j);
+        Continue;
       end
-      else if(AMesaj[j] = '%') and (AMesaj[j + 1] = 'd') then
+      else
       begin
 
-        // sayısal değeri karaktere çevir
-        //i := TVarRec(ASayisalDegerler[0]).VInteger;
-        s2 := IntToStr(TVarRec(ASayisalDegerler[DegerSiraNo]).VInteger);
-        Inc(DegerSiraNo);
-        s += s2;
-
+        s += AMesaj[j];
         Inc(j);
-      end
-      else if(AMesaj[j] = '%') and (AMesaj[j + 1] = 'x') then
-      begin
-
-        // sayısal değeri karaktere çevir
-        s2 := '0x' + hexStr(TVarRec(ASayisalDegerler[DegerSiraNo]).VInteger, 8);
-        Inc(DegerSiraNo);
-        s += s2;
-
-        Inc(j);
-      end else s += AMesaj[j];
-
-      Inc(j);
+      end;
     end;
   end;
 
@@ -349,42 +413,6 @@ begin
 end;
 
 {==============================================================================
-  sistem kayıtlarına mesaj ekle - mesaj + 16lı sayı sisteminde sayı birleşimi - 32 bit
- ==============================================================================}
-procedure SISTEM_MESAJ_S16(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  ASayi16, AHaneSayisi: TSayi4);
-var
-  Deger16: string[10];
-  s: string;
-begin
-
-  // sayısal değeri karaktere çevir
-  Deger16 := '0x' + hexStr(ASayi16, AHaneSayisi);
-
-  s := AMesaj + Deger16;
-
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
-end;
-
-{==============================================================================
-  sistem kayıtlarına mesaj ekle - mesaj + 16lı sayı sisteminde sayı birleşimi - 64 bit
- ==============================================================================}
-procedure SISTEM_MESAJ2_S16(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  ASayi16: TSayi8; AHaneSayisi: TSayi4);
-var
-  Deger16: string[18];
-  s: string;
-begin
-
-  // sayısal değeri karaktere çevir
-  Deger16 := '0x' + hexStr(ASayi16, AHaneSayisi);
-
-  s := AMesaj + Deger16;
-
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
-end;
-
-{==============================================================================
   sistem kayıtlarına mesaj ekle - mesaj + mac adres birleşimi
  ==============================================================================}
 procedure SISTEM_MESAJ_MAC(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
@@ -418,6 +446,28 @@ begin
   s := AMesaj + IPAdres;
 
   if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
+end;
+
+{==============================================================================
+  16lı sistemde sayının uzunluk değerini alır
+ ==============================================================================}
+function UzunlukAl16(ADeger: TSayi4): TSayi4; nostackframe; assembler;
+asm
+
+  push  ecx
+  mov   ecx,8
+@@1:
+  test  eax,$F0000000
+  jnz   @@2
+  shl   eax,4
+  loop  @@1
+
+  // tüm haneler 0 ise toplam hane sayısını geri döndür
+  mov   ecx,8
+
+@@2:
+  mov   eax,ecx
+  pop   ecx
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adý: ehci.pas
   Dosya Ýþlevi: usb ehci yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -47,33 +47,33 @@ begin
 
     _TemelAdres := (PCIOku4(EHCIAygit^.Yol, EHCIAygit^.Aygit, EHCIAygit^.Islev, $10)
       and $FFFFFF00);
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'USB Ana Adres: ', _TemelAdres, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'USB Ana Adres: $%.8x', [_TemelAdres]);
 
     // _CapLength - Capability Registers Length
     _CapLength := PByte(_TemelAdres + 00)^;
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'CAPLENGTH - Capability Registers Length: ', _CapLength, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'CAPLENGTH - Capability Registers Length: $%.8x', [_CapLength]);
 
     // HCSPARAMS - Structural Parameters
     _StructuralParams := PSayi4(_TemelAdres + 04)^;
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'HCSPARAMS - Structural Parameters: ', _StructuralParams, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'HCSPARAMS - Structural Parameters: $%.8x', [_StructuralParams]);
 
     // HCCPARAMS - Capability Parameters
     _CapabilityParams := PSayi4(_TemelAdres + 08)^;
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'HCCPARAMS - Capability Parameters: ', _CapabilityParams, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'HCCPARAMS - Capability Parameters: $%.8x', [_CapabilityParams]);
 
     _OperationalReg := _TemelAdres + _CapLength;
 
     // USBCMD - USB Command Register
     _Deger4 := PSayi4(_OperationalReg + 00)^;
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'USBCMD - USB Command Register: ', _Deger4, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'USBCMD - USB Command Register: $%.8x', [_Deger4]);
 
     // USBSTS - USB Status Register
     _Deger4 := PSayi4(_OperationalReg + 04)^;
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'USBSTS - USB Status Register: ', _Deger4, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'USBSTS - USB Status Register: $%.8x', [_Deger4]);
 
     // USBINTR - USB Interrupt Enable Register
     _Deger4 := PSayi4(_OperationalReg + 08)^;
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'USBINTR - USB Interrupt Enable Register: ', _Deger4, 8);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'USBINTR - USB Interrupt Enable Register: $%.8x', [_Deger4]);
   end;
 end;
 

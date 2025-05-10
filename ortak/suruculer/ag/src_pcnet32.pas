@@ -6,7 +6,7 @@
   Dosya Adý: src_pcnet32.pas
   Dosya Ýþlevi: PCNET32 að (network) sürücüsü
 
-  Güncelleme Tarihi: 08/05/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -36,8 +36,8 @@ function Yukle(APCI: PPCI): TISayi4;
 procedure VeriAl(ABellek: Isaretci; var AVeriUzunlugu: TSayi2);
 procedure VeriGonder(AEthernetPaket: PEthernetPaket; AVeriUzunlugu: TSayi2);
 procedure PCNET32YukleniciIslev;
-function IRQNoAl(APCI: PPCI): TSayi1;
 procedure DMAErisiminiAktiflestir(APCI: PPCI);
+procedure MACAdresiAl;
 
 function WIOCSROku(ASiraNo: TSayi4): TSayi4;
 procedure WIOCSRYaz(ASiraNo, AVeri: TSayi4);
@@ -358,16 +358,8 @@ begin
   SISTEM_MESAJ(RENK_MAVI, 'PCNET32 çip adý: ' + AygitPCNET32.CipAdi, []);
   {$ENDIF}
 
-  for i := 0 to 5 do
-  begin
-
-    AygitPCNet32.MACAdres[i] := PortAl1(AygitPCNet32.PortDegeri + i);
-  end;
-  GAgBilgisi.MACAdres := AygitPCNet32.MACAdres;
-
-  {$IFDEF PCNET32_BILGI}
-  SISTEM_MESAJ_MAC(RENK_MAVI, 'PCNET32 MAC Adres: ', AygitPCNET32.MACAdres);
-  {$ENDIF}
+  // aygýtýn mac adresini al
+  MACAdresiAl;
 
   // init_block içeriðini doldur
   BlokYukle._Mod := $80;
@@ -556,12 +548,23 @@ begin
 end;
 
 {==============================================================================
-  pci aygýtýnýn IRQ istek numarasýný alýr
+  aygýtýn mac adresini alýr
  ==============================================================================}
-function IRQNoAl(APCI: PPCI): TSayi1;
+procedure MACAdresiAl;
+var
+  i: TSayi4;
 begin
 
-  Result := PCIOku1(APCI^.Yol, APCI^.Aygit, APCI^.Islev, $3C) and $FF;
+  for i := 0 to 5 do
+  begin
+
+    AygitPCNet32.MACAdres[i] := PortAl1(AygitPCNet32.PortDegeri + i);
+  end;
+  GAgBilgisi.MACAdres := AygitPCNet32.MACAdres;
+
+  {$IFDEF PCNET32_BILGI}
+  SISTEM_MESAJ_MAC(RENK_MAVI, 'PCNET32 MAC Adres: ', AygitPCNET32.MACAdres);
+  {$ENDIF}
 end;
 
 function WIOCSROku(ASiraNo: TSayi4): TSayi4;

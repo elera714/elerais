@@ -6,7 +6,7 @@
   Dosya Adý: uhci.pas
   Dosya Ýþlevi: usb uhci yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -109,7 +109,7 @@ begin
     SISTEM_MESAJ(mtBilgi, RENK_MOR, 'USB-UHCI Genel Bilgiler:', []);
 
     PortNo := PCIOku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, $20) and $FFFC;
-    SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Giriþ/Çýkýþ Port No: ', PortNo, 4);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Giriþ/Çýkýþ Port No: $%.2x', [PortNo]);
 
     _Deger4 := PCIOku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, 4);
     _Deger4 := _Deger4 or $405;

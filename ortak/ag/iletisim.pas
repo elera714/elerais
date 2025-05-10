@@ -6,7 +6,7 @@
   Dosya Adý: iletisim.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -180,7 +180,7 @@ begin
     SISTEM_MESAJ(mtHata, RENK_SIYAH, 'ILETISIM.PAS: TBaglanti.Olustur', []);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> Bilinmeyen Protokol: %s ', [s]);
     SISTEM_MESAJ_IP(mtHata, RENK_SIYAH, '  -> Hedef IP: ', IPAdresi);
-    SISTEM_MESAJ_S16(mtHata, RENK_SIYAH, '  -> Hedef Port: ', AUzakPort, 4);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> Hedef Port: %d', [AUzakPort]);
   end;
 
   Result := Bag;

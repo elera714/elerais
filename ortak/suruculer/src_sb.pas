@@ -6,7 +6,7 @@
   Dosya Adý: src_sb.pas
   Dosya Ýþlevi: sound blaster ses kartý sürücüsü
 
-  Güncelleme Tarihi: 01/05/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -146,15 +146,15 @@ begin
       // dosya uzunluðunu al
       _DosyaUzunluk := FileSize(_DosyaKimlik);
 
-      SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Ses dosya uzunluðu: ', _DosyaUzunluk, 8);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Ses dosya uzunluðu: %d', [_DosyaUzunluk]);
 
       // dosyanýn çalýþtýrýlmasý için bellekte yer ayýr
       _DosyaBellek := GGercekBellek.Ayir(_DosyaUzunluk);
       if(_DosyaBellek <> nil) then
       begin
 
-        SISTEM_MESAJ_S16(mtBilgi, RENK_SIYAH, 'Dosya için ayrýlan bellek adresi: ',
-          Integer(_DosyaBellek), 8);
+        SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Dosya için ayrýlan bellek adresi: $%.8x',
+          [TSayi4(_DosyaBellek)]);
 
         // dosyayý hedef adrese kopyala
         Read(_DosyaKimlik, _DosyaBellek);

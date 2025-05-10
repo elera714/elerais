@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/04/2025
+  Güncelleme Tarihi: 10/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -199,7 +199,7 @@ begin
       begin
 
         // bilinmeyen protokol
-        SISTEM_MESAJ_S16(mtUyari, RENK_MAVI, 'AG.PAS: bilinmeyen protokol: ', Protokol, 4);
+        SISTEM_MESAJ(mtUyari, RENK_MAVI, 'AG.PAS: bilinmeyen protokol: $%.4x', [Protokol]);
         SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Kaynak MAC Adresi: ', EthernetPaket^.KaynakMACAdres);
         SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Hedef MAC Adresi: ', EthernetPaket^.HedefMACAdres);
       end;
