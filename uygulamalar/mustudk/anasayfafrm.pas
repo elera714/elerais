@@ -168,7 +168,7 @@ var
   DosyaKimlik: TKimlik;
 begin
 
-  FGenel._Assign(DosyaKimlik, 'disk2:\muyntcs.ini');
+  FGenel._AssignFile(DosyaKimlik, 'disk2:\muyntcs.ini');
   FGenel._ReWrite(DosyaKimlik);
   if(FGenel._IOResult = 0) then
   begin
@@ -176,7 +176,7 @@ begin
     FGenel._Write(DosyaKimlik, ADuvarKagidiDosyaAdi);
   end;
 
-  FGenel._Close(DosyaKimlik);
+  FGenel._CloseFile(DosyaKimlik);
 end;
 
 end.

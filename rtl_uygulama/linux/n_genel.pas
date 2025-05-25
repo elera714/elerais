@@ -42,17 +42,18 @@ type
       var ADosyaArama: TDosyaArama): TISayi4; assembler;
     function _FindNext(var ADosyaArama: TDosyaArama): TISayi4; assembler;
     function _FindClose(var ADosyaArama: TDosyaArama): TISayi4; assembler;
-    procedure _Assign(out ADosyaKimlik: TKimlik; const ADosyaAdi: string); assembler;
-    procedure _Reset(ADosyaKimlik: TKimlik); assembler;
-    function _IOResult: TISayi4; assembler;
-    function _EOF(ADosyaKimlik: TKimlik): Boolean; assembler;
-    function _FileSize(ADosyaKimlik: TKimlik): TISayi4; assembler;
-    procedure _FileRead(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
-    procedure _Close(ADosyaKimlik: TKimlik); assembler;
+    procedure _AssignFile(out ADosyaKimlik: TKimlik; const ADosyaAdi: string); assembler;
     procedure _ReWrite(ADosyaKimlik: TKimlik); assembler;
+    procedure _Append(ADosyaKimlik: TKimlik); assembler;
+    procedure _Reset(ADosyaKimlik: TKimlik); assembler;
     procedure _Write(ADosyaKimlik: TKimlik; const AVeri: string); assembler;
-    procedure _DeleteFile(ADosyaAdi: string); assembler;
+    procedure _Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
+    function _IOResult: TISayi4; assembler;
+    function _FileSize(ADosyaKimlik: TKimlik): TISayi4; assembler;
+    function _EOF(ADosyaKimlik: TKimlik): Boolean; assembler;
+    procedure _CloseFile(ADosyaKimlik: TKimlik); assembler;
     procedure _RemoveDir(AKlasorAdi: string); assembler;
+    procedure _DeleteFile(ADosyaAdi: string); assembler;
 
     // görsel nesne işlevleri
     function GorselNesneKimlikAl(KonumA1, KonumB1: TISayi4): TISayi4; assembler;
@@ -188,7 +189,7 @@ asm
   add	  esp,4
 end;
 
-procedure TGenel._Assign(out ADosyaKimlik: TKimlik; const ADosyaAdi: string); assembler;
+procedure TGenel._AssignFile(out ADosyaKimlik: TKimlik; const ADosyaAdi: string); assembler;
 asm
   push  DWORD ADosyaAdi
   push	DWORD ADosyaKimlik
@@ -197,59 +198,26 @@ asm
   add	  esp,8
 end;
 
-procedure TGenel._Reset(ADosyaKimlik: TKimlik); assembler;
-asm
-  push	DWORD ADosyaKimlik
-  mov	  eax,DOSYA_AC
-  int	  $34
-  add	  esp,4
-end;
-
-function TGenel._IOResult: TISayi4; assembler;
-asm
-  mov	  eax,DOSYA_ISLEMKONTROL
-  int	  $34
-end;
-
-function TGenel._EOF(ADosyaKimlik: TKimlik): Boolean; assembler;
-asm
-  push	DWORD ADosyaKimlik
-  mov	  eax,DOSYA_DOSYASONU
-  int	  $34
-  add	  esp,4
-end;
-
-function TGenel._FileSize(ADosyaKimlik: TKimlik): TISayi4; assembler;
-asm
-  push	DWORD ADosyaKimlik
-  mov	  eax,DOSYA_DOSYAUZUNLUGU
-  int	  $34
-  add	  esp,4
-end;
-
-// Read olarak değiştirilecek. Aşağıdaki hatayı veriyor
-// fileh.inc(7,15) Error: overloaded identifier "Read" isn't a function
-procedure TGenel._FileRead(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
-asm
-  push	DWORD AHedefBellek
-  push  DWORD ADosyaKimlik
-  mov	  eax,DOSYA_OKU
-  int	  $34
-  add	  esp,8
-end;
-
-procedure TGenel._Close(ADosyaKimlik: TKimlik); assembler;
-asm
-  push	DWORD ADosyaKimlik
-  mov	  eax,DOSYA_KAPAT
-  int	  $34
-  add	  esp,4
-end;
-
 procedure TGenel._ReWrite(ADosyaKimlik: TKimlik); assembler;
 asm
   push	DWORD ADosyaKimlik
   mov	  eax,DOSYA_OLUSTUR
+  int	  $34
+  add	  esp,4
+end;
+
+procedure TGenel._Append(ADosyaKimlik: TKimlik); assembler;
+asm
+  push	DWORD ADosyaKimlik
+  mov	  eax,DOSYA_EKLE
+  int	  $34
+  add	  esp,4
+end;
+
+procedure TGenel._Reset(ADosyaKimlik: TKimlik); assembler;
+asm
+  push	DWORD ADosyaKimlik
+  mov	  eax,DOSYA_AC
   int	  $34
   add	  esp,4
 end;
@@ -263,18 +231,59 @@ asm
   add	  esp,8
 end;
 
-procedure TGenel._DeleteFile(ADosyaAdi: string); assembler;
+// Read olarak değiştirilecek. Aşağıdaki hatayı veriyor
+// fileh.inc(7,15) Error: overloaded identifier "Read" isn't a function
+procedure TGenel._Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
 asm
-  push  DWORD ADosyaAdi
-  mov   eax,DOSYA_DOSYASIL
-  int   $34
-  add   esp,4
+  push	DWORD AHedefBellek
+  push  DWORD ADosyaKimlik
+  mov	  eax,DOSYA_OKU
+  int	  $34
+  add	  esp,8
+end;
+
+function TGenel._IOResult: TISayi4; assembler;
+asm
+  mov	  eax,DOSYA_ISLEMKONTROL
+  int	  $34
+end;
+
+function TGenel._FileSize(ADosyaKimlik: TKimlik): TISayi4; assembler;
+asm
+  push	DWORD ADosyaKimlik
+  mov	  eax,DOSYA_DOSYAUZUNLUGU
+  int	  $34
+  add	  esp,4
+end;
+
+function TGenel._EOF(ADosyaKimlik: TKimlik): Boolean; assembler;
+asm
+  push	DWORD ADosyaKimlik
+  mov	  eax,DOSYA_DOSYASONU
+  int	  $34
+  add	  esp,4
+end;
+
+procedure TGenel._CloseFile(ADosyaKimlik: TKimlik); assembler;
+asm
+  push	DWORD ADosyaKimlik
+  mov	  eax,DOSYA_KAPAT
+  int	  $34
+  add	  esp,4
 end;
 
 procedure TGenel._RemoveDir(AKlasorAdi: string); assembler;
 asm
   push  DWORD AKlasorAdi
   mov   eax,DOSYA_KLASORSIL
+  int   $34
+  add   esp,4
+end;
+
+procedure TGenel._DeleteFile(ADosyaAdi: string); assembler;
+asm
+  push  DWORD ADosyaAdi
+  mov   eax,DOSYA_DOSYASIL
   int   $34
   add   esp,4
 end;

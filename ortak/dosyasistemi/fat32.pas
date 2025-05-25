@@ -16,21 +16,28 @@ interface
 
 uses paylasim, islevler;
 
-procedure Assign(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
-procedure Reset(ADosyaKimlik: TKimlik);
-function EOF(ADosyaKimlik: TKimlik): Boolean;
-function FileSize(ADosyaKimlik: TKimlik): TISayi4;
-procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
-procedure ReWrite(ADosyaKimlik: TKimlik);
-procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
-procedure Close(ADosyaKimlik: TKimlik);
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
+procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+procedure ReWrite(ADosyaKimlik: TKimlik);
+procedure Append(ADosyaKimlik: TKimlik);
+procedure Reset(ADosyaKimlik: TKimlik);
+procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
+procedure WriteLn(ADosyaKimlik: TKimlik; AVeri: string);
+procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
+function IOResult: TISayi4;
+function FileSize(ADosyaKimlik: TKimlik): TISayi4;
+function EOF(ADosyaKimlik: TKimlik): Boolean;
+procedure CloseFile(ADosyaKimlik: TKimlik);
+procedure CreateDir(ADosyaKimlik: TKimlik);
+procedure RemoveDir(const AKlasorAdi: string);
+function DeleteFile(const ADosyaAdi: string): TISayi4;
+
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
   var ADosyaArama: TDosyaArama): TSayi1;
-function DizinGirisindeAra(AAramaKayit: TAramaKayit; AAranacakDeger: string): TSayi4;
+function DizinGirisindeAra(AAramaKayit: TDosyaIslem; AAranacakDeger: string): TSayi4;
 
 implementation
 
@@ -40,9 +47,65 @@ var
   DizinBellekAdresi: array[0..511] of TSayi1;
 
 {==============================================================================
+  dosya arama iþlevini baþlatýr
+ ==============================================================================}
+function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
+ var ADosyaArama: TDosyaArama): TISayi4;
+var
+  DizinGirisi: PDizinGirisi;
+begin
+
+  UzunDosyaAdi[0] := #0;
+  UzunDosyaAdi[1] := #0;
+
+  DizinGirisi := @GDosyaIslemleri[ADosyaArama.Kimlik].DizinGirisi;
+  GDosyaIslemleri[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
+  Result := DizinGirdisiOku(DizinGirisi, AAramaSuzgec, ADosyaArama);
+end;
+
+{==============================================================================
+  dosya arama iþlemine devam eder
+ ==============================================================================}
+function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
+var
+  DizinGirisi: PDizinGirisi;
+  Aranan: string;
+begin
+
+  DizinGirisi := @GDosyaIslemleri[ADosyaArama.Kimlik].DizinGirisi;
+  Aranan := GDosyaIslemleri[ADosyaArama.Kimlik].Aranan;
+  Result := DizinGirdisiOku(DizinGirisi, Aranan, ADosyaArama);
+end;
+
+{==============================================================================
+  dosya arama iþlemini sonlandýrýr
+ ==============================================================================}
+function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
+begin
+
+  Result := 0;
+end;
+
+{==============================================================================
   dosyalar ile ilgili iþlem yapmadan önce taným iþlevlerini gerçekleþtirir
  ==============================================================================}
-procedure Assign(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+begin
+end;
+
+{==============================================================================
+  dosya oluþturma iþlevini gerçekleþtirir
+ ==============================================================================}
+procedure ReWrite(ADosyaKimlik: TKimlik);
+begin
+
+  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat32.ReWrite: iþlev henüz yazýlmadý!', []);
+end;
+
+{==============================================================================
+  dosyaya veri eklemek için açma iþlevlerini gerçekleþtirir
+ ==============================================================================}
+procedure Append(ADosyaKimlik: TKimlik);
 begin
 end;
 
@@ -54,21 +117,21 @@ begin
 end;
 
 {==============================================================================
-  dosya okuma iþleminde dosyanýn sonuna gelinip gelinmediðini belirtir
+  dosyaya veri yazma iþlemini gerçekleþtirir
  ==============================================================================}
-function EOF(ADosyaKimlik: TKimlik): Boolean;
+procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
 begin
 
-  Result := True;
+  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat32.Write: iþlev henüz yazýlmadý!', []);
 end;
 
 {==============================================================================
-  dosya uzunluðunu geri döndürür
+  verinin sonuna #13#10 ekleyerek dosyaya veri yazma iþlemini gerçekleþtirir
  ==============================================================================}
-function FileSize(ADosyaKimlik: TKimlik): TISayi4;
+procedure WriteLn(ADosyaKimlik: TKimlik; AVeri: string);
 begin
 
-  Result := 0;
+  Write(ADosyaKimlik, AVeri + #13#10);
 end;
 
 {==============================================================================
@@ -77,7 +140,7 @@ end;
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
   MD: PMantiksalDepolama;
-  DosyaKayit: PDosyaKayit;
+  DosyaIslem: PDosyaIslem;
   DATBellekAdresi: array[0..511] of Byte;
   OkunacakSektorSayisi, i: TSayi2;
   ZincirBasinaSektor, OkunacakVeri,
@@ -88,14 +151,14 @@ var
 begin
 
   // iþlem yapýlan dosyayla ilgili bellek bölgesine konumlan
-  DosyaKayit := @GDosyaKayitListesi[ADosyaKimlik];
+  DosyaIslem := @GDosyaIslemleri[ADosyaKimlik];
 
   // üzerinde iþlem yapýlacak sürücü
-  MD := DosyaKayit^.MantiksalDepolama;
+  MD := DosyaIslem^.MantiksalDepolama;
 
-  OkunacakVeri := DosyaKayit^.Uzunluk;
+  OkunacakVeri := DosyaIslem^.Uzunluk;
 
-  Zincir := DosyaKayit^.IlkZincirSektor;
+  Zincir := DosyaIslem^.IlkZincirSektor;
 
   ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
@@ -146,68 +209,61 @@ begin
 end;
 
 {==============================================================================
-  dosya oluþturma iþlevini gerçekleþtirir
+  dosya ile yapýlmýþ en son iþlem sonucunu döndürür
  ==============================================================================}
-procedure ReWrite(ADosyaKimlik: TKimlik);
+function IOResult: TISayi4;
 begin
 
-  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat32.ReWrite: iþlev henüz yazýlmadý!', []);
+  Result := FileResult;
+
+  // son iþlem durumu geri döndürüldükten sonra deðiþkeni hata yok olarak iþaretle
+  FileResult := 0;
 end;
 
 {==============================================================================
-  dosyaya veri yazma iþlemini gerçekleþtirir
+  dosya uzunluðunu geri döndürür
  ==============================================================================}
-procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
+function FileSize(ADosyaKimlik: TKimlik): TISayi4;
 begin
 
-  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat32.Write: iþlev henüz yazýlmadý!', []);
+  Result := 0;
+end;
+
+{==============================================================================
+  dosya okuma iþleminde dosyanýn sonuna gelinip gelinmediðini belirtir
+ ==============================================================================}
+function EOF(ADosyaKimlik: TKimlik): Boolean;
+begin
+
+  Result := True;
 end;
 
 {==============================================================================
   dosya üzerinde yapýlan iþlemi sonlandýrýr
  ==============================================================================}
-procedure Close(ADosyaKimlik: TKimlik);
+procedure CloseFile(ADosyaKimlik: TKimlik);
 begin
 end;
 
 {==============================================================================
-  dosya arama iþlevini baþlatýr
+  klasör oluþturma iþlevini gerçekleþtirir
  ==============================================================================}
-function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
- var ADosyaArama: TDosyaArama): TISayi4;
-var
-  DizinGirisi: PDizinGirisi;
+procedure CreateDir(ADosyaKimlik: TKimlik);
 begin
-
-  UzunDosyaAdi[0] := #0;
-  UzunDosyaAdi[1] := #0;
-
-  DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
-  GAramaKayitListesi[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
-  Result := DizinGirdisiOku(DizinGirisi, AAramaSuzgec, ADosyaArama);
 end;
 
 {==============================================================================
-  dosya arama iþlemine devam eder
+  klasör silme iþlevini gerçekleþtirir
  ==============================================================================}
-function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
-var
-  DizinGirisi: PDizinGirisi;
-  Aranan: string;
+procedure RemoveDir(const AKlasorAdi: string);
 begin
-
-  DizinGirisi := @GAramaKayitListesi[ADosyaArama.Kimlik].DizinGirisi;
-  Aranan := GAramaKayitListesi[ADosyaArama.Kimlik].Aranan;
-  Result := DizinGirdisiOku(DizinGirisi, Aranan, ADosyaArama);
 end;
 
 {==============================================================================
-  dosya arama iþlemini sonlandýrýr
+  dosya silme iþlevini gerçekleþtirir
  ==============================================================================}
-function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
+function DeleteFile(const ADosyaAdi: string): TISayi4;
 begin
-
-  Result := 0;
 end;
 
 {==============================================================================
@@ -230,7 +286,7 @@ begin
   UzunDosyaAdiBulundu := False;
 
   // aramanýn yapýlacaðý sürücü
-  MD := GAramaKayitListesi[ADosyaArama.Kimlik].MantiksalDepolama;
+  MD := GDosyaIslemleri[ADosyaArama.Kimlik].MantiksalDepolama;
 
   // aramaya baþla
   repeat
@@ -352,7 +408,7 @@ end;
 {==============================================================================
   dizin giriþinden ilgili bilgileri alýr
  ==============================================================================}
-function DizinGirisindeAra(AAramaKayit: TAramaKayit; AAranacakDeger: string): TSayi4;
+function DizinGirisindeAra(AAramaKayit: TDosyaIslem; AAranacakDeger: string): TSayi4;
 var
   MD: PMantiksalDepolama;
   DizinGirdisi: PDizinGirdisi;

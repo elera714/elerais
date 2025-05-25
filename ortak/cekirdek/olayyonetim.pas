@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/04/2025
+  Güncelleme Tarihi: 21/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,7 +17,7 @@ interface
 uses gorselnesne, paylasim, gn_menu, gn_acilirmenu, sistemmesaj, gn_pencere;
 
 type
-  TOlayYonetim = object
+  TOlayYonetim = class
   private
     FSonYatayFareDegeri, FSonDikeyFareDegeri: TISayi4;
     FSonBasilanFareTusu: TSayi1;
@@ -25,7 +25,7 @@ type
   protected
     procedure OlaylariYonlendir(AGorselNesne: PGorselNesne; AOlay: TOlay);
   public
-    procedure Yukle;
+    constructor Create;
     function FareOlayiAl: TOlay;
     procedure FareOlaylariniIsle;
     procedure KlavyeOlaylariniIsle(ATusDegeri: TSayi2; ATusDurum: TTusDurum);
@@ -38,7 +38,7 @@ uses genel, gn_islevler, src_ps2, gorev;
 {==============================================================================
   olay deðiþkenlerini ilk deðerlerle yükler
  ==============================================================================}
-procedure TOlayYonetim.Yukle;
+constructor TOlayYonetim.Create;
 begin
 
   FOdaklanilanGorselNesne := nil;

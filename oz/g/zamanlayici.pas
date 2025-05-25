@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 13/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -274,7 +274,7 @@ begin
 
   // AMilisaniye * 100 saniye bekle
   Sayac := ZamanlayiciSayaci + AMilisaniye;
-  while (Sayac > ZamanlayiciSayaci) do begin asm int $20; end; end;
+  while (Sayac > ZamanlayiciSayaci) do;
 end;
 
 {==============================================================================

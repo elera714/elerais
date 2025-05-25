@@ -98,15 +98,15 @@ const
   CIP_KIMLIK_UST          = 89;
 
   PCNET32_GIDIS_BELLEK    = 4;
-  PCNET32_DONUS_BELLEK    = 5;
+  PCNET32_GELIS_BELLEK    = 5;
 
   GIDIS_HALKA_U           = (1 shl PCNET32_GIDIS_BELLEK);
   GIDIS_HALKA_MOD_MASKE   = (GIDIS_HALKA_U - 1);
   GIDIS_HALKA_UZ_BIT      = (PCNET32_GIDIS_BELLEK shl 12);
 
-  DONUS_HALKA_U           = (1 shl PCNET32_DONUS_BELLEK);
-  DONUS_HALKA_MOD_MASKE   = (DONUS_HALKA_U - 1);
-  DONUS_HALKA_UZ_BIT      = (PCNET32_DONUS_BELLEK shl 4);
+  GELIS_HALKA_U           = (1 shl PCNET32_GELIS_BELLEK);
+  GELIS_HALKA_MOD_MASKE   = (GELIS_HALKA_U - 1);
+  GELIS_HALKA_UZ_BIT      = (PCNET32_GELIS_BELLEK shl 4);
 
   ETH_CERCEVE_U           = 1544;
   TX_TIMEOUT              = 5000;
@@ -145,17 +145,8 @@ type
     AYRLDI: TSayi2;
     Suzgec1: TSayi4;
     Suzgec2: TSayi4;
-    DonusHalka: Isaretci;       // halka = ring
+    GelisHalka: Isaretci;       // halka = ring
     GidisHalka: Isaretci;
-  end;
-
-type
-  TDonusHalka = packed record
-    Bellek: Isaretci;
-    Uzunluk: TISayi2;
-    Durum: TSayi2;
-    MesajUz: TSayi4;
-    AYRLDI: TSayi4;
   end;
 
 type
@@ -167,15 +158,24 @@ type
     AYRLDI: TSayi4;
   end;
 
+type
+  TGelisHalka = packed record
+    Bellek: Isaretci;
+    Uzunluk: TISayi2;
+    Durum: TSayi2;
+    MesajUz: TSayi4;
+    AYRLDI: TSayi4;
+  end;
+
 var
   PCNET32Yuklendi: Boolean = False;
   BlokYukle: TBlokYukle;
-  DonusHalka: array[0..DONUS_HALKA_U - 1] of TDonusHalka;
   GidisHalka: array[0..GIDIS_HALKA_U - 1] of TGidisHalka;
-  DonusHalkaBellekAdresi: Isaretci;
-  GidisHalkaBellekAdresi: Isaretci;
-  BirSonrakiDonusSiraNo: TSayi4;
-  BirSonrakiGidisSiraNo: TSayi4;
+  GelisHalka: array[0..GELIS_HALKA_U - 1] of TGelisHalka;
+  GidisHalkaBellekAdresi,
+  GelisHalkaBellekAdresi: Isaretci;
+  BirSonrakiGidisSiraNo,
+  BirSonrakiGelisSiraNo: TSayi4;
 
 const
   CipAdi2420        = 'AMD PCI 79C970';
@@ -219,7 +219,7 @@ begin
   Result := -1;
 
   {$IFDEF PCNET32_BILGI}
-  SISTEM_MESAJ(RENK_LACIVERT, 'PCNET32: að kartý sürücüsü yükleniyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32: að kartý sürücüsü yükleniyor...', []);
   {$ENDIF}
 
   // sistemde birden fazla pcnet aygýtý varsa, aygýtýn çoklu
@@ -228,7 +228,7 @@ begin
   begin
 
     {$IFDEF PCNET32_BILGI}
-    SISTEM_MESAJ(RENK_KIRMIZI, 'PCNET32: aygýt yalnýzca bir kez yüklenebilir!', []);
+    SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'PCNET32: aygýt yalnýzca bir kez yüklenebilir!', []);
     {$ENDIF}
     Exit;
   end;
@@ -244,7 +244,7 @@ begin
   begin
 
     {$IFDEF PCNET32_BILGI}
-    SISTEM_MESAJ(RENK_KIRMIZI, 'PCNET32: giriþ / çýkýþ adresi alýnamýyor!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'PCNET32: giriþ / çýkýþ adresi alýnamýyor!', []);
     {$ENDIF}
     Exit;
   end;
@@ -253,13 +253,13 @@ begin
   AygitPCNet32.IRQNo := IRQNoAl(APCI);
 
   {$IFDEF PCNET32_BILGI}
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'PCNET32 Yol: ', APCI^.Yol, 2);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'PCNET32 Aygýt: ', APCI^.Aygit, 2);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'PCNET32 Ýþlev: ', APCI^.Islev, 2);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'PCNET32 Satýcý Kimlik: ', APCI^.SaticiKimlik, 4);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'PCNET32 Aygýt Kimlik: ', APCI^.AygitKimlik, 4);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'PCNET32 Port: ', AygitPCNET32.TemelAdres, 4);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'PCNET32 IRQ: ', AygitPCNET32.IRQNo, 2);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Yol: %d', [APCI^.Yol]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Aygýt: %d', [APCI^.Aygit]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Ýþlev: %d', [APCI^.Islev]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Satýcý Kimlik: $%x', [APCI^.SaticiKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Aygýt Kimlik: $%x', [APCI^.AygitKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Port: $%x', [AygitPCNET32.PortDegeri]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 IRQ: $%x', [AygitPCNET32.IRQNo]);
   {$ENDIF}
 
   // DMA eriþimini aktifleþtir
@@ -273,7 +273,7 @@ begin
   begin
 
     {$IFDEF PCNET32_BILGI}
-    SISTEM_MESAJ(RENK_LACIVERT, 'PCNET32 Mod: WIO 16 bit', []);
+    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Mod: WIO 16 bit', []);
     {$ENDIF}
     CSROku  := @WIOCSROku;
     CSRYaz  := @WIOCSRYaz;
@@ -300,7 +300,7 @@ begin
     begin
 
       {$IFDEF PCNET32_BILGI}
-      SISTEM_MESAJ(RENK_LACIVERT, 'PCNET32 Mod: DWIO 32 bit', []);
+      SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Mod: DWIO 32 bit', []);
       {$ENDIF}
       CSROku  := @DWIOCSROku;
       CSRYaz  := @DWIOCSRYaz;
@@ -318,7 +318,7 @@ begin
       //GeciciDeger := '3';
 
       {$IFDEF PCNET32_BILGI}
-      SISTEM_MESAJ(RENK_KIRMIZI, 'PCNET32: aygýt mevcut deðil(1)!', []);
+      SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'PCNET32: aygýt mevcut deðil(1)!', []);
       {$ENDIF}
       Exit;
     end;
@@ -334,7 +334,7 @@ begin
   begin
 
     {$IFDEF PCNET32_BILGI}
-    SISTEM_MESAJ(RENK_KIRMIZI, 'PCNET32: aygýt mevcut deðil(2)!', []);
+    SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'PCNET32: aygýt mevcut deðil(2)!', []);
     {$ENDIF}
     Exit;
   end;
@@ -355,7 +355,7 @@ begin
   end;
 
   {$IFDEF PCNET32_BILGI}
-  SISTEM_MESAJ(RENK_MAVI, 'PCNET32 çip adý: ' + AygitPCNET32.CipAdi, []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'PCNET32 çip adý: %s', [AygitPCNET32.CipAdi]);
   {$ENDIF}
 
   // aygýtýn mac adresini al
@@ -363,27 +363,15 @@ begin
 
   // init_block içeriðini doldur
   BlokYukle._Mod := $80;
-  BlokYukle.GDUzunluk := (GIDIS_HALKA_UZ_BIT or DONUS_HALKA_UZ_BIT);
+  BlokYukle.GDUzunluk := (GIDIS_HALKA_UZ_BIT or GELIS_HALKA_UZ_BIT);
 
   BlokYukle.MACAdres := AygitPCNet32.MACAdres;
 
   BlokYukle.Suzgec1 := 0;
   BlokYukle.Suzgec2 := 0;
 
-  BlokYukle.DonusHalka := @DonusHalka[0];
   BlokYukle.GidisHalka := @GidisHalka[0];
-
-  DonusHalkaBellekAdresi := GGercekBellek.Ayir(ETH_CERCEVE_U * DONUS_HALKA_U);
-  p := DonusHalkaBellekAdresi;
-  for i := 0 to DONUS_HALKA_U - 1 do
-  begin
-
-    DonusHalka[i].Bellek := p;
-    DonusHalka[i].Uzunluk := -(ETH_CERCEVE_U);
-    DonusHalka[i].Durum := RMD_OWN;
-    p += ETH_CERCEVE_U;
-  end;
-  BirSonrakiDonusSiraNo := 0;
+  BlokYukle.GelisHalka := @GelisHalka[0];
 
   GidisHalkaBellekAdresi := GGercekBellek.Ayir(ETH_CERCEVE_U * GIDIS_HALKA_U);
   p := GidisHalkaBellekAdresi;
@@ -396,6 +384,18 @@ begin
     p += ETH_CERCEVE_U;
   end;
   BirSonrakiGidisSiraNo := 0;
+
+  GelisHalkaBellekAdresi := GGercekBellek.Ayir(ETH_CERCEVE_U * GELIS_HALKA_U);
+  p := GelisHalkaBellekAdresi;
+  for i := 0 to GELIS_HALKA_U - 1 do
+  begin
+
+    GelisHalka[i].Bellek := p;
+    GelisHalka[i].Uzunluk := -(ETH_CERCEVE_U);
+    GelisHalka[i].Durum := RMD_OWN;
+    p += ETH_CERCEVE_U;
+  end;
+  BirSonrakiGelisSiraNo := 0;
 
   // IRQ kanalýný aktifleþtir
   IRQIsleviAta(AygitPCNet32.IRQNo, @PCNET32YukleniciIslev);
@@ -444,7 +444,7 @@ var
 begin
 
   // belirtilen halkaya veri gelip gelmediðini kontrol et
-  Durum := DonusHalka[BirSonrakiDonusSiraNo].Durum;
+  Durum := GelisHalka[BirSonrakiGelisSiraNo].Durum;
 
   if((Durum and RMD_OWN) = 0) then
   begin
@@ -452,18 +452,18 @@ begin
     if(((Durum shr 8) and $FF) = 3) then
     begin
 
-      i := DonusHalka[BirSonrakiDonusSiraNo].MesajUz;
+      i := GelisHalka[BirSonrakiGelisSiraNo].MesajUz;
       i := i and $FFF;
       i -= 4;
 
-      Tasi2(DonusHalka[BirSonrakiDonusSiraNo].Bellek, ABellek, i);
+      Tasi2(GelisHalka[BirSonrakiGelisSiraNo].Bellek, ABellek, i);
       AVeriUzunlugu := i;
 
       // halkayý veri alacak þekilde yeniden ayarla
-      DonusHalka[BirSonrakiDonusSiraNo].Uzunluk := -(ETH_CERCEVE_U);
-      DonusHalka[BirSonrakiDonusSiraNo].Durum := RMD_OWN;
+      GelisHalka[BirSonrakiGelisSiraNo].Uzunluk := -(ETH_CERCEVE_U);
+      GelisHalka[BirSonrakiGelisSiraNo].Durum := RMD_OWN;
 
-      BirSonrakiDonusSiraNo := (BirSonrakiDonusSiraNo + 1) and DONUS_HALKA_MOD_MASKE;
+      BirSonrakiGelisSiraNo := (BirSonrakiGelisSiraNo + 1) and GELIS_HALKA_MOD_MASKE;
 
     end else AVeriUzunlugu := 0;
   end else AVeriUzunlugu := 0;
@@ -495,7 +495,7 @@ begin
     begin
 
       {$IFDEF PCNET32_BILGI}
-      SISTEM_MESAJ(RENK_KIRMIZI, 'PCNET32: veri alým tetiklendi.', []);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'PCNET32: veri alým tetiklendi.', []);
       {$ENDIF}
       //VeriAl;
     end
@@ -503,7 +503,7 @@ begin
     begin
 
     {$IFDEF PCNET32_BILGI}
-    SISTEM_MESAJ(RENK_KIRMIZI, 'PCNET32: veri gönderimi.', []);
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'PCNET32: veri gönderimi.', []);
     {$ENDIF}
     end;
   until 1 = 2;
@@ -563,7 +563,7 @@ begin
   GAgBilgisi.MACAdres := AygitPCNet32.MACAdres;
 
   {$IFDEF PCNET32_BILGI}
-  SISTEM_MESAJ_MAC(RENK_MAVI, 'PCNET32 MAC Adres: ', AygitPCNET32.MACAdres);
+  SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'PCNET32 MAC Adres: ', AygitPCNET32.MACAdres);
   {$ENDIF}
 end;
 

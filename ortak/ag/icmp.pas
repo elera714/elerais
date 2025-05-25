@@ -6,7 +6,7 @@
   Dosya Adý: icmp.pas
   Dosya Ýþlevi: ICMP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 21/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -84,7 +84,7 @@ begin
   Tasi2(@AICMPBaslik^.Veri, @s[0], i);
 
   // gönderilecek paket için bellek bölgesi oluþtur
-  ICMPBaslik := GGercekBellek.Ayir(4095);
+  ICMPBaslik := GGercekBellek.Ayir(4096);
 
   //IcmpPacket := @IPPacket^.Data;
   ICMPBaslik^.MesajTipi := ICMP_YANKI_YANIT;
@@ -107,7 +107,7 @@ begin
   {$ENDIF}
 
   // belleði yok et
-  GGercekBellek.YokEt(ICMPBaslik, 4095);
+  GGercekBellek.YokEt(ICMPBaslik, 4096);
 end;
 
 end.

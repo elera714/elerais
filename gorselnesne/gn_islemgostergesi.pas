@@ -38,7 +38,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses temelgorselnesne, giysi_mac;
+uses temelgorselnesne, donusum, giysi_mac;
 
 {==============================================================================
   işlem göstergesi kesme çağrılarını yönetir
@@ -188,8 +188,10 @@ end;
 procedure TIslemGostergesi.Ciz;
 var
   IslemGostergesi: PIslemGostergesi;
-  Alan: TAlan;
+  Alan, Alan2: TAlan;
   i1, i2, Aralik, Deger: TISayi4;
+  s: string;
+  i: TISayi4;
 begin
 
   IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneAl(Kimlik));
@@ -218,9 +220,16 @@ begin
     Alan.Sag, Alan.Alt, $F1F1F1, RENK_BEYAZ);
 
   // artan renk ile (eğimli) doldur
-  Alan.Sag := Alan.Sol + Deger;
-  IslemGostergesi^.EgimliDoldur(IslemGostergesi, Alan, DUGME_NORMAL_ILKRENK,
+  Alan2 := Alan;
+  Alan2.Sag := Alan2.Sol + Deger;
+  IslemGostergesi^.EgimliDoldur(IslemGostergesi, Alan2, DUGME_NORMAL_ILKRENK,
     DUGME_NORMAL_SONRENK);
+
+  { TODO - aşağıdaki kodlar aktifleştirildiğinde pencerelerin başlık rengi değişiyor
+  Alan2 := Alan;
+  s := IntToStr(IslemGostergesi^.FMevcutDeger);
+  i := (Alan2.Sag - (Length(s) * 8)) div 2;
+  IslemGostergesi^.YaziYaz(IslemGostergesi, Alan2.Sol + i, Alan2.Ust, 'sss', RENK_SIYAH); }
 end;
 
 {==============================================================================

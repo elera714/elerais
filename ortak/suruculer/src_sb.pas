@@ -138,7 +138,7 @@ begin
     HoparloruAc;
     SesKuvvetiniAyarla($22);
 
-    Assign(_DosyaKimlik, 'disk1:\2.wav');
+    AssignFile(_DosyaKimlik, 'disk1:\2.wav');
     Reset(_DosyaKimlik);
     if(IOResult = 0) then
     begin
@@ -162,7 +162,7 @@ begin
         DMAAkis(_DosyaBellek + 44, _DosyaUzunluk - 44);
 
         // dosyayý kapat
-        Close(_DosyaKimlik);
+        CloseFile(_DosyaKimlik);
 
         GGercekBellek.YokEt(_DosyaBellek, _DosyaUzunluk);
       end;

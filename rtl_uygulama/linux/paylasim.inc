@@ -300,6 +300,7 @@ const
   DOSYA_KLASORSIL    	        = $00000D00 + SAC_DOSYA;
   DOSYA_OLUSTUR    	          = $00000E00 + SAC_DOSYA;
   DOSYA_VERIYAZ    	          = $00000F00 + SAC_DOSYA;
+  DOSYA_EKLE    	            = $00001000 + SAC_DOSYA;    // dosyaya ekleme için açar (append)
 
   HARF_YAZ		                = $00000100 + SAC_YAZIM;
   YAZI_YAZ		                = $00000200 + SAC_YAZIM;

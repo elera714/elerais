@@ -6,7 +6,7 @@
   Dosya Adı: pci.pas
   Dosya İşlevi: pci yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 21/05/2025
 
   Kaynaklar:
     http://wiki.osdev.org/PCI
@@ -60,7 +60,7 @@ begin
   ToplamPCIAygitSayisi := 0;
 
   // pci aygıtları için bellek talep et (1 blok = 4K)
-  _PCIAygitBellekAdresi := GGercekBellek.Ayir(4095);
+  _PCIAygitBellekAdresi := GGercekBellek.Ayir(4096);
 
   // bellek girişlerini pci yapılarıyla eşleştir
   _BellekAdresi := _PCIAygitBellekAdresi;

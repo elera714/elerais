@@ -1,6 +1,8 @@
 ================================================================================
                         Gerçekleþtirilecek Çalýþmalar
 ================================================================================
+- rtl_cekirdek ve rtl_uygulama klasörleri altýndaki tüm *_orjinal.* dosyalarý kandilerinin yerinde
+  kullanýlan geçici dosyalarýn yerine kodlar kontrol edilerek yerleþtirilecek
 - program baþlama/bitiþ arasýndaki fazla/eksik bellek durumlarý pencere bazýnda çözümlendi, diðer nesneler de kontrol edilecek
 - listegorunum nesnesine eleman sayýsý, seçili eleman oku / yaz iþlevi eklenecek (görev yöneticisi için)
 - çekirdek içeriðinin yeniden özelleþtirilebilmesi için ayarlar sayfasý oluþturulacak

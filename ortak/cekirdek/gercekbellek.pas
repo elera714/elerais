@@ -6,7 +6,7 @@
   Dosya Adý: gercekbellek.pas
   Dosya Ýþlevi: gerçek (fiziksel) bellek yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 20/05/2025
 
   Bilgi: Bellek rezervasyonlarý 4K blok ve katlarý halinde yönetilmektedir
 
@@ -42,6 +42,10 @@ var
 
 function ELRGetMem(AUzunluk: TSayi4): Isaretci;
 function ELRFreeMemSize(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
+function ELRFreeMem(ABellek: Isaretci): TSayi4;
+function ELRAllocMem(AUzunluk: TSayi4): Isaretci;
+function ELRReAllocMem(var ABellek: Isaretci; AUzunluk: TSayi4): Isaretci;
+function ELRMemSize(ABellek: Isaretci): TSayi4;
 
 implementation
 
@@ -90,11 +94,11 @@ begin
   // çekirdek bellek yönetim iþlevlerini yükle
   BellekYonetimFPC.NeedLock := False;     // eski iþlev
   BellekYonetimFPC.GetMem := @ELRGetMem;
-  BellekYonetimFPC.FreeMem := nil;
+  BellekYonetimFPC.FreeMem := @ELRFreeMem;
   BellekYonetimFPC.FreeMemSize := @ELRFreeMemSize;
-  BellekYonetimFPC.AllocMem := nil;
-  BellekYonetimFPC.ReAllocMem := nil;
-  BellekYonetimFPC.MemSize := nil;
+  BellekYonetimFPC.AllocMem := @ELRAllocMem;
+  BellekYonetimFPC.ReAllocMem := @ELRReAllocMem;
+  BellekYonetimFPC.MemSize := @ELRMemSize;
   BellekYonetimFPC.InitThread := nil;
   BellekYonetimFPC.DoneThread := nil;
   BellekYonetimFPC.RelocateHeap := nil;
@@ -143,8 +147,8 @@ end;
 {==============================================================================
   boþ bellek alanýný rezerv eder ve bellek bölgesini sýfýrlar
   bilgi: istenen bellek miktarý 4096 byte ve katlarý olarak tahsis edilir
-  0    byte..4095 byte arasý 1 blok
-  4096 byte..8191 byte arasý 2 blok tahsis edilir
+  1    byte..4096 byte arasý 1 blok
+  4097 byte..8192 byte arasý 2 blok tahsis edilir
  ==============================================================================}
 function TGercekBellek.Ayir(AIstenenBellek: TSayi4): Isaretci;
 var
@@ -154,9 +158,12 @@ var
   Bellek: PByte;
 begin
 
+  // istenen bellek boyutu 0 ise hata vererek çýk
+  if(AIstenenBellek = 0) then Exit(nil);
+
   // AIstenenBellek = byte türünden istenen bellek miktarý
-  // 0..4095 arasý 1 blok tasarýmý
-  IstenenBellek := AIstenenBellek;
+  // 1..4096 arasý 1 blok tasarýmý
+  IstenenBellek := AIstenenBellek - 1;
 
   BlokSayisi := (IstenenBellek shr 12) + 1;
 
@@ -193,13 +200,16 @@ end;
 procedure TGercekBellek.YokEt(ABellekAdresi: Isaretci; ABellekUzunlugu: TSayi4);
 var
   IlkBlok, BlokSayisi,
+  BellekUzunlugu,
   i: TSayi4;
   Bellek: PByte;
 begin
 
+  BellekUzunlugu := ABellekUzunlugu - 1;
+
   // bellek adresini ve uzunluðunu blok numarasýna çevir
   IlkBlok := (TSayi4(ABellekAdresi) shr 12);
-  BlokSayisi := (ABellekUzunlugu shr 12) + 1;
+  BlokSayisi := (BellekUzunlugu shr 12) + 1;
 
   Bellek := BELLEK_HARITA_ADRESI;
   Inc(Bellek, IlkBlok);
@@ -291,16 +301,50 @@ end;
 function ELRGetMem(AUzunluk: TSayi4): Isaretci;
 begin
 
-  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem-U: %d', [AUzunluk]);
   Result := GGercekBellek.Ayir(AUzunluk);
+
+  if(BellekDegeriniGoster) then begin
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem.Result: $%x', [Result]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem.AUzunluk: %d', [AUzunluk]); end;
 end;
 
 // sistemden alýnan belleði serbest býrak - fpc + çekirdek iþlevleri için
 function ELRFreeMemSize(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
 begin
 
-  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize: %d', [AUzunluk]);
+  if(BellekDegeriniGoster) then begin
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize.ABellek: $%x', [ABellek]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize.AUzunluk: %d', [AUzunluk]); end;
+
   GGercekBellek.YokEt(ABellek, AUzunluk);
+  Result := 0;
+end;
+
+function ELRFreeMem(ABellek: Isaretci): TSayi4;
+begin
+
+  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELRFreeMem iþlevi yazýlacak', []);
+  Result := 0;
+end;
+
+function ELRAllocMem(AUzunluk: TSayi4): Isaretci;
+begin
+
+  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELRAllocMem iþlevi yazýlacak', []);
+  Result := nil;
+end;
+
+function ELRReAllocMem(var ABellek: Isaretci; AUzunluk: TSayi4): Isaretci;
+begin
+
+  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELRReAllocMem iþlevi yazýlacak', []);
+  Result := nil;
+end;
+
+function ELRMemSize(ABellek: Isaretci): TSayi4;
+begin
+
+  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELRMemSize iþlevi yazýlacak', []);
   Result := 0;
 end;
 

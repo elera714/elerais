@@ -6,7 +6,7 @@
   Dosya Adı: veritipleri.inc
   Dosya İşlevi: sistem tarafından kullanılan veri tiplerini içerir
 
-  Güncelleme Tarihi: 12/04/2025
+  Güncelleme Tarihi: 20/05/2025
 
  ==============================================================================}
 
@@ -32,7 +32,6 @@ type
   ISayi4 = LongInt;
   Sayi8 = QWord;
   ISayi8 = Int64;
-  Isaretci = Pointer;
   TSayi1 = Sayi1;               // 1 byte'lık işaretsiz sayı
   PSayi1 = ^Sayi1;              // 1 byte'lık işaretsiz sayıya işaretçi
   TISayi1 = ISayi1;             // 1 byte'lık işaretli sayı
@@ -56,6 +55,11 @@ type
   TTarih = Sayi4;
   TSaat = Sayi4;
   PSaat = ^TSaat;
+
+  Isaretci = Pointer;
+  DiziIsaretci1 = array of TSayi1;
+  DiziIsaretci2 = array of TSayi2;
+  DiziIsaretci4 = array of TSayi4;
 
   HResult = ISayi4;
   PChar = ^Char;

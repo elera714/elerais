@@ -6,7 +6,7 @@
   Dosya Adı: n_sayilistesi.pas
   Dosya İşlevi: sayı liste nesne işlevlerini gerçekleştirir.
 
-  Güncelleme Tarihi: 24/12/2024
+  Güncelleme Tarihi: 21/05/2025
 
   Bilgi: sistem tasarlama yönünden FPC'nin sağladığı imkanlarından yararlanamama
   konusunda kısıtlamaları aşmak amacıyla (dinamik bellek yönetiminin kullanılamamasına
@@ -66,14 +66,14 @@ begin
   begin
 
     // nesne ve nesnenin işleyeceği veriler için 4K bellek bölgesi ayır
-    p2 := GGercekBellek.Ayir(4095);
+    p2 := GGercekBellek.Ayir(4096);
     if not(p2 = nil) then
     begin
 
       // nesne değişkenlerini ilk değerlerle yükle.
       p^.BellekBaslangicAdresi := p2;
       p^.MevcutBellekAdresi := p2;
-      p^.BellekUzunlugu := 4095;
+      p^.BellekUzunlugu := 4096;
       p^.ElemanSayisi := 0;
 
       Result := p;
@@ -97,7 +97,7 @@ begin
 
   // bellek tahsis edilmişse öncelikle belleği serbest bırak
   if not(BellekBaslangicAdresi = nil) then
-    GGercekBellek.YokEt(FBellekBaslangicAdresi, 4095);
+    GGercekBellek.YokEt(FBellekBaslangicAdresi, 4096);
 
   // nesnenin kullanılabilir özelliğini aktifleştir
   GSayiListesi[Tanimlayici]^.NesneKullanilabilir := True;

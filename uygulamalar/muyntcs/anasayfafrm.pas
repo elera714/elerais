@@ -654,13 +654,13 @@ var
   i: TSayi4;
 begin
 
-  FGenel._Assign(DosyaKimlik, 'disk2:\muyntcs.ini');
+  FGenel._AssignFile(DosyaKimlik, 'disk2:\muyntcs.ini');
   FGenel._Reset(DosyaKimlik);
 
   if(FGenel._IOResult = 0) then
   begin
 
-    FGenel._FileRead(DosyaKimlik, @DosyaBellek);
+    FGenel._Read(DosyaKimlik, @DosyaBellek);
 
     s := PChar(@DosyaBellek[0]);
 
@@ -673,7 +673,7 @@ begin
     DuvarKagidiDosyaAdi := 'disk1:\resimler\1.bmp';
   end;
 
-  FGenel._Close(DosyaKimlik);
+  FGenel._CloseFile(DosyaKimlik);
 end;
 
 end.

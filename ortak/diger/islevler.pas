@@ -35,8 +35,11 @@ function ELRTarih(AGun, AAy, AYil: TSayi2): TSayi4;
 function FatXTarih2ELRTarih(ATarih: TSayi2): TSayi4;
 function ELRSaat(ASaat, ADakika, ASaniye: TSayi1): TSayi4;
 function FatXSaat2ELRSaat(ASaat: TSayi2): TSayi4;
+procedure DosyaKopyala(AKaynakDosya, AHedefDosya: string);
 
 implementation
+
+uses dosya;
 
 {==============================================================================
   sürücü + dizin + dosya yolunu parçalara ayırır
@@ -481,6 +484,35 @@ begin
   Saat := (j shr 11) and 31;
 
   Result := (Saniye shl 16) or (Dakika shl 8) or (Saat);
+end;
+
+procedure DosyaKopyala(AKaynakDosya, AHedefDosya: string);
+var
+  DosyaKimlik: TKimlik;
+  Bellek: Isaretci;
+  U: TISayi4;
+begin
+
+  //AssignFile(DosyaKimlik, 'disk1:\belgeler\haklar.txt');
+  AssignFile(DosyaKimlik, AKaynakDosya);
+  Reset(DosyaKimlik);
+
+  U := FileSize(DosyaKimlik);
+
+  GetMem(Bellek, U);
+
+  Read(DosyaKimlik, Bellek);
+  CloseFile(DosyaKimlik);
+
+  AssignFile(DosyaKimlik, AHedefDosya);
+  ReWrite(DosyaKimlik);
+  if(IOResult = 0) then
+  begin
+
+    Write(DosyaKimlik, Bellek, U);
+  end;
+
+  CloseFile(DosyaKimlik);
 end;
 
 end.

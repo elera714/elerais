@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 20/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -237,7 +237,7 @@ begin
   end;
 
   // çalýþtýrýlacak dosyayý tanýmla ve aç
-  Assign(DosyaKimlik, TamDosyaYolu);
+  AssignFile(DosyaKimlik, TamDosyaYolu);
   Reset(DosyaKimlik);
   if(IOResult = 0) then
   begin
@@ -253,7 +253,7 @@ begin
 
     //ProgramBellekU := ((ProgramBellekU shr 12) + 1) shl 12;
 
-    DosyaBellek := GGercekBellek.Ayir(ProgramBellekU);
+    GetMem(DosyaBellek, ProgramBellekU);
     if(DosyaBellek = nil) then
     begin
 
@@ -269,7 +269,7 @@ begin
     begin
 
       // dosyayý kapat
-      Close(DosyaKimlik);
+      CloseFile(DosyaKimlik);
       SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + TamDosyaYolu + ' dosyasý okunamýyor!', []);
       Result := nil;
       CalistirGorevNo := 0;
@@ -278,7 +278,7 @@ begin
     end;
 
     // dosyayý kapat
-    Close(DosyaKimlik);
+    CloseFile(DosyaKimlik);
 
     // boþ iþlem giriþi bul
     Gorev := Gorev^.Olustur;
@@ -313,7 +313,7 @@ begin
     end;
 
     // olay iþlemleri için bellekte yer ayýr
-    Olay := POlay(GGercekBellek.Ayir(4095));
+    Olay := GetMem(4096);
     if(Olay = nil) then
     begin
 
@@ -405,7 +405,7 @@ begin
   else
   begin
 
-    Close(DosyaKimlik);
+    CloseFile(DosyaKimlik);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + TamDosyaYolu + ' dosya okuma hatasý!', []);
   end;
 
@@ -678,10 +678,10 @@ begin
   // göreve ait olay bellek bölgesini iptal et
   { TODO : 1. bu iþlev olay yönetim sistem nesnesinin içerisine dahil edilecek
            2. olay bellek bölgesi iptal edilmeden önce önceden oluþturulan olaylar da kayýtlardan çýkarýlacak }
-  GGercekBellek.YokEt(OlayBellekAdresi, 4095);
+  FreeMem(Gorev^.OlayBellekAdresi, 4096);
 
   // görev için ayrýlan bellek bölgesini serbest býrak
-  GGercekBellek.YokEt(Isaretci(BellekBaslangicAdresi), BellekUzunlugu);
+  FreeMem(Isaretci(Gorev^.BellekBaslangicAdresi), Gorev^.BellekUzunlugu);
 
   // görevi iþlem listesinden çýkart
   DurumDegistir(AGorevKimlik, gdBos);

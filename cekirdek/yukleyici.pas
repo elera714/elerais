@@ -26,7 +26,8 @@ implementation
 
 uses yonetim, gdt, idt, irq, pic, aygityonetimi, pci, src_klavye, genel, gorev,
   gn_islevler, dosya, sistemmesaj, bolumleme, islemci, paylasim, usb, zamanlayici,
-  ag, src_vesa20, src_com, src_sb, bmp, acpi, k_giysi, giysi_mac, giysi_normal;
+  ag, src_vesa20, src_com, src_sb, bmp, acpi, k_giysi, giysi_mac, giysi_normal,
+  olayyonetim;
 
 {==============================================================================
   çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
@@ -132,7 +133,7 @@ begin
   {$ENDIF}
 
   // olay nesnesini ilk deðerlerini yükle
-  GOlayYonetim.Yukle;
+  GOlayYonetim := TOlayYonetim.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Sistem içerisinde kullanýlacak görsel olmayan nesneler yükleniyor.', []);
   ListeleriIlkDegerlerleYukle;

@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 21/05/2025
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -630,7 +630,7 @@ begin
   begin
 
     // ata nesne için bellek oluþtur
-    AltNesneBellekAdresi := GGercekBellek.Ayir(4095);
+    AltNesneBellekAdresi := GGercekBellek.Ayir(4096);
     AAtaNesne^.FAltNesneBellekAdresi := AltNesneBellekAdresi;
   end;
 

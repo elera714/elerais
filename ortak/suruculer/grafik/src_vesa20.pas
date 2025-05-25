@@ -6,7 +6,7 @@
   Dosya Adı: src_vesa20.pas
   Dosya İşlevi: genel vesa 2.0 grafik kartı sürücüsü
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 11/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,6 +18,10 @@ interface
 uses paylasim, gorselnesne, gn_pencere, gn_masaustu;
 
 type
+  TNoktaOkuIslev = function(AYatay, ADikey: TISayi4): TRenk of object;
+  TNoktaYazIslev = procedure(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4;
+    ARenk: TRenk; ARenkDonustur: Boolean) of object;
+
   PEkranKartSurucusu = ^TEkranKartSurucusu;
   TEkranKartSurucusu = object
   private
@@ -34,6 +38,8 @@ type
     procedure FareGostergesiCiz;
   public
     KartBilgisi: TEkranKartBilgisi;
+    NoktaOkuIslev: TNoktaOkuIslev;
+    NoktaYazIslev: TNoktaYazIslev;
     procedure Yukle;
     function NoktaOku(AYatay, ADikey: TISayi4): TRenk;
     procedure NoktaYaz(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4; ARenk: TRenk;
@@ -46,7 +52,7 @@ implementation
 uses genel, donusum, gn_menu, gn_acilirmenu, fareimlec, gdt;
 
 var
-  ArkaBellek, EkranBellegi: Isaretci;
+  ArkaBellek: Isaretci;
 
 {==============================================================================
   vesa 2.0 grafik sürücüsünün ana yükleme işlevlerini içerir
@@ -62,9 +68,11 @@ begin
   ArkaBellek := GGercekBellek.Ayir(GEkranKartSurucusu.KartBilgisi.YatayCozunurluk *
     GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk * (KartBilgisi.PixelBasinaBitSayisi div 8));
 
-  // grafik kartı video belleği
-  // bilgi: EkranBellegi değişkeni, ekran kartı belleğine direkt erişim için kullanılabilir
-  EkranBellegi := Isaretci(KartBilgisi.BellekAdresi);
+  case KartBilgisi.PixelBasinaBitSayisi of
+    16: begin NoktaOkuIslev := @NoktaOku16; NoktaYazIslev := @NoktaYaz16; end;
+    24: begin NoktaOkuIslev := @NoktaOku24; NoktaYazIslev := @NoktaYaz24; end;
+    32: begin NoktaOkuIslev := @NoktaOku32; NoktaYazIslev := @NoktaYaz32; end;
+  end;
 end;
 
 {==============================================================================
@@ -76,11 +84,7 @@ begin
   if(AYatay < 0) or (AYatay > KartBilgisi.YatayCozunurluk - 1) then Exit(RENK_SIYAH);
   if(ADikey < 0) or (ADikey > KartBilgisi.DikeyCozunurluk - 1) then Exit(RENK_SIYAH);
 
-  case KartBilgisi.PixelBasinaBitSayisi of
-    16: Result := NoktaOku16(AYatay, ADikey);
-    24: Result := NoktaOku24(AYatay, ADikey);
-    32: Result := NoktaOku32(AYatay, ADikey);
-  end;
+  NoktaOkuIslev(AYatay, ADikey);
 end;
 
 {==============================================================================
@@ -107,11 +111,7 @@ begin
 
   TuvalNesne := AGorselNesne^.FTuvalNesne;
 
-  case KartBilgisi.PixelBasinaBitSayisi of
-    16: NoktaYaz16(TuvalNesne, Sol, Ust, ARenk, ARenkDonustur);
-    24: NoktaYaz24(TuvalNesne, Sol, Ust, ARenk, ARenkDonustur);
-    32: NoktaYaz32(TuvalNesne, Sol, Ust, ARenk, ARenkDonustur);
-  end;
+  NoktaYazIslev(TuvalNesne, Sol, Ust, ARenk, ARenkDonustur);
 end;
 
 {==============================================================================
@@ -330,14 +330,14 @@ begin
 
     KaynakBellek := (i * KaynakSatirdakiByteSayisi) + Masaustu^.FCizimBellekAdresi;
     HedefBellek := (i * HedefSatirdakiByteSayisi) + ArkaBellek;
-
     asm
       pushad
       mov esi,KaynakBellek
       mov edi,HedefBellek
       mov ecx,KaynakSatirdakiByteSayisi
+      shr ecx,2
       cld
-      rep movsb
+      rep movsd
       popad
     end;
   end;
@@ -436,8 +436,9 @@ begin
               mov esi,KaynakBellek
               mov edi,HedefBellek
               mov ecx,j
+              shr ecx,2
               cld
-              rep movsb
+              rep movsd
               popad
             end;
           end;
@@ -506,8 +507,9 @@ begin
         mov esi,KaynakBellek
         mov edi,HedefBellek
         mov ecx,KaynakSatirdakiByteSayisi
+        shr ecx,2
         cld
-        rep movsb
+        rep movsd
         popad
       end;
     end;

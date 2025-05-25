@@ -207,7 +207,7 @@ begin
 
     //SISTEM_MESAJ(RENK_MOR, 'NetBios -> Gönderilen Veri U: %d', [VeriSN]);
 
-    NB2 := GGercekBellek.Ayir(4095);
+    NB2 := GGercekBellek.Ayir(4096);
 
     NB2^.Tanimlayici := NB^.Tanimlayici;
     NB2^.Bayrak := htons(TSayi2($8400));
@@ -233,7 +233,7 @@ begin
       end;
     end;
 
-    GGercekBellek.YokEt(NB2, 4095);
+    GGercekBellek.YokEt(NB2, 4096);
 
     SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'NetBios yanýtý gönderildi...', []);
   end

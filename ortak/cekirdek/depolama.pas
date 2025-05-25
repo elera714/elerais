@@ -6,7 +6,7 @@
   Dosya Adý: depolama.pas
   Dosya Ýþlevi: depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 09/01/2025
+  Güncelleme Tarihi: 22/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -23,6 +23,7 @@ function FizikselDepolamaVeriOku(AFizikselDepolama: PFizikselDepolama; ASektorNo
 function FizikselDepolamaVeriYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo,
   ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 function MantiksalSurucuAl(ASiraNo: TISayi4): PMantiksalDepolama;
+function MantiksalSurucuAl(AAygitAdi: string): PMantiksalDepolama;
 function MantiksalSurucuAl2(AKimlik: TKimlik): PMantiksalDepolama;
 function MantiksalDepolamaVeriOku(AMantiksalDepolama: PMantiksalDepolama; ASektorNo,
   ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
@@ -131,6 +132,25 @@ begin
 end;
 
 {==============================================================================
+  aygýt adýna (örnek: disk2) göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
+ ==============================================================================}
+function MantiksalSurucuAl(AAygitAdi: string): PMantiksalDepolama;
+var
+  MD: PMantiksalDepolama;
+  i: TISayi4;
+begin
+
+  for i := Low(MantiksalDepolamaAygitListesi) to High(MantiksalDepolamaAygitListesi) do
+  begin
+
+    MD := @MantiksalDepolamaAygitListesi[i];
+    if(MD^.Mevcut) and (MD^.MD3.AygitAdi = AAygitAdi) then Exit(MD);
+  end;
+
+  Result := nil;
+end;
+
+{==============================================================================
   kimlik deðerine göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
 function MantiksalSurucuAl2(AKimlik: TKimlik): PMantiksalDepolama;
@@ -143,7 +163,7 @@ begin
   begin
 
     MD := MantiksalDepolamaAygitListesi[i];
-    if(MD.Mevcut) and (MD.MD3.Kimlik = AKimlik) then Exit(@FizikselDepolamaAygitListesi[i]);
+    if(MD.Mevcut) and (MD.MD3.Kimlik = AKimlik) then Exit(@MantiksalDepolamaAygitListesi[i]);
   end;
 
   Result := nil;

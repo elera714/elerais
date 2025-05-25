@@ -89,7 +89,7 @@ begin
 
     DosyaTamYol := Surucu + ':' + Klasor + DosyaAdi;
 
-    Assign(DosyaKimlik, DosyaTamYol);
+    AssignFile(DosyaKimlik, DosyaTamYol);
     Reset(DosyaKimlik);
     if(IOResult = 0) then
     begin
@@ -103,7 +103,7 @@ begin
       begin
 
         // dosyayı kapat
-        Close(DosyaKimlik);
+        CloseFile(DosyaKimlik);
         Exit;
       end;
 
@@ -111,7 +111,7 @@ begin
       Read(DosyaKimlik, DosyaBellek);
 
       // dosyayı kapat
-      Close(DosyaKimlik);
+      CloseFile(DosyaKimlik);
 
       BMPBicim := DosyaBellek;
       GoruntuYapi.Genislik := BMPBicim^.Genislik;

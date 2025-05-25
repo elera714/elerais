@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-05-10T18:56:38Z">
+  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-05-25T08:02:57Z">
     <Description>ELERA &#x130;&#x15F;letim Sistemi (32 Bit)</Description>
     <MediaRegistry>
       <HardDisks>
@@ -21,7 +21,7 @@
       <ExtraDataItem name="GUI/InformationWindowGeometry" value="507,249,598,332"/>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
       <ExtraDataItem name="GUI/LastGuestSizeHint" value="800,600"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="881,138,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="872,112,1024,808"/>
       <ExtraDataItem name="GUI/LastScaleWindowPosition" value="189,230,1096,595"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeDevicesMenuActions" value="HardDrives"/>
       <ExtraDataItem name="GUI/RestrictedRuntimeMachineMenuActions" value="SaveState,PowerOff"/>
@@ -64,7 +64,7 @@
             <HostOnlyInterface name="VirtualBox Host-Only Ethernet Adapter"/>
             <NATNetwork name="NatNetwork"/>
           </DisabledModes>
-          <BridgedInterface name="Realtek PCIe GBE Ailesi Denetleyici"/>
+          <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
         </Adapter>
         <Adapter slot="1" enabled="true" MACAddress="0A0011223344" type="82540EM">
           <DisabledModes>
@@ -72,7 +72,7 @@
             <InternalNetwork name="intnet"/>
             <NATNetwork name="NatNetwork"/>
           </DisabledModes>
-          <BridgedInterface name="Realtek PCIe GBE Ailesi Denetleyici"/>
+          <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
         </Adapter>
         <Adapter slot="2" MACAddress="080027B5080F">
           <DisabledModes>
@@ -115,7 +115,7 @@
       <Clipboard mode="Bidirectional"/>
       <DragAndDrop mode="Bidirectional"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1746903241870418900" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1748160050214562800" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="Floppy Controller" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">

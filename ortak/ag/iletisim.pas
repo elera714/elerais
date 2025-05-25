@@ -6,7 +6,7 @@
   Dosya Adý: iletisim.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 21/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -158,14 +158,14 @@ begin
     Bag^.FOnayNo := 0;
 
     Bag^.FBellekUzunlugu := 0;
-    Bag^.FBellek := GGercekBellek.Ayir(4095); //Bag^.FPencereU);
+    Bag^.FBellek := GGercekBellek.Ayir(4096); //Bag^.FPencereU);
     if(Bag^.FBellek = nil) then SISTEM_MESAJ(mtHata, RENK_SIYAH, 'ILETISIM.PAS: Bellek yok', []);
   end
   else if(AProtokolTipi = ptUDP) then
   begin
 
     Bag^.FBellekUzunlugu := 0;
-    Bag^.FBellek := GGercekBellek.Ayir(4095);
+    Bag^.FBellek := GGercekBellek.Ayir(4096);
 
     {SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Protokol -> UDP', []);
     SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Kimlik %d', [Bag^.FKimlik]);

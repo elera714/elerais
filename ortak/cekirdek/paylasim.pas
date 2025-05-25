@@ -390,13 +390,27 @@ type
   end;
 
 const
-  ELR_DOSYA_U = 39;
+  ELR_DG_U        = 64;       // her bir dosya / klasörün dizin girdisindeki uzunluðu
+  ELR_DOSYA_U     = 38;
+
+  // girdi tipleri
+  ELR_GT_DOSYA    = 1;
+  ELR_GT_KLASOR   = 2;
+
+  // girdi özellikleri
+  ELR_O_SILINMIS  = 1;
+  ELR_O_NORMAL    = 2;
+  ELR_O_GIZLI     = 3;
+
+  // dosya giriþi zincir (küme) durumlarý
+  ELR_ZD_SON      = TSayi4($FFFFFFFF);    // zincir sonu - baþka veri yok
 
 type
   PDizinGirdisiELR = ^TDizinGirdisiELR;
   TDizinGirdisiELR = packed record
     DosyaAdi: array[0..ELR_DOSYA_U - 1] of Char;
-    Ozellikler: TSayi1;
+    GirdiTipi: TSayi1;      // dosya / klasör vb
+    Ozellikler: TSayi1;     // silinmiþ, gizli vb
 
     OlusturmaTarihi,
     OlusturmaSaati,
@@ -531,23 +545,14 @@ var
   PDisket2: PFizikselDepolama;
 
 const
-  USTSINIR_ARAMAKAYIT = 5;
-  USTSINIR_DOSYAKAYIT = 5;
-
-// dosya arama iþlevleri için gereken yapý
-type
-  PAramaKayit = ^TAramaKayit;
-  TAramaKayit = record
-    Kullanilabilir: Boolean;
-    MantiksalDepolama: PMantiksalDepolama;
-    DizinGirisi: TDizinGirisi;
-    Aranan: string;
-  end;
+  USTSINIR_DOSYAISLEM = 10;
 
 // tüm dosya iþlevleri için gereken yapý
 type
-  PDosyaKayit = ^TDosyaKayit;
-  TDosyaKayit = record
+  TDosyaDurumu = (ddKapali, ddOkumaIcinAcik, ddYazmaIcinAcik);
+
+  PDosyaIslem = ^TDosyaIslem;
+  TDosyaIslem = record
     Kullanilabilir: Boolean;
     MantiksalDepolama: PMantiksalDepolama;
     Klasor, DosyaAdi: string;
@@ -557,21 +562,37 @@ type
     Konum: TSayi4;
 
     // bu deðiþkenler iþlevler arasý veri alýþveriþi içindir
-    SektorIcerigi: array[0..511] of TSayi1;
-    DizinGirdisi: array[0..63] of TSayi1;
+    DGTekSektorIcerik: array[0..511] of TSayi1;     // dizin giriþinin tek sektörlük içeriði
+
+    // aktif dosya / klasör için dizin giriþi
+    // tüm dosya iþlemleri bu yapý üzerinde olacak, daha sonra sektörün ilgili sýrasýna aktarýlacak
+    // tüm iþlevler dosya açýk olduðu müddetçe tekrar tekrar dizin giriþini okumadan bu yapýya bakarak
+    // karar mekanizmalarýný oluþturacak
+    { TODO - tüm dosya sistemleri için dizin girdileri buradan alýnarak bu yapý
+      içerisinde bulunan tekrar deðiþkenler iptal edilebilir }
+    DGAktif: array[0..63] of TSayi1;
+
+    GirdiTipi, Ozellikler: TSayi1;
+
+    //
     SektorNo,
-    KayitSN,
+
+    // dosya / klasörün okunan dizin sektöründeki (SektorNo) sýra numarasý
+    SN,
     KumeNo: TSayi4;
+    DosyaDurumu: TDosyaDurumu;
 
     VeriBellekAdresi: Isaretci;
+
+    // dosya arama iþlemleri için - yukarýdaki yapýlarla birliktelik saðlanacak
+    DizinGirisi: TDizinGirisi;
+    Aranan: string;
   end;
 
 var
   FileResult: TISayi4;
-  // arama iþlem veri yapýlarý
-  GAramaKayitListesi: array[0..USTSINIR_ARAMAKAYIT - 1] of TAramaKayit;
   // dosya iþlem veri yapýlarý
-  GDosyaKayitListesi: array[0..USTSINIR_DOSYAKAYIT - 1] of TDosyaKayit;
+  GDosyaIslemleri: array[0..USTSINIR_DOSYAISLEM - 1] of TDosyaIslem;
 
 var
   CalisanGorevSayisi,                     // oluþturulan / çalýþan program sayýsý
@@ -850,6 +871,8 @@ var
   // bilgi: bu deðiþken yapýsý, çekirdek dosyasýnýn (cekirdek.bin) sistemin yükleme
   // sonrasýnda deðiþimini takip içindir
   CekirdekYuklemeTS: TTarihSaat;
+
+  BellekDegeriniGoster: Boolean = False;
 
 var
   UzunDosyaAdi: array[0..511] of Char;

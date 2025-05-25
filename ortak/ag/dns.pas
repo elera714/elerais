@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 14/02/2025
+  Güncelleme Tarihi: 21/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -198,7 +198,7 @@ begin
 
 
     DNS^.FYerelPort := YerelPortAl;
-    DNS^.FBellekAdresi := GGercekBellek.Ayir(4095);
+    DNS^.FBellekAdresi := GGercekBellek.Ayir(4096);
     DNS^.FYanitUzunluk := 0;
   end;
 
@@ -346,7 +346,7 @@ begin
   DNS^.FBaglantiDurum := ddOlusturuldu;
   DNS^.FBaglanti^.BaglantiyiKes;
 
-  GGercekBellek.YokEt(DNS^.FBellekAdresi, 4095);
+  GGercekBellek.YokEt(DNS^.FBellekAdresi, 4096);
 end;
 
 {==============================================================================

@@ -90,16 +90,15 @@ Function fpc_PushExceptAddr (Ft: {$ifdef CPU16}SmallInt{$else}Longint{$endif};_b
 var
   _ExceptAddrstack : ^PExceptAddr;
 begin
-
 {$ifdef excdebug}
-//  writeln ('In PushExceptAddr');
+  writeln ('In PushExceptAddr');
 {$endif}
-//  _ExceptAddrstack:=@ExceptAddrstack;
-//  PExceptAddr(_newaddr)^.Next:=_ExceptAddrstack^;
-//  _ExceptAddrStack^:=PExceptAddr(_newaddr);
-//  PExceptAddr(_newaddr)^.Buf:=PJmp_Buf(_buf);
-//  PExceptAddr(_newaddr)^.FrameType:=ft;
-//  result:=PJmp_Buf(_buf);
+  _ExceptAddrstack:=@ExceptAddrstack;
+  PExceptAddr(_newaddr)^.Next:=_ExceptAddrstack^;
+  _ExceptAddrStack^:=PExceptAddr(_newaddr);
+  PExceptAddr(_newaddr)^.Buf:=PJmp_Buf(_buf);
+  PExceptAddr(_newaddr)^.FrameType:=ft;
+  result:=PJmp_Buf(_buf);
 end;
 
 
@@ -203,24 +202,24 @@ end;
 
 
 Procedure fpc_PopAddrStack;[Public, Alias : 'FPC_POPADDRSTACK']; compilerproc;
-//var
-//  hp : ^PExceptAddr;
+var
+  hp : ^PExceptAddr;
 begin
 {$ifdef excdebug}
-//  writeln ('In Popaddrstack');
+  writeln ('In Popaddrstack');
 {$endif}
-//  hp:=@ExceptAddrStack;
-//  If hp^=nil then
-    //begin
+  hp:=@ExceptAddrStack;
+  If hp^=nil then
+    begin
 {$ifdef excdebug}
-//      writeln ('At end of ExceptionAddresStack');
+      writeln ('At end of ExceptionAddresStack');
 {$endif}
-      //halt (255);
-    //end
-  //else
-//    begin
-      //hp^:=hp^^.Next;
-    //end;
+      halt (255);
+    end
+  else
+    begin
+      hp^:=hp^^.Next;
+    end;
 end;
 
 
@@ -290,17 +289,17 @@ end;
 
 {$ifndef FPC_SYSTEM_HAS_RERAISE}
 Procedure fpc_ReRaise;[Public, Alias : 'FPC_RERAISE']; compilerproc;
-//var
-//  _ExceptAddrStack : PExceptAddr;
+var
+  _ExceptAddrStack : PExceptAddr;
 begin
-//{$ifdef excdebug}
-  //writeln ('In reraise');
-//{$endif}
-//  _ExceptAddrStack:=ExceptAddrStack;
-//  If _ExceptAddrStack=Nil then
-    //DoUnHandledException;
-  //ExceptObjectStack^.refcount := 0;
-  //longjmp(_ExceptAddrStack^.Buf^,FPC_Exception);
+{$ifdef excdebug}
+  writeln ('In reraise');
+{$endif}
+  _ExceptAddrStack:=ExceptAddrStack;
+  If _ExceptAddrStack=Nil then
+    DoUnHandledException;
+  ExceptObjectStack^.refcount := 0;
+  longjmp(_ExceptAddrStack^.Buf^,FPC_Exception);
 end;
 {$endif FPC_SYSTEM_HAS_RERAISE}
 
@@ -369,14 +368,14 @@ end;
 {$ifndef FPC_SYSTEM_HAS_DONEEXCEPTION}
 procedure fpc_doneexception;[public,alias:'FPC_DONEEXCEPTION'] compilerproc;
 begin
-  //Internal_PopObjectStack.Free;
+  Internal_PopObjectStack.Free;
 end;
 {$endif FPC_SYSTEM_HAS_DONEEXCEPTION}
 
 procedure fpc_raise_nested;[public,alias:'FPC_RAISE_NESTED']compilerproc;
 begin
-  //Internal_PopSecondObjectStack.Free;
-  //Internal_Reraise;
+  Internal_PopSecondObjectStack.Free;
+  Internal_Reraise;
 end;
 
 {$ifndef FPC_SYSTEM_HAS_SAFECALLHANDLER}

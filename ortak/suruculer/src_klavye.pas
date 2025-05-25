@@ -6,7 +6,7 @@
   Dosya Adý: src_klavye.pas
   Dosya Ýþlevi: standart klavye sürücüsü
 
-  Güncelleme Tarihi: 03/04/2025
+  Güncelleme Tarihi: 12/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -291,7 +291,7 @@ begin
         $3B..$44:
         begin
 
-          ATusDegeri := TUS_F1 + (OlayTus - $3B); KontrolTusunaBasildi := True;
+          ATusDegeri := TUS_F1 + ((OlayTus - $3B) * $100); KontrolTusunaBasildi := True;
         end;
       end;
 

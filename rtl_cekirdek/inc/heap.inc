@@ -347,10 +347,11 @@ begin
   ReAllocMemory := ReAllocMem(p,size);
 end;
 
+
 { Needed for calls from Assembler }
 function fpc_getmem(size:ptruint):pointer;compilerproc;[public,alias:'FPC_GETMEM'];
 begin
-  MemoryManager.GetMem(size);
+  fpc_GetMem := MemoryManager.GetMem(size);
 end;
 
 procedure fpc_freemem(p:pointer);compilerproc;[public,alias:'FPC_FREEMEM'];

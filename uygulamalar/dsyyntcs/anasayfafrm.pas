@@ -300,13 +300,13 @@ var
   i: TSayi4;
 begin
 
-  FGenel._Assign(DosyaKimlik, 'disk2:\dsyyntcs.ini');
+  FGenel._AssignFile(DosyaKimlik, 'disk2:\dsyyntcs.ini');
   FGenel._Reset(DosyaKimlik);
 
   if(FGenel._IOResult = 0) then
   begin
 
-    FGenel._FileRead(DosyaKimlik, @DosyaBellek);
+    FGenel._Read(DosyaKimlik, @DosyaBellek);
 
     s := PChar(@DosyaBellek[0]);
 
@@ -324,7 +324,7 @@ begin
     FGenel.SistemYapiBilgisiAl(0, AyarSurucu);
   end;
 
-  FGenel._Close(DosyaKimlik);
+  FGenel._CloseFile(DosyaKimlik);
 end;
 
 // programýn ayarlarýný dosyayý yazar
@@ -333,7 +333,7 @@ var
   DosyaKimlik: TKimlik;
 begin
 
-  FGenel._Assign(DosyaKimlik, 'disk2:\dsyyntcs.ini');
+  FGenel._AssignFile(DosyaKimlik, 'disk2:\dsyyntcs.ini');
   FGenel._ReWrite(DosyaKimlik);
   if(FGenel._IOResult = 0) then
   begin
@@ -341,7 +341,7 @@ begin
     FGenel._Write(DosyaKimlik, 'sürücü=' + GecerliSurucu);
   end;
 
-  FGenel._Close(DosyaKimlik);
+  FGenel._CloseFile(DosyaKimlik);
 end;
 
 end.
