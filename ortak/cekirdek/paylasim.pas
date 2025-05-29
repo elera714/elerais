@@ -141,6 +141,7 @@ const
   PROTOKOL_ICMP = TSayi1($01);
 
 const
+  // genel hata kodlarý
   HATA_YOK                    = TISayi4(0);
   HATA_KIMLIK                 = TISayi4(-1);
   HATA_NESNE                  = TISayi4(-2);
@@ -148,7 +149,8 @@ const
   HATA_ALTNESNEBELLEKDOLU     = TISayi4(-4);
   HATA_TUMBELLEKKULLANIMDA    = TISayi4(-5);
   HATA_ISLEV                  = TISayi4(-6);
-  HATA_DOSYABULUNAMADI        = TISayi4(-7);
+  { TODO - hata deðeri aþaðýya alýndý. buraya baþka bir hata kodu tanýmlanacak }
+  //HATA_DOSYA_MEVCUTDEGIL      = TISayi4(-7);
   HATA_BOSGOREVYOK            = TISayi4(-8);
   HATA_BOSKIMLIKYOK           = TISayi4(-9);
   HATA_TUMZAMANLAYICILARDOLU  = TISayi4(-10);
@@ -160,6 +162,13 @@ const
   HATA_KAYNAKLARKULLANIMDA    = TISayi4(-16);
   HATA_BILINMEYENUZANTI       = TISayi4(-17);
   HATA_NESNEOLUSTURMA         = TISayi4(-18);
+
+  // dosya hata kodlarý
+  HATA_DOSYA_ISLEM_BASARILI   = 0;
+  HATA_DOSYA_MEVCUTDEGIL      = 2;
+  HATA_DOSYA_KULLANIMDA       = 5;
+
+  HATA_DOSYA_YAZILAMIYOR      = 40;     // dosya yazým iþlevi için açýk deðil
 
 type
   TTarihSaat = record
@@ -383,7 +392,7 @@ type
     // 1 = ilk kayýt numarasý okundu
     // 2 = ikinci kayýt numarasý okundu
     // 16 = sonuncu kayýt numarasý okundu
-    DizinTablosuKayitNo: TISayi4;
+    DizinTablosuKayitNo: TISayi4;   { TODO - geliþtirmeler kapsamýnda gereksiz olabilir }
 
     // dizin giriþinin okunan sektörü: 0 = ilk dizin giriþi 1, 2, .. sonraki dizin giriþleri
     OkunanSektor: TSayi4;
@@ -564,6 +573,8 @@ type
     // bu deðiþkenler iþlevler arasý veri alýþveriþi içindir
     DGTekSektorIcerik: array[0..511] of TSayi1;     // dizin giriþinin tek sektörlük içeriði
 
+    TekSektorIcerik: Isaretci;                      // DGTekSektorIcerik iþlevinin yerini alacak
+
     // aktif dosya / klasör için dizin giriþi
     // tüm dosya iþlemleri bu yapý üzerinde olacak, daha sonra sektörün ilgili sýrasýna aktarýlacak
     // tüm iþlevler dosya açýk olduðu müddetçe tekrar tekrar dizin giriþini okumadan bu yapýya bakarak
@@ -572,17 +583,17 @@ type
       içerisinde bulunan tekrar deðiþkenler iptal edilebilir }
     DGAktif: array[0..63] of TSayi1;
 
+    ELRDosyaAdi: string[ELR_DOSYA_U];
+
     GirdiTipi, Ozellikler: TSayi1;
 
-    //
+    // iþlem yapýlan sektör numarasý (-1 = sektör henüz okunmadý)
     SektorNo,
-
-    // dosya / klasörün okunan dizin sektöründeki (SektorNo) sýra numarasý
-    SN,
+    // dosya / klasörün okunan dizin sektöründeki (SektorNo) kayýt sýra numarasý
+    // -1 sektör okunacak (kayýt sýra numarasý yok)
+    KayitSN: TISayi4;
     KumeNo: TSayi4;
     DosyaDurumu: TDosyaDurumu;
-
-    VeriBellekAdresi: Isaretci;
 
     // dosya arama iþlemleri için - yukarýdaki yapýlarla birliktelik saðlanacak
     DizinGirisi: TDizinGirisi;
@@ -590,7 +601,6 @@ type
   end;
 
 var
-  FileResult: TISayi4;
   // dosya iþlem veri yapýlarý
   GDosyaIslemleri: array[0..USTSINIR_DOSYAISLEM - 1] of TDosyaIslem;
 

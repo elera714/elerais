@@ -95,22 +95,22 @@ end;
 
 
 procedure fpc_reraise; [public,alias:'FPC_RERAISE']; compilerproc;
-//var
-  //hp: PExceptObject;
+var
+  hp: PExceptObject;
 begin
-  //hp:=ExceptObjectStack;
-  //ExceptObjectStack:=hp^.next;
+  hp:=ExceptObjectStack;
+  ExceptObjectStack:=hp^.next;
   { Since we're going to 'reraise' the original OS exception (or, more exactly, pretend
     it wasn't handled), we must revert action of CommonHandler. }
-  //if TExceptionRecord(hp^.ExceptRec^).ExceptionCode<>FPC_EXCEPTION_CODE then
-  //begin
-//    if assigned(hp^.frames) then
-      //freemem(hp^.frames);
-    //if hp^.refcount=0 then
-//      hp^.FObject.Free;
-//  end;
-//  TSEHFrame(hp^.SEHFrame^).Addr:=@NullHandler;
-//  longjmp(hp^.ReraiseBuf,1);
+  if TExceptionRecord(hp^.ExceptRec^).ExceptionCode<>FPC_EXCEPTION_CODE then
+  begin
+    if assigned(hp^.frames) then
+      freemem(hp^.frames);
+    if hp^.refcount=0 then
+      hp^.FObject.Free;
+  end;
+  TSEHFrame(hp^.SEHFrame^).Addr:=@NullHandler;
+  longjmp(hp^.ReraiseBuf,1);
 end;
 
 
@@ -401,23 +401,23 @@ end;
 
 
 procedure fpc_doneexception;[public,alias:'FPC_DONEEXCEPTION'] compilerproc;
-//var
-//  hp: PExceptObject;
+var
+  hp: PExceptObject;
 begin
-//  hp:=PopObjectStack;
-  //if hp^.refcount=0 then
-    //hp^.FObject.Free;
-  //erroraddr:=nil;
-//    asm
-        //movl   %ebp,%edx                             // save current frame
-        //movl   hp,%eax
-        //movl   TExceptObject.SEHFrame(%eax),%eax     // target ESP minus sizeof(TSEHFrame)
-        //movl   (%eax),%ecx
-        //movl   %ecx,%fs:(0)                          // restore SEH chain
-        //movl   TSEHFrame._EBP(%eax),%ebp             // restore EBP
-        //leal   16(%eax),%esp                         // restore ESP, removing SEH frame
-        //jmpl   4(%edx)                               // jump to caller
-    //end;
+  hp:=PopObjectStack;
+  if hp^.refcount=0 then
+    hp^.FObject.Free;
+  erroraddr:=nil;
+    asm
+        movl   %ebp,%edx                             // save current frame
+        movl   hp,%eax
+        movl   TExceptObject.SEHFrame(%eax),%eax     // target ESP minus sizeof(TSEHFrame)
+        movl   (%eax),%ecx
+        movl   %ecx,%fs:(0)                          // restore SEH chain
+        movl   TSEHFrame._EBP(%eax),%ebp             // restore EBP
+        leal   16(%eax),%esp                         // restore ESP, removing SEH frame
+        jmpl   4(%edx)                               // jump to caller
+    end;
 end;
 
 

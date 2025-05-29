@@ -14,7 +14,7 @@ unit fat32;
 
 interface
 
-uses paylasim, islevler;
+uses paylasim, islevler, gorev;
 
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
@@ -28,12 +28,12 @@ procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
 procedure WriteLn(ADosyaKimlik: TKimlik; AVeri: string);
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 function IOResult: TISayi4;
-function FileSize(ADosyaKimlik: TKimlik): TISayi4;
+function FileSize(ADosyaKimlik: TKimlik): TISayi8;
 function EOF(ADosyaKimlik: TKimlik): Boolean;
 procedure CloseFile(ADosyaKimlik: TKimlik);
-procedure CreateDir(ADosyaKimlik: TKimlik);
-procedure RemoveDir(const AKlasorAdi: string);
-function DeleteFile(const ADosyaAdi: string): TISayi4;
+function CreateDir(ADosyaKimlik: TKimlik): Boolean;
+function RemoveDir(ADosyaKimlik: TKimlik): Boolean;
+function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
   var ADosyaArama: TDosyaArama): TSayi1;
@@ -91,6 +91,8 @@ end;
  ==============================================================================}
 procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
 begin
+
+  // iþlev dosya.pas tarafýndan yönetilmektedir
 end;
 
 {==============================================================================
@@ -113,7 +115,48 @@ end;
   dosyayý okumadan önce ön hazýrlýk iþlevlerini gerçekleþtirir
  ==============================================================================}
 procedure Reset(ADosyaKimlik: TKimlik);
+var
+  AktifGorev: PGorev;
+  DosyaIslem: PDosyaIslem;
+  DosyaArama: TDosyaArama;
+  TamAramaYolu: string;
+  Bulundu: Boolean;
 begin
+
+  AktifGorev := GorevListesi[CalisanGorev];
+
+  // en son iþlem hatalý ise çýk
+  if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DosyaIslem := @GDosyaIslemleri[ADosyaKimlik];
+
+  // tam dosya adýný al
+  TamAramaYolu := DosyaIslem^.MantiksalDepolama^.MD3.AygitAdi + ':' + DosyaIslem^.Klasor + '*.*';
+
+  // dosyayý dosya tablosunda bul
+  Bulundu := False;
+  if(FindFirst(TamAramaYolu, 0, DosyaArama) = 0) then
+  begin
+
+    repeat
+
+      if(DosyaArama.DosyaAdi = DosyaIslem^.DosyaAdi) then Bulundu := True;
+    until (Bulundu) or (FindNext(DosyaArama) <> 0);
+
+    FindClose(DosyaArama);
+  end;
+
+  // dosyanýn tabloda bulunmasý halinde
+  // dosyanýn ilk dizi ve uzunluðunu al
+  if(Bulundu) then
+  begin
+
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Reset: %d', [DosyaArama.DosyaUzunlugu]);
+
+    DosyaIslem^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
+    DosyaIslem^.Uzunluk := DosyaArama.DosyaUzunlugu;
+  end else AktifGorev^.FDosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
 {==============================================================================
@@ -209,24 +252,23 @@ begin
 end;
 
 {==============================================================================
-  dosya ile yapýlmýþ en son iþlem sonucunu döndürür
+  dosya ile yapýlmýþ en son iþlemin sonucunu döndürür
  ==============================================================================}
 function IOResult: TISayi4;
 begin
 
-  Result := FileResult;
-
-  // son iþlem durumu geri döndürüldükten sonra deðiþkeni hata yok olarak iþaretle
-  FileResult := 0;
+  Result := 0;
+  // bilgi: iþlev dosya.pas tarafýndan yönetilmektedir
 end;
 
 {==============================================================================
   dosya uzunluðunu geri döndürür
  ==============================================================================}
-function FileSize(ADosyaKimlik: TKimlik): TISayi4;
+function FileSize(ADosyaKimlik: TKimlik): TISayi8;
 begin
 
   Result := 0;
+  // bilgi: iþlev dosya.pas tarafýndan yönetilmektedir
 end;
 
 {==============================================================================
@@ -248,22 +290,31 @@ end;
 {==============================================================================
   klasör oluþturma iþlevini gerçekleþtirir
  ==============================================================================}
-procedure CreateDir(ADosyaKimlik: TKimlik);
+function CreateDir(ADosyaKimlik: TKimlik): Boolean;
 begin
+
+  Result := False;
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat32.CreateDir iþlevi yazýlacak', []);
 end;
 
 {==============================================================================
   klasör silme iþlevini gerçekleþtirir
  ==============================================================================}
-procedure RemoveDir(const AKlasorAdi: string);
+function RemoveDir(ADosyaKimlik: TKimlik): Boolean;
 begin
+
+  Result := False;
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat32.RemoveDir iþlevi yazýlacak', []);
 end;
 
 {==============================================================================
   dosya silme iþlevini gerçekleþtirir
  ==============================================================================}
-function DeleteFile(const ADosyaAdi: string): TISayi4;
+function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 begin
+
+  Result := False;
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat32.DeleteFile iþlevi yazýlacak', []);
 end;
 
 {==============================================================================

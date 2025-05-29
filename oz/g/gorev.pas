@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/05/2025
+  Güncelleme Tarihi: 29/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -55,6 +55,7 @@ type
 
     FGorevKimlik: TKimlik;                // görev kimlik numarasý
     FGorevDurum: TGorevDurum;             // iþlem durumu
+    FDosyaSonIslemDurum: TSayi4;          // görevin son dosya iþlem sonuç deðeri
 
     // hata ile ilgili deðiþkenler
     FHataKodu,
@@ -161,6 +162,7 @@ begin
 
     // görevi boþ olarak belirle
     Gorev^.FGorevDurum := gdBos;
+    Gorev^.FDosyaSonIslemDurum := HATA_DOSYA_ISLEM_BASARILI;
     Gorev^.FGorevKimlik := i;
     Gorev^.FAktifMasaustu := nil;
     Gorev^.FAktifPencere := nil;
@@ -239,7 +241,7 @@ begin
   // çalýþtýrýlacak dosyayý tanýmla ve aç
   AssignFile(DosyaKimlik, TamDosyaYolu);
   Reset(DosyaKimlik);
-  if(IOResult = 0) then
+  if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then
   begin
 
     // dosya uzunluðunu al

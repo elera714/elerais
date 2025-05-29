@@ -54,7 +54,8 @@ begin
   IPAdresiniOtomatikAl := False;
   {$ELSE}
   GTamBilgisayarAdi := GBilgisayarAdi;
-  IPAdresiniOtomatikAl := True;
+  { TOOD - True olduðunda að baðlantýsý yoksa hata veriyor }
+  IPAdresiniOtomatikAl := False;
   {$ENDIF}
 
   // að bilgileri öndeðerlerle yükleniyor

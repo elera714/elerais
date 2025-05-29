@@ -48,7 +48,7 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_cagri, prg_grafik,
-  prg_kontrol, dosya, src_e1000, depolama, islevler;
+  prg_kontrol, dosya, src_e1000, depolama, islevler, bolumleme, elr1, donusum;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -186,8 +186,9 @@ var
   Olay: TOlay;
   Bellek0: Isaretci;
   Bellek: array of TSayi1;
-  s: String;
+  s, DosyaAdi: String;
   MD: PMantiksalDepolama;
+  Sonuc: Boolean;
 begin
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
@@ -225,7 +226,7 @@ begin
     // 2 bytelýk TusDegeri deðiþken deðerinin üst byte'ý kontrol deðeri, alt byte'ý ise karakter deðeridir
     TusDurum := KlavyedenTusAl(TusDegeri);
     TusKontrolDegeri := (TusDegeri shr 8);
-    TusKarakterDegeri := char(TusDegeri and $FF);
+    TusKarakterDegeri := Char(TusDegeri and $FF);
 
     if(TusDegeri <> 0) then
     begin
@@ -276,10 +277,11 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            {BellekDegeriniGoster := True;
-            Merhaba := '';
-            for i := 1 to 11 do
-              Merhaba += 'Bugün benim doðum günüm, unuttun mu, yoksa yine' + #13#10;
+            DosyaKopyala('disk1:\progrmlr\grafik1.c', 'disk2:\grafik1.c');
+            //DosyalariKopyala;
+            //BellekDegeriniGoster := True;
+            {Merhaba := '';
+            for i := 1 to 11 do Merhaba += 'ELERA Ýþletim Sistemi' + #13#10;
 
             //i := Length(Merhaba);
             SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ansistring deðer: %s', [Merhaba]);
@@ -288,32 +290,16 @@ begin
 
             BellekDegeriniGoster := False;}
 
-            DosyaKopyala('disk1:\resimler\1.bmp', 'disk2:\1.bmp');
-
             //Assert(True, 'Merhaba');
 
-            //Gorev^.Calistir('disket1:\mustudk.c');
-            //Gorev^.Calistir('disk1:\sisbilgi.c');
-            //Gorev^.Calistir('disket1:\yzmcgor2.c');
             //vbox.Listele;
           end
           // test iþlev tuþu-1
           else if(TusKarakterDegeri = '4') then
           begin
 
-            {dosya.Assign(DosyaKimlik, 'disk1:\klasor\klsr' + IntToStr(DosyaNo));
-            dosya.CreateDir(DosyaKimlik);
-
-            Inc(DosyaNo);
-
-            dosya.Close(DosyaKimlik);}
-
-
-            //Gorev^.Calistir('disk1:\progrmlr\saat.c');
             //iiiii := Align(SizeOf(TIzgara) + 64, 16);
             //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %d', [iiiii]);
-
-
 
             //pic.Maskele(0);
             {IRR := pic.ISRDegeriniOku;
@@ -324,16 +310,7 @@ begin
 
             //          pic.MaskeKaldir(0);
 
-            // aþaðýdaki programlar üzerinden fdc iþlemleri tamamlanacak
-            //Gorev^.Calistir('disket1:\kopyala.c');
-            //Gorev^.Calistir('disket1:\dskgor.c');
-
             //vbox.IcerigiGoruntule;
-            //Gorev^.Calistir('disk1:\arpbilgi.c');
-
-            {Disk := SurucuAl('disk2:');
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-1: %d', [Disk^.Acilis.DizinGirisi.IlkSektor]);
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk2-2: %d', [Disk^.Acilis.DizinGirisi.ToplamSektor]);}
           end
           // test iþlev tuþu-2
           else if(TusKarakterDegeri = '5') then
@@ -444,7 +421,10 @@ begin
 
           // klavye olaylarýný iþle
           // kontrol tuþu haricinde basýlan tüm tuþlarý ilgili uygulamaya yönlendir
-          if((TusDegeri and $FF00) = 0) then
+
+          { TODO - burada kontrol tuþlarý ve karakter tuþlarý ayrý ayrý deðerlendirilerek
+            farklý olaylar olarak uygulamalara gönderilecek }
+          //if((TusDegeri and $FF00) = 0) then
             GOlayYonetim.KlavyeOlaylariniIsle(TusDegeri, TusDurum);
         end;
       end

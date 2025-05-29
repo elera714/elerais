@@ -38,8 +38,8 @@ procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 
 implementation
 
-uses {$IFDEF SISTEM_SUNUCU} dhcp_s, {$ENDIF} dhcp_i, donusum, sistemmesaj, dhcp,
-  iletisim, dns, netbios, genel, islevler;
+uses dhcp_s, dhcp_i, donusum, sistemmesaj, dhcp, iletisim, dns, netbios,
+  genel, islevler;
 
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir

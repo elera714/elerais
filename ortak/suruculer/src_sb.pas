@@ -124,9 +124,9 @@ end;
 
 procedure SesDosyasiOynat;
 var
-  _DosyaBellek: Isaretci;
-  _DosyaKimlik: TKimlik;
-  _DosyaUzunluk: TSayi4;
+  DosyaBellek: Isaretci;
+  DosyaKimlik: TKimlik;
+  DosyaUzunluk: TSayi4;
 begin
 
   if not(DSPSifirla($220)) then
@@ -138,33 +138,33 @@ begin
     HoparloruAc;
     SesKuvvetiniAyarla($22);
 
-    AssignFile(_DosyaKimlik, 'disk1:\2.wav');
-    Reset(_DosyaKimlik);
-    if(IOResult = 0) then
+    AssignFile(DosyaKimlik, 'disk1:\2.wav');
+    Reset(DosyaKimlik);
+    if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then
     begin
 
       // dosya uzunluðunu al
-      _DosyaUzunluk := FileSize(_DosyaKimlik);
+      DosyaUzunluk := FileSize(DosyaKimlik);
 
-      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Ses dosya uzunluðu: %d', [_DosyaUzunluk]);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Ses dosya uzunluðu: %d', [DosyaUzunluk]);
 
       // dosyanýn çalýþtýrýlmasý için bellekte yer ayýr
-      _DosyaBellek := GGercekBellek.Ayir(_DosyaUzunluk);
-      if(_DosyaBellek <> nil) then
+      DosyaBellek := GGercekBellek.Ayir(DosyaUzunluk);
+      if(DosyaBellek <> nil) then
       begin
 
         SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Dosya için ayrýlan bellek adresi: $%.8x',
-          [TSayi4(_DosyaBellek)]);
+          [TSayi4(DosyaBellek)]);
 
         // dosyayý hedef adrese kopyala
-        Read(_DosyaKimlik, _DosyaBellek);
+        Read(DosyaKimlik, DosyaBellek);
 
-        DMAAkis(_DosyaBellek + 44, _DosyaUzunluk - 44);
+        DMAAkis(DosyaBellek + 44, DosyaUzunluk - 44);
 
         // dosyayý kapat
-        CloseFile(_DosyaKimlik);
+        CloseFile(DosyaKimlik);
 
-        GGercekBellek.YokEt(_DosyaBellek, _DosyaUzunluk);
+        GGercekBellek.YokEt(DosyaBellek, DosyaUzunluk);
       end;
     end;
   end;

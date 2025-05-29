@@ -190,7 +190,7 @@ begin
                       DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
                       DosyaAyirmaTablosu^.IlkSektor := AcilisKayit32^.AyrilmisSektor1 +
                         AcilisKayit32^.BolumOncesiSektorSayisi;
-                      DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit32^.DATBasinaSektor;
+                      DosyaAyirmaTablosu^.ToplamSektor := 30 * 1024 * 1024; //AcilisKayit32^.DATBasinaSektor;
                       DosyaAyirmaTablosu^.ZincirBasinaSektor := 4; //AcilisKayit32^.ZincirBasinaSektor;
 
                       // DizinGirisi dizin giriþleri
@@ -198,7 +198,7 @@ begin
                       DizinGirisi^.IlkSektor := $600; //1536; (AcilisKayit32^.DATBasinaSektor *
                         //AcilisKayit32^.DATSayisi) + AcilisKayit32^.AyrilmisSektor1 +
                         //AcilisKayit32^.BolumOncesiSektorSayisi;
-                      DizinGirisi^.ToplamSektor := AcilisKayit32^.AzamiDizinGirisi div 16;
+                      DizinGirisi^.ToplamSektor := 30 * 1024 * 1024; // AcilisKayit32^.AzamiDizinGirisi div 16;
 
                       // fat32 dosya sisteminde dizin baþlangýcý da veri olarak kullanýlýr
                       // fat32 dosya sisteminin dizin tablo bitiþ deðeri yoktur!

@@ -353,7 +353,12 @@ var
 begin
 
   i := VeriOku(REG_CTRL);
-  KomutGonder(REG_CTRL, i or ECTRL_SLU);
+  KomutGonder(REG_CTRL, i or ECTRL_SLU or ECTRL_SLU{ or ECTRL_ASDE or ECTRL_FD or ECTRL_100M or ECTRL_FRCSPD});
+
+  KomutGonder($0028, 0);
+  KomutGonder($002C, 0);
+  KomutGonder($0030, 0);
+  KomutGonder($0170, 0);
 end;
 
 procedure KesmeIslevi;
@@ -392,8 +397,10 @@ var
   old_cur: TSayi4;
 begin
 
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->durum: %d', [rx_descs[GelisSiraNo]^.status]);
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->bellek : %d', [@rx_descs[0]]);
+  len:= rx_descs[0]^.length;
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->durum: %d', [rx_descs[0]^.status]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->bellek : %d', [len]);
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->bellek : %d', [TSayi4(@rx_descs[0])]);
 
 
   while (rx_descs[GelisSiraNo]^.status AND $1) > 0 do
@@ -422,10 +429,9 @@ var
 begin
 
   GelisHalkaBellekAdresi := GGercekBellek.Ayir(sizeof(TE1000_rx_desc) * E1000_NUM_RX_DESC + 16);
-  p := GelisHalkaBellekAdresi;
+  p := Isaretci($3C00000); //60 * 1024 * 1024); // GelisHalkaBellekAdresi;
 
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Bellek Adresi: $%x', [TSayi4(p)]);
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Bellek Adresi: $%x', [TSayi4(GelisHalkaBellekAdresi)]);
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p2 Bellek Adresi: $%x', [TSayi4(GelisHalkaBellekAdresi)]);
 
   for i := 0 to E1000_NUM_RX_DESC - 1 do
   begin
@@ -434,6 +440,8 @@ begin
     rx_descs[i]^.address := $90000;
     rx_descs[i]^.status := 0;
     p += sizeof(TE1000_rx_desc);
+
+    if(i < 3) then SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p1 Bellek Adresi: $%x', [TSayi4(p)]);
   end;
   GelisSiraNo := 0;
 

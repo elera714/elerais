@@ -6,7 +6,7 @@
   Dosya Adý: prg_grafik.pas
   Dosya Ýþlevi: dahili çekirdek programý: nesnelerin grafik kartýna çizimi için
 
-  Güncelleme Tarihi: 27/02/2025
+  Güncelleme Tarihi: 26/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,6 +16,10 @@ interface
 
 uses paylasim;
 
+const
+  P_BASLIK_YUKSEKLIK = 24;
+  P_SOL_SAG_KALINLIK = 5;
+
 procedure GrafikYoneticiGorevOlustur(AGorevKimlik: TKimlik; AGorevAdi: string;
   AIslev: TIslev);
 procedure GrafikYonetimi;
@@ -24,10 +28,15 @@ procedure SistemDegerleriOlayIsle;
 
 implementation
 
-uses gdt, gorev, genel, zamanlayici, gn_pencere;
+uses gdt, gorev, genel, zamanlayici, gn_pencere, gn_islemgostergesi, gn_etiket,
+  bolumleme, elr1;
 
 var
   SDPencere: PPencere = nil;
+  igBellek, igDisk: PIslemGostergesi;
+  etkBellek, etkDisk: PEtiket;
+  BellekSayac: TSayi4 = 0;
+  DiskSayac: TSayi4 = 0;
 
 {==============================================================================
   grafik iþlevlerini yönetecek görevi oluþturur
@@ -121,24 +130,74 @@ var
 begin
 
   Sol := GAktifMasaustu^.FBoyut.Genislik - 166;
-  SDPencere := SDPencere^.Olustur(nil, Sol, 10, 156, 70, ptBasliksiz,
-    'Sistem Durumu', 0);
+
+  SDPencere := SDPencere^.Olustur(nil, Sol, 10, 150, 105, ptIletisim, 'Sistem Durumu', RENK_BEYAZ);
+
+  etkBellek := etkBellek^.Olustur(ktNesne, SDPencere, 5, 65, 6 * 8, 16, RENK_SIYAH, 'Bellek');
+  etkBellek^.Goster;
+
+  igBellek := igBellek^.Olustur(ktNesne, SDPencere, 60, 65, 85, 16);
+  igBellek^.DegerleriBelirle(0, GGercekBellek.ToplamBlok * 4096);
+  igBellek^.MevcutDegerYaz(0);
+  igBellek^.Goster;
+
+  etkDisk := etkDisk^.Olustur(ktNesne, SDPencere, 5, 85, 4 * 8, 16, RENK_SIYAH, 'Disk');
+  etkDisk^.Goster;
+
+  igDisk := igDisk^.Olustur(ktNesne, SDPencere, 60, 85, 85, 16);
+  igDisk^.DegerleriBelirle(0, 64 * 1024 * 1024);
+  igDisk^.MevcutDegerYaz(0);
+  igDisk^.Goster;
+
   SDPencere^.Goster;
 end;
 
 procedure SistemDegerleriOlayIsle;
 var
+  MD: PMantiksalDepolama;
   CizimAlan: TAlan;
+  ToplamKullanimByte: TSayi4;
 begin
 
+  // $1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
+  Inc(BellekSayac);
+  if(BellekSayac = $100) then
+  begin
+
+    igBellek^.MevcutDegerYaz(GGercekBellek.KullanilmisBlok * 4096);
+
+    BellekSayac := 0;
+  end;
+
+  // $1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
+  Inc(DiskSayac);
+  if(DiskSayac = $1000) then
+  begin
+
+    MD := SurucuAl('disk2:\');
+    if not(MD = nil) then
+    begin
+
+      ToplamKullanimByte := SHTToplamKullanim(MD) * 512;
+    end else ToplamKullanimByte := 0;
+
+    igDisk^.MevcutDegerYaz(ToplamKullanimByte);
+
+    DiskSayac := 0;
+  end;
+
   CizimAlan := SDPencere^.FCizimAlan;
-  SDPencere^.DikdortgenDoldur(SDPencere, CizimAlan, RENK_SIYAH, $CCFFFF);
-  SDPencere^.YaziYaz(SDPencere, 12, 10, 'ÇKRDK:', RENK_LACIVERT);
-  SDPencere^.SayiYaz16(SDPencere, 64, 10, True, 8, SistemSayaci, RENK_LACIVERT);
-  SDPencere^.YaziYaz(SDPencere, 12, 26, 'ÇAÐRI:', RENK_LACIVERT);
-  SDPencere^.SayiYaz16(SDPencere, 64, 26, True, 8, CagriSayaci, RENK_LACIVERT);
-  SDPencere^.YaziYaz(SDPencere, 12, 42, 'GRAFK:', RENK_LACIVERT);
-  SDPencere^.SayiYaz16(SDPencere, 64, 42, True, 8, GrafikSayaci, RENK_LACIVERT);
+  CizimAlan.Sol += 5;
+  CizimAlan.Sag += 5;
+  CizimAlan.Ust += P_BASLIK_YUKSEKLIK;
+  CizimAlan.Alt := CizimAlan.Ust + 60;
+  SDPencere^.DikdortgenDoldur(SDPencere, CizimAlan, RENK_SIYAH, RENK_BEYAZ);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'ÇKRDK:', RENK_LACIVERT);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, True, 8, SistemSayaci, RENK_LACIVERT);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'ÇAÐRI:', RENK_LACIVERT);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, True, 8, CagriSayaci, RENK_LACIVERT);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'GRAFK:', RENK_LACIVERT);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, True, 8, GrafikSayaci, RENK_LACIVERT);
 end;
 
 end.

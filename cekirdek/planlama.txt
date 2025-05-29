@@ -1,8 +1,10 @@
 ================================================================================
                         Gerçekleþtirilecek Çalýþmalar
 ================================================================================
-- rtl_cekirdek ve rtl_uygulama klasörleri altýndaki tüm *_orjinal.* dosyalarý kandilerinin yerinde
-  kullanýlan geçici dosyalarýn yerine kodlar kontrol edilerek yerleþtirilecek
+- rtl_cekirdek\inc\system.inc dosyasý çekirdeðin çalýþtýrýlabilmesi için deðiþtirilmiþ olup,
+  gerekli çalýþmalar yapýlarak rtl_cekirdek\inc\system_orjinal.inc dosyasýyla orjinalleþtirilecektir
+  (diðer tüm dosyalar fpc sürüm 3.0.4 olup orjinalleþtirilmiþ kod dosyalarýdýr)
+- rtl_uygulama klasörü altýndaki dosyalar orjinalleþtirilecektir
 - program baþlama/bitiþ arasýndaki fazla/eksik bellek durumlarý pencere bazýnda çözümlendi, diðer nesneler de kontrol edilecek
 - listegorunum nesnesine eleman sayýsý, seçili eleman oku / yaz iþlevi eklenecek (görev yöneticisi için)
 - çekirdek içeriðinin yeniden özelleþtirilebilmesi için ayarlar sayfasý oluþturulacak

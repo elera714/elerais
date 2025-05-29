@@ -91,7 +91,7 @@ begin
 
     AssignFile(DosyaKimlik, DosyaTamYol);
     Reset(DosyaKimlik);
-    if(IOResult = 0) then
+    if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then
     begin
 
       // dosya uzunluğunu al

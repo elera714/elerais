@@ -6,7 +6,7 @@
   Dosya Adý: prg_kontrol.pas
   Dosya Ýþlevi: dahili çekirdek programý: çekirdek içi kontrol iþlemleri için
 
-  Güncelleme Tarihi: 01/05/2025
+  Güncelleme Tarihi: 26/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -169,18 +169,18 @@ begin
         G := GAktifMasaustu^.FBoyut.Genislik;
 
         if(Pencere = nil) then
-          Pencere := Pencere^.Olustur(GAktifMasaustu, G - 166, 85, 156, 16,
+          Pencere := Pencere^.Olustur(GAktifMasaustu, G - 162, 100 + 24, 152, 18,
           ptBasliksiz, '', RENK_KIRMIZI);
 
         if(IslemGostergesi = nil) then
-          IslemGostergesi := IslemGostergesi^.Olustur(ktNesne, Pencere, 1, 1, 154, 14);
+          IslemGostergesi := IslemGostergesi^.Olustur(ktNesne, Pencere, 1, 1, 150, 16);
 
         IslemGostergesi^.DegerleriBelirle(0, 20);
         IslemGostergesi^.Goster;
 
         Pencere^.Goster;
 
-        for i := 19 downto 0 do
+        for i := 19 downto 1 do
         begin
 
           IslemGostergesi^.MevcutDegerYaz(i);

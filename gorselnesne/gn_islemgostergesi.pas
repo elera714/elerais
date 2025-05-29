@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 25/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -225,11 +225,11 @@ begin
   IslemGostergesi^.EgimliDoldur(IslemGostergesi, Alan2, DUGME_NORMAL_ILKRENK,
     DUGME_NORMAL_SONRENK);
 
-  { TODO - aşağıdaki kodlar aktifleştirildiğinde pencerelerin başlık rengi değişiyor
+  // gösterge değerini yaz
   Alan2 := Alan;
   s := IntToStr(IslemGostergesi^.FMevcutDeger);
   i := (Alan2.Sag - (Length(s) * 8)) div 2;
-  IslemGostergesi^.YaziYaz(IslemGostergesi, Alan2.Sol + i, Alan2.Ust, 'sss', RENK_SIYAH); }
+  IslemGostergesi^.YaziYaz(IslemGostergesi, Alan2.Sol + i, Alan2.Ust, s, RENK_SIYAH);
 end;
 
 {==============================================================================
