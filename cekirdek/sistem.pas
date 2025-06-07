@@ -20,10 +20,11 @@ uses paylasim;
 procedure YenidenBaslat;
 procedure BilgisayariKapat;
 procedure SistemAyarlariniKaydet;
+procedure CalisanUygulamalariKaydet;
 
 implementation
 
-uses port, dosya;
+uses port, dosya, gorselnesne, gorev, genel, donusum, sistemmesaj;
 
 procedure YenidenBaslat;
 var
@@ -59,8 +60,66 @@ var
   DosyaAdi: string;
 begin
 
+  CalisanUygulamalariKaydet;
+
   DosyaAdi := 'elera.ini';
   IzKaydiOlustur(DosyaAdi, 'sistem-adý=' + SistemAdi);
+end;
+
+// çalýþan uygulama listesinin dosyaya kaydetme iþlemi
+procedure CalisanUygulamalariKaydet;
+var
+  GN: PGorselNesne;
+  P: TProgramKayit;
+  CalisanPSayisi,
+  i, j: TISayi4;
+  Sonuc: TISayi4;
+  DosyaKimlik: TKimlik;
+  s: string;
+begin
+
+  AssignFile(DosyaKimlik, 'disk2:\yuklenecek_programlar.ini');
+  ReWrite(DosyaKimlik);
+  Sonuc := IOResult;
+  //if(Sonuc > HATA_YOK) then Append(DosyaKimlik);
+  if(Sonuc = HATA_YOK) then
+  begin
+
+    CalisanPSayisi := CalisanProgramSayisiniAl(GAktifMasaustu^.Kimlik);
+
+    for i := 0 to CalisanPSayisi - 1 do
+    begin
+
+      P := CalisanProgramBilgisiAl(i, GAktifMasaustu^.Kimlik);
+      j := Length(P.DosyaAdi);
+      if(P.DosyaAdi[j] = 'c') then
+      begin
+
+        s := P.DosyaAdi;
+
+        GN := GN^.NesneAl(P.PencereKimlik);
+        if not(GN = nil) then
+        begin
+
+          s += ';' + IntToStr(GN^.FKonum.Sol);
+          s += ';' + IntToStr(GN^.FKonum.Ust);
+          s += ';' + IntToStr(GN^.FBoyut.Genislik);
+          s += ';' + IntToStr(GN^.FBoyut.Yukseklik);
+
+          WriteLn(DosyaKimlik, s);
+        end;
+
+      end;
+    end;
+
+    CloseFile(DosyaKimlik);
+  end
+  else
+  begin
+
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'disk2:\yuklenecek_programlar.ini dosyasý oluþturulamýyor!', []);
+    CloseFile(DosyaKimlik);
+  end;
 end;
 
 end.

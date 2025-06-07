@@ -6,7 +6,7 @@
   Dosya Adı: donusum.pas
   Dosya İşlevi: değer dönüşüm (convert) işlevlerini içerir
 
-  Güncelleme Tarihi: 07/02/2025
+  Güncelleme Tarihi: 31/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -43,7 +43,6 @@ function RGBToColor(R, G, B: TSayi1): TRenk;
 
 // derleyici içerisinde karşılığı olamayacak işlevler
 function HamDosyaAdiniDosyaAdinaCevir(ADizinGirdisi: PDizinGirdisi): string;
-function HamDosyaAdiniDosyaAdinaCevir2(ADizinGirdisi: PDizinGirdisiELR): string;
 function RGB24CevirRGB16(Color: TRenk): Word;
 
 implementation
@@ -640,29 +639,6 @@ begin
     end;
 
     Result := Result + LowerCase(ADizinGirdisi^.Uzanti[i]);
-    Inc(i);
-  end;
-end;
-
-{==============================================================================
-  ham dosya adını dosya.uz dosya ad formatına çevirir. (küçük harf ile)
- ==============================================================================}
-function HamDosyaAdiniDosyaAdinaCevir2(ADizinGirdisi: PDizinGirdisiELR): string;
-var
-  NoktaEklendi: Boolean;
-  i: TSayi4;
-begin
-
-  // hedef bellek bölgesini sıfırla
-  // hedef bellek alanı şu an 8+1+3+1 (dosya+.+uz+null) olmalıdır
-  Result := '';
-
-  // dosya adını çevir
-  i := 1;
-  while (i < 43) and (ADizinGirdisi^.DosyaAdi[i] <> #0) do
-  begin
-
-    Result := Result + ADizinGirdisi^.DosyaAdi[i];
     Inc(i);
   end;
 end;

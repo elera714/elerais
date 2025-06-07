@@ -43,12 +43,13 @@ procedure Yukle;
 procedure SistemAnaKontrol;
 procedure CekirdekDosyaTSDegeriniKaydet;
 procedure KaydedilenProgramlariYenidenYukle;
+procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
 
 implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_cagri, prg_grafik,
-  prg_kontrol, dosya, src_e1000, depolama, islevler, bolumleme, elr1, donusum;
+  prg_kontrol, dosya, src_e1000, depolama, islevler, bolumleme, donusum;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -277,8 +278,12 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            DosyaKopyala('disk1:\progrmlr\grafik1.c', 'disk2:\grafik1.c');
-            //DosyalariKopyala;
+            AssertErrorProc := @AssertIslev;
+            Assert(1 > 2, 'Merhaba');
+
+            //for i := 1 to 100 do CreateDir('disk2:\merhaba\mer' + IntToStr(i));
+            DosyalariKopyala;
+            //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
             //BellekDegeriniGoster := True;
             {Merhaba := '';
             for i := 1 to 11 do Merhaba += 'ELERA Ýþletim Sistemi' + #13#10;
@@ -495,80 +500,109 @@ end;
 
 procedure KaydedilenProgramlariYenidenYukle;
 var
-  i: TSayi4;
-  FD: TFizikselDepolama;
-  GN: PGorselNesne;
-  Bellek: PChar;
-  s: string;
+  s, DosyaAdi, s2: string;
   MUGorev: PGorev;
-  P4: PSayi4;
   Konum: TKonum;
   Boyut: TBoyut;
+  DosyaKimlik: TKimlik;
+  U: TISayi8;
+  Bellek0: Isaretci;
+  SiraNo, Kod,
+  i, j, k: TSayi4;
 begin
 
-  for i := 0 to 5 do
+  AssignFile(DosyaKimlik, 'disk2:\yuklenecek_programlar.ini');
+  Reset(DosyaKimlik);
+  if(IOResult = HATA_YOK) then
   begin
 
-    FD := FizikselDepolamaAygitListesi[i];
-    if(FD.Mevcut0) and (FD.FD3.SurucuTipi = SURUCUTIP_DISK) and
-      (FD.FD3.AygitAdi = 'fda4') then
-    begin
+    U := FileSize(DosyaKimlik);
+    GetMem(Bellek0, U);
 
-      FD.SektorOku(@FD, 10, 1, Isaretci($3200000));
-      Break;
-    end;
+    Read(DosyaKimlik, Bellek0);
+
+    j := 0;
+    i := 0;
+    repeat
+
+      i := Pos(#10, PChar(Bellek0));
+      if(i > 0) then
+      begin
+
+        Dec(i);
+        s := Copy(PChar(Bellek0 + j), 0, (i - j) - 1);
+        PChar(Bellek0 + i)^ := ' ';
+        j := i + 1;
+
+        if(Length(s) > 0) then
+        begin
+
+          DosyaAdi := '';
+          Konum.Sol := 0;
+          Konum.Ust := 0;
+          Boyut.Genislik := 0;
+          Boyut.Yukseklik := 0;
+          SiraNo := 1;
+
+          repeat
+
+            k := Pos(';', s);
+            if(k > 0) then
+            begin
+
+              case SiraNo of
+                1: DosyaAdi := Copy(s, 1, k - 1);
+                2: begin s2:= Copy(s, 1, k - 1); Val(s2, Konum.Sol, Kod) end;
+                3: begin s2:= Copy(s, 1, k - 1); Val(s2, Konum.Ust, Kod) end;
+                4: begin s2:= Copy(s, 1, k - 1); Val(s2, Boyut.Genislik, Kod) end;
+              end;
+
+              Delete(s, 1, k);
+              Inc(SiraNo);
+            end
+            else
+            begin
+
+              s2:= s;
+              Val(s2, Boyut.Yukseklik, Kod);
+              k := 0;
+            end;
+
+          until k = 0;
+
+          {SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Dosya Adý: "%s"', [DosyaAdi]);
+          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Sol: "%d, Üst: %d"', [Sol, Ust]);
+          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Geniþlik: "%d, Yükseklik: %d"', [Genislik, Yukseklik]);}
+
+          MUGorev := MUGorev^.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + DosyaAdi);
+
+          { TODO - aþaðýdaki satýrlardaki problem giderilerek aktifleþtirilecek }
+
+          {BekleMS(50);
+
+          GN := GN^.NesneAl(MUGorev^.AktifPencere^.Kimlik);
+
+          PPencere(GN)^.FKonum.Sol := Konum.Sol;
+          PPencere(GN)^.FKonum.Ust := Konum.Ust;
+          PPencere(GN)^.FBoyut.Genislik := Boyut.Genislik;
+          PPencere(GN)^.FBoyut.Yukseklik := Boyut.Yukseklik;
+          PPencere(GN)^.Guncelle;
+
+          PMasaustu(GN^.AtaNesne)^.Ciz;}
+        end;
+      end;
+    until i = 0;
+
+    FreeMem(Bellek0, U);
   end;
 
-  Bellek := Isaretci($3200000);
+  CloseFile(DosyaKimlik);
+end;
 
-  s := '';
-  while Bellek^ <> #0 do
-  begin
+procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
+begin
 
-    while Bellek^ <> #0 do
-    begin
-
-      s += Bellek^;
-      Inc(Bellek);
-    end;
-
-    Inc(Bellek);
-    P4 := PSayi4(Bellek);
-
-    Konum.Sol := P4^;
-    Inc(P4);
-    Konum.Ust := P4^;
-    Inc(P4);
-    Boyut.Genislik := P4^;
-    Inc(P4);
-    Boyut.Yukseklik := P4^;
-    Inc(P4);
-
-    Bellek := PChar(P4);
-
-    if(Length(s) > 0) then
-    begin
-
-      MUGorev := MUGorev^.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + s);
-      BekleMS(50);
-
-      GN := GN^.NesneAl(MUGorev^.AktifPencere^.Kimlik);
-
-      PPencere(GN)^.FKonum.Sol := Konum.Sol;
-      PPencere(GN)^.FKonum.Ust := Konum.Ust;
-      PPencere(GN)^.FBoyut.Genislik := Boyut.Genislik;
-      PPencere(GN)^.FBoyut.Yukseklik := Boyut.Yukseklik;
-      PPencere(GN)^.Guncelle;
-
-      PMasaustu(GN^.AtaNesne)^.Ciz;
-
-      //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'NesneAdi: %s', [PPencere(GN)^.NesneAdi]);
-      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Konum.Ust: %d', [Konum.Ust]);
-    end;
-
-    //Inc(Bellek);
-    s := '';
-  end;
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Assert: %s', [msg]);
 end;
 
 end.

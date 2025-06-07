@@ -6,7 +6,7 @@
   Dosya Adý: src_ide.pas
   Dosya Ýþlevi: ide aygýt sürücüsü
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 01/06/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -342,6 +342,7 @@ var
   FD: PFizikselDepolama;
   PortNo: TSayi2;
   i: TSayi1;
+  HataDurumu: TISayi4;
 begin
 
   //SISTEM_MESAJ(RENK_SIYAH, 'AIlkSektor: %d', [AIlkSektor]);
@@ -364,7 +365,7 @@ begin
   begin
 
     ReadSector28GorevNo := 0;
-    Exit(1);
+    Exit(HATA_AYGITMESGUL);
   end;
 
   //SISTEM_MESAJ(RENK_SIYAH, 'Tamam1', []);
@@ -394,6 +395,8 @@ begin
 
   Bekle(@FD^.Aygit);
 
+  HataDurumu := HATA_YOK;
+
 //  asm sti end;
 
   // okuma iþlevini gerçekleþtir
@@ -421,13 +424,14 @@ begin
 
         Dec(ASektorSayisi);
         ABellek += 512;
-        Result := 0;
-      end else Result := 1;
+      end else HataDurumu := HATA_AYGITMESGUL;
     end;
 
-  until (ASektorSayisi = 0) or (Result = 1);
+  until (ASektorSayisi = 0) or (HataDurumu <> HATA_YOK);
 
   ReadSector28GorevNo := 0;
+
+  Result := HataDurumu;
 end;
 
 {==============================================================================
@@ -439,6 +443,7 @@ var
   FD: PFizikselDepolama;
   PortNo: TSayi2;
   i: TSayi1;
+  HataDurumu: TISayi4;
 begin
 
   if(ReadSector28GorevNo <> 0) then
@@ -457,7 +462,7 @@ begin
   begin
 
     ReadSector28GorevNo := 0;
-    Exit(1);
+    Exit(HATA_AYGITMESGUL);
   end;
 
 //  asm cli end;
@@ -484,6 +489,8 @@ begin
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTORYAZ);
 
   Bekle(@FD^.Aygit);
+
+  HataDurumu := HATA_YOK;
 
 //  asm sti end;
 
@@ -512,13 +519,14 @@ begin
 
         Dec(ASektorSayisi);
         ABellek += 512;
-        Result := 0;
-      end else Result := 1;
+      end else HataDurumu := HATA_AYGITMESGUL;
     end;
 
-  until (ASektorSayisi = 0) or (Result = 1);
+  until (ASektorSayisi = 0) or (HataDurumu <> HATA_YOK);
 
   ReadSector28GorevNo := 0;
+
+  Result := HataDurumu;
 end;
 
 end.

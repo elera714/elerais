@@ -48,7 +48,7 @@ type
     procedure _Reset(ADosyaKimlik: TKimlik); assembler;
     procedure _Write(ADosyaKimlik: TKimlik; const AVeri: string); assembler;
     procedure _Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
-    function _IOResult: TISayi4; assembler;
+    function _IOResult: TSayi2; assembler;
     function _FileSize(ADosyaKimlik: TKimlik): TISayi4; assembler;
     function _EOF(ADosyaKimlik: TKimlik): Boolean; assembler;
     procedure _CloseFile(ADosyaKimlik: TKimlik); assembler;
@@ -242,10 +242,11 @@ asm
   add	  esp,8
 end;
 
-function TGenel._IOResult: TISayi4; assembler;
+function TGenel._IOResult: TSayi2; assembler;
 asm
   mov	  eax,DOSYA_ISLEMKONTROL
   int	  $34
+  and   eax,$FFFF
 end;
 
 function TGenel._FileSize(ADosyaKimlik: TKimlik): TISayi4; assembler;

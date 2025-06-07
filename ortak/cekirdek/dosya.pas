@@ -30,7 +30,7 @@ procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
 procedure WriteLn(ADosyaKimlik: TKimlik; AVeri: string);
 procedure Write(ADosyaKimlik: TKimlik; ABellekAdresi: Isaretci; AUzunluk: TSayi4);
 function Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci): TISayi4;
-function IOResult: TSayi4;
+function IOResult: TISayi4;
 function FileSize(ADosyaKimlik: TKimlik): TISayi8;
 function EOF(ADosyaKimlik: TKimlik): Boolean;
 procedure CloseFile(ADosyaKimlik: TKimlik);
@@ -45,7 +45,7 @@ function HamDosyaAdiniDosyaAdinaCevir2(ADizinGirdisi: PDizinGirdisi): string;
 procedure IzKaydiOlustur(ADosyaAdi, AKayit: string);
 procedure ELR1DiskBicimle(AMD: PMantiksalDepolama);
 procedure DosyalariKopyala;
-procedure DosyaKopyala(AKaynakDosya, AHedefDosya: string);
+function DosyaKopyala(AKaynakDosya, AHedefDosya: string): TISayi4;
 
 implementation
 
@@ -157,27 +157,34 @@ begin
       AramaSuzgeci := s;
     end;
 
+    DST := GDosyaIslemleri[DosyaKimlik].MantiksalDepolama^.MD3.DST;
+
     if(Length(AranacakKlasor) > 0) then
     begin
 
       //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AranacakDizin: ''%s''', [AranacakKlasor]);
       //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
 
-      GDosyaIslemleri[DosyaKimlik].DizinGirisi.IlkSektor := SektorNo;
-      GDosyaIslemleri[DosyaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
-      GDosyaIslemleri[DosyaKimlik].DizinGirisi.OkunanSektor := 0;
-
-      SektorNo := DizinGirisindeAra(GDosyaIslemleri[DosyaKimlik], AranacakKlasor);
-      if(SektorNo = 0) then
+      if(DST <> DST_ELR1) then
       begin
 
-        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: %s dizini dosya tablosunda mevcut deðil!', [AranacakKlasor]);
-        Exit(1);
-      end
-      else
-      begin
+        GDosyaIslemleri[DosyaKimlik].DizinGirisi.IlkSektor := SektorNo;
+        GDosyaIslemleri[DosyaKimlik].SektorNo := -1;
+        GDosyaIslemleri[DosyaKimlik].ZincirNo := 0;
+        GDosyaIslemleri[DosyaKimlik].KayitSN := -1;
 
-        SektorNo := ((SektorNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
+        SektorNo := DizinGirisindeAra(GDosyaIslemleri[DosyaKimlik], AranacakKlasor);
+        if(SektorNo = 0) then
+        begin
+
+          SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: %s dizini dosya tablosunda mevcut deðil!', [AranacakKlasor]);
+          Exit(1);
+        end
+        else
+        begin
+
+          SektorNo := ((SektorNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
+        end;
       end;
     end;
   until Length(AranacakKlasor) = 0;
@@ -189,14 +196,12 @@ begin
   if(AramaSuzgeci = '*.*') then
   begin
 
-    // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-    GDosyaIslemleri[DosyaKimlik].DizinGirisi.IlkSektor := SektorNo;
-    GDosyaIslemleri[DosyaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
-    GDosyaIslemleri[DosyaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
-    GDosyaIslemleri[DosyaKimlik].DizinGirisi.OkunanSektor := 0;
-
     // dosya sistem tipine göre iþlevi yönlendir
     DST := GDosyaIslemleri[DosyaKimlik].MantiksalDepolama^.MD3.DST;
+
+    GDosyaIslemleri[DosyaKimlik].SektorNo := -1;
+    GDosyaIslemleri[DosyaKimlik].ZincirNo := 0;
+    GDosyaIslemleri[DosyaKimlik].KayitSN := -1;
 
     // geçici
     if(DST = DST_ELR1) then
@@ -204,8 +209,13 @@ begin
 
       GDosyaIslemleri[DosyaKimlik].DizinGirisi.IlkSektor := $600; //SektorNo;    // $600 = 1536
       GDosyaIslemleri[DosyaKimlik].DizinGirisi.ToplamSektor := 4; //MD^.Acilis.DizinGirisi.ToplamSektor;
-      GDosyaIslemleri[DosyaKimlik].DizinGirisi.DizinTablosuKayitNo := 0;
-      GDosyaIslemleri[DosyaKimlik].DizinGirisi.OkunanSektor := 0;
+    end
+    else
+    begin
+
+      // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
+      GDosyaIslemleri[DosyaKimlik].DizinGirisi.IlkSektor := SektorNo;
+      GDosyaIslemleri[DosyaKimlik].DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
     end;
 
     case DST of
@@ -270,6 +280,7 @@ end;
   iþlev: dosya yoksa oluþturur, dosyanýn var olmasý durumunda tüm içeriði sýfýrlar
     (dosyayý yeniden oluturma durumuna getirir)
  ==============================================================================}
+{ TODO - iþlev rtl'ye uyumlu hale getirilecek }
 procedure ReWrite(ADosyaKimlik: TKimlik);
 var
   AktifGorev: PGorev;
@@ -302,12 +313,10 @@ begin
   else if(DST = DST_FAT32) or (DST = DST_FAT32LBA) then
 
     fat32.ReWrite(ADosyaKimlik);
-
-  //Result := 1;
 end;
 
 {==============================================================================
-  dosyaya veri eklemek için açma iþlevlerini gerçekleþtirir
+  dosyaya veri eklemek için dosya açma iþlevlerini gerçekleþtirir
  ==============================================================================}
 procedure Append(ADosyaKimlik: TKimlik);
 var
@@ -341,8 +350,6 @@ begin
   else if(DST = DST_FAT32) or (DST = DST_FAT32LBA) then
 
     fat32.Append(ADosyaKimlik);
-
-  //Result := 1;
 end;
 
 {==============================================================================
@@ -447,8 +454,6 @@ begin
   else if(DST = DST_FAT32) or (DST = DST_FAT32LBA) then
 
     fat32.Write(ADosyaKimlik, AVeri);
-
-  //Result := 1;
 end;
 
 {==============================================================================
@@ -543,7 +548,7 @@ end;
 {==============================================================================
   görev içerisinde, dosya ile yapýlmýþ en son iþlemin sonucunu döndürür
  ==============================================================================}
-function IOResult: TSayi4;
+function IOResult: TISayi4;
 var
   AktifGorev: PGorev;
 begin
@@ -793,18 +798,12 @@ begin
   DosyaIslem^.Klasor := Klasor;
   DosyaIslem^.DosyaAdi := DosyaAdi;
 
-  FillChar(DosyaIslem^.DGAktif[0], ELR_DOSYA_U, #0);
-  FillChar(DosyaIslem^.ELRDosyaAdi[0], ELR_DOSYA_U, #0);
+  FillChar(DosyaIslem^.AktifDG[0], ELR_DOSYA_U, #0);
 
-  DosyaIslem^.DGAktif[0] := Length(DosyaIslem^.DosyaAdi);
-  DosyaIslem^.ELRDosyaAdi[0] := Chr(Length(DosyaIslem^.DosyaAdi));
+  DosyaIslem^.AktifDG[0] := Length(DosyaIslem^.DosyaAdi);
 
   for i := 1 to Length(DosyaIslem^.DosyaAdi) do
-  begin
-
-    DosyaIslem^.DGAktif[i] := Ord(DosyaIslem^.DosyaAdi[i]);
-    DosyaIslem^.ELRDosyaAdi[i] := DosyaIslem^.DosyaAdi[i];
-  end;
+    DosyaIslem^.AktifDG[i] := Ord(DosyaIslem^.DosyaAdi[i]);
 
   // diðer deðerleri sýfýrla
   DosyaIslem^.DosyaDurumu := ddKapali;
@@ -868,7 +867,7 @@ procedure DosyalariKopyala;
 var
   AramaKaydi: TDosyaArama;
   DosyaSayisi: TSayi4;
-  i: TISayi4;
+  i, Sonuc: TISayi4;
 begin
 
   DosyaSayisi := 0;
@@ -878,11 +877,23 @@ begin
   begin
 
     if not(AramaKaydi.DosyaAdi = '..') then
-      DosyaKopyala('disk1:\progrmlr\' + AramaKaydi.DosyaAdi, 'disk2:\' + AramaKaydi.DosyaAdi);
-    //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Dosya Adý: %s', [AramaKaydi.DosyaAdi]);
+    begin
+
+
+      Sonuc := DosyaKopyala('disk1:\progrmlr\' + AramaKaydi.DosyaAdi, 'disk2:\' + AramaKaydi.DosyaAdi);
+      if(Sonuc <> HATA_YOK) then
+      begin
+
+        SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Dosya Adý: %s', [AramaKaydi.DosyaAdi]);
+        SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Hata Kodu: %d', [Sonuc]);
+        FindClose(AramaKaydi);
+        Exit;
+      end;
 
     Inc(DosyaSayisi);
-    if(DosyaSayisi = 3) then Break;
+    //if(DosyaSayisi = 2) then Break;   // -1 dosya kopyalanacak
+    if(DosyaSayisi = 14) then Break;   // -1 dosya kopyalanacak
+    end;
 
     i := FindNext(AramaKaydi);
   end;
@@ -890,16 +901,40 @@ begin
   FindClose(AramaKaydi);
 end;
 
-procedure DosyaKopyala(AKaynakDosya, AHedefDosya: string);
+function DosyaKopyala(AKaynakDosya, AHedefDosya: string): TISayi4;
 var
   DosyaKimlik: TKimlik;
   Bellek: Isaretci;
   U: TISayi8;
+  Sonuc: TSayi2;
+  s: String;
+  i: Integer;
 begin
+
+{  s := 'Merhaba0' + #13#10;
+  AssignFile(DosyaKimlik, AHedefDosya);
+  //ReWrite(DosyaKimlik);
+  Append(DosyaKimlik);
+  Sonuc := IOResult;
+  if(Sonuc = 0) then
+  begin
+
+    //Write(DosyaKimlik, Isaretci(0), 300);
+    for i := 1 to 500 do
+      Write(DosyaKimlik, s);
+  end else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Hedef Dosya Hatasý: %d', [Sonuc]);
+
+  CloseFile(DosyaKimlik);
+
+  Exit;
+}
+
+  Result := HATA_YOK;
 
   AssignFile(DosyaKimlik, AKaynakDosya);
   Reset(DosyaKimlik);
-  if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then
+  Sonuc := IOResult;
+  if(Sonuc = HATA_DOSYA_ISLEM_BASARILI) then
   begin
 
     U := FileSize(DosyaKimlik);
@@ -911,15 +946,30 @@ begin
 
     AssignFile(DosyaKimlik, AHedefDosya);
     ReWrite(DosyaKimlik);
-    if(IOResult = 0) then
+    Sonuc := IOResult;
+    if(Sonuc = 0) then
     begin
 
       Write(DosyaKimlik, Bellek, U);
+    end
+    else
+    begin
+
+      Result := Sonuc;
+      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Hedef Dosya Hatasý: %d', [Sonuc]);
     end;
 
     CloseFile(DosyaKimlik);
 
     FreeMem(Bellek, U);
+
+    //if(Result <> HATA_YOK) then Exit;
+  end
+  else
+  begin
+
+    Result := Sonuc;
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Kaynak Dosya Hatasý: %d', [Sonuc]);
   end;
 end;
 

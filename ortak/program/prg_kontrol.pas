@@ -6,7 +6,7 @@
   Dosya Adý: prg_kontrol.pas
   Dosya Ýþlevi: dahili çekirdek programý: çekirdek içi kontrol iþlemleri için
 
-  Güncelleme Tarihi: 26/05/2025
+  Güncelleme Tarihi: 07/06/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,14 +14,13 @@ unit prg_kontrol;
 
 interface
 
-uses gdt, gorev, paylasim, genel, zamanlayici, gn_pencere, gn_islemgostergesi,
-  gorselnesne, sistemmesaj, dosya;
+uses gdt, gorev, paylasim, genel, gn_pencere, gn_islemgostergesi, gorselnesne,
+  sistemmesaj, dosya;
 
 procedure SistemKontrolGoreviOlustur(AGorevKimlik: TKimlik; AGorevAdi: string;
   AIslev: TIslev);
 procedure KontrolYonetimi;
 procedure NesneKontrol;
-procedure CalisanUygulamalariKaydet;
 
 implementation
 
@@ -120,7 +119,7 @@ begin
 
     // 10 saniye bekle
     //BekleMS(1000);
-    Sayac := ZamanlayiciSayaci + 1000;
+    Sayac := ZamanlayiciSayaci + 500;
     while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
 
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
@@ -169,7 +168,7 @@ begin
         G := GAktifMasaustu^.FBoyut.Genislik;
 
         if(Pencere = nil) then
-          Pencere := Pencere^.Olustur(GAktifMasaustu, G - 162, 100 + 24, 152, 18,
+          Pencere := Pencere^.Olustur(GAktifMasaustu, G - 162, 122 + 24, 152, 18,
           ptBasliksiz, '', RENK_KIRMIZI);
 
         if(IslemGostergesi = nil) then
@@ -189,8 +188,6 @@ begin
           Sayac := ZamanlayiciSayaci + 20;
           while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
         end;
-
-        CalisanUygulamalariKaydet;
 
         YenidenBaslat;
 
@@ -224,72 +221,6 @@ begin
     begin
 
       SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%d. nesne giriþi hatalý: %d', [i, G^.Kimlik]);
-      Break;
-    end;
-  end;
-end;
-
-// sistem yeniden baþlamadan önce çalýþan tüm pencereye sahip uygulamalarýn
-// diske kaydedilme iþlemini gerçekleþtirir
-procedure CalisanUygulamalariKaydet;
-var
-  GN: PGorselNesne;
-  Bellek: PChar;
-  i, j, CalisanPSayisi: TISayi4;
-  P: TProgramKayit;
-  FD: TFizikselDepolama;
-  P4: PSayi4;
-begin
-
-  Bellek := Isaretci($3200000);
-  FillByte(Isaretci(Bellek)^, 512, 0);
-
-  CalisanPSayisi := CalisanProgramSayisiniAl(GAktifMasaustu^.Kimlik);
-
-  for i := 0 to CalisanPSayisi - 1 do
-  begin
-
-    P := CalisanProgramBilgisiAl(i, GAktifMasaustu^.Kimlik);
-
-    for j := 1 to Length(P.DosyaAdi) do
-    begin
-
-      Bellek^ := P.DosyaAdi[j];
-      Inc(Bellek);
-    end;
-
-    Bellek^ := #0;
-    Inc(Bellek);
-
-    P4 := PSayi4(Bellek);
-
-    GN := GN^.NesneAl(P.PencereKimlik);
-    if not(GN = nil) then
-    begin
-
-      P4^ := GN^.FKonum.Sol;
-      Inc(P4);
-      P4^ := GN^.FKonum.Ust;
-      Inc(P4);
-      P4^ := GN^.FBoyut.Genislik;
-      Inc(P4);
-      P4^ := GN^.FBoyut.Yukseklik;
-      Inc(P4);
-    end;
-
-    Bellek := PChar(P4);
-  end;
-
-  Bellek^ := #0;
-
-  for i := 0 to 5 do
-  begin
-
-    FD := FizikselDepolamaAygitListesi[i];
-    if(FD.Mevcut0) and (FD.FD3.SurucuTipi = SURUCUTIP_DISK) and (FD.FD3.AygitAdi = 'fda4') then
-    begin
-
-      FD.SektorYaz(@FD, 10, 1, Isaretci($3200000));
       Break;
     end;
   end;

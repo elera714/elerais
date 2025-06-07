@@ -55,7 +55,7 @@ type
 
     FGorevKimlik: TKimlik;                // görev kimlik numarasý
     FGorevDurum: TGorevDurum;             // iþlem durumu
-    FDosyaSonIslemDurum: TSayi4;          // görevin son dosya iþlem sonuç deðeri
+    FDosyaSonIslemDurum: TISayi4;         // görevin son dosya iþlem sonuç deðeri
 
     // hata ile ilgili deðiþkenler
     FHataKodu,

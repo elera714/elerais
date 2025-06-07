@@ -163,6 +163,11 @@ const
   HATA_BILINMEYENUZANTI       = TISayi4(-17);
   HATA_NESNEOLUSTURMA         = TISayi4(-18);
 
+  HATA_AYGITMESGUL            = TISayi4(-19);
+  HATA_AYGITSEKTOROKUMA       = TISayi4(-20);
+  HATA_AYGITSEKTORYAZMA       = TISayi4(-21);
+  HATA_TUMSEKTORLERDOLU       = TISayi4(-22);
+
   // dosya hata kodlarý
   HATA_DOSYA_ISLEM_BASARILI   = 0;
   HATA_DOSYA_MEVCUTDEGIL      = 2;
@@ -386,16 +391,6 @@ type
   TDizinGirisi = record
     IlkSektor: TSayi4;
     ToplamSektor: TSayi4;
-
-    // her bir dizin tablosu okunduðunda, o sektörde okunan kaydýn sýra numarasý
-    // 0 = dizin tablosu okundu, bir sonraki dizin tablosunu oku
-    // 1 = ilk kayýt numarasý okundu
-    // 2 = ikinci kayýt numarasý okundu
-    // 16 = sonuncu kayýt numarasý okundu
-    DizinTablosuKayitNo: TISayi4;   { TODO - geliþtirmeler kapsamýnda gereksiz olabilir }
-
-    // dizin giriþinin okunan sektörü: 0 = ilk dizin giriþi 1, 2, .. sonraki dizin giriþleri
-    OkunanSektor: TSayi4;
   end;
 
 const
@@ -570,29 +565,23 @@ type
     Uzunluk: TISayi4;
     Konum: TSayi4;
 
-    // bu deðiþkenler iþlevler arasý veri alýþveriþi içindir
-    DGTekSektorIcerik: array[0..511] of TSayi1;     // dizin giriþinin tek sektörlük içeriði
+    // dizin giriþinin tek sektörlük içeriði, iþlevler arasý veri alýþveriþi için
+    TekSektorIcerik: Isaretci;
 
-    TekSektorIcerik: Isaretci;                      // DGTekSektorIcerik iþlevinin yerini alacak
-
-    // aktif dosya / klasör için dizin giriþi
+    // üzerinde iþlem yapýlan aktif dosya / klasör için dizin giriþi
     // tüm dosya iþlemleri bu yapý üzerinde olacak, daha sonra sektörün ilgili sýrasýna aktarýlacak
     // tüm iþlevler dosya açýk olduðu müddetçe tekrar tekrar dizin giriþini okumadan bu yapýya bakarak
     // karar mekanizmalarýný oluþturacak
-    { TODO - tüm dosya sistemleri için dizin girdileri buradan alýnarak bu yapý
-      içerisinde bulunan tekrar deðiþkenler iptal edilebilir }
-    DGAktif: array[0..63] of TSayi1;
-
-    ELRDosyaAdi: string[ELR_DOSYA_U];
-
-    GirdiTipi, Ozellikler: TSayi1;
+    { TODO - iptal edilecek }
+    AktifDG: array[0..63] of TSayi1;
 
     // iþlem yapýlan sektör numarasý (-1 = sektör henüz okunmadý)
-    SektorNo,
+    SektorNo,       { TODO - bu deðiþken iptal edilecek, KumeNo deðiþkeniyle devam edilecek }
     // dosya / klasörün okunan dizin sektöründeki (SektorNo) kayýt sýra numarasý
     // -1 sektör okunacak (kayýt sýra numarasý yok)
     KayitSN: TISayi4;
     KumeNo: TSayi4;
+    ZincirNo: TSayi4;
     DosyaDurumu: TDosyaDurumu;
 
     // dosya arama iþlemleri için - yukarýdaki yapýlarla birliktelik saðlanacak

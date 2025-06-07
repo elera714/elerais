@@ -37,7 +37,7 @@ function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
   var ADosyaArama: TDosyaArama): TSayi1;
-function DizinGirisindeAra(AAramaKayit: TDosyaIslem; AAranacakDeger: string): TSayi4;
+function DizinGirisindeAra(ADosyaIslem: TDosyaIslem; AAranacakDeger: string): TSayi4;
 
 implementation
 
@@ -101,14 +101,16 @@ end;
 procedure ReWrite(ADosyaKimlik: TKimlik);
 begin
 
-  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat32.ReWrite: iþlev henüz yazýlmadý!', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat32.ReWrite iþlevi yazýlacak', []);
 end;
 
 {==============================================================================
-  dosyaya veri eklemek için açma iþlevlerini gerçekleþtirir
+  dosyaya veri eklemek için dosya açma iþlevlerini gerçekleþtirir
  ==============================================================================}
 procedure Append(ADosyaKimlik: TKimlik);
 begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat12.Append iþlevi yazýlacak', []);
 end;
 
 {==============================================================================
@@ -165,7 +167,7 @@ end;
 procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
 begin
 
-  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat32.Write: iþlev henüz yazýlmadý!', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat32.Write iþlevi yazýlacak', []);
 end;
 
 {==============================================================================
@@ -327,6 +329,7 @@ var
   DizinGirdisi: PDizinGirdisi;
   TumGirislerOkundu,
   UzunDosyaAdiBulundu: Boolean;
+  DosyaIslem: PDosyaIslem;
 begin
 
   ADosyaArama.DosyaAdi := '';
@@ -336,25 +339,30 @@ begin
 
   UzunDosyaAdiBulundu := False;
 
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DosyaIslem := @GDosyaIslemleri[ADosyaArama.Kimlik];
+
   // aramanýn yapýlacaðý sürücü
-  MD := GDosyaIslemleri[ADosyaArama.Kimlik].MantiksalDepolama;
+  MD := DosyaIslem^.MantiksalDepolama;
 
   // aramaya baþla
   repeat
 
-    if(ADizinGirisi^.DizinTablosuKayitNo = 0) then
+    if(DosyaIslem^.KayitSN = -1) then
     begin
 
       // bir sonraki dizin giriþini oku
-      MD^.FD^.SektorOku(MD^.FD, ADizinGirisi^.IlkSektor + ADizinGirisi^.OkunanSektor,
+      MD^.FD^.SektorOku(MD^.FD, ADizinGirisi^.IlkSektor + DosyaIslem^.ZincirNo,
         1, @DizinBellekAdresi);
 
-      Inc(ADizinGirisi^.OkunanSektor);
+      Inc(DosyaIslem^.ZincirNo);
+
+      DosyaIslem^.KayitSN := 0;
     end;
 
     // dosya giriþ tablosuna konumlan
     DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi);
-    Inc(DizinGirdisi, ADizinGirisi^.DizinTablosuKayitNo);
+    Inc(DizinGirdisi, DosyaIslem^.KayitSN);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
     if(DizinGirdisi^.DosyaAdi[0] = #00) then
@@ -437,9 +445,9 @@ begin
     end;
 
     // bir sonraki girdiye konumlan
-    Inc(ADizinGirisi^.DizinTablosuKayitNo);
-    if(ADizinGirisi^.DizinTablosuKayitNo = 16) then
-      ADizinGirisi^.DizinTablosuKayitNo := 0
+    Inc(DosyaIslem^.KayitSN);
+    if(DosyaIslem^.KayitSN = 16) then
+      DosyaIslem^.KayitSN := -1
     else Inc(DizinGirdisi);
 
     { TODO - kontrol edilerek aktifleþtirilecek }
@@ -457,9 +465,10 @@ begin
 end;
 
 {==============================================================================
-  dizin giriþinden ilgili bilgileri alýr
+  dizin giriþinden dosya / klasör bilgilerini bulup, geriye ilgili giriþin küme
+  numarasýný döndürür
  ==============================================================================}
-function DizinGirisindeAra(AAramaKayit: TDosyaIslem; AAranacakDeger: string): TSayi4;
+function DizinGirisindeAra(ADosyaIslem: TDosyaIslem; AAranacakDeger: string): TSayi4;
 var
   MD: PMantiksalDepolama;
   DizinGirdisi: PDizinGirdisi;
@@ -470,24 +479,26 @@ begin
   UzunDosyaAdiBulundu := False;
 
   // aramanýn yapýlacaðý sürücü
-  MD := AAramaKayit.MantiksalDepolama;
+  MD := ADosyaIslem.MantiksalDepolama;
 
   // aramaya baþla
   repeat
 
-    if(AAramaKayit.DizinGirisi.DizinTablosuKayitNo = 0) then
+    if(ADosyaIslem.KayitSN = -1) then
     begin
 
       // bir sonraki dizin giriþini oku
-      MD^.FD^.SektorOku(MD^.FD, AAramaKayit.DizinGirisi.IlkSektor +
-        AAramaKayit.DizinGirisi.OkunanSektor, 1, @DizinBellekAdresi);
+      MD^.FD^.SektorOku(MD^.FD, ADosyaIslem.DizinGirisi.IlkSektor +
+        ADosyaIslem.ZincirNo, 1, @DizinBellekAdresi);
 
-      Inc(AAramaKayit.DizinGirisi.OkunanSektor);
+      Inc(ADosyaIslem.SektorNo);
+
+      ADosyaIslem.KayitSN := 0;
     end;
 
     // dosya giriþ tablosuna konumlan
     DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi);
-    Inc(DizinGirdisi, AAramaKayit.DizinGirisi.DizinTablosuKayitNo);
+    Inc(DizinGirdisi, ADosyaIslem.KayitSN);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
     if(DizinGirdisi^.DosyaAdi[0] = #00) then
@@ -539,9 +550,9 @@ begin
     end;
 
     // bir sonraki girdiye konumlan
-    Inc(AAramaKayit.DizinGirisi.DizinTablosuKayitNo);
-    if(AAramaKayit.DizinGirisi.DizinTablosuKayitNo = 16) then
-      AAramaKayit.DizinGirisi.DizinTablosuKayitNo := 0
+    Inc(ADosyaIslem.KayitSN);
+    if(ADosyaIslem.KayitSN = 16) then
+      ADosyaIslem.KayitSN := -1
     else Inc(DizinGirdisi);
 
   until True = False;

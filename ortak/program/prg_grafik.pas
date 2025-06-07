@@ -6,7 +6,7 @@
   Dosya Adý: prg_grafik.pas
   Dosya Ýþlevi: dahili çekirdek programý: nesnelerin grafik kartýna çizimi için
 
-  Güncelleme Tarihi: 26/05/2025
+  Güncelleme Tarihi: 31/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -133,7 +133,7 @@ begin
 
   SDPencere := SDPencere^.Olustur(nil, Sol, 10, 150, 105, ptIletisim, 'Sistem Durumu', RENK_BEYAZ);
 
-  etkBellek := etkBellek^.Olustur(ktNesne, SDPencere, 5, 65, 6 * 8, 16, RENK_SIYAH, 'Bellek');
+  etkBellek := etkBellek^.Olustur(ktNesne, SDPencere, 5, 65, 6 * 8, 16, RENK_TURKUAZ, 'Bellek');
   etkBellek^.Goster;
 
   igBellek := igBellek^.Olustur(ktNesne, SDPencere, 60, 65, 85, 16);
@@ -141,7 +141,7 @@ begin
   igBellek^.MevcutDegerYaz(0);
   igBellek^.Goster;
 
-  etkDisk := etkDisk^.Olustur(ktNesne, SDPencere, 5, 85, 4 * 8, 16, RENK_SIYAH, 'Disk');
+  etkDisk := etkDisk^.Olustur(ktNesne, SDPencere, 5, 85, 4 * 8, 16, RENK_TURKUAZ, 'Disk');
   etkDisk^.Goster;
 
   igDisk := igDisk^.Olustur(ktNesne, SDPencere, 60, 85, 85, 16);
@@ -192,12 +192,12 @@ begin
   CizimAlan.Ust += P_BASLIK_YUKSEKLIK;
   CizimAlan.Alt := CizimAlan.Ust + 60;
   SDPencere^.DikdortgenDoldur(SDPencere, CizimAlan, RENK_SIYAH, RENK_BEYAZ);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'ÇKRDK:', RENK_LACIVERT);
-  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, True, 8, SistemSayaci, RENK_LACIVERT);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'ÇAÐRI:', RENK_LACIVERT);
-  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, True, 8, CagriSayaci, RENK_LACIVERT);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'GRAFK:', RENK_LACIVERT);
-  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, True, 8, GrafikSayaci, RENK_LACIVERT);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'ÇKRDK:', RENK_TURKUAZ);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, True, 8, SistemSayaci, RENK_GRI);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'ÇAÐRI:', RENK_TURKUAZ);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, True, 8, CagriSayaci, RENK_GRI);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'GRAFK:', RENK_TURKUAZ);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, True, 8, GrafikSayaci, RENK_GRI);
 end;
 
 end.

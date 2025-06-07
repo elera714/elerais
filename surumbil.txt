@@ -1,6 +1,7 @@
 *******************************************************************************
   Sürüm: 0.4.0 (sunucu / istemci) - 25.05.2025 (R36) - Beta
 *******************************************************************************
+
   + iþletim sistemine uyum kapsamýnda pascal rtl çalýþmalarý orijinalleþtirildi
   + elr-1 dosya sistemi Write dosya iþlevi kodlama çalýþmasý tamamlandý
   + ekran kartý sürücüsünde iyileþtirmeler gerçekleþtirildi

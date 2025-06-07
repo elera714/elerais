@@ -91,14 +91,16 @@ end;
 procedure ReWrite(ADosyaKimlik: TKimlik);
 begin
 
-  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat12.ReWrite: iþlev henüz yazýlmadý!', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat12.ReWrite iþlevi yazýlacak', []);
 end;
 
 {==============================================================================
-  dosyaya veri eklemek için açma iþlevlerini gerçekleþtirir
+  dosyaya veri eklemek için dosya açma iþlevlerini gerçekleþtirir
  ==============================================================================}
 procedure Append(ADosyaKimlik: TKimlik);
 begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat12.Append iþlevi yazýlacak', []);
 end;
 
 {==============================================================================
@@ -155,7 +157,7 @@ end;
 procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
 begin
 
-  SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Uyarý: Fat12.Write: iþlev henüz yazýlmadý!', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat12.Write iþlevi yazýlacak', []);
 end;
 
 {==============================================================================
