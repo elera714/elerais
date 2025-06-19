@@ -43,7 +43,7 @@ function NesneOlustur(AMasaustuAdi: string): TKimlik;
 
 implementation
 
-uses gn_islevler, genel, bmp, temelgorselnesne, gn_pencere;
+uses gn_islevler, genel, bmp, temelgorselnesne, gn_pencere, gorev;
 
 {==============================================================================
   masaüstü kesme çaðrýlarýný yönetir
@@ -59,7 +59,7 @@ begin
     ISLEV_OLUSTUR:
 
       Result := NesneOlustur(PKarakterKatari(PSayi4(ADegiskenler + 04)^ +
-        CalisanGorevBellekAdresi)^);
+        FAktifGorevBellekAdresi)^);
 
     ISLEV_GOSTER:
     begin
@@ -138,7 +138,7 @@ begin
       Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntMasaustu));
       if(Masaustu <> nil) then Masaustu^.MasaustuResminiDegistir(
-        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^);
     end;
 
     else Result := HATA_ISLEV;

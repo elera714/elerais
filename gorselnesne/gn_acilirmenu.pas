@@ -44,7 +44,7 @@ function NesneOlustur(AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi
 
 implementation
 
-uses genel, temelgorselnesne;
+uses genel, temelgorselnesne, gorev;
 
 {==============================================================================
   açýlýr menü kesme çaðrýlarýný yönetir
@@ -89,7 +89,7 @@ begin
       AcilirMenu := PAcilirMenu(AcilirMenu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
 
-      AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^;
+      AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
       AResimSiraNo := PISayi4(ADegiskenler + 08)^;
 
       if(AcilirMenu <> nil) then

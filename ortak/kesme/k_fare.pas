@@ -20,7 +20,7 @@ function FareCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel;
+uses genel, gorev;
 
 {==============================================================================
   fare kesme çağrılarını yönetir
@@ -39,7 +39,7 @@ begin
   begin
 
     // fare konum değerini belirtilen bellek adreslerine kopyala
-    _Nokta := PKonum(PSayi4(Degiskenler)^ + CalisanGorevBellekAdresi);
+    _Nokta := PKonum(PSayi4(Degiskenler)^ + FAktifGorevBellekAdresi);
 
     _Nokta^.Sol := GFareSurucusu.YatayKonum;
     _Nokta^.Ust := GFareSurucusu.DikeyKonum;

@@ -65,7 +65,7 @@ begin
   //GDTRGirdisiEkle(SECICI_GRAFIK_LFB, KartBilgisi.BellekAdresi, $FFFFFF, $92, $D0);
 
   // arka plan için bellek ayır
-  ArkaBellek := GGercekBellek.Ayir(GEkranKartSurucusu.KartBilgisi.YatayCozunurluk *
+  ArkaBellek := GetMem(GEkranKartSurucusu.KartBilgisi.YatayCozunurluk *
     GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk * (KartBilgisi.PixelBasinaBitSayisi div 8));
 
   case KartBilgisi.PixelBasinaBitSayisi of

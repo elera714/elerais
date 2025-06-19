@@ -21,7 +21,7 @@ function SayacCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses cmos;
+uses cmos, gorev;
 
 function SayacCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -40,7 +40,7 @@ begin
   if(Islev = 1) then
   begin
 
-    P1 := Isaretci(PSayi4(ADegiskenler)^ + CalisanGorevBellekAdresi);
+    P1 := Isaretci(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
 
     SaatAl(Saat, Dakika, Saniye);
     P1^ := Saat;
@@ -53,7 +53,7 @@ begin
   else if(Islev = 2) then
   begin
 
-    P2 := Isaretci(PSayi4(ADegiskenler)^ + CalisanGorevBellekAdresi);
+    P2 := Isaretci(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
 
     TarihAl(Gun, Ay, Yil, HaftaninGunu);
     P2^ := Gun;

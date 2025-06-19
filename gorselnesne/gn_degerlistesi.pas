@@ -49,7 +49,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_islevler, gn_pencere, temelgorselnesne;
+uses genel, gn_islevler, gn_pencere, temelgorselnesne, gorev;
 
 {==============================================================================
   değer listesi kesme çağrılarını yönetir
@@ -102,7 +102,7 @@ begin
       DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntDegerListesi));
       if(DegerListesi <> nil) then Result := TISayi4(DegerListesi^.DegerEkle(
-        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^,
+        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^,
         PRenk(ADegiskenler + 08)^));
     end;
 
@@ -127,7 +127,7 @@ begin
       DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntDegerListesi));
       if(DegerListesi <> nil) then Result := DegerListesi^.FSeciliSiraNo;
-      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       p^ := DegerListesi^.SeciliSatirDegeriniAl;
     end;
 
@@ -140,8 +140,8 @@ begin
       if(DegerListesi <> nil) then
       begin
 
-        Kolon1Ad := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^;
-        Kolon2Ad := PKarakterKatari(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi)^;
+        Kolon1Ad := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
+        Kolon2Ad := PKarakterKatari(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi)^;
         KolonU := PISayi4(ADegiskenler + 12)^;
         Result := TISayi4(DegerListesi^.BaslikEkle(Kolon1Ad, Kolon2Ad, KolonU));
       end;

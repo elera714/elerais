@@ -54,7 +54,7 @@ function DefterCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses gn_pencere, gn_islevler, genel, temelgorselnesne, islevler, sistemmesaj;
+uses gn_pencere, gn_islevler, genel, temelgorselnesne, islevler, sistemmesaj, gorev;
 
 {==============================================================================
   defter kesme çaðrýlarýný yönetir
@@ -105,7 +105,7 @@ begin
       if(Defter <> nil) then
       begin
 
-        Defter^.YaziEkle(Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi));
+        Defter^.YaziEkle(Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi));
         Result := 1;
       end;
     end;
@@ -119,7 +119,7 @@ begin
       if(Defter <> nil) then
       begin
 
-        Defter^.YaziEkle(PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^);
+        Defter^.YaziEkle(PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^);
         Result := 1;
       end;
     end;

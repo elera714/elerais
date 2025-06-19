@@ -34,7 +34,7 @@ function GiysiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel;
+uses genel, gorev;
 
 function GiysiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -58,7 +58,7 @@ begin
     if(GiysiNo < TOPLAM_GIYSISAYISI) then
     begin
 
-      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       p^ := GiysiListesi[GiysiNo].Ad;
     end;
   end

@@ -373,7 +373,7 @@ begin
   BlokYukle.GidisHalka := @GidisHalka[0];
   BlokYukle.GelisHalka := @GelisHalka[0];
 
-  GidisHalkaBellekAdresi := GGercekBellek.Ayir(ETH_CERCEVE_U * GIDIS_HALKA_U);
+  GidisHalkaBellekAdresi := GetMem(ETH_CERCEVE_U * GIDIS_HALKA_U);
   p := GidisHalkaBellekAdresi;
   for i := 0 to GIDIS_HALKA_U - 1 do
   begin
@@ -385,7 +385,7 @@ begin
   end;
   BirSonrakiGidisSiraNo := 0;
 
-  GelisHalkaBellekAdresi := GGercekBellek.Ayir(ETH_CERCEVE_U * GELIS_HALKA_U);
+  GelisHalkaBellekAdresi := GetMem(ETH_CERCEVE_U * GELIS_HALKA_U);
   p := GelisHalkaBellekAdresi;
   for i := 0 to GELIS_HALKA_U - 1 do
   begin

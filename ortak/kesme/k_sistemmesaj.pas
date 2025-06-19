@@ -20,7 +20,7 @@ function SistemMesajCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TI
 
 implementation
 
-uses genel, sistemmesaj;
+uses genel, sistemmesaj, gorev;
 
 {==============================================================================
   mesaj kesme çağrılarını yönetir
@@ -45,7 +45,7 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    p := PMesajKayit(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+    p := PMesajKayit(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
     GSistemMesaj.MesajAl(PISayi4(ADegiskenler + 00)^, p);
     Result := GSistemMesaj.ToplamMesaj;
   end
@@ -55,7 +55,7 @@ begin
   begin
 
     SISTEM_MESAJ(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
-      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi))^, []);
+      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi))^, []);
   end
 
   // programdan karakter katarı + sayısal değer türünde gelen mesajı sistem mesajlarına ekle
@@ -63,7 +63,7 @@ begin
   begin
 
     SISTEM_MESAJ(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
-      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi))^,
+      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi))^,
       [PSayi4(ADegiskenler + 12)^]); //, PSayi4(ADegiskenler + 16)^);
       { TODO - üstte iptal edilen ifadeyi api işlevinden çıkar }
   end

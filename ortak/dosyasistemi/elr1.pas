@@ -127,7 +127,7 @@ var
   Saat, Dakika, Saniye: TSayi1;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -329,7 +329,7 @@ var
   DosyaAdi: string;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -461,7 +461,7 @@ var
   Bulundu: Boolean;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -535,7 +535,7 @@ var
   Bellek: Isaretci;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -1585,7 +1585,7 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ABirOncekiKumeNo: %d', [ABirOncekiKumeNo]);
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AKumeNo: %d', [AKumeNo]);}
 
-  GetMem(Bellek, 512);
+  Bellek := GetMem(512);
 
   // konumlanýlacak sektör numarasý
   SektorNo := AKumeNo div 128;
@@ -1613,7 +1613,7 @@ var
   Deger: PSayi4;
 begin
 
-  GetMem(Bellek, 512);
+  Bellek := GetMem(512);
 
   // tüm sektörler dolu
   KullanilanSektor := 0;

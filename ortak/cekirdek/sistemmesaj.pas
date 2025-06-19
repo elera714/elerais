@@ -51,7 +51,7 @@ type
 
 { TODO : // aşağıdaki tüm çağrılar iptal edilerek bu çağrının içerisine alınacak }
 procedure SISTEM_MESAJ(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-    ADegerler: array of const);
+  ADegerler: array of const);
 
 procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: PWideChar);
 procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: PChar; AMesajUz: TISayi4);
@@ -85,7 +85,7 @@ var
 begin
 
   // mesajlar için bellek ayır
-  MesajBellekAdresi := GGercekBellek.Ayir(USTSINIR_MESAJ * SizeOf(TMesajKayit));
+  MesajBellekAdresi := GetMem(USTSINIR_MESAJ * SizeOf(TMesajKayit));
 
   // bellek girişlerini mesaj yapılarıyla eşleştir
   for i := 0 to USTSINIR_MESAJ - 1 do

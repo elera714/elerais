@@ -20,7 +20,7 @@ function EkranCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel;
+uses genel, gorev;
 
 {==============================================================================
   ekran kesme çağrılarını yönetir
@@ -45,7 +45,7 @@ begin
     begin
 
       // çözünürlük değerlerini belirtilen bellek adreslerine kopyala
-      Konum := PKonum(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
+      Konum := PKonum(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
 
 
       Konum^.Sol := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;

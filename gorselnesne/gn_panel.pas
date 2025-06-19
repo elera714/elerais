@@ -65,7 +65,7 @@ begin
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PSayi4(ADegiskenler + 20)^,
         PRenk(ADegiskenler + 24)^, PRenk(ADegiskenler + 28)^, PRenk(ADegiskenler + 32)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 36)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 36)^ + FAktifGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:
@@ -94,8 +94,8 @@ begin
       if(Panel <> nil) then
       begin
 
-        Konum := PKonum(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
-        Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
+        Konum := PKonum(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+        Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
         Konum^.Sol := Panel^.FKonum.Sol;
         Konum^.Ust := Panel^.FKonum.Ust;
         Boyut^.Genislik := Panel^.FBoyut.Genislik;

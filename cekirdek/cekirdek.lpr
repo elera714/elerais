@@ -72,7 +72,7 @@ begin
   yukleyici.Yukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Masaüstü yönetim programý yükleniyor...', []);
-  MUGorev^.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + OnDegerMasaustuProgram);
+  MUGorev^.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + OnDegerMasaustuProgram, CALISMA_SEVIYE3);
 
   // sistem ana kontrol kýsmýna geçiþ yap
   SistemAnaKontrol;

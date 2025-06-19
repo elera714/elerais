@@ -20,7 +20,7 @@ function PCICagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses pci;
+uses pci, gorev;
 
 {==============================================================================
   pci kesme çağrılarını yönetir
@@ -50,7 +50,7 @@ begin
     if(PCIAygitSiraNo >= 0) and (PCIAygitSiraNo < ToplamPCIAygitSayisi) then
     begin
 
-      p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       Move(PCIAygitBellekAdresi[PCIAygitSiraNo]^, Isaretci(p)^, PCI_YAPIUZUNLUGU);
     end else Result := HATA_DEGERARALIKDISI;
   end

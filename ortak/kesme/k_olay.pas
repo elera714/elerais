@@ -40,7 +40,7 @@ begin
   if(IslevNo = 1) then
   begin
 
-    Gorev := GorevListesi[CalisanGorev];
+    Gorev := GorevListesi[FAktifGorev];
 
     // çalýþan proses'e ait olay var mý ?
     if(Gorev^.OlayAl(Olay)) then
@@ -52,7 +52,7 @@ begin
     if(OlayMevcut) then
     begin
 
-      _Olay := POlay(PSayi4(ADegiskenler)^ + CalisanGorevBellekAdresi);
+      _Olay := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
       _Olay^.Kimlik := Olay.Kimlik;
       _Olay^.Olay := Olay.Olay;
       _Olay^.Deger1 := Olay.Deger1;
@@ -75,7 +75,7 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    Gorev := GorevListesi[CalisanGorev];
+    Gorev := GorevListesi[FAktifGorev];
 
     // uygulama için olay üretilinceye kadar bekle
     // olay olmamasý durumda bir sonraki göreve geç (mevcut görev olay bekliyor)
@@ -91,7 +91,7 @@ begin
     until (OlayMevcut = True);
 
     // olay deðiþkenlerini görevin yýðýn alanýna kopyala
-    _Olay := POlay(PSayi4(ADegiskenler)^ + CalisanGorevBellekAdresi);
+    _Olay := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
     _Olay^.Kimlik := Olay.Kimlik;
     _Olay^.Olay := Olay.Olay;
     _Olay^.Deger1 := Olay.Deger1;

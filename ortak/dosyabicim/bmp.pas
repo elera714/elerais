@@ -98,7 +98,7 @@ begin
       DosyaUzunlugu := FileSize(DosyaKimlik);
 
       // dosyanın belleğe Ustüklenmesi için bellekte yer ayır
-      DosyaBellek := GGercekBellek.Ayir(DosyaUzunlugu);
+      DosyaBellek := GetMem(DosyaUzunlugu);
       if(DosyaBellek = nil) then
       begin
 
@@ -117,7 +117,7 @@ begin
       GoruntuYapi.Genislik := BMPBicim^.Genislik;
       GoruntuYapi.Yukseklik := BMPBicim^.Yukseklik;
 
-      GoruntuYapi.BellekAdresi := GGercekBellek.Ayir(GoruntuYapi.Genislik *
+      GoruntuYapi.BellekAdresi := GetMem(GoruntuYapi.Genislik *
         GoruntuYapi.Yukseklik * 4);
       if(GoruntuYapi.BellekAdresi = nil) then Exit;
 
@@ -145,7 +145,7 @@ begin
       end;
 
       // dosyanın açıldığı belleği serbest bırak
-      GGercekBellek.YokEt(DosyaBellek, DosyaUzunlugu);
+      FreeMem(DosyaBellek, DosyaUzunlugu);
 
       Result := GoruntuYapi;
     end;

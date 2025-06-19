@@ -428,7 +428,7 @@ var
 
 begin
 
-  GelisHalkaBellekAdresi := GGercekBellek.Ayir(sizeof(TE1000_rx_desc) * E1000_NUM_RX_DESC + 16);
+  GelisHalkaBellekAdresi := GetMem(sizeof(TE1000_rx_desc) * E1000_NUM_RX_DESC + 16);
   p := Isaretci($3C00000); //60 * 1024 * 1024); // GelisHalkaBellekAdresi;
 
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p2 Bellek Adresi: $%x', [TSayi4(GelisHalkaBellekAdresi)]);
@@ -481,7 +481,7 @@ var
 
 begin
 
-  GidisHalkaBellekAdresi := GGercekBellek.Ayir(sizeof(TE1000_tx_desc) * E1000_NUM_TX_DESC + 16);
+  GidisHalkaBellekAdresi := GetMem(sizeof(TE1000_tx_desc) * E1000_NUM_TX_DESC + 16);
   p := GidisHalkaBellekAdresi;
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Bellek Adresi: $%x', [TSayi4(p)]);

@@ -20,7 +20,7 @@ function AgIletisimCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISay
 
 implementation
 
-uses iletisim, genel, donusum, dns, sistemmesaj;
+uses iletisim, genel, donusum, dns, sistemmesaj, gorev;
 
 {==============================================================================
   ağ iletişim (soket) yönetim işlevlerini içerir
@@ -48,7 +48,7 @@ begin
     begin
 
       ProtokolTipi := PProtokolTipi(Degiskenler + 00)^;
-      s := PKarakterKatari(PSayi4(Degiskenler + 04)^ + CalisanGorevBellekAdresi)^;
+      s := PKarakterKatari(PSayi4(Degiskenler + 04)^ + FAktifGorevBellekAdresi)^;
       HedefPort := PSayi4(Degiskenler + 08)^;
 
       //SISTEM_MESAJ(RENK_KIRMIZI, 'IP Adresi: %s', [s]);
@@ -99,7 +99,7 @@ begin
       i := PSayi4(Degiskenler + 04)^;
 
       Bag := GAgIletisimListesi[BaglantiKimlik];
-      Result := Bag^.Oku(Isaretci(i + CalisanGorevBellekAdresi));
+      Result := Bag^.Oku(Isaretci(i + FAktifGorevBellekAdresi));
     end
     // bağlantıya veri gönder
     else if(AltIslev = 6) then
@@ -110,7 +110,7 @@ begin
       j := PSayi4(Degiskenler + 08)^;
 
       Bag := GAgIletisimListesi[BaglantiKimlik];
-      Bag^.Yaz(Isaretci(i + CalisanGorevBellekAdresi), j);
+      Bag^.Yaz(Isaretci(i + FAktifGorevBellekAdresi), j);
     end
     // bağlantıyı kapat
     else if(AltIslev = 7) then
@@ -119,7 +119,7 @@ begin
       { TODO : kaynakların yok edilmesi test edilecek }
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       Bag := GAgIletisimListesi[BaglantiKimlik];
-      Result := Bag^.BaglantiyiKes;
+      Result := Bag^.BaglantiyiKes(Bag^.FKimlik);
     end
 
     else Result := HATA_ISLEV;

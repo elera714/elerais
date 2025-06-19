@@ -207,7 +207,7 @@ begin
 
     //SISTEM_MESAJ(RENK_MOR, 'NetBios -> Gönderilen Veri U: %d', [VeriSN]);
 
-    NB2 := GGercekBellek.Ayir(4096);
+    NB2 := GetMem(4096);
 
     NB2^.Tanimlayici := NB^.Tanimlayici;
     NB2^.Bayrak := htons(TSayi2($8400));
@@ -229,11 +229,11 @@ begin
 
         Baglanti^.Yaz(NB2, VeriSN + 12);
 
-        Baglanti^.BaglantiyiKes;
+        Baglanti^.BaglantiyiKes(Baglanti^.FKimlik);
       end;
     end;
 
-    GGercekBellek.YokEt(NB2, 4096);
+    FreeMem(NB2, 4096);
 
     SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'NetBios yanýtý gönderildi...', []);
   end

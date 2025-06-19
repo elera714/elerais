@@ -2,6 +2,9 @@
   Sürüm: 0.4.0 (sunucu / istemci) - 25.05.2025 (R36) - Beta
 *******************************************************************************
 
+  + fpc derleyicisinin kendi dahili iþlevleri için kullandýðý çekirdek bellek yönetim modülü tamamlandý
+  + çekirdek içerisinde tanýmlý (çekirdek haricinde) tüm yýðýn (stack) deðerleri otomatikleþtirildi
+  + arp tablosunun güncellenmesi iþlevi çekirdek içerisinden çýkarýlarak ayrý bir görev olarak tanýmlandý
   + iþletim sistemine uyum kapsamýnda pascal rtl çalýþmalarý orijinalleþtirildi
   + elr-1 dosya sistemi Write dosya iþlevi kodlama çalýþmasý tamamlandý
   + ekran kartý sürücüsünde iyileþtirmeler gerçekleþtirildi

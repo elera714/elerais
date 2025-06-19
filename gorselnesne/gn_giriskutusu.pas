@@ -41,7 +41,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses gn_islevler, gn_pencere, genel, temelgorselnesne;
+uses gn_islevler, gn_pencere, genel, temelgorselnesne, gorev;
 
 {==============================================================================
   giriþ kutusu kesme çaðrýlarýný yönetir
@@ -61,7 +61,7 @@ begin
       GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:
@@ -76,7 +76,7 @@ begin
     begin
 
       GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
-      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       p1^ := GirisKutusu^.Baslik;
     end;
 
@@ -85,7 +85,7 @@ begin
     begin
 
       GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
-      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       GirisKutusu^.Baslik := p1^;
       GirisKutusu^.Ciz;
     end;

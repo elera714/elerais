@@ -49,7 +49,7 @@ function NesneOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISay
 
 implementation
 
-uses genel, temelgorselnesne, gn_islevler, sistemmesaj;
+uses genel, temelgorselnesne, gn_islevler, sistemmesaj, gorev;
 
 {==============================================================================
   menü kesme çağrılarını yönetir
@@ -91,7 +91,7 @@ begin
 
       Menu := PMenu(Menu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
 
-      AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^;
+      AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
       AResimSiraNo := PISayi4(ADegiskenler + 08)^;
 
       if(Menu <> nil) then
@@ -165,8 +165,7 @@ begin
   Menu^.FCizimBaslangic.Ust := 0;
 
   // menü çizimi için bellekte yer ayır
-  Menu^.FCizimBellekAdresi := GGercekBellek.Ayir(Menu^.FBoyut.Genislik *
-    Menu^.FBoyut.Yukseklik * 4);
+  Menu^.FCizimBellekAdresi := GetMem(Menu^.FBoyut.Genislik * Menu^.FBoyut.Yukseklik * 4);
   if(Menu^.FCizimBellekAdresi = nil) then
   begin
 
@@ -289,8 +288,7 @@ begin
   Menu^.FCizimAlan.Alt := Menu^.FBoyut.Yukseklik - 1;
 
   // menü çizimi için bellekte yer ayır
-  Menu^.FCizimBellekAdresi := GGercekBellek.Ayir(Menu^.FBoyut.Genislik *
-    Menu^.FBoyut.Yukseklik * 4);
+  Menu^.FCizimBellekAdresi := GetMem(Menu^.FBoyut.Genislik * Menu^.FBoyut.Yukseklik * 4);
   if(Menu^.FCizimBellekAdresi = nil) then
   begin
 

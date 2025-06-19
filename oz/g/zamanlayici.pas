@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 13/05/2025
+  Güncelleme Tarihi: 11/06/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -85,7 +85,7 @@ begin
   ZamanlayiciU := SizeOf(TZamanlayici);
 
   // uygulamalar için zamanlayýcý bilgilerinin yerleþtirileceði bellek oluþtur
-  ZamanlayiciYapiBellekAdresi := GGercekBellek.Ayir(AZAMI_ZAMANLAYICI_SAYISI * ZamanlayiciU);
+  ZamanlayiciYapiBellekAdresi := GetMem(AZAMI_ZAMANLAYICI_SAYISI * ZamanlayiciU);
 
   // bellek giriþlerini zamanlayýcý yapýlarýyla eþleþtir
   BellekAdresi := ZamanlayiciYapiBellekAdresi;
@@ -125,7 +125,7 @@ begin
   if(Z <> nil) then
   begin
 
-    Z^.FGorevKimlik := CalisanGorev;
+    Z^.FGorevKimlik := FAktifGorev;
     Z^.FTetiklemeSuresi := AMiliSaniye;
     Z^.FGeriSayimSayaci := AMiliSaniye;
     Z^.FOlayYonlendirmeAdresi := nil;
@@ -342,17 +342,13 @@ asm
   // uygulamalar tarafýndan oluþturulan zamanlayýcý nesnelerini denetle
   call  ZamanlayicilariKontrolEt
 
-  // her 1 saniyede kontrol edilecek dahili iþlevler
-  mov edx,0
+  // her 1 saniyede kontrol edilecek dahili iþlevler - (þu aþamada gerekli deðil)
+{  mov edx,0
   mov eax,ZamanlayiciSayaci
   mov ecx,100
   div ecx
   cmp edx,0
-  jg  @@yenigorev
-
-  // ARP tablosunu güüncelle
-  { TODO - ARPTablosunuGuncelle iþlevi ana iþlemden (main thread) alýnacak }
-  call  ARPTablosunuGuncelle
+  jg  @@yenigorev }
 
 @@yenigorev:
 
@@ -363,13 +359,13 @@ asm
 
   // geçiþ yapýlacak bir sonraki görevi bul
   call  CalistirilacakBirSonrakiGoreviBul
-  mov CalisanGorev,eax
+  mov FAktifGorev,eax
 
   // aktif görevin bellek baþlangýç adresini al
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,[esi + TGorev.FBellekBaslangicAdresi]
-  mov CalisanGorevBellekAdresi,eax
+  mov FAktifGorevBellekAdresi,eax
 
   // görev deðiþiklik sayacýný bir artýr
   mov eax,[esi + TGorev.FGorevSayaci]
@@ -382,47 +378,24 @@ asm
   mov GorevDegisimSayisi,eax
 
   // görevin devredileceði TSS giriþini belirle
-  mov   ecx,CalisanGorev
-  cmp   ecx,0
-  je    @@TSS_SISTEM
-  cmp   ecx,1
-  je    @@TSS_CAGRI
-  cmp   ecx,2
-  je    @@TSS_GRAFIK
-  cmp   ecx,3
-  je    @@TSS_KONTROL
+  mov   ecx,FAktifGorev
+  mov   eax,[esi + TGorev.FSeviyeNo]
+  cmp   eax,CALISMA_SEVIYE0
+  jz    @@TSS_SEVIYE0
 
-@@TSS_UYGULAMA:
-  sub   ecx,AYRILMIS_GOREV_SAYISI
+@@TSS_SEVIYE3:
+  inc   ecx
   imul  ecx,3
-  add   ecx,AYRILMIS_SECICISAYISI + 2
-  imul  ecx,8
+  shl   ecx,3
   add   ecx,3                             // DPL3 - uygulama
   mov   @@SECICI,cx
   jmp   @@son
 
-@@TSS_SISTEM:
-  mov   ecx,SECICI_SISTEM_TSS * 8         // DPL0 - sistem
+@@TSS_SEVIYE0:                            // DPL0 - sistem seviyesi
+  inc   ecx
+  imul  ecx,3
+  shl   ecx,3
   mov   @@SECICI,cx
-  jmp   @@son
-
-@@TSS_CAGRI:
-  mov   ecx,SECICI_CAGRI_TSS * 8          // DPL0 - sistem
-//  add   ecx,3
-  mov   @@SECICI,cx
-  jmp   @@son
-
-@@TSS_GRAFIK:
-  mov   ecx,SECICI_GRAFIK_TSS * 8         // DPL0 - sistem
-//  add   ecx,3
-  mov   @@SECICI,cx
-  jmp   @@son
-
-@@TSS_KONTROL:
-  mov   ecx,SECICI_KONTROL_TSS * 8         // DPL0 - sistem
-//  add   ecx,3
-  mov   @@SECICI,cx
-//  jmp   @@son
 
 @@son:
 
@@ -482,17 +455,17 @@ asm
 @@yenigorev:
 
   call  CalistirilacakBirSonrakiGoreviBul
-  mov CalisanGorev,eax
+  mov FAktifGorev,eax
 
   // aktif görevin bellek baþlangýç adresini al
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,[esi + TGorev.FBellekBaslangicAdresi]
-  mov CalisanGorevBellekAdresi,eax
+  mov FAktifGorevBellekAdresi,eax
 
   // görev deðiþiklik sayacýný bir artýr
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,[esi + TGorev.FGorevSayaci]
@@ -500,47 +473,24 @@ asm
   mov [esi + TGorev.FGorevSayaci],eax
 
   // görevin devredileceði TSS giriþini belirle
-  mov   ecx,CalisanGorev
-  cmp   ecx,0
-  je    @@TSS_SISTEM
-  cmp   ecx,1
-  je    @@TSS_CAGRI
-  cmp   ecx,2
-  je    @@TSS_GRAFIK
-  cmp   ecx,3
-  je    @@TSS_KONTROL
+  mov   ecx,FAktifGorev
+  mov   eax,[esi + TGorev.FSeviyeNo]
+  cmp   eax,CALISMA_SEVIYE0
+  jz    @@TSS_SEVIYE0
 
-@@TSS_UYGULAMA:
-  sub   ecx,AYRILMIS_GOREV_SAYISI
+@@TSS_SEVIYE3:
+  inc   ecx
   imul  ecx,3
-  add   ecx,AYRILMIS_SECICISAYISI + 2
-  imul  ecx,8
+  shl   ecx,3
   add   ecx,3                             // DPL3 - uygulama
   mov   @@SECICI,cx
   jmp   @@son
 
-@@TSS_SISTEM:
-  mov   ecx,SECICI_SISTEM_TSS * 8         // DPL0 - sistem
+@@TSS_SEVIYE0:                            // DPL0 - sistem seviyesi
+  inc   ecx
+  imul  ecx,3
+  shl   ecx,3
   mov   @@SECICI,cx
-  jmp   @@son
-
-@@TSS_CAGRI:
-  mov   ecx,SECICI_CAGRI_TSS * 8          // DPL0 - sistem
-//  add   ecx,3
-  mov   @@SECICI,cx
-  jmp   @@son
-
-@@TSS_GRAFIK:
-  mov   ecx,SECICI_GRAFIK_TSS * 8         // DPL0 - sistem
-//  add   ecx,3
-  mov   @@SECICI,cx
-  jmp   @@son
-
-@@TSS_KONTROL:
-  mov   ecx,SECICI_KONTROL_TSS * 8         // DPL0 - sistem
-//  add   ecx,3
-  mov   @@SECICI,cx
-//  jmp   @@son
 
 @@son:
   popfd

@@ -40,7 +40,7 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi
 implementation
 
 uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, islevler, genel,
-  dhcp, dhcp_s;
+  dhcp, dhcp_s, gorev;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
@@ -138,7 +138,7 @@ begin
   if(IslevNo = 1) then
   begin
 
-    AgBilgisi := Isaretci(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
+    AgBilgisi := Isaretci(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
     AgBilgisi^.MACAdres := GAgBilgisi.MACAdres;
     AgBilgisi^.IP4Adres := GAgBilgisi.IP4Adres;
     AgBilgisi^.AltAgMaskesi := GAgBilgisi.AltAgMaskesi;
@@ -179,7 +179,7 @@ begin
 
       SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthernetPaket^.KaynakMACAdres);
       SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.HedefMACAdres: ', EthernetPaket^.HedefMACAdres);
-      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'EthernetPaket^.PaketTipi: %x', [EthernetPaket^.PaketTipi]);
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'EthernetPaket^.PaketTipi: %.4x', [EthernetPaket^.PaketTipi]);
 
       // ******* protokollerin iþlenmesi *******
 

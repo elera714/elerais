@@ -6,7 +6,7 @@
   Dosya Adı: gdt.pas
   Dosya İşlevi: genel (global) tanımlayıcı tablo (GDTR) işlevlerini yönetir
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 10/06/2025
 
  ==============================================================================}
 {$mode objfpc}

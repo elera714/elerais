@@ -36,7 +36,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne;
+uses genel, gn_pencere, gn_islevler, temelgorselnesne, gorev;
 
 {==============================================================================
   etiket nesne kesme çağrılarını yönetir
@@ -57,7 +57,7 @@ begin
       GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PRenk(ADegiskenler + 20)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 24)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 24)^ + FAktifGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:
@@ -72,7 +72,7 @@ begin
     begin
 
       Etiket := PEtiket(Etiket^.NesneAl(PKimlik(ADegiskenler + 00)^));
-      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       Etiket^.Baslik := p^;
 
       // etiketin bağlı olduğu pencere nesnesini güncelle

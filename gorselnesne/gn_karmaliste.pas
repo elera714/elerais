@@ -42,7 +42,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_islevler, temelgorselnesne, hamresim, sistemmesaj;
+uses genel, gn_islevler, temelgorselnesne, hamresim, sistemmesaj, gorev;
 
 {==============================================================================
   karma liste kesme çaðrýlarýný yönetir
@@ -95,7 +95,7 @@ begin
         PKimlik(ADegiskenler + 00)^, gntKarmaListe));
       if(KarmaListe <> nil) then
         KarmaListe^.ListeyeEkle(PKarakterKatari(PSayi4(ADegiskenler + 04)^ +
-          CalisanGorevBellekAdresi)^);
+          FAktifGorevBellekAdresi)^);
 
       Result := 1;
     end;
@@ -126,7 +126,7 @@ begin
       if(KarmaListe <> nil) then
       begin
 
-        p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+        p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         p^ := KarmaListe^.Baslik;
       end;
     end;

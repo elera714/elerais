@@ -15,7 +15,33 @@ unit yonetim;
 
 interface
 
-uses paylasim, gn_pencere, zamanlayici, dns, gorselnesne, irq, arge;
+uses paylasim, gn_pencere, zamanlayici, dns, gorselnesne, irq, arge, thread;
+
+type
+
+  { TMyThread }
+
+  TMyThread = class(TThread)
+  private
+    //procedure ShowStatus;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(CreateSuspended: Boolean);
+  end;
+
+type
+
+  { TMyThread2 }
+
+  TMyThread2 = class(TThread)
+  private
+    //procedure ShowStatus;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(CreateSuspended: Boolean);
+  end;
 
 type
   // gerçek moddan gelen veri yapýsý
@@ -48,8 +74,8 @@ procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:point
 implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
-  gn_masaustu, src_disket, vbox, usb, ohci, port, prg_cagri, prg_grafik,
-  prg_kontrol, dosya, src_e1000, depolama, islevler, bolumleme, donusum;
+  gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
+  src_e1000, depolama, islevler, bolumleme, donusum, arp, gercekbellek;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -59,6 +85,9 @@ var
   Gorev: PGorev;
   GMBilgi: PGMBilgi;
   Olay: POlay;
+  GrafikESP, KontrolESP,
+  OHCIESP, ARPESP,
+  Prg1ESP, Prg2ESP: Isaretci;
 begin
 
   GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
@@ -146,26 +175,36 @@ begin
 
   // çalýþan ve oluþturulan görev deðerlerini belirle
   CalisanGorevSayisi := 1;
-  CalisanGorev := 0;
-
-  { TODO - aþaðýdaki 3 iþlev ve ileride eklenebilinecek diðer iþlevler
-    sistemin parçasý (thread) olacak þekilde tek bir iþlevden oluþturulacak }
-
-  // program çaðrýlarýna yanýt verecek görevi oluþtur
-  CagriYanitlayiciyiOlustur(1, 'Sistem Çaðrýlarý', @ProgramCagrilariniYanitla);
+  FAktifGorev := 0;
 
   // grafik iþlevlerini yönetecek görevi oluþtur
-  GrafikYoneticiGorevOlustur(2, 'Grafik Yöneticisi', @GrafikYonetimi);
+  GrafikESP := GGercekBellek.Ayir(4096);
+  Memur('grafik yöneticisi', @GrafikYonetimi, TSayi4(GrafikESP), CALISMA_SEVIYE0);
 
   // sistem kontrol görevi oluþtur
-  SistemKontrolGoreviOlustur(3, 'Sistem Kontrol', @KontrolYonetimi);
+  KontrolESP := GGercekBellek.Ayir(4096);
+  Memur('sistem denetim', @KontrolYonetimi, TSayi4(KontrolESP), CALISMA_SEVIYE0);
+
+  // ohci kontrol görevi oluþtur
+  {GetMem(OHCIESP, 4096);
+  Memur('ohci', @ohci.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0);}
+
+  // arp tablosu güncelleme görevi oluþtur
+  ARPESP := GGercekBellek.Ayir(4096);
+  Memur('arp', @ARPTablosunuGuncelle, TSayi4(ARPESP), CALISMA_SEVIYE0);
+
+  {GetMem(Prg1ESP, 4096);
+  Memur('prg1', @Prg1, TSayi4(Prg1ESP), CALISMA_SEVIYE0);
+
+  GetMem(Prg2ESP, 4096);
+  Memur('prg2', @Prg2, TSayi4(Prg2ESP), CALISMA_SEVIYE0);}
 
   // ilk TSS'yi yükle
   // not : tss'nin yükleme iþlevi görev geçiþini gerçekleþtirmez. sadece
   // TSS'yi meþgul olarak ayarlar.
   asm
-           MOV     AX,SECICI_SISTEM_TSS * 8;
-           LTR     AX
+    mov ax,SECICI_SISTEM_TSS * 8;
+    ltr ax
   end;
 end;
 
@@ -182,14 +221,16 @@ var
   i: TSayi4;
   Masaustu: PMasaustu;
   GN: PGorselNesne;
-  DosyaKimlik: TKimlik;
-  DosyaNo: TSayi4 = 1;
   Olay: TOlay;
-  Bellek0: Isaretci;
-  Bellek: array of TSayi1;
-  s, DosyaAdi: String;
+  Bellek1, Bellek2,
+  Bellek3, Bellek4,
+  Bellek5: Isaretci;
   MD: PMantiksalDepolama;
-  Sonuc: Boolean;
+  T: TMyThread;
+  AracTipleri: TAracTipleriSinif;
+  A: TAracTipiSinif;
+  //T: TMyThread;
+  //T2: TMyThread2;
 begin
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
@@ -278,11 +319,23 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            AssertErrorProc := @AssertIslev;
-            Assert(1 > 2, 'Merhaba');
+            {AracTipleri := TAracTipleriSinif.Create;
+            A := AracTipleri.Ekle;
+            A.Kimlik := 123;
+
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Toplam: %d', [AracTipleri.Toplam]);}
+
+            //T := TMyThread.Create(True);
+            {T.Start;}
+
+            //T2 := TMyThread2.Create(True);
+            //T2.Start;
+
+            //AssertErrorProc := @AssertIslev;
+            //Assert(1 > 2, 'Merhaba');
 
             //for i := 1 to 100 do CreateDir('disk2:\merhaba\mer' + IntToStr(i));
-            DosyalariKopyala;
+            //DosyalariKopyala;
             //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
             //BellekDegeriniGoster := True;
             {Merhaba := '';
@@ -327,18 +380,17 @@ begin
           // program çalýþtýrma programýný çalýþtýr
           else if(TusKarakterDegeri = 'c') then
 
-            //ohci.Kontrol1
-            Gorev^.Calistir('calistir.c')
+            Gorev^.Calistir('calistir.c', CALISMA_SEVIYE3)
 
           // dosya yöneticisi programýný çalýþtýr
           else if(TusKarakterDegeri = 'd') then
 
-            Gorev^.Calistir('dsyyntcs.c')
+            Gorev^.Calistir('dsyyntcs.c', CALISMA_SEVIYE3)
 
           // görev yöneticisi programýný çalýþtýr
           else if(TusKarakterDegeri = 'g') then
 
-            Gorev^.Calistir('grvyntcs.c')
+            Gorev^.Calistir('grvyntcs.c', CALISMA_SEVIYE3)
 
           // giriþ kutusundaki veriyi panoya kopyala
           else if(TusKarakterDegeri = 'k') then
@@ -359,12 +411,12 @@ begin
           // mesaj görüntüleme programýný çalýþtýr
           else if(TusKarakterDegeri = 'm') then
 
-            Gorev^.Calistir('smsjgor.c')
+            Gorev^.Calistir('smsjgor.c', CALISMA_SEVIYE3)
 
           // resim görüntüleme programýný çalýþtýr
           else if(TusKarakterDegeri = 'r') then
 
-            Gorev^.Calistir('resimgor.c')
+            Gorev^.Calistir('resimgor.c', CALISMA_SEVIYE3)
 
           // panodaki veriyi giriþ kutusuna yapýþtýr
           else if(TusKarakterDegeri = 'y') then
@@ -500,6 +552,7 @@ end;
 
 procedure KaydedilenProgramlariYenidenYukle;
 var
+  GN: PGorselNesne;
   s, DosyaAdi, s2: string;
   MUGorev: PGorev;
   Konum: TKonum;
@@ -517,7 +570,8 @@ begin
   begin
 
     U := FileSize(DosyaKimlik);
-    GetMem(Bellek0, U);
+    Bellek0 := GGercekBellek.Ayir(U);
+    //GetMem(Bellek0, U);
 
     Read(DosyaKimlik, Bellek0);
 
@@ -574,11 +628,9 @@ begin
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Sol: "%d, Üst: %d"', [Sol, Ust]);
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Geniþlik: "%d, Yükseklik: %d"', [Genislik, Yukseklik]);}
 
-          MUGorev := MUGorev^.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + DosyaAdi);
+          MUGorev := MUGorev^.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + DosyaAdi, CALISMA_SEVIYE3);
 
-          { TODO - aþaðýdaki satýrlardaki problem giderilerek aktifleþtirilecek }
-
-          {BekleMS(50);
+          BekleMS(50);
 
           GN := GN^.NesneAl(MUGorev^.AktifPencere^.Kimlik);
 
@@ -588,12 +640,13 @@ begin
           PPencere(GN)^.FBoyut.Yukseklik := Boyut.Yukseklik;
           PPencere(GN)^.Guncelle;
 
-          PMasaustu(GN^.AtaNesne)^.Ciz;}
+          PMasaustu(GN^.AtaNesne)^.Ciz;
         end;
       end;
     until i = 0;
 
-    FreeMem(Bellek0, U);
+    //FreeMem(Bellek0, U);
+    GGercekBellek.YokEt(Bellek0, U);
   end;
 
   CloseFile(DosyaKimlik);
@@ -603,6 +656,36 @@ procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:point
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Assert: %s', [msg]);
+end;
+
+{ TMyThread2 }
+
+procedure TMyThread2.Execute;
+begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'TMyThread2', []);
+end;
+
+constructor TMyThread2.Create(CreateSuspended: Boolean);
+begin
+
+  inherited Create(CreateSuspended);
+end;
+
+{ TMyThread }
+
+procedure TMyThread.Execute;
+begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'TMyThread', []);
+  //BekleMS(200);
+end;
+
+constructor TMyThread.Create(CreateSuspended: Boolean);
+begin
+
+  inherited Create(CreateSuspended);
+  //FreeOnTerminate := True;
 end;
 
 end.

@@ -27,7 +27,7 @@ implementation
 
 uses k_ekran, k_gorselnesne, k_olay, k_dosya, k_yazim, k_sayac, k_cizim, k_sistem,
   k_zamanlayici, k_sistemmesaj, k_bellek, k_gorev, k_pci, k_ag, k_depolama, k_fare,
-  k_iletisim, k_diger, k_giysi;
+  k_iletisim, k_diger, k_giysi, gorev;
 
 var
   UygulamaYiginAdresi: Isaretci;
@@ -46,14 +46,19 @@ asm
   push  ebx
 
   // bölütleri sistem bölütlerine ayarla
-  mov   bx,SECICI_CAGRI_VERI * 8
+  mov   ebx,SECICI_SISTEM_VERI
+  shl   ebx,3
   mov   ds,bx
   mov   es,bx
+
+  mov   ecx,CagriSayaci
+  inc   ecx
+  mov   CagriSayaci,ecx
 
   // uygulamanın yığına sürdüğü değişken adresine konumlan
   mov   edx,[esp + 12 + 04]               // sistem esp (ring0)
   mov   edx,[edx + 12]                    // program esp (ring3)
-  add   edx,CalisanGorevBellekAdresi      // + program bellek başlangıç adresi
+  add   edx,FAktifGorevBellekAdresi       // + program bellek başlangıç adresi
   mov   UygulamaYiginAdresi,edx
 
   // eax = işlev çağrı numarası

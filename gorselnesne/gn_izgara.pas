@@ -56,7 +56,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_islevler, gn_pencere, temelgorselnesne, sistemmesaj;
+uses genel, gn_islevler, gn_pencere, temelgorselnesne, sistemmesaj, gorev;
 
 {==============================================================================
   ýzgara nesnesi kesme çaðrýlarýný yönetir
@@ -127,7 +127,7 @@ begin
 
       Izgara := PIzgara(Izgara^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntIzgara));
       if(Izgara <> nil) then Result := TISayi4(Izgara^.DegerEkle(
-        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^));
+        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^));
     end;
 
     // sabit satýr ve sutun hücre sayýsýný belirle

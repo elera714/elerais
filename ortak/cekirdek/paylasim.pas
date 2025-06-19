@@ -64,14 +64,6 @@ const
   GERCEKBELLEK_DIZINADRESI = $600000;
   GERCEKBELLEK_TABLOADRESI = $610000;
 
-  // sistem için ayrýlmýþ görev sayýsý
-  AYRILMIS_GOREV_SAYISI = 4;
-
-  // seçici (selector) sabitleri
-  // ayrýlmýþ seçici sayýsý
-  // aþaðýdaki seçiciler (tss) sistem için ayrýlmýþtýr
-  AYRILMIS_SECICISAYISI = 16;
-
   // boþ seçici
   SECICI_SISTEM_BOS     = 0;
 
@@ -80,22 +72,10 @@ const
   SECICI_SISTEM_VERI    = 2;
   SECICI_SISTEM_TSS     = 3;
 
-  // çaðrý yanýtlayýcý seçicileri
-  SECICI_CAGRI_KOD      = 4;
-  SECICI_CAGRI_VERI     = 5;
-  SECICI_CAGRI_TSS      = 6;
-
-  //SECICI_GRAFIK_KOD     = 7;
-  //SECICI_GRAFIK_VERI    = 8;
-  SECICI_GRAFIK_TSS     = 9;
-
-  //SECICI_KONTROL_KOD    = 10;
-  //SECICI_KONTROL_VERI   = 11;
-  SECICI_KONTROL_TSS    = 12;
-
-  SECICI_GRAFIK_LFB     = 13;
-  SECICI_AYRILDI1       = 14;
-  SECICI_AYRILDI2       = 15;
+  // özel seçiciler, tüm görev seçicilerinden sonra oluþturulacak
+  SECICI_GRAFIK_LFB     = (USTSINIR_GOREVSAYISI * 3) + 1;         // +1 = null seçici
+  // diðer seçiciler aþaðýdaki biçimde alt satýrlara eklenecek
+  // SECICI_DIGER_OZEL     = SECICI_GRAFIK_LFB + 1;
 
 type
   PHiza = ^THiza;
@@ -119,9 +99,6 @@ const
   BELLEK_HARITA_ADRESI: PByte = PByte($510000);
 
   SISTEM_ESP        = $300000 + $1000;
-  CAGRI_ESP         = SISTEM_ESP + $1000;
-  GRAFIK_ESP        = CAGRI_ESP + $1000;
-  KONTROL_ESP       = GRAFIK_ESP + $1000;
 
   // program için ESP bellek adresi ve ESP uzunluðu
   // $2000 (GOREV3_ESP_U) * $20 (USTSINIR_GOREVSAYISI) = $40000
@@ -592,13 +569,6 @@ type
 var
   // dosya iþlem veri yapýlarý
   GDosyaIslemleri: array[0..USTSINIR_DOSYAISLEM - 1] of TDosyaIslem;
-
-var
-  CalisanGorevSayisi,                     // oluþturulan / çalýþan program sayýsý
-  CalisanGorev: TISayi4;                  // o an çalýþan program
-  CalisanGorevBellekAdresi: TSayi4;       // o an çalýþan programýn yüklendiði bellek adresi
-  GorevDegisimSayisi: TSayi4 = 0;         // çekirdek baþladýðý andan itibaren gerçekleþtirilen görev deðiþim sayýsý
-  GorevBayrakDegeri: TSayi4 = 0;          // her görev çalýþtýrma / sonlandýrma / aktifleþtirme durumunda 1 artýrýlýr
 
 type
   PAlan = ^TAlan;

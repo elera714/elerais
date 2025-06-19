@@ -16,7 +16,7 @@
 
 {$define newsignal}
 
-{$I systemh.inc}
+{$I ..\inc\systemh.inc}
 
 {$ifdef cpum68k}
 { used for single computations }

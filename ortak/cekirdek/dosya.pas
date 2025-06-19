@@ -288,7 +288,7 @@ var
   DST: TSayi4;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -325,7 +325,7 @@ var
   DST: TSayi4;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -365,7 +365,7 @@ var
   Bulundu: Boolean;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
 {  if(FileResult > 0) then Exit;
@@ -429,7 +429,7 @@ var
   DST: TSayi4;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -475,7 +475,7 @@ var
   DST: TSayi4;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -516,7 +516,7 @@ begin
 
   Result := 0;
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -553,7 +553,7 @@ var
   AktifGorev: PGorev;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   Result := AktifGorev^.FDosyaSonIslemDurum;
 
@@ -729,7 +729,7 @@ begin
       // ilk deðer atamalarýný gerçekleþtir
       GDosyaIslemleri[i].DosyaDurumu := ddKapali;
 
-      GetMem(GDosyaIslemleri[i].TekSektorIcerik, 512);
+      GDosyaIslemleri[i].TekSektorIcerik := GetMem(512);
 
       Result := i;
       Exit;
@@ -939,7 +939,7 @@ begin
 
     U := FileSize(DosyaKimlik);
 
-    GetMem(Bellek, U);
+    Bellek := GetMem(U);
 
     Read(DosyaKimlik, Bellek);
     CloseFile(DosyaKimlik);

@@ -6,7 +6,7 @@
   Dosya Adý: gn_pencere.pas
   Dosya Ýþlevi: pencere (TForm) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/04/2025
+  Güncelleme Tarihi: 10/06/2025
 
   Önemli Bilgiler:
 
@@ -103,7 +103,7 @@ begin
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
       PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^,
       PISayi4(ADegiskenler + 16)^, PPencereTipi(ADegiskenler + 20)^,
-      PKarakterKatari(PSayi4(ADegiskenler + 24)^ + CalisanGorevBellekAdresi)^,
+      PKarakterKatari(PSayi4(ADegiskenler + 24)^ + FAktifGorevBellekAdresi)^,
       PRenk(ADegiskenler + 28)^);
     end;
 
@@ -211,7 +211,7 @@ begin
   if(Masaustu = nil) then Exit(nil);
 
   // pencerenin ana pencere olup olmadýðýný tespit et
-  Gorev := Gorev^.GorevBul(CalisanGorev);
+  Gorev := Gorev^.GorevBul(FAktifGorev);
   if not(Gorev = nil) and (Gorev^.AktifPencere = nil) then
     AnaPencere := True
   else AnaPencere := False;
@@ -363,7 +363,7 @@ begin
     Pencere^.FBoyut.Yukseklik * 4);
 
   // pencere çizimi için bellekte yer ayýr
-  Pencere^.FCizimBellekAdresi := GGercekBellek.Ayir(Pencere^.FCizimBellekUzunlugu);
+  Pencere^.FCizimBellekAdresi := GetMem(Pencere^.FCizimBellekUzunlugu);
   if(Pencere^.FCizimBellekAdresi = nil) then
   begin
 
@@ -1395,10 +1395,10 @@ begin
 
         // çizim için ayrýlan belleði yok et ve yeni bellek ayýr
         { TODO : ileride çizimlerin daha hýzlý olmasý için APencere küçülmesi için bellek ayrýlmayabilir }
-        GGercekBellek.YokEt(APencere^.FCizimBellekAdresi, APencere^.FCizimBellekUzunlugu);
+        FreeMem(APencere^.FCizimBellekAdresi, APencere^.FCizimBellekUzunlugu);
 
         APencere^.FCizimBellekUzunlugu := (APencere^.FBoyut.Genislik * APencere^.FBoyut.Yukseklik * 4);
-        APencere^.FCizimBellekAdresi := GGercekBellek.Ayir(APencere^.FCizimBellekUzunlugu);
+        APencere^.FCizimBellekAdresi := GetMem(APencere^.FCizimBellekUzunlugu);
 
         APencere^.Ciz;
       end;

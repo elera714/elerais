@@ -31,7 +31,7 @@ Unit System;
 
 {$i osdefs.inc}
 
-{$I sysunixh.inc}
+{$I ..\unix\sysunixh.inc}
 
 function get_cmdline:Pchar; 
 property cmdline:Pchar read get_cmdline;

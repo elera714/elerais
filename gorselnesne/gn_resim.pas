@@ -39,7 +39,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, bmp;
+uses genel, gn_pencere, gn_islevler, bmp, gorev;
 
 {==============================================================================
   resim nesnesi kesme çağrılarını yönetir
@@ -62,7 +62,7 @@ begin
       GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:
@@ -88,7 +88,7 @@ begin
     begin
 
       Resim := PResim(Resim^.NesneAl(PKimlik(ADegiskenler + 00)^));
-      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       Resim^.ResimYaz(p^);
     end;
 

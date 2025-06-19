@@ -6,7 +6,7 @@
   Dosya Adý: dhcp.pas
   Dosya Ýþlevi: DHCP protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 20/04/2025
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -278,7 +278,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4096);
+  DHCPYapi := GGercekBellek.Ayir(4095);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -390,11 +390,11 @@ begin
 
       Baglanti^.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglanti^.BaglantiyiKes;
+      Baglanti^.BaglantiyiKes(Baglanti^.FKimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4096);
+  GGercekBellek.YokEt(DHCPYapi, 4095);
 end;
 
 // DHCP istemcisine teklif mesajý gönderir
@@ -410,7 +410,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4096);
+  DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -540,11 +540,11 @@ begin
 
       Baglanti^.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglanti^.BaglantiyiKes;
+      Baglanti^.BaglantiyiKes(Baglanti^.FKimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4096);
+  FreeMem(DHCPYapi, 4096);
 end;
 
 // DHCP sunucusuna istek mesajý gönderir
@@ -561,7 +561,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4096);
+  DHCPYapi := GGercekBellek.Ayir(4095);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -713,11 +713,11 @@ begin
 
       Baglanti^.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglanti^.BaglantiyiKes;
+      Baglanti^.BaglantiyiKes(Baglanti^.FKimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4096);
+  GGercekBellek.YokEt(DHCPYapi, 4095);
 end;
 
 // DHCP istemcisinin istek mesajýna onay yanýtý gönderir
@@ -735,7 +735,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4096);
+  DHCPYapi := GGercekBellek.Ayir(4095);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -879,11 +879,11 @@ begin
 
       Baglanti^.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglanti^.BaglantiyiKes;
+      Baglanti^.BaglantiyiKes(Baglanti^.FKimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4096);
+  GGercekBellek.YokEt(DHCPYapi, 4095);
 end;
 
 // DHCP sunucusuna bilgilendirme mesajý gönderir
@@ -899,7 +899,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4096);
+  DHCPYapi := GGercekBellek.Ayir(4095);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -1011,11 +1011,11 @@ begin
 
       Baglanti^.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglanti^.BaglantiyiKes;
+      Baglanti^.BaglantiyiKes(Baglanti^.FKimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4096);
+  GGercekBellek.YokEt(DHCPYapi, 4095);
 end;
 
 // DHCP istemcisinin bilgilendirme mesajýna onay yanýtý gönderir
@@ -1030,7 +1030,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4096);
+  DHCPYapi := GGercekBellek.Ayir(4095);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -1139,11 +1139,11 @@ begin
 
       Baglanti^.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglanti^.BaglantiyiKes;
+      Baglanti^.BaglantiyiKes(Baglanti^.FKimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4096);
+  GGercekBellek.YokEt(DHCPYapi, 4095);
 end;
 
 // DHCP istemcisine ret mesajý gönderir
@@ -1157,7 +1157,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4096);
+  DHCPYapi := GGercekBellek.Ayir(4095);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -1224,11 +1224,11 @@ begin
 
       Baglanti^.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglanti^.BaglantiyiKes;
+      Baglanti^.BaglantiyiKes(Baglanti^.FKimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4096);
+  GGercekBellek.YokEt(DHCPYapi, 4095);
 end;
 
 end.

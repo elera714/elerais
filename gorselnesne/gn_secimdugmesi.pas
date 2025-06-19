@@ -66,7 +66,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TISayi4; ABaslik: str
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne;
+uses genel, gn_pencere, gn_islevler, temelgorselnesne, gorev;
 
 {==============================================================================
   seçim düğmesi çağrılarını yönetir
@@ -85,7 +85,7 @@ begin
 
       GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:

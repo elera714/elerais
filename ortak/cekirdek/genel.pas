@@ -66,7 +66,7 @@ var
 begin
 
   // 1. görsel olmayan yazı listesi için bellekte yer ayır
-  YL := GGercekBellek.Ayir(Align(SizeOf(TYaziListesi), 16) * USTSINIR_YAZILISTESI);
+  YL := GetMem(Align(SizeOf(TYaziListesi), 16) * USTSINIR_YAZILISTESI);
 
   // bellek girişlerini nesne yapı girişleriyle eşleştir
   for i := 0 to USTSINIR_YAZILISTESI - 1 do
@@ -82,7 +82,7 @@ begin
   end;
 
   // 2. görsel olmayan sayı listesi için bellekte yer ayır
-  SL := GGercekBellek.Ayir(Align(SizeOf(TSayiListesi), 16) * USTSINIR_SAYILISTESI);
+  SL := GetMem(Align(SizeOf(TSayiListesi), 16) * USTSINIR_SAYILISTESI);
 
   // bellek girişlerini nesne yapı girişleriyle eşleştir
   for i := 0 to USTSINIR_SAYILISTESI - 1 do

@@ -149,7 +149,7 @@ begin
       SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Ses dosya uzunluðu: %d', [DosyaUzunluk]);
 
       // dosyanýn çalýþtýrýlmasý için bellekte yer ayýr
-      DosyaBellek := GGercekBellek.Ayir(DosyaUzunluk);
+      DosyaBellek := GetMem(DosyaUzunluk);
       if(DosyaBellek <> nil) then
       begin
 
@@ -164,7 +164,7 @@ begin
         // dosyayý kapat
         CloseFile(DosyaKimlik);
 
-        GGercekBellek.YokEt(DosyaBellek, DosyaUzunluk);
+        FreeMem(DosyaBellek, DosyaUzunluk);
       end;
     end;
   end;

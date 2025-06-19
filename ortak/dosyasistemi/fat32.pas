@@ -125,7 +125,7 @@ var
   Bulundu: Boolean;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;

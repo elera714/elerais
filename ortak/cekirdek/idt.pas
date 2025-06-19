@@ -6,7 +6,7 @@
   Dosya Adý: idt.pas
   Dosya Ýþlevi: kesme servis rutinlerini (isr) içerir
 
-  Güncelleme Tarihi: 14/02/2025
+  Güncelleme Tarihi: 10/06/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -156,7 +156,7 @@ begin
 
   // sistem ana kesmesi
   // %11101110 = 1 = mevcut, 11 = DPL3, 0, 1 = 32 bit kod, 110 - kesme kapýsý
-  KesmeGirisiBelirle($34, @Kesme34CagriIslevleri, SECICI_CAGRI_KOD * 8, %11101110);
+  KesmeGirisiBelirle($34, @Kesme34CagriIslevleri, SECICI_SISTEM_KOD * 8, %11101110);
 
   // IDTYazmac'ý yükle
   asm
@@ -223,7 +223,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -256,7 +256,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -289,7 +289,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -322,7 +322,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -355,7 +355,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -388,7 +388,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -421,7 +421,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -487,7 +487,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -520,7 +520,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -553,7 +553,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -586,7 +586,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -619,7 +619,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -652,7 +652,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
 
@@ -698,7 +698,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -731,7 +731,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -764,7 +764,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -797,7 +797,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -830,7 +830,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -863,7 +863,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -897,7 +897,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -930,7 +930,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -963,7 +963,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -996,7 +996,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1029,7 +1029,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1062,7 +1062,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1095,7 +1095,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1128,7 +1128,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1161,7 +1161,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1194,7 +1194,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1227,7 +1227,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1260,7 +1260,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1297,7 +1297,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1330,7 +1330,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1363,7 +1363,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1396,7 +1396,7 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,CalisanGorev
+  mov eax,FAktifGorev
   shl eax,2
   mov esi,GorevListesi[eax]
   mov eax,4                             // gdSonlandiriliyor
@@ -1421,7 +1421,7 @@ end;
 procedure YazmacGoruntuleHY(AYazmaclar0: PYazmaclar0);
 begin
 
-  SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Görev: %d, Kesme: %d', [CalisanGorev, AYazmaclar0^.ISRNo]);
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Görev: %d, Kesme: %d', [FAktifGorev, AYazmaclar0^.ISRNo]);
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EIP: %x, ESP: %x', [AYazmaclar0^.EIP, AYazmaclar0^.ESP]);
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '   CS: %x,  DS: %x', [AYazmaclar0^.CS, AYazmaclar0^.DS]);
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '   ES: %x,  SS: %x', [AYazmaclar0^.ES, AYazmaclar0^.SS]);
@@ -1430,7 +1430,7 @@ begin
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '  ECX: %x, EDX: %x', [AYazmaclar0^.ECX, AYazmaclar0^.EDX]);
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '  ESI: %x, EDI: %x', [AYazmaclar0^.ESI, AYazmaclar0^.EDI]);
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EBP: %x, FLG: %x', [AYazmaclar0^.EBP, AYazmaclar0^.EFLAGS]);
-//  asm @@abc: jmp @@abc end;
+  asm @@abc: jmp @@abc end;
 end;
 
 {==============================================================================
@@ -1439,7 +1439,7 @@ end;
 procedure YazmacGoruntuleHV(AYazmaclar1: PYazmaclar1);
 begin
 
-  SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Görev: %d, Kesme: %d, Hata Kodu: %d', [CalisanGorev,
+  SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Görev: %d, Kesme: %d, Hata Kodu: %d', [FAktifGorev,
     AYazmaclar1^.ISRNo, AYazmaclar1^.HataKodu]);
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EIP: %x, ESP: %x', [AYazmaclar1^.EIP, AYazmaclar1^.ESP]);
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '   CS: %x,  DS: %x', [AYazmaclar1^.CS, AYazmaclar1^.DS]);
@@ -1449,7 +1449,7 @@ begin
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '  ECX: %x, EDX: %x', [AYazmaclar1^.ECX, AYazmaclar1^.EDX]);
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '  ESI: %x, EDI: %x', [AYazmaclar1^.ESI, AYazmaclar1^.EDI]);
   SISTEM_MESAJ(mtHata, RENK_SIYAH, '  EBP: %x, FLG: %x', [AYazmaclar1^.EBP, AYazmaclar1^.EFLAGS]);
-  //asm @@abc: jmp @@abc end;
+  asm @@abc: jmp @@abc end;
 end;
 
 end.

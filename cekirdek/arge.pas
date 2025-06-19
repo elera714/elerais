@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÃ‡
-  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
+  Kodlayan: Fatih KILIÇ
+  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
-  Dosya AdÄ±: arge.pas
-  Dosya Ä°ÅŸlevi: sistem ar-ge Ã§alÄ±ÅŸmalarÄ±nÄ± iÃ§erir
+  Dosya Adý: arge.pas
+  Dosya Ýþlevi: sistem ar-ge çalýþmalarýný içerir
 
-  GÃ¼ncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 21/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,6 +17,39 @@ interface
 uses paylasim, gn_masaustu, gn_pencere, gn_araccubugu, gn_durumcubugu, gn_gucdugmesi,
   gn_panel, gn_sayfakontrol, gn_etiket, gn_defter, gn_dugme, gn_giriskutusu,
   gn_onaykutusu, gn_kaydirmacubugu, gn_listekutusu, gn_karmaliste, gorselnesne;
+
+type
+
+  { TAracTipiSinif }
+
+  TAracTipiSinif = class
+  private
+    FKimlik: QWord;
+  public
+    constructor Create;
+    destructor Destroy; override;
+  published
+    property Kimlik: QWord read FKimlik write FKimlik;
+  end;
+
+type
+  //TAracTipListesi = specialize TFPGObjectList<TAracTipiSinif>;
+
+  { TAracTipleriSinif }
+
+  TAracTipleriSinif = class
+  private
+    //FAracTipListesi: TAracTipListesi;
+    function Al(ASiraNo: Integer): TAracTipiSinif;
+    procedure Yaz(ASiraNo: Integer; AGaraj: TAracTipiSinif);
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function Toplam: Integer;
+    procedure Temizle;
+    function Ekle: TAracTipiSinif;
+    property AracTipi[ASiraNo: Integer]: TAracTipiSinif read Al write Yaz;
+  end;
 
 type
   TArgeIslev = procedure of object;
@@ -56,9 +89,73 @@ type
     procedure P2NesneTestOlayIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   end;
 
+procedure Prg1;
+procedure Prg2;
+function Mutex(ADeger: TSayi4): TSayi4;
+
 implementation
 
-uses donusum;
+uses donusum, zamanlayici, sistemmesaj;
+
+{ TAracTipleriSinif }
+
+function TAracTipleriSinif.Al(ASiraNo: Integer): TAracTipiSinif;
+begin
+
+  {if(ASiraNo >= 0) and (ASiraNo < Toplam) then
+    Result := TAracTipiSinif(FAracTipListesi[ASiraNo])
+  else Result := nil;}
+end;
+
+procedure TAracTipleriSinif.Yaz(ASiraNo: Integer; AGaraj: TAracTipiSinif);
+begin
+
+  {if(ASiraNo >= 0) and (ASiraNo < Toplam) then
+    FAracTipListesi[ASiraNo] := AGaraj;}
+end;
+
+constructor TAracTipleriSinif.Create;
+begin
+
+  //FAracTipListesi := TAracTipListesi.Create(False);
+end;
+
+destructor TAracTipleriSinif.Destroy;
+begin
+
+  //FreeAndNil(FAracTipListesi);
+  inherited;
+end;
+
+function TAracTipleriSinif.Toplam: Integer;
+begin
+
+  //Result := FAracTipListesi.Count;
+end;
+
+procedure TAracTipleriSinif.Temizle;
+begin
+
+end;
+
+function TAracTipleriSinif.Ekle: TAracTipiSinif;
+begin
+
+  {Result := TAracTipiSinif.Create;
+  FAracTipListesi.Add(Result);}
+end;
+
+{ TAracTipiSinif }
+
+constructor TAracTipiSinif.Create;
+begin
+
+end;
+
+destructor TAracTipiSinif.Destroy;
+begin
+  inherited Destroy;
+end;
 
 constructor TArGe.Create(AProgramSN: TSayi4);
 begin
@@ -82,16 +179,16 @@ var
   P1Masaustu: PMasaustu = nil;
 begin
 
-  P1Masaustu := P1Masaustu^.Olustur('giriÅŸ');
+  P1Masaustu := P1Masaustu^.Olustur('giriþ');
   P1Masaustu^.MasaustuRenginiDegistir($9FB6BF);
   P1Masaustu^.Aktiflestir;
 
   P1Pencere := P1Pencere^.Olustur(P1Masaustu, 100, 100, 500, 400,
-    ptBoyutlanabilir, 'GÃ¶rsel Nesne YÃ¶netim', RENK_BEYAZ);
+    ptBoyutlanabilir, 'Görsel Nesne Yönetim', RENK_BEYAZ);
   P1Pencere^.OlayYonlendirmeAdresi := @P1NesneTestOlayIsle;
 
   P1Dugmeler[0] := P1Dugmeler[0]^.Olustur(ktNesne, P1Pencere, 10,
-    10, 100, 100, 'ArtÄ±r');
+    10, 100, 100, 'Artýr');
   P1Dugmeler[0]^.OlayYonlendirmeAdresi := @P1NesneTestOlayIsle;
   P1Dugmeler[0]^.Goster;
 
@@ -155,7 +252,7 @@ begin
     G := AGonderici^.FBoyut.Genislik;
     Y := AGonderici^.FBoyut.Yukseklik - 28;
 
-    // yatay Ã§izgiler
+    // yatay çizgiler
     Ust := 5 + 28;
     repeat
 
@@ -175,19 +272,19 @@ begin
     case SonSecim of
       0: s := '-';
       1: s := 'TPanel';
-      2: s := 'TDÃ¼ÄŸme';
+      2: s := 'TDüðme';
       3: s := 'TGucDugmesi';
       4: s := 'TEtiket';
-      5: s := 'TGiriÅŸKutusu';
+      5: s := 'TGiriþKutusu';
       6: s := 'TDefter';
       7: s := 'TOnayKutusu';
-      8: s := 'TKaydÄ±rmaÃ‡ubuÄŸu';
+      8: s := 'TKaydýrmaÇubuðu';
       9: s := 'TListeKutusu';
       10: s := 'TKarmaListe';
     end;
 
     P2DurumCubugu^.Baslik := 'Konum: ' + IntToStr(AOlay.Deger1) +
-      ':' + IntToStr(AOlay.Deger2) + ' - SeÃ§ili Nesne: ' + s;
+      ':' + IntToStr(AOlay.Deger2) + ' - Seçili Nesne: ' + s;
     P2DurumCubugu^.Ciz;
   end
   else if(AOlay.Olay = FO_SAGTUS_BIRAKILDI) and (AOlay.Kimlik = P2Pencere^.Kimlik) then
@@ -204,14 +301,14 @@ begin
     begin
 
       P4Dugme := P4Dugme^.Olustur(ktNesne, P2Pencere, SonKonumY,
-        SonKonumD, 100, 20, 'TDÃ¼ÄŸme');
+        SonKonumD, 100, 20, 'TDüðme');
       P4Dugme^.Goster;
     end
     else if(SonSecim = 3) then
     begin
 
       P4GucDugmesi := P4GucDugmesi^.Olustur(ktNesne, P2Pencere,
-        SonKonumY, SonKonumD, 100, 20, 'TGÃ¼Ã§DÃ¼ÄŸmesi');
+        SonKonumY, SonKonumD, 100, 20, 'TGüçDüðmesi');
       P4GucDugmesi^.Goster;
     end
     else if(SonSecim = 4) then
@@ -225,7 +322,7 @@ begin
     begin
 
       P4GirisKutusu := P4GirisKutusu^.Olustur(ktNesne, P2Pencere,
-        SonKonumY, SonKonumD, 120, 20, 'TGiriÅŸKutusu');
+        SonKonumY, SonKonumD, 120, 20, 'TGiriþKutusu');
       P4GirisKutusu^.Goster;
     end
     else if(SonSecim = 6) then
@@ -303,6 +400,64 @@ begin
 
     //SISTEM_MESAJ(RENK_SIYAH, 'Kimlik: %d', [AOlay.Kimlik]);
   end;
+end;
+
+procedure Prg1;
+var
+  Deger: TSayi4;
+begin
+
+  Deger := 0;
+
+  while True do
+  begin
+
+    BekleMS(100);
+
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Prg1', []);
+
+    Deger := Mutex(Deger);
+
+    //Inc(Deger);
+
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Deðer: %d', [Deger]);
+  end;
+end;
+
+procedure Prg2;
+var
+  Deger: TSayi4;
+begin
+
+  Deger := 100;
+
+  while True do
+  begin
+
+    BekleMS(500);
+
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Prg2', []);
+
+    Deger := Mutex(Deger);
+
+    //Inc(Deger);
+
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Deðer: %d', [Deger]);
+  end;
+end;
+
+function Mutex(ADeger: TSayi4): TSayi4;
+var
+  Deger: TSayi4;
+begin
+
+  Deger := ADeger;
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Deðer: %d', [Deger]);
+
+  BekleMS(500);
+
+  Result := Deger + 1;
 end;
 
 end.

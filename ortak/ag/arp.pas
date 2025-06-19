@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 12/04/2025
+  Güncelleme Tarihi: 18/06/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,11 +19,11 @@ uses paylasim;
 type
   PARPPaket = ^TARPPaket;
   TARPPaket = packed record
-    DonanimTip: Word;             // donaným tipi
-    ProtokolTip: Word;            // protokol tipi
-    DonanimAdresU: Byte;          // donaným adres uzunluðu
-    ProtokolAdresU: Byte;         // protokol adres uzunluðu
-    Islem: Word;                  // iþlem
+    DonanimTip: TSayi2;           // donaným tipi
+    ProtokolTip: TSayi2;          // protokol tipi
+    DonanimAdresU: TSayi1;        // donaným adres uzunluðu
+    ProtokolAdresU: TSayi1;       // protokol adres uzunluðu
+    Islem: TSayi2;                // iþlem
     GonderenMACAdres: TMACAdres;  // paketi gönderen donaným adresi
     GonderenIPAdres: TIPAdres;    // paketi gönderen ip adresi
     HedefMACAdres: TMACAdres;     // paketin gönderildiði donaným adresi
@@ -63,7 +63,7 @@ function MACAdresiAl(AIPAdres: TIPAdres): TMACAdres;
 
 implementation
 
-uses genel, ag, islevler, zamanlayici, sistemmesaj, donusum;
+uses genel, ag, islevler, zamanlayici, sistemmesaj, donusum, gorev;
 
 var
   ARPKayitSayisi: TISayi4;
@@ -80,7 +80,7 @@ var
 begin
 
   // ARP giriþleri için bellekte yer tahsis et
-  ARPKayitBellekAdresi := GGercekBellek.Ayir(USTLIMIT_KAYITSAYISI * SizeOf(TARPKayit));
+  ARPKayitBellekAdresi := GetMem(USTLIMIT_KAYITSAYISI * SizeOf(TARPKayit));
 
   // giriþlere ait iþaretçileri bellek bölgeleriyle eþleþtir
   Bellek := ARPKayitBellekAdresi;
@@ -126,7 +126,7 @@ begin
     if(GirdiSiraNo >= 0) and (GirdiSiraNo < ARPKayitSayisi) then
     begin
 
-      ARPKayit := PARPKayit(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      ARPKayit := PARPKayit(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       Result := ARPKaydiAl(GirdiSiraNo, ARPKayit);
 
     end else Result := HATA_DEGERARALIKDISI;
@@ -205,29 +205,37 @@ begin
 end;
 
 {==============================================================================
-  ARP tablosunu günceller
+  ARP tablosunu her 1 saniyede bir günceller
+  bilgi: iþlev, çekirdeðe baðlý ayrý bir görev olarak çalýþmaktadýr
  ==============================================================================}
 procedure ARPTablosunuGuncelle;
 var
-  i, YasamSuresi: TISayi4;
+  YasamSuresi,
+  i: TISayi4;
 begin
 
-  for i := 0 to USTLIMIT_KAYITSAYISI - 1 do
+  while True do
   begin
 
-    if(ARPKayitListesi[i]^.YasamSuresi > 0) then
+    BekleMS(100);
+
+    for i := 0 to USTLIMIT_KAYITSAYISI - 1 do
     begin
 
-      YasamSuresi := ARPKayitListesi[i]^.YasamSuresi;
-      Dec(YasamSuresi);
-      ARPKayitListesi[i]^.YasamSuresi := YasamSuresi;
-
-      // yaþam süresi 0 olduðunda girdi -1 yapýlarak baþka kayýtlarýn eklenmesi saðlanýyor
-      if(YasamSuresi = 0) then
+      if(ARPKayitListesi[i]^.YasamSuresi > 0) then
       begin
 
-        ARPKayitListesi[i]^.YasamSuresi := -1;
-        Dec(ARPKayitSayisi);      // girdi sayýsýný azalt
+        YasamSuresi := ARPKayitListesi[i]^.YasamSuresi;
+        Dec(YasamSuresi);
+        ARPKayitListesi[i]^.YasamSuresi := YasamSuresi;
+
+        // yaþam süresi 0 olduðunda girdi -1 yapýlarak baþka kayýtlarýn eklenmesi saðlanýyor
+        if(YasamSuresi = 0) then
+        begin
+
+          ARPKayitListesi[i]^.YasamSuresi := -1;
+          Dec(ARPKayitSayisi);      // girdi sayýsýný azalt
+        end;
       end;
     end;
   end;

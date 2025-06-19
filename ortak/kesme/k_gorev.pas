@@ -6,7 +6,7 @@
   Dosya Adı: k_gorev.pas
   Dosya İşlevi: görev (program) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 11/06/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,9 +46,9 @@ begin
   if(IslevNo = 1) then
   begin
 
-    s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi)^;
+    s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
 
-    p := p^.Calistir(s);
+    p := p^.Calistir(s, CALISMA_SEVIYE3);
     if(p <> nil) then
 
       Result := p^.GorevKimlik
@@ -65,8 +65,8 @@ begin
     if(i = -1) then
     begin
 
-      p := GorevListesi[CalisanGorev];
-      p^.Isaretle(CalisanGorev);
+      p := GorevListesi[FAktifGorev];
+      p^.Isaretle(FAktifGorev);
     end
     else if(i >= 0) and (i < USTSINIR_GOREVSAYISI) then
     begin
@@ -80,9 +80,9 @@ begin
   else if(IslevNo = 3) then
   begin
 
-    p2 := PSayi4(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
+    p2 := PSayi4(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
     p2^ := USTSINIR_GOREVSAYISI;
-    p2 := PSayi4(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+    p2 := PSayi4(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
     p2^ := CalisanGorevSayisi;
 
     Result := 1;
@@ -100,7 +100,7 @@ begin
       if(p <> nil) then
       begin
 
-        GorevKayit := PGorevKayit(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+        GorevKayit := PGorevKayit(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         GorevKayit^.GorevDurum := p^.FGorevDurum;
         GorevKayit^.GorevKimlik := p^.GorevKimlik;
         GorevKayit^.GorevSayaci := p^.GorevSayaci;
@@ -126,7 +126,7 @@ begin
       if(GK >= 0) then
       begin
 
-        p4 := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+        p4 := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         TSS := GorevTSSListesi[GK];
         Tasi2(TSS, p4, 104);
 
@@ -152,7 +152,7 @@ begin
     j := PISayi4(ADegiskenler + 04)^;
     ProgramKayit := CalisanProgramBilgisiAl(i, j);
 
-    ProgramKayit2 := PProgramKayit(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
+    ProgramKayit2 := PProgramKayit(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
     ProgramKayit2^.PencereKimlik := ProgramKayit.PencereKimlik;
     ProgramKayit2^.GorevKimlik := ProgramKayit.GorevKimlik;
     ProgramKayit2^.PencereTipi := ProgramKayit.PencereTipi;
@@ -171,7 +171,7 @@ begin
   else if(IslevNo = 9) then
   begin
 
-    s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi)^;
+    s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
     Result := p^.GorevKimligiAl(s);
   end
 
@@ -179,7 +179,7 @@ begin
   else if(IslevNo = $A) then
   begin
 
-    s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi)^;
+    s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
     p^.FProgramAdi := s;
   end
 

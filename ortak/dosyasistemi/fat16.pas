@@ -118,7 +118,7 @@ var
   Bulundu: Boolean;
 begin
 
-  AktifGorev := GorevListesi[CalisanGorev];
+  AktifGorev := GorevListesi[FAktifGorev];
 
   // en son işlem hatalı ise çık
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;

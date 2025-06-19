@@ -46,7 +46,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses temelgorselnesne;
+uses temelgorselnesne, gorev;
 
 {==============================================================================
   sayfa kontrol nesne kesme çaðrýlarýný yönetir
@@ -87,7 +87,7 @@ begin
     begin
 
       SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(PKimlik(ADegiskenler + 00)^));
-      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       SayfaKontrol^.SayfaEkle(p^);
     end;
 
@@ -96,7 +96,7 @@ begin
     begin
 
       SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(PKimlik(ADegiskenler + 00)^));
-      p := PKarakterKatari(PSayi4(ADegiskenler + 16)^ + CalisanGorevBellekAdresi);
+      p := PKarakterKatari(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
       SayfaKontrol^.EtiketEkle(PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, p^);
     end

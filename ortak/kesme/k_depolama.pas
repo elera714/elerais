@@ -20,7 +20,7 @@ function DepolamaCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISay
 
 implementation
 
-uses depolama;
+uses depolama, gorev;
 
 {==============================================================================
   depolama aygýt kesme çaðrýlarýný yönetir
@@ -53,7 +53,7 @@ begin
     if not(MD = nil) then
     begin
 
-      p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       PMantiksalDepolama3(p)^ := MD^.MD3;
       Result := SizeOf(TMantiksalDepolama3);
     end else Result := 0;
@@ -67,7 +67,7 @@ begin
     if not(MD = nil) then
     begin
 
-      p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
+      p := Isaretci(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
       Result := MantiksalDepolamaVeriOku(MD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
     end else Result := 1;
@@ -90,7 +90,7 @@ begin
     if not(FD = nil) then
     begin
 
-      p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      p := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       PFizikselDepolama3(p)^ := FD^.FD3;
       Result := SizeOf(TFizikselDepolama3);
     end else Result := 0;
@@ -104,7 +104,7 @@ begin
     if not(FD = nil) then
     begin
 
-      p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
+      p := Isaretci(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
       Result := FizikselDepolamaVeriOku(FD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
     end else Result := 1;
@@ -117,7 +117,7 @@ begin
     if not(FD = nil) then
     begin
 
-      p := Isaretci(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
+      p := Isaretci(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
       Result := FizikselDepolamaVeriYaz(FD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
     end else Result := 1;

@@ -38,7 +38,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TISayi4; ANormalRenk,
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne;
+uses genel, gn_pencere, gn_islevler, temelgorselnesne, gorev;
 
 {==============================================================================
   bağlantı nesne kesme çağrılarını yönetir
@@ -57,7 +57,7 @@ begin
       GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PRenk(ADegiskenler + 12)^, PRenk(ADegiskenler + 16)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:

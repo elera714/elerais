@@ -43,7 +43,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_islevler, gn_pencere, temelgorselnesne, sistemmesaj;
+uses genel, gn_islevler, gn_pencere, temelgorselnesne, sistemmesaj, gorev;
 
 {==============================================================================
   liste kutusu kesme çağrılarını yönetir
@@ -100,7 +100,7 @@ begin
       ListeKutusu := PListeKutusu(ListeKutusu^.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeKutusu));
       if(ListeKutusu <> nil) then ListeKutusu^.ListeyeEkle(
-        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^);
       Result := 1;
     end;
 
@@ -158,7 +158,7 @@ begin
       if(ListeKutusu <> nil) then
       begin
 
-        p := PKarakterKatari(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
+        p := PKarakterKatari(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
         p^ := ListeKutusu^.FYaziListesi^.Eleman[PSayi4(ADegiskenler + 04)^];
       end;
     end

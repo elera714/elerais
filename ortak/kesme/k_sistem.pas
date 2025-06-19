@@ -20,7 +20,7 @@ function SistemCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses genel, sistem;
+uses genel, sistem, gorev;
 
 function SistemCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -38,7 +38,7 @@ begin
   if(IslevNo = 1) then
   begin
 
-    SB := PSistemBilgisi(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
+    SB := PSistemBilgisi(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
     SB^.SistemAdi := SistemAdi;
     SB^.DerlemeBilgisi := DerlemeTarihi;
     SB^.FPCMimari := FPCMimari;
@@ -50,7 +50,7 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    IB := PIslemciBilgisi(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
+    IB := PIslemciBilgisi(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
     IB^.Satici := GIslemciBilgisi.Satici;
     IB^.Ozellik1_EAX := GIslemciBilgisi.Ozellik1_EAX;
     IB^.Ozellik1_EDX := GIslemciBilgisi.Ozellik1_EDX;
@@ -70,7 +70,7 @@ begin
       else s := '';
     end;
 
-    p := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+    p := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
     PKarakterKatari(p)^ := s;
   end
 

@@ -139,7 +139,7 @@ type
 implementation
 
 uses genel, genel8x16, donusum, bmp, gn_islevler, sistemmesaj, gn_pencere,
-  hamresim, giysi_normal, giysi_mac;
+  hamresim, giysi_normal, giysi_mac, gorev;
 
 var
   GiysiResimler: array[0..11] of THamResim = (
@@ -188,7 +188,7 @@ begin
   end;
 
   // temel nesne deðerlerini ata
-  GN^.GorevKimlik := CalisanGorev;
+  GN^.GorevKimlik := FAktifGorev;
   GN^.AtaNesne := AtaGorselNesne;
 
   // nesne olaylarý öndeðer olarak nesneyi oluþturan programa yönlendirilecek

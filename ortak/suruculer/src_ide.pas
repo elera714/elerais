@@ -123,7 +123,7 @@ function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSa
 
 implementation
 
-uses aygityonetimi, irq, sistemmesaj, donusum;
+uses aygityonetimi, irq, sistemmesaj, donusum, gorev;
 
 var
   IDEDiskListesi: array[0..3] of TIDEDisk = (
@@ -355,7 +355,7 @@ begin
     while ReadSector28GorevNo <> 0 do;
   end;
 
-  ReadSector28GorevNo := CalisanGorev;
+  ReadSector28GorevNo := FAktifGorev;
 
   // sürücü bilgisine konumlan
   FD := AFizikselSurucu;
@@ -452,7 +452,7 @@ begin
     while ReadSector28GorevNo <> 0 do;
   end;
 
-  ReadSector28GorevNo := CalisanGorev;
+  ReadSector28GorevNo := FAktifGorev;
 
   // sürücü bilgisine konumlan
   FD := PFizikselDepolama(AFizikselDepolama);

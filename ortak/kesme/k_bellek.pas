@@ -20,7 +20,7 @@ function BellekCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses genel, islevler;
+uses genel, islevler, gorev;
 
 {==============================================================================
   bellek kesme çağrılarını yönetir
@@ -38,11 +38,11 @@ begin
   if(IslevNo = 1) then
   begin
 
-    p := PSayi4(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
     p^ := CekirdekBaslangicAdresi;
-    p := PSayi4(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
     p^ := CekirdekBaslangicAdresi + CekirdekUzunlugu;
-    p := PSayi4(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
     p^ := CekirdekUzunlugu;
 
     Result := 1;
@@ -52,15 +52,15 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    p := PSayi4(PSayi4(ADegiskenler + 00)^ + CalisanGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
     p^ := GGercekBellek.ToplamBlok;
-    p := PSayi4(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
     p^ := GGercekBellek.AyrilmisBlok;
-    p := PSayi4(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
     p^ := GGercekBellek.KullanilmisBlok;
-    p := PSayi4(PSayi4(ADegiskenler + 12)^ + CalisanGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
     p^ := GGercekBellek.ToplamBlok - GGercekBellek.KullanilmisBlok;
-    p := PSayi4(PSayi4(ADegiskenler + 16)^ + CalisanGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
     p^ := 4096;
 
     Result := 1;
@@ -79,7 +79,7 @@ begin
     else}
     begin
 
-      Tasi2(Isaretci(Kaynak), Isaretci(Hedef + CalisanGorevBellekAdresi), Uzunluk);
+      Tasi2(Isaretci(Kaynak), Isaretci(Hedef + FAktifGorevBellekAdresi), Uzunluk);
       Result := 1;
     end;
   end

@@ -61,7 +61,7 @@ type
     function BaglantiOlustur: PBaglanti;
     function Baglan(ABaglantiTipi: TBaglantiTipi): TISayi4;
     function BagliMi: Boolean;
-    function BaglantiyiKes: TISayi4;
+    function BaglantiyiKes(AKimlik : TKimlik): TISayi4;
     function TCPIlkSiraNoAl: TSayi4;
     function TCPBaglantiAl(AYerelPort, AUzakPort: TSayi2): PBaglanti;
     function UDPBaglantiAl(AYerelPort: TSayi2): PBaglanti;
@@ -88,7 +88,7 @@ var
 begin
 
   // baðlantý bilgilerinin yerleþtirilmesi için bellek ayýr
-  Bag := GGercekBellek.Ayir(SizeOf(TBaglanti) * USTSINIR_AGILETISIM);
+  Bag := GetMem(SizeOf(TBaglanti) * USTSINIR_AGILETISIM);
 
   // bellek giriþlerini dizi giriþleriyle eþleþtir
   for i := 0 to USTSINIR_AGILETISIM - 1 do
@@ -158,14 +158,14 @@ begin
     Bag^.FOnayNo := 0;
 
     Bag^.FBellekUzunlugu := 0;
-    Bag^.FBellek := GGercekBellek.Ayir(4096); //Bag^.FPencereU);
+    Bag^.FBellek := GetMem(4096); //Bag^.FPencereU);
     if(Bag^.FBellek = nil) then SISTEM_MESAJ(mtHata, RENK_SIYAH, 'ILETISIM.PAS: Bellek yok', []);
   end
   else if(AProtokolTipi = ptUDP) then
   begin
 
     Bag^.FBellekUzunlugu := 0;
-    Bag^.FBellek := GGercekBellek.Ayir(4096);
+    Bag^.FBellek := GetMem(4096);
 
     {SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Protokol -> UDP', []);
     SISTEM_MESAJ(RENK_MOR, 'ILETISIM.PAS: Kimlik %d', [Bag^.FKimlik]);
@@ -301,7 +301,7 @@ end;
 {==============================================================================
   baðlantýyý kapatýr
  ==============================================================================}
-function TBaglanti.BaglantiyiKes: TISayi4;
+function TBaglanti.BaglantiyiKes(AKimlik : TKimlik): TISayi4;
 begin
 
   // baðlantý kimliði tanýmlanan aralýkta ise...
@@ -317,7 +317,7 @@ begin
       FYerelPort := 0;
       FUzakPort := 0;
 
-      GGercekBellek.YokEt(FBellek, FBellekUzunlugu);
+      FreeMem(FBellek, FBellekUzunlugu);
       FBagli := False;
 
       Result := 0;

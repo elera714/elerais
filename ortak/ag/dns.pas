@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 10/06/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -65,7 +65,7 @@ procedure DNSPaketleriniIsle(AUDPPaket: PUDPPaket);
 
 implementation
 
-uses genel, donusum, islevler, sistemmesaj;
+uses genel, donusum, islevler, sistemmesaj, gorev;
 
 {==============================================================================
   dns protokol değişken / yapı ilk yükleme işlevlerini içerir
@@ -77,7 +77,7 @@ var
 begin
 
   // dns bilgilerinin yerleştirilmesi için bellek ayır
-  DNS := GGercekBellek.Ayir(SizeOf(TDNS) * USTSINIR_DNSBAGLANTI);
+  DNS := GetMem(SizeOf(TDNS) * USTSINIR_DNSBAGLANTI);
 
   // bellek girişlerini dizi girişleriyle eşleştir
   for i := 0 to USTSINIR_DNSBAGLANTI - 1 do
@@ -117,7 +117,7 @@ begin
 
     i := PISayi4(ADegiskenler + 00)^;
     DNS := GDNSBaglantilari[i];
-    DNS^.Sorgula(i, PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^);
+    DNS^.Sorgula(i, PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^);
   end
   // dns sorgu durumunu al
   else if(AIslevNo = 3) then
@@ -132,7 +132,7 @@ begin
 
     DNS := GDNSBaglantilari[PISayi4(ADegiskenler + 00)^];
 
-    Hedef := PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi;
+    Hedef := PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi;
 
     // dns yanıtını ve uzunluğunu (4 byte) hedef alana kopyala
     Tasi2(Isaretci(DNS^.FBellekAdresi + 2048), Isaretci(Hedef), DNS^.FYanitUzunluk + 4);
@@ -198,7 +198,7 @@ begin
 
 
     DNS^.FYerelPort := YerelPortAl;
-    DNS^.FBellekAdresi := GGercekBellek.Ayir(4096);
+    DNS^.FBellekAdresi := GetMem(4096);
     DNS^.FYanitUzunluk := 0;
   end;
 
@@ -344,9 +344,9 @@ begin
   DNS := GDNSBaglantilari[ADNSKimlik];
 
   DNS^.FBaglantiDurum := ddOlusturuldu;
-  DNS^.FBaglanti^.BaglantiyiKes;
+  DNS^.FBaglanti^.BaglantiyiKes(DNS^.FKimlik);
 
-  GGercekBellek.YokEt(DNS^.FBellekAdresi, 4096);
+  FreeMem(DNS^.FBellekAdresi, 4096);
 end;
 
 {==============================================================================

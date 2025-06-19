@@ -84,7 +84,7 @@ begin
   Tasi2(@AICMPBaslik^.Veri, @s[0], i);
 
   // gönderilecek paket için bellek bölgesi oluþtur
-  ICMPBaslik := GGercekBellek.Ayir(4096);
+  ICMPBaslik := GetMem(4096);
 
   //IcmpPacket := @IPPacket^.Data;
   ICMPBaslik^.MesajTipi := ICMP_YANKI_YANIT;
@@ -107,7 +107,7 @@ begin
   {$ENDIF}
 
   // belleði yok et
-  GGercekBellek.YokEt(ICMPBaslik, 4096);
+  FreeMem(ICMPBaslik, 4096);
 end;
 
 end.

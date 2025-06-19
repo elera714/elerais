@@ -20,7 +20,7 @@ function YazimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses gorselnesne, gn_pencere;
+uses gorselnesne, gn_pencere, gorev;
 
 {==============================================================================
   görsel nesne (pencere nesnesi) yazım kesmelerini içerir
@@ -66,7 +66,7 @@ begin
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
     A1 := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     B1 := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
-    Bellek := Isaretci((PSayi4(ADegiskenler + 16)^ + CalisanGorevBellekAdresi));
+    Bellek := Isaretci((PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi));
 
     P^.YaziYaz(P, A1, B1, PKarakterKatari(Bellek)^, PRenk(ADegiskenler + 12)^);
 
@@ -116,7 +116,7 @@ begin
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
     A1 := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     B1 := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
-    Bellek := PMACAdres(PSayi4(ADegiskenler + 16)^ + CalisanGorevBellekAdresi);
+    Bellek := PMACAdres(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
 
     P^.MACAdresiYaz(P, A1, B1, PMACAdres(Bellek)^, PRenk(ADegiskenler + 12)^);
 
@@ -133,7 +133,7 @@ begin
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
     A1 := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     B1 := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
-    Bellek := PIPAdres(PSayi4(ADegiskenler + 16)^ + CalisanGorevBellekAdresi);
+    Bellek := PIPAdres(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
 
     P^.IPAdresiYaz(P, A1, B1, PIPAdres(Bellek)^, PRenk(ADegiskenler + 12)^);
 

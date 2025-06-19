@@ -43,7 +43,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_islevler, temelgorselnesne, giysi_mac, gn_pencere, sistemmesaj;
+uses genel, gn_islevler, temelgorselnesne, giysi_mac, gn_pencere, sistemmesaj, gorev;
 
 {==============================================================================
   güç düğme kesme çağrılarını yönetir
@@ -65,7 +65,7 @@ begin
       GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + CalisanGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
     end;
 
     ISLEV_GOSTER:
@@ -90,8 +90,8 @@ begin
       if(GucDugmesi <> nil) then
       begin
 
-        Konum := PKonum(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
-        Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
+        Konum := PKonum(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+        Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
         GucDugmesi^.FIlkKonum.Sol := Konum^.Sol;
         GucDugmesi^.FIlkKonum.Ust := Konum^.Ust;
         GucDugmesi^.FIlkBoyut.Genislik := Boyut^.Genislik;
@@ -116,7 +116,7 @@ begin
       if not(GucDugmesi = nil) then
       begin
 
-        GucDugmesi^.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi)^;
+        GucDugmesi^.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
       end;
     end;
 

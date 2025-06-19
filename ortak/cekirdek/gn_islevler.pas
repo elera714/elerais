@@ -31,7 +31,7 @@ procedure OlayYakalamayiBirak(AGorselNesne: PGorselNesne);
 
 implementation
 
-uses islevler, sistemmesaj;
+uses islevler, sistemmesaj, gorev;
 
 {==============================================================================
   görsel nesne yükleme işlevlerini gerçekleştirir
@@ -49,7 +49,7 @@ begin
   GN_UZUNLUK := 1024; //Align(SizeOf(TPencere) + 64, 16);
 
   // görsel nesneler için bellekte yer tahsis et
-  GNBellekAdresi := GGercekBellek.Ayir(USTSINIR_GORSELNESNE * GN_UZUNLUK);
+  GNBellekAdresi := GetMem(USTSINIR_GORSELNESNE * GN_UZUNLUK);
 
   // 0. bit    : 1 = nesne Kullanılıyor, 0 = nesne kullanılmıyor
   // 1..9 bit  : düşük 12 bit sistem kontrol amacıyla sürekli 1 olacak
@@ -110,7 +110,7 @@ begin
     begin
 
       GN := GGorselNesneListesi[Kimlik];
-      BellekAdresi := Isaretci(PSayi4(ADegiskenler + 04)^ + CalisanGorevBellekAdresi);
+      BellekAdresi := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       Tasi2(GN, BellekAdresi, GN_UZUNLUK);
 
       Result := 1;
@@ -124,7 +124,7 @@ begin
     Konum.Sol := PISayi4(ADegiskenler + 00)^;
     Konum.Ust := PISayi4(ADegiskenler + 04)^;
     GN := GorselNesneBul(Konum);
-    BellekAdresi := Isaretci(PSayi4(ADegiskenler + 08)^ + CalisanGorevBellekAdresi);
+    BellekAdresi := Isaretci(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
     Tasi2(@GN^.NesneAdi[0], BellekAdresi, Length(GN^.NesneAdi) + 1);
   end;
 end;
@@ -179,14 +179,14 @@ begin
 
             // pencere nesnesinin alt nesne için ayrılan bellek bloğunu iptal et
             { TODO : bu işlev buradan çıkarılarak nesnenin yoketme işlevine eklenecektir }
-            GGercekBellek.YokEt(Pencere^.FAltNesneBellekAdresi, 4096);
+            FreeMem(Pencere^.FAltNesneBellekAdresi, 4096);
           end;
 
           // bulunan pencereyi masaüstü listesinden çıkart
           MasaustuGNBellekAdresi[PencereSiraNo] := nil;
 
           // pencere ve alt görsel nesneler için ayrılan çizim bellek alanının yok et
-          GGercekBellek.YokEt(Pencere^.FCizimBellekAdresi, Pencere^.FCizimBellekUzunlugu);
+          FreeMem(Pencere^.FCizimBellekAdresi, Pencere^.FCizimBellekUzunlugu);
 
           // pencereyi yok et
           Pencere^.YokEt;
@@ -210,7 +210,7 @@ begin
           end
 
           // aksi durumda masaüstü alt nesne bellek bölgesini iptal et
-          else GGercekBellek.YokEt(Masaustu^.FAltNesneBellekAdresi, 4096);
+          else FreeMem(Masaustu^.FAltNesneBellekAdresi, 4096);
 
           // bir sonraki döngüye devam etmeden çık
           Exit;

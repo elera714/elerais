@@ -103,7 +103,7 @@ var
 begin
 
   // paket için bellek bölgesi oluştur
-  IPPaket := GGercekBellek.Ayir(AVeriUzunlugu + IP_BASLIK_U);
+  IPPaket := GetMem(AVeriUzunlugu + IP_BASLIK_U);
 
   // ip paketi hazırlanıyor
   IPPaket^.SurumVeBaslikUzunlugu := $45;      // 4 = ip4; 5 * 4 = 20 = ip başlık uzunluğu
@@ -135,7 +135,7 @@ begin
   // paketi donanıma (ethernet) gönder
   AgKartinaVeriGonder(AHedefMACAdres, ptIP, IPPaket, AVeriUzunlugu + IP_BASLIK_U);
 
-  GGercekBellek.YokEt(IPPaket, AVeriUzunlugu + IP_BASLIK_U);
+  FreeMem(IPPaket, AVeriUzunlugu + IP_BASLIK_U);
 end;
 
 end.
