@@ -327,7 +327,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(Dugme^.OlayYonlendirmeAdresi = nil) then
         Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-      else GorevListesi[Dugme^.GorevKimlik]^.OlayEkle(Dugme^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(Dugme^.GorevKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -351,14 +351,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Dugme^.OlayYonlendirmeAdresi = nil) then
         Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-      else GorevListesi[Dugme^.GorevKimlik]^.OlayEkle(Dugme^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(Dugme^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Dugme^.OlayYonlendirmeAdresi = nil) then
       Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-    else GorevListesi[Dugme^.GorevKimlik]^.OlayEkle(Dugme^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Dugme^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -382,7 +382,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Dugme^.OlayYonlendirmeAdresi = nil) then
       Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-    else GorevListesi[Dugme^.GorevKimlik]^.OlayEkle(Dugme^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Dugme^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle

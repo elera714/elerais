@@ -21,15 +21,16 @@ uses paylasim, gn_masaustu, gn_pencere, gn_araccubugu, gn_durumcubugu, gn_gucdug
 type
 
   { TAracTipiSinif }
-
+  PAracTipiSinif = ^TAracTipiSinif;
   TAracTipiSinif = class
-  private
-    FKimlik: QWord;
+  //private
+
   public
+    FKimlik: TSayi4;
     constructor Create;
     destructor Destroy; override;
   published
-    property Kimlik: QWord read FKimlik write FKimlik;
+    property Kimlik: TSayi4 read FKimlik write FKimlik;
   end;
 
 type
@@ -39,10 +40,11 @@ type
 
   TAracTipleriSinif = class
   private
-    //FAracTipListesi: TAracTipListesi;
+    FToplam: TSayi4;
     function Al(ASiraNo: Integer): TAracTipiSinif;
     procedure Yaz(ASiraNo: Integer; AGaraj: TAracTipiSinif);
   public
+    FAracTipListesi: array[0..9] of TAracTipiSinif;
     constructor Create;
     destructor Destroy; override;
     function Toplam: Integer;
@@ -91,7 +93,6 @@ type
 
 procedure Prg1;
 procedure Prg2;
-function Mutex(ADeger: TSayi4): TSayi4;
 
 implementation
 
@@ -102,8 +103,8 @@ uses donusum, zamanlayici, sistemmesaj;
 function TAracTipleriSinif.Al(ASiraNo: Integer): TAracTipiSinif;
 begin
 
-  {if(ASiraNo >= 0) and (ASiraNo < Toplam) then
-    Result := TAracTipiSinif(FAracTipListesi[ASiraNo])
+{  if(ASiraNo >= 0) and (ASiraNo < Toplam) then
+    Result := FAracTipListesi[ASiraNo]
   else Result := nil;}
 end;
 
@@ -115,7 +116,13 @@ begin
 end;
 
 constructor TAracTipleriSinif.Create;
+var
+  i: TSayi4;
 begin
+
+  FToplam := 0;
+
+  for i := 0 to 9 do FAracTipListesi[i] := nil;
 
   //FAracTipListesi := TAracTipListesi.Create(False);
 end;
@@ -130,6 +137,7 @@ end;
 function TAracTipleriSinif.Toplam: Integer;
 begin
 
+  Result := FToplam;
   //Result := FAracTipListesi.Count;
 end;
 
@@ -139,10 +147,15 @@ begin
 end;
 
 function TAracTipleriSinif.Ekle: TAracTipiSinif;
+var
+  A: TAracTipiSinif;
 begin
 
-  {Result := TAracTipiSinif.Create;
-  FAracTipListesi.Add(Result);}
+  A := TAracTipiSinif.Create;
+  FAracTipListesi[FToplam] := A;
+  Inc(FToplam);
+
+  Result := A;
 end;
 
 { TAracTipiSinif }
@@ -402,62 +415,52 @@ begin
   end;
 end;
 
+var
+  MutexDeger: TSayi4 = 0;
+  MutexDurum: TSayi4 = 0;
+
 procedure Prg1;
 var
-  Deger: TSayi4;
+  i: TSayi4;
 begin
-
-  Deger := 0;
 
   while True do
   begin
 
+    while KritikBolgeyeGir(MutexDurum) = False do;
+
+    i := MutexDeger;
+    Inc(i);
+    MutexDeger := i;
+
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Prg1: %d', [MutexDeger]);
+
+    KritikBolgedenCik(MutexDurum);
+
     BekleMS(100);
-
-    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Prg1', []);
-
-    Deger := Mutex(Deger);
-
-    //Inc(Deger);
-
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Deðer: %d', [Deger]);
   end;
 end;
 
 procedure Prg2;
 var
-  Deger: TSayi4;
+  i: TSayi4;
 begin
-
-  Deger := 100;
 
   while True do
   begin
 
-    BekleMS(500);
+    while KritikBolgeyeGir(MutexDurum) = False do;
 
-    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Prg2', []);
+    i := MutexDeger;
+    Inc(i);
+    MutexDeger := i;
 
-    Deger := Mutex(Deger);
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Prg2: %d', [i]);
 
-    //Inc(Deger);
+    KritikBolgedenCik(MutexDurum);
 
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Deðer: %d', [Deger]);
+    BekleMS(1000);
   end;
-end;
-
-function Mutex(ADeger: TSayi4): TSayi4;
-var
-  Deger: TSayi4;
-begin
-
-  Deger := ADeger;
-
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Deðer: %d', [Deger]);
-
-  BekleMS(500);
-
-  Result := Deger + 1;
 end;
 
 end.

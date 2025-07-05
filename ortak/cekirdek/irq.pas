@@ -27,7 +27,7 @@ var
 procedure Yukle;
 procedure IRQIsleviAta(AIRQNo: TSayi4; AIslevAdres: TIslev);
 procedure IRQIsleviIptal(AIRQNo, AIRQSiraNo: TSayi4);
-function IRQIslevBoSiraNoBul(AIRQNo: TSayi4): TISayi4;
+function IRQIslevBoSsiraNoBul(AIRQNo: TSayi4): TISayi4;
 function IRQDoluKanalSayisiniAl(AIRQNo: TSayi4): TISayi4;
 procedure IRQEtkinlestir(AIRQNo: TSayi4);
 procedure IRQPasiflestir(AIRQNo: TSayi4);
@@ -167,7 +167,7 @@ begin
 
   cli;
 
-  IRQSiraNo := IRQIslevBoSiraNoBul(AIRQNo);
+  IRQSiraNo := IRQIslevBosSiraNoBul(AIRQNo);
   if(IRQSiraNo > -1) then
   begin
 
@@ -197,7 +197,7 @@ end;
 {==============================================================================
   irq işlevi atamak için boş sıra numarası bulur (sıra numarasının tahsisini yapmaz)
  ==============================================================================}
-function IRQIslevBoSiraNoBul(AIRQNo: TSayi4): TISayi4;
+function IRQIslevBosSiraNoBul(AIRQNo: TSayi4): TISayi4;
 var
   i: TSayi4;
 begin
@@ -256,7 +256,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -299,7 +299,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -342,7 +342,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -385,7 +385,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -428,7 +428,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -471,7 +471,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -514,7 +514,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -557,7 +557,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -600,7 +600,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -644,7 +644,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -688,7 +688,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -732,7 +732,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -776,7 +776,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -820,7 +820,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -864,7 +864,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:
@@ -908,7 +908,7 @@ asm
 
 @@bir_sonraki:
   inc   ecx
-  cmp   ecx,7
+  cmp   ecx,IRQBASINA_ISLEVSAYISI - 1
   jbe   @@islev_calistir
 
 @@islev_tamam:

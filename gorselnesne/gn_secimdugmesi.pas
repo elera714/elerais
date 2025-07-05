@@ -301,7 +301,7 @@ begin
         // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
         if not(SecimDugmesi^.OlayYonlendirmeAdresi = nil) then
           SecimDugmesi^.OlayYonlendirmeAdresi(SecimDugmesi, AOlay)
-        else GorevListesi[SecimDugmesi^.GorevKimlik]^.OlayEkle(SecimDugmesi^.GorevKimlik, AOlay);
+        else GGorevler.OlayEkle(SecimDugmesi^.GorevKimlik, AOlay);
       end;
     end;
   end;

@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 11/06/2025
+  Güncelleme Tarihi: 05/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,7 +18,7 @@ interface
 uses paylasim, port, gorselnesne;
 
 const
-  AZAMI_ZAMANLAYICI_SAYISI = 32;
+  AZAMI_ZAMANLAYICI_SAYISI = 64;
 
 type
   TZamanlayiciDurum = (zdBos, zdCalisiyor, zdDurduruldu);
@@ -45,7 +45,7 @@ type
   end;
 
 var
-  ZamanlayiciYapiBellekAdresi: Isaretci;
+  ZamanlayiciBellekAdresi: Isaretci;
   OlusturulanZamanlayiciSayisi: TSayi4 = 0;
   GZamanlayiciListesi: array[0..AZAMI_ZAMANLAYICI_SAYISI - 1] of PZamanlayici;
 
@@ -84,11 +84,11 @@ begin
 
   ZamanlayiciU := SizeOf(TZamanlayici);
 
-  // uygulamalar için zamanlayýcý bilgilerinin yerleþtirileceði bellek oluþtur
-  ZamanlayiciYapiBellekAdresi := GetMem(AZAMI_ZAMANLAYICI_SAYISI * ZamanlayiciU);
+  // zamanlayýcý bilgilerinin yerleþtirileceði bellek bölgesini oluþtur
+  ZamanlayiciBellekAdresi := GetMem(AZAMI_ZAMANLAYICI_SAYISI * ZamanlayiciU);
 
-  // bellek giriþlerini zamanlayýcý yapýlarýyla eþleþtir
-  BellekAdresi := ZamanlayiciYapiBellekAdresi;
+  // bellek bölgesini zamanlayýcý yapýlarýyla eþleþtir
+  BellekAdresi := ZamanlayiciBellekAdresi;
   for i := 0 to AZAMI_ZAMANLAYICI_SAYISI - 1 do
   begin
 
@@ -140,7 +140,7 @@ begin
 end;
 
 {==============================================================================
-  boþ zamanlayýcý bulur
+  boþ (kullanýlmayan) zamanlayýcý bulur
  ==============================================================================}
 function TZamanlayici.BosZamanlayiciBul: PZamanlayici;
 var
@@ -227,8 +227,8 @@ begin
         else
         begin
 
-          Gorev := GorevListesi[GZamanlayiciListesi[i]^.GorevKimlik];
-          Gorev^.OlayEkle(Gorev^.GorevKimlik, Olay);
+          Gorev := GorevAl(GZamanlayiciListesi[i]^.GorevKimlik);
+          GGorevler.OlayEkle(Gorev^.GorevKimlik, Olay);
         end;
       end;
     end;
@@ -310,13 +310,13 @@ asm
   mov   es,ax
 
   // zamanlayýcý sayacýný artýr.
-  mov ecx,ZamanlayiciSayaci
-  inc ecx
-  mov ZamanlayiciSayaci,ecx
+  mov   ecx,ZamanlayiciSayaci
+  inc   ecx
+  mov   ZamanlayiciSayaci,ecx
 
-  mov eax,GorevDegisimBayragi
-  cmp eax,0
-  je  @@cik
+  mov   eax,GorevDegisimBayragi
+  cmp   eax,0
+  je    @@cik
 
   mov   eax,CokluGorevBasladi
   cmp   eax,1
@@ -353,45 +353,57 @@ asm
 @@yenigorev:
 
   // tek bir görev çalýþýyorsa görev deðiþikliði yapma, çýk
-  mov ecx,CalisanGorevSayisi
-  cmp ecx,1
-  je  @@cik
+  mov   ecx,CalisanGorevSayisi
+  cmp   ecx,1
+  je    @@cik
 
   // geçiþ yapýlacak bir sonraki görevi bul
   call  CalistirilacakBirSonrakiGoreviBul
-  mov FAktifGorev,eax
+  mov   FAktifGorev,eax
 
   // aktif görevin bellek baþlangýç adresini al
-  shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,[esi + TGorev.FBellekBaslangicAdresi]
-  mov FAktifGorevBellekAdresi,eax
+  mov   eax,FAktifGorev
+  shl   eax,2
+  mov   esi,GorevListesi[eax]
+  mov   esi,[esi + TGorev.G0]
+  mov   eax,[esi + TGorev0.FBellekBaslangicAdresi]
+  mov   FAktifGorevBellekAdresi,eax
 
   // görev deðiþiklik sayacýný bir artýr
-  mov eax,[esi + TGorev.FGorevSayaci]
-  inc eax
-  mov [esi + TGorev.FGorevSayaci],eax
+  mov   eax,FAktifGorev
+  shl   eax,2
+  mov   esi,GorevListesi[eax]
+  mov   esi,[esi + TGorev.G0]
+  mov   eax,[esi + TGorev0.FGorevSayaci]
+  inc   eax
+  mov   [esi + TGorev0.FGorevSayaci],eax
 
   // GorevDegisimSayisi = kilitlenmeleri denetleyebilmek için eklenen deðiþken
-  mov eax,GorevDegisimSayisi
-  inc eax
-  mov GorevDegisimSayisi,eax
+  mov   eax,GorevDegisimSayisi
+  inc   eax
+  mov   GorevDegisimSayisi,eax
 
-  // görevin devredileceði TSS giriþini belirle
+  // görevin öncelik seviyesine göre görev geçiþini gerçekleþtir
   mov   ecx,FAktifGorev
-  mov   eax,[esi + TGorev.FSeviyeNo]
+  mov   eax,ecx
+  shl   eax,2
+  mov   esi,GorevListesi[eax]
+  mov   esi,[esi + TGorev.G0]
+  mov   eax,[esi + TGorev0.FSeviyeNo]
   cmp   eax,CALISMA_SEVIYE0
   jz    @@TSS_SEVIYE0
 
+// DPL3 - uygulama yazýlýmlarý için (ring3)
 @@TSS_SEVIYE3:
   inc   ecx
   imul  ecx,3
   shl   ecx,3
-  add   ecx,3                             // DPL3 - uygulama
+  add   ecx,3
   mov   @@SECICI,cx
   jmp   @@son
 
-@@TSS_SEVIYE0:                            // DPL0 - sistem seviyesi
+// DPL0 - sistem yazýlýmlarý için (ring0)
+@@TSS_SEVIYE0:
   inc   ecx
   imul  ecx,3
   shl   ecx,3
@@ -414,10 +426,15 @@ asm
 
   sti
 
-// iþlemi belirtilen proses'e devret
-@@JMPKOD: db  $EA
-@@ADRES:  dd  0       // donaným destekli görev deðiþimlerinde ADRES (offset) gözardý edilir
-@@SECICI: dw  0
+// iþlemi belirtilen göreve devret
+@@JMPKOD:
+  db  $EA
+// donaným destekli görev deðiþimlerinde ADRES (offset) gözardý edilir
+@@ADRES:
+  dd  0
+@@SECICI:
+  dw  0
+
   iretd
 end;
 
@@ -428,6 +445,7 @@ procedure ElleGorevDegistir; nostackframe; assembler;
 asm
 
   cli
+
   pushad
   pushfd
 
@@ -443,9 +461,9 @@ asm
 
 @@kontrol1:
 
-  mov ecx,CalisanGorevSayisi
-  cmp ecx,1
-  jg  @@yenigorev
+  mov   ecx,CalisanGorevSayisi
+  cmp   ecx,1
+  jg    @@yenigorev
 
   popfd
   popad
@@ -455,38 +473,46 @@ asm
 @@yenigorev:
 
   call  CalistirilacakBirSonrakiGoreviBul
-  mov FAktifGorev,eax
+  mov   FAktifGorev,eax
 
   // aktif görevin bellek baþlangýç adresini al
-  mov eax,FAktifGorev
-  shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,[esi + TGorev.FBellekBaslangicAdresi]
-  mov FAktifGorevBellekAdresi,eax
+  mov   eax,FAktifGorev
+  shl   eax,2
+  mov   esi,GorevListesi[eax]
+  mov   esi,[esi + TGorev.G0]
+  mov   eax,[esi + TGorev0.FBellekBaslangicAdresi]
+  mov   FAktifGorevBellekAdresi,eax
 
   // görev deðiþiklik sayacýný bir artýr
-  mov eax,FAktifGorev
-  shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,[esi + TGorev.FGorevSayaci]
-  inc eax
-  mov [esi + TGorev.FGorevSayaci],eax
+  mov   eax,FAktifGorev
+  shl   eax,2
+  mov   esi,GorevListesi[eax]
+  mov   esi,[esi + TGorev.G0]
+  mov   eax,[esi + TGorev0.FGorevSayaci]
+  inc   eax
+  mov   [esi + TGorev0.FGorevSayaci],eax
 
-  // görevin devredileceði TSS giriþini belirle
+  // görevin öncelik seviyesine göre görev geçiþini gerçekleþtir
   mov   ecx,FAktifGorev
-  mov   eax,[esi + TGorev.FSeviyeNo]
+  mov   eax,ecx
+  shl   eax,2
+  mov   esi,GorevListesi[eax]
+  mov   esi,[esi + TGorev.G0]
+  mov   eax,[esi + TGorev0.FSeviyeNo]
   cmp   eax,CALISMA_SEVIYE0
   jz    @@TSS_SEVIYE0
 
+// DPL3 - uygulama yazýlýmlarý için (ring3)
 @@TSS_SEVIYE3:
   inc   ecx
   imul  ecx,3
   shl   ecx,3
-  add   ecx,3                             // DPL3 - uygulama
+  add   ecx,3
   mov   @@SECICI,cx
   jmp   @@son
 
-@@TSS_SEVIYE0:                            // DPL0 - sistem seviyesi
+// DPL0 - sistem yazýlýmlarý için (ring0)
+@@TSS_SEVIYE0:
   inc   ecx
   imul  ecx,3
   shl   ecx,3
@@ -496,9 +522,15 @@ asm
   popfd
   popad
 
-@@JMPKOD: db  $EA
-@@ADRES:  dd  0
-@@SECICI: dw  0
+// iþlemi belirtilen göreve devret
+@@JMPKOD:
+  db  $EA
+// donaným destekli görev deðiþimlerinde ADRES (offset) gözardý edilir
+@@ADRES:
+  dd  0
+@@SECICI:
+  dw  0
+
   sti
   ret
 end;

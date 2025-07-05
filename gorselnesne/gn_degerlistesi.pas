@@ -466,7 +466,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
         DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-      else GorevListesi[DegerListesi^.GorevKimlik]^.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
     end;
   end
 
@@ -486,14 +486,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
         DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-      else GorevListesi[DegerListesi^.GorevKimlik]^.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
       DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-    else GorevListesi[DegerListesi^.GorevKimlik]^.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
   end
 
   // fare hakeret işlemi
@@ -551,7 +551,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
         DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-      else GorevListesi[DegerListesi^.GorevKimlik]^.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
     end
 
     // nesne yakalanmamış ise uygulamaya sadece mesaj gönder
@@ -561,7 +561,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
         DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-      else GorevListesi[DegerListesi^.GorevKimlik]^.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
     end;
   end
 

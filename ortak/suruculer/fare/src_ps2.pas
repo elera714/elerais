@@ -6,7 +6,7 @@
   Dosya Adı: src_ps2.pas
   Dosya İşlevi: ps / 2 fare sürücüsü
 
-  Güncelleme Tarihi: 31/12/2024
+  Güncelleme Tarihi: 02/07/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -87,7 +87,7 @@ begin
   FYatayKonum := Round(FYatayDeger);
   FDikeyDeger := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk div 2;
   FDikeyKonum := Round(FDikeyDeger);
-  FHiz := 1.4;
+  FHiz := 1.8;
   FFareDugmeleri := 0;
   FKaydirmaDegeri := 0;
 

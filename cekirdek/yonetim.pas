@@ -147,10 +147,10 @@ begin
     %10001001, %00010000);
 
   // sistem görev deðerlerini belirle
-  GorevListesi[0]^.GorevSayaci := 0;
-  GorevListesi[0]^.BellekBaslangicAdresi := CekirdekBaslangicAdresi;
+  GorevListesi[0]^.G0.FGorevSayaci := 0;
+  GorevListesi[0]^.G0.FBellekBaslangicAdresi := CekirdekBaslangicAdresi;
   GorevListesi[0]^.BellekUzunlugu := CekirdekUzunlugu;
-  GorevListesi[0]^.OlaySayisi := 0;
+  GorevListesi[0]^.FOlaySayisi := 0;
   GorevListesi[0]^.OlayBellekAdresi := nil;
   GorevListesi[0]^.AktifMasaustu := nil;
   GorevListesi[0]^.AktifPencere := nil;
@@ -160,7 +160,7 @@ begin
 
   // sistem görevini çalýþýyor olarak iþaretle
   Gorev := GorevListesi[0];
-  Gorev^.OlaySayisi := 0;
+  Gorev^.FOlaySayisi := 0;
 
   Olay := POlay(GGercekBellek.Ayir(4096));
   if not(Olay = nil) then
@@ -171,26 +171,26 @@ begin
   else
     Gorev^.FOlayBellekAdresi := nil;
 
-  Gorev^.DurumDegistir(0, gdCalisiyor);
+  GGorevler.DurumDegistir(0, gdCalisiyor);
 
   // çalýþan ve oluþturulan görev deðerlerini belirle
   CalisanGorevSayisi := 1;
   FAktifGorev := 0;
 
   // grafik iþlevlerini yönetecek görevi oluþtur
-  GrafikESP := GGercekBellek.Ayir(4096);
+  GrafikESP := GetMem(8192);
   Memur('grafik yöneticisi', @GrafikYonetimi, TSayi4(GrafikESP), CALISMA_SEVIYE0);
 
   // sistem kontrol görevi oluþtur
-  KontrolESP := GGercekBellek.Ayir(4096);
+  KontrolESP := GetMem(8192);
   Memur('sistem denetim', @KontrolYonetimi, TSayi4(KontrolESP), CALISMA_SEVIYE0);
 
   // ohci kontrol görevi oluþtur
-  {GetMem(OHCIESP, 4096);
-  Memur('ohci', @ohci.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0);}
+  GetMem(OHCIESP, 4096);
+  Memur('ohci', @ohci.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0);
 
   // arp tablosu güncelleme görevi oluþtur
-  ARPESP := GGercekBellek.Ayir(4096);
+  ARPESP := GetMem(4096);
   Memur('arp', @ARPTablosunuGuncelle, TSayi4(ARPESP), CALISMA_SEVIYE0);
 
   {GetMem(Prg1ESP, 4096);
@@ -211,6 +211,9 @@ end;
 {==============================================================================
   sistem ana kontrol kýsmý
  ==============================================================================}
+var
+  AracTipleri: TAracTipleriSinif;
+
 procedure SistemAnaKontrol;
 var
   Gorev: PGorev = nil;
@@ -227,11 +230,14 @@ var
   Bellek5: Isaretci;
   MD: PMantiksalDepolama;
   T: TMyThread;
-  AracTipleri: TAracTipleriSinif;
-  A: TAracTipiSinif;
+  A, B: TAracTipiSinif;
+  G: PGorev;
   //T: TMyThread;
   //T2: TMyThread2;
 begin
+
+  AracTipleri := TAracTipleriSinif.Create;
+  i := 100;
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
   BekleMS(100);
@@ -319,11 +325,40 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            {AracTipleri := TAracTipleriSinif.Create;
             A := AracTipleri.Ekle;
-            A.Kimlik := 123;
+            A.Kimlik := 11111111;
+            B := AracTipleri.Ekle;
+            B.Kimlik := 22222222;
+            B := AracTipleri.Ekle;
+            B.Kimlik := 33333333;
+            B := AracTipleri.Ekle;
+            B.Kimlik := 44444444;
 
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Toplam: %d', [AracTipleri.Toplam]);}
+            asm
+              mov esi,AracTipleri;
+              mov ebx,2
+              shl ebx,2
+              mov esi,[esi + TAracTipleriSinif.FAracTipListesi + ebx]
+              mov eax,[esi + TAracTipiSinif.FKimlik]
+              mov i,eax
+            end;
+
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Toplam: %d', [AracTipleri.Toplam]);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer1: %d', [i]);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer2: %d', [TSayi4(@AracTipleri)]);
+
+            //i := TSayi4(@GorevListesi[4]^.G0);
+            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [G^.G0.FGorevSayaci]);
+            //i := PSayi4(i)^;
+            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [G^.G0.FDeger]);
+            //i := TSayi4(@GorevListesi[4]^.G0.FGorevSayaci);
+            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [G^.G0.FDeger2]);
+            {i := TSayi4(@GorevListesi[4]^.G0.FDeger);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %x', [i]);
+            i := TSayi4(@GorevListesi[4]^.G0.FDeger2);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %x', [i]);}
+
+            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Kimlik: %d', [A.Kimlik]);
 
             //T := TMyThread.Create(True);
             {T.Start;}
@@ -356,6 +391,11 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
+            for i := 0 to AracTipleri.Toplam - 1 do
+            begin
+
+              SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [AracTipleri.AracTipi[i].Kimlik]);
+            end;
             //iiiii := Align(SizeOf(TIzgara) + 64, 16);
             //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %d', [iiiii]);
 
@@ -380,17 +420,18 @@ begin
           // program çalýþtýrma programýný çalýþtýr
           else if(TusKarakterDegeri = 'c') then
 
-            Gorev^.Calistir('calistir.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('calistir.c', CALISMA_SEVIYE3)
 
           // dosya yöneticisi programýný çalýþtýr
           else if(TusKarakterDegeri = 'd') then
 
-            Gorev^.Calistir('dsyyntcs.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('dsyyntcs.c', CALISMA_SEVIYE3)
 
           // görev yöneticisi programýný çalýþtýr
           else if(TusKarakterDegeri = 'g') then
 
-            Gorev^.Calistir('grvyntcs.c', CALISMA_SEVIYE3)
+            //GGorevler.Calistir('yzmcgor2.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('grvyntcs.c', CALISMA_SEVIYE3)
 
           // giriþ kutusundaki veriyi panoya kopyala
           else if(TusKarakterDegeri = 'k') then
@@ -411,12 +452,12 @@ begin
           // mesaj görüntüleme programýný çalýþtýr
           else if(TusKarakterDegeri = 'm') then
 
-            Gorev^.Calistir('smsjgor.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('smsjgor.c', CALISMA_SEVIYE3)
 
           // resim görüntüleme programýný çalýþtýr
           else if(TusKarakterDegeri = 'r') then
 
-            Gorev^.Calistir('resimgor.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('resimgor.c', CALISMA_SEVIYE3)
 
           // panodaki veriyi giriþ kutusuna yapýþtýr
           else if(TusKarakterDegeri = 'y') then
@@ -468,7 +509,7 @@ begin
             Olay.Deger2 := 0;
             if not(GAktifPencere^.OlayYonlendirmeAdresi = nil) then
               GAktifPencere^.OlayYonlendirmeAdresi(GAktifPencere, Olay)
-            else GorevListesi[GAktifPencere^.GorevKimlik]^.OlayEkle(GAktifPencere^.GorevKimlik, Olay);
+            else GGorevler.OlayEkle(GAktifPencere^.GorevKimlik, Olay);
           end;
         end
         else
@@ -628,7 +669,7 @@ begin
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Sol: "%d, Üst: %d"', [Sol, Ust]);
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Geniþlik: "%d, Yükseklik: %d"', [Genislik, Yukseklik]);}
 
-          MUGorev := MUGorev^.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + DosyaAdi, CALISMA_SEVIYE3);
+          MUGorev := GGorevler.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + DosyaAdi, CALISMA_SEVIYE3);
 
           BekleMS(50);
 

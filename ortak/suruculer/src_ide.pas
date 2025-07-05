@@ -6,7 +6,7 @@
   Dosya Adý: src_ide.pas
   Dosya Ýþlevi: ide aygýt sürücüsü
 
-  Güncelleme Tarihi: 01/06/2025
+  Güncelleme Tarihi: 01/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -107,6 +107,9 @@ type
     SurumNo: Word;                          // 80
     Diger: array[81..255] of Word;          // diðer data alanlarý
   end;
+
+var
+  SektorOkuYazKilit: TSayi4 = 0;
 
 procedure Yukle;
 procedure IRQ14KesmeIslevi;
@@ -330,11 +333,8 @@ begin
   PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_ALTDURUM);
 end;
 
-var
-  ReadSector28GorevNo: LongWord = 0;
-
 {==============================================================================
-  LBA modunda 28 bitlik sektör okuma iþlemi yapar
+  LBA modunda 28 bitlik <>tör okuma iþlemi yapar
  ==============================================================================}
 function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
@@ -349,13 +349,7 @@ begin
   //SISTEM_MESAJ(RENK_SIYAH, 'ASektorSayisi: %d', [ASektorSayisi]);
   //SISTEM_MESAJ(RENK_SIYAH, 'ABellek: %d', [TSayi4(ABellek)]);
 
-  if(ReadSector28GorevNo <> 0) then
-  begin
-
-    while ReadSector28GorevNo <> 0 do;
-  end;
-
-  ReadSector28GorevNo := FAktifGorev;
+  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
 
   // sürücü bilgisine konumlan
   FD := AFizikselSurucu;
@@ -364,7 +358,7 @@ begin
   if(IDEAygitiMesgulMu(@FD^.Aygit)) then
   begin
 
-    ReadSector28GorevNo := 0;
+    KritikBolgedenCik(SektorOkuYazKilit);
     Exit(HATA_AYGITMESGUL);
   end;
 
@@ -429,7 +423,7 @@ begin
 
   until (ASektorSayisi = 0) or (HataDurumu <> HATA_YOK);
 
-  ReadSector28GorevNo := 0;
+  KritikBolgedenCik(SektorOkuYazKilit);
 
   Result := HataDurumu;
 end;
@@ -446,13 +440,7 @@ var
   HataDurumu: TISayi4;
 begin
 
-  if(ReadSector28GorevNo <> 0) then
-  begin
-
-    while ReadSector28GorevNo <> 0 do;
-  end;
-
-  ReadSector28GorevNo := FAktifGorev;
+  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
 
   // sürücü bilgisine konumlan
   FD := PFizikselDepolama(AFizikselDepolama);
@@ -461,7 +449,7 @@ begin
   if(IDEAygitiMesgulMu(@FD^.Aygit)) then
   begin
 
-    ReadSector28GorevNo := 0;
+    KritikBolgedenCik(SektorOkuYazKilit);
     Exit(HATA_AYGITMESGUL);
   end;
 
@@ -524,7 +512,7 @@ begin
 
   until (ASektorSayisi = 0) or (HataDurumu <> HATA_YOK);
 
-  ReadSector28GorevNo := 0;
+  KritikBolgedenCik(SektorOkuYazKilit);
 
   Result := HataDurumu;
 end;

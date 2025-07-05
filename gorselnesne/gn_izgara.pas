@@ -469,7 +469,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(Izgara^.OlayYonlendirmeAdresi = nil) then
         Izgara^.OlayYonlendirmeAdresi(Izgara, AOlay)
-      else GorevListesi[Izgara^.GorevKimlik]^.OlayEkle(Izgara^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(Izgara^.GorevKimlik, AOlay);
     end;
   end
 
@@ -489,14 +489,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Izgara^.OlayYonlendirmeAdresi = nil) then
         Izgara^.OlayYonlendirmeAdresi(Izgara, AOlay)
-      else GorevListesi[Izgara^.GorevKimlik]^.OlayEkle(Izgara^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(Izgara^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Izgara^.OlayYonlendirmeAdresi = nil) then
       Izgara^.OlayYonlendirmeAdresi(Izgara, AOlay)
-    else GorevListesi[Izgara^.GorevKimlik]^.OlayEkle(Izgara^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Izgara^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle

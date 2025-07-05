@@ -40,10 +40,10 @@ begin
   if(IslevNo = 1) then
   begin
 
-    Gorev := GorevListesi[FAktifGorev];
+    Gorev := GorevAl(-1);
 
     // çalýþan proses'e ait olay var mý ?
-    if(Gorev^.OlayAl(Olay)) then
+    if(GGorevler.OlayAl(Gorev^.FGorevKimlik, Olay)) then
 
       OlayMevcut := True
     else OlayMevcut := False;
@@ -58,7 +58,7 @@ begin
       _Olay^.Deger1 := Olay.Deger1;
       _Olay^.Deger2 := Olay.Deger2;
 
-      Result := Gorev^.OlaySayisi;
+      Result := Gorev^.FOlaySayisi;
     end
 
     // olay yok ise tek bir görev deðiþikliði yap ve görevi istekte bulunan devret.
@@ -75,14 +75,14 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    Gorev := GorevListesi[FAktifGorev];
+    Gorev := GorevAl(-1);
 
     // uygulama için olay üretilinceye kadar bekle
     // olay olmamasý durumda bir sonraki göreve geç (mevcut görev olay bekliyor)
     // ta ki ilgili görev için olay mevcut oluncaya kadar
     repeat
 
-      if(Gorev^.OlayAl(Olay)) then
+      if(GGorevler.OlayAl(Gorev^.FGorevKimlik, Olay)) then
 
         OlayMevcut := True
       else OlayMevcut := False;
@@ -97,7 +97,7 @@ begin
     _Olay^.Deger1 := Olay.Deger1;
     _Olay^.Deger2 := Olay.Deger2;
 
-    Result := Gorev^.OlaySayisi;
+    Result := Gorev^.FOlaySayisi;
   end;
 end;
 

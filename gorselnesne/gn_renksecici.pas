@@ -275,7 +275,7 @@ begin
         AOlay.Deger2 := 0;
         if not(RenkSecici^.OlayYonlendirmeAdresi = nil) then
           RenkSecici^.OlayYonlendirmeAdresi(RenkSecici, AOlay)
-        else GorevListesi[RenkSecici^.GorevKimlik]^.OlayEkle(RenkSecici^.GorevKimlik, AOlay);
+        else GGorevler.OlayEkle(RenkSecici^.GorevKimlik, AOlay);
       end;
     end;
   end;

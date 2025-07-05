@@ -288,7 +288,7 @@ var
   DST: TSayi4;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -325,7 +325,7 @@ var
   DST: TSayi4;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -365,7 +365,7 @@ var
   Bulundu: Boolean;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
 {  if(FileResult > 0) then Exit;
@@ -429,7 +429,7 @@ var
   DST: TSayi4;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -475,7 +475,7 @@ var
   DST: TSayi4;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -516,7 +516,7 @@ begin
 
   Result := 0;
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -553,7 +553,7 @@ var
   AktifGorev: PGorev;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   Result := AktifGorev^.FDosyaSonIslemDurum;
 

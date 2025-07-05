@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 18/06/2025
+  Güncelleme Tarihi: 01/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -66,6 +66,7 @@ implementation
 uses genel, ag, islevler, zamanlayici, sistemmesaj, donusum, gorev;
 
 var
+  ARPTabloKilit: TSayi4 = 0;
   ARPKayitSayisi: TISayi4;
   ARPKayitListesi: array[0..USTLIMIT_KAYITSAYISI - 1] of PARPKayit;
 
@@ -219,6 +220,8 @@ begin
 
     BekleMS(100);
 
+    while KritikBolgeyeGir(ARPTabloKilit) = False do;
+
     for i := 0 to USTLIMIT_KAYITSAYISI - 1 do
     begin
 
@@ -238,6 +241,8 @@ begin
         end;
       end;
     end;
+
+    KritikBolgedenCik(ARPTabloKilit);
   end;
 end;
 
@@ -248,6 +253,8 @@ procedure ARPKaydiEkle(AARPKayit: TARPKayit);
 var
   i: TISayi4;
 begin
+
+  while KritikBolgeyeGir(ARPTabloKilit) = False do;
 
   {SISTEM_MESAJ(RENK_MOR, 'Eklenecek ARP Kayýt Bilgileri:', []);
   SISTEM_MESAJ_IP(RENK_LACIVERT, 'ARP - IP: ', AARPKayit.IPAdres);
@@ -270,7 +277,12 @@ begin
 
   // ARP girdisi bulunamadýysa girdiyi tabloya ekle
 
-  if(ARPKayitSayisi >= USTLIMIT_KAYITSAYISI) then Exit;
+  if(ARPKayitSayisi >= USTLIMIT_KAYITSAYISI) then
+  begin
+
+    KritikBolgedenCik(ARPTabloKilit);
+    Exit;
+  end;
 
   // boþ ARP giriþi ara
   for i := 0 to USTLIMIT_KAYITSAYISI - 1 do
@@ -284,6 +296,8 @@ begin
       ARPKayitListesi[i]^.MACAdres := AARPKayit.MACAdres;
       ARPKayitListesi[i]^.YasamSuresi := AARPKayit.YasamSuresi;
       Inc(ARPKayitSayisi);
+
+      KritikBolgedenCik(ARPTabloKilit);
       Exit;
     end;
   end;
@@ -347,6 +361,8 @@ var
   SiraNo, i: TISayi4;
 begin
 
+  while KritikBolgeyeGir(ARPTabloKilit) = False do;
+
   // ARP tablosunda silinen kayýtlar da olacaðýndan dolayý SiraNo deðiþkeni
   // gerçek sýra no'ya sahip kaydý almak için tanýmlanmý ve kullanýlmýþtýr
 
@@ -368,6 +384,8 @@ begin
         AHedefBellek^.MACAdres := ARPKayitListesi[i]^.MACAdres;
         AHedefBellek^.YasamSuresi := ARPKayitListesi[i]^.YasamSuresi;
         Result := HATA_YOK;
+
+        KritikBolgedenCik(ARPTabloKilit);
         Exit;
       end;
     end;
@@ -375,6 +393,8 @@ begin
     Result := HATA_DEGERARALIKDISI;
 
   end else Result := HATA_DEGERARALIKDISI;
+
+  KritikBolgedenCik(ARPTabloKilit);
 end;
 
 end.

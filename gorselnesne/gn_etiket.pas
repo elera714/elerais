@@ -234,7 +234,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Etiket^.OlayYonlendirmeAdresi = nil) then
       Etiket^.OlayYonlendirmeAdresi(Etiket, AOlay)
-    else GorevListesi[Etiket^.GorevKimlik]^.OlayEkle(Etiket^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Etiket^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
@@ -254,14 +254,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Etiket^.OlayYonlendirmeAdresi = nil) then
         Etiket^.OlayYonlendirmeAdresi(Etiket, AOlay)
-      else GorevListesi[Etiket^.GorevKimlik]^.OlayEkle(Etiket^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(Etiket^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Etiket^.OlayYonlendirmeAdresi = nil) then
       Etiket^.OlayYonlendirmeAdresi(Etiket, AOlay)
-    else GorevListesi[Etiket^.GorevKimlik]^.OlayEkle(Etiket^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Etiket^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -272,7 +272,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Etiket^.OlayYonlendirmeAdresi = nil) then
       Etiket^.OlayYonlendirmeAdresi(Etiket, AOlay)
-    else GorevListesi[Etiket^.GorevKimlik]^.OlayEkle(Etiket^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Etiket^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle

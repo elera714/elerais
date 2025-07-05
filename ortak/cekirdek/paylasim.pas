@@ -968,6 +968,8 @@ function ProtokolTipAdi(AProtokolTipi: TProtokolTipi): string;
 procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
 procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
 procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
+function KritikBolgeyeGir(var ABellek: TSayi4): Boolean;
+procedure KritikBolgedenCik(var ABellek: TSayi4);
 
 implementation
 
@@ -1133,6 +1135,22 @@ begin
     (A.Saat = B.Saat) and (A.Dakika = B.Dakika) and (A.Saniye = B.Saniye) then
     Result := True
   else Result := False;
+end;
+
+function KritikBolgeyeGir(var ABellek: TSayi4): Boolean;
+begin
+
+  if(ABellek = 1) then Exit(False);
+
+  ABellek := 1;
+
+  Result := True;
+end;
+
+procedure KritikBolgedenCik(var ABellek: TSayi4);
+begin
+
+  ABellek := 0;
 end;
 
 end.

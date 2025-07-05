@@ -327,7 +327,7 @@ begin
     AOlay.Deger1 := i;
     if not(GucDugmesi^.OlayYonlendirmeAdresi = nil) then
       GucDugmesi^.OlayYonlendirmeAdresi(GucDugmesi, AOlay)
-    else GorevListesi[GucDugmesi^.GorevKimlik]^.OlayEkle(GucDugmesi^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(GucDugmesi^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin

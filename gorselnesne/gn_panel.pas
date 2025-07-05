@@ -346,7 +346,7 @@ begin
       // fare mesajlarını panel nesnesine yönlendir
       OlayYakalamayaBasla(Panel);
 
-      GorevListesi[Panel^.GorevKimlik]^.OlayEkle(Panel^.GorevKimlik, AOlay);
+      GGorevler.OlayEkle(Panel^.GorevKimlik, AOlay);
     end;
   end
 
@@ -363,12 +363,12 @@ begin
 
       // uygulamaya veya efendi nesneye mesaj gönder
       AOlay.Olay := FO_TIKLAMA;
-      GorevListesi[Panel^.GorevKimlik]^.OlayEkle(Panel^.GorevKimlik, AOlay);
+      GGorevler.OlayEkle(Panel^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
-    GorevListesi[Panel^.GorevKimlik]^.OlayEkle(Panel^.GorevKimlik, AOlay);
+    GGorevler.OlayEkle(Panel^.GorevKimlik, AOlay);
   end
   else
   begin

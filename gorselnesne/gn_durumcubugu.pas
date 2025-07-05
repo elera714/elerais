@@ -249,7 +249,7 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(DurumCubugu^.OlayYonlendirmeAdresi = nil) then
         DurumCubugu^.OlayYonlendirmeAdresi(DurumCubugu, AOlay)
-      else GorevListesi[DurumCubugu^.GorevKimlik]^.OlayEkle(DurumCubugu^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(DurumCubugu^.GorevKimlik, AOlay);
     end;
 
     // fare olaylarını almayı bırak

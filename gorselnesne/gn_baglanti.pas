@@ -224,7 +224,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Baglanti^.OlayYonlendirmeAdresi = nil) then
       Baglanti^.OlayYonlendirmeAdresi(Baglanti, AOlay)
-    else GorevListesi[Baglanti^.GorevKimlik]^.OlayEkle(Baglanti^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Baglanti^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
@@ -241,14 +241,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Baglanti^.OlayYonlendirmeAdresi = nil) then
         Baglanti^.OlayYonlendirmeAdresi(Baglanti, AOlay)
-      else GorevListesi[Baglanti^.GorevKimlik]^.OlayEkle(Baglanti^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(Baglanti^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Baglanti^.OlayYonlendirmeAdresi = nil) then
       Baglanti^.OlayYonlendirmeAdresi(Baglanti, AOlay)
-    else GorevListesi[Baglanti^.GorevKimlik]^.OlayEkle(Baglanti^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Baglanti^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = CO_ODAKKAZANILDI) then
   begin

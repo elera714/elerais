@@ -26,7 +26,7 @@ procedure SistemDegerleriOlayIsle;
 
 implementation
 
-uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, bolumleme, elr1;
+uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, bolumleme, elr1, sistemmesaj;
 
 var
   SDPencere: PPencere = nil;
@@ -102,6 +102,8 @@ begin
   if(DiskSayac = $1000) then
   begin
 
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk kullaným alaný hesaplanýyor...', []);
+
     MD := SurucuAl('disk2:\');
     if not(MD = nil) then
     begin
@@ -129,7 +131,8 @@ begin
   SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'YBTOP:', RENK_TURKUAZ);
   SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, GGercekBellek.FToplamYBYBellek, RENK_MAVI);
   SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'YBKUL:', RENK_TURKUAZ);
-  SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, GGercekBellek.FKullanilanYBYBellek, RENK_MAVI);
+  SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, ZamanlayiciSayaci, RENK_MAVI);
+  //SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, GGercekBellek.FKullanilanYBYBellek, RENK_MAVI);
 end;
 
 end.

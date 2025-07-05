@@ -6,126 +6,59 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{c57f6602-509a-44df-9984-ee0a65931c4d}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-06-19T13:20:17Z">
-    <Description>ELERA &#x130;&#x15F;letim Sistemi (32 Bit)</Description>
+  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-07-05T09:53:10Z">
     <MediaRegistry>
       <HardDisks>
-        <HardDisk uuid="{6fd6e465-bd5e-4267-b67c-9161595fa4b6}" location="D:/calismalar/elerais/araclar/elerais-araclar/eleraos2GB.vhd" format="VHD" type="Normal"/>
+        <HardDisk uuid="{769293a2-a8b3-4206-ae16-497c497b6f33}" location="elera.vdi" format="VDI" type="Normal"/>
+        <HardDisk uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}" location="320mb.vhd" format="VHD" type="Normal"/>
         <HardDisk uuid="{4266f554-c8aa-40bc-90c0-96799576edc2}" location="320mb2.vhd" format="VHD" type="Normal"/>
       </HardDisks>
-      <FloppyImages>
-        <Image uuid="{cefa122d-813d-44b5-9fba-613b866e45cb}" location="disket144.img"/>
-      </FloppyImages>
     </MediaRegistry>
     <ExtraData>
-      <ExtraDataItem name="GUI/InformationWindowGeometry" value="507,249,598,332"/>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
-      <ExtraDataItem name="GUI/LastGuestSizeHint" value="800,600"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="881,138,1024,808"/>
-      <ExtraDataItem name="GUI/LastScaleWindowPosition" value="189,230,1096,595"/>
-      <ExtraDataItem name="GUI/RestrictedRuntimeDevicesMenuActions" value="HardDrives"/>
-      <ExtraDataItem name="GUI/RestrictedRuntimeMachineMenuActions" value="SaveState,PowerOff"/>
-      <ExtraDataItem name="GUI/SaveMountedAtRuntime" value="yes"/>
-      <ExtraDataItem name="GUI/ScaleFactor" value="1"/>
-      <ExtraDataItem name="GUI/StatusBar/IndicatorOrder" value="HardDisks,OpticalDisks,FloppyDisks,Network,USB,SharedFolders,Display,VideoCapture,Features,Mouse,Keyboard"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="861,98,1024,808"/>
     </ExtraData>
     <Hardware>
       <CPU>
         <PAE enabled="false"/>
         <LongMode enabled="false"/>
-        <HardwareVirtExLargePages enabled="false"/>
+        <HardwareVirtExLargePages enabled="true"/>
       </CPU>
       <Memory RAMSize="64"/>
-      <Paravirt provider="Legacy"/>
       <Boot>
         <Order position="1" device="Floppy"/>
         <Order position="2" device="None"/>
         <Order position="3" device="None"/>
         <Order position="4" device="None"/>
       </Boot>
-      <RemoteDisplay>
-        <VRDEProperties>
-          <Property name="TCP/Ports" value="3389"/>
-        </VRDEProperties>
-      </RemoteDisplay>
+      <Display VRAMSize="16"/>
       <BIOS>
-        <IOAPIC enabled="true"/>
+        <SmbiosUuidLittleEndian enabled="true"/>
       </BIOS>
-      <USB>
-        <Controllers>
-          <Controller name="OHCI" type="OHCI"/>
-        </Controllers>
-      </USB>
       <Network>
-        <Adapter slot="0" enabled="true" MACAddress="080011223344" type="Am79C970A">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-            <InternalNetwork name="intnet"/>
-            <HostOnlyInterface name="VirtualBox Host-Only Ethernet Adapter"/>
-            <NATNetwork name="NatNetwork"/>
-          </DisabledModes>
-          <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
-        </Adapter>
-        <Adapter slot="1" MACAddress="0A0011223344" type="82540EM">
+        <Adapter slot="0" enabled="true" MACAddress="0800ABCDEF01">
           <DisabledModes>
             <NAT localhost-reachable="true"/>
             <InternalNetwork name="intnet"/>
             <NATNetwork name="NatNetwork"/>
           </DisabledModes>
-          <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
+          <BridgedInterface name="Realtek PCIe GBE Family Controller"/>
         </Adapter>
-        <Adapter slot="2" MACAddress="080027B5080F">
+        <Adapter slot="1" enabled="true" MACAddress="0800ABCDEF02" type="82540EM">
           <DisabledModes>
             <NAT localhost-reachable="true"/>
+            <InternalNetwork name="intnet"/>
+            <NATNetwork name="NatNetwork"/>
           </DisabledModes>
-        </Adapter>
-        <Adapter slot="3" MACAddress="080027D3FF8A">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="4" MACAddress="0800277D7197">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="5" MACAddress="0800278660AA">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="6" MACAddress="08002795A3FC">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
-        </Adapter>
-        <Adapter slot="7" MACAddress="0800272E137C">
-          <DisabledModes>
-            <NAT localhost-reachable="true"/>
-          </DisabledModes>
+          <BridgedInterface name="Realtek PCIe GBE Family Controller"/>
         </Adapter>
       </Network>
-      <UART>
-        <Port slot="0" enabled="false" IOBase="0x3f8" IRQ="4" path="C:\Users\elera\Documents\bitbucket\elerais\comport1.txt" hostMode="RawFile"/>
-      </UART>
-      <LPT>
-        <Port slot="1" enabled="false" IOBase="0x378" IRQ="7"/>
-      </LPT>
-      <AudioAdapter driver="DirectSound" enabledIn="true" enabledOut="true"/>
-      <Clipboard mode="Bidirectional"/>
-      <DragAndDrop mode="Bidirectional"/>
+      <AudioAdapter useDefault="true" driver="WAS" enabledOut="true"/>
+      <Clipboard/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1750339211165455200" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1751709169047851500" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
-        <StorageController name="Floppy Controller" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">
-          <AttachedDevice type="Floppy" hotpluggable="false" port="0" device="0">
-            <HostDrive src="A:"/>
-          </AttachedDevice>
-          <AttachedDevice type="Floppy" hotpluggable="false" port="0" device="1">
-            <HostDrive src="B:"/>
-          </AttachedDevice>
-        </StorageController>
         <StorageController name="IDE" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">
           <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="0">
             <Image uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}"/>
@@ -134,10 +67,15 @@
             <Image uuid="{4266f554-c8aa-40bc-90c0-96799576edc2}"/>
           </AttachedDevice>
         </StorageController>
+        <StorageController name="Floppy" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">
+          <AttachedDevice type="Floppy" hotpluggable="false" port="0" device="0">
+            <HostDrive src="A:"/>
+          </AttachedDevice>
+          <AttachedDevice type="Floppy" hotpluggable="false" port="0" device="1">
+            <HostDrive src="B:"/>
+          </AttachedDevice>
+        </StorageController>
       </StorageControllers>
     </Hardware>
-    <Recording screens="1">
-      <Screen id="0" enabled="true" featuresEnabled="video" options="vc_enabled=true,ac_enabled=true,ac_profile=med" dest="1" videoCodec="VP8" fps="25" audioCodec="vorbis"/>
-    </Recording>
   </Machine>
 </VirtualBox>

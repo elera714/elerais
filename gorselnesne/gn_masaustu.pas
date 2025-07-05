@@ -361,7 +361,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Masaustu^.OlayYonlendirmeAdresi = nil) then
       Masaustu^.OlayYonlendirmeAdresi(Masaustu, AOlay)
-    else GorevListesi[Masaustu^.GorevKimlik]^.OlayEkle(Masaustu^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Masaustu^.GorevKimlik, AOlay);
   end
 
   // sað / sol fare tuþ býrakýmý
@@ -381,14 +381,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Masaustu^.OlayYonlendirmeAdresi = nil) then
         Masaustu^.OlayYonlendirmeAdresi(Masaustu, AOlay)
-      else GorevListesi[Masaustu^.GorevKimlik]^.OlayEkle(Masaustu^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(Masaustu^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := BirOncekiOlay;
     if not(Masaustu^.OlayYonlendirmeAdresi = nil) then
       Masaustu^.OlayYonlendirmeAdresi(Masaustu, AOlay)
-    else GorevListesi[Masaustu^.GorevKimlik]^.OlayEkle(Masaustu^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(Masaustu^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle

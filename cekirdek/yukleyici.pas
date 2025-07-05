@@ -75,7 +75,7 @@ begin
   GSistemMesaj.Yukle;
 
   // uygulama deðiþkenlerini ilk deðerlerle yükle
-  Gorev^.Yukle;
+  GGorevler := TGorevler.Create;
 
   // çekirdek deðiþken / iþlevlerini ilk deðerlerle yükle
   yonetim.Yukle;

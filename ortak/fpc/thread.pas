@@ -43,7 +43,7 @@ var
   i: TSayi4;
 begin
 
-  G := G^.BosGorevBul;
+  G := GGorevler.BosGorevBul;
   if not(G = nil) then
   begin
 
@@ -84,11 +84,11 @@ begin
     GorevTSSListesi[i]^.ESP0 := $3300000; // AYiginDegeri;
 
     // sistem görev değerlerini belirle
-    GorevListesi[i]^.FSeviyeNo := 0; // ASeviyeNo;
-    GorevListesi[i]^.GorevSayaci := 0;
-    GorevListesi[i]^.BellekBaslangicAdresi := TSayi4(@Calistir);
+    GorevListesi[i]^.G0.FSeviyeNo := 0; // ASeviyeNo;
+    GorevListesi[i]^.G0.FGorevSayaci := 0;
+    GorevListesi[i]^.G0.FBellekBaslangicAdresi := TSayi4(@Calistir);
     GorevListesi[i]^.BellekUzunlugu := $FFFFFFFF;
-    GorevListesi[i]^.OlaySayisi := 0;
+    GorevListesi[i]^.FOlaySayisi := 0;
     GorevListesi[i]^.OlayBellekAdresi := nil;
     GorevListesi[i]^.AktifMasaustu := nil;
     GorevListesi[i]^.AktifPencere := nil;
@@ -99,7 +99,7 @@ begin
 
     // sistem görevini çalışıyor olarak işaretle
     G := GorevListesi[i];
-    G^.DurumDegistir(i, gdDurduruldu);
+    GGorevler.DurumDegistir(i, gdDurduruldu);
 
     // çalışan ve oluşturulan görev değerlerini belirle
     Inc(CalisanGorevSayisi);
@@ -124,7 +124,7 @@ begin
 
   until True = False;}
 
-  G^.DurumDegistir(G^.FGorevKimlik, gdCalisiyor);
+  GGorevler.DurumDegistir(G^.FGorevKimlik, gdCalisiyor);
 end;
 
 end.

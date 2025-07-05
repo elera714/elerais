@@ -294,7 +294,7 @@ begin
       // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
       if not(OnayKutusu^.OlayYonlendirmeAdresi = nil) then
         OnayKutusu^.OlayYonlendirmeAdresi(OnayKutusu, AOlay)
-      else GorevListesi[OnayKutusu^.GorevKimlik]^.OlayEkle(OnayKutusu^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(OnayKutusu^.GorevKimlik, AOlay);
 
     // aksi durumda onay kutusu durumunu bir önceki duruma getir
     end else OnayKutusu^.FSecimDurumu := OnayKutusu^.FOncekiSecimDurumu;

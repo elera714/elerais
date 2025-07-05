@@ -316,7 +316,7 @@ var
   Gorev: PGorev;
 begin
 
-  Gorev := GorevListesi[AGorselNesne^.GorevKimlik];
+  Gorev := GorevAl(AGorselNesne^.GorevKimlik);
 
   // görev çalýþmýyorsa nesneye olay gönderme
   if(Gorev^.FGorevDurum <> gdCalisiyor) then Exit;

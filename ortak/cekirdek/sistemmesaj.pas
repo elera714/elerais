@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 01/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -48,6 +48,9 @@ type
     property MesajNo: TISayi4 read FMesajNo;
     property ToplamMesaj: TISayi4 read FToplamMesaj;
   end;
+
+var
+  SistemMesajKilit: TSayi4 = 0;
 
 { TODO : // aşağıdaki tüm çağrılar iptal edilerek bu çağrının içerisine alınacak }
 procedure SISTEM_MESAJ(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
@@ -117,6 +120,8 @@ begin
 
   if not(ServisCalisiyor) then Exit;
 
+  while KritikBolgeyeGir(SistemMesajKilit) = False do;
+
   // kaydedilecek mesaj sıra numarasını belirle
   Inc(FMesajNo);
 
@@ -157,6 +162,8 @@ begin
 
   Inc(i);
   FToplamMesaj := i;
+
+  KritikBolgedenCik(SistemMesajKilit);
 end;
 
 {==============================================================================
@@ -166,6 +173,8 @@ procedure TSistemMesaj.Temizle;
 var
   i: TSayi4;
 begin
+
+  while KritikBolgeyeGir(SistemMesajKilit) = False do;
 
   FMesajNo := 0;
   FToplamMesaj := 0;
@@ -179,6 +188,8 @@ begin
     MesajListesi[i]^.Renk := RENK_SIYAH;
     MesajListesi[i]^.Mesaj := '';
   end;
+
+  KritikBolgedenCik(SistemMesajKilit);
 end;
 
 {==============================================================================
@@ -186,6 +197,8 @@ end;
  ==============================================================================}
 procedure TSistemMesaj.MesajAl(ASiraNo: TISayi4; var AMesajKayit: PMesajKayit);
 begin
+
+  while KritikBolgeyeGir(SistemMesajKilit) = False do;
 
   // istenen mesajın belirtilen aralıkta olup olmadığını kontrol et
   if(ASiraNo > -1) and (ASiraNo <= USTSINIR_MESAJ) then
@@ -197,6 +210,8 @@ begin
     AMesajKayit^.Renk := MesajListesi[ASiraNo]^.Renk;
     AMesajKayit^.Mesaj := MesajListesi[ASiraNo]^.Mesaj;
   end;
+
+  KritikBolgedenCik(SistemMesajKilit);
 end;
 
 {==============================================================================

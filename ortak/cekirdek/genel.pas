@@ -41,7 +41,8 @@ var
   // TGucDugme ve benzeri görsel nesnelerin normal duruma (basılı olmayan) gelmesi için
   GFareIleBasilanSonGN: PGorselNesne = nil;
 
-  GorevListesi: array[0..USTSINIR_GOREVSAYISI - 1] of PGorev;
+  GGorevler: TGorevler;
+
   GGorselNesneListesi: array[0..USTSINIR_GORSELNESNE - 1] of PGorselNesne;
   GAgIletisimListesi: array[0..USTSINIR_AGILETISIM - 1] of PBaglanti;
   GDNSBaglantilari: array[0..USTSINIR_DNSBAGLANTI - 1] of PDNS;

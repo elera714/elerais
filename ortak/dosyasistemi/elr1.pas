@@ -127,7 +127,7 @@ var
   Saat, Dakika, Saniye: TSayi1;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -329,7 +329,7 @@ var
   DosyaAdi: string;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -461,7 +461,7 @@ var
   Bulundu: Boolean;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -535,7 +535,7 @@ var
   Bellek: Isaretci;
 begin
 
-  AktifGorev := GorevListesi[FAktifGorev];
+  AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
   if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;

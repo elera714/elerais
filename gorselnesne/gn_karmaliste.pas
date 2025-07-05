@@ -363,7 +363,7 @@ begin
     Olay.Deger2 := 0;
     if not(KarmaListe^.OlayYonlendirmeAdresi = nil) then
       KarmaListe^.OlayYonlendirmeAdresi(KarmaListe, Olay)
-    else GorevListesi[KarmaListe^.GorevKimlik]^.OlayEkle(KarmaListe^.GorevKimlik, Olay);
+    else GGorevler.OlayEkle(KarmaListe^.GorevKimlik, Olay);
   end;
 end;
 
@@ -445,7 +445,7 @@ begin
   Olay.Deger2 := 0;
   if not(KarmaListe^.OlayYonlendirmeAdresi = nil) then
     KarmaListe^.OlayYonlendirmeAdresi(KarmaListe, Olay)
-  else GorevListesi[KarmaListe^.GorevKimlik]^.OlayEkle(KarmaListe^.GorevKimlik, Olay);
+  else GGorevler.OlayEkle(KarmaListe^.GorevKimlik, Olay);
 end;
 
 end.

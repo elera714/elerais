@@ -233,7 +233,7 @@ begin
   Olay.Deger2 := 0;
   if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
     Menu^.FMenuOlayGeriDonusAdresi(Menu, Olay)
-  else GorevListesi[Menu^.GorevKimlik]^.OlayEkle(Menu^.GorevKimlik, Olay);
+  else GGorevler.OlayEkle(Menu^.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -259,7 +259,7 @@ begin
   Olay.Deger2 := 0;
   if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
     Menu^.FMenuOlayGeriDonusAdresi(Menu, Olay)
-  else GorevListesi[Menu^.GorevKimlik]^.OlayEkle(Menu^.GorevKimlik, Olay);
+  else GGorevler.OlayEkle(Menu^.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -415,7 +415,7 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
         Menu^.FMenuOlayGeriDonusAdresi(Menu, AOlay)
-      else GorevListesi[Menu^.GorevKimlik]^.OlayEkle(Menu^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(Menu^.GorevKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then

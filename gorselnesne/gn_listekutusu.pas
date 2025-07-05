@@ -428,7 +428,7 @@ begin
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(ListeKutusu^.OlayYonlendirmeAdresi = nil) then
       ListeKutusu^.OlayYonlendirmeAdresi(ListeKutusu, AOlay)
-    else GorevListesi[ListeKutusu^.GorevKimlik]^.OlayEkle(ListeKutusu^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(ListeKutusu^.GorevKimlik, AOlay);
   end
 
   // fare hakeret işlemi
@@ -595,7 +595,7 @@ begin
   Olay.Deger2 := 0;
   if not(ListeKutusu^.OlayYonlendirmeAdresi = nil) then
     ListeKutusu^.OlayYonlendirmeAdresi(ListeKutusu, Olay)
-  else GorevListesi[ListeKutusu^.GorevKimlik]^.OlayEkle(ListeKutusu^.GorevKimlik, Olay);
+  else GGorevler.OlayEkle(ListeKutusu^.GorevKimlik, Olay);
 end;
 
 end.

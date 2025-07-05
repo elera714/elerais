@@ -48,7 +48,7 @@ begin
 
     s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
 
-    p := p^.Calistir(s, CALISMA_SEVIYE3);
+    p := GGorevler.Calistir(s, CALISMA_SEVIYE3);
     if(p <> nil) then
 
       Result := p^.GorevKimlik
@@ -65,14 +65,14 @@ begin
     if(i = -1) then
     begin
 
-      p := GorevListesi[FAktifGorev];
-      p^.Isaretle(FAktifGorev);
+      p := GorevAl(-1);
+      GGorevler.Isaretle(FAktifGorev);
     end
     else if(i >= 0) and (i < USTSINIR_GOREVSAYISI) then
     begin
 
-      p := GorevListesi[i];
-      p^.Isaretle(i);
+      p := GorevAl(i);
+      GGorevler.Isaretle(i);
     end;
   end
 
@@ -103,10 +103,10 @@ begin
         GorevKayit := PGorevKayit(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         GorevKayit^.GorevDurum := p^.FGorevDurum;
         GorevKayit^.GorevKimlik := p^.GorevKimlik;
-        GorevKayit^.GorevSayaci := p^.GorevSayaci;
-        GorevKayit^.BellekBaslangicAdresi := p^.BellekBaslangicAdresi;
+        GorevKayit^.GorevSayaci := p^.G0.FGorevSayaci;
+        GorevKayit^.BellekBaslangicAdresi := p^.G0.FBellekBaslangicAdresi;
         GorevKayit^.BellekUzunlugu := p^.BellekUzunlugu;
-        GorevKayit^.OlaySayisi := p^.OlaySayisi;
+        GorevKayit^.OlaySayisi := p^.FOlaySayisi;
         GorevKayit^.DosyaAdi := p^.FDosyaAdi;
 
         Result := HATA_YOK;
@@ -172,7 +172,7 @@ begin
   begin
 
     s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
-    Result := p^.GorevKimligiAl(s);
+    Result := GGorevler.GorevKimligiAl(s);
   end
 
   // görev / program adını belirle

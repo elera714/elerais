@@ -388,7 +388,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(KaydirmaCubugu^.OlayYonlendirmeAdresi = nil) then
       KaydirmaCubugu^.OlayYonlendirmeAdresi(KaydirmaCubugu, AOlay)
-    else GorevListesi[KaydirmaCubugu^.GorevKimlik]^.OlayEkle(KaydirmaCubugu^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(KaydirmaCubugu^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle

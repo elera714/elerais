@@ -260,7 +260,7 @@ begin
 
     if not(AracCubugu^.OlayYonlendirmeAdresi = nil) then
       AracCubugu^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-    else GorevListesi[ResimDugmesi^.GorevKimlik]^.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
   end;
 end;
 

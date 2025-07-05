@@ -475,7 +475,7 @@ begin
         // uygulamaya veya efendi nesneye mesaj gönder
         if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
           ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-        else GorevListesi[ListeGorunum^.GorevKimlik]^.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+        else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
       end;
     end;
   end
@@ -496,14 +496,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
         ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-      else GorevListesi[ListeGorunum^.GorevKimlik]^.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
       ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-    else GorevListesi[ListeGorunum^.GorevKimlik]^.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
   end
 
   // fare hakeret iþlemi
@@ -561,7 +561,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
         ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-      else GorevListesi[ListeGorunum^.GorevKimlik]^.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
     end
 
     // nesne yakalanmamýþ ise uygulamaya sadece mesaj gönder
@@ -571,7 +571,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
         ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-      else GorevListesi[ListeGorunum^.GorevKimlik]^.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
     end;
   end
 
@@ -611,7 +611,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
       ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-    else GorevListesi[ListeGorunum^.GorevKimlik]^.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+    else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle

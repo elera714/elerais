@@ -238,7 +238,7 @@ begin
       AOlay.Deger1 := 0;
       if not(DegerDugmesi^.OlayYonlendirmeAdresi = nil) then
         DegerDugmesi^.OlayYonlendirmeAdresi(DegerDugmesi, AOlay)
-      else GorevListesi[DegerDugmesi^.GorevKimlik]^.OlayEkle(DegerDugmesi^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(DegerDugmesi^.GorevKimlik, AOlay);
     end
     else if(AOlay.Kimlik = DegerDugmesi^.FEksiltmeDugmesi^.Kimlik) then
     begin
@@ -248,7 +248,7 @@ begin
       AOlay.Deger1 := 1;
       if not(DegerDugmesi^.OlayYonlendirmeAdresi = nil) then
         DegerDugmesi^.OlayYonlendirmeAdresi(DegerDugmesi, AOlay)
-      else GorevListesi[DegerDugmesi^.GorevKimlik]^.OlayEkle(DegerDugmesi^.GorevKimlik, AOlay);
+      else GGorevler.OlayEkle(DegerDugmesi^.GorevKimlik, AOlay);
     end;
   end;
 end;
