@@ -180,7 +180,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := ListeKutusu^.Kimlik;
+  else Result := ListeKutusu^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -237,7 +237,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(Kimlik));
+  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(FTGN.Kimlik));
   if(ListeKutusu = nil) then Exit;
 
   if(ListeKutusu^.FYaziListesi <> nil) then ListeKutusu^.FYaziListesi^.YokEt;
@@ -267,7 +267,7 @@ var
   ListeKutusu: PListeKutusu = nil;
 begin
 
-  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(Kimlik));
+  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(FTGN.Kimlik));
   if(ListeKutusu = nil) then Exit;
 
   inherited Gizle;
@@ -294,7 +294,7 @@ var
   ListeKutusu: PListeKutusu = nil;
 begin
 
-  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(Kimlik));
+  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(FTGN.Kimlik));
   if(ListeKutusu = nil) then Exit;
 
   inherited Hizala;
@@ -314,7 +314,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(Kimlik));
+  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(FTGN.Kimlik));
   if(ListeKutusu = nil) then Exit;
 
   if not(ListeKutusu^.Gorunum) then Exit;
@@ -529,7 +529,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := ListeKutusu^.FFareImlecTipi;
+  GecerliFareGostegeTipi := ListeKutusu^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -544,7 +544,7 @@ begin
   Result := '';
 
   // nesnenin kimlik, tip değerlerini denetle.
-  ListeKutusu := PListeKutusu(ListeKutusu^.NesneTipiniKontrolEt(Kimlik, gntListeKutusu));
+  ListeKutusu := PListeKutusu(ListeKutusu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntListeKutusu));
   if(ListeKutusu = nil) then Exit;
 
   YL := ListeKutusu^.FYaziListesi;
@@ -569,7 +569,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(Kimlik));
+  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(FTGN.Kimlik));
   if(ListeKutusu = nil) then Exit;
 
   ListeKutusu^.FYaziListesi^.Ekle(ADeger);
@@ -582,14 +582,14 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(Kimlik));
+  ListeKutusu := PListeKutusu(ListeKutusu^.NesneAl(FTGN.Kimlik));
   if(ListeKutusu = nil) then Exit;
 
   ListeKutusu^.FSeciliSiraNo := ASiraNo;
   ListeKutusu^.Ciz;
 
   // nesneye FO_TIKLAMA mesajı gönder
-  Olay.Kimlik := ListeKutusu^.Kimlik;
+  Olay.Kimlik := ListeKutusu^.FTGN.Kimlik;
   Olay.Olay := FO_TIKLAMA;
   Olay.Deger1 := ListeKutusu^.FSeciliSiraNo;
   Olay.Deger2 := 0;

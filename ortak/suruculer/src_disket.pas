@@ -348,7 +348,7 @@ begin
   { TODO : IRQ6KesmeIslevi her iki floppy sürücüsüne göre ayarlanacaktýr }
   IRQ6Tetiklendi := True;
 
-  //SISTEM_MESAJ(RENK_KIRMIZI, 'IRQ6Tetiklendi', []);
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IRQ6Tetiklendi', []);
 end;
 
 {==============================================================================

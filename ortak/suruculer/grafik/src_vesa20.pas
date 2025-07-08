@@ -343,12 +343,12 @@ begin
   end;
 
   // 2. pencere ve alt nesnelerin arka belleğe çizilmesi
-  if(Masaustu^.FAltNesneSayisi > 0) then
+  if(Masaustu^.FTGN.AltNesneSayisi > 0) then
   begin
 
     PencereBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
 
-    for i := 0 to Masaustu^.FAltNesneSayisi - 1 do
+    for i := 0 to Masaustu^.FTGN.AltNesneSayisi - 1 do
     begin
 
       GN := PencereBellekAdresi[i];

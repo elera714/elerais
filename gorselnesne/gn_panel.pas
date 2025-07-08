@@ -123,7 +123,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Panel^.Kimlik;
+  else Result := Panel^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -190,20 +190,20 @@ var
   i: TSayi4;
 begin
 
-  Panel := PPanel(Panel^.NesneAl(Kimlik));
+  Panel := PPanel(Panel^.NesneAl(FTGN.Kimlik));
   if(Panel = nil) then Exit;
 
   inherited Hizala;
 
   // panel alt nesnelerini yeniden boyutlandır
-  if(Panel^.FAltNesneSayisi > 0) then
+  if(Panel^.FTGN.AltNesneSayisi > 0) then
   begin
 
     AltNesneler := Panel^.FAltNesneBellekAdresi;
 
     // ilk oluşturulan alt nesneden son oluşturulan alt nesneye doğru
     // panelin alt nesnelerini yeniden boyutlandır
-    for i := 0 to Panel^.FAltNesneSayisi - 1 do
+    for i := 0 to Panel^.FTGN.AltNesneSayisi - 1 do
     begin
 
       GorunurNesne := AltNesneler[i];
@@ -256,15 +256,15 @@ var
   i: TISayi4;
 begin
 
-  GN := GN^.NesneAl(Kimlik);
+  GN := GN^.NesneAl(FTGN.Kimlik);
   if(GN = nil) then Exit;
 
   inherited Ciz;
 
-  if(GN^.FAltNesneSayisi = 0) then Exit;
+  if(GN^.FTGN.AltNesneSayisi = 0) then Exit;
 
   // mevcut görsel nesneyi kaydet
-  for i := 0 to GN^.FAltNesneSayisi - 1 do
+  for i := 0 to GN^.FTGN.AltNesneSayisi - 1 do
   begin
 
     AltNesneBellekAdresi := GN^.FAltNesneBellekAdresi;
@@ -377,7 +377,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Panel^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Panel^.FTGN.FareImlecTipi;
 end;
 
 end.

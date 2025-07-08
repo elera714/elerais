@@ -171,7 +171,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Defter^.Kimlik;
+  else Result := Defter^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -196,7 +196,7 @@ begin
 
   Defter^.OlayCagriAdresi := @OlaylariIsle;
 
-  Defter^.FFareImlecTipi := fitGiris;
+  Defter^.FTGN.FareImlecTipi := fitGiris;
 
   { TODO - kaydýrma çubuklarýna sabit deðer olarak 50 deðeri verilmiþtir. Bu deðer
     nesne içeriðindeki metine göre dinamik olarak oluþturulacaktýr }
@@ -254,7 +254,7 @@ var
   Defter: PDefter;
 begin
 
-  Defter := PDefter(Defter^.NesneAl(Kimlik));
+  Defter := PDefter(Defter^.NesneAl(FTGN.Kimlik));
   if(Defter = nil) then Exit;
 
   Defter^.FYatayKCubugu^.Goster;
@@ -280,7 +280,7 @@ var
   Defter: PDefter;
 begin
 
-  Defter := PDefter(Defter^.NesneAl(Kimlik));
+  Defter := PDefter(Defter^.NesneAl(FTGN.Kimlik));
   if(Defter = nil) then Exit;
 
   inherited Hizala;
@@ -330,7 +330,7 @@ var
   AktifSutunNo, AktifSatirNo: TISayi4;
 begin
 
-  Defter := PDefter(Defter^.NesneAl(Kimlik));
+  Defter := PDefter(Defter^.NesneAl(FTGN.Kimlik));
   if(Defter = nil) then Exit;
 
   inherited Ciz;
@@ -597,7 +597,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Defter^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Defter^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -617,7 +617,7 @@ begin
   if(AOlay.Olay = FO_TIKLAMA) then Defter^.Ciz;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Defter^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Defter^.FTGN.FareImlecTipi;
 end;
 
 end.

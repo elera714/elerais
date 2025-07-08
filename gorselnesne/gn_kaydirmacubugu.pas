@@ -113,7 +113,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := KaydirmaCubugu^.Kimlik;
+  else Result := KaydirmaCubugu^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -209,7 +209,7 @@ var
   KaydirmaCubugu: PKaydirmaCubugu = nil;
 begin
 
-  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(Kimlik));
+  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(FTGN.Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
   KaydirmaCubugu^.FArtirmaDugmesi^.Goster;
@@ -235,7 +235,7 @@ var
   KaydirmaCubugu: PKaydirmaCubugu = nil;
 begin
 
-  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(Kimlik));
+  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(FTGN.Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
   if(KaydirmaCubugu^.FYon = yYatay) then
@@ -283,7 +283,7 @@ begin
 
   inherited Ciz;
 
-  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(Kimlik));
+  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(FTGN.Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
   // kaydýrma çubuðunun çizim alan koordinatlarýný al
@@ -342,7 +342,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := KaydirmaCubugu^.FFareImlecTipi;
+  GecerliFareGostegeTipi := KaydirmaCubugu^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -363,7 +363,7 @@ begin
   if(AOlay.Olay = FO_TIKLAMA) then
   begin
 
-    if(AOlay.Kimlik = KaydirmaCubugu^.FEksiltmeDugmesi^.Kimlik) then
+    if(AOlay.Kimlik = KaydirmaCubugu^.FEksiltmeDugmesi^.FTGN.Kimlik) then
     begin
 
       i := KaydirmaCubugu^.FMevcutDeger;
@@ -382,7 +382,7 @@ begin
 
     KaydirmaCubugu^.Ciz;
 
-    AOlay.Kimlik := KaydirmaCubugu^.Kimlik;
+    AOlay.Kimlik := KaydirmaCubugu^.FTGN.Kimlik;
     AOlay.Deger1 := KaydirmaCubugu^.FMevcutDeger;
 
     // uygulamaya veya efendi nesneye mesaj gönder
@@ -392,7 +392,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := KaydirmaCubugu^.FFareImlecTipi;
+  GecerliFareGostegeTipi := KaydirmaCubugu^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -403,7 +403,7 @@ var
   KaydirmaCubugu: PKaydirmaCubugu = nil;
 begin
 
-  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(Kimlik));
+  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(FTGN.Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
   KaydirmaCubugu^.FAltDeger := AAltDeger;

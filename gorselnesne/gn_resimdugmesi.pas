@@ -107,7 +107,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := ResimDugmesi^.Kimlik;
+  else Result := ResimDugmesi^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -197,7 +197,7 @@ var
   ResimSiraNo, CizimTipi: TSayi4;
 begin
 
-  ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl(Kimlik));
+  ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl(FTGN.Kimlik));
   if(ResimDugmesi = nil) then Exit;
 
   Alan := ResimDugmesi^.FCizimAlan;
@@ -352,7 +352,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := ResimDugmesi^.FFareImlecTipi;
+  GecerliFareGostegeTipi := ResimDugmesi^.FTGN.FareImlecTipi;
 end;
 
 end.

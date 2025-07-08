@@ -192,7 +192,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Izgara^.Kimlik;
+  else Result := Izgara^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -262,7 +262,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   if(Izgara^.FDegerler <> nil) then Izgara^.FDegerler^.YokEt;
@@ -278,7 +278,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   if(Izgara^.FYatayKCGoster) then Izgara^.FYatayKCubugu^.Goster;
@@ -304,7 +304,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   inherited Hizala;
@@ -359,7 +359,7 @@ var
   i, j, SolIlk, UstIlk: TISayi4;
 begin
 
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   inherited Ciz;
@@ -500,7 +500,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Izgara^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Izgara^.FTGN.FareImlecTipi;
 end;
 
 procedure TIzgara.KaydirmaCubuguOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -517,7 +517,7 @@ begin
   if(AOlay.Olay = FO_TIKLAMA) then Izgara^.Ciz;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Izgara^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Izgara^.FTGN.FareImlecTipi;
 end;
 
 procedure TIzgara.HucreSayisiYaz(ASatirSayisi, ASutunSayisi: TSayi4);
@@ -525,7 +525,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   Izgara^.FSatirSayisi := ASatirSayisi;
@@ -537,7 +537,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   Izgara^.FSatirYukseklik := ASatirYukseklik;
@@ -549,7 +549,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   Izgara^.FSabitSatirSayisi := ASabitSatirSayisi;
@@ -561,7 +561,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   Izgara^.FYatayKCGoster := AYatayKCGoster;
@@ -583,7 +583,7 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   Izgara^.FSeciliSatir := ASatir;
@@ -601,7 +601,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  Izgara := PIzgara(Izgara^.NesneTipiniKontrolEt(Kimlik, gntIzgara));
+  Izgara := PIzgara(Izgara^.NesneTipiniKontrolEt(FTGN.Kimlik, gntIzgara));
   if(Izgara = nil) then Exit;
 
   if(FSeciliSutun = -1) or (FSeciliSutun > FDegerler^.ElemanSayisi) then Exit('');
@@ -654,7 +654,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   Izgara^.FDegerler^.Ekle(ADeger);
@@ -668,7 +668,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  Izgara := PIzgara(Izgara^.NesneAl(Kimlik));
+  Izgara := PIzgara(Izgara^.NesneAl(FTGN.Kimlik));
   if(Izgara = nil) then Exit;
 
   Izgara^.FDegerler^.Temizle;

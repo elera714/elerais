@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 10/06/2025
+  Güncelleme Tarihi: 07/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -72,24 +72,20 @@ uses genel, donusum, islevler, sistemmesaj, gorev;
  ==============================================================================}
 procedure Yukle;
 var
-  DNS: PDNS;
+  P: PDNS;
   i: TSayi4;
 begin
-
-  // dns bilgilerinin yerleştirilmesi için bellek ayır
-  DNS := GetMem(SizeOf(TDNS) * USTSINIR_DNSBAGLANTI);
 
   // bellek girişlerini dizi girişleriyle eşleştir
   for i := 0 to USTSINIR_DNSBAGLANTI - 1 do
   begin
 
-    GDNSBaglantilari[i] := DNS;
+    P := GetMem(SizeOf(TDNS));
+    GDNSBaglantilari[i] := P;
 
     // işlemi boş olarak belirle
-    DNS^.FBaglantiDurum := ddOlusturuldu;
-    DNS^.FKimlik := i;
-
-    Inc(DNS);
+    P^.FBaglantiDurum := ddOlusturuldu;
+    P^.FKimlik := i;
   end;
 end;
 

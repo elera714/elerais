@@ -179,7 +179,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := KarmaListe^.Kimlik;
+  else Result := KarmaListe^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -219,7 +219,7 @@ var
   KarmaListe: PKarmaListe;
 begin
 
-  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(Kimlik));
+  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(FTGN.Kimlik));
   if(KarmaListe = nil) then Exit;
 
   KarmaListe^.FAcilirMenu^.YokEt;
@@ -253,7 +253,7 @@ var
   KarmaListe: PKarmaListe = nil;
 begin
 
-  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(Kimlik));
+  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(FTGN.Kimlik));
   if(KarmaListe = nil) then Exit;
 
   inherited Hizala;
@@ -271,7 +271,7 @@ begin
   inherited Ciz;
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(Kimlik));
+  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(FTGN.Kimlik));
   if(KarmaListe = nil) then Exit;
 
   // karma listenin çizim alan koordinatlarýný al
@@ -328,7 +328,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := KarmaListe^.FFareImlecTipi;
+  GecerliFareGostegeTipi := KarmaListe^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -357,7 +357,7 @@ begin
     KarmaListe^.Ciz;
 
     // uygulamaya veya efendi nesneye mesaj gönder
-    Olay.Kimlik := KarmaListe^.Kimlik;
+    Olay.Kimlik := KarmaListe^.FTGN.Kimlik;
     Olay.Olay := CO_SECIMDEGISTI;
     Olay.Deger1 := AcilirMenu^.FSeciliSiraNo;
     Olay.Deger2 := 0;
@@ -395,7 +395,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(Kimlik));
+  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(FTGN.Kimlik));
   if(KarmaListe = nil) then Exit;
 
   KarmaListe^.FAcilirMenu^.MenuEkle(ADeger, -1, True);
@@ -414,7 +414,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(Kimlik));
+  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(FTGN.Kimlik));
   if(KarmaListe = nil) then Exit;
 
   KarmaListe^.Baslik := '';
@@ -431,7 +431,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(Kimlik));
+  KarmaListe := PKarmaListe(KarmaListe^.NesneAl(FTGN.Kimlik));
   if(KarmaListe = nil) then Exit;
 
   KarmaListe^.FAcilirMenu^.FSeciliSiraNo := ASiraNo;
@@ -439,7 +439,7 @@ begin
   KarmaListe^.Ciz;
 
   // uygulamaya veya efendi nesneye mesaj gönder
-  Olay.Kimlik := KarmaListe^.Kimlik;
+  Olay.Kimlik := KarmaListe^.FTGN.Kimlik;
   Olay.Olay := CO_SECIMDEGISTI;
   Olay.Deger1 := ASiraNo;
   Olay.Deger2 := 0;

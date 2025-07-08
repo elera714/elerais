@@ -147,7 +147,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := GirisKutusu^.Kimlik;
+  else Result := GirisKutusu^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -176,7 +176,7 @@ begin
 
   GirisKutusu^.OlayCagriAdresi := @OlaylariIsle;
 
-  GirisKutusu^.FFareImlecTipi := fitGiris;
+  GirisKutusu^.FTGN.FareImlecTipi := fitGiris;
 
   GirisKutusu^.FYazilamaz := False;
   GirisKutusu^.FSadeceRakam := False;
@@ -198,7 +198,7 @@ var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(Kimlik));
+  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(FTGN.Kimlik));
   if(GirisKutusu = nil) then Exit;
 
   GirisKutusu^.FSilmeDugmesi^.YokEt;
@@ -214,7 +214,7 @@ var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(Kimlik));
+  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(FTGN.Kimlik));
   if(GirisKutusu = nil) then Exit;
 
   GirisKutusu^.FSilmeDugmesi^.Gorunum := True;
@@ -239,7 +239,7 @@ var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(Kimlik));
+  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(FTGN.Kimlik));
   if(GirisKutusu = nil) then Exit;
 
   GirisKutusu^.FSilmeDugmesi^.FKonum.Sol := GirisKutusu^.FBoyut.Genislik - 13;
@@ -260,7 +260,7 @@ var
   Alan: TAlan;
 begin
 
-  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(Kimlik));
+  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(FTGN.Kimlik));
   if(GirisKutusu = nil) then Exit;
 
   inherited Ciz;
@@ -394,7 +394,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := GirisKutusu^.FFareImlecTipi;
+  GecerliFareGostegeTipi := GirisKutusu^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================

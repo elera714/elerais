@@ -356,7 +356,23 @@ asm
   mov   ecx,CalisanGorevSayisi
   cmp   ecx,1
   je    @@cik
+{
+  // görevin belirlenen süre kadar çalýþmasýný saðla
+  mov   eax,FAktifGorev
+  shl   eax,2
+  mov   esi,GorevListesi[eax]
+  mov   eax,[esi + TGorev.FCalismaSuresiSayacMS]
+  dec   eax
+  jz    @@bir_sonraki_gorev
+  mov   [esi + TGorev.FCalismaSuresiSayacMS],eax
+  jmp   @@cik
 
+@@bir_sonraki_gorev:
+
+  // sayacý öndeðere eþitle
+  mov   eax,[esi + TGorev.FCalismaSuresiMS]
+  mov   [esi + TGorev.FCalismaSuresiSayacMS],eax
+}
   // geçiþ yapýlacak bir sonraki görevi bul
   call  CalistirilacakBirSonrakiGoreviBul
   mov   FAktifGorev,eax
@@ -473,6 +489,7 @@ asm
 @@yenigorev:
 
   call  CalistirilacakBirSonrakiGoreviBul
+//  mov   eax,0
   mov   FAktifGorev,eax
 
   // aktif görevin bellek baþlangýç adresini al

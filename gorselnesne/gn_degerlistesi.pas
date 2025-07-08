@@ -173,7 +173,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := DegerListesi^.Kimlik;
+  else Result := DegerListesi^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -236,7 +236,7 @@ var
   DegerListesi: PDegerListesi;
 begin
 
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(Kimlik));
+  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
   if(DegerListesi = nil) then Exit;
 
   if(DegerListesi^.FDegerler <> nil) then DegerListesi^.FDegerler^.YokEt;
@@ -274,7 +274,7 @@ var
   Kolon1U: TSayi4;
 begin
 
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(Kimlik));
+  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
   if(DegerListesi = nil) then Exit;
 
   inherited Hizala;
@@ -307,7 +307,7 @@ var
   RY: TRenkYazi;
 begin
 
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(Kimlik));
+  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
   if(DegerListesi = nil) then Exit;
 
   inherited Ciz;
@@ -594,7 +594,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := DegerListesi^.FFareImlecTipi;
+  GecerliFareGostegeTipi := DegerListesi^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -606,7 +606,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(Kimlik, gntDegerListesi));
+  DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(FTGN.Kimlik, gntDegerListesi));
   if(DegerListesi = nil) then Exit;
 
   if(FSeciliSiraNo = -1) or (FSeciliSiraNo > FDegerler^.ElemanSayisi) then Exit('');
@@ -662,7 +662,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(Kimlik));
+  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
   if(DegerListesi = nil) then Exit;
 
   DegerListesi^.FKolonAdlari^.Ekle(AKolon1);
@@ -680,7 +680,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(Kimlik));
+  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
   if(DegerListesi = nil) then Exit;
 
   DegerListesi^.FDegerler^.Ekle(ADeger, AYaziRengi);
@@ -696,7 +696,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(Kimlik));
+  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
   if(DegerListesi = nil) then Exit;
 
   DegerListesi^.FDegerler^.Temizle;

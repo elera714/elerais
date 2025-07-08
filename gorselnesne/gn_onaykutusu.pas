@@ -97,7 +97,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := OnayKutusu^.Kimlik;
+  else Result := OnayKutusu^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -167,7 +167,7 @@ var
   OnayKutusu: POnayKutusu = nil;
 begin
 
-  OnayKutusu := POnayKutusu(OnayKutusu^.NesneAl(Kimlik));
+  OnayKutusu := POnayKutusu(OnayKutusu^.NesneAl(FTGN.Kimlik));
   if(OnayKutusu = nil) then Exit;
 
   inherited Hizala;
@@ -184,7 +184,7 @@ var
   p1: PSayi1;
 begin
 
-  OnayKutusu := POnayKutusu(OnayKutusu^.NesneAl(Kimlik));
+  OnayKutusu := POnayKutusu(OnayKutusu^.NesneAl(FTGN.Kimlik));
   if(OnayKutusu = nil) then Exit;
 
   // nesne çizim alanı
@@ -304,7 +304,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := OnayKutusu^.FFareImlecTipi;
+  GecerliFareGostegeTipi := OnayKutusu^.FTGN.FareImlecTipi;
 end;
 
 end.

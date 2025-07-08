@@ -122,7 +122,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Resim^.Kimlik;
+  else Result := Resim^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -200,7 +200,7 @@ var
   Resim: PResim;
 begin
 
-  Resim := PResim(Resim^.NesneAl(Kimlik));
+  Resim := PResim(Resim^.NesneAl(FTGN.Kimlik));
   if(Resim = nil) then Exit;
 
   inherited Hizala;
@@ -214,7 +214,7 @@ var
   Resim: PResim;
 begin
 
-  Resim := PResim(Resim^.NesneAl(Kimlik));
+  Resim := PResim(Resim^.NesneAl(FTGN.Kimlik));
   if(Resim = nil) then Exit;
 
   inherited Ciz;
@@ -289,7 +289,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Resim^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Resim^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -301,7 +301,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  Resim := PResim(Resim^.NesneAl(Kimlik));
+  Resim := PResim(Resim^.NesneAl(FTGN.Kimlik));
   if(Resim = nil) then Exit;
 
   // daha önce resim için bellek rezerv edildiyse belleği iptal et

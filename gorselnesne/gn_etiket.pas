@@ -111,7 +111,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Etiket^.Kimlik;
+  else Result := Etiket^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -183,7 +183,7 @@ var
   Etiket: PEtiket = nil;
 begin
 
-  Etiket := PEtiket(Etiket^.NesneAl(Kimlik));
+  Etiket := PEtiket(Etiket^.NesneAl(FTGN.Kimlik));
   if(Etiket = nil) then Exit;
 
   inherited Hizala;
@@ -198,7 +198,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  Etiket := PEtiket(Etiket^.NesneAl(Kimlik));
+  Etiket := PEtiket(Etiket^.NesneAl(FTGN.Kimlik));
   if(Etiket = nil) then Exit;
 
   inherited Ciz;
@@ -276,7 +276,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Etiket^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Etiket^.FTGN.FareImlecTipi;
 end;
 
 end.

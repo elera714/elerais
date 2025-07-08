@@ -115,7 +115,7 @@ type
 
 type
     PE1000_rx_desc = ^TE1000_rx_desc;
-    TE1000_rx_desc = bitpacked record
+    TE1000_rx_desc = packed record
         address  : uint64;
         length   : uint16;
         checksum : uint16;
@@ -139,8 +139,8 @@ type
 var
   AygitBilgisi: TAygit;
   EEPROMVar: Boolean;
-  tx_descs : array[0..E1000_NUM_TX_DESC-1] of PE1000_tx_desc;
-  rx_descs : array[0..E1000_NUM_RX_DESC-1] of PE1000_rx_desc;
+  tx_descs : array[0..E1000_NUM_TX_DESC-1] of TE1000_tx_desc;
+  rx_descs : array[0..E1000_NUM_RX_DESC-1] of TE1000_rx_desc;
   rx_buffs : array[0..E1000_NUM_RX_DESC-1] of puint8;
   GidisSiraNo, GelisSiraNo: TSayi4;
 
@@ -154,9 +154,10 @@ procedure MACAdresiAl;
 procedure KesmeAktiflestir;
 procedure BaglantiyiBaslat;
 procedure KesmeIslevi;
-procedure VeriAl;
+procedure VeriAl1;
 procedure rxinit;
 procedure txinit;
+procedure DMAErisiminiAktiflestir(APCI: PPCI);
 
 implementation
 
@@ -234,24 +235,28 @@ begin
   BitPasiflestir(REG_CTRL, 1 shl 30);
 
 
-  for i:=0 to 128 - 1 do begin
-      KomutGonder($5200 + i, 0);
-  end;
 
   for i:=0 to 64 - 1 do begin
       KomutGonder($4000 + (i * 4), 0);
   end;
 
+//  DMAErisiminiAktiflestir(APCI);
+
+  for i:=0 to 128 - 1 do begin
+      KomutGonder($5200 + i * 4, 0);
+  end;
+
+  rxinit;
+//  txinit;
+
   //IRQEtkinlestir(2);
   IRQIsleviAta(AygitBilgisi.IRQNo, @KesmeIslevi);
+
+  BaglantiyiBaslat;
 
   // kesmeyi aktifleþtir
   KesmeAktiflestir;
 
-  BaglantiyiBaslat;
-
-  rxinit;
-  txinit;
 
 end;
 
@@ -368,6 +373,8 @@ var
 
 begin
 
+  KomutGonder($00D0, 1);
+
   Durum := VeriOku($C0);
   if((Durum and $04) = $04) then
   begin
@@ -379,10 +386,10 @@ begin
 
     //Good Threshold
   end
-  else if((Durum and $C0) > 0) then
+  else if((Durum and $80) > 0) then
   begin
 
-    VeriAl;
+    VeriAl1;
   end;
 
 
@@ -391,19 +398,24 @@ begin
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'E1000 kesme iþlevi', []);
 end;
 
-procedure VeriAl;
+procedure VeriAl1;
 var
   len: UInt16;
   old_cur: TSayi4;
+  p: TE1000_rx_desc;
 begin
 
-  len:= rx_descs[0]^.length;
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->durum: %d', [rx_descs[0]^.status]);
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->bellek : %d', [len]);
-  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->bellek : %d', [TSayi4(@rx_descs[0])]);
+  p := rx_descs[GelisSiraNo];
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->status: %d', [p.status]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->len : %d', [p.length]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->address: %d', [p.address]);
 
+  rx_descs[GelisSiraNo].status:= 0;
+  old_cur:= GelisSiraNo;
+  GelisSiraNo := (GelisSiraNo + 1) mod E1000_NUM_RX_DESC;
+  KomutGonder(REG_RXDESCTAIL, old_cur);
 
-  while (rx_descs[GelisSiraNo]^.status AND $1) > 0 do
+  {while (rx_descs[GelisSiraNo]^.status AND $1) > 0 do
   begin
 
     //buf:= rx_buffs[GelisSiraNo];
@@ -415,7 +427,7 @@ begin
     old_cur:= GelisSiraNo;
     GelisSiraNo := (GelisSiraNo + 1) mod E1000_NUM_RX_DESC;
     KomutGonder(REG_RXDESCTAIL, old_cur);
-  end;
+  end;}
 end;
 
 procedure rxinit;
@@ -428,30 +440,33 @@ var
 
 begin
 
-  GelisHalkaBellekAdresi := GetMem(sizeof(TE1000_rx_desc) * E1000_NUM_RX_DESC + 16);
-  p := Isaretci($3C00000); //60 * 1024 * 1024); // GelisHalkaBellekAdresi;
+  //GelisHalkaBellekAdresi := GetMem(sizeof(TE1000_rx_desc) * E1000_NUM_RX_DESC + 16);
+  //p := GelisHalkaBellekAdresi;
 
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p2 Bellek Adresi: $%x', [TSayi4(GelisHalkaBellekAdresi)]);
 
   for i := 0 to E1000_NUM_RX_DESC - 1 do
   begin
 
-    rx_descs[i] := p;
-    rx_descs[i]^.address := $90000;
-    rx_descs[i]^.status := 0;
-    p += sizeof(TE1000_rx_desc);
+    rx_descs[i].address := 10; //TSayi8(GetMem(8192));
+    rx_descs[i].status := 0;
+    //p += sizeof(TE1000_rx_desc);
 
-    if(i < 3) then SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p1 Bellek Adresi: $%x', [TSayi4(p)]);
+    //if(i < 3) then SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p1 Bellek Adresi: $%x', [TSayi4(p)]);
   end;
   GelisSiraNo := 0;
 
-  KomutGonder(REG_RXDESCLO, TSayi4(GelisHalkaBellekAdresi));
+  //KomutGonder(REG_TXDESCLO, 0);
+  //KomutGonder(REG_TXDESCHI, 0);
+
+  p := @rx_descs;
+  KomutGonder(REG_RXDESCLO, TSayi4(p));
   KomutGonder(REG_RXDESCHI, 0);
 
-  KomutGonder(REG_RXDESCLEN, E1000_NUM_RX_DESC * sizeof(TE1000_rx_desc));
+  KomutGonder(REG_RXDESCLEN, E1000_NUM_RX_DESC * 16); //sizeof(TE1000_rx_desc));
 
   KomutGonder(REG_RXDESCHEAD, 0);
-  KomutGonder(REG_RXDESCTAIL, E1000_NUM_RX_DESC-1);
+  KomutGonder(REG_RXDESCTAIL, E1000_NUM_RX_DESC - 1);
 
 {	KomutGonder($0028, $002C8001);
 	KomutGonder($002c, $0100);
@@ -461,14 +476,13 @@ begin
   KomutGonder(REG_RCTRL, //RCTL_EN OR RCTL_SBP OR RCTL_UPE OR RCTL_MPE OR RCTL_LBM_NONE OR RTCL_RDMTS_HALF OR RCTL_BAM OR RCTL_SECRC OR RCTL_BSIZE_2048);
     (1 shl 1) or
     (1 shl 2) or
+    (1 shl 3) or
     (1 shl 4) or
     (1 shl 15) or
-    (1 shl 25) or
-    (1 shl 16) or
-    (1 shl 26));
+    ((2 shl 16) or (1 shl 25)));
 
-  BitPasiflestir(REG_CTRL, (1 shl 16) or (1 shl 17));
-  BitAktiflestir(REG_CTRL, (1 shl 1));
+  //BitPasiflestir(REG_CTRL, (1 shl 16) or (1 shl 17));
+  //BitAktiflestir(REG_CTRL, (1 shl 1));
 end;
 
 procedure txinit;
@@ -487,7 +501,7 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Bellek Adresi: $%x', [TSayi4(p)]);
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Bellek Adresi: $%x', [TSayi4(GidisHalkaBellekAdresi)]);
 
-  for i := 0 to E1000_NUM_TX_DESC - 1 do
+{  for i := 0 to E1000_NUM_TX_DESC - 1 do
   begin
 
     tx_descs[i] := p;
@@ -495,7 +509,7 @@ begin
     tx_descs[i]^.cmd := 0;
     tx_descs[i]^.status:= TSTA_DD;
     p += sizeof(TE1000_tx_desc);
-  end;
+  end;}
   GidisSiraNo := 0;
 
   KomutGonder(REG_TXDESCLO, TSayi4(GidisHalkaBellekAdresi));
@@ -512,6 +526,16 @@ begin
       KomutGonder(REG_TCTRL, $3003F0FA);
       //KomutGonder(REG_TIPG, $0060200A);
 
+end;
+
+procedure DMAErisiminiAktiflestir(APCI: PPCI);
+var
+  Deger: TSayi2;
+begin
+
+  Deger := PCIOku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
+  if((Deger and 4) = 4) then Exit;
+  PCIYaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger and 4));
 end;
 
 end.

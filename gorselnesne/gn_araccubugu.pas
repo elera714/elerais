@@ -98,7 +98,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := AracCubugu^.Kimlik;
+  else Result := AracCubugu^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -149,7 +149,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(FTGN.Kimlik));
   if(AracCubugu = nil) then Exit;
 
 {  if(AracCubugu^.FDugmeSayisi > 0) then
@@ -175,7 +175,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(FTGN.Kimlik));
   if(AracCubugu = nil) then Exit;
 {
   if(AracCubugu^.FDugmeSayisi > 0) then
@@ -209,7 +209,7 @@ var
 //  i: Integer;
 begin
 
-  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(FTGN.Kimlik));
   if(AracCubugu = nil) then Exit;
 
   // öncelikle kendini çiz
@@ -239,7 +239,7 @@ begin
   if(AracCubugu = nil) then Exit;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := AracCubugu^.FFareImlecTipi;
+  GecerliFareGostegeTipi := AracCubugu^.FTGN.FareImlecTipi;
 end;
 
 procedure TAracCubugu.ResimDugmeOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -256,7 +256,7 @@ begin
   if(AOlay.Olay = FO_TIKLAMA) then
   begin
 
-    AOlay.Kimlik := ResimDugmesi^.Kimlik;
+    AOlay.Kimlik := ResimDugmesi^.FTGN.Kimlik;
 
     if not(AracCubugu^.OlayYonlendirmeAdresi = nil) then
       AracCubugu^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
@@ -272,7 +272,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(FTGN.Kimlik));
   if(AracCubugu = nil) then Exit;
 
   if(AracCubugu^.FDugmeSayisi > AZAMI_DUGME_SAYISI) then Exit;
@@ -286,7 +286,7 @@ begin
 
   Inc(FDugmeSayisi);
 
-  Result := ResimDugmesi^.Kimlik;
+  Result := ResimDugmesi^.FTGN.Kimlik;
 end;
 
 // araç çubuðuna düðme ekler - çekirdek grafiksel programlama çalýþmasý için
@@ -297,7 +297,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(AracCubugu^.NesneAl(FTGN.Kimlik));
   if(AracCubugu = nil) then Exit;
 
   if(AracCubugu^.FDugmeSayisi > AZAMI_DUGME_SAYISI) then Exit;
@@ -311,7 +311,7 @@ begin
 
   Inc(FDugmeSayisi);
 
-  Result := ResimDugmesi^.Kimlik;
+  Result := ResimDugmesi^.FTGN.Kimlik;
 end;
 
 end.

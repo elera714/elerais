@@ -127,7 +127,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := AcilirMenu^.Kimlik;
+  else Result := AcilirMenu^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -176,7 +176,7 @@ begin
 
   inherited Goster;
 
-  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(Kimlik));
+  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(FTGN.Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   if(AcilirMenu^.FYardimciNesne) then
@@ -192,7 +192,7 @@ begin
   end;
 
   // menünün açýldýðýna dair nesne sahibine mesaj gönder
-  Olay.Kimlik := AcilirMenu^.Kimlik;
+  Olay.Kimlik := AcilirMenu^.FTGN.Kimlik;
   Olay.Olay := CO_MENUACILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
@@ -212,11 +212,11 @@ begin
 
   inherited Gizle;
 
-  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(Kimlik));
+  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(FTGN.Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   // menünün açýldýðýna dair nesne sahibine mesaj gönder
-  Olay.Kimlik := AcilirMenu^.Kimlik;
+  Olay.Kimlik := AcilirMenu^.FTGN.Kimlik;
   Olay.Olay := CO_MENUKAPATILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
@@ -278,7 +278,7 @@ var
   i: TISayi4;
 begin
 
-  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(Kimlik));
+  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(FTGN.Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   AcilirMenu^.FMenuBaslikListesi^.Ekle(ADeger);
@@ -315,7 +315,7 @@ var
   AcilirMenu: PAcilirMenu = nil;
 begin
 
-  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(Kimlik));
+  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(FTGN.Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   AcilirMenu^.FMenuBaslikListesi^.Temizle;

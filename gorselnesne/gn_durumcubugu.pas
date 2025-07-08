@@ -96,7 +96,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := DurumCubugu^.Kimlik;
+  else Result := DurumCubugu^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -166,7 +166,7 @@ var
   DurumCubugu: PDurumCubugu;
 begin
 
-  DurumCubugu := PDurumCubugu(DurumCubugu^.NesneAl(Kimlik));
+  DurumCubugu := PDurumCubugu(DurumCubugu^.NesneAl(FTGN.Kimlik));
   if(DurumCubugu = nil) then Exit;
 
   inherited Hizala;
@@ -183,7 +183,7 @@ var
   Sol, Ust, Yatay, Dikey: TISayi4;
 begin
 
-  DurumCubugu := PDurumCubugu(DurumCubugu^.NesneAl(Kimlik));
+  DurumCubugu := PDurumCubugu(DurumCubugu^.NesneAl(FTGN.Kimlik));
   if(DurumCubugu = nil) then Exit;
 
   inherited Ciz;
@@ -257,7 +257,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := DurumCubugu^.FFareImlecTipi;
+  GecerliFareGostegeTipi := DurumCubugu^.FTGN.FareImlecTipi;
 end;
 
 end.

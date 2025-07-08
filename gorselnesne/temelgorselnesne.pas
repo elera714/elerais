@@ -6,7 +6,7 @@
   Dosya Adý: temelgorselnesne.pas
   Dosya Ýþlevi: temel görsel nesne yapýsýný içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 07/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,13 +17,32 @@ interface
 uses paylasim;
 
 type
+  { TODO - object nesneleri class nesnelerine çevirme çalýþmasý }
+  PTTGN = ^TTGN;
+
+  { TTGN }
+
+  TTGN = class
+  private
+    // nesne kimliði. kimlik deðeri
+    FKimlik: TKimlik;
+    // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
+    FFareImlecTipi: TFareImlecTipi;
+    // nesnenin alt nesne sayýsý
+    FAltNesneSayisi: TSayi4;
+  public
+    constructor Create;
+  published
+    property Kimlik: TKimlik read FKimlik write FKimlik;
+    property FareImlecTipi: TFareImlecTipi read FFareImlecTipi write FFareImlecTipi;
+    property AltNesneSayisi: TSayi4 read FAltNesneSayisi write FAltNesneSayisi;
+  end;
+
   PTemelGorselNesne = ^TTemelGorselNesne;
   TTemelGorselNesne = object
   private
     // nesnenin sahibi olan görev / program
     FGorevKimlik: TKimlik;
-    // nesne kimliði. kimlik deðeri
-    FKimlik: TKimlik;
     // nesnenin tipi
     FNesneTipi: TGNTip;
     // nesnenin adý
@@ -38,6 +57,8 @@ type
     FOdaklanilabilir: Boolean;
     FOdaklanildi: Boolean;
   public
+    FTGN: TTGN;
+
     // nesnenin kullaným tipi
     FKullanimTipi: TKullanimTipi;
     // nesnenin ilk oluþturulmasýnda atanan deðerler
@@ -62,10 +83,6 @@ type
     FHiza: THiza;
     // nesneye yazýlacak yazýnýn yatay + dikey hizalanmasý
     FYaziHiza: TYaziHiza;
-    // nesnenin alt nesne sayýsý
-    FAltNesneSayisi: TISayi4;
-    // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
-    FFareImlecTipi: TFareImlecTipi;
     // nesnenin o anda çizilip çizilmediðini belirten deðiþken.
     // bilgi: pencere çiziminin kontrolü için eklendi
     FCiziliyor: Boolean;
@@ -74,7 +91,6 @@ type
     procedure BaslikYaz(ABaslik: string);
   published
     property GorevKimlik: TKimlik read FGorevKimlik write FGorevKimlik;
-    property Kimlik: TKimlik read FKimlik write FKimlik;
     property NesneTipi: TGNTip read FNesneTipi write NesneTipiYaz;
     property NesneAdi: string read FNesneAdi;
     property Baslik: string read FBaslik write BaslikYaz;
@@ -263,6 +279,19 @@ begin
       Result := 'seçimdüðmesi' + '.' + IntToStr(SecimDugmesiSayac);
     end;
   end;
+end;
+
+constructor TTGN.Create;
+begin
+
+  // nesne kimliði. kimlik deðeri
+  FKimlik := 0;
+
+  // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
+  FFareImlecTipi := fitOK;
+
+  // nesnenin alt nesne sayýsý
+  FAltNesneSayisi := 0;
 end;
 
 procedure TTemelGorselNesne.NesneTipiYaz(AGNTip: TGNTip);

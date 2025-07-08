@@ -14,8 +14,9 @@ unit genel;
 
 interface
 
-uses gercekbellek, src_vesa20, src_ps2, gorev, zamanlayici, paylasim, olayyonetim, gorselnesne,
-  sistemmesaj, gn_masaustu, iletisim, n_yazilistesi, n_sayilistesi, dns;
+uses gercekbellek, src_vesa20, src_ps2, gorev, zamanlayici, paylasim, olayyonetim,
+  gorselnesne, sistemmesaj, gn_masaustu, iletisim, n_yazilistesi, n_sayilistesi,
+  dns, depolama;
 
 const
   USTSINIR_YAZILISTESI = 128;    // 4096 byte / 32 byte = 128 adet liste
@@ -51,6 +52,8 @@ var
   // sistem içerisinde kullanılacak görsel olmayan listeler
   GYaziListesi: array[0..USTSINIR_YAZILISTESI - 1] of PYaziListesi;
   GSayiListesi: array[0..USTSINIR_SAYILISTESI - 1] of PSayiListesi;
+
+  GDepolama: TDepolama;
 
 procedure ListeleriIlkDegerlerleYukle;
 

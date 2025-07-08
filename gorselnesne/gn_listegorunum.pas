@@ -189,7 +189,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := ListeGorunum^.Kimlik;
+  else Result := ListeGorunum^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -255,7 +255,7 @@ var
   ListeGorunum: PListeGorunum;
 begin
 
-  ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(Kimlik));
+  ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(FTGN.Kimlik));
   if(ListeGorunum = nil) then Exit;
 
   if(ListeGorunum^.FDegerler <> nil) then ListeGorunum^.FDegerler^.YokEt;
@@ -292,7 +292,7 @@ var
   ListeGorunum: PListeGorunum;
 begin
 
-  ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(Kimlik));
+  ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(FTGN.Kimlik));
   if(ListeGorunum = nil) then Exit;
 
   inherited Hizala;
@@ -314,7 +314,7 @@ var
   s: String;
 begin
 
-  ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(Kimlik));
+  ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(FTGN.Kimlik));
   if(ListeGorunum = nil) then Exit;
 
   inherited Ciz;
@@ -615,7 +615,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := ListeGorunum^.FFareImlecTipi;
+  GecerliFareGostegeTipi := ListeGorunum^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -627,7 +627,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(Kimlik, gntListeGorunum));
+  ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(FTGN.Kimlik, gntListeGorunum));
   if(ListeGorunum = nil) then Exit;
 
   if(FSeciliSiraNo = -1) or (FSeciliSiraNo > FDegerler^.ElemanSayisi) then Exit('');

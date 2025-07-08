@@ -96,7 +96,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := RenkSecici^.Kimlik;
+  else Result := RenkSecici^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -167,7 +167,7 @@ var
   RenkSecici: PRenkSecici = nil;
 begin
 
-  RenkSecici := PRenkSecici(RenkSecici^.NesneAl(Kimlik));
+  RenkSecici := PRenkSecici(RenkSecici^.NesneAl(FTGN.Kimlik));
   if(RenkSecici = nil) then Exit;
 
   inherited Hizala;
@@ -184,7 +184,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  RenkSecici := PRenkSecici(RenkSecici^.NesneAl(Kimlik));
+  RenkSecici := PRenkSecici(RenkSecici^.NesneAl(FTGN.Kimlik));
   if(RenkSecici = nil) then Exit;
 
   // 16 rengi 8 sütün, 2 satýr olarak çiz. (8 x 2)
@@ -281,7 +281,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := RenkSecici^.FFareImlecTipi;
+  GecerliFareGostegeTipi := RenkSecici^.FTGN.FareImlecTipi;
 end;
 
 end.

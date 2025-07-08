@@ -86,7 +86,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Baglanti^.Kimlik;
+  else Result := Baglanti^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -119,7 +119,7 @@ begin
 
   Baglanti^.OlayCagriAdresi := @OlaylariIsle;
 
-  Baglanti^.FFareImlecTipi := fitEl;
+  Baglanti^.FTGN.FareImlecTipi := fitEl;
 
   Baglanti^.FYaziHiza.Yatay := yhSol;
   Baglanti^.FYaziHiza.Dikey := dhUst;
@@ -170,7 +170,7 @@ var
   Baglanti: PBaglanti;
 begin
 
-  Baglanti := PBaglanti(Baglanti^.NesneAl(Kimlik));
+  Baglanti := PBaglanti(Baglanti^.NesneAl(FTGN.Kimlik));
   if(Baglanti = nil) then Exit;
 
   inherited Hizala;
@@ -184,7 +184,7 @@ var
   Baglanti: PBaglanti;
 begin
 
-  Baglanti := PBaglanti(Baglanti^.NesneAl(Kimlik));
+  Baglanti := PBaglanti(Baglanti^.NesneAl(FTGN.Kimlik));
   if(Baglanti = nil) then Exit;
 
   // düğme başlığı
@@ -268,7 +268,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Baglanti^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Baglanti^.FTGN.FareImlecTipi;
 end;
 
 end.

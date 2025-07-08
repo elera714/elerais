@@ -79,7 +79,7 @@ begin
     $020E:
     begin
 
-      Result := GAktifMasaustu^.Kimlik;
+      Result := GAktifMasaustu^.FTGN.Kimlik;
     end;
 
     // masaüstünü aktifleştir
@@ -158,7 +158,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Masaustu^.Kimlik;
+  else Result := Masaustu^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -264,7 +264,7 @@ begin
   inherited Goster;
 
   // nesnenin kimlik, tip değerlerini denetle.
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   // masaüstünü aktifleştir
@@ -273,13 +273,13 @@ begin
   Masaustu^.Ciz;
 
   // masaüstü alt nesnesi olan pencereleri çiz
-  if(Masaustu^.FAltNesneSayisi > 0) then
+  if(Masaustu^.FTGN.AltNesneSayisi > 0) then
   begin
 
     AltNesneler := Masaustu^.FAltNesneBellekAdresi;
 
     // ilk oluşturulan pencereden son oluşturulan pencereye doğru nesneleri çiz
-    for i := 0 to Masaustu^.FAltNesneSayisi - 1 do
+    for i := 0 to Masaustu^.FTGN.AltNesneSayisi - 1 do
     begin
 
       Pencere := AltNesneler[i];
@@ -323,7 +323,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   // masaüstü arka plan resmini çiz
@@ -392,7 +392,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Masaustu^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Masaustu^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -421,7 +421,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   Masaustu^.FMasaustuArkaPlan := 1;
@@ -447,7 +447,7 @@ var
   Masaustu: PMasaustu = nil;
 begin
 
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   // masaüstünün renk değerini değiştir
@@ -465,7 +465,7 @@ var
   Masaustu: PMasaustu = nil;
 begin
 
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   // masaüstü resmini değiştir

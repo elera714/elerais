@@ -97,9 +97,9 @@ begin
     BellekSayac := 0;
   end;
 
-  // $1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
+  // 1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
   Inc(DiskSayac);
-  if(DiskSayac = $1000) then
+  if(DiskSayac = 1000) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk kullaným alaný hesaplanýyor...', []);
