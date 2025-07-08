@@ -144,11 +144,11 @@ begin
 
     G := GGorselNesneListesi[i];
 
-    j := G^.Kimlik shr 10;
+    j := G^.FTGN.Kimlik shr 10;
     if(i <> j) then
     begin
 
-      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%d. nesne giriþi hatalý: %d', [i, G^.Kimlik]);
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%d. nesne giriþi hatalý: %d', [i, G^.FTGN.Kimlik]);
       Break;
     end;
   end;

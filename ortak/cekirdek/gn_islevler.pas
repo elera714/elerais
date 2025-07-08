@@ -31,14 +31,13 @@ procedure OlayYakalamayiBirak(AGorselNesne: PGorselNesne);
 
 implementation
 
-uses islevler, sistemmesaj, gorev;
+uses islevler, sistemmesaj, gorev, donusum, temelgorselnesne;
 
 {==============================================================================
   görsel nesne yükleme işlevlerini gerçekleştirir
  ==============================================================================}
 procedure Yukle;
 var
-  GNBellekAdresi: Isaretci;
   i: TSayi4;
   j: TKimlik;
 begin
@@ -47,9 +46,6 @@ begin
     olarak ayrılan temkin değeri. gereken değer teyit edilip otomatikleştirilecek }
   // üstteki açıklama durumu değişkenin 1024 olarak değiştirilmesiyle pasifleştirilmiştir
   GN_UZUNLUK := 1024; //Align(SizeOf(TPencere) + 64, 16);
-
-  // görsel nesneler için bellekte yer tahsis et
-  GNBellekAdresi := GetMem(USTSINIR_GORSELNESNE * GN_UZUNLUK);
 
   // 0. bit    : 1 = nesne Kullanılıyor, 0 = nesne kullanılmıyor
   // 1..9 bit  : düşük 12 bit sistem kontrol amacıyla sürekli 1 olacak
@@ -61,13 +57,13 @@ begin
   for i := 0 to USTSINIR_GORSELNESNE - 1 do
   begin
 
-    GGorselNesneListesi[i] := GNBellekAdresi;
+    GGorselNesneListesi[i] := GetMem(1024);
 
-    GGorselNesneListesi[i]^.Kimlik := j;
+    GGorselNesneListesi[i]^.FTGN := TTGN.Create;
+
+    GGorselNesneListesi[i]^.FTGN.Kimlik := j;
 
     j += GN_UZUNLUK;
-
-    GNBellekAdresi += GN_UZUNLUK;
   end;
 
   // görsel nesne değişkenlerini ilk değerlerle yükle
@@ -88,6 +84,7 @@ var
   Kimlik: TKimlik;
   BellekAdresi: Isaretci;
   Konum: TKonum;
+  s: string;
 begin
 
   // yatay & dikey koordinattaki nesneyi al
@@ -97,7 +94,7 @@ begin
     Konum.Sol := PISayi4(ADegiskenler + 00)^;
     Konum.Ust := PISayi4(ADegiskenler + 04)^;
     GN := GorselNesneBul(Konum);
-    Result := GN^.Kimlik;
+    Result := GN^.FTGN.Kimlik;
   end
 
   // görsel nesne bilgilerini hedef bellek bölgesine kopyala
@@ -123,9 +120,13 @@ begin
 
     Konum.Sol := PISayi4(ADegiskenler + 00)^;
     Konum.Ust := PISayi4(ADegiskenler + 04)^;
+
+    { TODO - GN yapısı object'den class'a çevrildi. api yeniden düzenlencek }
     GN := GorselNesneBul(Konum);
+    s := IntToStr(GN^.FTGN.Kimlik);
     BellekAdresi := Isaretci(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-    Tasi2(@GN^.NesneAdi[0], BellekAdresi, Length(GN^.NesneAdi) + 1);
+    Tasi2(@s[0], BellekAdresi, Length(s) + 1);
+    //Tasi2(@GN^.NesneAdi[0], BellekAdresi, Length(GN^.NesneAdi) + 1);
   end;
 end;
 
@@ -148,14 +149,14 @@ begin
   begin
 
     // masaüstü nesnesinin alt nesnesi var ise
-    if(Masaustu^.FAltNesneSayisi > 0) then
+    if(Masaustu^.FTGN.AltNesneSayisi > 0) then
     begin
 
       // masaüstünün alt nesnelerinin bellek adresini al
       MasaustuGNBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
 
       // masaüstü alt nesnelerini teker teker ara
-      for PencereSiraNo := 0 to Masaustu^.FAltNesneSayisi - 1 do
+      for PencereSiraNo := 0 to Masaustu^.FTGN.AltNesneSayisi - 1 do
       begin
 
         Pencere := MasaustuGNBellekAdresi[PencereSiraNo];
@@ -166,12 +167,12 @@ begin
         begin
 
           // pencere nesnesinin alt nesnesi var mı?
-          if(Pencere^.FAltNesneSayisi > 0) then
+          if(Pencere^.FTGN.AltNesneSayisi > 0) then
           begin
 
             // pencere nesnesinin alt nesne bellek bölgesine konumlan
             PencereGNBellekAdresi := Pencere^.FAltNesneBellekAdresi;
-            for PencereAltNesneSiraNo := Pencere^.FAltNesneSayisi - 1 downto 0 do
+            for PencereAltNesneSiraNo := Pencere^.FTGN.AltNesneSayisi - 1 downto 0 do
             begin
 
               PencereGNBellekAdresi[PencereAltNesneSiraNo]^.YokEt;
@@ -192,16 +193,16 @@ begin
           Pencere^.YokEt;
 
           // masaüstü alt nesne sayısını bir azalt
-          i := Masaustu^.FAltNesneSayisi;
+          i := Masaustu^.FTGN.AltNesneSayisi;
           Dec(i);
-          Masaustu^.FAltNesneSayisi := i;
+          Masaustu^.FTGN.AltNesneSayisi := i;
 
           // eğer alt nesne sayısı halen mevcut ise
           // sıralamayı tekrar gözden geçir
-          if(Masaustu^.FAltNesneSayisi > 0) then
+          if(Masaustu^.FTGN.AltNesneSayisi > 0) then
           begin
 
-            for i := 0 to Masaustu^.FAltNesneSayisi - 1 do
+            for i := 0 to Masaustu^.FTGN.AltNesneSayisi - 1 do
             begin
 
               if(MasaustuGNBellekAdresi[i] = nil) then
@@ -238,14 +239,14 @@ begin
   begin
 
     // masaüstü nesnesinin alt nesnesi var ise
-    if(Masaustu^.FAltNesneSayisi > 0) then
+    if(Masaustu^.FTGN.AltNesneSayisi > 0) then
     begin
 
       // masaüstünün alt nesnelerinin bellek adresini al
       AltNesneBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
 
       // masaüstü alt nesnelerini teker teker ara
-      for i := 0 to Masaustu^.FAltNesneSayisi - 1 do
+      for i := 0 to Masaustu^.FTGN.AltNesneSayisi - 1 do
       begin
 
         Pencere := AltNesneBellekAdresi[i];
@@ -315,7 +316,7 @@ begin
   SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.FBoyut.Genislik;
   SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.FBoyut.Yukseklik;
 
-  if(SonBulunanGN^.FAltNesneSayisi = 0) then
+  if(SonBulunanGN^.FTGN.AltNesneSayisi = 0) then
   begin
 
     AKonum.Sol := AKonum.Sol - SonBulunanGN^.FKonum.Sol;
@@ -324,11 +325,11 @@ begin
   end;
 
   // 3. pencerelerin sorgulanması
-  if(SonBulunanGN^.FAltNesneSayisi > 0) then
+  if(SonBulunanGN^.FTGN.AltNesneSayisi > 0) then
   begin
 
     // alt nesnesi olan nesnenin alt nesnelerini ara. sondan başa doğru (3..0 gibi)
-    for i := SonBulunanGN^.FAltNesneSayisi - 1 downto 0 do
+    for i := SonBulunanGN^.FTGN.AltNesneSayisi - 1 downto 0 do
     begin
 
       // görsel nesneyi al
@@ -419,11 +420,11 @@ begin
 
               GenelGN := nil;
 
-              if(SonBulunanGN^.FAltNesneSayisi > 0) then
+              if(SonBulunanGN^.FTGN.AltNesneSayisi > 0) then
               begin
 
                 // alt nesnesi olan nesnenin alt nesnelerini ara. sondan başa doğru (3..0 gibi)
-                for j := SonBulunanGN^.FAltNesneSayisi - 1 downto 0 do
+                for j := SonBulunanGN^.FTGN.AltNesneSayisi - 1 downto 0 do
                 begin
 
                   // görsel nesneyi al

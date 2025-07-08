@@ -123,7 +123,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := SecimDugmesi^.Kimlik;
+  else Result := SecimDugmesi^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -204,7 +204,7 @@ var
   p1: PSayi1;
 begin
 
-  SecimDugmesi := PSecimDugmesi(SecimDugmesi^.NesneAl(Kimlik));
+  SecimDugmesi := PSecimDugmesi(SecimDugmesi^.NesneAl(FTGN.Kimlik));
   if(SecimDugmesi = nil) then Exit;
 
   // seçim düğmesi üst nesneye bağlı olarak koordinatlarını al
@@ -307,7 +307,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := SecimDugmesi^.FFareImlecTipi;
+  GecerliFareGostegeTipi := SecimDugmesi^.FTGN.FareImlecTipi;
 end;
 
 end.

@@ -120,7 +120,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := SayfaKontrol^.Kimlik;
+  else Result := SayfaKontrol^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -167,7 +167,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(Kimlik));
+  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   if(SayfaKontrol^.FAktifSayfa = 0) then
@@ -215,7 +215,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(Kimlik));
+  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   inherited Gizle;
@@ -238,7 +238,7 @@ var
   SayfaKontrol: PSayfaKontrol = nil;
 begin
 
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(Kimlik));
+  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   if(SayfaKontrol^.FAktifSayfa = 0) then
@@ -289,7 +289,7 @@ begin
   SayfaKontrol := PSayfaKontrol(AGonderici);
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := SayfaKontrol^.FFareImlecTipi;
+  GecerliFareGostegeTipi := SayfaKontrol^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -311,13 +311,13 @@ begin
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
-    if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[0]^.Kimlik) then
+    if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[0]^.FTGN.Kimlik) then
       SayfaKontrol^.FAktifSayfa := 0
-    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[1]^.Kimlik) then
+    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[1]^.FTGN.Kimlik) then
       SayfaKontrol^.FAktifSayfa := 1
-    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[2]^.Kimlik) then
+    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[2]^.FTGN.Kimlik) then
       SayfaKontrol^.FAktifSayfa := 2
-    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[3]^.Kimlik) then
+    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[3]^.FTGN.Kimlik) then
       SayfaKontrol^.FAktifSayfa := 3;
 
     SayfaKontrol^.Ciz;
@@ -331,7 +331,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(Kimlik));
+  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   i := SayfaKontrol^.FSayfaSayisi;
@@ -360,7 +360,7 @@ begin
     SayfaKontrol^.FSayfaSayisi := 1;
     SayfaKontrol^.FAktifSayfa := 0;
 
-    Result := SayfaKontrol^.FPaneller[0]^.Kimlik;
+    Result := SayfaKontrol^.FPaneller[0]^.FTGN.Kimlik;
   end
   else if(i = 1) then
   begin
@@ -385,7 +385,7 @@ begin
     SayfaKontrol^.FSayfaSayisi := 2;
     SayfaKontrol^.FAktifSayfa := 0;
 
-    Result := SayfaKontrol^.FPaneller[1]^.Kimlik;
+    Result := SayfaKontrol^.FPaneller[1]^.FTGN.Kimlik;
   end
   else if(i = 2) then
   begin
@@ -410,7 +410,7 @@ begin
     SayfaKontrol^.FSayfaSayisi := 3;
     SayfaKontrol^.FAktifSayfa := 0;
 
-    Result := SayfaKontrol^.FPaneller[2]^.Kimlik;
+    Result := SayfaKontrol^.FPaneller[2]^.FTGN.Kimlik;
   end
   else //if(i = 3) then
   begin
@@ -435,7 +435,7 @@ begin
     SayfaKontrol^.FSayfaSayisi := 4;
     SayfaKontrol^.FAktifSayfa := 0;
 
-    Result := SayfaKontrol^.FPaneller[3]^.Kimlik;
+    Result := SayfaKontrol^.FPaneller[3]^.FTGN.Kimlik;
   end;
 end;
 
@@ -452,7 +452,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(Kimlik));
+  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   if(ASayfaNo = 0) then

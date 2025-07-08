@@ -6,7 +6,7 @@
   Dosya Adı: gorselnesne.pas
   Dosya İşlevi: tüm görsel nesnelerin türediği temel görsel ana yapı
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 07/07/2025
 
   Bilgi: bu görsel yapı, tüm nesnelerin ihtiyaç duyabileceği ana yapıları içerir
 
@@ -168,7 +168,7 @@ begin
 
   if(AAtaNesne = nil) then
     AtaGorselNesne := nil
-  else AtaGorselNesne := AtaGorselNesne^.NesneyiAl(AAtaNesne^.Kimlik);
+  else AtaGorselNesne := AtaGorselNesne^.NesneyiAl(AAtaNesne^.FTGN.Kimlik);
 
   // görsel ana yapı nesnesini oluştur
   GN := PGorselNesne(Olustur0(AGNTip));
@@ -254,10 +254,10 @@ begin
   GN^.FAltNesneBellekAdresi := nil;
 
   // nesnenin alt nesne sayısı
-  GN^.FAltNesneSayisi := 0;
+  GN^.FTGN.AltNesneSayisi := 0;
 
   // nesnenin üzerine gelindiğinde görüntülenecek fare göstergesi
-  GN^.FFareImlecTipi := fitOK;
+  GN^.FTGN.FareImlecTipi := fitOK;
 
   // nesnenin görünüm durumu
   GN^.Gorunum := False;
@@ -297,17 +297,19 @@ begin
     TemelGorselNesne := GGorselNesneListesi[i];
 
     // eğer nesne kullanılmamış ise ... (0. bit 0 ise)
-    if((TemelGorselNesne^.Kimlik and 1) = 0) then
+    if((TemelGorselNesne^.FTGN.Kimlik and 1) = 0) then
     begin
 
-      // nesne kimliğini Kullanıldı olarak işaretle
-      j := TemelGorselNesne^.Kimlik or 1;
-
       // nesne içeriğini sıfırla
-      FillByte(TemelGorselNesne^, GN_UZUNLUK, 0);
+      //FillByte(TemelGorselNesne^, GN_UZUNLUK, 0);
+
+      //TemelGorselNesne^.FTGN.Kimlik := 11223344;
+
+      // nesne kimliğini Kullanıldı olarak işaretle
+      j := TemelGorselNesne^.FTGN.Kimlik or 1;
 
       // nesne kimliğini güncelle
-      TemelGorselNesne^.Kimlik := j;
+      TemelGorselNesne^.FTGN.Kimlik := j;
 
       TemelGorselNesne^.NesneTipi := AGNTip;
 
@@ -335,16 +337,16 @@ var
   i: TKimlik;
 begin
 
-  i := Kimlik shr 10;
+  i := FTGN.Kimlik shr 10;
 
   // eğer nesne istenen aralıkta ise yok et
   if(i >= 0) and (i < USTSINIR_GORSELNESNE) then
   begin
 
     // nesne kimliğini Kullanıldı bitini sıfırla
-    i := GGorselNesneListesi[i]^.Kimlik;
+    i := GGorselNesneListesi[i]^.FTGN.Kimlik;
     i := i and $FFFFFFFE;
-    GGorselNesneListesi[i]^.Kimlik := i;
+    GGorselNesneListesi[i]^.FTGN.Kimlik := i;
     //Kimlik := HATA_KIMLIK;
     Dec(ToplamGNSayisi);
     //Result := True;
@@ -358,7 +360,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  GorselAnaYapi := PGorselNesne(GorselAnaYapi^.NesneTipiniKontrolEt(Kimlik, NesneTipi));
+  GorselAnaYapi := PGorselNesne(GorselAnaYapi^.NesneTipiniKontrolEt(FTGN.Kimlik, NesneTipi));
   if(GorselAnaYapi = nil) then Exit;
 
   // nesne görünür durumda mı ?
@@ -386,7 +388,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  GorselAnaYapi := PGorselNesne(GorselAnaYapi^.NesneTipiniKontrolEt(Kimlik, NesneTipi));
+  GorselAnaYapi := PGorselNesne(GorselAnaYapi^.NesneTipiniKontrolEt(FTGN.Kimlik, NesneTipi));
   if(GorselAnaYapi = nil) then Exit;
 
   // nesne görünür durumda mı ?
@@ -417,7 +419,7 @@ var
   CizimAlan: TAlan;
 begin
 
-  GN := GN^.NesneAl(Kimlik);
+  GN := GN^.NesneAl(FTGN.Kimlik);
   if(GN = nil) then Exit;
 
   CizimAlan := GN^.FCizimAlan;
@@ -453,7 +455,7 @@ var
   GorselAtaNesne, GN: PGorselNesne;
 begin
 
-  GN := GN^.NesneAl(Kimlik);
+  GN := GN^.NesneAl(FTGN.Kimlik);
   if(GN = nil) then Exit;
 
   GN^.FCizimAlan.Sol := 0;
@@ -484,7 +486,7 @@ var
   GN: PGorselNesne;
 begin
 
-  GN := GN^.NesneAl(Kimlik);
+  GN := GN^.NesneAl(FTGN.Kimlik);
   if(GN = nil) then Exit;
 
   GN^.FHizaAlani.Sol := GN^.FCizimAlan.Sol;
@@ -587,7 +589,7 @@ begin
     GN := GGorselNesneListesi[i];
 
     // nesne oluşturulmuş mu ?
-    if(GN^.Kimlik = AKimlik) then
+    if(GN^.FTGN.Kimlik = AKimlik) then
     begin
 
       // nesne tipini kontrol et
@@ -635,19 +637,19 @@ begin
   end;
 
   // alt nesne toplam nesne sayısı aşılmamışsa ...
-  if(AAtaNesne^.FAltNesneSayisi < 1024) then
+  if(AAtaNesne^.FTGN.AltNesneSayisi < 1024) then
   begin
 
     // üst nesnenin bellek adresini al
     AltNesneBellekAdresi := AAtaNesne^.FAltNesneBellekAdresi;
 
     // nesneyi üst nesneye kaydet
-    AltNesneBellekAdresi[AAtaNesne^.FAltNesneSayisi] := @Self;
+    AltNesneBellekAdresi[AAtaNesne^.FTGN.AltNesneSayisi] := @Self;
 
     // üst nesnenin nesne saysını 1 artır
-    i := AAtaNesne^.FAltNesneSayisi;
+    i := AAtaNesne^.FTGN.AltNesneSayisi;
     Inc(i);
-    AAtaNesne^.FAltNesneSayisi := i;
+    AAtaNesne^.FTGN.AltNesneSayisi := i;
     Result := True;
   end else Result := False;
 end;
@@ -895,7 +897,7 @@ var
   Alan: TAlan;
 begin
 
-  Alan := CizimAlaniniAl2(Kimlik);
+  Alan := CizimAlaniniAl2(FTGN.Kimlik);
   YaziYaz(FAtaNesne, Alan.Sol + ASol, Alan.Ust + AUst, AKarakterDizi, ARenk);
 end;
 
@@ -1034,7 +1036,7 @@ begin
     Deger := '0x' + hexStr(ADeger, AHaneSayisi)
   else Deger := hexStr(ADeger, AHaneSayisi);
 
-  Alan := CizimAlaniniAl2(Kimlik);
+  Alan := CizimAlaniniAl2(FTGN.Kimlik);
 
   // sayısal değeri ekrana yaz
   YaziYaz(FAtaNesne, Alan.Sol + ASol, Alan.Ust + AUst, Deger, ARenk);
@@ -1070,7 +1072,7 @@ begin
   // saat değerini karakter katarına çevir
   Saat := TimeToStr(ASaat);
 
-  Alan := CizimAlaniniAl2(Kimlik);
+  Alan := CizimAlaniniAl2(FTGN.Kimlik);
 
   // saat değerini belirtilen koordinatlara yaz
   YaziYaz(FAtaNesne, Alan.Sol + ASol, Alan.Ust + AUst, Saat, ARenk);

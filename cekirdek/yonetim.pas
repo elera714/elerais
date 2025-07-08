@@ -82,7 +82,7 @@ uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
  ==============================================================================}
 procedure Yukle;
 var
-  Gorev: PGorev;
+  G: PGorev;
   GMBilgi: PGMBilgi;
   Olay: POlay;
   GrafikESP, KontrolESP,
@@ -147,29 +147,28 @@ begin
     %10001001, %00010000);
 
   // sistem görev deðerlerini belirle
-  GorevListesi[0]^.G0.FGorevSayaci := 0;
-  GorevListesi[0]^.G0.FBellekBaslangicAdresi := CekirdekBaslangicAdresi;
-  GorevListesi[0]^.BellekUzunlugu := CekirdekUzunlugu;
-  GorevListesi[0]^.FOlaySayisi := 0;
-  GorevListesi[0]^.OlayBellekAdresi := nil;
-  GorevListesi[0]^.AktifMasaustu := nil;
-  GorevListesi[0]^.AktifPencere := nil;
+  G := GorevListesi[0];
+  G^.G0.FSeviyeNo := CALISMA_SEVIYE0;
+  G^.G0.FGorevSayaci := 0;
+  G^.G0.FBellekBaslangicAdresi := CekirdekBaslangicAdresi;
+  G^.FCalismaSuresiMS := 20;
+  G^.FCalismaSuresiSayacMS := 20;
+  G^.BellekUzunlugu := CekirdekUzunlugu;
+  G^.FOlaySayisi := 0;
+  G^.OlayBellekAdresi := nil;
+  G^.AktifMasaustu := nil;
+  G^.AktifPencere := nil;
 
-  GorevListesi[0]^.FDosyaAdi := 'cekirdek.bin';
-  GorevListesi[0]^.FProgramAdi := 'Sistem Çekirdeði';
+  G^.FDosyaAdi := 'cekirdek.bin';
+  G^.FProgramAdi := 'Sistem Çekirdeði';
 
   // sistem görevini çalýþýyor olarak iþaretle
-  Gorev := GorevListesi[0];
-  Gorev^.FOlaySayisi := 0;
+  G^.FOlaySayisi := 0;
 
   Olay := POlay(GGercekBellek.Ayir(4096));
   if not(Olay = nil) then
-  begin
-
-    Gorev^.FOlayBellekAdresi := Olay;
-  end
-  else
-    Gorev^.FOlayBellekAdresi := nil;
+    G^.FOlayBellekAdresi := Olay
+  else G^.FOlayBellekAdresi := nil;
 
   GGorevler.DurumDegistir(0, gdCalisiyor);
 
@@ -325,7 +324,9 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            A := AracTipleri.Ekle;
+            //GSistemMesaj.Ekle0(mtBilgi, RENK_KIRMIZI, 'Merhaba');
+
+            {A := AracTipleri.Ekle;
             A.Kimlik := 11111111;
             B := AracTipleri.Ekle;
             B.Kimlik := 22222222;
@@ -346,7 +347,7 @@ begin
             SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Toplam: %d', [AracTipleri.Toplam]);
             SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer1: %d', [i]);
             SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer2: %d', [TSayi4(@AracTipleri)]);
-
+                      }
             //i := TSayi4(@GorevListesi[4]^.G0);
             //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [G^.G0.FGorevSayaci]);
             //i := PSayi4(i)^;
@@ -414,7 +415,7 @@ begin
           else if(TusKarakterDegeri = '5') then
           begin
 
-            MD := MantiksalSurucuAl('disk2');
+            MD := GDepolama.MantiksalSurucuAl('disk2');
             if not(MD = nil) then ELR1DiskBicimle(MD);
           end
           // program çalýþtýrma programýný çalýþtýr
@@ -503,7 +504,7 @@ begin
           if(TusDegeri = TUS_F4) then
           begin
 
-            Olay.Kimlik := GAktifPencere^.Kimlik;
+            Olay.Kimlik := GAktifPencere^.FTGN.Kimlik;
             Olay.Olay := CO_SONLANDIR;
             Olay.Deger1 := 0;
             Olay.Deger2 := 0;
@@ -673,7 +674,7 @@ begin
 
           BekleMS(50);
 
-          GN := GN^.NesneAl(MUGorev^.AktifPencere^.Kimlik);
+          GN := GN^.NesneAl(MUGorev^.AktifPencere^.FTGN.Kimlik);
 
           PPencere(GN)^.FKonum.Sol := Konum.Sol;
           PPencere(GN)^.FKonum.Ust := Konum.Ust;

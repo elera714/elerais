@@ -6,7 +6,7 @@
   Dosya Adý: k_olay.pas
   Dosya Ýþlevi: olay (event) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 01/01/2025
+  Güncelleme Tarihi: 07/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,9 +27,9 @@ uses genel, gorev, zamanlayici;
  ==============================================================================}
 function OlayCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  Gorev: PGorev;
-  Olay: TOlay;
-  _Olay: POlay;
+  G: PGorev;
+  O: TOlay;
+  O2: POlay;
   IslevNo: TSayi4;
   OlayMevcut: Boolean;
 begin
@@ -40,10 +40,10 @@ begin
   if(IslevNo = 1) then
   begin
 
-    Gorev := GorevAl(-1);
+    G := GorevAl(-1);
 
     // çalýþan proses'e ait olay var mý ?
-    if(GGorevler.OlayAl(Gorev^.FGorevKimlik, Olay)) then
+    if(GGorevler.OlayAl(G^.FGorevKimlik, O)) then
 
       OlayMevcut := True
     else OlayMevcut := False;
@@ -52,13 +52,13 @@ begin
     if(OlayMevcut) then
     begin
 
-      _Olay := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
-      _Olay^.Kimlik := Olay.Kimlik;
-      _Olay^.Olay := Olay.Olay;
-      _Olay^.Deger1 := Olay.Deger1;
-      _Olay^.Deger2 := Olay.Deger2;
+      O2 := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
+      O2^.Kimlik := O.Kimlik;
+      O2^.Olay := O.Olay;
+      O2^.Deger1 := O.Deger1;
+      O2^.Deger2 := O.Deger2;
 
-      Result := Gorev^.FOlaySayisi;
+      Result := G^.FOlaySayisi;
     end
 
     // olay yok ise tek bir görev deðiþikliði yap ve görevi istekte bulunan devret.
@@ -75,14 +75,14 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    Gorev := GorevAl(-1);
+    G := GorevAl(-1);
 
     // uygulama için olay üretilinceye kadar bekle
     // olay olmamasý durumda bir sonraki göreve geç (mevcut görev olay bekliyor)
     // ta ki ilgili görev için olay mevcut oluncaya kadar
     repeat
 
-      if(GGorevler.OlayAl(Gorev^.FGorevKimlik, Olay)) then
+      if(GGorevler.OlayAl(G^.FGorevKimlik, O)) then
 
         OlayMevcut := True
       else OlayMevcut := False;
@@ -91,13 +91,13 @@ begin
     until (OlayMevcut = True);
 
     // olay deðiþkenlerini görevin yýðýn alanýna kopyala
-    _Olay := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
-    _Olay^.Kimlik := Olay.Kimlik;
-    _Olay^.Olay := Olay.Olay;
-    _Olay^.Deger1 := Olay.Deger1;
-    _Olay^.Deger2 := Olay.Deger2;
+    O2 := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
+    O2^.Kimlik := O.Kimlik;
+    O2^.Olay := O.Olay;
+    O2^.Deger1 := O.Deger1;
+    O2^.Deger2 := O.Deger2;
 
-    Result := Gorev^.FOlaySayisi;
+    Result := G^.FOlaySayisi;
   end;
 end;
 

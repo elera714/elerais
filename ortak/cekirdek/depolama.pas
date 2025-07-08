@@ -6,7 +6,7 @@
   Dosya Adý: depolama.pas
   Dosya Ýþlevi: depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 22/05/2025
+  Güncelleme Tarihi: 07/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,17 +16,21 @@ interface
 
 uses paylasim;
 
-function FizikselSurucuAl(ASiraNo: TISayi4): PFizikselDepolama;
-function FizikselSurucuAl2(AKimlik: TKimlik): PFizikselDepolama;
-function FizikselDepolamaVeriOku(AFizikselDepolama: PFizikselDepolama; ASektorNo,
-  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
-function FizikselDepolamaVeriYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo,
-  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
-function MantiksalSurucuAl(ASiraNo: TISayi4): PMantiksalDepolama;
-function MantiksalSurucuAl(AAygitAdi: string): PMantiksalDepolama;
-function MantiksalSurucuAl2(AKimlik: TKimlik): PMantiksalDepolama;
-function MantiksalDepolamaVeriOku(AMantiksalDepolama: PMantiksalDepolama; ASektorNo,
-  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+type
+  TDepolama = class
+  public
+    function FizikselSurucuAl(ASiraNo: TISayi4): PFizikselDepolama;
+    function FizikselSurucuAl2(AKimlik: TKimlik): PFizikselDepolama;
+    function FizikselDepolamaVeriOku(AFizikselDepolama: PFizikselDepolama; ASektorNo,
+      ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    function FizikselDepolamaVeriYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo,
+      ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    function MantiksalSurucuAl(ASiraNo: TISayi4): PMantiksalDepolama;
+    function MantiksalSurucuAl(AAygitAdi: string): PMantiksalDepolama;
+    function MantiksalSurucuAl2(AKimlik: TKimlik): PMantiksalDepolama;
+    function MantiksalDepolamaVeriOku(AMantiksalDepolama: PMantiksalDepolama; ASektorNo,
+      ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+  end;
 
 implementation
 
@@ -35,7 +39,7 @@ uses sistemmesaj;
 {==============================================================================
   sýra numarasýna göre fiziksel depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function FizikselSurucuAl(ASiraNo: TISayi4): PFizikselDepolama;
+function TDepolama.FizikselSurucuAl(ASiraNo: TISayi4): PFizikselDepolama;
 var
   FD: TFizikselDepolama;
   SiraNo, i: TISayi4;
@@ -61,7 +65,7 @@ end;
 {==============================================================================
   kimlik deðerine göre fiziksel depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function FizikselSurucuAl2(AKimlik: TKimlik): PFizikselDepolama;
+function TDepolama.FizikselSurucuAl2(AKimlik: TKimlik): PFizikselDepolama;
 var
   FD: TFizikselDepolama;
   i: TISayi4;
@@ -80,7 +84,7 @@ end;
 {==============================================================================
   fiziksel depolama aygýtýndan veri oku
  ==============================================================================}
-function FizikselDepolamaVeriOku(AFizikselDepolama: PFizikselDepolama; ASektorNo,
+function TDepolama.FizikselDepolamaVeriOku(AFizikselDepolama: PFizikselDepolama; ASektorNo,
   ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 begin
 
@@ -97,7 +101,7 @@ end;
 {==============================================================================
   fiziksel depolama aygýtýna veri yaz
  ==============================================================================}
-function FizikselDepolamaVeriYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo,
+function TDepolama.FizikselDepolamaVeriYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo,
   ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 begin
 
@@ -108,7 +112,7 @@ end;
 {==============================================================================
   sýra numarasýna göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function MantiksalSurucuAl(ASiraNo: TISayi4): PMantiksalDepolama;
+function TDepolama.MantiksalSurucuAl(ASiraNo: TISayi4): PMantiksalDepolama;
 var
   MD: TMantiksalDepolama;
   SiraNo, i: TISayi4;
@@ -134,7 +138,7 @@ end;
 {==============================================================================
   aygýt adýna (örnek: disk2) göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function MantiksalSurucuAl(AAygitAdi: string): PMantiksalDepolama;
+function TDepolama.MantiksalSurucuAl(AAygitAdi: string): PMantiksalDepolama;
 var
   MD: PMantiksalDepolama;
   i: TISayi4;
@@ -153,7 +157,7 @@ end;
 {==============================================================================
   kimlik deðerine göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function MantiksalSurucuAl2(AKimlik: TKimlik): PMantiksalDepolama;
+function TDepolama.MantiksalSurucuAl2(AKimlik: TKimlik): PMantiksalDepolama;
 var
   MD: TMantiksalDepolama;
   i: TISayi4;
@@ -172,7 +176,7 @@ end;
 {==============================================================================
   mantýksal depolama aygýtýndan veri okur
  ==============================================================================}
-function MantiksalDepolamaVeriOku(AMantiksalDepolama: PMantiksalDepolama; ASektorNo,
+function TDepolama.MantiksalDepolamaVeriOku(AMantiksalDepolama: PMantiksalDepolama; ASektorNo,
   ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 begin
 

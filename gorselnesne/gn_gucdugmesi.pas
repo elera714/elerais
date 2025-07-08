@@ -167,7 +167,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := GucDugmesi^.Kimlik;
+  else Result := GucDugmesi^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -242,7 +242,7 @@ var
   GucDugmesi: PGucDugmesi;
 begin
 
-  GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(Kimlik));
+  GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(FTGN.Kimlik));
   if(GucDugmesi = nil) then Exit;
 
   inherited Hizala;
@@ -257,7 +257,7 @@ var
   CizimAlan: TAlan;
 begin
 
-  GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(Kimlik));
+  GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(FTGN.Kimlik));
   if(GucDugmesi= nil) then Exit;
 
   // düğme başlığı
@@ -337,7 +337,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := GucDugmesi^.FFareImlecTipi;
+  GecerliFareGostegeTipi := GucDugmesi^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -350,7 +350,7 @@ var
 begin
 
   // kimlik değerinden nesneyi al
-  GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(Kimlik));
+  GucDugmesi := PGucDugmesi(GucDugmesi^.NesneAl(FTGN.Kimlik));
   if(GucDugmesi = nil) then Exit;
 
   GucDugmesi^.FDolguluCizim := ADolguluCizim;

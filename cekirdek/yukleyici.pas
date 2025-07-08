@@ -27,7 +27,7 @@ implementation
 uses yonetim, gdt, idt, irq, pic, aygityonetimi, pci, src_klavye, genel, gorev,
   gn_islevler, dosya, sistemmesaj, bolumleme, islemci, paylasim, usb, zamanlayici,
   ag, src_vesa20, src_com, src_sb, bmp, acpi, k_giysi, giysi_mac, giysi_normal,
-  olayyonetim;
+  olayyonetim, depolama;
 
 {==============================================================================
   çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
@@ -109,6 +109,8 @@ begin
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ USB aygýtlarý yükleniyor...', []);
   usb.Yukle;
+
+  GDepolama := TDepolama.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Depolama aygýtlarý yükleniyor...', []);
   DepolamaAygitlariniYukle;

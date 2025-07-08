@@ -254,7 +254,7 @@ begin
       end;
 
       // nesneye yönlendirilecek parametreleri hazýrla
-      Olay.Kimlik := GN^.Kimlik;
+      Olay.Kimlik := GN^.FTGN.Kimlik;
       if(Olay.Olay <> FO_KAYDIRMA) then
         Olay.Deger1 := Konum.Sol;
       Olay.Deger2 := Konum.Ust;

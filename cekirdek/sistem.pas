@@ -85,12 +85,12 @@ begin
   if(Sonuc = HATA_YOK) then
   begin
 
-    CalisanPSayisi := CalisanProgramSayisiniAl(GAktifMasaustu^.Kimlik);
+    CalisanPSayisi := CalisanProgramSayisiniAl(GAktifMasaustu^.FTGN.Kimlik);
 
     for i := 0 to CalisanPSayisi - 1 do
     begin
 
-      P := CalisanProgramBilgisiAl(i, GAktifMasaustu^.Kimlik);
+      P := CalisanProgramBilgisiAl(i, GAktifMasaustu^.FTGN.Kimlik);
       j := Length(P.DosyaAdi);
       if(P.DosyaAdi[j] = 'c') then
       begin

@@ -108,7 +108,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := IslemGostergesi^.Kimlik;
+  else Result := IslemGostergesi^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -176,7 +176,7 @@ var
   IslemGostergesi: PIslemGostergesi;
 begin
 
-  IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneAl(Kimlik));
+  IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneAl(FTGN.Kimlik));
   if(IslemGostergesi = nil) then Exit;
 
   inherited Hizala;
@@ -194,7 +194,7 @@ var
   i: TISayi4;
 begin
 
-  IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneAl(Kimlik));
+  IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneAl(FTGN.Kimlik));
   if(IslemGostergesi = nil) then Exit;
 
   // giriş kutusunun çizim alan koordinatlarını al

@@ -175,7 +175,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Dugme^.Kimlik;
+  else Result := Dugme^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -251,7 +251,7 @@ var
   Dugme: PDugme = nil;
 begin
 
-  Dugme := PDugme(Dugme^.NesneAl(Kimlik));
+  Dugme := PDugme(Dugme^.NesneAl(FTGN.Kimlik));
   if(Dugme = nil) then Exit;
 
   inherited Hizala;
@@ -266,7 +266,7 @@ var
   CizimAlan: TAlan;
 begin
 
-  Dugme := PDugme(Dugme^.NesneAl(Kimlik));
+  Dugme := PDugme(Dugme^.NesneAl(FTGN.Kimlik));
   if(Dugme = nil) then Exit;
 
   // düðme baþlýðý
@@ -386,7 +386,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Dugme^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Dugme^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -399,7 +399,7 @@ var
 begin
 
   // kimlik deðerinden nesneyi al
-  Dugme := PDugme(Dugme^.NesneAl(Kimlik));
+  Dugme := PDugme(Dugme^.NesneAl(FTGN.Kimlik));
   if(Dugme = nil) then Exit;
 
   Dugme^.FDolguluCizim := ADolguluCizim;

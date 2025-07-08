@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 01/07/2025
+  Güncelleme Tarihi: 07/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -92,6 +92,9 @@ type
     FAktifPencere: PPencere;              // görevin aktif penceresi
   public
     G0: TGorev0;
+
+    FCalismaSuresiMS,                     // görevin çalýþacaðý süre (irq0 tick sayýsý)
+    FCalismaSuresiSayacMS: TSayi4;        // görevin çalýþacaðý sürenin sayaç deðeri
 
     FOlayBellekAdresi: POlay;             // olaylarýn yerleþtirileceði bellek bölgesi
     FOlaySayisi: TSayi4;                  // olay sayacý
@@ -193,30 +196,30 @@ end;
  ==============================================================================}
 procedure TGorevler.Yukle;
 var
-  Gorev: PGorev;
+  G: PGorev;
   i: TISayi4;
 begin
 
   // görev bilgilerinin yerleþtirilmesi için bellek ayýr
-  Gorev := GetMem(SizeOf(TGorev) * USTSINIR_GOREVSAYISI);
+  G := GetMem(SizeOf(TGorev) * USTSINIR_GOREVSAYISI);
 
   // bellek giriþlerini görev yapýlarýyla eþleþtir
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
-    GorevListesi[i] := Gorev;
+    GorevListesi[i] := G;
 
     // görevi boþ olarak belirle
-    Gorev^.FGorevDurum := gdBos;
-    Gorev^.FDosyaSonIslemDurum := HATA_DOSYA_ISLEM_BASARILI;
-    Gorev^.FGorevKimlik := i;
-    Gorev^.FAktifMasaustu := nil;
-    Gorev^.FAktifPencere := nil;
+    G^.FGorevDurum := gdBos;
+    G^.FDosyaSonIslemDurum := HATA_DOSYA_ISLEM_BASARILI;
+    G^.FGorevKimlik := i;
+    G^.FAktifMasaustu := nil;
+    G^.FAktifPencere := nil;
 
-    Gorev^.G0 := TGorev0.Create;
+    G^.G0 := TGorev0.Create;
     //Gorev^.G0.FDeger0 := 0;
 
-    Inc(Gorev);
+    Inc(G);
   end;
 end;
 
@@ -372,8 +375,15 @@ begin
     // görev çalýþma seviye numarasý - öncelik derecesi
     Gorev^.G0.FSeviyeNo := ASeviyeNo;
 
+    // görev deðiþim sayacýný sýfýrla
+    Gorev^.G0.FGorevSayaci := 0;
+
     // bellek baþlangýç adresi
     Gorev^.G0.FBellekBaslangicAdresi := TSayi4(DosyaBellek);
+
+    // görev çalýþma süreleri
+    Gorev^.FCalismaSuresiMS := 2;
+    Gorev^.FCalismaSuresiSayacMS := 2;
 
     // bellek miktarý
     Gorev^.FBellekUzunlugu := ProgramBellekU;
@@ -389,9 +399,6 @@ begin
     // dosyanýn çalýþtýrýlmasý için seçicileri oluþtur
     GGorevler.SecicileriOlustur(Gorev^.FGorevKimlik, Gorev^.FBellekUzunlugu,
       Gorev^.G0.FBellekBaslangicAdresi, Gorev^.FKodBaslangicAdres, Gorev^.FYiginBaslangicAdres);
-
-    // görev deðiþim sayacýný sýfýrla
-    Gorev^.G0.FGorevSayaci := 0;
 
     // görev olay sayacýný sýfýrla
     Gorev^.FOlaySayisi := 0;
@@ -836,7 +843,7 @@ begin
 
       if(AMasaustuKimlik = -1) then
         Inc(Result)
-      else if(GorevListesi[i]^.AktifMasaustu^.Kimlik = AMasaustuKimlik) then
+      else if(GorevListesi[i]^.AktifMasaustu^.FTGN.Kimlik = AMasaustuKimlik) then
         Inc(Result);
     end;
   end;
@@ -879,7 +886,7 @@ begin
 
       if(AMasaustuKimlik = -1) then
         Inc(ArananGorev)
-      else if(GorevListesi[i]^.AktifMasaustu^.Kimlik = AMasaustuKimlik) then
+      else if(GorevListesi[i]^.AktifMasaustu^.FTGN.Kimlik = AMasaustuKimlik) then
         Inc(ArananGorev);
     end;
 
@@ -887,7 +894,7 @@ begin
     if(AGorevSiraNo = ArananGorev) then
     begin
 
-      Result.PencereKimlik := GorevListesi[i]^.FAktifPencere^.Kimlik;
+      Result.PencereKimlik := GorevListesi[i]^.FAktifPencere^.FTGN.Kimlik;
       Result.GorevKimlik := GorevListesi[i]^.GorevKimlik;
       Result.PencereTipi := GorevListesi[i]^.FAktifPencere^.FPencereTipi;
       Result.PencereDurum := GorevListesi[i]^.FAktifPencere^.FPencereDurum;
@@ -1095,6 +1102,8 @@ begin
     GorevListesi[i]^.G0.FSeviyeNo := ASeviyeNo;
     GorevListesi[i]^.G0.FGorevSayaci := 0;
     GorevListesi[i]^.G0.FBellekBaslangicAdresi := TSayi4(@AIslev);
+    GorevListesi[i]^.FCalismaSuresiMS := 20;
+    GorevListesi[i]^.FCalismaSuresiSayacMS := 20;
     GorevListesi[i]^.BellekUzunlugu := $FFFFFFFF;
     GorevListesi[i]^.FOlaySayisi := 0;
     GorevListesi[i]^.OlayBellekAdresi := nil;

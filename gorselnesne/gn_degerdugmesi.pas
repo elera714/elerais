@@ -85,7 +85,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := DegerDugmesi^.Kimlik;
+  else Result := DegerDugmesi^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -131,7 +131,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(Kimlik));
+  DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(FTGN.Kimlik));
   if(DegerDugmesi = nil) then Exit;
 
   DegerDugmesi^.FArtirmaDugmesi^.YokEt;
@@ -149,7 +149,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(Kimlik));
+  DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(FTGN.Kimlik));
   if(DegerDugmesi = nil) then Exit;
 
   DegerDugmesi^.FArtirmaDugmesi^.Goster;
@@ -175,7 +175,7 @@ var
   DegerDugmesi: PDegerDugmesi;
 begin
 
-  DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(Kimlik));
+  DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(FTGN.Kimlik));
   if(DegerDugmesi = nil) then Exit;
 
   inherited Hizala;
@@ -189,7 +189,7 @@ var
   DegerDugmesi: PDegerDugmesi;
 begin
 
-  DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(Kimlik));
+  DegerDugmesi := PDegerDugmesi(DegerDugmesi^.NesneAl(FTGN.Kimlik));
   if(DegerDugmesi = nil) then Exit;
 
   inherited Ciz;
@@ -210,7 +210,7 @@ begin
   if(DegerDugmesi = nil) then Exit;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := DegerDugmesi^.FFareImlecTipi;
+  GecerliFareGostegeTipi := DegerDugmesi^.FTGN.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -230,21 +230,21 @@ begin
   if(AOlay.Olay = FO_TIKLAMA) then
   begin
 
-    if(AOlay.Kimlik = DegerDugmesi^.FArtirmaDugmesi^.Kimlik) then
+    if(AOlay.Kimlik = DegerDugmesi^.FArtirmaDugmesi^.FTGN.Kimlik) then
     begin
 
       // nesnenin olay çaðrý adresini çaðýr veya uygulamaya mesaj gönder
-      AOlay.Kimlik := DegerDugmesi^.Kimlik;
+      AOlay.Kimlik := DegerDugmesi^.FTGN.Kimlik;
       AOlay.Deger1 := 0;
       if not(DegerDugmesi^.OlayYonlendirmeAdresi = nil) then
         DegerDugmesi^.OlayYonlendirmeAdresi(DegerDugmesi, AOlay)
       else GGorevler.OlayEkle(DegerDugmesi^.GorevKimlik, AOlay);
     end
-    else if(AOlay.Kimlik = DegerDugmesi^.FEksiltmeDugmesi^.Kimlik) then
+    else if(AOlay.Kimlik = DegerDugmesi^.FEksiltmeDugmesi^.FTGN.Kimlik) then
     begin
 
       // nesnenin olay çaðrý adresini çaðýr veya uygulamaya mesaj gönder
-      AOlay.Kimlik := DegerDugmesi^.Kimlik;
+      AOlay.Kimlik := DegerDugmesi^.FTGN.Kimlik;
       AOlay.Deger1 := 1;
       if not(DegerDugmesi^.OlayYonlendirmeAdresi = nil) then
         DegerDugmesi^.OlayYonlendirmeAdresi(DegerDugmesi, AOlay)

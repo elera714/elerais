@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-07-05T09:53:10Z">
+  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-07-11T20:08:30Z">
     <MediaRegistry>
       <HardDisks>
         <HardDisk uuid="{769293a2-a8b3-4206-ae16-497c497b6f33}" location="elera.vdi" format="VDI" type="Normal"/>
@@ -16,7 +16,7 @@
     </MediaRegistry>
     <ExtraData>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="861,98,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="867,100,1024,808"/>
     </ExtraData>
     <Hardware>
       <CPU>
@@ -56,7 +56,7 @@
       <AudioAdapter useDefault="true" driver="WAS" enabledOut="true"/>
       <Clipboard/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1751709169047851500" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1752264499653320300" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="IDE" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">

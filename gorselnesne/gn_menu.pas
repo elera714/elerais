@@ -131,7 +131,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Menu^.Kimlik;
+  else Result := Menu^.FTGN.Kimlik;
 end;
 
 {==============================================================================
@@ -198,7 +198,7 @@ var
   Menu: PMenu = nil;
 begin
 
-  Menu := PMenu(Menu^.NesneAl(Kimlik));
+  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
   if(Menu = nil) then Exit;
 
   if(Menu^.FMenuBaslikListesi <> nil) then Menu^.FMenuBaslikListesi^.YokEt;
@@ -218,7 +218,7 @@ begin
 
   inherited Goster;
 
-  Menu := PMenu(Menu^.NesneAl(Kimlik));
+  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
   if(Menu = nil) then Exit;
 
   GAktifMenu := Menu;
@@ -227,7 +227,7 @@ begin
   Menu^.FSeciliSiraNo := -1;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := Menu^.Kimlik;
+  Olay.Kimlik := Menu^.FTGN.Kimlik;
   Olay.Olay := CO_MENUACILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
@@ -249,11 +249,11 @@ begin
 
   GAktifMenu := nil;
 
-  Menu := PMenu(Menu^.NesneAl(Kimlik));
+  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
   if(Menu = nil) then Exit;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := Menu^.Kimlik;
+  Olay.Kimlik := Menu^.FTGN.Kimlik;
   Olay.Olay := CO_MENUKAPATILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
@@ -279,7 +279,7 @@ var
   Menu: PMenu = nil;
 begin
 
-  Menu := PMenu(Menu^.NesneAl(Kimlik));
+  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
   if(Menu = nil) then Exit;
 
   Menu^.FCizimAlan.Sol := 0;
@@ -315,7 +315,7 @@ begin
 
   inherited Ciz;
 
-  Menu := PMenu(Menu^.NesneAl(Kimlik));
+  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
   if(Menu = nil) then Exit;
 
   // menü nesnesinin çizim alan koordinatlarını al
@@ -432,7 +432,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Menu^.FFareImlecTipi;
+  GecerliFareGostegeTipi := Menu^.FTGN.FareImlecTipi;
 end;
 
 end.
