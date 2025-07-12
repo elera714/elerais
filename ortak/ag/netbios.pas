@@ -14,7 +14,7 @@ unit netbios;
 
 interface
 
-uses udp, iletisim, paylasim;
+uses udp, baglanti, paylasim;
 
 type
   PNetBiosServis = ^TNetBiosServis;
@@ -47,7 +47,7 @@ var
   PB1: PByte;
   PB2: PSayi2;
   B1, B2, B3: TSayi1;
-  Baglanti: PBaglanti;
+  B: PBaglanti;
   p: Isaretci;
   VeriSN, VeriUzunlukSN,
   VeriBaslangic: TSayi4;
@@ -219,17 +219,17 @@ begin
     Tasi2(@Veri[0], p, VeriSN);
 
     IPAdresi := IP_KarakterKatari(AIPPaket^.KaynakIP);
-    Baglanti := GBaglanti^.Olustur2(ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
+    B := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
       ntohs(AUDPBaslik^.HedefPort));
-    if not(Baglanti = nil) then
+    if not(B = nil) then
     begin
 
-      if(Baglanti^.Baglan(btYayin) <> -1) then
+      if(GBaglantilar.Baglan(B^.Kimlik, btYayin) <> -1) then
       begin
 
-        Baglanti^.Yaz(NB2, VeriSN + 12);
+        GBaglantilar.Yaz(B^.Kimlik, NB2, VeriSN + 12);
 
-        Baglanti^.BaglantiyiKes(Baglanti^.FKimlik);
+        GBaglantilar.BaglantiyiKes(B^.Kimlik);
       end;
     end;
 

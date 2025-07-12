@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 11/07/2025
+  Güncelleme Tarihi: 12/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -38,9 +38,6 @@ type
 
 type
   PSistemMesaj = ^TSistemMesaj;
-
-  { TSistemMesaj }
-
   TSistemMesaj = object
   private
     FServisCalisiyor: Boolean;
@@ -81,22 +78,6 @@ implementation
 
 uses genel, cmos, donusum;
 
-function TSistemMesaj.MesajAl(ASiraNo: TSayi4): PMesajKayit;
-begin
-
-  // istenen mesajın belirtilen aralıkta olup olmadığını kontrol et
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_MESAJ) then
-    Result := FMesajListesi[ASiraNo]
-  else Result := nil;
-end;
-
-procedure TSistemMesaj.MesajYaz(ASiraNo: TSayi4; AMesajKayit: PMesajKayit);
-begin
-
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_MESAJ) then
-    FMesajListesi[ASiraNo] := AMesajKayit;
-end;
-
 {==============================================================================
   oluşturulacak mesajların ana yükleme işlevlerini içerir
  ==============================================================================}
@@ -105,7 +86,7 @@ var
   i: TSayi4;
 begin
 
-  // sistem mesajları için bellekte yer oluştur
+  // sistem mesaj yapılarını ilk değerlerle yükle
   for i := 0 to USTSINIR_MESAJ - 1 do Mesaj[i] := nil;
 
   // mesaj sıra numarası
@@ -116,6 +97,23 @@ begin
 
   // mesaj servisini başlat
   ServisCalisiyor := True;
+end;
+
+function TSistemMesaj.MesajAl(ASiraNo: TSayi4): PMesajKayit;
+begin
+
+  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_MESAJ) then
+    Result := FMesajListesi[ASiraNo]
+  else Result := nil;
+end;
+
+procedure TSistemMesaj.MesajYaz(ASiraNo: TSayi4; AMesajKayit: PMesajKayit);
+begin
+
+  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_MESAJ) then
+    FMesajListesi[ASiraNo] := AMesajKayit;
 end;
 
 {==============================================================================
@@ -142,8 +140,10 @@ begin
   if(i >= USTSINIR_MESAJ) then
   begin
 
+    // ilk mesajı sil
     FreeMem(Mesaj[0]);
 
+    // mesajları bir yukarı kaydır
     for j := 1 to USTSINIR_MESAJ - 1 do Mesaj[j - 1] := Mesaj[j];
 
     Dec(i);
@@ -151,8 +151,10 @@ begin
     Mesaj[i] := nil;
   end;
 
+  // yeni mesaj için bellekte yer ayır
   M := PMesajKayit(GetMem(SizeOf(TMesajKayit)));
 
+  // mesajın adresini mesaj listesine kaydet
   Mesaj[i] := M;
 
   // mesaj tipi

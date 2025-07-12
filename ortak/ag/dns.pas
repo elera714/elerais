@@ -14,7 +14,7 @@ unit dns;
 
 interface
 
-uses paylasim, iletisim, udp;
+uses paylasim, baglanti, udp;
 
 const
   USTSINIR_DNSBAGLANTI  = 16;
@@ -193,7 +193,7 @@ begin
   begin
 
 
-    DNS^.FYerelPort := YerelPortAl;
+    DNS^.FYerelPort := GBaglantilar.YerelPortAl;
     DNS^.FBellekAdresi := GetMem(4096);
     DNS^.FYanitUzunluk := 0;
   end;
@@ -273,14 +273,14 @@ begin
     B2^ := ntohs(TSayi2(Class_IN));
 
     IPAdresi := IP_KarakterKatari(GAgBilgisi.DNSSunucusu);
-    DNS^.FBaglanti := DNS^.FBaglanti^.Olustur2(ptUDP, IPAdresi, DNS^.FYerelPort, DNS_PORTNO);
+    DNS^.FBaglanti := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, DNS^.FYerelPort, DNS_PORTNO);
     if not(DNS^.FBaglanti = nil) then
     begin
 
-      if(DNS^.FBaglanti^.Baglan(btYayin) <> -1) then
+      if(GBaglantilar.Baglan(DNS^.FKimlik, btYayin) <> -1) then
       begin
 
-        DNS^.FBaglanti^.Yaz(@DNSPaket[0], 12 + ToplamUzunluk + 4);
+        GBaglantilar.Yaz(DNS^.FKimlik, @DNSPaket[0], 12 + ToplamUzunluk + 4);
 
         DNS^.FBaglantiDurum := ddSorgulaniyor;
       end;
@@ -340,7 +340,7 @@ begin
   DNS := GDNSBaglantilari[ADNSKimlik];
 
   DNS^.FBaglantiDurum := ddOlusturuldu;
-  DNS^.FBaglanti^.BaglantiyiKes(DNS^.FKimlik);
+  GBaglantilar.BaglantiyiKes(DNS^.FKimlik);
 
   FreeMem(DNS^.FBellekAdresi, 4096);
 end;

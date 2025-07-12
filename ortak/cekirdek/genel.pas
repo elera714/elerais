@@ -15,7 +15,7 @@ unit genel;
 interface
 
 uses gercekbellek, src_vesa20, src_ps2, gorev, zamanlayici, paylasim, olayyonetim,
-  gorselnesne, sistemmesaj, gn_masaustu, iletisim, n_yazilistesi, n_sayilistesi,
+  gorselnesne, sistemmesaj, gn_masaustu, baglanti, n_yazilistesi, n_sayilistesi,
   dns, depolama;
 
 const
@@ -28,11 +28,11 @@ var
   GFareSurucusu: TFareSurucusu;
   GZamanlayici: TZamanlayici;
   GSistemMesaj: TSistemMesaj;
+  GBaglantilar: TBaglantilar;
   GOlayYonetim: TOlayYonetim;
   GIslemciBilgisi: TIslemciBilgisi;
   GAktifMasaustu: PMasaustu;
   GAktifMenu: PGorselNesne;             // PMenu veya PAcilirMenu
-  GBaglanti: PBaglanti;                 // dhcp.pas dosyası tarafından kullanılmaktadır. (iptal edilecek)
 
   // 24 x 24 sistemler. yukleyici.pas dosyasından yükleme işlemi yapılır
   GSistemResimler,
@@ -45,7 +45,6 @@ var
   GGorevler: TGorevler;
 
   GGorselNesneListesi: array[0..USTSINIR_GORSELNESNE - 1] of PGorselNesne;
-  GAgIletisimListesi: array[0..USTSINIR_AGILETISIM - 1] of PBaglanti;
   GDNSBaglantilari: array[0..USTSINIR_DNSBAGLANTI - 1] of PDNS;
   GMasaustuListesi: array[0..USTSINIR_MASAUSTU - 1] of PMasaustu = (nil, nil, nil, nil);
 

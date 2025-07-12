@@ -55,16 +55,18 @@
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="68"/>
-        <CursorPos X="8" Y="77"/>
+        <TopLine Value="127"/>
+        <CursorPos X="5" Y="112"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\rtl_uygulama\linux\n_dns.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
+        <TopLine Value="196"/>
+        <CursorPos X="3" Y="221"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit4>

@@ -20,7 +20,7 @@ interface
     Big Endian:   78 56 34 12
     Litle Endian: 12 34 56 78
  ==============================================================================}
-uses paylasim, aygityonetimi, iletisim;
+uses paylasim, aygityonetimi, baglanti;
 
 const
   ETHERNET_BASLIKU = TSayi1(14);
@@ -46,6 +46,8 @@ uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, islevler, genel
   að ilk deðer yüklemelerini gerçekleþtirir
  ==============================================================================}
 procedure Yukle;
+var
+  Baglanti: PBaglantilar;
 begin
 
   // sistemin çalýþtýðý bilgisayarýn alan adý - (domain name)
@@ -55,7 +57,7 @@ begin
   {$ELSE}
   GTamBilgisayarAdi := GBilgisayarAdi;
   { TOOD - True olduðunda að baðlantýsý yoksa hata veriyor }
-  IPAdresiniOtomatikAl := False;
+  IPAdresiniOtomatikAl := True;
   {$ENDIF}
 
   // að bilgileri öndeðerlerle yükleniyor
@@ -69,7 +71,7 @@ begin
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Baðlantý yapýlarý ilk deðerlerle yükleniyor...', []);
-    iletisim.Yukle;
+    GBaglantilar.Yukle;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ARP protokolü yükleniyor...', []);
     arp.Yukle;
@@ -177,9 +179,9 @@ begin
 
       Protokol := htons(EthernetPaket^.PaketTipi);
 
-      SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthernetPaket^.KaynakMACAdres);
+      {SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthernetPaket^.KaynakMACAdres);
       SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.HedefMACAdres: ', EthernetPaket^.HedefMACAdres);
-      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'EthernetPaket^.PaketTipi: %.4x', [EthernetPaket^.PaketTipi]);
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'EthernetPaket^.PaketTipi: %.4x', [EthernetPaket^.PaketTipi]);}
 
       // ******* protokollerin iþlenmesi *******
 

@@ -6,7 +6,7 @@
   Dosya Adı: kesme34.pas
   Dosya İşlevi: uygulamaların kesme ($34) isteklerini yönlendirir
 
-  Güncelleme Tarihi: 10/08/2020
+  Güncelleme Tarihi: 12/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,7 +27,7 @@ implementation
 
 uses k_ekran, k_gorselnesne, k_olay, k_dosya, k_yazim, k_sayac, k_cizim, k_sistem,
   k_zamanlayici, k_sistemmesaj, k_bellek, k_gorev, k_pci, k_ag, k_depolama, k_fare,
-  k_iletisim, k_diger, k_giysi, gorev;
+  k_baglanti, k_diger, k_giysi, gorev;
 
 var
   UygulamaYiginAdresi: Isaretci;
@@ -95,7 +95,7 @@ asm
   dd  {09} ZamanlayiciCagriIslevleri, SistemMesajCagriIslevleri, BellekCagriIslevleri,
   dd  {12} GorevCagriIslevleri, PCICagriIslevleri, AgCagriIslevleri
   dd  {15} DepolamaCagriIslevleri, FareCagriIslevleri, GiysiCagriIslevleri,
-  dd  {18} AgIletisimCagriIslevleri, DigerCagriIslevleri
+  dd  {18} AgBaglantiCagriIslevleri, DigerCagriIslevleri
 
 @@islem_tamam:
 

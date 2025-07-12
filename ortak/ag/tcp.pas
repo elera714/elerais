@@ -16,7 +16,7 @@ unit tcp;
 
 interface
 
-uses paylasim, iletisim;
+uses paylasim, baglanti;
 
 const
   TCP_BASLIK_U      = 20;
@@ -52,7 +52,7 @@ uses genel, donusum, ip, islevler, sistemmesaj;
 
 procedure TCPPaketleriniIsle(AIPPaket: PIPPaket);
 var
-  Bag: PBaglanti;
+  B: PBaglanti;
   TCPPaket: PTCPPaket;
   YerelPort, UzakPort,
   U: TSayi2;
@@ -71,8 +71,8 @@ begin
   SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Bayrak: %d', [TCPPaket^.Bayrak]);
   {$ENDIF}
 
-  Bag := Bag^.TCPBaglantiAl(UzakPort, YerelPort);
-  if(Bag = nil) then
+  B := GBaglantilar.TCPBaglantiAl(UzakPort, YerelPort);
+  if(B = nil) then
   begin
 
     SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'TCP: eþleþen uzak port bulunamadý: %d', [YerelPort]);
@@ -81,7 +81,7 @@ begin
   else
   begin
 
-    if(Bag^.FBaglantiDurum = bdBaglaniyor) then
+    if(B^.BaglantiDurum = bdBaglaniyor) then
     begin
 
       if(TCPPaket^.Bayrak = (TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL)) then
@@ -92,22 +92,22 @@ begin
         //if(i = Bag^.FSiraNo + 1) then
         begin
 
-          Bag^.FSiraNo := i;
+          B^.SiraNo := i;
 
           // gelen SiraNo deðerini 1 artýrarak gönder
           i := ntohs(TCPPaket^.SiraNo);
-          Bag^.FOnayNo := i + 1;
+          B^.OnayNo := i + 1;
 
           //Bag^.FPencereU := $100;
 
           // baðlantýnýn gerçekleþtiðine dair onay deðerini gönder
-          TCPPaketGonder(Bag, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+          TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
 
-          Bag^.FBaglantiDurum := bdBaglandi;
+          B^.BaglantiDurum := bdBaglandi;
         end;
       end;
     end
-    else if(Bag^.FBaglantiDurum = bdBaglandi) then
+    else if(B^.BaglantiDurum = bdBaglandi) then
     begin
 
       // gönderilen verinin kabul edildiðinin teyidi
@@ -115,52 +115,52 @@ begin
       begin
 
         i := ntohs(TCPPaket^.OnayNo);
-        Bag^.FSiraNo := i;
+        B^.SiraNo := i;
 
         i := ntohs(TCPPaket^.SiraNo);
-        Bag^.FOnayNo := i;
+        B^.OnayNo := i;
 
         U := ntohs(AIPPaket^.ToplamUzunluk) - 40;
-        if(U > 0) then Bag^.BellegeEkle(Bag, @TCPPaket^.Secenekler, U);
+        if(U > 0) then GBaglantilar.BellegeEkle(B, @TCPPaket^.Secenekler, U);
       end
       // alýnan veri
       else if(TCPPaket^.Bayrak = TCP_BAYRAK_GONDER or TCP_BAYRAK_KABUL) then
       begin
 
         i := ntohs(TCPPaket^.OnayNo);
-        Bag^.FSiraNo := i;
+        B^.SiraNo := i;
 
         i := ntohs(TCPPaket^.SiraNo);
         U := ntohs(AIPPaket^.ToplamUzunluk) - 40;
-        Bag^.FOnayNo := i + U;
+        B^.OnayNo := i + U;
 
-        if(U > 0) then Bag^.BellegeEkle(Bag, @TCPPaket^.Secenekler, U);
+        if(U > 0) then GBaglantilar.BellegeEkle(B, @TCPPaket^.Secenekler, U);
 
-        TCPPaketGonder(Bag, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+        TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
       end;
     end
-    else if(Bag^.FBaglantiDurum = bdBaglandi) or (Bag^.FBaglantiDurum = bdKapaniyor1) then
+    else if(B^.BaglantiDurum = bdBaglandi) or (B^.BaglantiDurum = bdKapaniyor1) then
     begin
 
       if(TCPPaket^.Bayrak = TCP_BAYRAK_SON or TCP_BAYRAK_KABUL) then
       begin
 
         i := ntohs(TCPPaket^.OnayNo);
-        Bag^.FSiraNo := i;
+        B^.SiraNo := i;
 
         i := ntohs(TCPPaket^.SiraNo);
-        Bag^.FOnayNo := i + 1;
+        B^.OnayNo := i + 1;
 
-        TCPPaketGonder(Bag, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+        TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
 
-        Bag^.FProtokolTipi := ptBilinmiyor;
-        Bag^.FHedefIPAdres := IPAdres0;
-        Bag^.FYerelPort := 0;
-        Bag^.FUzakPort := 0;
+        B^.ProtokolTipi := ptBilinmiyor;
+        B^.HedefIPAdres := IPAdres0;
+        B^.YerelPort := 0;
+        B^.UzakPort := 0;
 
-        GGercekBellek.YokEt(Bag^.FBellek, Bag^.FBellekUzunlugu);
-        Bag^.FBagli := False;
-        Bag^.FBaglantiDurum := bdYok;
+        GGercekBellek.YokEt(B^.Bellek, B^.BellekUzunlugu);
+        B^.Bagli := False;
+        B^.BaglantiDurum := bdYok;
       end;
     end;
   end;
@@ -180,7 +180,7 @@ begin
 
   // tcp için ek baþlýk hesaplanýyor
   EkBaslik.KaynakIP := AKaynakIPAdres;
-  EkBaslik.HedefIP := ABaglanti^.FHedefIPAdres;
+  EkBaslik.HedefIP := ABaglanti^.HedefIPAdres;
   EkBaslik.Sifir := 0;
   EkBaslik.Protokol := PROTOKOL_TCP;
   EkBaslik.Uzunluk := htons(TSayi2(AVeriU + TCP_BASLIK_U));
@@ -189,13 +189,13 @@ begin
   if(AVeriSonEk) then
     BaslikUzunlugu := (((20 + AVeriU) shr 2) shl 4)
   else BaslikUzunlugu := ((20 shr 2) shl 4);
-  TCPPaket^.YerelPort := htons(ABaglanti^.FYerelPort);
-  TCPPaket^.UzakPort := htons(ABaglanti^.FUzakPort);
-  TCPPaket^.SiraNo := htons(ABaglanti^.FSiraNo);
-  TCPPaket^.OnayNo := htons(ABaglanti^.FOnayNo);
+  TCPPaket^.YerelPort := htons(ABaglanti^.YerelPort);
+  TCPPaket^.UzakPort := htons(ABaglanti^.UzakPort);
+  TCPPaket^.SiraNo := htons(ABaglanti^.SiraNo);
+  TCPPaket^.OnayNo := htons(ABaglanti^.OnayNo);
   TCPPaket^.BaslikU := BaslikUzunlugu;     // üst 4 bit = BaslikUzunlugu * 4 = baþlýk uzunluðu;
   TCPPaket^.Bayrak := ABayrak;
-  TCPPaket^.Pencere := htons(ABaglanti^.FPencereU);
+  TCPPaket^.Pencere := htons(ABaglanti^.PencereU);
   TCPPaket^.SaglamaToplami := 0;
   TCPPaket^.AcilIsaretci := 0;
   if(AVeriU > 0) then
@@ -209,7 +209,7 @@ begin
     @EkBaslik, TCP_EKBASLIK_U);
   TCPPaket^.SaglamaToplami := SaglamaToplami;
 
-  IPPaketGonder(ABaglanti^.FHedefMACAdres, AKaynakIPAdres, ABaglanti^.FHedefIPAdres,
+  IPPaketGonder(ABaglanti^.HedefMACAdres, AKaynakIPAdres, ABaglanti^.HedefIPAdres,
     ptTCP, $4000, TCPPaket, TCP_BASLIK_U + AVeriU);
 
   GGercekBellek.YokEt(TCPPaket, TCP_BASLIK_U + AVeriU);

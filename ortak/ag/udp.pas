@@ -38,7 +38,7 @@ procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 
 implementation
 
-uses dhcp_s, dhcp_i, donusum, sistemmesaj, dhcp, iletisim, dns, netbios,
+uses dhcp_s, dhcp_i, donusum, sistemmesaj, dhcp, baglanti, dns, netbios,
   genel, islevler;
 
 {==============================================================================
@@ -46,7 +46,7 @@ uses dhcp_s, dhcp_i, donusum, sistemmesaj, dhcp, iletisim, dns, netbios,
  ==============================================================================}
 procedure UDPPaketleriniIsle(AIPPaket: PIPPaket);
 var
-  Baglanti: PBaglanti;
+  B: PBaglanti;
   UDPPaket: PUDPPaket;
   KaynakPort, HedefPort: TSayi2;
   U2: TSayi2;
@@ -85,8 +85,8 @@ begin
   else
   begin
 
-    Baglanti := Baglanti^.UDPBaglantiAl(HedefPort);
-    if(Baglanti = nil) then
+    B := GBaglantilar.UDPBaglantiAl(HedefPort);
+    if(B = nil) then
     begin
 
       SISTEM_MESAJ(mtUyari, RENK_MAVI, 'UDP.PAS: eþleþen UDP portu bulunamadý: %d', [HedefPort]);
@@ -101,7 +101,7 @@ begin
       //SISTEM_MESAJ(RENK_MOR, 'UDP Veri Uzunluðu: %d', [U2]);
 
       // 8 byte = udp paket baþlýk uzunluðu
-      if(U2 > 8) then Baglanti^.BellegeEkle(Baglanti, @UDPPaket^.Veri, U2 - 8);
+      if(U2 > 8) then GBaglantilar.BellegeEkle(B, @UDPPaket^.Veri, U2 - 8);
     end;
   end;
 end;

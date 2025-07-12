@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-07-11T20:08:30Z">
+  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-07-12T15:05:33Z">
     <MediaRegistry>
       <HardDisks>
         <HardDisk uuid="{769293a2-a8b3-4206-ae16-497c497b6f33}" location="elera.vdi" format="VDI" type="Normal"/>
@@ -44,7 +44,7 @@
           </DisabledModes>
           <BridgedInterface name="Realtek PCIe GBE Family Controller"/>
         </Adapter>
-        <Adapter slot="1" enabled="true" MACAddress="0800ABCDEF02" type="82540EM">
+        <Adapter slot="1" MACAddress="0800ABCDEF02" type="82540EM">
           <DisabledModes>
             <NAT localhost-reachable="true"/>
             <InternalNetwork name="intnet"/>
@@ -56,7 +56,7 @@
       <AudioAdapter useDefault="true" driver="WAS" enabledOut="true"/>
       <Clipboard/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1752264499653320300" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1752332658471679600" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="IDE" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">
