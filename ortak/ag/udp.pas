@@ -85,7 +85,7 @@ begin
   else
   begin
 
-    B := GBaglantilar.UDPBaglantiAl(HedefPort);
+    B := Baglantilar0.UDPBaglantiAl(HedefPort);
     if(B = nil) then
     begin
 
@@ -101,7 +101,7 @@ begin
       //SISTEM_MESAJ(RENK_MOR, 'UDP Veri Uzunluðu: %d', [U2]);
 
       // 8 byte = udp paket baþlýk uzunluðu
-      if(U2 > 8) then GBaglantilar.BellegeEkle(B, @UDPPaket^.Veri, U2 - 8);
+      if(U2 > 8) then Baglantilar0.BellegeEkle(B, @UDPPaket^.Veri, U2 - 8);
     end;
   end;
 end;

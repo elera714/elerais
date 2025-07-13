@@ -72,7 +72,7 @@ begin
   // NOT: SISTEM_MESAJ_'ler buradan itibaren sistem içerisine yönlendiriliyor
 
   //SISTEM_MESAJ(RENK_LACIVERT, '+ Sistem mesaj servisi baþlatýlýyor...', []);
-  GSistemMesaj.Yukle;
+  SistemMesaj0.Yukle;
 
   // uygulama deðiþkenlerini ilk deðerlerle yükle
   GGorevler := TGorevler.Create;

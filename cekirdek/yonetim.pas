@@ -86,7 +86,7 @@ var
   GMBilgi: PGMBilgi;
   Olay: POlay;
   GrafikESP, KontrolESP,
-  OHCIESP, ARPESP,
+  OHCIESP, ARPESP0, ARPESP1,
   Prg1ESP, Prg2ESP: Isaretci;
 begin
 
@@ -189,8 +189,11 @@ begin
   Memur('ohci', @ohci.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0);
 
   // arp tablosu güncelleme görevi oluþtur
-  ARPESP := GetMem(4096);
-  Memur('arp', @ARPTablosunuGuncelle, TSayi4(ARPESP), CALISMA_SEVIYE0);
+  ARPESP0 := GetMem(4096);
+  Memur('arp_güncelleme', @ARPTablosunuGuncelle, TSayi4(ARPESP0), CALISMA_SEVIYE0);
+
+  ARPESP1 := GetMem(4096);
+  Memur('arp_dolaþým', @CihazlaraARPMesajiGonder, TSayi4(ARPESP1), CALISMA_SEVIYE0);
 
   {GetMem(Prg1ESP, 4096);
   Memur('prg1', @Prg1, TSayi4(Prg1ESP), CALISMA_SEVIYE0);

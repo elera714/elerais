@@ -66,7 +66,7 @@ begin
   // ServisCalisiyor = True olmasý durumunda sistem mesajlarý dahili olarak
   //  iþlenerek daha sonra sistem mesaj görüntüleme programlarý tarafýndan görüntülenir
   // NOT: bu deðiþkeni aktifleþtiren GSistemMesaj.pas Yukle iþlevidir
-  GSistemMesaj.ServisCalisiyor := False;
+  SistemMesaj0.ServisCalisiyor := False;
 
   // çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
   yukleyici.Yukle;

@@ -26,7 +26,7 @@ var
 implementation
 
 const
-  PencereAdi: string = 'Tarih / Saat';
+  PencereAdi: string = 'ARP Tablosu';
   ARPGirdiSayisi: string  = 'Toplam ARP Girdi Sayýsý: ';
   Baslik1: string   = 'IP Adresi       MAC Adresi        Sayaç ';
   Baslik2: string  = '--------------- ----------------- ------';

@@ -27,8 +27,6 @@ var
   GEkranKartSurucusu: TEkranKartSurucusu;
   GFareSurucusu: TFareSurucusu;
   GZamanlayici: TZamanlayici;
-  GSistemMesaj: TSistemMesaj;
-  GBaglantilar: TBaglantilar;
   GOlayYonetim: TOlayYonetim;
   GIslemciBilgisi: TIslemciBilgisi;
   GAktifMasaustu: PMasaustu;

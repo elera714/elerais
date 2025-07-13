@@ -38,7 +38,6 @@ var
   FAktifGorevBellekAdresi: TSayi4;        // o an çalýþan programýn yüklendiði bellek adresi
   GorevDegisimSayisi: TSayi4 = 0;         // çekirdek baþladýðý andan itibaren gerçekleþtirilen görev deðiþim sayýsý
   GorevBayrakDegeri: TSayi4 = 0;          // her görev çalýþtýrma / sonlandýrma / aktifleþtirme durumunda 1 artýrýlýr
-  GorevKilit: TSayi4 = 0;
 
 type
   TDosyaTip = (dtDiger, dtCalistirilabilir, dtSurucu, dtResim, dtBelge);
@@ -126,6 +125,7 @@ type
 
 var
   GorevListesi: array[0..USTSINIR_GOREVSAYISI - 1] of PGorev;
+  GorevKilit: TSayi4 = 0;
 
 function GorevBilgisiAl(AGorevSiraNo: TISayi4): PGorev;
 function CalisanProgramSayisiniAl(AMasaustuKimlik: TKimlik = -1): TSayi4;
@@ -1058,6 +1058,8 @@ var
   i: TSayi4;
 begin
 
+  while KritikBolgeyeGir(GorevKilit) = False do;
+
   Gorev := GGorevler.BosGorevBul;
   if not(Gorev = nil) then
   begin
@@ -1123,6 +1125,8 @@ begin
 
     Result := SNYazmacCS;
   end;
+
+  KritikBolgedenCik(GorevKilit);
 end;
 
 function GorevAl(AGorevKimlik: TKimlik = -1): PGorev;

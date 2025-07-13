@@ -278,7 +278,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4095);
+  DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -381,20 +381,20 @@ begin
   DHCPYapiUzunlugu += 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(GBaglantilar.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      GBaglantilar.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      GBaglantilar.BaglantiyiKes(B^.Kimlik);
+      Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4095);
+  FreeMem(DHCPYapi, 4096);
 end;
 
 // DHCP istemcisine teklif mesajý gönderir
@@ -531,16 +531,16 @@ begin
   DHCPYapiUzunlugu += 1;
 
   IPAdresi := IP_KarakterKatari(ATeklifEdilenIPAdresi);
-  B := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(GBaglantilar.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      GBaglantilar.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      GBaglantilar.BaglantiyiKes(B^.Kimlik);
+      Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
   end;
 
@@ -561,7 +561,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4095);
+  DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -704,20 +704,20 @@ begin
   DHCPYapiUzunlugu += 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(GBaglantilar.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      GBaglantilar.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      GBaglantilar.BaglantiyiKes(B^.Kimlik);
+      Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4095);
+  FreeMem(DHCPYapi, 4096);
 end;
 
 // DHCP istemcisinin istek mesajýna onay yanýtý gönderir
@@ -735,7 +735,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4095);
+  DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -870,20 +870,20 @@ begin
   DHCPYapiUzunlugu += 1;
 
   IPAdresi := IP_KarakterKatari(AIstenenIPAdresi);
-  B := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(GBaglantilar.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      GBaglantilar.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      GBaglantilar.BaglantiyiKes(B^.Kimlik);
+      Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4095);
+  FreeMem(DHCPYapi, 4096);
 end;
 
 // DHCP sunucusuna bilgilendirme mesajý gönderir
@@ -899,7 +899,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4095);
+  DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -1002,20 +1002,20 @@ begin
   DHCPYapiUzunlugu += 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(GBaglantilar.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      GBaglantilar.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      GBaglantilar.BaglantiyiKes(B^.Kimlik);
+      Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4095);
+  FreeMem(DHCPYapi, 4096);
 end;
 
 // DHCP istemcisinin bilgilendirme mesajýna onay yanýtý gönderir
@@ -1030,7 +1030,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4095);
+  DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -1130,20 +1130,20 @@ begin
   DHCPYapiUzunlugu += 1;
 
   IPAdresi := IP_KarakterKatari(AIPAdres);
-  B := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(GBaglantilar.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      GBaglantilar.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      GBaglantilar.BaglantiyiKes(B^.Kimlik);
+      Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4095);
+  FreeMem(DHCPYapi, 4096);
 end;
 
 // DHCP istemcisine ret mesajý gönderir
@@ -1157,7 +1157,7 @@ var
   IPAdresi: string;
 begin
 
-  DHCPYapi := GGercekBellek.Ayir(4095);
+  DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -1215,20 +1215,20 @@ begin
   DHCPYapiUzunlugu += 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(GBaglantilar.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      GBaglantilar.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      GBaglantilar.BaglantiyiKes(B^.Kimlik);
+      Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
   end;
 
-  GGercekBellek.YokEt(DHCPYapi, 4095);
+  FreeMem(DHCPYapi, 4096);
 end;
 
 end.

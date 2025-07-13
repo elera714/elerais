@@ -6,7 +6,7 @@
   Dosya Adı: k_baglanti.pas
   Dosya İşlevi: ağ bağlantı (socket) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 12/07/2025
+  Güncelleme Tarihi: 13/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -57,10 +57,10 @@ begin
         geçicidir, sunucu / istemci yapısı kurulduğunda bu yapının olması gerektiği gibi
         yapılanması gerekmektedir }
       if(ProtokolTipi = ptTCP) then
-        YerelPort := GBaglantilar.YerelPortAl
+        YerelPort := Baglantilar0.YerelPortAl
       else YerelPort := HedefPort;
 
-      B := GBaglantilar.BaglantiOlustur(ProtokolTipi, s, YerelPort, HedefPort);
+      B := Baglantilar0.BaglantiOlustur(ProtokolTipi, s, YerelPort, HedefPort);
       if not(B = nil) then
 
         Result := B^.Kimlik
@@ -71,9 +71,9 @@ begin
     begin
 
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
-      B := GBaglantilar.Baglanti[BaglantiKimlik];
+      B := Baglantilar0.Baglanti[BaglantiKimlik];
       if not(B = nil) then
-        Result := GBaglantilar.Baglan(B^.Kimlik, btIP)
+        Result := Baglantilar0.Baglan(B^.Kimlik, btIP)
       else Result := -1;
     end
     // bağlantının varlığını kontrol et
@@ -81,9 +81,9 @@ begin
     begin
 
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
-      B := GBaglantilar.Baglanti[BaglantiKimlik];
+      B := Baglantilar0.Baglanti[BaglantiKimlik];
       if not(B = nil) then
-        Result := TSayi4(GBaglantilar.BagliMi(B^.Kimlik))
+        Result := TSayi4(Baglantilar0.BagliMi(B^.Kimlik))
       else Result := TSayi4(False);
     end
     // porta gelen veri uzunluğunu al
@@ -91,9 +91,9 @@ begin
     begin
 
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
-      B := GBaglantilar.Baglanti[BaglantiKimlik];
+      B := Baglantilar0.Baglanti[BaglantiKimlik];
       if not(B = nil) then
-        Result := GBaglantilar.VeriUzunlugu(B^.Kimlik)
+        Result := Baglantilar0.VeriUzunlugu(B^.Kimlik)
       else Result := 0;
     end
     // bağlantıya gelen veriyi oku
@@ -103,9 +103,9 @@ begin
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       i := PSayi4(Degiskenler + 04)^;
 
-      B := GBaglantilar.Baglanti[BaglantiKimlik];
+      B := Baglantilar0.Baglanti[BaglantiKimlik];
       if not(B = nil) then
-        Result := GBaglantilar.Oku(B^.Kimlik, Isaretci(i + FAktifGorevBellekAdresi))
+        Result := Baglantilar0.Oku(B^.Kimlik, Isaretci(i + FAktifGorevBellekAdresi))
       else Result := 0;
     end
     // bağlantıya veri gönder
@@ -116,9 +116,9 @@ begin
       i := PSayi4(Degiskenler + 04)^;
       j := PSayi4(Degiskenler + 08)^;
 
-      B := GBaglantilar.Baglanti[BaglantiKimlik];
+      B := Baglantilar0.Baglanti[BaglantiKimlik];
       if not(B = nil) then
-        GBaglantilar.Yaz(B^.Kimlik, Isaretci(i + FAktifGorevBellekAdresi), j);
+        Baglantilar0.Yaz(B^.Kimlik, Isaretci(i + FAktifGorevBellekAdresi), j);
     end
     // bağlantıyı kapat
     else if(AltIslev = 7) then
@@ -126,9 +126,9 @@ begin
 
       { TODO : kaynakların yok edilmesi test edilecek }
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
-      B := GBaglantilar.Baglanti[BaglantiKimlik];
+      B := Baglantilar0.Baglanti[BaglantiKimlik];
       if not(B = nil) then
-        Result := GBaglantilar.BaglantiyiKes(B^.Kimlik)
+        Result := Baglantilar0.BaglantiyiKes(B^.Kimlik)
       else Result := -1;
     end
 

@@ -193,7 +193,7 @@ begin
   begin
 
 
-    DNS^.FYerelPort := GBaglantilar.YerelPortAl;
+    DNS^.FYerelPort := Baglantilar0.YerelPortAl;
     DNS^.FBellekAdresi := GetMem(4096);
     DNS^.FYanitUzunluk := 0;
   end;
@@ -273,14 +273,14 @@ begin
     B2^ := ntohs(TSayi2(Class_IN));
 
     IPAdresi := IP_KarakterKatari(GAgBilgisi.DNSSunucusu);
-    DNS^.FBaglanti := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, DNS^.FYerelPort, DNS_PORTNO);
+    DNS^.FBaglanti := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DNS^.FYerelPort, DNS_PORTNO);
     if not(DNS^.FBaglanti = nil) then
     begin
 
-      if(GBaglantilar.Baglan(DNS^.FKimlik, btYayin) <> -1) then
+      if(Baglantilar0.Baglan(DNS^.FKimlik, btYayin) <> -1) then
       begin
 
-        GBaglantilar.Yaz(DNS^.FKimlik, @DNSPaket[0], 12 + ToplamUzunluk + 4);
+        Baglantilar0.Yaz(DNS^.FKimlik, @DNSPaket[0], 12 + ToplamUzunluk + 4);
 
         DNS^.FBaglantiDurum := ddSorgulaniyor;
       end;
@@ -340,7 +340,7 @@ begin
   DNS := GDNSBaglantilari[ADNSKimlik];
 
   DNS^.FBaglantiDurum := ddOlusturuldu;
-  GBaglantilar.BaglantiyiKes(DNS^.FKimlik);
+  Baglantilar0.BaglantiyiKes(DNS^.FKimlik);
 
   FreeMem(DNS^.FBellekAdresi, 4096);
 end;

@@ -71,7 +71,7 @@ begin
   SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Bayrak: %d', [TCPPaket^.Bayrak]);
   {$ENDIF}
 
-  B := GBaglantilar.TCPBaglantiAl(UzakPort, YerelPort);
+  B := Baglantilar0.TCPBaglantiAl(UzakPort, YerelPort);
   if(B = nil) then
   begin
 
@@ -121,7 +121,7 @@ begin
         B^.OnayNo := i;
 
         U := ntohs(AIPPaket^.ToplamUzunluk) - 40;
-        if(U > 0) then GBaglantilar.BellegeEkle(B, @TCPPaket^.Secenekler, U);
+        //if(U > 0) then GBaglantilar.BellegeEkle(B, @TCPPaket^.Secenekler, U);
       end
       // alýnan veri
       else if(TCPPaket^.Bayrak = TCP_BAYRAK_GONDER or TCP_BAYRAK_KABUL) then
@@ -134,7 +134,7 @@ begin
         U := ntohs(AIPPaket^.ToplamUzunluk) - 40;
         B^.OnayNo := i + U;
 
-        if(U > 0) then GBaglantilar.BellegeEkle(B, @TCPPaket^.Secenekler, U);
+        if(U > 0) then Baglantilar0.BellegeEkle(B, @TCPPaket^.Secenekler, U);
 
         TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
       end;

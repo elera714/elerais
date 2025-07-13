@@ -219,17 +219,17 @@ begin
     Tasi2(@Veri[0], p, VeriSN);
 
     IPAdresi := IP_KarakterKatari(AIPPaket^.KaynakIP);
-    B := GBaglantilar.BaglantiOlustur(ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
+    B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
       ntohs(AUDPBaslik^.HedefPort));
     if not(B = nil) then
     begin
 
-      if(GBaglantilar.Baglan(B^.Kimlik, btYayin) <> -1) then
+      if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
       begin
 
-        GBaglantilar.Yaz(B^.Kimlik, NB2, VeriSN + 12);
+        Baglantilar0.Yaz(B^.Kimlik, NB2, VeriSN + 12);
 
-        GBaglantilar.BaglantiyiKes(B^.Kimlik);
+        Baglantilar0.BaglantiyiKes(B^.Kimlik);
       end;
     end;
 

@@ -6,7 +6,7 @@
   Dosya Adı: k_sistemmesaj.pas
   Dosya İşlevi: hata ayıklama (debug) amaçlı mesaj yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/07/2025
+  Güncelleme Tarihi: 13/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -38,7 +38,7 @@ begin
   if(IslevNo = 1) then
   begin
 
-    Result := GSistemMesaj.ToplamMesaj;
+    Result := SistemMesaj0.ToplamMesaj;
   end
 
   // sistem mesaj bilgisini program hedef bellek bölgesine kopyala
@@ -46,8 +46,8 @@ begin
   begin
 
     p := PMesajKayit(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-    GSistemMesaj.MesajAl(PISayi4(ADegiskenler + 00)^, p);
-    Result := GSistemMesaj.ToplamMesaj;
+    SistemMesaj0.MesajAl(PISayi4(ADegiskenler + 00)^, p);
+    Result := SistemMesaj0.ToplamMesaj;
   end
 
   // programdan karakter katarı türünde gelen mesajı sistem mesajlarına ekle
@@ -72,7 +72,7 @@ begin
   else if(IslevNo = 5) then
   begin
 
-    GSistemMesaj.Temizle;
+    SistemMesaj0.Temizle;
   end
 end;
 

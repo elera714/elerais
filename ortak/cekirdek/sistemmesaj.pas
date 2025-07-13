@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 12/07/2025
+  Güncelleme Tarihi: 13/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -56,6 +56,7 @@ type
   end;
 
 var
+  SistemMesaj0: TSistemMesaj;
   SistemMesajKilit: TSayi4 = 0;
 
 { TODO : // aşağıdaki tüm çağrılar iptal edilerek bu çağrının içerisine alınacak }
@@ -361,7 +362,7 @@ begin
   end;
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
+  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -393,7 +394,7 @@ begin
   for i := 0 to AMesajUz - 1 do s := s + p[i];
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
+  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -416,7 +417,7 @@ begin
   for i := 0 to AMesajUz2 - 1 do s := s + p[i];
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
+  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -435,7 +436,7 @@ begin
   for i := 0 to ABellekUz - 1 do s := s + p[i];
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
+  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -453,7 +454,7 @@ begin
 
   s := AMesaj + MACAdres;
 
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
+  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -471,7 +472,7 @@ begin
 
   s := AMesaj + IPAdres;
 
-  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
+  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================

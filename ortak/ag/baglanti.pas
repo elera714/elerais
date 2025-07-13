@@ -6,7 +6,7 @@
   Dosya Adý: baglanti.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 12/07/2025
+  Güncelleme Tarihi: 13/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -86,6 +86,7 @@ type
   end;
 
 var
+  Baglantilar0: TBaglantilar;
   BaglantilarKilit: TSayi4 = 0;
 
 implementation
@@ -269,8 +270,8 @@ begin
       begin
 
         if(IPAdresiAyniAgdaMi(B^.HedefIPAdres)) then
-          B^.HedefMACAdres := MACAdresiAl(B^.HedefIPAdres)
-        else B^.HedefMACAdres := MACAdresiAl(GAgBilgisi.DNSSunucusu);
+          B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(B^.HedefIPAdres)
+        else B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAgBilgisi.DNSSunucusu);
 
         B^.Bagli := True;
         Exit(B^.Kimlik);
@@ -283,8 +284,8 @@ begin
       begin
 
         if(IPAdresiAyniAgdaMi(B^.HedefIPAdres)) then
-          B^.HedefMACAdres := MACAdresiAl(B^.HedefIPAdres)
-        else B^.HedefMACAdres := MACAdresiAl(GAgBilgisi.DNSSunucusu);
+          B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(B^.HedefIPAdres)
+        else B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAgBilgisi.DNSSunucusu);
 
         // ilk paket olan SYN (ARZ) paketi gönderiliyor
         TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);

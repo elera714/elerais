@@ -71,10 +71,10 @@ begin
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Baðlantý yapýlarý ilk deðerlerle yükleniyor...', []);
-    GBaglantilar.Yukle;
+    Baglantilar0.Yukle;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ARP protokolü yükleniyor...', []);
-    arp.Yukle;
+    ARPKayitlar0.Yukle;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DNS protokolü yükleniyor...', []);
     dns.Yukle;
@@ -191,7 +191,7 @@ begin
 
         ARPPaket := @EthernetPaket^.Veri;
         if(IPKarsilastir(ARPPaket^.HedefIPAdres, GAgBilgisi.IP4Adres)) then
-          ARPPaketleriniIsle(EthernetPaket)
+          ARPKayitlar0.ARPPaketleriniIsle(EthernetPaket)
       end
 
       // IP protokolü
