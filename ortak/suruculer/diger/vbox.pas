@@ -118,10 +118,10 @@ var
   KesmeAktif: TSayi2;
 begin
 
-  VBPort := PCIOku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $10);
-  VBBellek := PCIOku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $14) and $FFFFFFF0;
-  KesmeAktif := PCIOku2(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $4);
-  VBKesmeNo := PCIOku1(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $3C);
+  VBPort := PCIAygiti0.Oku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $10);
+  VBBellek := PCIAygiti0.Oku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $14) and $FFFFFFF0;
+  KesmeAktif := PCIAygiti0.Oku2(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $4);
+  VBKesmeNo := PCIAygiti0.Oku1(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $3C);
 
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Yol: %d', [PCIAygit.Yol]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt: %d', [PCIAygit.Aygit]);

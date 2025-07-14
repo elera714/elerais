@@ -6,7 +6,7 @@
   Dosya Adı: pci.pas
   Dosya İşlevi: pci yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 14/07/2025
 
   Kaynaklar:
     http://wiki.osdev.org/PCI
@@ -21,99 +21,115 @@ interface
 uses paylasim;
 
 const
-  PCI_ADRES = $CF8;
-  PCI_VERI  = $CFC;
+  PCI_ADRES           = $CF8;
+  PCI_VERI            = $CFC;
 
-  PCI_YAPIUZUNLUGU = 12;
-  USTSINIR_PCI_AYGIT = 256;     // 4096 / PCI_YAPIUZUNLUGU = 12) = 341
+  PCI_YAPIUZUNLUGU    = 12;
+  USTSINIR_PCIAYGIT   = 256;     // 4096 / PCI_YAPIUZUNLUGU = 12) = 341
+
+type
+  PPCI = ^TPCI;
+  TPCI = packed record
+    Yol, Aygit, Islev, AYRLD0: TSayi1;
+    SaticiKimlik, AygitKimlik: TSayi2;
+    SinifKod: TSayi4;
+  end;
+
+type
+  PPCIAygiti = ^TPCIAygiti;
+  TPCIAygiti = object
+  private
+    FToplamAygit: TSayi4;
+    FPCIAygitListesi: array[0..USTSINIR_PCIAYGIT - 1] of PPCI;
+    function PCIBilgiAl(ASiraNo: TSayi4): PPCI;
+    procedure PCIBilgiYaz(ASiraNo: TSayi4; APCI: PPCI);
+  public
+    procedure Yukle;
+    function Oku1(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi1;
+    function Oku2(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi2;
+    function Oku4(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi4;
+    procedure Yaz1(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi1);
+    procedure Yaz2(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi2);
+    procedure Yaz4(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi4);
+    function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
+    function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
+    function IRQNoAl(APCI: PPCI): TSayi1;
+    property ToplamAygit: TSayi4 read FToplamAygit write FToplamAygit;
+    property PCI[ASiraNo: TSayi4]: PPCI read PCIBilgiAl write PCIBilgiYaz;
+  end;
 
 var
-  ToplamPCIAygitSayisi: TISayi4;
-  PCIAygitBellekAdresi: array[0..USTSINIR_PCI_AYGIT - 1] of PPCI;
-
-procedure Yukle;
-function PCIOku1(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi1;
-function PCIOku2(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi2;
-function PCIOku4(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi4;
-procedure PCIYaz1(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi1);
-procedure PCIYaz2(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi2);
-procedure PCIYaz4(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi4);
-function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
-function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
-function IRQNoAl(APCI: PPCI): TSayi1;
+  PCIAygiti0: TPCIAygiti;
 
 implementation
 
-uses gercekbellek, aygityonetimi, genel, port;
+uses aygityonetimi, port;
 
 {==============================================================================
   sistemde mevcut pci aygıtlarının ana yükleme işlevlerini içerir
  ==============================================================================}
-procedure Yukle;
+procedure TPCIAygiti.Yukle;
 var
-  _PCI: PPCI;
-  _BellekAdresi, _PCIAygitBellekAdresi: Isaretci;
-  _Yol, _Aygit, _Islev, i, j: TSayi4;
+  P: PPCI;
+  Yol, Aygit, Islev,
+  i, j, k: TSayi4;
 begin
 
-  // mevcut aygıt sayısını sıfırla
-  ToplamPCIAygitSayisi := 0;
+  // toplam aygıt sayısını sıfırla
+  ToplamAygit := 0;
 
-  // pci aygıtları için bellek talep et (1 blok = 4K)
-  _PCIAygitBellekAdresi := GetMem(4096);
-
-  // bellek girişlerini pci yapılarıyla eşleştir
-  _BellekAdresi := _PCIAygitBellekAdresi;
-  for i := 0 to USTSINIR_PCI_AYGIT - 1 do
-  begin
-
-    PCIAygitBellekAdresi[i] := _BellekAdresi;
-    _BellekAdresi += PCI_YAPIUZUNLUGU;
-  end;
+  // bellek girişlerini sıfırla
+  for i := 0 to USTSINIR_PCIAYGIT - 1 do PCI[i] := nil;
 
   // yol / aygıt / işlev girişlerini sorgula
-  for _Yol := 0 to 255 do
+  for Yol := 0 to 255 do
   begin
 
-    for _Aygit := 0 to 31 do
+    for Aygit := 0 to 31 do
     begin
 
-      for _Islev := 0 to 7 do
+      for Islev := 0 to 7 do
       begin
 
         // satıcı / aygıt bilgilerini al
-        j := PCIOku4(_Yol, _Aygit, _Islev, 0);
+        j := Oku4(Yol, Aygit, Islev, 0);
         if((j and $FFFF) <> 0) and ((j and $FFFF) <> $FFFF) then
         begin
 
           // eğer azami aygıt sayısı aşılmamışsa
-          if(ToplamPCIAygitSayisi <= USTSINIR_PCI_AYGIT) then
+          if(ToplamAygit <= USTSINIR_PCIAYGIT) then
           begin
 
-            _PCI := PCIAygitBellekAdresi[ToplamPCIAygitSayisi];
+            // yeni pci aygıt bilgisi için bellekte yer ayır
+            P := PPCI(GetMem(SizeOf(TPCI)));
+
+            // pci aygıt adresini listesiye kaydet
+            PCI[ToplamAygit] := P;
 
             // yol / aygıt / işlev bilgilerini kaydet
-            _PCI^.Yol := _Yol;
-            _PCI^.Aygit := _Aygit;
-            _PCI^.Islev := _Islev;
+            P^.Yol := Yol;
+            P^.Aygit := Aygit;
+            P^.Islev := Islev;
 
             // satıcı / aygıt bilgilerini kaydet
-            _PCI^.SaticiKimlik := j and $FFFF;
-            _PCI^.AygitKimlik := ((j shr 16) and $FFFF);
+            P^.SaticiKimlik := j and $FFFF;
+            P^.AygitKimlik := ((j shr 16) and $FFFF);
 
             // aygıtın sınıfını al (Class Code + Revision ID)
             // üst 24 bit sınıf kodu, alt 8 bit revizyon kodu
-            _PCI^.SinifKod := PCIOku4(_Yol, _Aygit, _Islev, 8);
+            P^.SinifKod := Oku4(Yol, Aygit, Islev, 8);
 
             // başlık (header) tipi
-            j := PCIOku1(_Yol, _Aygit, _Islev, $E);
+            j := Oku1(Yol, Aygit, Islev, $E);
             j := (j and $FF);
 
             // aygıtı, yüklenecek aygıt listesine ekle
-            AygitiSistemeKaydet(PCIAygitBellekAdresi[ToplamPCIAygitSayisi]);
+            AygitiSistemeKaydet(P);
 
-            // aygıt sayısını artır
-            Inc(ToplamPCIAygitSayisi);
+            // aygıt sayısını bir artır
+            k := FToplamAygit;
+            Inc(k);
+            FToplamAygit := k;
 
             // eğer aygıt çok fonksiyonlu değil ise bir sonraki aygıta geç
             { if(_Islev = 0) then
@@ -128,112 +144,123 @@ begin
   end;
 end;
 
+function TPCIAygiti.PCIBilgiAl(ASiraNo: TSayi4): PPCI;
+begin
+
+  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  if(ASiraNo >= 0) and (ASiraNo <= ToplamAygit) then
+    Result := FPCIAygitListesi[ASiraNo]
+  else Result := nil;
+end;
+
+procedure TPCIAygiti.PCIBilgiYaz(ASiraNo: TSayi4; APCI: PPCI);
+begin
+
+  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_PCIAYGIT) then
+    FPCIAygitListesi[ASiraNo] := APCI;
+end;
+
 {==============================================================================
   belirtilen aygıtın sıra değerinden 1 byte değer okur
  ==============================================================================}
-function PCIOku1(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi1;
+function TPCIAygiti.Oku1(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi1;
 var
-  _Deger: TSayi4;
+  i: TSayi4;
 begin
 
   //  ASiraNo = bit 2..7, AIslev = bit 8..10
   //  AAygit = bit 11..15, AYol = bit 16..31
-  _Deger := $80000000 + (AYol shl 16) + (AAygit shl 11) + (AIslev shl 8) +
-    (ASiraNo and $FC);
+  i := $80000000 + (AYol shl 16) + (AAygit shl 11) + (AIslev shl 8) + (ASiraNo and $FC);
 
-  PortYaz4(PCI_ADRES, _Deger);
+  PortYaz4(PCI_ADRES, i);
   Result := PortAl1(PCI_VERI)
 end;
 
 {==============================================================================
   belirtilen aygıtın sıra değerinden 2 byte değer okur
  ==============================================================================}
-function PCIOku2(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi2;
+function TPCIAygiti.Oku2(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi2;
 var
-  _Deger: TSayi4;
+  i: TSayi4;
 begin
 
-  _Deger := $80000000 + (AYol shl 16) + (AAygit shl 11) +
-    (AIslev shl 8) + (ASiraNo and $FC);
+  i := $80000000 + (AYol shl 16) + (AAygit shl 11) + (AIslev shl 8) + (ASiraNo and $FC);
 
-  PortYaz4(PCI_ADRES, _Deger);
+  PortYaz4(PCI_ADRES, i);
   Result := PortAl2(PCI_VERI)
 end;
 
 {==============================================================================
   belirtilen aygıtın sıra değerinden 4 byte değer okur
  ==============================================================================}
-function PCIOku4(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi4;
+function TPCIAygiti.Oku4(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi4;
 var
-  _Deger: TSayi4;
+  i: TSayi4;
 begin
 
-  _Deger := $80000000 + (AYol shl 16) + (AAygit shl 11) +
-    (AIslev shl 8) + (ASiraNo and $FC);
+  i := $80000000 + (AYol shl 16) + (AAygit shl 11) + (AIslev shl 8) + (ASiraNo and $FC);
 
-  PortYaz4(PCI_ADRES, _Deger);
+  PortYaz4(PCI_ADRES, i);
   Result := PortAl4(PCI_VERI)
 end;
 
 {==============================================================================
   belirtilen aygıtın sıra değerine 1 byte değer yazar
  ==============================================================================}
-procedure PCIYaz1(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi1);
+procedure TPCIAygiti.Yaz1(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi1);
 var
-  _Deger: TSayi4;
+  i: TSayi4;
 begin
 
-  _Deger := $80000000 + (AYol shl 16) + (AAygit shl 11) +
-    (AIslev shl 8) + (ASiraNo and $FC);
+  i := $80000000 + (AYol shl 16) + (AAygit shl 11) + (AIslev shl 8) + (ASiraNo and $FC);
 
-  PortYaz4(PCI_ADRES, _Deger);
+  PortYaz4(PCI_ADRES, i);
   PortYaz1(PCI_VERI, ADeger)
 end;
 
 {==============================================================================
   belirtilen aygıtın sıra değerine 2 byte değer yazar
  ==============================================================================}
-procedure PCIYaz2(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi2);
+procedure TPCIAygiti.Yaz2(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi2);
 var
-  _Deger: TSayi4;
+  i: TSayi4;
 begin
 
-  _Deger := $80000000 + (AYol shl 16) + (AAygit shl 11) +
-    (AIslev shl 8) + (ASiraNo and $FC);
+  i := $80000000 + (AYol shl 16) + (AAygit shl 11) + (AIslev shl 8) + (ASiraNo and $FC);
 
-  PortYaz4(PCI_ADRES, _Deger);
+  PortYaz4(PCI_ADRES, i);
   PortYaz2(PCI_VERI, ADeger)
 end;
 
 {==============================================================================
   belirtilen aygıtın sıra değerine 4 byte değer yazar
  ==============================================================================}
-procedure PCIYaz4(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi4);
+procedure TPCIAygiti.Yaz4(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi4);
 var
-  _Deger: TSayi4;
+  i: TSayi4;
 begin
 
-  _Deger := $80000000 + (AYol shl 16) + (AAygit shl 11) +
-    (AIslev shl 8) + (ASiraNo and $FC);
+  i := $80000000 + (AYol shl 16) + (AAygit shl 11) + (AIslev shl 8) + (ASiraNo and $FC);
 
-  PortYaz4(PCI_ADRES, _Deger);
+  PortYaz4(PCI_ADRES, i);
   PortYaz4(PCI_VERI, ADeger)
 end;
 
 {==============================================================================
   pci aygıtının ilk iletişim port değerini alır
  ==============================================================================}
-function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
+function TPCIAygiti.IlkPortDegeriniAl(APCI: PPCI): TSayi2;
 var
-  Adres, i: TSayi1;
-  Deger: TSayi4;
+  Adres: TSayi1;
+  Deger, i: TSayi4;
 begin
 
   Adres := $10;
   for i := 1 to 6 do
   begin
 
-    Deger := PCIOku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
+    Deger := Oku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
     if((Deger and 1) = 1) then Exit(Deger and (not %11));
 
     Adres += 4;
@@ -245,17 +272,17 @@ end;
 {==============================================================================
   pci aygıtının ilk iletişim bellek değerini alır
  ==============================================================================}
- function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
+ function TPCIAygiti.IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
 var
-  Adres, i: TSayi1;
-  Deger: TSayi4;
+  Adres: TSayi1;
+  Deger, i: TSayi4;
 begin
 
   Adres := $10;
   for i := 1 to 6 do
   begin
 
-    Deger := PCIOku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
+    Deger := Oku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
     if((Deger and 1) = 0) then Exit(Deger and (not %1111));
 
     Adres += 4;
@@ -267,10 +294,10 @@ end;
  {==============================================================================
   pci aygıtının IRQ istek numarasını alır
  ==============================================================================}
-function IRQNoAl(APCI: PPCI): TSayi1;
+function TPCIAygiti.IRQNoAl(APCI: PPCI): TSayi1;
 begin
 
-  Result := PCIOku1(APCI^.Yol, APCI^.Aygit, APCI^.Islev, $3C) and $FF;
+  Result := Oku1(APCI^.Yol, APCI^.Aygit, APCI^.Islev, $3C) and $FF;
 end;
 
 end.

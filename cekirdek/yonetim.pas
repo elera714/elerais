@@ -75,7 +75,7 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
-  src_e1000, depolama, islevler, bolumleme, donusum, arp, gercekbellek;
+  src_e1000, depolama, islevler, bolumleme, donusum, arp, gercekbellek, pci;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -223,7 +223,7 @@ var
   TusKontrolDegeri: TSayi1;
   TusKarakterDegeri: char;
   TusDurum: TTusDurum;
-  i: TSayi4;
+  i, p4: TSayi4;
   Masaustu: PMasaustu;
   GN: PGorselNesne;
   Olay: TOlay;
@@ -326,6 +326,9 @@ begin
           // test amaçlý
           else if(TusKarakterDegeri = '3') then
           begin
+
+            p4 := PCIAygiti0.Oku4(0, 8, 0, $10);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %x', [p4]);
 
             //GSistemMesaj.Ekle0(mtBilgi, RENK_KIRMIZI, 'Merhaba');
 

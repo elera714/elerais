@@ -14,7 +14,7 @@ unit aygityonetimi;
 
 interface
 
-uses paylasim;
+uses paylasim, pci;
 
 const
   // aygýt tipleri

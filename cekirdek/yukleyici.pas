@@ -96,7 +96,7 @@ begin
   // Bilgi: Delay iþlevleri buradan itibaren kullanýlabilir
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ PCI aygýtlarý aranýyor...', []);
-  pci.Yukle;
+  PCIAygiti0.Yukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ACPI donanýmý yükleniyor...', []);
   acpi.Yukle;

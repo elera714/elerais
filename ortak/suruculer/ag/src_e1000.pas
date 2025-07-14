@@ -14,7 +14,7 @@ unit src_e1000;
 
 interface
 
-uses paylasim;
+uses paylasim, pci;
 
 const
   REG_CTRL      = $0000;    // aygýt kontrol
@@ -140,7 +140,7 @@ var
   AygitBilgisi: TAygit;
   EEPROMVar: Boolean;
   tx_descs : array[0..E1000_NUM_TX_DESC-1] of TE1000_tx_desc;
-  rx_descs : array[0..E1000_NUM_RX_DESC-1] of TE1000_rx_desc;
+  rx_descs : array[0..E1000_NUM_RX_DESC-1] of PE1000_rx_desc;
   rx_buffs : array[0..E1000_NUM_RX_DESC-1] of puint8;
   GidisSiraNo, GelisSiraNo: TSayi4;
 
@@ -161,7 +161,7 @@ procedure DMAErisiminiAktiflestir(APCI: PPCI);
 
 implementation
 
-uses pci, port, irq, genel, sistemmesaj;
+uses port, irq, genel, sistemmesaj;
 
 {==============================================================================
   intel e1000 að sürücü yükleme iþlevlerini içerir
@@ -182,7 +182,7 @@ begin
   EEPROMVar := False;
 
   // aygýt port deðerini al
-  AygitBilgisi.PortDegeri := IlkPortDegeriniAl(APCI);
+  AygitBilgisi.PortDegeri := PCIAygiti0.IlkPortDegeriniAl(APCI);
   if(AygitBilgisi.PortDegeri = 0) then
   begin
 
@@ -191,7 +191,7 @@ begin
   end;
 
   // aygýt bellek deðerini al
-  AygitBilgisi.BellekDegeri := IlkBellekDegeriniAl(APCI);
+  AygitBilgisi.BellekDegeri := PCIAygiti0.IlkBellekDegeriniAl(APCI);
   if(AygitBilgisi.BellekDegeri = 0) then
   begin
 
@@ -200,7 +200,7 @@ begin
   end;
 
   // IRQ numarasýný al
-  AygitBilgisi.IRQNo := IRQNoAl(APCI);
+  AygitBilgisi.IRQNo := PCIAygiti0.IRQNoAl(APCI);
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'E1000 aygýt bilgileri:', []);
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '----------------------', []);
@@ -402,15 +402,15 @@ procedure VeriAl1;
 var
   len: UInt16;
   old_cur: TSayi4;
-  p: TE1000_rx_desc;
+  p: PE1000_rx_desc;
 begin
 
   p := rx_descs[GelisSiraNo];
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->status: %d', [p.status]);
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->len : %d', [p.length]);
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->address: %d', [p.address]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->status: %d', [p^.status]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->len : %d', [p^.length]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'veri->address: %d', [p^.address]);
 
-  rx_descs[GelisSiraNo].status:= 0;
+  rx_descs[GelisSiraNo]^.status:= 0;
   old_cur:= GelisSiraNo;
   GelisSiraNo := (GelisSiraNo + 1) mod E1000_NUM_RX_DESC;
   KomutGonder(REG_RXDESCTAIL, old_cur);
@@ -440,17 +440,18 @@ var
 
 begin
 
-  //GelisHalkaBellekAdresi := GetMem(sizeof(TE1000_rx_desc) * E1000_NUM_RX_DESC + 16);
-  //p := GelisHalkaBellekAdresi;
+  GelisHalkaBellekAdresi := GetMem(sizeof(TE1000_rx_desc) * E1000_NUM_RX_DESC + 16);
+  p := GelisHalkaBellekAdresi;
 
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p2 Bellek Adresi: $%x', [TSayi4(GelisHalkaBellekAdresi)]);
 
   for i := 0 to E1000_NUM_RX_DESC - 1 do
   begin
 
-    rx_descs[i].address := 10; //TSayi8(GetMem(8192));
-    rx_descs[i].status := 0;
-    //p += sizeof(TE1000_rx_desc);
+    rx_descs[i] := p;
+    rx_descs[i]^.address := 10; //TSayi8(GetMem(8192));
+    rx_descs[i]^.status := 0;
+    p += sizeof(TE1000_rx_desc);
 
     //if(i < 3) then SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p1 Bellek Adresi: $%x', [TSayi4(p)]);
   end;
@@ -460,7 +461,7 @@ begin
   //KomutGonder(REG_TXDESCHI, 0);
 
   p := @rx_descs;
-  KomutGonder(REG_RXDESCLO, TSayi4(p));
+  KomutGonder(REG_RXDESCLO, TSayi4(GelisHalkaBellekAdresi));
   KomutGonder(REG_RXDESCHI, 0);
 
   KomutGonder(REG_RXDESCLEN, E1000_NUM_RX_DESC * 16); //sizeof(TE1000_rx_desc));
@@ -533,9 +534,9 @@ var
   Deger: TSayi2;
 begin
 
-  Deger := PCIOku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
+  Deger := PCIAygiti0.Oku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
   if((Deger and 4) = 4) then Exit;
-  PCIYaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger and 4));
+  PCIAygiti0.Yaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger and 4));
 end;
 
 end.

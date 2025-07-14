@@ -14,7 +14,7 @@ unit ohci;
 
 interface
 
-uses paylasim;
+uses pci, paylasim;
 
 procedure Yukle(APCI: PPCI);
 procedure Kontrol1;
@@ -22,7 +22,7 @@ procedure KesmeIslevi;
 
 implementation
 
-uses sistemmesaj, zamanlayici, pci, irq;
+uses sistemmesaj, zamanlayici, irq;
 
 type
   POHCIYazmac = ^TOHCIYazmac;
@@ -53,7 +53,7 @@ begin
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '  -> USB:OHCI kontrol aygýtý bulundu...', []);
 
     // aygýt bellek deðerini al
-    TemelAdres := IlkBellekDegeriniAl(OHCIAygit);
+    TemelAdres := PCIAygiti0.IlkBellekDegeriniAl(OHCIAygit);
     if(TemelAdres = 0) then
     begin
 
@@ -62,7 +62,7 @@ begin
     end;
 
     // IRQ numarasýný al
-    IRQNo := IRQNoAl(APCI);
+    IRQNo := PCIAygiti0.IRQNoAl(APCI);
 
     //IRQIsleviAta(IRQNo, @KesmeIslevi);
 

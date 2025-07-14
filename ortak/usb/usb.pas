@@ -66,10 +66,10 @@ var
   _SinifKod, i: TSayi4;
 begin
 
-  for i := 0 to ToplamPCIAygitSayisi - 1 do
+  for i := 0 to PCIAygiti0.ToplamAygit - 1 do
   begin
 
-    p := PCIAygitBellekAdresi[i];
+    p := PCIAygiti0.PCI[i];
     _SinifKod := (p^.SinifKod shr 8);
     case _SinifKod of
 

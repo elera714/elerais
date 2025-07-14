@@ -15,7 +15,7 @@ unit src_pcnet32;
  
 interface
 
-uses paylasim, port;
+uses paylasim, pci, port;
 
 type
   TAygit = packed record
@@ -59,7 +59,7 @@ function DWIOKontrol: Boolean;
 
 implementation
 
-uses pci, gercekbellek, irq, genel, islevler, sistemmesaj;
+uses gercekbellek, irq, genel, islevler, sistemmesaj;
 
 const
   PCNET32_WIO_RDP         = $10;
@@ -239,7 +239,7 @@ begin
   AygitPCNet32.Islev := APCI^.Islev;
 
   // aygýt port deðerini al
-  AygitPCNet32.PortDegeri := IlkPortDegeriniAl(APCI);
+  AygitPCNet32.PortDegeri := PCIAygiti0.IlkPortDegeriniAl(APCI);
   if(AygitPCNet32.PortDegeri = 0) then
   begin
 
@@ -250,7 +250,7 @@ begin
   end;
 
   // IRQ numarasýný al
-  AygitPCNet32.IRQNo := IRQNoAl(APCI);
+  AygitPCNet32.IRQNo := PCIAygiti0.IRQNoAl(APCI);
 
   {$IFDEF PCNET32_BILGI}
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Yol: %d', [APCI^.Yol]);
@@ -542,9 +542,9 @@ var
   Deger: TSayi2;
 begin
 
-  Deger := PCIOku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
+  Deger := PCIAygiti0.Oku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
   if((Deger and 4) = 4) then Exit;
-  PCIYaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger and 4));
+  PCIAygiti0.Yaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger and 4));
 end;
 
 {==============================================================================

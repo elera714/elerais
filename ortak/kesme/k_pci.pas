@@ -6,7 +6,7 @@
   Dosya Adı: k_pci.pas
   Dosya İşlevi: pci yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 22/09/2024
+  Güncelleme Tarihi: 14/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,9 +27,10 @@ uses pci, gorev;
  ==============================================================================}
 function PCICagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
+  PAygit: PPCI;
   p: Isaretci;
   Islev: TSayi1;
-  PCIAygitSiraNo: TISayi4;
+  PCIAygitSiraNo: TSayi4;
 begin
 
   // işlev no
@@ -39,7 +40,7 @@ begin
   if(Islev = 1) then
   begin
 
-    Result := ToplamPCIAygitSayisi;
+    Result := PCIAygiti0.ToplamAygit;
   end
 
   // pci bilgilerini al
@@ -47,11 +48,12 @@ begin
   begin
 
     PCIAygitSiraNo := PSayi4(ADegiskenler + 00)^;
-    if(PCIAygitSiraNo >= 0) and (PCIAygitSiraNo < ToplamPCIAygitSayisi) then
+    if(PCIAygitSiraNo >= 0) and (PCIAygitSiraNo < PCIAygiti0.ToplamAygit) then
     begin
 
       p := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-      Move(PCIAygitBellekAdresi[PCIAygitSiraNo]^, Isaretci(p)^, PCI_YAPIUZUNLUGU);
+      PAygit := PCIAygiti0.PCI[PCIAygitSiraNo];
+      if not(PAygit = nil) then Move(PAygit^, Isaretci(p)^, PCI_YAPIUZUNLUGU);
     end else Result := HATA_DEGERARALIKDISI;
   end
 
@@ -59,7 +61,7 @@ begin
   else if(Islev = 3) then
   begin
 
-    Result := PCIOku1(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
+    Result := PCIAygiti0.Oku1(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
       PSayi4(ADegiskenler + 08)^, PSayi4(ADegiskenler + 12)^) and $FF;
   end
 
@@ -67,7 +69,7 @@ begin
   else if(Islev = 4) then
   begin
 
-    Result := PCIOku2(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
+    Result := PCIAygiti0.Oku2(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
       PSayi4(ADegiskenler + 08)^, PSayi4(ADegiskenler + 12)^) and $FFFF;
   end
 
@@ -75,7 +77,7 @@ begin
   else if(Islev = 5) then
   begin
 
-    Result := PCIOku4(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
+    Result := PCIAygiti0.Oku4(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
       PSayi4(ADegiskenler + 08)^, PSayi4(ADegiskenler + 12)^);
   end
 
@@ -83,7 +85,7 @@ begin
   else if(Islev = 6) then
   begin
 
-    PCIYaz1(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
+    PCIAygiti0.Yaz1(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
       PSayi4(ADegiskenler + 12)^, PSayi4(ADegiskenler + 16)^);
   end
 
@@ -91,7 +93,7 @@ begin
   else if(Islev = 7) then
   begin
 
-    PCIYaz2(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
+    PCIAygiti0.Yaz2(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
       PSayi4(ADegiskenler + 12)^, PSayi4(ADegiskenler + 16)^);
   end
 
@@ -99,7 +101,7 @@ begin
   else if(Islev = 8) then
   begin
 
-    PCIYaz4(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
+    PCIAygiti0.Yaz4(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
       PSayi4(ADegiskenler + 12)^, PSayi4(ADegiskenler + 16)^);
   end
 

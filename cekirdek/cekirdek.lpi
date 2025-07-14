@@ -49,18 +49,18 @@
       <Unit1>
         <Filename Value="yonetim.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="174"/>
-        <CursorPos X="39" Y="196"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="312"/>
+        <CursorPos X="30" Y="330"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="yukleyici.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="57"/>
-        <CursorPos X="15" Y="75"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="81"/>
+        <CursorPos X="13" Y="99"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -155,7 +155,6 @@
         <Filename Value="..\ortak\cekirdek\sistemmesaj.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="28" Y="25"/>
         <UsageCount Value="224"/>
       </Unit15>
       <Unit16>
@@ -175,14 +174,16 @@
       <Unit18>
         <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="881"/>
+        <CursorPos Y="897"/>
         <UsageCount Value="224"/>
+        <Loaded Value="True"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\ortak\cekirdek\pci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="34" Y="63"/>
         <UsageCount Value="224"/>
       </Unit19>
       <Unit20>
@@ -217,8 +218,7 @@
         <Filename Value="..\ortak\cekirdek\aygityonetimi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="98"/>
-        <CursorPos X="39" Y="108"/>
+        <CursorPos X="19" Y="17"/>
         <UsageCount Value="224"/>
       </Unit24>
       <Unit25>
@@ -273,10 +273,9 @@
       <Unit32>
         <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="55" Y="507"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\ortak\suruculer\fare\src_ps2.pas"/>
@@ -290,8 +289,8 @@
         <Filename Value="..\ortak\suruculer\ag\src_pcnet32.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="428"/>
-        <CursorPos X="3" Y="174"/>
+        <TopLine Value="235"/>
+        <CursorPos X="36" Y="253"/>
         <UsageCount Value="224"/>
       </Unit34>
       <Unit35>
@@ -400,7 +399,7 @@
         <Filename Value="..\ortak\ag\saglama.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="15"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="26"/>
       </Unit49>
       <Unit50>
         <Filename Value="..\ortak\ag\dhcp.pas"/>
@@ -519,8 +518,6 @@
         <Filename Value="..\ortak\kesme\k_pci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="36"/>
-        <CursorPos X="73" Y="53"/>
         <UsageCount Value="224"/>
       </Unit65>
       <Unit66>
@@ -579,32 +576,32 @@
         <Filename Value="..\ortak\usb\uhci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="70"/>
-        <CursorPos X="16" Y="82"/>
+        <TopLine Value="98"/>
+        <CursorPos X="16" Y="116"/>
         <UsageCount Value="224"/>
       </Unit73>
       <Unit74>
         <Filename Value="..\ortak\usb\usb.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="66"/>
-        <CursorPos X="17" Y="83"/>
+        <TopLine Value="54"/>
+        <CursorPos Y="72"/>
         <UsageCount Value="224"/>
       </Unit74>
       <Unit75>
         <Filename Value="..\ortak\usb\ehci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="43"/>
-        <CursorPos Y="55"/>
+        <TopLine Value="30"/>
+        <CursorPos X="32" Y="48"/>
         <UsageCount Value="224"/>
       </Unit75>
       <Unit76>
         <Filename Value="..\ortak\usb\ohci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="57"/>
-        <CursorPos X="40" Y="68"/>
+        <TopLine Value="48"/>
+        <CursorPos X="25" Y="65"/>
         <UsageCount Value="224"/>
       </Unit76>
       <Unit77>
@@ -786,7 +783,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <TopLine Value="1049"/>
-        <CursorPos X="33" Y="1060"/>
+        <CursorPos X="23" Y="1066"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit99>
@@ -840,7 +837,7 @@
         <Filename Value="..\notlar.txt"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="3"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="29"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit106>
       <Unit107>
@@ -902,6 +899,8 @@
         <Filename Value="..\ortak\suruculer\diger\vbox.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="103"/>
+        <CursorPos X="27" Y="124"/>
         <UsageCount Value="202"/>
       </Unit114>
       <Unit115>
@@ -930,7 +929,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="13"/>
         <CursorPos X="31" Y="32"/>
-        <UsageCount Value="150"/>
+        <UsageCount Value="145"/>
       </Unit118>
       <Unit119>
         <Filename Value="..\ortak\program\prg_grafik.pas"/>
@@ -981,8 +980,8 @@
         <Filename Value="..\ortak\suruculer\ag\src_e1000.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="192"/>
-        <CursorPos X="35" Y="212"/>
+        <TopLine Value="185"/>
+        <CursorPos X="36" Y="203"/>
         <UsageCount Value="200"/>
       </Unit125>
       <Unit126>
@@ -1005,12 +1004,12 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="181"/>
         <CursorPos X="23" Y="194"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="1"/>
       </Unit128>
       <Unit129>
         <Filename Value="..\..\..\Downloads\kolibrios-main\kolibrios\kernel\trunk\acpi\acpi.inc"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="5"/>
       </Unit129>
     </Units>
     <OtherDefines Count="1">

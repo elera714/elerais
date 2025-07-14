@@ -14,7 +14,7 @@ unit uhci;
 
 interface
 
-uses paylasim;
+uses pci, paylasim;
 
 const
   UHCI_YAZMAC_KOMUT		          = $0000;    // word
@@ -88,7 +88,7 @@ procedure PaketGonder;
 
 implementation
 
-uses sistemmesaj, pci, port;
+uses sistemmesaj, port;
 
 procedure Yukle(APCI: PPCI);
 begin
@@ -108,12 +108,12 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MOR, 'USB-UHCI Genel Bilgiler:', []);
 
-    PortNo := PCIOku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, $20) and $FFFC;
+    PortNo := PCIAygiti0.Oku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, $20) and $FFFC;
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Giriþ/Çýkýþ Port No: $%.2x', [PortNo]);
 
-    _Deger4 := PCIOku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, 4);
+    _Deger4 := PCIAygiti0.Oku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, 4);
     _Deger4 := _Deger4 or $405;
-    PCIYaz4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, 4, _Deger4);
+    PCIAygiti0.Yaz4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, 4, _Deger4);
 
     _CerceveAdresi := PSayi4(UHCI_CERCEVE_ADRESI);
     for i := 0 to 1023 do

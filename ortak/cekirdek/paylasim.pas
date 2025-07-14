@@ -896,14 +896,6 @@ type
   end;
 
 type
-  PPCI = ^TPCI;
-  TPCI = packed record
-    Yol, Aygit, Islev, AYRLD0: TSayi1;
-    SaticiKimlik, AygitKimlik: TSayi2;
-    SinifKod: TSayi4;
-  end;
-
-type
   PRGB = ^TRGBRenk;
   TRGBRenk = packed record
     B: TSayi1;

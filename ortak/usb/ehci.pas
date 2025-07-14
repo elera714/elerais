@@ -14,14 +14,14 @@ unit ehci;
 
 interface
 
-uses paylasim;
+uses pci, paylasim;
 
 procedure Yukle(APCI: PPCI);
 procedure EHCIAygitBilgileriniGoster;
 
 implementation
 
-uses sistemmesaj, pci;
+uses sistemmesaj;
 
 var
   EHCIAygit: PPCI = nil;
@@ -45,7 +45,7 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'USB-EHCI Genel Bilgiler:', []);
 
-    _TemelAdres := (PCIOku4(EHCIAygit^.Yol, EHCIAygit^.Aygit, EHCIAygit^.Islev, $10)
+    _TemelAdres := (PCIAygiti0.Oku4(EHCIAygit^.Yol, EHCIAygit^.Aygit, EHCIAygit^.Islev, $10)
       and $FFFFFF00);
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'USB Ana Adres: $%.8x', [_TemelAdres]);
 
