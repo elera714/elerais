@@ -6,7 +6,7 @@
   Dosya Adý: k_zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý kesme iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 23/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -38,7 +38,7 @@ begin
   if(IslevNo = ISLEV_OLUSTUR) then
   begin
 
-    Z := Z^.Olustur(PISayi4(ADegiskenler)^);
+    Z := Zamanlayicilar0.Olustur(PISayi4(ADegiskenler)^);
 
     if(Z <> nil) then
       Result := Z^.Kimlik
@@ -49,17 +49,16 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    Z := GZamanlayiciListesi[PKimlik(ADegiskenler)^];
-    if(Z <> nil) then Z^.Durum := zdCalisiyor;
+    Z := Zamanlayicilar0.Zamanlayici[PKimlik(ADegiskenler)^];
+    if(Z <> nil) then Z^.ZamanlayiciDurum := zdCalisiyor;
   end
 
   // zamanlayýcý nesnesini durdurur
   else if(IslevNo = 3) then
   begin
 
-    Z := GZamanlayiciListesi[PKimlik(ADegiskenler)^];
-
-    if(Z <> nil) then Z^.Durum := zdDurduruldu;
+    Z := Zamanlayicilar0.Zamanlayici[PKimlik(ADegiskenler)^];
+    if(Z <> nil) then Z^.ZamanlayiciDurum := zdDurduruldu;
   end
 
   // iþlev belirtilen aralýkta deðilse hata kodunu geri döndür

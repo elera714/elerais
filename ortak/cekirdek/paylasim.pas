@@ -161,6 +161,35 @@ type
     class operator = (const A, B: TTarihSaat): Boolean;
   end;
 
+type
+  PIPAdres = ^TIPAdres;
+  TIPAdres = array[0..3] of TSayi1;
+
+type
+  TIPAdresIslev = record
+    IPAdres: TIPAdres;
+    procedure Sifirla;
+    function IPAdres0Mi: Boolean;
+    function IPAdres255Mi: Boolean;
+    function IPAgAraligiIcinde(AAgIPAdresi: TIPAdres): Boolean;
+    class operator = (const IP1, IP2: TIPAdresIslev): Boolean;
+  end;
+
+
+type
+  PMACAdres = ^TMACAdres;
+  TMACAdres = array[0..5] of TSayi1;
+
+type
+  TMACAdresIslev = record
+    MACAdres: TMACAdres;
+    procedure Sifirla;
+    function MACAdres0Mi: Boolean;
+    function MACAdres255Mi: Boolean;
+    class operator = (const MAC1, MAC2: TMACAdresIslev): Boolean;
+  end;
+
+
 var
   // GN_UZUNLUK deðiþkeni, görsel nesne yapýlarý içerisinde en uzun yapýlý nesne olan
   // TPencere nesnesinin uzunluðu alýnarak;
@@ -224,12 +253,6 @@ type
     BaslikTabloGirisSayisi: TSayi4;
     UstBilgiTabloGirisiSayisi: TSayi4;
    end;
-
-type
-  PMACAdres = ^TMACAdres;
-  TMACAdres = array[0..5] of TSayi1;
-  PIPAdres = ^TIPAdres;
-  TIPAdres = array[0..3] of TSayi1;
 
 type
   PEthernetPaket = ^TEthernetPaket;
@@ -1118,6 +1141,128 @@ begin
   EkleByte(AHedef + 1, Byte(ADeger shr 16));
   EkleByte(AHedef + 2, Byte(ADeger shr 8));
   EkleByte(AHedef + 3, Byte(ADeger and $FF));
+end;
+
+{ TMACAdresIslev }
+
+class operator TMACAdresIslev.=(const MAC1, MAC2: TMACAdresIslev): Boolean;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to 5 do
+  begin
+
+    if(MAC1.MACAdres[i] <> MAC2.MACAdres[i]) then Exit(False);
+  end;
+
+  Result := True;
+end;
+
+procedure TMACAdresIslev.Sifirla;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to 5 do MACAdres[i] := 0;
+end;
+
+function TMACAdresIslev.MACAdres0Mi: Boolean;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to 5 do
+  begin
+
+    if(MACAdres[i] <> 0) then Exit(False);
+  end;
+
+  Result := True;
+end;
+
+function TMACAdresIslev.MACAdres255Mi: Boolean;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to 5 do
+  begin
+
+    if(MACAdres[i] <> 255) then Exit(False);
+  end;
+
+  Result := True;
+end;
+
+procedure TIPAdresIslev.Sifirla;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to 3 do IPAdres[i] := 0;
+end;
+
+function TIPAdresIslev.IPAdres0Mi: Boolean;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to 3 do
+  begin
+
+    if(IPAdres[i] <> 0) then Exit(False);
+  end;
+
+  Result := True;
+end;
+
+function TIPAdresIslev.IPAdres255Mi: Boolean;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to 3 do
+  begin
+
+    if(IPAdres[i] <> 255) then Exit(False);
+  end;
+
+  Result := True;
+end;
+
+// ip adresinin að adres aralýðý içerisinde olup olmadýðýný kontrol eder
+// örnek:
+// istenen ip adresi: 192.168.1.110
+// dhcp ip adresi   : 192.168.1.1
+// ilk 3 byte deðerinin ayný olmasý ip adresinin ayný aðda olduðunu gösterir
+function TIPAdresIslev.IPAgAraligiIcinde(AAgIPAdresi: TIPAdres): Boolean;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to 2 do
+  begin
+
+    if(IPAdres[i] <> AAgIPAdresi[i]) then Exit(False);
+  end;
+
+  Result := True;
+end;
+
+
+class operator TIPAdresIslev.=(const IP1, IP2: TIPAdresIslev): Boolean;
+var
+  i: TSayi4;
+begin
+
+  for i := 0 to 3 do
+  begin
+
+    if(IP1.IPAdres[i] <> IP2.IPAdres[i]) then Exit(False);
+  end;
+
+  Result := True;
 end;
 
 class operator TTarihSaat.=(const A, B: TTarihSaat): Boolean;

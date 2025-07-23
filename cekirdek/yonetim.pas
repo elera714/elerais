@@ -60,7 +60,6 @@ type
   end;
 
 var
-  P1Zamanlayici: PZamanlayici;
   _DNS: PDNS = nil;
   Arge0: TArGe;
   Merhaba: AnsiString = 'Merhaba';
@@ -327,8 +326,11 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            p4 := PCIAygiti0.Oku4(0, 8, 0, $10);
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %x', [p4]);
+            //p4 := PCIAygiti0.Oku4(0, 8, 0, $10);
+            p4 := SizeOf(TIPAdres);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [p4]);
+            p4 := SizeOf(TIPAdresIslev);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [p4]);
 
             //GSistemMesaj.Ekle0(mtBilgi, RENK_KIRMIZI, 'Merhaba');
 

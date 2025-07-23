@@ -94,7 +94,7 @@ implementation
 uses tcp, udp, arp, islevler, donusum;
 
 {==============================================================================
-  baðlantý ana yükleme iþlevlerini içerir
+  baðlantý nesnelerinin ana yükleme iþlevlerini içerir
  ==============================================================================}
 procedure TBaglantilar.Yukle;
 var

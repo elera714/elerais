@@ -70,7 +70,7 @@ begin
   {$IFDEF SISTEM_SUNUCU}
   else if(HedefPort = 67) then
 
-    DHCPSunucuPaketleriniIsle(@UDPPaket^.Veri)
+    DHCPSunucu0.DHCPSunucuPaketleriniIsle(@UDPPaket^.Veri)
   {$ENDIF}
   // verileri dhcp istemci protokolüne yönlendir
   else if(HedefPort = 68) then

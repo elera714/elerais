@@ -80,7 +80,7 @@ begin
     dns.Yukle;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DHCP protokolü yükleniyor...', []);
-    dhcp_s.Yukle;
+    DHCPSunucu0.Yukle;
 
     // sistem için ip adresini yapýlandýr
     if(GAgBilgisi.IPAdresiAlindi = False) then

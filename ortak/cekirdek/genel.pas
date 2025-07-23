@@ -6,7 +6,7 @@
   Dosya Adı: genel.pas
   Dosya İşlevi: sistem genelinde kullanılan sabit, değişken ve yapıları içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 23/05/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,9 +14,8 @@ unit genel;
 
 interface
 
-uses gercekbellek, src_vesa20, src_ps2, gorev, zamanlayici, paylasim, olayyonetim,
-  gorselnesne, sistemmesaj, gn_masaustu, baglanti, n_yazilistesi, n_sayilistesi,
-  dns, depolama;
+uses gercekbellek, src_vesa20, src_ps2, gorev, paylasim, olayyonetim, gorselnesne,
+  gn_masaustu, n_yazilistesi, n_sayilistesi, dns, depolama;
 
 const
   USTSINIR_YAZILISTESI = 128;    // 4096 byte / 32 byte = 128 adet liste
@@ -26,7 +25,6 @@ var
   GGercekBellek: TGercekBellek;
   GEkranKartSurucusu: TEkranKartSurucusu;
   GFareSurucusu: TFareSurucusu;
-  GZamanlayici: TZamanlayici;
   GOlayYonetim: TOlayYonetim;
   GIslemciBilgisi: TIslemciBilgisi;
   GAktifMasaustu: PMasaustu;

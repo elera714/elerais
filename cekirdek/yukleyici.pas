@@ -91,7 +91,7 @@ begin
     GIslemciBilgisi.Ozellik1_ECX);
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Zamanlayýcý yükleniyor...', []);
-  GZamanlayici.Yukle;
+  Zamanlayicilar0.Yukle;
 
   // Bilgi: Delay iþlevleri buradan itibaren kullanýlabilir
 

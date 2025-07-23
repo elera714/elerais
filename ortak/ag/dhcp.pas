@@ -6,7 +6,7 @@
   Dosya Adý: dhcp.pas
   Dosya Ýþlevi: DHCP protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 20/04/2025
+  Güncelleme Tarihi: 22/07/2025
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -240,32 +240,37 @@ procedure DHCPIpAdresiAl;
 { Discover }
 procedure DHCPKesifMesajiGonder;
 { Offer }
-procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi: TIPAdres;
+procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi: TIPAdresIslev;
   AMACAdres: TMACAdres);
 { Request }
 procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIPAdres);
 { Request -> Ack }
-procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: TIPAdres;
-  AMACAdres: TMACAdres);
+procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: TIPAdresIslev;
+  AMACAdres: TMACAdresIslev);
 { Inform }
 procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIPAdres);
 { Inform -> Ack }
-procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres: TIPAdres;
-  AMACAdres: TMACAdres);
+procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres: TIPAdresIslev;
+  AMACAdres: TMACAdresIslev);
 { NAck }
-procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdres);
+procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
 
 implementation
 
-uses genel, baglanti, donusum, islevler, sistemmesaj;
+uses baglanti, donusum, islevler, sistemmesaj;
 
+{==============================================================================
+  DHCP sunucularýna keþif mesajý gönderir
+ ==============================================================================}
 procedure DHCPIpAdresiAl;
 begin
 
   DHCPKesifMesajiGonder;
 end;
 
-// DHCP sunucusuna keþif mesajý gönderir
+{==============================================================================
+  DHCP sunucusuna keþif mesajý gönderir
+ ==============================================================================}
 procedure DHCPKesifMesajiGonder;
 var
   B: PBaglanti;
@@ -397,8 +402,10 @@ begin
   FreeMem(DHCPYapi, 4096);
 end;
 
-// DHCP istemcisine teklif mesajý gönderir
-procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi: TIPAdres;
+{==============================================================================
+  DHCP istemcisine teklif mesajý gönderir
+ ==============================================================================}
+procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi: TIPAdresIslev;
   AMACAdres: TMACAdres);
 var
   B: PBaglanti;
@@ -420,7 +427,7 @@ begin
 	DHCPYapi^.Sure := 0;
 	DHCPYapi^.Bayraklar := 0;
 	DHCPYapi^.IstemciIPAdres := IPAdres0;
-	DHCPYapi^.IstemciyeAtanacakIPAdresi := ATeklifEdilenIPAdresi;
+	DHCPYapi^.IstemciyeAtanacakIPAdresi := ATeklifEdilenIPAdresi.IPAdres;
 	DHCPYapi^.SunucuIPAdres := IPAdres0;
 	DHCPYapi^.AgGecidiIPAdres := IPAdres0;
 
@@ -530,7 +537,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu += 1;
 
-  IPAdresi := IP_KarakterKatari(ATeklifEdilenIPAdresi);
+  IPAdresi := IP_KarakterKatari(ATeklifEdilenIPAdresi.IPAdres);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
@@ -547,7 +554,9 @@ begin
   FreeMem(DHCPYapi, 4096);
 end;
 
-// DHCP sunucusuna istek mesajý gönderir
+{==============================================================================
+  DHCP sunucusuna istek mesajý gönderir
+ ==============================================================================}
 procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIPAdres);
 var
   B: PBaglanti;
@@ -720,9 +729,11 @@ begin
   FreeMem(DHCPYapi, 4096);
 end;
 
-// DHCP istemcisinin istek mesajýna onay yanýtý gönderir
-procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: TIPAdres;
-  AMACAdres: TMACAdres);
+{==============================================================================
+  DHCP istemcisinin istek mesajýna onay yanýtý gönderir
+ ==============================================================================}
+procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: TIPAdresIslev;
+  AMACAdres: TMACAdresIslev);
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
@@ -745,12 +756,12 @@ begin
 	DHCPYapi^.Sure := 0;
 	DHCPYapi^.Bayraklar := 0;
 	DHCPYapi^.IstemciIPAdres := IPAdres0;
-	DHCPYapi^.IstemciyeAtanacakIPAdresi := AIstenenIPAdresi;
+	DHCPYapi^.IstemciyeAtanacakIPAdresi := AIstenenIPAdresi.IPAdres;
 	DHCPYapi^.SunucuIPAdres := IPAdres0;
 	DHCPYapi^.AgGecidiIPAdres := IPAdres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPYapi^.IstemciMACAdres := AMACAdres;
+  DHCPYapi^.IstemciMACAdres := AMACAdres.MACAdres;
 	DHCPYapi^.AYRLDI1 := 0;
 	DHCPYapi^.AYRLDI2 := 0;
 	DHCPYapi^.AYRLDI3 := 0;
@@ -869,7 +880,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu += 1;
 
-  IPAdresi := IP_KarakterKatari(AIstenenIPAdresi);
+  IPAdresi := IP_KarakterKatari(AIstenenIPAdresi.IPAdres);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
@@ -886,7 +897,9 @@ begin
   FreeMem(DHCPYapi, 4096);
 end;
 
-// DHCP sunucusuna bilgilendirme mesajý gönderir
+{==============================================================================
+  DHCP sunucusuna bilgilendirme mesajý gönderir
+ ==============================================================================}
 procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIPAdres);
 var
   B: PBaglanti;
@@ -1018,9 +1031,11 @@ begin
   FreeMem(DHCPYapi, 4096);
 end;
 
-// DHCP istemcisinin bilgilendirme mesajýna onay yanýtý gönderir
-procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres: TIPAdres;
-  AMACAdres: TMACAdres);
+{==============================================================================
+  DHCP istemcisinin bilgilendirme mesajýna onay yanýtý gönderir
+ ==============================================================================}
+procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres: TIPAdresIslev;
+  AMACAdres: TMACAdresIslev);
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
@@ -1045,7 +1060,7 @@ begin
 	DHCPYapi^.AgGecidiIPAdres := IPAdres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPYapi^.IstemciMACAdres := AMACAdres;
+  DHCPYapi^.IstemciMACAdres := AMACAdres.MACAdres;
 	DHCPYapi^.AYRLDI1 := 0;
 	DHCPYapi^.AYRLDI2 := 0;
 	DHCPYapi^.AYRLDI3 := 0;
@@ -1129,7 +1144,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu += 1;
 
-  IPAdresi := IP_KarakterKatari(AIPAdres);
+  IPAdresi := IP_KarakterKatari(AIPAdres.IPAdres);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
@@ -1146,8 +1161,10 @@ begin
   FreeMem(DHCPYapi, 4096);
 end;
 
-// DHCP istemcisine ret mesajý gönderir
-procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdres);
+{==============================================================================
+  DHCP istemcisine ret mesajý gönderir
+ ==============================================================================}
+procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
@@ -1172,7 +1189,7 @@ begin
 	DHCPYapi^.AgGecidiIPAdres := IPAdres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPYapi^.IstemciMACAdres := AMACAdres;
+  DHCPYapi^.IstemciMACAdres := AMACAdres.MACAdres;
 	DHCPYapi^.AYRLDI1 := 0;
 	DHCPYapi^.AYRLDI2 := 0;
 	DHCPYapi^.AYRLDI3 := 0;
