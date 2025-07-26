@@ -104,7 +104,7 @@ function TSistemMesaj.MesajAl(ASiraNo: TSayi4): PMesajKayit;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_MESAJ) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MESAJ) then
     Result := FMesajListesi[ASiraNo]
   else Result := nil;
 end;
@@ -113,7 +113,7 @@ procedure TSistemMesaj.MesajYaz(ASiraNo: TSayi4; AMesajKayit: PMesajKayit);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_MESAJ) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MESAJ) then
     FMesajListesi[ASiraNo] := AMesajKayit;
 end;
 

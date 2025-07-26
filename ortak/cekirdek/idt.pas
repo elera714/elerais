@@ -6,7 +6,7 @@
   Dosya Adý: idt.pas
   Dosya Ýþlevi: kesme servis rutinlerini (isr) içerir
 
-  Güncelleme Tarihi: 10/06/2025
+  Güncelleme Tarihi: 23/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -225,12 +225,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$00
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -258,12 +258,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$01
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -291,12 +291,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$02
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -324,12 +324,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$03
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -357,12 +357,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$04
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -390,12 +390,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$05
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -423,12 +423,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$06
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -489,12 +489,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$08
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -522,12 +522,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$09
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -555,12 +555,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$0A
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -588,12 +588,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$0B
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -621,12 +621,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$0C
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -654,25 +654,25 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
+  mov esi,Gorevler0.Gorev[eax]
 
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
 
   mov eax,$0D
-  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.HataKodu],eax
 
   mov eax,[esp + 04]
-  mov [esi + TGorev.FHataEIP],eax
+  mov [esi + TGorev.HataEIP],eax
 
   mov eax,[esp + 08]
-  mov [esi + TGorev.FHataCS],eax
+  mov [esi + TGorev.HataCS],eax
 
   mov eax,[esp + 12]
-  mov [esi + TGorev.FHataBayrak],eax
+  mov [esi + TGorev.HataBayrak],eax
 
   mov eax,[esp + 16]
-  mov [esi + TGorev.FHataESP],eax
+  mov [esi + TGorev.HataESP],eax
 
 //  add   esp,4
 
@@ -700,12 +700,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$0E
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -733,12 +733,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$0F
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -766,12 +766,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$10
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -799,12 +799,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$11
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -832,12 +832,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$12
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -865,13 +865,13 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$13
-  mov [esi + TGorev.FHataKodu],eax
+  mov [esi + TGorev.HataKodu],eax
   mov eax,esp
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -899,12 +899,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$14
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -932,12 +932,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$15
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -965,12 +965,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$16
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -998,12 +998,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$17
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1031,12 +1031,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$18
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1064,12 +1064,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$19
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1097,12 +1097,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$1A
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1130,12 +1130,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$1B
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1163,12 +1163,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$1C
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1196,12 +1196,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$1D
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1229,12 +1229,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$1E
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1262,12 +1262,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$1F
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1299,12 +1299,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$30
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1332,12 +1332,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$31
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1365,12 +1365,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$32
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 
@@ -1398,12 +1398,12 @@ asm
   // programý ilgili deðerlerle iþaretle
   mov eax,FAktifGorev
   shl eax,2
-  mov esi,GorevListesi[eax]
-  mov eax,4                             // gdSonlandiriliyor
-  mov [esi + TGorev.FGorevDurum],eax
+  mov esi,Gorevler0.Gorev[eax]
+  mov eax,TGorevDurum(gdSonlandiriliyor)
+  mov [esi + TGorev.Durum],eax
   mov eax,$33
-  mov [esi + TGorev.FHataKodu],eax
-  mov [esi + TGorev.FHataESP],esp
+  mov [esi + TGorev.HataKodu],eax
+  mov [esi + TGorev.HataESP],esp
 
   add   esp,4
 

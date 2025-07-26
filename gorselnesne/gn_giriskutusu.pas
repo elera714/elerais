@@ -27,7 +27,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PGirisKutusu;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -58,7 +58,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
@@ -67,7 +67,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       GirisKutusu^.Goster;
     end;
 
@@ -75,7 +75,7 @@ begin
     $010E:
     begin
 
-      GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       p1^ := GirisKutusu^.Baslik;
     end;
@@ -84,7 +84,7 @@ begin
     $010F:
     begin
 
-      GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       GirisKutusu^.Baslik := p1^;
       GirisKutusu^.Ciz;
@@ -94,7 +94,7 @@ begin
     $020F:
     begin
 
-      GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p2 := PLongBool(ADegiskenler + 04);
       GirisKutusu^.FYazilamaz := p2^;
       GirisKutusu^.Ciz;
@@ -104,7 +104,7 @@ begin
     $030F:
     begin
 
-      GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p2 := PLongBool(ADegiskenler + 04);
       GirisKutusu^.FSadeceRakam := p2^;
     end;
@@ -113,7 +113,7 @@ begin
     $040F:
     begin
 
-      GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
 
       if(GirisKutusu <> nil) and (GirisKutusu^.NesneTipi = gntGirisKutusu) then
       begin
@@ -147,7 +147,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := GirisKutusu^.FTGN.Kimlik;
+  else Result := GirisKutusu^.Kimlik;
 end;
 
 {==============================================================================
@@ -176,7 +176,7 @@ begin
 
   GirisKutusu^.OlayCagriAdresi := @OlaylariIsle;
 
-  GirisKutusu^.FTGN.FareImlecTipi := fitGiris;
+  GirisKutusu^.FareImlecTipi := fitGiris;
 
   GirisKutusu^.FYazilamaz := False;
   GirisKutusu^.FSadeceRakam := False;
@@ -193,17 +193,17 @@ end;
 {==============================================================================
   giriþ kutusu nesnesini yok eder
  ==============================================================================}
-procedure TGirisKutusu.YokEt;
+procedure TGirisKutusu.YokEt(AKimlik: TKimlik);
 var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(FTGN.Kimlik));
+  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
   if(GirisKutusu = nil) then Exit;
 
-  GirisKutusu^.FSilmeDugmesi^.YokEt;
+  GorselNesneler0.YokEt(GirisKutusu^.FSilmeDugmesi^.Kimlik);
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -214,7 +214,7 @@ var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(FTGN.Kimlik));
+  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
   if(GirisKutusu = nil) then Exit;
 
   GirisKutusu^.FSilmeDugmesi^.Gorunum := True;
@@ -239,7 +239,7 @@ var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(FTGN.Kimlik));
+  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
   if(GirisKutusu = nil) then Exit;
 
   GirisKutusu^.FSilmeDugmesi^.FKonum.Sol := GirisKutusu^.FBoyut.Genislik - 13;
@@ -260,7 +260,7 @@ var
   Alan: TAlan;
 begin
 
-  GirisKutusu := PGirisKutusu(GirisKutusu^.NesneAl(FTGN.Kimlik));
+  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
   if(GirisKutusu = nil) then Exit;
 
   inherited Ciz;
@@ -316,7 +316,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
       GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-    else GGorevler.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
   end
   // klavye tuþ basýmý
   else if(AOlay.Olay = CO_TUSBASILDI) then
@@ -337,7 +337,7 @@ begin
         AOlay.Deger1 := Tus;
         if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
           GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-        else GGorevler.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
       end
       // geri silme tuþu
       else if(C = #8) then
@@ -357,7 +357,7 @@ begin
         AOlay.Deger1 := Tus;
         if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
           GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-        else GGorevler.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
       end
       else
       begin
@@ -374,7 +374,7 @@ begin
             AOlay.Deger1 := Tus;
             if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
               GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-            else GGorevler.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+            else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
           end;
         end
         else
@@ -385,7 +385,7 @@ begin
           AOlay.Deger1 := Tus;
           if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
             GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-          else GGorevler.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+          else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
         end;
       end;
 
@@ -394,7 +394,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := GirisKutusu^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := GirisKutusu^.FareImlecTipi;
 end;
 
 {==============================================================================

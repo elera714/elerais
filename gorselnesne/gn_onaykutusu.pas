@@ -38,7 +38,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst: TISayi4; ABaslik: string): POnayKutusu;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -67,7 +67,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PKarakterKatari(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi)^);
     end;
@@ -75,7 +75,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      OnayKutusu := POnayKutusu(OnayKutusu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      OnayKutusu := POnayKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       OnayKutusu^.Goster;
     end
 
@@ -97,7 +97,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := OnayKutusu^.FTGN.Kimlik;
+  else Result := OnayKutusu^.Kimlik;
 end;
 
 {==============================================================================
@@ -135,10 +135,10 @@ end;
 {==============================================================================
   onay kutusu nesnesini yok eder
  ==============================================================================}
-procedure TOnayKutusu.YokEt;
+procedure TOnayKutusu.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -167,7 +167,7 @@ var
   OnayKutusu: POnayKutusu = nil;
 begin
 
-  OnayKutusu := POnayKutusu(OnayKutusu^.NesneAl(FTGN.Kimlik));
+  OnayKutusu := POnayKutusu(GorselNesneler0.NesneAl(Kimlik));
   if(OnayKutusu = nil) then Exit;
 
   inherited Hizala;
@@ -184,7 +184,7 @@ var
   p1: PSayi1;
 begin
 
-  OnayKutusu := POnayKutusu(OnayKutusu^.NesneAl(FTGN.Kimlik));
+  OnayKutusu := POnayKutusu(GorselNesneler0.NesneAl(Kimlik));
   if(OnayKutusu = nil) then Exit;
 
   // nesne çizim alanı
@@ -294,7 +294,7 @@ begin
       // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
       if not(OnayKutusu^.OlayYonlendirmeAdresi = nil) then
         OnayKutusu^.OlayYonlendirmeAdresi(OnayKutusu, AOlay)
-      else GGorevler.OlayEkle(OnayKutusu^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(OnayKutusu^.GorevKimlik, AOlay);
 
     // aksi durumda onay kutusu durumunu bir önceki duruma getir
     end else OnayKutusu^.FSecimDurumu := OnayKutusu^.FOncekiSecimDurumu;
@@ -304,7 +304,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := OnayKutusu^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := OnayKutusu^.FareImlecTipi;
 end;
 
 end.

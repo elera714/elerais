@@ -276,7 +276,7 @@ begin
       Inc(Ust, 10);
     until Ust > Y;
   end
-  else if(AOlay.Olay = FO_HAREKET) and (AOlay.Kimlik = P2Pencere^.FTGN.Kimlik) then
+  else if(AOlay.Olay = FO_HAREKET) and (AOlay.Kimlik = P2Pencere^.Kimlik) then
   begin
 
     SonKonumY := AOlay.Deger1 - P2Pencere^.FKalinlik.Sol;
@@ -300,7 +300,7 @@ begin
       ':' + IntToStr(AOlay.Deger2) + ' - Seçili Nesne: ' + s;
     P2DurumCubugu^.Ciz;
   end
-  else if(AOlay.Olay = FO_SAGTUS_BIRAKILDI) and (AOlay.Kimlik = P2Pencere^.FTGN.Kimlik) then
+  else if(AOlay.Olay = FO_SAGTUS_BIRAKILDI) and (AOlay.Kimlik = P2Pencere^.Kimlik) then
   begin
 
     if(SonSecim = 1) then

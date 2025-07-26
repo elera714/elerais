@@ -89,7 +89,7 @@ begin
 
   // $1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
   Inc(BellekSayac);
-  if(BellekSayac = $100) then
+  if(BellekSayac = $1000) then
   begin
 
     igBellek^.MevcutDegerYaz(GGercekBellek.KullanilmisBlok * 4096);
@@ -99,7 +99,7 @@ begin
 
   // 1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
   Inc(DiskSayac);
-  if(DiskSayac = 1000) then
+  if(DiskSayac = $1000) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk kullaným alaný hesaplanýyor...', []);

@@ -135,21 +135,23 @@ end;
 procedure NesneKontrol;
 var
   G: PGorselNesne;
-  i: Integer;
-  j: TKimlik;
+  i, j: TKimlik;
 begin
 
   for i := 0 to USTSINIR_GORSELNESNE - 1 do
   begin
 
-    G := GGorselNesneListesi[i];
-
-    j := G^.FTGN.Kimlik shr 10;
-    if(i <> j) then
+    G := GorselNesneler0.GorselNesne[i];
+    if not(G = nil) then
     begin
 
-      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%d. nesne giriþi hatalý: %d', [i, G^.FTGN.Kimlik]);
-      Break;
+      j := G^.Kimlik shr 10;
+      if(i <> j) then
+      begin
+
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%d. nesne giriþi hatalý: %d', [i, G^.Kimlik]);
+        Break;
+      end;
     end;
   end;
 end;

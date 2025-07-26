@@ -30,7 +30,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4): PSayfaKontrol;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -63,7 +63,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
     end;
@@ -71,14 +71,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       SayfaKontrol^.Goster;
     end;
 
     ISLEV_GIZLE:
     begin
 
-      SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       SayfaKontrol^.Gizle;
     end;
 
@@ -86,7 +86,7 @@ begin
     $010F:
     begin
 
-      SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       SayfaKontrol^.SayfaEkle(p^);
     end;
@@ -95,7 +95,7 @@ begin
     $020F:
     begin
 
-      SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p := PKarakterKatari(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
       SayfaKontrol^.EtiketEkle(PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, p^);
@@ -120,7 +120,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := SayfaKontrol^.FTGN.Kimlik;
+  else Result := SayfaKontrol^.Kimlik;
 end;
 
 {==============================================================================
@@ -152,10 +152,10 @@ end;
 {==============================================================================
   sayfa kontrol nesnesini yok eder
  ==============================================================================}
-procedure TSayfaKontrol.YokEt;
+procedure TSayfaKontrol.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -167,7 +167,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
+  SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   if(SayfaKontrol^.FAktifSayfa = 0) then
@@ -215,7 +215,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
+  SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   inherited Gizle;
@@ -238,7 +238,7 @@ var
   SayfaKontrol: PSayfaKontrol = nil;
 begin
 
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
+  SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   if(SayfaKontrol^.FAktifSayfa = 0) then
@@ -289,7 +289,7 @@ begin
   SayfaKontrol := PSayfaKontrol(AGonderici);
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := SayfaKontrol^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := SayfaKontrol^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -311,13 +311,13 @@ begin
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
-    if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[0]^.FTGN.Kimlik) then
+    if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[0]^.Kimlik) then
       SayfaKontrol^.FAktifSayfa := 0
-    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[1]^.FTGN.Kimlik) then
+    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[1]^.Kimlik) then
       SayfaKontrol^.FAktifSayfa := 1
-    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[2]^.FTGN.Kimlik) then
+    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[2]^.Kimlik) then
       SayfaKontrol^.FAktifSayfa := 2
-    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[3]^.FTGN.Kimlik) then
+    else if(AOlay.Kimlik = SayfaKontrol^.FDugmeler[3]^.Kimlik) then
       SayfaKontrol^.FAktifSayfa := 3;
 
     SayfaKontrol^.Ciz;
@@ -331,7 +331,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
+  SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   i := SayfaKontrol^.FSayfaSayisi;
@@ -360,7 +360,7 @@ begin
     SayfaKontrol^.FSayfaSayisi := 1;
     SayfaKontrol^.FAktifSayfa := 0;
 
-    Result := SayfaKontrol^.FPaneller[0]^.FTGN.Kimlik;
+    Result := SayfaKontrol^.FPaneller[0]^.Kimlik;
   end
   else if(i = 1) then
   begin
@@ -385,7 +385,7 @@ begin
     SayfaKontrol^.FSayfaSayisi := 2;
     SayfaKontrol^.FAktifSayfa := 0;
 
-    Result := SayfaKontrol^.FPaneller[1]^.FTGN.Kimlik;
+    Result := SayfaKontrol^.FPaneller[1]^.Kimlik;
   end
   else if(i = 2) then
   begin
@@ -410,7 +410,7 @@ begin
     SayfaKontrol^.FSayfaSayisi := 3;
     SayfaKontrol^.FAktifSayfa := 0;
 
-    Result := SayfaKontrol^.FPaneller[2]^.FTGN.Kimlik;
+    Result := SayfaKontrol^.FPaneller[2]^.Kimlik;
   end
   else //if(i = 3) then
   begin
@@ -435,7 +435,7 @@ begin
     SayfaKontrol^.FSayfaSayisi := 4;
     SayfaKontrol^.FAktifSayfa := 0;
 
-    Result := SayfaKontrol^.FPaneller[3]^.FTGN.Kimlik;
+    Result := SayfaKontrol^.FPaneller[3]^.Kimlik;
   end;
 end;
 
@@ -452,7 +452,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  SayfaKontrol := PSayfaKontrol(SayfaKontrol^.NesneAl(FTGN.Kimlik));
+  SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
   if(ASayfaNo = 0) then

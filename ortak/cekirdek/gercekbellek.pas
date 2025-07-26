@@ -6,7 +6,7 @@
   Dosya Adý: gercekbellek.pas
   Dosya Ýþlevi: gerçek (fiziksel) bellek yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 20/05/2025
+  Güncelleme Tarihi: 23/07/2025
 
   Bilgi: Bellek rezervasyonlarý 4K blok ve katlarý halinde yönetilmektedir
 
@@ -49,6 +49,7 @@ type
 
 var
   BellekYonetimFPC: TMemoryManager;
+  GercekBellekKilit: TSayi4 = 0;
 
 function ELRGetMem(AUzunluk: TSayi4): Isaretci;
 function ELRFreeMemSize(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
@@ -362,7 +363,14 @@ var
   SiraNo, i: TSayi4;
 begin
 
-  if(AUzunluk = 0) then Exit(nil);
+  while KritikBolgeyeGir(GercekBellekKilit) = False do;
+
+  if(AUzunluk = 0) then
+  begin
+
+    KritikBolgedenCik(GercekBellekKilit);
+    Exit(nil);
+  end;
 
   Hafiza1 := YBYAdresIlk;
   Hafiza2 := nil;
@@ -393,6 +401,8 @@ begin
 
         GGercekBellek.FKullanilanYBYBellek += AUzunluk + 12;
 
+        KritikBolgedenCik(GercekBellekKilit);
+
         Exit(Isaretci(Hafiza1) + SizeOf(THafiza));
       end
       else
@@ -407,6 +417,8 @@ begin
           Hafiza1^.U := AUzunluk;
 
           GGercekBellek.FKullanilanYBYBellek += AUzunluk + 12;
+
+          KritikBolgedenCik(GercekBellekKilit);
 
           Exit(Isaretci(Hafiza1) + SizeOf(THafiza));
         end
@@ -432,6 +444,8 @@ begin
 
           GGercekBellek.FKullanilanYBYBellek += AUzunluk + 12;
 
+          KritikBolgedenCik(GercekBellekKilit);
+
           Exit(Isaretci(Hafiza1) + SizeOf(THafiza));
         end
         else
@@ -453,6 +467,8 @@ begin
 
   until True = False;
 
+  KritikBolgedenCik(GercekBellekKilit);
+
   Result := nil;
 end;
 
@@ -462,6 +478,8 @@ var
   YBMAdresMevcut: Isaretci;
   i, j: TSayi4;
 begin
+
+  while KritikBolgeyeGir(GercekBellekKilit) = False do;
 
   // bellek yönetimi, her zaman için bir sonrakini silme, bir öncekine eklenme
   // mantýðý içerisinde çalýþmaktadýr
@@ -583,6 +601,8 @@ begin
     //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELRFreeMemSizeYeni.Uzunluk Hatalý', []);
     Result := 1;
   end;
+
+  KritikBolgedenCik(GercekBellekKilit);
 end;
 
 function ELRMemSizeYeni(ABellek: Isaretci): TSayi4;

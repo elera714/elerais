@@ -254,7 +254,7 @@ begin
       end;
 
       // nesneye yönlendirilecek parametreleri hazýrla
-      Olay.Kimlik := GN^.FTGN.Kimlik;
+      Olay.Kimlik := GN^.Kimlik;
       if(Olay.Olay <> FO_KAYDIRMA) then
         Olay.Deger1 := Konum.Sol;
       Olay.Deger2 := Konum.Ust;
@@ -319,7 +319,7 @@ begin
   Gorev := GorevAl(AGorselNesne^.GorevKimlik);
 
   // görev çalýþmýyorsa nesneye olay gönderme
-  if(Gorev^.FGorevDurum <> gdCalisiyor) then Exit;
+  if(Gorev^.Durum <> gdCalisiyor) then Exit;
 
   // aktif nesneyi belirle
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then

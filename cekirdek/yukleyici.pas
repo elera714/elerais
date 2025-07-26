@@ -25,7 +25,7 @@ procedure YukleIslevindenSonraCalistir;
 implementation
 
 uses yonetim, gdt, idt, irq, pic, aygityonetimi, pci, src_klavye, genel, gorev,
-  gn_islevler, dosya, sistemmesaj, bolumleme, islemci, paylasim, usb, zamanlayici,
+  gorselnesne, dosya, sistemmesaj, bolumleme, islemci, paylasim, usb, zamanlayici,
   ag, src_vesa20, src_com, src_sb, bmp, acpi, k_giysi, giysi_mac, giysi_normal,
   olayyonetim, depolama;
 
@@ -75,7 +75,7 @@ begin
   SistemMesaj0.Yukle;
 
   // uygulama deðiþkenlerini ilk deðerlerle yükle
-  GGorevler := TGorevler.Create;
+  Gorevler0.Yukle;
 
   // çekirdek deðiþken / iþlevlerini ilk deðerlerle yükle
   yonetim.Yukle;
@@ -141,7 +141,7 @@ begin
   ListeleriIlkDegerlerleYukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Görsel nesne için bellek iþlemleri yapýlýyor.', []);
-  gn_islevler.Yukle;
+  GorselNesneler0.Yukle;
 
   // çekirdek yükleme sonrasý iþlevleri gerçekleþtir
   YukleIslevindenSonraCalistir;

@@ -37,11 +37,11 @@ function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
   var ADosyaArama: TDosyaArama): TSayi1;
-function DizinGirisindeAra(ADosyaIslem: TDosyaIslem; AAranacakDeger: string): TSayi4;
+function DizinGirisindeAra(ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TSayi4;
 
 implementation
 
-uses genel, donusum, gercekbellek, sistemmesaj;
+uses genel, donusum, gercekbellek, sistemmesaj, dosya;
 
 var
   DizinBellekAdresi: array[0..511] of TSayi1;
@@ -53,13 +53,15 @@ function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
  var ADosyaArama: TDosyaArama): TISayi4;
 var
   DizinGirisi: PDizinGirisi;
+  DI: PDosyaIslem;
 begin
 
   UzunDosyaAdi[0] := #0;
   UzunDosyaAdi[1] := #0;
 
-  DizinGirisi := @GDosyaIslemleri[ADosyaArama.Kimlik].DizinGirisi;
-  GDosyaIslemleri[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
+  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+  DizinGirisi := @DI^.DizinGirisi;
+  DI^.Aranan := AAramaSuzgec;
   Result := DizinGirdisiOku(DizinGirisi, AAramaSuzgec, ADosyaArama);
 end;
 
@@ -70,10 +72,12 @@ function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 var
   DizinGirisi: PDizinGirisi;
   Aranan: string;
+  DI: PDosyaIslem;
 begin
 
-  DizinGirisi := @GDosyaIslemleri[ADosyaArama.Kimlik].DizinGirisi;
-  Aranan := GDosyaIslemleri[ADosyaArama.Kimlik].Aranan;
+  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+  DizinGirisi := @DI^.DizinGirisi;
+  Aranan := DI^.Aranan;
   Result := DizinGirdisiOku(DizinGirisi, Aranan, ADosyaArama);
 end;
 
@@ -128,10 +132,10 @@ begin
   AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
-  if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(AktifGorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := @GDosyaIslemleri[ADosyaKimlik];
+  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
 
   // tam dosya adýný al
   TamAramaYolu := DosyaIslem^.MantiksalDepolama^.MD3.AygitAdi + ':' + DosyaIslem^.Klasor + '*.*';
@@ -158,7 +162,7 @@ begin
 
     DosyaIslem^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
     DosyaIslem^.Uzunluk := DosyaArama.DosyaUzunlugu;
-  end else AktifGorev^.FDosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+  end else AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
 {==============================================================================
@@ -196,7 +200,7 @@ var
 begin
 
   // iþlem yapýlan dosyayla ilgili bellek bölgesine konumlan
-  DosyaIslem := @GDosyaIslemleri[ADosyaKimlik];
+  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
 
   // üzerinde iþlem yapýlacak sürücü
   MD := DosyaIslem^.MantiksalDepolama;
@@ -329,7 +333,7 @@ var
   DizinGirdisi: PDizinGirdisi;
   TumGirislerOkundu,
   UzunDosyaAdiBulundu: Boolean;
-  DosyaIslem: PDosyaIslem;
+  DI: PDosyaIslem;
 begin
 
   ADosyaArama.DosyaAdi := '';
@@ -340,29 +344,29 @@ begin
   UzunDosyaAdiBulundu := False;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := @GDosyaIslemleri[ADosyaArama.Kimlik];
+  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
 
   // aramanýn yapýlacaðý sürücü
-  MD := DosyaIslem^.MantiksalDepolama;
+  MD := DI^.MantiksalDepolama;
 
   // aramaya baþla
   repeat
 
-    if(DosyaIslem^.KayitSN = -1) then
+    if(DI^.KayitSN = -1) then
     begin
 
       // bir sonraki dizin giriþini oku
-      MD^.FD^.SektorOku(MD^.FD, ADizinGirisi^.IlkSektor + DosyaIslem^.ZincirNo,
+      MD^.FD^.SektorOku(MD^.FD, ADizinGirisi^.IlkSektor + DI^.ZincirNo,
         1, @DizinBellekAdresi);
 
-      Inc(DosyaIslem^.ZincirNo);
+      Inc(DI^.ZincirNo);
 
-      DosyaIslem^.KayitSN := 0;
+      DI^.KayitSN := 0;
     end;
 
     // dosya giriþ tablosuna konumlan
     DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi);
-    Inc(DizinGirdisi, DosyaIslem^.KayitSN);
+    Inc(DizinGirdisi, DI^.KayitSN);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
     if(DizinGirdisi^.DosyaAdi[0] = #00) then
@@ -445,9 +449,9 @@ begin
     end;
 
     // bir sonraki girdiye konumlan
-    Inc(DosyaIslem^.KayitSN);
-    if(DosyaIslem^.KayitSN = 16) then
-      DosyaIslem^.KayitSN := -1
+    Inc(DI^.KayitSN);
+    if(DI^.KayitSN = 16) then
+      DI^.KayitSN := -1
     else Inc(DizinGirdisi);
 
     { TODO - kontrol edilerek aktifleþtirilecek }
@@ -468,7 +472,7 @@ end;
   dizin giriþinden dosya / klasör bilgilerini bulup, geriye ilgili giriþin küme
   numarasýný döndürür
  ==============================================================================}
-function DizinGirisindeAra(ADosyaIslem: TDosyaIslem; AAranacakDeger: string): TSayi4;
+function DizinGirisindeAra(ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TSayi4;
 var
   MD: PMantiksalDepolama;
   DizinGirdisi: PDizinGirdisi;
@@ -479,26 +483,26 @@ begin
   UzunDosyaAdiBulundu := False;
 
   // aramanýn yapýlacaðý sürücü
-  MD := ADosyaIslem.MantiksalDepolama;
+  MD := ADosyaIslem^.MantiksalDepolama;
 
   // aramaya baþla
   repeat
 
-    if(ADosyaIslem.KayitSN = -1) then
+    if(ADosyaIslem^.KayitSN = -1) then
     begin
 
       // bir sonraki dizin giriþini oku
-      MD^.FD^.SektorOku(MD^.FD, ADosyaIslem.DizinGirisi.IlkSektor +
-        ADosyaIslem.ZincirNo, 1, @DizinBellekAdresi);
+      MD^.FD^.SektorOku(MD^.FD, ADosyaIslem^.DizinGirisi.IlkSektor +
+        ADosyaIslem^.ZincirNo, 1, @DizinBellekAdresi);
 
-      Inc(ADosyaIslem.SektorNo);
+      Inc(ADosyaIslem^.SektorNo);
 
-      ADosyaIslem.KayitSN := 0;
+      ADosyaIslem^.KayitSN := 0;
     end;
 
     // dosya giriþ tablosuna konumlan
     DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi);
-    Inc(DizinGirdisi, ADosyaIslem.KayitSN);
+    Inc(DizinGirdisi, ADosyaIslem^.KayitSN);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
     if(DizinGirdisi^.DosyaAdi[0] = #00) then
@@ -550,9 +554,9 @@ begin
     end;
 
     // bir sonraki girdiye konumlan
-    Inc(ADosyaIslem.KayitSN);
-    if(ADosyaIslem.KayitSN = 16) then
-      ADosyaIslem.KayitSN := -1
+    Inc(ADosyaIslem^.KayitSN);
+    if(ADosyaIslem^.KayitSN = 16) then
+      ADosyaIslem^.KayitSN := -1
     else Inc(DizinGirdisi);
 
   until True = False;

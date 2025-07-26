@@ -19,7 +19,6 @@ uses gorselnesne, genel, paylasim, gn_masaustu, gn_pencere;
 var
   YakalananGorselNesne: PGorselNesne;   // farenin, üzerine sol tuş ile basılıp seçildiği nesne
 
-procedure Yukle;
 function GorselNesneIslevCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 procedure GorevGorselNesneleriniYokEt(AGorevKimlik: TKimlik);
 procedure PencereleriYenidenCiz;
@@ -32,48 +31,6 @@ procedure OlayYakalamayiBirak(AGorselNesne: PGorselNesne);
 implementation
 
 uses islevler, sistemmesaj, gorev, donusum, temelgorselnesne;
-
-{==============================================================================
-  görsel nesne yükleme işlevlerini gerçekleştirir
- ==============================================================================}
-procedure Yukle;
-var
-  i: TSayi4;
-  j: TKimlik;
-begin
-
-  { TODO : 64 Byte = fazladan ayrılan ve şu an hesaplanamadığı için en üst değer
-    olarak ayrılan temkin değeri. gereken değer teyit edilip otomatikleştirilecek }
-  // üstteki açıklama durumu değişkenin 1024 olarak değiştirilmesiyle pasifleştirilmiştir
-  GN_UZUNLUK := 1024; //Align(SizeOf(TPencere) + 64, 16);
-
-  // 0. bit    : 1 = nesne Kullanılıyor, 0 = nesne kullanılmıyor
-  // 1..9 bit  : düşük 12 bit sistem kontrol amacıyla sürekli 1 olacak
-  // 10..31 bit: nesne kimlik numarası. (kimlik sıralaması: 0, 1, 2 ...)
-  // 00000000 00000000 00000010 1010101K
-  j := %1010101010;
-
-  // nesneye ait işaretçileri bellek bölgeleriyle eşleştir
-  for i := 0 to USTSINIR_GORSELNESNE - 1 do
-  begin
-
-    GGorselNesneListesi[i] := GetMem(1024);
-
-    GGorselNesneListesi[i]^.FTGN := TTGN.Create;
-
-    GGorselNesneListesi[i]^.FTGN.Kimlik := j;
-
-    j += GN_UZUNLUK;
-  end;
-
-  // görsel nesne değişkenlerini ilk değerlerle yükle
-  ToplamMasaustu := 0;
-  ToplamGNSayisi := 0;
-  GAktifMasaustu := nil;
-  GAktifPencere := nil;
-  GAktifMenu := nil;
-  YakalananGorselNesne := nil;
-end;
 
 {==============================================================================
   genel nesne çağrılarını yönetir
@@ -94,7 +51,7 @@ begin
     Konum.Sol := PISayi4(ADegiskenler + 00)^;
     Konum.Ust := PISayi4(ADegiskenler + 04)^;
     GN := GorselNesneBul(Konum);
-    Result := GN^.FTGN.Kimlik;
+    Result := GN^.Kimlik;
   end
 
   // görsel nesne bilgilerini hedef bellek bölgesine kopyala
@@ -106,7 +63,7 @@ begin
     if(Kimlik >= 0) and (Kimlik < USTSINIR_GORSELNESNE) then
     begin
 
-      GN := GGorselNesneListesi[Kimlik];
+      GN := GorselNesneler0.GorselNesne[Kimlik];
       BellekAdresi := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       Tasi2(GN, BellekAdresi, GN_UZUNLUK);
 
@@ -123,7 +80,7 @@ begin
 
     { TODO - GN yapısı object'den class'a çevrildi. api yeniden düzenlencek }
     GN := GorselNesneBul(Konum);
-    s := IntToStr(GN^.FTGN.Kimlik);
+    s := IntToStr(GN^.Kimlik);
     BellekAdresi := Isaretci(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
     Tasi2(@s[0], BellekAdresi, Length(s) + 1);
     //Tasi2(@GN^.NesneAdi[0], BellekAdresi, Length(GN^.NesneAdi) + 1);
@@ -149,14 +106,14 @@ begin
   begin
 
     // masaüstü nesnesinin alt nesnesi var ise
-    if(Masaustu^.FTGN.AltNesneSayisi > 0) then
+    if(Masaustu^.AltNesneSayisi > 0) then
     begin
 
       // masaüstünün alt nesnelerinin bellek adresini al
       MasaustuGNBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
 
       // masaüstü alt nesnelerini teker teker ara
-      for PencereSiraNo := 0 to Masaustu^.FTGN.AltNesneSayisi - 1 do
+      for PencereSiraNo := 0 to Masaustu^.AltNesneSayisi - 1 do
       begin
 
         Pencere := MasaustuGNBellekAdresi[PencereSiraNo];
@@ -167,15 +124,15 @@ begin
         begin
 
           // pencere nesnesinin alt nesnesi var mı?
-          if(Pencere^.FTGN.AltNesneSayisi > 0) then
+          if(Pencere^.AltNesneSayisi > 0) then
           begin
 
             // pencere nesnesinin alt nesne bellek bölgesine konumlan
             PencereGNBellekAdresi := Pencere^.FAltNesneBellekAdresi;
-            for PencereAltNesneSiraNo := Pencere^.FTGN.AltNesneSayisi - 1 downto 0 do
+            for PencereAltNesneSiraNo := Pencere^.AltNesneSayisi - 1 downto 0 do
             begin
 
-              PencereGNBellekAdresi[PencereAltNesneSiraNo]^.YokEt;
+              GorselNesneler0.YokEt(PencereGNBellekAdresi[PencereAltNesneSiraNo]^.Kimlik);
             end;
 
             // pencere nesnesinin alt nesne için ayrılan bellek bloğunu iptal et
@@ -190,19 +147,19 @@ begin
           FreeMem(Pencere^.FCizimBellekAdresi, Pencere^.FCizimBellekUzunlugu);
 
           // pencereyi yok et
-          Pencere^.YokEt;
+          GorselNesneler0.YokEt(Pencere^.Kimlik);
 
           // masaüstü alt nesne sayısını bir azalt
-          i := Masaustu^.FTGN.AltNesneSayisi;
+          i := Masaustu^.AltNesneSayisi;
           Dec(i);
-          Masaustu^.FTGN.AltNesneSayisi := i;
+          Masaustu^.AltNesneSayisi := i;
 
           // eğer alt nesne sayısı halen mevcut ise
           // sıralamayı tekrar gözden geçir
-          if(Masaustu^.FTGN.AltNesneSayisi > 0) then
+          if(Masaustu^.AltNesneSayisi > 0) then
           begin
 
-            for i := 0 to Masaustu^.FTGN.AltNesneSayisi - 1 do
+            for i := 0 to Masaustu^.AltNesneSayisi - 1 do
             begin
 
               if(MasaustuGNBellekAdresi[i] = nil) then
@@ -239,14 +196,14 @@ begin
   begin
 
     // masaüstü nesnesinin alt nesnesi var ise
-    if(Masaustu^.FTGN.AltNesneSayisi > 0) then
+    if(Masaustu^.AltNesneSayisi > 0) then
     begin
 
       // masaüstünün alt nesnelerinin bellek adresini al
       AltNesneBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
 
       // masaüstü alt nesnelerini teker teker ara
-      for i := 0 to Masaustu^.FTGN.AltNesneSayisi - 1 do
+      for i := 0 to Masaustu^.AltNesneSayisi - 1 do
       begin
 
         Pencere := AltNesneBellekAdresi[i];
@@ -316,7 +273,7 @@ begin
   SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.FBoyut.Genislik;
   SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.FBoyut.Yukseklik;
 
-  if(SonBulunanGN^.FTGN.AltNesneSayisi = 0) then
+  if(SonBulunanGN^.AltNesneSayisi = 0) then
   begin
 
     AKonum.Sol := AKonum.Sol - SonBulunanGN^.FKonum.Sol;
@@ -325,11 +282,11 @@ begin
   end;
 
   // 3. pencerelerin sorgulanması
-  if(SonBulunanGN^.FTGN.AltNesneSayisi > 0) then
+  if(SonBulunanGN^.AltNesneSayisi > 0) then
   begin
 
     // alt nesnesi olan nesnenin alt nesnelerini ara. sondan başa doğru (3..0 gibi)
-    for i := SonBulunanGN^.FTGN.AltNesneSayisi - 1 downto 0 do
+    for i := SonBulunanGN^.AltNesneSayisi - 1 downto 0 do
     begin
 
       // görsel nesneyi al
@@ -420,11 +377,11 @@ begin
 
               GenelGN := nil;
 
-              if(SonBulunanGN^.FTGN.AltNesneSayisi > 0) then
+              if(SonBulunanGN^.AltNesneSayisi > 0) then
               begin
 
                 // alt nesnesi olan nesnenin alt nesnelerini ara. sondan başa doğru (3..0 gibi)
-                for j := SonBulunanGN^.FTGN.AltNesneSayisi - 1 downto 0 do
+                for j := SonBulunanGN^.AltNesneSayisi - 1 downto 0 do
                 begin
 
                   // görsel nesneyi al

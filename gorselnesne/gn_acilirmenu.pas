@@ -26,7 +26,7 @@ type
     function Olustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik,
       AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi,
       ASeciliYaziRengi: TRenk): PAcilirMenu;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -68,7 +68,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      AcilirMenu := PAcilirMenu(AcilirMenu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
       if(AcilirMenu <> nil) then AcilirMenu^.Goster;
     end;
@@ -77,7 +77,7 @@ begin
     ISLEV_GIZLE:
     begin
 
-      AcilirMenu := PAcilirMenu(AcilirMenu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
       if(AcilirMenu <> nil) then AcilirMenu^.Gizle;
     end;
@@ -86,7 +86,7 @@ begin
     $010F:
     begin
 
-      AcilirMenu := PAcilirMenu(AcilirMenu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
 
       AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
@@ -101,7 +101,7 @@ begin
     $020E:
     begin
 
-      AcilirMenu := PAcilirMenu(AcilirMenu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
       if(AcilirMenu <> nil) then Result := AcilirMenu^.FSeciliSiraNo
     end
@@ -127,7 +127,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := AcilirMenu^.FTGN.Kimlik;
+  else Result := AcilirMenu^.Kimlik;
 end;
 
 {==============================================================================
@@ -159,10 +159,10 @@ end;
 {==============================================================================
   açýlýr menü nesnesini yok eder
  ==============================================================================}
-procedure TAcilirMenu.YokEt;
+procedure TAcilirMenu.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -176,7 +176,7 @@ begin
 
   inherited Goster;
 
-  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(FTGN.Kimlik));
+  AcilirMenu := PAcilirMenu(GorselNesneler0.NesneAl(Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   if(AcilirMenu^.FYardimciNesne) then
@@ -192,13 +192,13 @@ begin
   end;
 
   // menünün açýldýðýna dair nesne sahibine mesaj gönder
-  Olay.Kimlik := AcilirMenu^.FTGN.Kimlik;
+  Olay.Kimlik := AcilirMenu^.Kimlik;
   Olay.Olay := CO_MENUACILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
   if not(AcilirMenu^.FMenuOlayGeriDonusAdresi = nil) then
     AcilirMenu^.FMenuOlayGeriDonusAdresi(AcilirMenu, Olay)
-  else GGorevler.OlayEkle(AcilirMenu^.GorevKimlik, Olay);
+  else Gorevler0.OlayEkle(AcilirMenu^.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -212,17 +212,17 @@ begin
 
   inherited Gizle;
 
-  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(FTGN.Kimlik));
+  AcilirMenu := PAcilirMenu(GorselNesneler0.NesneAl(Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   // menünün açýldýðýna dair nesne sahibine mesaj gönder
-  Olay.Kimlik := AcilirMenu^.FTGN.Kimlik;
+  Olay.Kimlik := AcilirMenu^.Kimlik;
   Olay.Olay := CO_MENUKAPATILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
   if not(AcilirMenu^.FMenuOlayGeriDonusAdresi = nil) then
     AcilirMenu^.FMenuOlayGeriDonusAdresi(AcilirMenu, Olay)
-  else GGorevler.OlayEkle(AcilirMenu^.GorevKimlik, Olay);
+  else Gorevler0.OlayEkle(AcilirMenu^.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -265,7 +265,7 @@ begin
 
   if not(AcilirMenu^.FAcilirMenuOlayGeriDonusAdresi = nil) then
     AcilirMenu^.FAcilirMenuOlayGeriDonusAdresi(AcilirMenu, AOlay)
-  else GGorevler.OlayEkle(AcilirMenu^.GorevKimlik, AOlay);
+  else Gorevler0.OlayEkle(AcilirMenu^.GorevKimlik, AOlay);
 end;
 
 {==============================================================================
@@ -278,7 +278,7 @@ var
   i: TISayi4;
 begin
 
-  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(FTGN.Kimlik));
+  AcilirMenu := PAcilirMenu(GorselNesneler0.NesneAl(Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   AcilirMenu^.FMenuBaslikListesi^.Ekle(ADeger);
@@ -315,7 +315,7 @@ var
   AcilirMenu: PAcilirMenu = nil;
 begin
 
-  AcilirMenu := PAcilirMenu(AcilirMenu^.NesneAl(FTGN.Kimlik));
+  AcilirMenu := PAcilirMenu(GorselNesneler0.NesneAl(Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   AcilirMenu^.FMenuBaslikListesi^.Temizle;

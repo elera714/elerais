@@ -43,6 +43,9 @@ var
   GeciciDeger: string = '';
 
 type
+  PObject = ^TObject;
+
+type
   PProtokolTipi = ^TProtokolTipi;
   TProtokolTipi = (ptBilinmiyor, ptIP, ptARP, ptTCP, ptUDP, ptICMP);
 
@@ -557,7 +560,6 @@ type
 
   PDosyaIslem = ^TDosyaIslem;
   TDosyaIslem = record
-    Kullanilabilir: Boolean;
     MantiksalDepolama: PMantiksalDepolama;
     Klasor, DosyaAdi: string;
     DATBellekAdresi: Isaretci;    // Dosya Ayýrma Tablosu bellek adresi
@@ -567,6 +569,8 @@ type
 
     // dizin giriþinin tek sektörlük içeriði, iþlevler arasý veri alýþveriþi için
     TekSektorIcerik: Isaretci;
+
+    Kimlik: TKimlik;
 
     // üzerinde iþlem yapýlan aktif dosya / klasör için dizin giriþi
     // tüm dosya iþlemleri bu yapý üzerinde olacak, daha sonra sektörün ilgili sýrasýna aktarýlacak
@@ -588,10 +592,6 @@ type
     DizinGirisi: TDizinGirisi;
     Aranan: string;
   end;
-
-var
-  // dosya iþlem veri yapýlarý
-  GDosyaIslemleri: array[0..USTSINIR_DOSYAISLEM - 1] of TDosyaIslem;
 
 type
   PAlan = ^TAlan;
@@ -851,8 +851,6 @@ var
 
   GecerliFareGostegeTipi: TFareImlecTipi;
 
-  ToplamGNSayisi, ToplamMasaustu: TSayi4;
-
   // að - gelen paket sayýlarý
   ICMPPaketSayisi: TSayi4 = 0;
   TCPPaketSayisi: TSayi4 = 0;
@@ -876,7 +874,7 @@ var
   GorevTSSListesi: array[0..USTSINIR_GOREVSAYISI - 1] of PTSS;
 
 type
-  TGorevDurum = (gdBos, gdOlusturuldu, gdCalisiyor, gdDurduruldu, gdSonlandiriliyor);
+  TGorevDurum = (gdIptal, gdOlusturuldu, gdCalisiyor, gdDurduruldu, gdSonlandiriliyor);
 
 type
   PPencereTipi = ^TPencereTipi;

@@ -14,7 +14,7 @@ unit gn_resimdugmesi;
 
 interface
 
-uses gorselnesne, paylasim, gn_panel;
+uses gorev, gorselnesne, paylasim, gn_panel;
 
 type
   PResimDugmesi = ^TResimDugmesi;
@@ -30,7 +30,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik, AResimSiraNo: TSayi4; AKenarlikCiz: Boolean): PResimDugmesi;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -64,7 +64,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PISayi4(ADegiskenler + 20)^);
     end;
@@ -72,14 +72,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      ResimDugmesi := PResimDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       ResimDugmesi^.Goster;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      ResimDugmesi := PResimDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       ResimDugmesi^.FHiza := Hiza;
 
@@ -107,7 +107,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := ResimDugmesi^.FTGN.Kimlik;
+  else Result := ResimDugmesi^.Kimlik;
 end;
 
 {==============================================================================
@@ -147,10 +147,10 @@ end;
 {==============================================================================
   resim düğmesi nesnesini yok eder
  ==============================================================================}
-procedure TResimDugmesi.YokEt;
+procedure TResimDugmesi.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -197,7 +197,7 @@ var
   ResimSiraNo, CizimTipi: TSayi4;
 begin
 
-  ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl(FTGN.Kimlik));
+  ResimDugmesi := PResimDugmesi(GorselNesneler0.NesneAl(Kimlik));
   if(ResimDugmesi = nil) then Exit;
 
   Alan := ResimDugmesi^.FCizimAlan;
@@ -294,7 +294,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(ResimDugmesi^.OlayYonlendirmeAdresi = nil) then
         ResimDugmesi^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-      else GGorevler.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -318,14 +318,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(ResimDugmesi^.OlayYonlendirmeAdresi = nil) then
         ResimDugmesi^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-      else GGorevler.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(ResimDugmesi^.OlayYonlendirmeAdresi = nil) then
       ResimDugmesi^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-    else GGorevler.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -348,11 +348,11 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(ResimDugmesi^.OlayYonlendirmeAdresi = nil) then
       ResimDugmesi^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-    else GGorevler.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := ResimDugmesi^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := ResimDugmesi^.FareImlecTipi;
 end;
 
 end.

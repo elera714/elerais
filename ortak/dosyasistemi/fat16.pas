@@ -37,7 +37,7 @@ function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 
 implementation
 
-uses genel, donusum, gercekbellek, fat32, sistemmesaj;
+uses genel, donusum, gercekbellek, fat32, sistemmesaj, dosya;
 
 var
   DizinBellekAdresi: array[0..511] of TSayi1;
@@ -49,10 +49,12 @@ function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
  var ADosyaArama: TDosyaArama): TISayi4;
 var
   DizinGirisi: PDizinGirisi;
+  DI: PDosyaIslem;
 begin
 
-  DizinGirisi := @GDosyaIslemleri[ADosyaArama.Kimlik].DizinGirisi;
-  GDosyaIslemleri[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
+  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+  DizinGirisi := @DI^.DizinGirisi;
+  DI^.Aranan := AAramaSuzgec;
   Result := DizinGirdisiOku(DizinGirisi, AAramaSuzgec, ADosyaArama);
 end;
 
@@ -63,10 +65,12 @@ function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 var
   DizinGirisi: PDizinGirisi;
   Aranan: string;
+  DI: PDosyaIslem;
 begin
 
-  DizinGirisi := @GDosyaIslemleri[ADosyaArama.Kimlik].DizinGirisi;
-  Aranan := GDosyaIslemleri[ADosyaArama.Kimlik].Aranan;
+  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+  DizinGirisi := @DI^.DizinGirisi;
+  Aranan := DI^.Aranan;
   Result := DizinGirdisiOku(DizinGirisi, Aranan, ADosyaArama);
 end;
 
@@ -121,10 +125,10 @@ begin
   AktifGorev := GorevAl(-1);
 
   // en son işlem hatalı ise çık
-  if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(AktifGorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // dosya işlem yapısı bellek bölgesine konumlan
-  DosyaIslem := @GDosyaIslemleri[ADosyaKimlik];
+  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
 
   // tam dosya adını al
   TamAramaYolu := DosyaIslem^.MantiksalDepolama^.MD3.AygitAdi + ':' + DosyaIslem^.Klasor + '*.*';
@@ -151,7 +155,7 @@ begin
 
     DosyaIslem^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
     DosyaIslem^.Uzunluk := DosyaArama.DosyaUzunlugu;
-  end else AktifGorev^.FDosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+  end else AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
 {==============================================================================
@@ -189,7 +193,7 @@ var
 begin
 
   // işlem yapılan dosyayla ilgili bellek bölgesine konumlan
-  DosyaIslem := @GDosyaIslemleri[ADosyaKimlik];
+  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
 
   // üzerinde işlem yapılacak sürücü
   MD := DosyaIslem^.MantiksalDepolama;

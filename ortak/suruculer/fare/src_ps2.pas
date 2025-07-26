@@ -6,7 +6,7 @@
   Dosya Adı: src_ps2.pas
   Dosya İşlevi: ps / 2 fare sürücüsü
 
-  Güncelleme Tarihi: 02/07/2024
+  Güncelleme Tarihi: 23/07/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -242,10 +242,14 @@ begin
     end;
 
     // işlenen verileri fare belleğinden sil
-    for i := FAygitPaketUzunlugu to ToplamVeriUzunlugu - 1 do
+    if(ToplamVeriUzunlugu > FAygitPaketUzunlugu) then
     begin
 
-      FareVeriBellegi[i - FAygitPaketUzunlugu] := FareVeriBellegi[i];
+      for i := FAygitPaketUzunlugu to ToplamVeriUzunlugu - 1 do
+      begin
+
+        FareVeriBellegi[i - FAygitPaketUzunlugu] := FareVeriBellegi[i];
+      end;
     end;
 
     // sayacı güncelle

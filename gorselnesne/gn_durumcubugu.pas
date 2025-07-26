@@ -22,7 +22,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4; ADurumYazi: string): PDurumCubugu;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -53,7 +53,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
@@ -62,7 +62,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      DurumCubugu := PDurumCubugu(DurumCubugu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      DurumCubugu := PDurumCubugu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       DurumCubugu^.Goster;
     end;
 
@@ -70,7 +70,7 @@ begin
     $010F:
     begin
 
-      DurumCubugu := PDurumCubugu(DurumCubugu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      DurumCubugu := PDurumCubugu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       DurumCubugu^.Baslik := p1^;
       DurumCubugu^.Ciz;
@@ -96,7 +96,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := DurumCubugu^.FTGN.Kimlik;
+  else Result := DurumCubugu^.Kimlik;
 end;
 
 {==============================================================================
@@ -134,10 +134,10 @@ end;
 {==============================================================================
   durum çubuğu nesnesini yok eder
  ==============================================================================}
-procedure TDurumCubugu.YokEt;
+procedure TDurumCubugu.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -166,7 +166,7 @@ var
   DurumCubugu: PDurumCubugu;
 begin
 
-  DurumCubugu := PDurumCubugu(DurumCubugu^.NesneAl(FTGN.Kimlik));
+  DurumCubugu := PDurumCubugu(GorselNesneler0.NesneAl(Kimlik));
   if(DurumCubugu = nil) then Exit;
 
   inherited Hizala;
@@ -183,7 +183,7 @@ var
   Sol, Ust, Yatay, Dikey: TISayi4;
 begin
 
-  DurumCubugu := PDurumCubugu(DurumCubugu^.NesneAl(FTGN.Kimlik));
+  DurumCubugu := PDurumCubugu(GorselNesneler0.NesneAl(Kimlik));
   if(DurumCubugu = nil) then Exit;
 
   inherited Ciz;
@@ -249,7 +249,7 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(DurumCubugu^.OlayYonlendirmeAdresi = nil) then
         DurumCubugu^.OlayYonlendirmeAdresi(DurumCubugu, AOlay)
-      else GGorevler.OlayEkle(DurumCubugu^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(DurumCubugu^.GorevKimlik, AOlay);
     end;
 
     // fare olaylarını almayı bırak
@@ -257,7 +257,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := DurumCubugu^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := DurumCubugu^.FareImlecTipi;
 end;
 
 end.

@@ -37,7 +37,7 @@ function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 
 implementation
 
-uses genel, gercekbellek, sistemmesaj, fat32, src_com;
+uses genel, gercekbellek, sistemmesaj, fat32, src_com, dosya;
 
 {==============================================================================
   dosya arama iþlevini baþlatýr
@@ -46,10 +46,12 @@ function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 var
   DizinGirisi: PDizinGirisi;
+  DI: PDosyaIslem;
 begin
 
-  DizinGirisi := @GDosyaIslemleri[ADosyaArama.Kimlik].DizinGirisi;
-  GDosyaIslemleri[ADosyaArama.Kimlik].Aranan := AAramaSuzgec;
+  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+  DizinGirisi := @DI^.DizinGirisi;
+  DI^.Aranan := AAramaSuzgec;
   Result := DizinGirdisiOku(DizinGirisi, AAramaSuzgec, ADosyaArama);
 end;
 
@@ -60,10 +62,12 @@ function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 var
   DizinGirisi: PDizinGirisi;
   Aranan: string;
+  DI: PDosyaIslem;
 begin
 
-  DizinGirisi := @GDosyaIslemleri[ADosyaArama.Kimlik].DizinGirisi;
-  Aranan := GDosyaIslemleri[ADosyaArama.Kimlik].Aranan;
+  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+  DizinGirisi := @DI^.DizinGirisi;
+  Aranan := DI^.Aranan;
   Result := DizinGirdisiOku(DizinGirisi, Aranan, ADosyaArama);
 end;
 
@@ -118,10 +122,10 @@ begin
   AktifGorev := GorevAl(-1);
 
   // en son iþlem hatalý ise çýk
-  if(AktifGorev^.FDosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(AktifGorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := @GDosyaIslemleri[ADosyaKimlik];
+  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
 
   // tam dosya adýný al
   TamAramaYolu := DosyaIslem^.MantiksalDepolama^.MD3.AygitAdi + ':' + DosyaIslem^.Klasor + '*.*';
@@ -148,7 +152,7 @@ begin
 
     DosyaIslem^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
     DosyaIslem^.Uzunluk := DosyaArama.DosyaUzunlugu;
-  end else AktifGorev^.FDosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+  end else AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
 {==============================================================================
@@ -185,7 +189,7 @@ var
 begin
 
   // iþlem yapýlan dosyayla ilgili bellek bölgesine konumlan
-  DosyaIslem := @GDosyaIslemleri[ADosyaKimlik];
+  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
 
   // üzerinde iþlem yapýlacak sürücü
   MD := DosyaIslem^.MantiksalDepolama;

@@ -23,7 +23,7 @@ type
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne; ASol, AUst,
       AGenislik, AYukseklik: TISayi4; ACizimModel: TSayi4; AGovdeRenk1, AGovdeRenk2,
       AYaziRenk: TRenk; ABaslik: string): PPanel;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -61,7 +61,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PSayi4(ADegiskenler + 20)^,
         PRenk(ADegiskenler + 24)^, PRenk(ADegiskenler + 28)^, PRenk(ADegiskenler + 32)^,
@@ -71,14 +71,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Panel := PPanel(Panel^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Panel := PPanel(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Panel^.Goster;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      Panel := PPanel(Panel^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Panel := PPanel(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       Panel^.FHiza := Hiza;
 
@@ -90,7 +90,7 @@ begin
     $010E:
     begin
 
-      Panel := PPanel(Panel^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Panel := PPanel(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(Panel <> nil) then
       begin
 
@@ -123,7 +123,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Panel^.FTGN.Kimlik;
+  else Result := Panel^.Kimlik;
 end;
 
 {==============================================================================
@@ -155,10 +155,10 @@ end;
 {==============================================================================
   panel nesnesini yok eder
  ==============================================================================}
-procedure TPanel.YokEt;
+procedure TPanel.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -190,20 +190,20 @@ var
   i: TSayi4;
 begin
 
-  Panel := PPanel(Panel^.NesneAl(FTGN.Kimlik));
+  Panel := PPanel(GorselNesneler0.NesneAl(Kimlik));
   if(Panel = nil) then Exit;
 
   inherited Hizala;
 
   // panel alt nesnelerini yeniden boyutlandır
-  if(Panel^.FTGN.AltNesneSayisi > 0) then
+  if(Panel^.AltNesneSayisi > 0) then
   begin
 
     AltNesneler := Panel^.FAltNesneBellekAdresi;
 
     // ilk oluşturulan alt nesneden son oluşturulan alt nesneye doğru
     // panelin alt nesnelerini yeniden boyutlandır
-    for i := 0 to Panel^.FTGN.AltNesneSayisi - 1 do
+    for i := 0 to Panel^.AltNesneSayisi - 1 do
     begin
 
       GorunurNesne := AltNesneler[i];
@@ -256,15 +256,15 @@ var
   i: TISayi4;
 begin
 
-  GN := GN^.NesneAl(FTGN.Kimlik);
+  GN := GorselNesneler0.NesneAl(Kimlik);
   if(GN = nil) then Exit;
 
   inherited Ciz;
 
-  if(GN^.FTGN.AltNesneSayisi = 0) then Exit;
+  if(GN^.AltNesneSayisi = 0) then Exit;
 
   // mevcut görsel nesneyi kaydet
-  for i := 0 to GN^.FTGN.AltNesneSayisi - 1 do
+  for i := 0 to GN^.AltNesneSayisi - 1 do
   begin
 
     AltNesneBellekAdresi := GN^.FAltNesneBellekAdresi;
@@ -346,7 +346,7 @@ begin
       // fare mesajlarını panel nesnesine yönlendir
       OlayYakalamayaBasla(Panel);
 
-      GGorevler.OlayEkle(Panel^.GorevKimlik, AOlay);
+      Gorevler0.OlayEkle(Panel^.GorevKimlik, AOlay);
     end;
   end
 
@@ -363,12 +363,12 @@ begin
 
       // uygulamaya veya efendi nesneye mesaj gönder
       AOlay.Olay := FO_TIKLAMA;
-      GGorevler.OlayEkle(Panel^.GorevKimlik, AOlay);
+      Gorevler0.OlayEkle(Panel^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
-    GGorevler.OlayEkle(Panel^.GorevKimlik, AOlay);
+    Gorevler0.OlayEkle(Panel^.GorevKimlik, AOlay);
   end
   else
   begin
@@ -377,7 +377,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Panel^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := Panel^.FareImlecTipi;
 end;
 
 end.

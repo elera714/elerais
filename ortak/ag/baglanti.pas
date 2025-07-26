@@ -112,7 +112,7 @@ function TBaglantilar.BaglantiAl(ASiraNo: TSayi4): PBaglanti;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_BAGLANTI) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_BAGLANTI) then
     Result := FBaglantiListesi[ASiraNo]
   else Result := nil;
 end;
@@ -121,7 +121,7 @@ procedure TBaglantilar.BaglantiYaz(ASiraNo: TSayi4; ABaglanti: PBaglanti);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_BAGLANTI) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_BAGLANTI) then
     FBaglantiListesi[ASiraNo] := ABaglanti;
 end;
 

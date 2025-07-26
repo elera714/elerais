@@ -146,33 +146,35 @@ begin
     %10001001, %00010000);
 
   // sistem görev deðerlerini belirle
-  G := GorevListesi[0];
-  G^.G0.FSeviyeNo := CALISMA_SEVIYE0;
-  G^.G0.FGorevSayaci := 0;
-  G^.G0.FBellekBaslangicAdresi := CekirdekBaslangicAdresi;
-  G^.FCalismaSuresiMS := 20;
-  G^.FCalismaSuresiSayacMS := 20;
+  G := GetMem(SizeOf(TGorev));
+  Gorevler0.Gorev[0] := G;
+  G^.SeviyeNo := CALISMA_SEVIYE0;
+  G^.GorevSayaci := 0;
+  G^.BellekBaslangicAdresi := CekirdekBaslangicAdresi;
+  G^.CalismaSuresiMS := 20;
+  G^.CalismaSuresiSayacMS := 20;
   G^.BellekUzunlugu := CekirdekUzunlugu;
-  G^.FOlaySayisi := 0;
+  G^.OlaySayisi := 0;
   G^.OlayBellekAdresi := nil;
   G^.AktifMasaustu := nil;
   G^.AktifPencere := nil;
 
-  G^.FDosyaAdi := 'cekirdek.bin';
-  G^.FProgramAdi := 'Sistem Çekirdeði';
+  G^.DosyaAdi := 'cekirdek.bin';
+  G^.ProgramAdi := 'Sistem Çekirdeði';
 
-  // sistem görevini çalýþýyor olarak iþaretle
-  G^.FOlaySayisi := 0;
-
+  // görev olaylarý için bellekte yer ayýr
   Olay := POlay(GGercekBellek.Ayir(4096));
   if not(Olay = nil) then
-    G^.FOlayBellekAdresi := Olay
-  else G^.FOlayBellekAdresi := nil;
+    G^.OlayBellekAdresi := Olay
+  else G^.OlayBellekAdresi := nil;
 
-  GGorevler.DurumDegistir(0, gdCalisiyor);
+  // görev olay sayýsý
+  G^.OlaySayisi := 0;
+
+  Gorevler0.DurumDegistir(0, gdCalisiyor);
 
   // çalýþan ve oluþturulan görev deðerlerini belirle
-  CalisanGorevSayisi := 1;
+  FCalisanGorevSayisi := 1;
   FAktifGorev := 0;
 
   // grafik iþlevlerini yönetecek görevi oluþtur
@@ -257,7 +259,7 @@ begin
   SistemTusDurumuDegisimSag := tdYok;
 
   // masaüstü aktif olana kadar bekle
-  while GAktifMasaustu = nil do ;
+  while GAktifMasaustu = nil do;
 
   // sistem deðer görüntüleyicisini baþlat
   SistemDegerleriBasla;
@@ -429,18 +431,18 @@ begin
           // program çalýþtýrma programýný çalýþtýr
           else if(TusKarakterDegeri = 'c') then
 
-            GGorevler.Calistir('calistir.c', CALISMA_SEVIYE3)
+            Gorevler0.Calistir('calistir.c', CALISMA_SEVIYE3)
 
           // dosya yöneticisi programýný çalýþtýr
           else if(TusKarakterDegeri = 'd') then
 
-            GGorevler.Calistir('dsyyntcs.c', CALISMA_SEVIYE3)
+            Gorevler0.Calistir('dsyyntcs.c', CALISMA_SEVIYE3)
 
           // görev yöneticisi programýný çalýþtýr
           else if(TusKarakterDegeri = 'g') then
 
             //GGorevler.Calistir('yzmcgor2.c', CALISMA_SEVIYE3)
-            GGorevler.Calistir('grvyntcs.c', CALISMA_SEVIYE3)
+            Gorevler0.Calistir('grvyntcs.c', CALISMA_SEVIYE3)
 
           // giriþ kutusundaki veriyi panoya kopyala
           else if(TusKarakterDegeri = 'k') then
@@ -461,12 +463,12 @@ begin
           // mesaj görüntüleme programýný çalýþtýr
           else if(TusKarakterDegeri = 'm') then
 
-            GGorevler.Calistir('smsjgor.c', CALISMA_SEVIYE3)
+            Gorevler0.Calistir('smsjgor.c', CALISMA_SEVIYE3)
 
           // resim görüntüleme programýný çalýþtýr
           else if(TusKarakterDegeri = 'r') then
 
-            GGorevler.Calistir('resimgor.c', CALISMA_SEVIYE3)
+            Gorevler0.Calistir('resimgor.c', CALISMA_SEVIYE3)
 
           // panodaki veriyi giriþ kutusuna yapýþtýr
           else if(TusKarakterDegeri = 'y') then
@@ -512,13 +514,13 @@ begin
           if(TusDegeri = TUS_F4) then
           begin
 
-            Olay.Kimlik := GAktifPencere^.FTGN.Kimlik;
+            Olay.Kimlik := GAktifPencere^.Kimlik;
             Olay.Olay := CO_SONLANDIR;
             Olay.Deger1 := 0;
             Olay.Deger2 := 0;
             if not(GAktifPencere^.OlayYonlendirmeAdresi = nil) then
               GAktifPencere^.OlayYonlendirmeAdresi(GAktifPencere, Olay)
-            else GGorevler.OlayEkle(GAktifPencere^.GorevKimlik, Olay);
+            else Gorevler0.OlayEkle(GAktifPencere^.GorevKimlik, Olay);
           end;
         end
         else
@@ -678,11 +680,11 @@ begin
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Sol: "%d, Üst: %d"', [Sol, Ust]);
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Geniþlik: "%d, Yükseklik: %d"', [Genislik, Yukseklik]);}
 
-          MUGorev := GGorevler.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + DosyaAdi, CALISMA_SEVIYE3);
+          MUGorev := Gorevler0.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + DosyaAdi, CALISMA_SEVIYE3);
 
           BekleMS(50);
 
-          GN := GN^.NesneAl(MUGorev^.AktifPencere^.FTGN.Kimlik);
+          GN := GorselNesneler0.NesneAl(PPencere(MUGorev^.AktifPencere)^.Kimlik);
 
           PPencere(GN)^.FKonum.Sol := Konum.Sol;
           PPencere(GN)^.FKonum.Ust := Konum.Ust;

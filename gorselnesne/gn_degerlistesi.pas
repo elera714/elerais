@@ -30,7 +30,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4): PDegerListesi;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -71,7 +71,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
     end;
@@ -79,7 +79,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      DegerListesi := PDegerListesi(DegerListesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       DegerListesi^.Goster;
     end;
 
@@ -87,7 +87,7 @@ begin
     ISLEV_HIZALA:
     begin
 
-      DegerListesi := PDegerListesi(DegerListesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       DegerListesi^.FHiza := Hiza;
 
@@ -99,7 +99,7 @@ begin
     $010F:
     begin
 
-      DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(
+      DegerListesi := PDegerListesi(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntDegerListesi));
       if(DegerListesi <> nil) then Result := TISayi4(DegerListesi^.DegerEkle(
         PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^,
@@ -110,7 +110,7 @@ begin
     $020F:
     begin
 
-      DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(
+      DegerListesi := PDegerListesi(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntDegerListesi));
       if(DegerListesi <> nil) then
       begin
@@ -124,7 +124,7 @@ begin
     $030E:
     begin
 
-      DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(
+      DegerListesi := PDegerListesi(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntDegerListesi));
       if(DegerListesi <> nil) then Result := DegerListesi^.FSeciliSiraNo;
       p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
@@ -135,7 +135,7 @@ begin
     $040F:
     begin
 
-      DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(
+      DegerListesi := PDegerListesi(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntDegerListesi));
       if(DegerListesi <> nil) then
       begin
@@ -151,7 +151,7 @@ begin
     $050E:
     begin
 
-      DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(
+      DegerListesi := PDegerListesi(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntDegerListesi));
       if(DegerListesi <> nil) then Result := DegerListesi^.FSeciliSiraNo;
     end;
@@ -173,7 +173,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := DegerListesi^.FTGN.Kimlik;
+  else Result := DegerListesi^.Kimlik;
 end;
 
 {==============================================================================
@@ -231,12 +231,12 @@ end;
 {==============================================================================
   değer listesi nesnesini yok eder
  ==============================================================================}
-procedure TDegerListesi.YokEt;
+procedure TDegerListesi.YokEt(AKimlik: TKimlik);
 var
   DegerListesi: PDegerListesi;
 begin
 
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
+  DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(Kimlik));
   if(DegerListesi = nil) then Exit;
 
   if(DegerListesi^.FDegerler <> nil) then DegerListesi^.FDegerler^.YokEt;
@@ -244,7 +244,7 @@ begin
   if(DegerListesi^.FKolonAdlari <> nil) then DegerListesi^.FKolonAdlari^.YokEt;
   if(DegerListesi^.FKolonUzunluklari <> nil) then DegerListesi^.FKolonUzunluklari^.YokEt;
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -274,7 +274,7 @@ var
   Kolon1U: TSayi4;
 begin
 
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
+  DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(Kimlik));
   if(DegerListesi = nil) then Exit;
 
   inherited Hizala;
@@ -307,7 +307,7 @@ var
   RY: TRenkYazi;
 begin
 
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
+  DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(Kimlik));
   if(DegerListesi = nil) then Exit;
 
   inherited Ciz;
@@ -466,7 +466,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
         DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-      else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
     end;
   end
 
@@ -486,14 +486,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
         DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-      else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
       DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-    else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
   end
 
   // fare hakeret işlemi
@@ -551,7 +551,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
         DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-      else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
     end
 
     // nesne yakalanmamış ise uygulamaya sadece mesaj gönder
@@ -561,7 +561,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(DegerListesi^.OlayYonlendirmeAdresi = nil) then
         DegerListesi^.OlayYonlendirmeAdresi(DegerListesi, AOlay)
-      else GGorevler.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(DegerListesi^.GorevKimlik, AOlay);
     end;
   end
 
@@ -594,7 +594,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := DegerListesi^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := DegerListesi^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -606,7 +606,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  DegerListesi := PDegerListesi(DegerListesi^.NesneTipiniKontrolEt(FTGN.Kimlik, gntDegerListesi));
+  DegerListesi := PDegerListesi(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntDegerListesi));
   if(DegerListesi = nil) then Exit;
 
   if(FSeciliSiraNo = -1) or (FSeciliSiraNo > FDegerler^.ElemanSayisi) then Exit('');
@@ -662,7 +662,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
+  DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(Kimlik));
   if(DegerListesi = nil) then Exit;
 
   DegerListesi^.FKolonAdlari^.Ekle(AKolon1);
@@ -680,7 +680,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
+  DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(Kimlik));
   if(DegerListesi = nil) then Exit;
 
   DegerListesi^.FDegerler^.Ekle(ADeger, AYaziRengi);
@@ -696,7 +696,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  DegerListesi := PDegerListesi(DegerListesi^.NesneAl(FTGN.Kimlik));
+  DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(Kimlik));
   if(DegerListesi = nil) then Exit;
 
   DegerListesi^.FDegerler^.Temizle;

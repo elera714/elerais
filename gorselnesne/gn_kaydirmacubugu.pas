@@ -14,7 +14,7 @@ unit gn_kaydirmacubugu;
 
 interface
 
-uses gorselnesne, paylasim, gn_pencere, gn_panel, gn_resimdugmesi;
+uses gorev, gorselnesne, paylasim, gn_pencere, gn_panel, gn_resimdugmesi;
 
 type
   PKaydirmaCubugu = ^TKaydirmaCubugu;
@@ -27,7 +27,7 @@ type
     FEksiltmeDugmesi, FArtirmaDugmesi: PResimDugmesi;
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne; ASol, AUst,
       AGenislik, AYukseklik: TISayi4; AYon: TYon): PKaydirmaCubugu;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -60,7 +60,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PYon(ADegiskenler + 20)^);
     end;
@@ -68,14 +68,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       KaydirmaCubugu^.Goster;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       KaydirmaCubugu^.FHiza := Hiza;
 
@@ -87,7 +87,7 @@ begin
     $010F:
     begin
 
-      KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneTipiniKontrolEt(
+      KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntKaydirmaCubugu));
       if(KaydirmaCubugu <> nil) then KaydirmaCubugu^.DegerleriBelirle(
         PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
@@ -113,7 +113,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := KaydirmaCubugu^.FTGN.Kimlik;
+  else Result := KaydirmaCubugu^.Kimlik;
 end;
 
 {==============================================================================
@@ -195,10 +195,10 @@ end;
 {==============================================================================
   kaydýrma çubuðu nesnesini yok eder
  ==============================================================================}
-procedure TKaydirmaCubugu.YokEt;
+procedure TKaydirmaCubugu.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -209,7 +209,7 @@ var
   KaydirmaCubugu: PKaydirmaCubugu = nil;
 begin
 
-  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(FTGN.Kimlik));
+  KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneAl(Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
   KaydirmaCubugu^.FArtirmaDugmesi^.Goster;
@@ -235,7 +235,7 @@ var
   KaydirmaCubugu: PKaydirmaCubugu = nil;
 begin
 
-  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(FTGN.Kimlik));
+  KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneAl(Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
   if(KaydirmaCubugu^.FYon = yYatay) then
@@ -283,7 +283,7 @@ begin
 
   inherited Ciz;
 
-  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(FTGN.Kimlik));
+  KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneAl(Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
   // kaydýrma çubuðunun çizim alan koordinatlarýný al
@@ -342,7 +342,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := KaydirmaCubugu^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := KaydirmaCubugu^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -363,7 +363,7 @@ begin
   if(AOlay.Olay = FO_TIKLAMA) then
   begin
 
-    if(AOlay.Kimlik = KaydirmaCubugu^.FEksiltmeDugmesi^.FTGN.Kimlik) then
+    if(AOlay.Kimlik = KaydirmaCubugu^.FEksiltmeDugmesi^.Kimlik) then
     begin
 
       i := KaydirmaCubugu^.FMevcutDeger;
@@ -382,17 +382,17 @@ begin
 
     KaydirmaCubugu^.Ciz;
 
-    AOlay.Kimlik := KaydirmaCubugu^.FTGN.Kimlik;
+    AOlay.Kimlik := KaydirmaCubugu^.Kimlik;
     AOlay.Deger1 := KaydirmaCubugu^.FMevcutDeger;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(KaydirmaCubugu^.OlayYonlendirmeAdresi = nil) then
       KaydirmaCubugu^.OlayYonlendirmeAdresi(KaydirmaCubugu, AOlay)
-    else GGorevler.OlayEkle(KaydirmaCubugu^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(KaydirmaCubugu^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := KaydirmaCubugu^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := KaydirmaCubugu^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -403,7 +403,7 @@ var
   KaydirmaCubugu: PKaydirmaCubugu = nil;
 begin
 
-  KaydirmaCubugu := PKaydirmaCubugu(KaydirmaCubugu^.NesneAl(FTGN.Kimlik));
+  KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneAl(Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
   KaydirmaCubugu^.FAltDeger := AAltDeger;

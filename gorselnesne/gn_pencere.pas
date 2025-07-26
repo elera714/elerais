@@ -98,7 +98,7 @@ begin
       AtaNesneKimlik := PKimlik(ADegiskenler + 00)^;
       if(AtaNesneKimlik = -1) then
         GN := nil
-      else GN := GN^.NesneAl(AtaNesneKimlik);
+      else GN := GorselNesneler0.NesneAl(AtaNesneKimlik);
 
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
       PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^,
@@ -110,14 +110,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Pencere := PPencere(Pencere^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Pencere := PPencere(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Pencere^.Goster;
     end;
 
     ISLEV_GIZLE:
     begin
 
-      Pencere := PPencere(Pencere^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Pencere := PPencere(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Pencere^.Gizle;
     end;
 
@@ -125,7 +125,7 @@ begin
     begin
 
       // nesnenin kimlik, tip deðerlerini denetle.
-      Pencere := PPencere(Pencere^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Pencere := PPencere(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(Pencere <> nil) then Pencere^.Guncelle;
     end;
 
@@ -134,7 +134,7 @@ begin
     begin
 
       // nesnenin kimlik, tip deðerlerini denetle.
-      Pencere := PPencere(Pencere^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Pencere := PPencere(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(Pencere <> nil) then
       begin
 
@@ -152,14 +152,14 @@ begin
     $020E:
     begin
 
-      Result := GAktifPencere^.FTGN.Kimlik;
+      Result := GAktifPencere^.Kimlik;
     end;
 
     // aktif pencereyi yaz
     $020F:
     begin
 
-      Pencere := PPencere(Pencere^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Pencere := PPencere(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(Pencere <> nil) then Pencere^.EnUsteGetir(Pencere);
     end
 
@@ -183,7 +183,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Pencere^.FTGN.Kimlik;
+  else Result := Pencere^.Kimlik;
 end;
 
 {==============================================================================
@@ -205,13 +205,13 @@ begin
   if(AAtaNesne = nil) then
 
     Masaustu := GAktifMasaustu
-  else Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(AAtaNesne^.FTGN.Kimlik, gntMasaustu));
+  else Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(AAtaNesne^.Kimlik, gntMasaustu));
 
   // geçerli masaüstü yok ise hata kodunu ver ve çýk
   if(Masaustu = nil) then Exit(nil);
 
   // pencerenin ana pencere olup olmadýðýný tespit et
-  Gorev := GGorevler.GorevBul(FAktifGorev);
+  Gorev := Gorevler0.GorevBul(FAktifGorev);
   if not(Gorev = nil) and (Gorev^.AktifPencere = nil) then
     AnaPencere := True
   else AnaPencere := False;
@@ -261,11 +261,11 @@ begin
   Pencere^.FTuvalNesne := Pencere;
 
   // ana pencerenin aktif penceresini belirle (alt penceresi olan ana pencere için)
-  Pencere^.FAtaPencere := Gorev^.AktifPencere;
+  Pencere^.FAtaPencere := PPencere(Gorev^.AktifPencere);
 
   // görevin aktif masaüstü ve penceresini belirle
   Gorev^.AktifMasaustu := Masaustu;
-  Gorev^.AktifPencere := Pencere;
+  Gorev^.AktifPencere := PObject(Pencere);
 
   Pencere^.Odaklanilabilir := False;
   Pencere^.Odaklanildi := False;
@@ -368,7 +368,7 @@ begin
   begin
 
     // hata olmasý durumunda nesneyi yok et ve iþlevden çýk
-    Pencere^.YokEt;
+    GorselNesneler0.YokEt(Pencere^.Kimlik);
     Result := nil;
     Exit;
   end;
@@ -385,7 +385,7 @@ var
   Pencere: PPencere;
 begin
 
-  Pencere := PPencere(Pencere^.NesneAl(FTGN.Kimlik));
+  Pencere := PPencere(GorselNesneler0.NesneAl(Kimlik));
   if(Pencere = nil) then Exit;
 
   inherited Goster;
@@ -423,7 +423,7 @@ var
   i: TSayi4;
 begin
 
-  Pencere := PPencere(Pencere^.NesneAl(FTGN.Kimlik));
+  Pencere := PPencere(GorselNesneler0.NesneAl(Kimlik));
   if(Pencere = nil) then Exit;
 
   // kontrol düðmesine sahip olan pencerelerin iç bileþenlerini konumlandýr
@@ -444,14 +444,14 @@ begin
   end;
 
   // pencere alt nesnelerini yeniden boyutlandýr
-  if(Pencere^.FTGN.AltNesneSayisi > 0) then
+  if(Pencere^.AltNesneSayisi > 0) then
   begin
 
     AltNesneler := Pencere^.FAltNesneBellekAdresi;
 
     // ilk oluþturulan alt nesneden son oluþturulan alt nesneye doðru
     // pencerenin alt nesnelerini yeniden boyutlandýr
-    for i := 0 to Pencere^.FTGN.AltNesneSayisi - 1 do
+    for i := 0 to Pencere^.AltNesneSayisi - 1 do
     begin
 
       GorunurNesne := AltNesneler[i];
@@ -516,7 +516,7 @@ var
   RenkBellek: PRenk;
 begin
 
-  Pencere := PPencere(Pencere^.NesneAl(FTGN.Kimlik));
+  Pencere := PPencere(GorselNesneler0.NesneAl(Kimlik));
   if(Pencere = nil) then Exit;
 
   Pencere^.FCiziliyor := True;
@@ -784,16 +784,16 @@ begin
   end;
 
   AltNesneler := Pencere^.FAltNesneBellekAdresi;
-  if(Pencere^.FTGN.AltNesneSayisi > 0) then
+  if(Pencere^.AltNesneSayisi > 0) then
   begin
 
     // ilk oluþturulan alt nesneden son oluþturulan alt nesneye doðru
     // pencerenin alt nesnelerini çiz
-    for i := 0 to Pencere^.FTGN.AltNesneSayisi - 1 do
+    for i := 0 to Pencere^.AltNesneSayisi - 1 do
     begin
 
       GorunurNesne := AltNesneler[i];
-      if(GorunurNesne^.Gorunum) and ((GorunurNesne^.FTGN.Kimlik and 1) = 1) then
+      if(GorunurNesne^.Gorunum) and ((GorunurNesne^.Kimlik and 1) = 1) then
       begin
 
         // yeni eklenecek görsel nesne - görsel nesneyi buraya ekle...
@@ -831,13 +831,13 @@ begin
   end;
 
   // uygulamaya veya efendi nesneye mesaj gönder
-  Olay.Kimlik := Pencere^.FTGN.Kimlik;
+  Olay.Kimlik := Pencere^.Kimlik;
   Olay.Olay := CO_CIZIM;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
   if not(Pencere^.OlayYonlendirmeAdresi = nil) then
     Pencere^.OlayYonlendirmeAdresi(Pencere, Olay)
-  else GGorevler.OlayEkle(Pencere^.GorevKimlik, Olay);
+  else Gorevler0.OlayEkle(Pencere^.GorevKimlik, Olay);
 
   Pencere^.FCiziliyor := False;
 end;
@@ -884,7 +884,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(APencere^.OlayYonlendirmeAdresi = nil) then
         APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-      else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
     end;
   end
 
@@ -903,14 +903,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(APencere^.OlayYonlendirmeAdresi = nil) then
         APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-      else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(APencere^.OlayYonlendirmeAdresi = nil) then
       APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-    else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -918,7 +918,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(APencere^.OlayYonlendirmeAdresi = nil) then
       APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-    else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
   end
   // diðer olaylar
   else
@@ -927,11 +927,11 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(APencere^.OlayYonlendirmeAdresi = nil) then
       APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-    else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := APencere^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := APencere^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -960,12 +960,12 @@ begin
       if(FareKonumu = fkGovde) then
       begin
 
-        GecerliFareGostegeTipi := APencere^.FTGN.FareImlecTipi;
+        GecerliFareGostegeTipi := APencere^.FareImlecTipi;
 
         // uygulamaya veya efendi nesneye mesaj gönder
         if not(APencere^.OlayYonlendirmeAdresi = nil) then
           APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-        else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
       end
       else
 
@@ -977,7 +977,7 @@ begin
         SonFareYatayKoordinat := GFareSurucusu.YatayKonum;
         SonFareDikeyKoordinat := GFareSurucusu.DikeyKonum;
       end;
-    end else GecerliFareGostegeTipi := APencere^.FTGN.FareImlecTipi;
+    end else GecerliFareGostegeTipi := APencere^.FareImlecTipi;
   end
 
   // sol tuþ býrakým iþlemi
@@ -995,19 +995,19 @@ begin
       if(APencere^.FarePencereCizimAlanindaMi(APencere)) then
       begin
 
-        GecerliFareGostegeTipi := APencere^.FTGN.FareImlecTipi;
+        GecerliFareGostegeTipi := APencere^.FareImlecTipi;
 
         // uygulamaya veya efendi nesneye mesaj gönder
         AOlay.Olay := FO_TIKLAMA;
         if not(APencere^.OlayYonlendirmeAdresi = nil) then
           APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-        else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
 
         // uygulamaya veya efendi nesneye mesaj gönder
         AOlay.Olay := FO_SOLTUS_BIRAKILDI;
         if not(APencere^.OlayYonlendirmeAdresi = nil) then
           APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-        else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
       end
       else
 
@@ -1016,12 +1016,12 @@ begin
 
         { TODO : býrakma iþlemi APencere dýþýnda olursa normalde kursor de ilgili
           nesnenin kursörü olur }
-        GecerliFareGostegeTipi := APencere^.FTGN.FareImlecTipi;
+        GecerliFareGostegeTipi := APencere^.FareImlecTipi;
 
         // uygulamaya veya efendi nesneye mesaj gönder
         if not(APencere^.OlayYonlendirmeAdresi = nil) then
           APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-        else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
       end;
     end;
   end
@@ -1037,12 +1037,12 @@ begin
       begin
 
         FareKonumu := fkGovde;
-        GecerliFareGostegeTipi := APencere^.FTGN.FareImlecTipi;
+        GecerliFareGostegeTipi := APencere^.FareImlecTipi;
 
         // uygulamaya veya efendi nesneye mesaj gönder
         if not(APencere^.OlayYonlendirmeAdresi = nil) then
           APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-        else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
       end
       else
       begin
@@ -1053,7 +1053,7 @@ begin
         // uygulamaya veya efendi nesneye mesaj gönder
         if not(APencere^.OlayYonlendirmeAdresi = nil) then
           APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-        else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
       end;
     end
     else
@@ -1087,9 +1087,9 @@ begin
         // uygulamaya veya efendi nesneye mesaj gönder
         if not(APencere^.OlayYonlendirmeAdresi = nil) then
           APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-        else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
 
-        GecerliFareGostegeTipi := APencere^.FTGN.FareImlecTipi;
+        GecerliFareGostegeTipi := APencere^.FareImlecTipi;
       end;
     end;
   end
@@ -1100,7 +1100,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(APencere^.OlayYonlendirmeAdresi = nil) then
       APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-    else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
   end;
 end;
 
@@ -1128,7 +1128,7 @@ begin
 
       if not(APencere^.OlayYonlendirmeAdresi = nil) then
         APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-      else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
     end
     else
     begin
@@ -1158,14 +1158,14 @@ begin
         AOlay.Olay := FO_TIKLAMA;
         if not(APencere^.OlayYonlendirmeAdresi = nil) then
           APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-        else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
       end;
 
       // nesneye sadece FO_SOLTUS_BIRAKILDI mesajý gönder
       AOlay.Olay := FO_SOLTUS_BIRAKILDI;
       if not(APencere^.OlayYonlendirmeAdresi = nil) then
         APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-      else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
     end;
   end
 
@@ -1202,11 +1202,11 @@ begin
 
                 // fare göstergesi APencere gövdesinde
                 FareKonumu := fkGovde;
-                GecerliFareGostegeTipi := APencere^.FTGN.FareImlecTipi;
+                GecerliFareGostegeTipi := APencere^.FareImlecTipi;
 
                 if not(APencere^.OlayYonlendirmeAdresi = nil) then
                   APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-                else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+                else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
               end
               else
               begin
@@ -1298,7 +1298,7 @@ begin
 
         if not(APencere^.OlayYonlendirmeAdresi = nil) then
           APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-        else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
       end
       else
       begin
@@ -1411,7 +1411,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(APencere^.OlayYonlendirmeAdresi = nil) then
       APencere^.OlayYonlendirmeAdresi(APencere, AOlay)
-    else GGorevler.OlayEkle(APencere^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(APencere^.GorevKimlik, AOlay);
   end;
 end;
 
@@ -1425,7 +1425,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  Pencere := PPencere(Pencere^.NesneAl(FTGN.Kimlik));
+  Pencere := PPencere(GorselNesneler0.NesneAl(Kimlik));
   if(Pencere = nil) then Exit;
 
   Pencere^.Boyutlandir;
@@ -1461,24 +1461,24 @@ begin
   AltNesneBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
 
   // nesnenin alt nesne sayýsý var ise
-  if(Masaustu^.FTGN.AltNesneSayisi > 1) then
+  if(Masaustu^.AltNesneSayisi > 1) then
   begin
 
-    BirOncekiPencere := PPencere(AltNesneBellekAdresi[Masaustu^.FTGN.AltNesneSayisi - 1]);
+    BirOncekiPencere := PPencere(AltNesneBellekAdresi[Masaustu^.AltNesneSayisi - 1]);
 
     // alt nesneler içerisinde pencere nesnesini ara
-    for i := (Masaustu^.FTGN.AltNesneSayisi - 1) downto 0 do
+    for i := (Masaustu^.AltNesneSayisi - 1) downto 0 do
     begin
 
       if(PPencere(AltNesneBellekAdresi[i]) = APencere) then Break;
     end;
 
     // eðer pencere nesnesi en üstte deðil ise
-    if(i <> Masaustu^.FTGN.AltNesneSayisi - 1) then
+    if(i <> Masaustu^.AltNesneSayisi - 1) then
     begin
 
       // pencere nesnesini masaüstü nesne belleðinde en üste getir
-      for j := i to Masaustu^.FTGN.AltNesneSayisi - 2 do
+      for j := i to Masaustu^.AltNesneSayisi - 2 do
       begin
 
         GN := AltNesneBellekAdresi[j + 0];
@@ -1601,21 +1601,21 @@ begin
 
     Pencere := PPencere(ResimDugmesi^.AtaNesne);
 
-    if(ResimDugmesi^.FTGN.Kimlik = Pencere^.FKucultmeDugmesi^.FTGN.Kimlik) then
+    if(ResimDugmesi^.Kimlik = Pencere^.FKucultmeDugmesi^.Kimlik) then
       Pencere^.FPencereDurum := pdKucultuldu
-    else if(ResimDugmesi^.FTGN.Kimlik = Pencere^.FBuyutmeDugmesi^.FTGN.Kimlik) then
+    else if(ResimDugmesi^.Kimlik = Pencere^.FBuyutmeDugmesi^.Kimlik) then
       SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'Bilgi: büyütme düðmesi iþlevi yapýlandýrýlacak', [])
-    else if(ResimDugmesi^.FTGN.Kimlik = Pencere^.FKapatmaDugmesi^.FTGN.Kimlik) then
+    else if(ResimDugmesi^.Kimlik = Pencere^.FKapatmaDugmesi^.Kimlik) then
     begin
 
       // uygulamaya veya efendi nesneye mesaj gönder
-      Olay.Kimlik := Pencere^.FTGN.Kimlik;
+      Olay.Kimlik := Pencere^.Kimlik;
       Olay.Olay := CO_SONLANDIR;
       Olay.Deger1 := 0;
       Olay.Deger2 := 0;
       if not(Pencere^.OlayYonlendirmeAdresi = nil) then
         Pencere^.OlayYonlendirmeAdresi(Pencere, Olay)
-      else GGorevler.OlayEkle(Pencere^.GorevKimlik, Olay);
+      else Gorevler0.OlayEkle(Pencere^.GorevKimlik, Olay);
     end;
   end;
 end;

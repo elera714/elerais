@@ -80,7 +80,7 @@ function TDHCPSunucu.DHCPKayitAl(ASiraNo: TSayi4): PDHCPKayit;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_DHCPKAYIT) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DHCPKAYIT) then
     Result := FDHCPKayitListesi[ASiraNo]
   else Result := nil;
 end;
@@ -89,7 +89,7 @@ procedure TDHCPSunucu.DHCPKayitYaz(ASiraNo: TSayi4; ADHCPKayit: PDHCPKayit);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_DHCPKAYIT) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DHCPKAYIT) then
     FDHCPKayitListesi[ASiraNo] := ADHCPKayit;
 end;
 

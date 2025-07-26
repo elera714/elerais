@@ -53,7 +53,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst: TISayi4; ABaslik: string): PSecimDugmesi;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -83,7 +83,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PKarakterKatari(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi)^);
     end;
@@ -91,14 +91,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      SecimDugmesi := PSecimDugmesi(SecimDugmesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SecimDugmesi := PSecimDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       SecimDugmesi^.Goster;
     end;
 
     $010F:
     begin
 
-      SecimDugmesi := PSecimDugmesi(SecimDugmesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SecimDugmesi := PSecimDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       SecimDugmesi^.FSecimDurumu := PSecimDurumu(ADegiskenler + 04)^;
 
       Pencere := PPencere(SecimDugmesi^.AtaNesne);
@@ -123,7 +123,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := SecimDugmesi^.FTGN.Kimlik;
+  else Result := SecimDugmesi^.Kimlik;
 end;
 
 {==============================================================================
@@ -161,10 +161,10 @@ end;
 {==============================================================================
   seçim düğmesi nesnesini yok eder
  ==============================================================================}
-procedure TSecimDugmesi.YokEt;
+procedure TSecimDugmesi.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -204,7 +204,7 @@ var
   p1: PSayi1;
 begin
 
-  SecimDugmesi := PSecimDugmesi(SecimDugmesi^.NesneAl(FTGN.Kimlik));
+  SecimDugmesi := PSecimDugmesi(GorselNesneler0.NesneAl(Kimlik));
   if(SecimDugmesi = nil) then Exit;
 
   // seçim düğmesi üst nesneye bağlı olarak koordinatlarını al
@@ -301,13 +301,13 @@ begin
         // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
         if not(SecimDugmesi^.OlayYonlendirmeAdresi = nil) then
           SecimDugmesi^.OlayYonlendirmeAdresi(SecimDugmesi, AOlay)
-        else GGorevler.OlayEkle(SecimDugmesi^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(SecimDugmesi^.GorevKimlik, AOlay);
       end;
     end;
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := SecimDugmesi^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := SecimDugmesi^.FareImlecTipi;
 end;
 
 end.

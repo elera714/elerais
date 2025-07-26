@@ -30,7 +30,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4): PListeGorunum;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -66,7 +66,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
     end;
@@ -75,7 +75,7 @@ begin
     ISLEV_HIZALA:
     begin
 
-      ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      ListeGorunum := PListeGorunum(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       ListeGorunum^.FHiza := Hiza;
 
@@ -87,7 +87,7 @@ begin
     $010F:
     begin
 
-      ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
+      ListeGorunum := PListeGorunum(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeGorunum));
       if(ListeGorunum <> nil) then ListeGorunum^.FDegerler^.Ekle(
         PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^,
@@ -99,7 +99,7 @@ begin
     $020E:
     begin
 
-      ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
+      ListeGorunum := PListeGorunum(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeGorunum));
       if(ListeGorunum <> nil) then Result := ListeGorunum^.FSeciliSiraNo;
     end;
@@ -108,7 +108,7 @@ begin
     $020F:
     begin
 
-      ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
+      ListeGorunum := PListeGorunum(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeGorunum));
       if(ListeGorunum <> nil) then ListeGorunum^.FSeciliSiraNo := PISayi4(ADegiskenler + 04)^;
     end;
@@ -117,7 +117,7 @@ begin
     $030F:
     begin
 
-      ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
+      ListeGorunum := PListeGorunum(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeGorunum));
       if(ListeGorunum <> nil) then
       begin
@@ -134,7 +134,7 @@ begin
     $040E:
     begin
 
-      ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
+      ListeGorunum := PListeGorunum(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeGorunum));
       if(ListeGorunum <> nil) then Result := ListeGorunum^.FSeciliSiraNo;
       p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
@@ -145,7 +145,7 @@ begin
     $050F:
     begin
 
-      ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
+      ListeGorunum := PListeGorunum(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeGorunum));
       if(ListeGorunum <> nil) then
       begin
@@ -160,7 +160,7 @@ begin
     $060F:
     begin
 
-      ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(
+      ListeGorunum := PListeGorunum(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeGorunum));
       if(ListeGorunum <> nil) then
       begin
@@ -189,7 +189,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := ListeGorunum^.FTGN.Kimlik;
+  else Result := ListeGorunum^.Kimlik;
 end;
 
 {==============================================================================
@@ -250,12 +250,12 @@ end;
 {==============================================================================
   liste görünüm nesnesini yok eder
  ==============================================================================}
-procedure TListeGorunum.YokEt;
+procedure TListeGorunum.YokEt(AKimlik: TKimlik);
 var
   ListeGorunum: PListeGorunum;
 begin
 
-  ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(FTGN.Kimlik));
+  ListeGorunum := PListeGorunum(GorselNesneler0.NesneAl(Kimlik));
   if(ListeGorunum = nil) then Exit;
 
   if(ListeGorunum^.FDegerler <> nil) then ListeGorunum^.FDegerler^.YokEt;
@@ -263,7 +263,7 @@ begin
   if(ListeGorunum^.FKolonAdlari <> nil) then ListeGorunum^.FKolonAdlari^.YokEt;
   if(ListeGorunum^.FKolonUzunluklari <> nil) then ListeGorunum^.FKolonUzunluklari^.YokEt;
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -292,7 +292,7 @@ var
   ListeGorunum: PListeGorunum;
 begin
 
-  ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(FTGN.Kimlik));
+  ListeGorunum := PListeGorunum(GorselNesneler0.NesneAl(Kimlik));
   if(ListeGorunum = nil) then Exit;
 
   inherited Hizala;
@@ -314,7 +314,7 @@ var
   s: String;
 begin
 
-  ListeGorunum := PListeGorunum(ListeGorunum^.NesneAl(FTGN.Kimlik));
+  ListeGorunum := PListeGorunum(GorselNesneler0.NesneAl(Kimlik));
   if(ListeGorunum = nil) then Exit;
 
   inherited Ciz;
@@ -475,7 +475,7 @@ begin
         // uygulamaya veya efendi nesneye mesaj gönder
         if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
           ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-        else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
       end;
     end;
   end
@@ -496,14 +496,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
         ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-      else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
       ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-    else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
   end
 
   // fare hakeret iþlemi
@@ -561,7 +561,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
         ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-      else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
     end
 
     // nesne yakalanmamýþ ise uygulamaya sadece mesaj gönder
@@ -571,7 +571,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
         ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-      else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
     end;
   end
 
@@ -611,11 +611,11 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(ListeGorunum^.OlayYonlendirmeAdresi = nil) then
       ListeGorunum^.OlayYonlendirmeAdresi(ListeGorunum, AOlay)
-    else GGorevler.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(ListeGorunum^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := ListeGorunum^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := ListeGorunum^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -627,7 +627,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  ListeGorunum := PListeGorunum(ListeGorunum^.NesneTipiniKontrolEt(FTGN.Kimlik, gntListeGorunum));
+  ListeGorunum := PListeGorunum(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntListeGorunum));
   if(ListeGorunum = nil) then Exit;
 
   if(FSeciliSiraNo = -1) or (FSeciliSiraNo > FDegerler^.ElemanSayisi) then Exit('');

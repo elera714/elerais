@@ -43,11 +43,11 @@ var
   i: TSayi4;
 begin
 
-  G := GGorevler.BosGorevBul;
+  G := Gorevler0.BosGorevBul;
   if not(G = nil) then
   begin
 
-    i := G^.FGorevKimlik;
+    i := G^.Kimlik;
 
     // uygulamanın TSS, CS, DS seçicilerini belirle, her bir program 3 seçici içerir
     SNYazmacCS := (i * 3) + 1;
@@ -84,25 +84,26 @@ begin
     GorevTSSListesi[i]^.ESP0 := $3300000; // AYiginDegeri;
 
     // sistem görev değerlerini belirle
-    GorevListesi[i]^.G0.FSeviyeNo := 0; // ASeviyeNo;
-    GorevListesi[i]^.G0.FGorevSayaci := 0;
-    GorevListesi[i]^.G0.FBellekBaslangicAdresi := TSayi4(@Calistir);
-    GorevListesi[i]^.BellekUzunlugu := $FFFFFFFF;
-    GorevListesi[i]^.FOlaySayisi := 0;
-    GorevListesi[i]^.OlayBellekAdresi := nil;
-    GorevListesi[i]^.AktifMasaustu := nil;
-    GorevListesi[i]^.AktifPencere := nil;
+    G := GetMem(SizeOf(TGorev));
+    Gorevler0.Gorev[i] := G;
+    G^.SeviyeNo := 0; // ASeviyeNo;
+    G^.GorevSayaci := 0;
+    G^.BellekBaslangicAdresi := TSayi4(@Calistir);
+    G^.BellekUzunlugu := $FFFFFFFF;
+    G^.OlaySayisi := 0;
+    G^.OlayBellekAdresi := nil;
+    G^.AktifMasaustu := nil;
+    G^.AktifPencere := nil;
 
     // sistem görev adı (dosya adı)
-    GorevListesi[i]^.FDosyaAdi := 'cekirdek.bin';
-    GorevListesi[i]^.FProgramAdi := 'AGorevAdi';
+    G^.DosyaAdi := 'cekirdek.bin';
+    G^.ProgramAdi := 'AGorevAdi';
 
     // sistem görevini çalışıyor olarak işaretle
-    G := GorevListesi[i];
-    GGorevler.DurumDegistir(i, gdDurduruldu);
+    Gorevler0.DurumDegistir(i, gdDurduruldu);
 
     // çalışan ve oluşturulan görev değerlerini belirle
-    Inc(CalisanGorevSayisi);
+    Inc(FCalisanGorevSayisi);
 
     //Result := SNYazmacCS;
 
@@ -124,7 +125,7 @@ begin
 
   until True = False;}
 
-  GGorevler.DurumDegistir(G^.FGorevKimlik, gdCalisiyor);
+  Gorevler0.DurumDegistir(G^.Kimlik, gdCalisiyor);
 end;
 
 end.

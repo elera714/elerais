@@ -14,7 +14,7 @@ unit gn_renksecici;
 
 interface
 
-uses gorselnesne, paylasim, gn_panel;
+uses gorev, gorselnesne, paylasim, gn_panel;
 
 const
   SecimRenkleri: array[0..15] of TRenk = (
@@ -37,7 +37,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TSayi4): PRenkSecici;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -66,7 +66,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PRenk(ADegiskenler + 12)^, PRenk(ADegiskenler + 16)^);
     end;
@@ -74,7 +74,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      RenkSecici := PRenkSecici(RenkSecici^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      RenkSecici := PRenkSecici(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       RenkSecici^.Goster;
     end;
 
@@ -96,7 +96,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := RenkSecici^.FTGN.Kimlik;
+  else Result := RenkSecici^.Kimlik;
 end;
 
 {==============================================================================
@@ -135,10 +135,10 @@ end;
 {==============================================================================
   renk seçici nesnesini yok eder
  ==============================================================================}
-procedure TRenkSecici.YokEt;
+procedure TRenkSecici.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -167,7 +167,7 @@ var
   RenkSecici: PRenkSecici = nil;
 begin
 
-  RenkSecici := PRenkSecici(RenkSecici^.NesneAl(FTGN.Kimlik));
+  RenkSecici := PRenkSecici(GorselNesneler0.NesneAl(Kimlik));
   if(RenkSecici = nil) then Exit;
 
   inherited Hizala;
@@ -184,7 +184,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  RenkSecici := PRenkSecici(RenkSecici^.NesneAl(FTGN.Kimlik));
+  RenkSecici := PRenkSecici(GorselNesneler0.NesneAl(Kimlik));
   if(RenkSecici = nil) then Exit;
 
   // 16 rengi 8 sütün, 2 satýr olarak çiz. (8 x 2)
@@ -275,13 +275,13 @@ begin
         AOlay.Deger2 := 0;
         if not(RenkSecici^.OlayYonlendirmeAdresi = nil) then
           RenkSecici^.OlayYonlendirmeAdresi(RenkSecici, AOlay)
-        else GGorevler.OlayEkle(RenkSecici^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(RenkSecici^.GorevKimlik, AOlay);
       end;
     end;
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := RenkSecici^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := RenkSecici^.FareImlecTipi;
 end;
 
 end.

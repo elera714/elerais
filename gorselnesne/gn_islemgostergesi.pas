@@ -23,7 +23,7 @@ type
     FAltDeger, FUstDeger, FMevcutDeger: TISayi4;
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4): PIslemGostergesi;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -58,7 +58,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
     end;
@@ -66,7 +66,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       IslemGostergesi^.Goster;
     end;
 
@@ -74,7 +74,7 @@ begin
     $010F:
     begin
 
-      IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneTipiniKontrolEt(
+      IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntIslemGostergesi));
       if(IslemGostergesi <> nil) then IslemGostergesi^.DegerleriBelirle(
         PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
@@ -84,7 +84,7 @@ begin
     $020F:
     begin
 
-      IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneTipiniKontrolEt(
+      IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntIslemGostergesi));
       if(IslemGostergesi <> nil) then IslemGostergesi^.MevcutDegerYaz(PISayi4(ADegiskenler + 04)^);
     end
@@ -108,7 +108,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := IslemGostergesi^.FTGN.Kimlik;
+  else Result := IslemGostergesi^.Kimlik;
 end;
 
 {==============================================================================
@@ -144,10 +144,10 @@ end;
 {==============================================================================
   işlem göstergesi nesnesini yok eder
  ==============================================================================}
-procedure TIslemGostergesi.YokEt;
+procedure TIslemGostergesi.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -176,7 +176,7 @@ var
   IslemGostergesi: PIslemGostergesi;
 begin
 
-  IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneAl(FTGN.Kimlik));
+  IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
   if(IslemGostergesi = nil) then Exit;
 
   inherited Hizala;
@@ -194,7 +194,7 @@ var
   i: TISayi4;
 begin
 
-  IslemGostergesi := PIslemGostergesi(IslemGostergesi^.NesneAl(FTGN.Kimlik));
+  IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
   if(IslemGostergesi = nil) then Exit;
 
   // giriş kutusunun çizim alan koordinatlarını al

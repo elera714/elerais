@@ -25,7 +25,7 @@ type
     FGoruntuYapi: TGoruntuYapi;
     function Olustur(AMasaustuAdi: string): PMasaustu;
     function Olustur2(AMasaustuAdi: string): PMasaustu;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -64,7 +64,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Masaustu := PMasaustu(Masaustu^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Masaustu := PMasaustu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Masaustu^.Goster;
     end;
 
@@ -72,14 +72,14 @@ begin
     $010E:
     begin
 
-      Result := ToplamMasaustu;
+      Result := GorselNesneler0.ToplamMasaustu;
     end;
 
     // aktif masaüstü kimliði
     $020E:
     begin
 
-      Result := GAktifMasaustu^.FTGN.Kimlik;
+      Result := GAktifMasaustu^.Kimlik;
     end;
 
     // masaüstünü aktifleþtir
@@ -116,7 +116,7 @@ begin
     $030F:
     begin
 
-      Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(
+      Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntMasaustu));
       if(Masaustu <> nil) then Masaustu^.Ciz;
     end;
@@ -125,7 +125,7 @@ begin
     $040F:
     begin
 
-      Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(
+      Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntMasaustu));
       if(Masaustu <> nil) then Masaustu^.MasaustuRenginiDegistir(
         PRenk(ADegiskenler + 04)^);
@@ -135,7 +135,7 @@ begin
     $050F:
     begin
 
-      Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(
+      Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntMasaustu));
       if(Masaustu <> nil) then Masaustu^.MasaustuResminiDegistir(
         PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^);
@@ -158,7 +158,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Masaustu^.FTGN.Kimlik;
+  else Result := Masaustu^.Kimlik;
 end;
 
 {==============================================================================
@@ -198,13 +198,14 @@ end;
 function TMasaustu.Olustur2(AMasaustuAdi: string): PMasaustu;
 var
   Masaustu: PMasaustu = nil;
-  Genislik, Yukseklik, i: TISayi4;
+  Genislik, Yukseklik,
+  i, j: TISayi4;
 begin
 
   Result := nil;
 
   // tüm masaüstü nesneleri oluþturulduysa çýk
-  if(ToplamMasaustu >= USTSINIR_MASAUSTU) then Exit;
+  if(GorselNesneler0.ToplamMasaustu >= USTSINIR_MASAUSTU) then Exit;
 
   Genislik := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;
   Yukseklik := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
@@ -234,7 +235,10 @@ begin
       // 2. oluþturulan masaüstü nesne sayýsýný artýr
       // 3. geriye nesneyi döndür
       GMasaustuListesi[i] := Masaustu;
-      Inc(ToplamMasaustu);
+
+      j := GorselNesneler0.ToplamMasaustu;
+      Inc(j);
+      GorselNesneler0.ToplamMasaustu := j;
 
       // nesne adresini geri döndür
       Exit(Masaustu);
@@ -242,12 +246,12 @@ begin
   end;
 end;
 
-procedure TMasaustu.YokEt;
+procedure TMasaustu.YokEt(AKimlik: TKimlik);
 begin
 
   { TODO : öncelikle ayrýlan bellek serbest býrakýlacak }
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -264,7 +268,7 @@ begin
   inherited Goster;
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   // masaüstünü aktifleþtir
@@ -273,13 +277,13 @@ begin
   Masaustu^.Ciz;
 
   // masaüstü alt nesnesi olan pencereleri çiz
-  if(Masaustu^.FTGN.AltNesneSayisi > 0) then
+  if(Masaustu^.AltNesneSayisi > 0) then
   begin
 
     AltNesneler := Masaustu^.FAltNesneBellekAdresi;
 
     // ilk oluþturulan pencereden son oluþturulan pencereye doðru nesneleri çiz
-    for i := 0 to Masaustu^.FTGN.AltNesneSayisi - 1 do
+    for i := 0 to Masaustu^.AltNesneSayisi - 1 do
     begin
 
       Pencere := AltNesneler[i];
@@ -323,7 +327,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   // masaüstü arka plan resmini çiz
@@ -361,7 +365,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Masaustu^.OlayYonlendirmeAdresi = nil) then
       Masaustu^.OlayYonlendirmeAdresi(Masaustu, AOlay)
-    else GGorevler.OlayEkle(Masaustu^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Masaustu^.GorevKimlik, AOlay);
   end
 
   // sað / sol fare tuþ býrakýmý
@@ -381,18 +385,18 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Masaustu^.OlayYonlendirmeAdresi = nil) then
         Masaustu^.OlayYonlendirmeAdresi(Masaustu, AOlay)
-      else GGorevler.OlayEkle(Masaustu^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Masaustu^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := BirOncekiOlay;
     if not(Masaustu^.OlayYonlendirmeAdresi = nil) then
       Masaustu^.OlayYonlendirmeAdresi(Masaustu, AOlay)
-    else GGorevler.OlayEkle(Masaustu^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Masaustu^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Masaustu^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := Masaustu^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -421,7 +425,7 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   Masaustu^.FMasaustuArkaPlan := 1;
@@ -447,7 +451,7 @@ var
   Masaustu: PMasaustu = nil;
 begin
 
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   // masaüstünün renk deðerini deðiþtir
@@ -465,7 +469,7 @@ var
   Masaustu: PMasaustu = nil;
 begin
 
-  Masaustu := PMasaustu(Masaustu^.NesneTipiniKontrolEt(FTGN.Kimlik, gntMasaustu));
+  Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
   // masaüstü resmini deðiþtir

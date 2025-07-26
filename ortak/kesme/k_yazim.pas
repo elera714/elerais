@@ -44,7 +44,7 @@ begin
   if(IslevNo = 1) then
   begin
 
-    P := PPencere(P^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
+    P := PPencere(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
     if(P = nil) then Exit;
 
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
@@ -60,7 +60,7 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    P := PPencere(P^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
+    P := PPencere(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
     if(P = nil) then Exit;
 
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
@@ -77,7 +77,7 @@ begin
   else if(IslevNo = 3) then
   begin
 
-    P := PPencere(P^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
+    P := PPencere(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
     if(P = nil) then Exit;
 
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
@@ -94,7 +94,7 @@ begin
   else if(IslevNo = 4) then
   begin
 
-    P := PPencere(P^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
+    P := PPencere(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
     if(P = nil) then Exit;
 
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
@@ -110,7 +110,7 @@ begin
   else if(IslevNo = 5) then
   begin
 
-    P := PPencere(P^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
+    P := PPencere(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
     if(P = nil) then Exit;
 
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
@@ -127,7 +127,7 @@ begin
   else if(IslevNo = 6) then
   begin
 
-    P := PPencere(P^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
+    P := PPencere(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
     if(P = nil) then Exit;
 
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
@@ -144,7 +144,7 @@ begin
   else if(IslevNo = 7) then
   begin
 
-    P := PPencere(P^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
+    P := PPencere(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere));
     if(P = nil) then Exit;
 
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);

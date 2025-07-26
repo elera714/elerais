@@ -24,7 +24,7 @@ type
     FGoruntuYapi: TGoruntuYapi;
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4; ADosyaYolu: string): PResim;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -59,7 +59,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
@@ -68,14 +68,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Resim := PResim(Resim^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Resim := PResim(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Resim^.Goster;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      Resim := PResim(Resim^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Resim := PResim(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       Resim^.FHiza := Hiza;
 
@@ -87,7 +87,7 @@ begin
     $010F:
     begin
 
-      Resim := PResim(Resim^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Resim := PResim(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       Resim^.ResimYaz(p^);
     end;
@@ -95,7 +95,7 @@ begin
     $020F:
     begin
 
-      Resim := PResim(Resim^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Resim := PResim(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       TuvaleSigdir := PLongBool(ADegiskenler + 04)^;
       Resim^.FTuvaleSigdir := TuvaleSigdir;
 
@@ -122,7 +122,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Resim^.FTGN.Kimlik;
+  else Result := Resim^.Kimlik;
 end;
 
 {==============================================================================
@@ -168,10 +168,10 @@ end;
 {==============================================================================
   resim nesnesini yok eder
  ==============================================================================}
-procedure TResim.YokEt;
+procedure TResim.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -200,7 +200,7 @@ var
   Resim: PResim;
 begin
 
-  Resim := PResim(Resim^.NesneAl(FTGN.Kimlik));
+  Resim := PResim(GorselNesneler0.NesneAl(Kimlik));
   if(Resim = nil) then Exit;
 
   inherited Hizala;
@@ -214,7 +214,7 @@ var
   Resim: PResim;
 begin
 
-  Resim := PResim(Resim^.NesneAl(FTGN.Kimlik));
+  Resim := PResim(GorselNesneler0.NesneAl(Kimlik));
   if(Resim = nil) then Exit;
 
   inherited Ciz;
@@ -255,7 +255,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Resim^.OlayYonlendirmeAdresi = nil) then
       Resim^.OlayYonlendirmeAdresi(Resim, AOlay)
-    else GGorevler.OlayEkle(Resim^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Resim^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
@@ -272,24 +272,24 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Resim^.OlayYonlendirmeAdresi = nil) then
         Resim^.OlayYonlendirmeAdresi(Resim, AOlay)
-      else GGorevler.OlayEkle(Resim^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Resim^.GorevKimlik, AOlay);
     end;
 
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Resim^.OlayYonlendirmeAdresi = nil) then
       Resim^.OlayYonlendirmeAdresi(Resim, AOlay)
-    else GGorevler.OlayEkle(Resim^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Resim^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
 
     if not(Resim^.OlayYonlendirmeAdresi = nil) then
       Resim^.OlayYonlendirmeAdresi(Resim, AOlay)
-    else GGorevler.OlayEkle(Resim^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Resim^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Resim^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := Resim^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -301,7 +301,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  Resim := PResim(Resim^.NesneAl(FTGN.Kimlik));
+  Resim := PResim(GorselNesneler0.NesneAl(Kimlik));
   if(Resim = nil) then Exit;
 
   // daha önce resim için bellek rezerv edildiyse belleği iptal et

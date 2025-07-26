@@ -35,7 +35,7 @@ type
     FSeciliYaziRenk: TRenk;
     function Olustur(AAtaNesne: PGorselNesne; AGNTip: TGNTip; ASol, AUst,
       AGenislik, AYukseklik, AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi: TRenk): PMenu;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -73,7 +73,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Menu := PMenu(Menu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      Menu := PMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
       if(Menu <> nil) then Menu^.Goster;
     end;
 
@@ -81,7 +81,7 @@ begin
     ISLEV_GIZLE:
     begin
 
-      Menu := PMenu(Menu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      Menu := PMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
       if(Menu <> nil) then Menu^.Gizle;
     end;
 
@@ -89,7 +89,7 @@ begin
     $010F:
     begin
 
-      Menu := PMenu(Menu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      Menu := PMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
 
       AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
       AResimSiraNo := PISayi4(ADegiskenler + 08)^;
@@ -107,7 +107,7 @@ begin
     $020E:
     begin
 
-      Menu := PMenu(Menu^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      Menu := PMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
       if(Menu <> nil) then Result := Menu^.FSeciliSiraNo
     end
 
@@ -131,7 +131,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Menu^.FTGN.Kimlik;
+  else Result := Menu^.Kimlik;
 end;
 
 {==============================================================================
@@ -170,7 +170,7 @@ begin
   begin
 
     // hata olması durumunda nesneyi yok et ve işlevden çık
-    Menu^.YokEt;
+    Menu^.YokEt(Menu^.Kimlik);
     Result := nil;
     Exit;
   end;
@@ -193,18 +193,18 @@ end;
 {==============================================================================
   nesne ve nesneye ayrılan kaynakları yok eder
  ==============================================================================}
-procedure TMenu.YokEt;
+procedure TMenu.YokEt(AKimlik: TKimlik);
 var
   Menu: PMenu = nil;
 begin
 
-  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
+  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
   if(Menu = nil) then Exit;
 
   if(Menu^.FMenuBaslikListesi <> nil) then Menu^.FMenuBaslikListesi^.YokEt;
   if(Menu^.FMenuResimListesi <> nil) then Menu^.FMenuResimListesi^.YokEt;
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -218,7 +218,7 @@ begin
 
   inherited Goster;
 
-  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
+  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
   if(Menu = nil) then Exit;
 
   GAktifMenu := Menu;
@@ -227,13 +227,13 @@ begin
   Menu^.FSeciliSiraNo := -1;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := Menu^.FTGN.Kimlik;
+  Olay.Kimlik := Menu^.Kimlik;
   Olay.Olay := CO_MENUACILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
   if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
     Menu^.FMenuOlayGeriDonusAdresi(Menu, Olay)
-  else GGorevler.OlayEkle(Menu^.GorevKimlik, Olay);
+  else Gorevler0.OlayEkle(Menu^.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -249,17 +249,17 @@ begin
 
   GAktifMenu := nil;
 
-  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
+  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
   if(Menu = nil) then Exit;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := Menu^.FTGN.Kimlik;
+  Olay.Kimlik := Menu^.Kimlik;
   Olay.Olay := CO_MENUKAPATILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
   if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
     Menu^.FMenuOlayGeriDonusAdresi(Menu, Olay)
-  else GGorevler.OlayEkle(Menu^.GorevKimlik, Olay);
+  else Gorevler0.OlayEkle(Menu^.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -279,7 +279,7 @@ var
   Menu: PMenu = nil;
 begin
 
-  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
+  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
   if(Menu = nil) then Exit;
 
   Menu^.FCizimAlan.Sol := 0;
@@ -293,7 +293,7 @@ begin
   begin
 
     // hata olması durumunda nesneyi yok et ve işlevden çık
-    Menu^.YokEt;
+    Menu^.YokEt(Menu^.Kimlik);
     Exit;
   end;
 end;
@@ -315,7 +315,7 @@ begin
 
   inherited Ciz;
 
-  Menu := PMenu(Menu^.NesneAl(FTGN.Kimlik));
+  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
   if(Menu = nil) then Exit;
 
   // menü nesnesinin çizim alan koordinatlarını al
@@ -415,7 +415,7 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
         Menu^.FMenuOlayGeriDonusAdresi(Menu, AOlay)
-      else GGorevler.OlayEkle(Menu^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Menu^.GorevKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -432,7 +432,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Menu^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := Menu^.FareImlecTipi;
 end;
 
 end.

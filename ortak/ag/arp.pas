@@ -103,7 +103,7 @@ function TARPKayitlar.ARPKayitAl(ASiraNo: TSayi4): PARPKayit;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_KAYITSAYISI) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_KAYITSAYISI) then
     Result := FARPKayitListesi[ASiraNo]
   else Result := nil;
 end;
@@ -112,7 +112,7 @@ procedure TARPKayitlar.ARPKayitYaz(ASiraNo: TSayi4; AARPKayit: PARPKayit);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_KAYITSAYISI) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_KAYITSAYISI) then
     FARPKayitListesi[ASiraNo] := AARPKayit;
 end;
 
@@ -325,7 +325,7 @@ begin
 
     BekleMS(100);
 
-    if(AgYuklendi) then
+    if(AgYuklendi) and (GAgBilgisi.IPAdresiAlindi) then
     begin
 
       if(i = 0) then

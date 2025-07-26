@@ -22,7 +22,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TSayi4; AYaziRenk: TRenk; ABaslik: string): PEtiket;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -54,7 +54,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PRenk(ADegiskenler + 20)^,
         PKarakterKatari(PSayi4(ADegiskenler + 24)^ + FAktifGorevBellekAdresi)^);
@@ -63,7 +63,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Etiket := PEtiket(Etiket^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Etiket := PEtiket(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Etiket^.Goster;
     end;
 
@@ -71,7 +71,7 @@ begin
     $010F:
     begin
 
-      Etiket := PEtiket(Etiket^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Etiket := PEtiket(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       Etiket^.Baslik := p^;
 
@@ -84,7 +84,7 @@ begin
     $020F:
     begin
 
-      Etiket := PEtiket(Etiket^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Etiket := PEtiket(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Etiket^.FYaziRenk := PRenk(ADegiskenler + 04)^;
 
       // etiketin bağlı olduğu pencere nesnesini güncelle
@@ -111,7 +111,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Etiket^.FTGN.Kimlik;
+  else Result := Etiket^.Kimlik;
 end;
 
 {==============================================================================
@@ -151,10 +151,10 @@ end;
 {==============================================================================
   etiket nesnesini yok eder
  ==============================================================================}
-procedure TEtiket.YokEt;
+procedure TEtiket.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -183,7 +183,7 @@ var
   Etiket: PEtiket = nil;
 begin
 
-  Etiket := PEtiket(Etiket^.NesneAl(FTGN.Kimlik));
+  Etiket := PEtiket(GorselNesneler0.NesneAl(Kimlik));
   if(Etiket = nil) then Exit;
 
   inherited Hizala;
@@ -198,7 +198,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  Etiket := PEtiket(Etiket^.NesneAl(FTGN.Kimlik));
+  Etiket := PEtiket(GorselNesneler0.NesneAl(Kimlik));
   if(Etiket = nil) then Exit;
 
   inherited Ciz;
@@ -234,7 +234,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Etiket^.OlayYonlendirmeAdresi = nil) then
       Etiket^.OlayYonlendirmeAdresi(Etiket, AOlay)
-    else GGorevler.OlayEkle(Etiket^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Etiket^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
@@ -254,14 +254,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Etiket^.OlayYonlendirmeAdresi = nil) then
         Etiket^.OlayYonlendirmeAdresi(Etiket, AOlay)
-      else GGorevler.OlayEkle(Etiket^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Etiket^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Etiket^.OlayYonlendirmeAdresi = nil) then
       Etiket^.OlayYonlendirmeAdresi(Etiket, AOlay)
-    else GGorevler.OlayEkle(Etiket^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Etiket^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -272,11 +272,11 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Etiket^.OlayYonlendirmeAdresi = nil) then
       Etiket^.OlayYonlendirmeAdresi(Etiket, AOlay)
-    else GGorevler.OlayEkle(Etiket^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Etiket^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Etiket^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := Etiket^.FareImlecTipi;
 end;
 
 end.

@@ -17,27 +17,6 @@ interface
 uses paylasim;
 
 type
-  { TODO - object nesneleri class nesnelerine çevirme çalýþmasý }
-  PTTGN = ^TTGN;
-
-  { TTGN }
-
-  TTGN = class
-  private
-    // nesne kimliði. kimlik deðeri
-    FKimlik: TKimlik;
-    // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
-    FFareImlecTipi: TFareImlecTipi;
-    // nesnenin alt nesne sayýsý
-    FAltNesneSayisi: TSayi4;
-  public
-    constructor Create;
-  published
-    property Kimlik: TKimlik read FKimlik write FKimlik;
-    property FareImlecTipi: TFareImlecTipi read FFareImlecTipi write FFareImlecTipi;
-    property AltNesneSayisi: TSayi4 read FAltNesneSayisi write FAltNesneSayisi;
-  end;
-
   PTemelGorselNesne = ^TTemelGorselNesne;
   TTemelGorselNesne = object
   private
@@ -57,7 +36,12 @@ type
     FOdaklanilabilir: Boolean;
     FOdaklanildi: Boolean;
   public
-    FTGN: TTGN;
+    // nesne kimliði. kimlik deðeri
+    Kimlik: TKimlik;
+    // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
+    FareImlecTipi: TFareImlecTipi;
+    // nesnenin alt nesne sayýsý
+    AltNesneSayisi: TSayi4;
 
     // nesnenin kullaným tipi
     FKullanimTipi: TKullanimTipi;
@@ -279,19 +263,6 @@ begin
       Result := 'seçimdüðmesi' + '.' + IntToStr(SecimDugmesiSayac);
     end;
   end;
-end;
-
-constructor TTGN.Create;
-begin
-
-  // nesne kimliði. kimlik deðeri
-  FKimlik := 0;
-
-  // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
-  FFareImlecTipi := fitOK;
-
-  // nesnenin alt nesne sayýsý
-  FAltNesneSayisi := 0;
 end;
 
 procedure TTemelGorselNesne.NesneTipiYaz(AGNTip: TGNTip);

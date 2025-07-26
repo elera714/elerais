@@ -6,7 +6,7 @@
   Dosya Adý: k_olay.pas
   Dosya Ýþlevi: olay (event) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 07/07/2025
+  Güncelleme Tarihi: 23/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ function OlayCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel, gorev, zamanlayici;
+uses gorev, zamanlayici;
 
 {==============================================================================
   olay kesme çaðrýlarýný yönetir
@@ -40,10 +40,10 @@ begin
   if(IslevNo = 1) then
   begin
 
-    G := GorevAl(-1);
+    G := GorevAl;
 
     // çalýþan proses'e ait olay var mý ?
-    if(GGorevler.OlayAl(G^.FGorevKimlik, O)) then
+    if(Gorevler0.OlayAl(G^.Kimlik, O)) then
 
       OlayMevcut := True
     else OlayMevcut := False;
@@ -58,7 +58,7 @@ begin
       O2^.Deger1 := O.Deger1;
       O2^.Deger2 := O.Deger2;
 
-      Result := G^.FOlaySayisi;
+      Result := G^.OlaySayisi;
     end
 
     // olay yok ise tek bir görev deðiþikliði yap ve görevi istekte bulunan devret.
@@ -75,14 +75,14 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    G := GorevAl(-1);
+    G := GorevAl;
 
     // uygulama için olay üretilinceye kadar bekle
     // olay olmamasý durumda bir sonraki göreve geç (mevcut görev olay bekliyor)
     // ta ki ilgili görev için olay mevcut oluncaya kadar
     repeat
 
-      if(GGorevler.OlayAl(G^.FGorevKimlik, O)) then
+      if(Gorevler0.OlayAl(G^.Kimlik, O)) then
 
         OlayMevcut := True
       else OlayMevcut := False;
@@ -97,7 +97,7 @@ begin
     O2^.Deger1 := O.Deger1;
     O2^.Deger2 := O.Deger2;
 
-    Result := G^.FOlaySayisi;
+    Result := G^.OlaySayisi;
   end;
 end;
 

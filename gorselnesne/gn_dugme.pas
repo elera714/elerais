@@ -26,7 +26,7 @@ type
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PDugme;
-    procedure YokEt;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -62,7 +62,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
@@ -71,14 +71,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Dugme := PDugme(Dugme^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Dugme^.Goster;
     end;
 
     ISLEV_GIZLE:
     begin
 
-      Dugme := PDugme(Dugme^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Pencere := PPencere(Dugme^.AtaNesne);
 
       Dugme^.Gizle;
@@ -89,7 +89,7 @@ begin
     ISLEV_BOYUTLANDIR:
     begin
 
-      Dugme := PDugme(Dugme^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(Dugme <> nil) then
       begin
 
@@ -108,17 +108,17 @@ begin
     ISLEV_YOKET:
     begin
 
-      Dugme := PDugme(Dugme^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Pencere := PPencere(Dugme^.AtaNesne);
 
-      Dugme^.YokEt;
+      GorselNesneler0.YokEt(Dugme^.Kimlik);
       Pencere^.Ciz;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      Dugme := PDugme(Dugme^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       Dugme^.FHiza := Hiza;
 
@@ -130,7 +130,7 @@ begin
     $010F:
     begin
 
-      Dugme := PDugme(Dugme^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       if not(Dugme = nil) then
         Dugme^.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
 
@@ -141,7 +141,7 @@ begin
     $020F:
     begin
 
-      Dugme := PDugme(Dugme^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
 
       if(Dugme <> nil) and (Dugme^.NesneTipi = gntDugme) then
       begin
@@ -175,7 +175,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Dugme^.FTGN.Kimlik;
+  else Result := Dugme^.Kimlik;
 end;
 
 {==============================================================================
@@ -219,10 +219,10 @@ end;
 {==============================================================================
   düðme nesnesini yok eder
  ==============================================================================}
-procedure TDugme.YokEt;
+procedure TDugme.YokEt(AKimlik: TKimlik);
 begin
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -251,7 +251,7 @@ var
   Dugme: PDugme = nil;
 begin
 
-  Dugme := PDugme(Dugme^.NesneAl(FTGN.Kimlik));
+  Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
   if(Dugme = nil) then Exit;
 
   inherited Hizala;
@@ -266,7 +266,7 @@ var
   CizimAlan: TAlan;
 begin
 
-  Dugme := PDugme(Dugme^.NesneAl(FTGN.Kimlik));
+  Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
   if(Dugme = nil) then Exit;
 
   // düðme baþlýðý
@@ -327,7 +327,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(Dugme^.OlayYonlendirmeAdresi = nil) then
         Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-      else GGorevler.OlayEkle(Dugme^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -351,14 +351,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Dugme^.OlayYonlendirmeAdresi = nil) then
         Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-      else GGorevler.OlayEkle(Dugme^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Dugme^.OlayYonlendirmeAdresi = nil) then
       Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-    else GGorevler.OlayEkle(Dugme^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -382,11 +382,11 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Dugme^.OlayYonlendirmeAdresi = nil) then
       Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-    else GGorevler.OlayEkle(Dugme^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Dugme^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := Dugme^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -399,7 +399,7 @@ var
 begin
 
   // kimlik deðerinden nesneyi al
-  Dugme := PDugme(Dugme^.NesneAl(FTGN.Kimlik));
+  Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
   if(Dugme = nil) then Exit;
 
   Dugme^.FDolguluCizim := ADolguluCizim;

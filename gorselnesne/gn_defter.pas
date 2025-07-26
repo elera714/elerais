@@ -72,7 +72,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GN^.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PRenk(ADegiskenler + 20)^,
         PRenk(ADegiskenler + 24)^, PBoolean(ADegiskenler + 28)^);
@@ -81,14 +81,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Defter := PDefter(Defter^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Defter := PDefter(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Defter^.Goster;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      Defter := PDefter(Defter^.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Defter := PDefter(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       Defter^.FHiza := Hiza;
 
@@ -101,7 +101,7 @@ begin
     begin
 
       // nesnenin handle, tip deðerlerini denetle.
-      Defter := PDefter(Defter^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
+      Defter := PDefter(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
       if(Defter <> nil) then
       begin
 
@@ -115,7 +115,7 @@ begin
     begin
 
       // nesnenin handle, tip deðerlerini denetle.
-      Defter := PDefter(Defter^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
+      Defter := PDefter(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
       if(Defter <> nil) then
       begin
 
@@ -129,7 +129,7 @@ begin
     begin
 
       // nesnenin kimlik, tip deðerlerini denetle.
-      Defter := PDefter(Defter^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
+      Defter := PDefter(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
       if(Defter <> nil) then
       begin
 
@@ -142,7 +142,7 @@ begin
     begin
 
       // nesnenin handle, tip deðerlerini denetle.
-      Defter := PDefter(Defter^.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
+      Defter := PDefter(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
       if(Defter <> nil) then
       begin
 
@@ -171,7 +171,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Defter^.FTGN.Kimlik;
+  else Result := Defter^.Kimlik;
 end;
 
 {==============================================================================
@@ -196,7 +196,7 @@ begin
 
   Defter^.OlayCagriAdresi := @OlaylariIsle;
 
-  Defter^.FTGN.FareImlecTipi := fitGiris;
+  Defter^.FareImlecTipi := fitGiris;
 
   { TODO - kaydýrma çubuklarýna sabit deðer olarak 50 deðeri verilmiþtir. Bu deðer
     nesne içeriðindeki metine göre dinamik olarak oluþturulacaktýr }
@@ -237,13 +237,13 @@ var
 begin
 
   // AtaNesne nesnesinin doðruluðunu kontrol et
-  Defter := PDefter(Defter^.NesneAl(AKimlik));
+  Defter := PDefter(GorselNesneler0.NesneAl(AKimlik));
   if(Defter = nil) then Exit;
 
   if(Defter^.FYaziBellekAdresi <> nil) then
     GGercekBellek.YokEt(Defter^.FYaziBellekAdresi, (4096 * 10) - 1);
 
-  inherited YokEt;
+  GorselNesneler0.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -254,7 +254,7 @@ var
   Defter: PDefter;
 begin
 
-  Defter := PDefter(Defter^.NesneAl(FTGN.Kimlik));
+  Defter := PDefter(GorselNesneler0.NesneAl(Kimlik));
   if(Defter = nil) then Exit;
 
   Defter^.FYatayKCubugu^.Goster;
@@ -280,7 +280,7 @@ var
   Defter: PDefter;
 begin
 
-  Defter := PDefter(Defter^.NesneAl(FTGN.Kimlik));
+  Defter := PDefter(GorselNesneler0.NesneAl(Kimlik));
   if(Defter = nil) then Exit;
 
   inherited Hizala;
@@ -330,7 +330,7 @@ var
   AktifSutunNo, AktifSatirNo: TISayi4;
 begin
 
-  Defter := PDefter(Defter^.NesneAl(FTGN.Kimlik));
+  Defter := PDefter(GorselNesneler0.NesneAl(Kimlik));
   if(Defter = nil) then Exit;
 
   inherited Ciz;
@@ -597,7 +597,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Defter^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := Defter^.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -617,7 +617,7 @@ begin
   if(AOlay.Olay = FO_TIKLAMA) then Defter^.Ciz;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Defter^.FTGN.FareImlecTipi;
+  GecerliFareGostegeTipi := Defter^.FareImlecTipi;
 end;
 
 end.

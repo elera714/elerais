@@ -6,7 +6,7 @@
   Dosya Adı: k_gorev.pas
   Dosya İşlevi: görev (program) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/06/2025
+  Güncelleme Tarihi: 23/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ function GorevCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel, gorev, islevler, sistemmesaj;
+uses gorev, islevler;
 
 {==============================================================================
   uygulama kesme çağrılarını yönetir
@@ -48,10 +48,10 @@ begin
 
     s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
 
-    p := GGorevler.Calistir(s, CALISMA_SEVIYE3);
+    p := Gorevler0.Calistir(s, CALISMA_SEVIYE3);
     if(p <> nil) then
 
-      Result := p^.GorevKimlik
+      Result := p^.Kimlik
     else Result := -1;
   end
 
@@ -65,14 +65,14 @@ begin
     if(i = -1) then
     begin
 
-      p := GorevAl(-1);
-      GGorevler.Isaretle(FAktifGorev);
+      p := GorevAl;
+      Gorevler0.Isaretle(FAktifGorev);
     end
     else if(i >= 0) and (i < USTSINIR_GOREVSAYISI) then
     begin
 
       p := GorevAl(i);
-      GGorevler.Isaretle(i);
+      Gorevler0.Isaretle(i);
     end;
   end
 
@@ -83,7 +83,7 @@ begin
     p2 := PSayi4(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
     p2^ := USTSINIR_GOREVSAYISI;
     p2 := PSayi4(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-    p2^ := CalisanGorevSayisi;
+    p2^ := FCalisanGorevSayisi;
 
     Result := 1;
   end
@@ -101,13 +101,13 @@ begin
       begin
 
         GorevKayit := PGorevKayit(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-        GorevKayit^.GorevDurum := p^.FGorevDurum;
-        GorevKayit^.GorevKimlik := p^.GorevKimlik;
-        GorevKayit^.GorevSayaci := p^.G0.FGorevSayaci;
-        GorevKayit^.BellekBaslangicAdresi := p^.G0.FBellekBaslangicAdresi;
+        GorevKayit^.GorevDurum := p^.Durum;
+        GorevKayit^.GorevKimlik := p^.Kimlik;
+        GorevKayit^.GorevSayaci := p^.GorevSayaci;
+        GorevKayit^.BellekBaslangicAdresi := p^.BellekBaslangicAdresi;
         GorevKayit^.BellekUzunlugu := p^.BellekUzunlugu;
-        GorevKayit^.OlaySayisi := p^.FOlaySayisi;
-        GorevKayit^.DosyaAdi := p^.FDosyaAdi;
+        GorevKayit^.OlaySayisi := p^.OlaySayisi;
+        GorevKayit^.DosyaAdi := p^.DosyaAdi;
 
         Result := HATA_YOK;
       end else Result := HATA_GOREVNO;
@@ -172,7 +172,7 @@ begin
   begin
 
     s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
-    Result := GGorevler.GorevKimligiAl(s);
+    Result := Gorevler0.GorevKimligiAl(s);
   end
 
   // görev / program adını belirle
@@ -180,7 +180,7 @@ begin
   begin
 
     s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
-    p^.FProgramAdi := s;
+    p^.ProgramAdi := s;
   end
 
   // görev bayrak değerini al
