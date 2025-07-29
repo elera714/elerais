@@ -25,9 +25,9 @@ procedure YukleIslevindenSonraCalistir;
 implementation
 
 uses yonetim, gdt, idt, irq, pic, aygityonetimi, pci, src_klavye, genel, gorev,
-  gorselnesne, dosya, sistemmesaj, bolumleme, islemci, paylasim, usb, zamanlayici,
+  gorselnesne, dosya, sistemmesaj, mdepolama, islemci, paylasim, usb, zamanlayici,
   ag, src_vesa20, src_com, src_sb, bmp, acpi, k_giysi, giysi_mac, giysi_normal,
-  olayyonetim, depolama;
+  olayyonetim, fdepolama;
 
 {==============================================================================
   çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
@@ -110,13 +110,11 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ USB aygýtlarý yükleniyor...', []);
   usb.Yukle;
 
-  GDepolama := TDepolama.Create;
-
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Depolama aygýtlarý yükleniyor...', []);
-  DepolamaAygitlariniYukle;
+  FizikselDepolama0.Yukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Mantýksal sürücü atamalarý gerçekleþtiriliyor...', []);
-  bolumleme.Yukle;
+  MantiksalDepolama0.Yukle;
 
   {$IFDEF SRC_COM}
   SISTEM_MESAJ(RENK_MAVI, '+ Ýletiþim (COM) portu yükleniyor...', []);
@@ -184,7 +182,7 @@ end;
 procedure YukleIslevindenSonraCalistir;
 begin
 
-  dosya.Yukle;
+  Dosyalar0.Yukle;
 
   // 24 x 24 sistem resimlerini yükle
   GSistemResimler := BMPDosyasiYukle('disk1:\resimler\sistem.bmp');

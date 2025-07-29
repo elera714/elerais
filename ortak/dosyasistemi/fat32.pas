@@ -14,7 +14,7 @@ unit fat32;
 
 interface
 
-uses paylasim, islevler, gorev;
+uses paylasim, islevler, gorev, dosya, fdepolama, mdepolama;
 
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
@@ -41,7 +41,7 @@ function DizinGirisindeAra(ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TS
 
 implementation
 
-uses genel, donusum, gercekbellek, sistemmesaj, dosya;
+uses genel, donusum, gercekbellek, sistemmesaj;
 
 var
   DizinBellekAdresi: array[0..511] of TSayi1;
@@ -122,23 +122,21 @@ end;
  ==============================================================================}
 procedure Reset(ADosyaKimlik: TKimlik);
 var
-  AktifGorev: PGorev;
-  DosyaIslem: PDosyaIslem;
+  DI: PDosyaIslem;
   DosyaArama: TDosyaArama;
   TamAramaYolu: string;
   Bulundu: Boolean;
 begin
 
-  AktifGorev := GorevAl(-1);
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
 
   // en son iþlem hatalý ise çýk
-  if(AktifGorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
-
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // tam dosya adýný al
-  TamAramaYolu := DosyaIslem^.MantiksalDepolama^.MD3.AygitAdi + ':' + DosyaIslem^.Klasor + '*.*';
+  TamAramaYolu := DI^.MantiksalDepolama^.MD3.AygitAdi + ':' + DI^.Klasor + '*.*';
 
   // dosyayý dosya tablosunda bul
   Bulundu := False;
@@ -147,7 +145,7 @@ begin
 
     repeat
 
-      if(DosyaArama.DosyaAdi = DosyaIslem^.DosyaAdi) then Bulundu := True;
+      if(DosyaArama.DosyaAdi = DI^.DosyaAdi) then Bulundu := True;
     until (Bulundu) or (FindNext(DosyaArama) <> 0);
 
     FindClose(DosyaArama);
@@ -160,9 +158,9 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Reset: %d', [DosyaArama.DosyaUzunlugu]);
 
-    DosyaIslem^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
-    DosyaIslem^.Uzunluk := DosyaArama.DosyaUzunlugu;
-  end else AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+    DI^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
+    DI^.Uzunluk := DosyaArama.DosyaUzunlugu;
+  end else DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
 {==============================================================================
@@ -188,8 +186,8 @@ end;
  ==============================================================================}
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
-  MD: PMantiksalDepolama;
-  DosyaIslem: PDosyaIslem;
+  MD: PMDNesne;
+  DI: PDosyaIslem;
   DATBellekAdresi: array[0..511] of Byte;
   OkunacakSektorSayisi, i: TSayi2;
   ZincirBasinaSektor, OkunacakVeri,
@@ -199,15 +197,19 @@ var
   OkumaSonuc: Boolean;
 begin
 
-  // iþlem yapýlan dosyayla ilgili bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
+
+  // en son iþlem hatalý ise çýk
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // üzerinde iþlem yapýlacak sürücü
-  MD := DosyaIslem^.MantiksalDepolama;
+  MD := DI^.MantiksalDepolama;
 
-  OkunacakVeri := DosyaIslem^.Uzunluk;
+  OkunacakVeri := DI^.Uzunluk;
 
-  Zincir := DosyaIslem^.IlkZincirSektor;
+  Zincir := DI^.IlkZincirSektor;
 
   ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
@@ -329,7 +331,7 @@ end;
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
  var ADosyaArama: TDosyaArama): TSayi1;
 var
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   DizinGirdisi: PDizinGirdisi;
   TumGirislerOkundu,
   UzunDosyaAdiBulundu: Boolean;
@@ -474,7 +476,7 @@ end;
  ==============================================================================}
 function DizinGirisindeAra(ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TSayi4;
 var
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   DizinGirdisi: PDizinGirdisi;
   UzunDosyaAdiBulundu: Boolean;
   DosyaAdi: string;

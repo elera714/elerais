@@ -473,56 +473,6 @@ type
   TSektorIslev = function(AFizikselDepolama: Isaretci; AIlkSektor,
     ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 
-// fiziksel depolama aygýt yapýsý - program için
-type
-  PFizikselDepolama3 = ^TFizikselDepolama3;
-  TFizikselDepolama3 = packed record
-    Kimlik: TKimlik;
-    SurucuTipi: TSayi4;
-    AygitAdi: string[16];
-    KafaSayisi: TSayi4;
-    SilindirSayisi: TSayi4;
-    IzBasinaSektorSayisi: TSayi4;
-    ToplamSektorSayisi: TSayi4;
-  end;
-
-// fiziksel depolama aygýt yapýsý - sistem için
-type
-  PFizikselDepolama = ^TFizikselDepolama;
-  TFizikselDepolama = record
-    FD3: TFizikselDepolama3;
-    Mevcut0: Boolean;
-    Ozellikler: TSayi1;
-    SonIzKonumu: TISayi1;           // floppy sürücüsünün kafasýnýn bulunduðu son iz (track) no
-    IslemYapiliyor: Boolean;        // True = sürücü iþlem yapmakta, False = sürücü boþta
-    MotorSayac: TSayi4;             // motor kapatma geri sayým sayacý (þu an sadece floppy sürücüsü için)
-    Aygit: TIDEDisk;                // depolama aygýtý
-    SektorOku: TSektorIslev;        // sektör okuma iþlevi
-    SektorYaz: TSektorIslev;        // sektör yazma iþlevi
-  end;
-
-// mantýksal depolama aygýt yapýsý - program için
-type
-  PMantiksalDepolama3 = ^TMantiksalDepolama3;
-  TMantiksalDepolama3 = packed record
-    Kimlik: TKimlik;
-    SurucuTipi: TSayi4;     { TODO - bu deðer TMantiksalDepolama.FD içerisinde de mevcut, tasarýmsal olarak iptal edilmeli }
-    AygitAdi: string[16];
-    DST: TSayi4;
-    BolumIlkSektor: TSayi4;
-    BolumToplamSektor: TSayi4
-  end;
-
-// mantýksal depolama aygýt yapýsý - sistem için
-type
-  PMantiksalDepolama = ^TMantiksalDepolama;
-  TMantiksalDepolama = packed record
-    MD3: TMantiksalDepolama3;
-    FD: PFizikselDepolama;
-    Mevcut: Boolean;
-    Acilis: TAcilis;
-  end;
-
 // sistem dosya arama yapýsý
 type
   PDosyaArama = ^TDosyaArama;
@@ -537,60 +487,6 @@ type
     SonErisimTarihi: TSayi4;
     SonDegisimSaati: TSayi4;
     SonDegisimTarihi: TSayi4;
-  end;
-
-var
-  // fiziksel sürücü listesi. en fazla 2 floppy sürücüsü + 4 disk sürücüsü
-  FizikselDepolamaAygitSayisi: TSayi4;
-  FizikselDepolamaAygitListesi: array[0..5] of TFizikselDepolama;
-
-  // mantýksal sürücü listesi. en fazla 6 depolama sürücüsü
-  MantiksalDepolamaAygitSayisi: TISayi4;
-  MantiksalDepolamaAygitListesi: array[0..5] of TMantiksalDepolama;
-
-  PDisket1: PFizikselDepolama;
-  PDisket2: PFizikselDepolama;
-
-const
-  USTSINIR_DOSYAISLEM = 10;
-
-// tüm dosya iþlevleri için gereken yapý
-type
-  TDosyaDurumu = (ddKapali, ddOkumaIcinAcik, ddYazmaIcinAcik);
-
-  PDosyaIslem = ^TDosyaIslem;
-  TDosyaIslem = record
-    MantiksalDepolama: PMantiksalDepolama;
-    Klasor, DosyaAdi: string;
-    DATBellekAdresi: Isaretci;    // Dosya Ayýrma Tablosu bellek adresi
-    IlkZincirSektor: Word;
-    Uzunluk: TISayi4;
-    Konum: TSayi4;
-
-    // dizin giriþinin tek sektörlük içeriði, iþlevler arasý veri alýþveriþi için
-    TekSektorIcerik: Isaretci;
-
-    Kimlik: TKimlik;
-
-    // üzerinde iþlem yapýlan aktif dosya / klasör için dizin giriþi
-    // tüm dosya iþlemleri bu yapý üzerinde olacak, daha sonra sektörün ilgili sýrasýna aktarýlacak
-    // tüm iþlevler dosya açýk olduðu müddetçe tekrar tekrar dizin giriþini okumadan bu yapýya bakarak
-    // karar mekanizmalarýný oluþturacak
-    { TODO - iptal edilecek }
-    AktifDG: array[0..63] of TSayi1;
-
-    // iþlem yapýlan sektör numarasý (-1 = sektör henüz okunmadý)
-    SektorNo,       { TODO - bu deðiþken iptal edilecek, KumeNo deðiþkeniyle devam edilecek }
-    // dosya / klasörün okunan dizin sektöründeki (SektorNo) kayýt sýra numarasý
-    // -1 sektör okunacak (kayýt sýra numarasý yok)
-    KayitSN: TISayi4;
-    KumeNo: TSayi4;
-    ZincirNo: TSayi4;
-    DosyaDurumu: TDosyaDurumu;
-
-    // dosya arama iþlemleri için - yukarýdaki yapýlarla birliktelik saðlanacak
-    DizinGirisi: TDizinGirisi;
-    Aranan: string;
   end;
 
 type

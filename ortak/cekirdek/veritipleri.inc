@@ -57,6 +57,7 @@ type
   PSaat = ^TSaat;
 
   Isaretci = Pointer;
+  PDiziIsaretci1 = ^DiziIsaretci1;
   DiziIsaretci1 = array of TSayi1;
   DiziIsaretci2 = array of TSayi2;
   DiziIsaretci4 = array of TSayi4;

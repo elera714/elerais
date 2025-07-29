@@ -17,7 +17,7 @@ unit elr1;
 
 interface
 
-uses paylasim, islevler, gorev;
+uses paylasim, islevler, gorev, fdepolama, mdepolama;
 
 const
   DIZIN_GIRDI_SAYISI = 8;
@@ -46,21 +46,21 @@ function DeleteFile(const ADosyaKimlik: TKimlik): Boolean;
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
   var ADosyaArama: TDosyaArama): TSayi1;
 
-procedure ELR1DiskBicimle(AMD: PMantiksalDepolama);
-procedure ELR1VerileriSil(AMD: PMantiksalDepolama);
-procedure ELR1SHTOlustur(AMD: PMantiksalDepolama; AIlkSektor, AToplamSektor,
+procedure ELR1DiskBicimle(AMDNesne: PMDNesne);
+procedure ELR1VerileriSil(AMDNesne: PMDNesne);
+procedure ELR1SHTOlustur(AMDNesne: PMDNesne; AIlkSektor, AToplamSektor,
  AAyrilanSektor: TSayi4);
-function SHTBosKumeTahsisEt(AMD: PMantiksalDepolama): TISayi4;
-function SHTBosKumeSerbestBirak(AMD: PMantiksalDepolama; AKumeNo: TSayi4): Boolean;
-function SHTKumeyiBirOncekiKumeyeBagla(AMD: PMantiksalDepolama; ABirOncekiKumeNo,
+function SHTBosKumeTahsisEt(AMDNesne: PMDNesne): TISayi4;
+function SHTBosKumeSerbestBirak(AMDNesne: PMDNesne; AKumeNo: TSayi4): Boolean;
+function SHTKumeyiBirOncekiKumeyeBagla(AMDNesne: PMDNesne; ABirOncekiKumeNo,
  AKumeNo: TSayi4): Boolean;
-function SHTBirSonrakiKumeyiAl(AMD: PMantiksalDepolama; AKumeNo: TSayi4): TSayi4;
-function SHTToplamKullanim(AMD: PMantiksalDepolama): TSayi4;
+function SHTBirSonrakiKumeyiAl(AMDNesne: PMDNesne; AKumeNo: TSayi4): TSayi4;
+function SHTToplamKullanim(AMDNesne: PMDNesne): TSayi4;
 function ELRDosyaAdiniAl(ADizinGirdisi: PDizinGirdisiELR): string;
 
 implementation
 
-uses genel, donusum, gercekbellek, cmos, sistemmesaj, dosya;
+uses cmos, sistemmesaj, dosya;
 
 {==============================================================================
   dosya arama iþlevini baþlatýr
@@ -117,8 +117,7 @@ end;
  ==============================================================================}
 procedure ReWrite(ADosyaKimlik: TKimlik);
 var
-  AktifGorev: PGorev;
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   AktifDG: PDizinGirdisiELR;
   DI: PDosyaIslem;
   DosyaAdi: string;
@@ -131,19 +130,18 @@ var
   Saat, Dakika, Saniye: TSayi1;
 begin
 
-  AktifGorev := GorevAl(-1);
-
-  // en son iþlem hatalý ise çýk
-  if(AktifGorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
-
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
+
+  // en son iþlem hatalý ise çýk
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // dosya açýk mý? (kapalý olmalý)
   if(DI^.DosyaDurumu <> ddKapali) then
   begin
 
-    AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_KULLANIMDA;
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_KULLANIMDA;
     Exit;
   end;
 
@@ -230,7 +228,7 @@ begin
             if(YeniKumeNo < HATA_YOK) then
             begin
 
-              AktifGorev^.DosyaSonIslemDurum := YeniKumeNo;
+              DI^.Gorev^.DosyaSonIslemDurum := YeniKumeNo;
               Exit;
             end;
 
@@ -322,10 +320,9 @@ end;
  ==============================================================================}
 procedure Append(ADosyaKimlik: TKimlik);
 var
-  AktifGorev: PGorev;
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   AktifDG: PDizinGirdisiELR;
-  DosyaIslem: PDosyaIslem;
+  DI: PDosyaIslem;
   ZincirNo, ZincirBasinaSektor,
   KumeNo, i: TSayi4;
   TumGirislerOkundu,
@@ -333,19 +330,18 @@ var
   DosyaAdi: string;
 begin
 
-  AktifGorev := GorevAl(-1);
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
 
   // en son iþlem hatalý ise çýk
-  if(AktifGorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
-
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // dosya daha önce kapalý olmalý
-  if(DosyaIslem^.DosyaDurumu <> ddKapali) then
+  if(DI^.DosyaDurumu <> ddKapali) then
   begin
 
-    AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_KULLANIMDA;
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_KULLANIMDA;
     Exit;
   end;
 
@@ -354,31 +350,31 @@ begin
 
   TumGirislerOkundu := False;
 
-  DosyaIslem^.SektorNo := -1;
-  DosyaIslem^.KayitSN := -1;
+  DI^.SektorNo := -1;
+  DI^.KayitSN := -1;
   ZincirNo := 0;
 
-  MD := DosyaIslem^.MantiksalDepolama;
+  MD := DI^.MantiksalDepolama;
 
   ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
   KumeNo := MD^.Acilis.DizinGirisi.IlkSektor div ZincirBasinaSektor;
 
   repeat
 
-    if(DosyaIslem^.KayitSN = -1) then
+    if(DI^.KayitSN = -1) then
     begin
 
-      DosyaIslem^.SektorNo := (KumeNo * ZincirBasinaSektor) + ZincirNo;
+      DI^.SektorNo := (KumeNo * ZincirBasinaSektor) + ZincirNo;
 
       // dizin giriþ sektörünü oku
-      MD^.FD^.SektorOku(MD^.FD, DosyaIslem^.SektorNo, 1, DosyaIslem^.TekSektorIcerik);
+      MD^.FD^.SektorOku(MD^.FD, DI^.SektorNo, 1, DI^.TekSektorIcerik);
 
-      DosyaIslem^.KayitSN := 0;
+      DI^.KayitSN := 0;
     end;
 
     // dosya giriþ tablosuna konumlan
-    AktifDG := PDizinGirdisiELR(DosyaIslem^.TekSektorIcerik);
-    Inc(AktifDG, DosyaIslem^.KayitSN);
+    AktifDG := PDizinGirdisiELR(DI^.TekSektorIcerik);
+    Inc(AktifDG, DI^.KayitSN);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
     if(AktifDG^.DosyaAdi[0] = #00) then
@@ -397,12 +393,12 @@ begin
 
       DosyaAdi := ELRDosyaAdiniAl(AktifDG);
 
-      if(AktifDG^.GirdiTipi = ELR_GT_DOSYA) and (DosyaAdi = DosyaIslem^.DosyaAdi) then
+      if(AktifDG^.GirdiTipi = ELR_GT_DOSYA) and (DosyaAdi = DI^.DosyaAdi) then
       begin
 
         // diðer iþlevlerin de girdi üzerinde iþlem yapabilmesi için
         // dosya bilgilerini aktif dizin giriþine taþý
-        Tasi2(AktifDG, @DosyaIslem^.AktifDG, ELR_DG_U);
+        Tasi2(AktifDG, @DI^.AktifDG, ELR_DG_U);
 
         DosyaBulundu := True;
         TumGirislerOkundu := True;
@@ -413,12 +409,12 @@ begin
     begin
 
       // bir sonraki girdiye konumlan
-      Inc(DosyaIslem^.KayitSN);
-      if(DosyaIslem^.KayitSN = DIZIN_GIRDI_SAYISI) then
+      Inc(DI^.KayitSN);
+      if(DI^.KayitSN = DIZIN_GIRDI_SAYISI) then
       begin
 
         // yeni sektörün okunmasý için KayitSN deðiþkenini -1 olarak ayarla
-        DosyaIslem^.KayitSN := -1;
+        DI^.KayitSN := -1;
 
         Inc(ZincirNo);
         if(ZincirNo = ZincirBasinaSektor) then
@@ -428,7 +424,7 @@ begin
           if(i = ELR_ZD_SON) then
           begin
 
-            AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+            DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
             Exit;
           end else KumeNo := i;
 
@@ -443,13 +439,13 @@ begin
   if(DosyaBulundu) then
   begin
 
-    DosyaIslem^.DosyaDurumu := ddYazmaIcinAcik;
+    DI^.DosyaDurumu := ddYazmaIcinAcik;
   end
   else
   // aksi halde ilgili hata kodunu deðiþkene ata
   begin
 
-    AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
   end;
 end;
 
@@ -458,23 +454,21 @@ end;
  ==============================================================================}
 procedure Reset(ADosyaKimlik: TKimlik);
 var
-  AktifGorev: PGorev;
-  DosyaIslem: PDosyaIslem;
+  DI: PDosyaIslem;
   DosyaArama: TDosyaArama;
   TamAramaYolu: string;
   Bulundu: Boolean;
 begin
 
-  AktifGorev := GorevAl(-1);
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
 
   // en son iþlem hatalý ise çýk
-  if(AktifGorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
-
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // tam dosya adýný al
-  TamAramaYolu := DosyaIslem^.MantiksalDepolama^.MD3.AygitAdi + ':' + DosyaIslem^.Klasor + '*.*';
+  TamAramaYolu := DI^.MantiksalDepolama^.MD3.AygitAdi + ':' + DI^.Klasor + '*.*';
 
   // dosyayý dosya tablosunda bul
   Bulundu := False;
@@ -483,7 +477,7 @@ begin
 
     repeat
 
-      if(DosyaArama.DosyaAdi = DosyaIslem^.DosyaAdi) then Bulundu := True;
+      if(DosyaArama.DosyaAdi = DI^.DosyaAdi) then Bulundu := True;
     until (Bulundu) or (FindNext(DosyaArama) <> 0);
 
     FindClose(DosyaArama);
@@ -494,16 +488,16 @@ begin
   if(Bulundu) then
   begin
 
-    DosyaIslem^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
-    DosyaIslem^.Uzunluk := DosyaArama.DosyaUzunlugu;
+    DI^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
+    DI^.Uzunluk := DosyaArama.DosyaUzunlugu;
 
     {SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IlkZincirSektor: %d', [DosyaIslem^.IlkZincirSektor]);
     SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'DosyaUzunlugu: %d', [DosyaIslem^.Uzunluk]);}
 
     // dosya durumunu, "dosya okuma için açýldý" olarak güncelle
-    DosyaIslem^.DosyaDurumu := ddOkumaIcinAcik;
+    DI^.DosyaDurumu := ddOkumaIcinAcik;
 
-  end else AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+  end else DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
 {==============================================================================
@@ -523,9 +517,8 @@ end;
  ==============================================================================}
 procedure Write0(ADosyaKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TSayi4);
 var
-  AktifGorev: PGorev;
-  MD: PMantiksalDepolama;
-  DosyaIslem: PDosyaIslem;
+  MD: PMDNesne;
+  DI: PDosyaIslem;
   SHTyeYazilacakKumeNo, YeniKumeNo: TISayi4;
   OncedenYazilanKumeSayisi,
   YazilacakKumeNo: TSayi4;
@@ -539,28 +532,27 @@ var
   Bellek: Isaretci;
 begin
 
-  AktifGorev := GorevAl(-1);
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
 
   // en son iþlem hatalý ise çýk
-  if(AktifGorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
-
-  // iþlem yapýlan dosyayla ilgili bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // dosya yazma için açýk mý?
-  if not(DosyaIslem^.DosyaDurumu = ddYazmaIcinAcik) then
+  if not(DI^.DosyaDurumu = ddYazmaIcinAcik) then
   begin
 
-    AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_YAZILAMIYOR;
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_YAZILAMIYOR;
     Exit;
   end;
 
   // ilk deðer atamalarý
-  MD := DosyaIslem^.MantiksalDepolama;
+  MD := DI^.MantiksalDepolama;
 
   ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
-  AktifDG := PDizinGirdisiELR(@DosyaIslem^.AktifDG);
+  AktifDG := PDizinGirdisiELR(@DI^.AktifDG);
 
   SHTyeYazilacakKumeNo := 0;
 
@@ -573,7 +565,7 @@ begin
     begin
 
       SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTBosKumeTahsisEt.HataKodu: %d', [SHTyeYazilacakKumeNo]);
-      AktifGorev^.DosyaSonIslemDurum := SHTyeYazilacakKumeNo;
+      DI^.Gorev^.DosyaSonIslemDurum := SHTyeYazilacakKumeNo;
       Exit;
     end;
 
@@ -635,7 +627,7 @@ begin
 
             SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTBosKumeTahsisEt.HataKodu1: %d', [YeniKumeNo]);
             FreeMem(Bellek, 512 * ZincirBasinaSektor);
-            AktifGorev^.DosyaSonIslemDurum := YeniKumeNo;
+            DI^.Gorev^.DosyaSonIslemDurum := YeniKumeNo;
             Exit;
           end;
 
@@ -672,7 +664,7 @@ begin
 
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTBosKumeTahsisEt.HataKodu2: %d', [YeniKumeNo]);
           FreeMem(Bellek, 512 * ZincirBasinaSektor);
-          AktifGorev^.DosyaSonIslemDurum := YeniKumeNo;
+          DI^.Gorev^.DosyaSonIslemDurum := YeniKumeNo;
           Exit;
         end;
 
@@ -695,10 +687,10 @@ begin
   AktifDG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
 
   // aktif dizin giriþinin sektördeki içeriðini güncelle
-  Tasi2(AktifDG, DosyaIslem^.TekSektorIcerik + (DosyaIslem^.KayitSN * ELR_DG_U), ELR_DG_U);
+  Tasi2(AktifDG, DI^.TekSektorIcerik + (DI^.KayitSN * ELR_DG_U), ELR_DG_U);
 
   // dosyanýn güncel deðerlerini ilgili sektöre yaz
-  MD^.FD^.SektorYaz(MD^.FD, DosyaIslem^.SektorNo, 1, DosyaIslem^.TekSektorIcerik);
+  MD^.FD^.SektorYaz(MD^.FD, DI^.SektorNo, 1, DI^.TekSektorIcerik);
 end;
 
 {==============================================================================
@@ -724,8 +716,8 @@ end;
  ==============================================================================}
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
-  MD: PMantiksalDepolama;
-  DosyaIslem: PDosyaIslem;
+  MD: PMDNesne;
+  DI: PDosyaIslem;
   OkunacakSektorSayisi, i: TSayi4;
   ZincirBasinaSektor, VeriU,
   Zincir: TSayi4;
@@ -735,13 +727,17 @@ var
   Bellek: Isaretci;
 begin
 
-  // iþlem yapýlan dosyayla ilgili bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
+
+  // en son iþlem hatalý ise çýk
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // üzerinde iþlem yapýlacak sürücü
-  MD := DosyaIslem^.MantiksalDepolama;
+  MD := DI^.MantiksalDepolama;
 
-  VeriU := DosyaIslem^.Uzunluk;
+  VeriU := DI^.Uzunluk;
   if(VeriU = 0) then Exit;
 
   ToplamVeriU := VeriU;
@@ -749,7 +745,7 @@ begin
   //SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Ýlk Zincir: %x', [DosyaKayit^.IlkZincirSektor]);
   //SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Dosya Uzunluk: %d', [OkunacakVeri]);
 
-  Zincir := DosyaIslem^.IlkZincirSektor;
+  Zincir := DI^.IlkZincirSektor;
 
   ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
@@ -855,7 +851,7 @@ end;
  ==============================================================================}
 function CreateDir(ADosyaKimlik: TKimlik): Boolean;
 var
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   DG: PDizinGirdisiELR;
   DosyaIslem: PDosyaIslem;
   YeniKumeNo: TISayi4;
@@ -995,7 +991,7 @@ end;
  ==============================================================================}
 function RemoveDir(const ADosyaKimlik: TKimlik): Boolean;
 var
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   DG: PDizinGirdisiELR;
   DosyaIslem: PDosyaIslem;
   DosyaAdi: string;
@@ -1107,7 +1103,7 @@ end;
  ==============================================================================}
 function DeleteFile(const ADosyaKimlik: TKimlik): Boolean;
 var
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   DG: PDizinGirdisiELR;
   DosyaIslem: PDosyaIslem;
   DosyaAdi: string;
@@ -1220,7 +1216,7 @@ end;
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
   var ADosyaArama: TDosyaArama): TSayi1;
 var
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   AktifDG: PDizinGirdisiELR;
   TumGirislerOkundu: Boolean;
   DosyaIslem: PDosyaIslem;
@@ -1343,21 +1339,21 @@ end;
 {==============================================================================
   diski elr-1 dosya sistemi için hazýrlar
  ==============================================================================}
-procedure ELR1DiskBicimle(AMD: PMantiksalDepolama);
+procedure ELR1DiskBicimle(AMDNesne: PMDNesne);
 begin
 
-  ELR1VerileriSil(AMD);
+  ELR1VerileriSil(AMDNesne);
 
   // dosya içerik tablosunu oluþtur
-  ELR1SHTOlustur(AMD, 256, 1280, 1536);
+  ELR1SHTOlustur(AMDNesne, 256, 1280, 1536);
 end;
 
 {==============================================================================
   dosya sisteminin veri alanýndaki mevcut verileri siler
  ==============================================================================}
-procedure ELR1VerileriSil(AMD: PMantiksalDepolama);
+procedure ELR1VerileriSil(AMDNesne: PMDNesne);
 var
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   Bellek: Isaretci;
   KumeNo, i: TSayi4;
 begin
@@ -1367,7 +1363,7 @@ begin
   // dosya tablosunu oluþtur
   FillChar(Bellek^, 512, 0);
 
-  FD := AMD^.FD;
+  FD := AMDNesne^.FD;
 
   KumeNo := 384;      // küme no: 384, sektör no: 1536 veya $600
 
@@ -1384,11 +1380,11 @@ end;
 {==============================================================================
   dosya sistemi sektör harita tablosunu oluþturur
  ==============================================================================}
-procedure ELR1SHTOlustur(AMD: PMantiksalDepolama; AIlkSektor, AToplamSektor,
+procedure ELR1SHTOlustur(AMDNesne: PMDNesne; AIlkSektor, AToplamSektor,
  AAyrilanSektor: TSayi4);
 var
   Bellek: Isaretci;
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   i, j: TSayi4;
 begin
 
@@ -1398,7 +1394,7 @@ begin
 
   // sht için ayrýlan sektörleri sýfýrla
   FillChar(Bellek^, 512, 0);
-  FD := AMD^.FD;
+  FD := AMDNesne^.FD;
 
   for i := AIlkSektor to (AIlkSektor + AToplamSektor) - 1 do
   begin
@@ -1440,10 +1436,10 @@ end;
 {==============================================================================
   sektör harita tablosundan boþ küme numarasý alýr
  ==============================================================================}
-function SHTBosKumeTahsisEt(AMD: PMantiksalDepolama): TISayi4;
+function SHTBosKumeTahsisEt(AMDNesne: PMDNesne): TISayi4;
 var
   Bellek: Isaretci;
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   KumeNo, i, j: TSayi4;
   Deger: PSayi4;
   HataDurumu: TISayi4;
@@ -1454,7 +1450,7 @@ begin
   // tüm sektörler dolu
   KumeNo := 0;
 
-  FD := AMD^.FD;
+  FD := AMDNesne^.FD;
 
   for i := 256 to (256 + 1280) - 1 do
   begin
@@ -1502,10 +1498,10 @@ end;
 {==============================================================================
   sektör harita tablosundan alýnan sektör kümesini serbest býrakýr
  ==============================================================================}
-function SHTBosKumeSerbestBirak(AMD: PMantiksalDepolama; AKumeNo: TSayi4): Boolean;
+function SHTBosKumeSerbestBirak(AMDNesne: PMDNesne; AKumeNo: TSayi4): Boolean;
 var
   Bellek: Isaretci;
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   SektorNo, SiraNo: TSayi4;
   Deger: PSayi4;
 begin
@@ -1518,7 +1514,7 @@ begin
   SektorNo := AKumeNo div 128;
   SiraNo := AKumeNo mod 128;
 
-  FD := AMD^.FD;
+  FD := AMDNesne^.FD;
 
   FD^.SektorOku(FD, 256 + SektorNo, 1, Bellek);
 
@@ -1540,11 +1536,11 @@ end;
 {==============================================================================
   kümeyi bir önceki kümeye baðlar
  ==============================================================================}
-function SHTKumeyiBirOncekiKumeyeBagla(AMD: PMantiksalDepolama; ABirOncekiKumeNo,
+function SHTKumeyiBirOncekiKumeyeBagla(AMDNesne: PMDNesne; ABirOncekiKumeNo,
  AKumeNo: TSayi4): Boolean;
 var
   Bellek: Isaretci;
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   SektorNo, SiraNo: TSayi4;
   Deger: PSayi4;
 begin
@@ -1559,7 +1555,7 @@ begin
   SektorNo := ABirOncekiKumeNo div 128;
   SiraNo := ABirOncekiKumeNo mod 128;
 
-  FD := AMD^.FD;
+  FD := AMDNesne^.FD;
 
   FD^.SektorOku(FD, 256 + SektorNo, 1, Bellek);
 
@@ -1577,10 +1573,10 @@ end;
 {==============================================================================
   kümeye baðlý bir sonraki kümeyi alýr
  ==============================================================================}
-function SHTBirSonrakiKumeyiAl(AMD: PMantiksalDepolama; AKumeNo: TSayi4): TSayi4;
+function SHTBirSonrakiKumeyiAl(AMDNesne: PMDNesne; AKumeNo: TSayi4): TSayi4;
 var
   Bellek: Isaretci;
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   SektorNo, SiraNo: TSayi4;
   Deger: PSayi4;
 begin
@@ -1595,7 +1591,7 @@ begin
   SektorNo := AKumeNo div 128;
   SiraNo := AKumeNo mod 128;
 
-  FD := AMD^.FD;
+  FD := AMDNesne^.FD;
 
   FD^.SektorOku(FD, 256 + SektorNo, 1, Bellek);
 
@@ -1609,10 +1605,10 @@ end;
 {==============================================================================
   sektör olarak depolama aygýtý kullanýlan toplam kapasiteyi hesaplar
  ==============================================================================}
-function SHTToplamKullanim(AMD: PMantiksalDepolama): TSayi4;
+function SHTToplamKullanim(AMDNesne: PMDNesne): TSayi4;
 var
   Bellek: Isaretci;
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   i, j, KullanilanSektor: TSayi4;
   Deger: PSayi4;
 begin
@@ -1622,7 +1618,7 @@ begin
   // tüm sektörler dolu
   KullanilanSektor := 0;
 
-  FD := AMD^.FD;
+  FD := AMDNesne^.FD;
 
   for i := 256 to (256 + 1280) - 1 do
   begin

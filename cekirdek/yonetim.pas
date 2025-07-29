@@ -74,7 +74,7 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
-  src_e1000, depolama, islevler, bolumleme, donusum, arp, gercekbellek, pci;
+  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci, sistem;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -231,7 +231,7 @@ var
   Bellek1, Bellek2,
   Bellek3, Bellek4,
   Bellek5: Isaretci;
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   T: TMyThread;
   A, B: TAracTipiSinif;
   G: PGorev;
@@ -328,11 +328,13 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
+            CalisanUygulamalariKaydet;
+
             //p4 := PCIAygiti0.Oku4(0, 8, 0, $10);
-            p4 := SizeOf(TIPAdres);
+            {p4 := SizeOf(TIPAdres);
             SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [p4]);
             p4 := SizeOf(TIPAdresIslev);
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [p4]);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [p4]);}
 
             //GSistemMesaj.Ekle0(mtBilgi, RENK_KIRMIZI, 'Merhaba');
 
@@ -425,7 +427,7 @@ begin
           else if(TusKarakterDegeri = '5') then
           begin
 
-            MD := GDepolama.MantiksalSurucuAl('disk2');
+            MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
             if not(MD = nil) then ELR1DiskBicimle(MD);
           end
           // program çalýþtýrma programýný çalýþtýr

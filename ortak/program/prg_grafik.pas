@@ -14,7 +14,7 @@ unit prg_grafik;
 
 interface
 
-uses paylasim;
+uses paylasim, fdepolama;
 
 const
   P_BASLIK_YUKSEKLIK = 24;
@@ -26,7 +26,7 @@ procedure SistemDegerleriOlayIsle;
 
 implementation
 
-uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, bolumleme, elr1, sistemmesaj;
+uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, mdepolama, elr1, sistemmesaj;
 
 var
   SDPencere: PPencere = nil;
@@ -82,14 +82,14 @@ end;
 
 procedure SistemDegerleriOlayIsle;
 var
-  MD: PMantiksalDepolama;
+  MD: PMDNesne;
   CizimAlan: TAlan;
   ToplamKullanimByte: TSayi4;
 begin
 
   // $1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
   Inc(BellekSayac);
-  if(BellekSayac = $1000) then
+  if(BellekSayac = 2000) then
   begin
 
     igBellek^.MevcutDegerYaz(GGercekBellek.KullanilmisBlok * 4096);
@@ -99,12 +99,12 @@ begin
 
   // 1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
   Inc(DiskSayac);
-  if(DiskSayac = $1000) then
+  if(DiskSayac = 2000) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk kullaným alaný hesaplanýyor...', []);
 
-    MD := SurucuAl('disk2:\');
+    MD := MantiksalDepolama0.SurucuAl('disk2:\');
     if not(MD = nil) then
     begin
 

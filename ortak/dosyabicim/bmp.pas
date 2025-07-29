@@ -17,7 +17,7 @@ unit bmp;
 
 interface
 
-uses dosya, gercekbellek, genel, paylasim, gn_pencere, gorselnesne;
+uses dosya, genel, paylasim, gn_pencere, gorselnesne;
 
 type
   PRGBRenk = ^TRGBRenk;

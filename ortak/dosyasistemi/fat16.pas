@@ -14,7 +14,7 @@ unit fat16;
 
 interface
 
-uses paylasim, gorev;
+uses paylasim, gorev, fdepolama, mdepolama;
 
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
@@ -115,23 +115,21 @@ end;
  ==============================================================================}
 procedure Reset(ADosyaKimlik: TKimlik);
 var
-  AktifGorev: PGorev;
-  DosyaIslem: PDosyaIslem;
+  DI: PDosyaIslem;
   DosyaArama: TDosyaArama;
   TamAramaYolu: string;
   Bulundu: Boolean;
 begin
 
-  AktifGorev := GorevAl(-1);
+  // dosya işlem yapısı bellek bölgesine konumlan
+  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
 
   // en son işlem hatalı ise çık
-  if(AktifGorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
-
-  // dosya işlem yapısı bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // tam dosya adını al
-  TamAramaYolu := DosyaIslem^.MantiksalDepolama^.MD3.AygitAdi + ':' + DosyaIslem^.Klasor + '*.*';
+  TamAramaYolu := DI^.MantiksalDepolama^.MD3.AygitAdi + ':' + DI^.Klasor + '*.*';
 
   // dosyayı dosya tablosunda bul
   Bulundu := False;
@@ -140,7 +138,7 @@ begin
 
     repeat
 
-      if(DosyaArama.DosyaAdi = DosyaIslem^.DosyaAdi) then Bulundu := True;
+      if(DosyaArama.DosyaAdi = DI^.DosyaAdi) then Bulundu := True;
     until (Bulundu) or (FindNext(DosyaArama) <> 0);
 
     FindClose(DosyaArama);
@@ -153,9 +151,9 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Reset: %d', [DosyaArama.DosyaUzunlugu]);
 
-    DosyaIslem^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
-    DosyaIslem^.Uzunluk := DosyaArama.DosyaUzunlugu;
-  end else AktifGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+    DI^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
+    DI^.Uzunluk := DosyaArama.DosyaUzunlugu;
+  end else DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
 {==============================================================================
@@ -181,8 +179,8 @@ end;
  ==============================================================================}
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
-  MD: PMantiksalDepolama;
-  DosyaIslem: PDosyaIslem;
+  MD: PMDNesne;
+  DI: PDosyaIslem;
   DATBellekAdresi: array[0..511] of Byte;
   DATSiraNo: TSayi2;
   OkunacakSektorSayisi,
@@ -192,15 +190,19 @@ var
   OkumaSonuc: Boolean;
 begin
 
-  // işlem yapılan dosyayla ilgili bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  // dosya işlem yapısı bellek bölgesine konumlan
+  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
+
+  // en son işlem hatalı ise çık
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // üzerinde işlem yapılacak sürücü
-  MD := DosyaIslem^.MantiksalDepolama;
+  MD := DI^.MantiksalDepolama;
 
-  OkunacakVeri := DosyaIslem^.Uzunluk;
+  OkunacakVeri := DI^.Uzunluk;
 
-  Zincir := DosyaIslem^.IlkZincirSektor;
+  Zincir := DI^.IlkZincirSektor;
 
   OkumaSonuc := False;
 

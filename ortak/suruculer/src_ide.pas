@@ -126,7 +126,7 @@ function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSa
 
 implementation
 
-uses aygityonetimi, irq, sistemmesaj, donusum, gorev;
+uses aygityonetimi, irq, sistemmesaj, donusum, gorev, fdepolama;
 
 var
   IDEDiskListesi: array[0..3] of TIDEDisk = (
@@ -140,7 +140,7 @@ var
  ==============================================================================}
 procedure Yukle;
 var
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   Bellek: TATA4;
   i: TSayi4;
 begin
@@ -175,7 +175,7 @@ begin
       {$ENDIF}
 
       // mevcut ise fiziksel sürücü yapýsýný oluþtur
-      FD := FizikselDepolamaAygitiOlustur(SURUCUTIP_DISK);
+      FD := FizikselDepolama0.FDAygitiOlustur(SURUCUTIP_DISK);
       if(FD <> nil) then
       begin
 
@@ -339,7 +339,7 @@ end;
 function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 var
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   PortNo: TSayi2;
   i: TSayi1;
   HataDurumu: TISayi4;
@@ -434,7 +434,7 @@ end;
 function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 var
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   PortNo: TSayi2;
   i: TSayi1;
   HataDurumu: TISayi4;
@@ -443,7 +443,7 @@ begin
   while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
 
   // sürücü bilgisine konumlan
-  FD := PFizikselDepolama(AFizikselDepolama);
+  FD := PFDNesne(AFizikselDepolama);
 
   // aygýt meþgulse çýk
   if(IDEAygitiMesgulMu(@FD^.Aygit)) then

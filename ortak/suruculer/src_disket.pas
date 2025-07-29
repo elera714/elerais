@@ -25,7 +25,7 @@ interface
   2 * 80 * 18 * 512 = 1474560 = 1.44
 
 }
-uses paylasim, port;
+uses paylasim, port, fdepolama;
 
 const
   DISKET_TEMEL          = $3F0;       // base addres
@@ -45,19 +45,19 @@ var
   DURUM0, DURUM1, DURUM2: TSayi1;
 
 procedure Yukle;
-procedure MotorAc(AFizikselDepolama: PFizikselDepolama);
-procedure MotorKapat(AFizikselDepolama: PFizikselDepolama);
+procedure MotorAc(AFDNesne: PFDNesne);
+procedure MotorKapat(AFDNesne: PFDNesne);
 procedure DMA2Yukle(Op: Byte);
 function DurumOku: TSayi1;
 procedure DurumYaz(ADeger: TSayi1);
 function Bekle: Boolean;
 procedure IRQ6KesmeIslevi;
-function Konumlan0(AFizikselDepolama: PFizikselDepolama): Boolean;
-function Konumlan(AFizikselDepolama: PFizikselDepolama; AIz, AKafa: TSayi1): Boolean;
+function Konumlan0(AFDNesne: PFDNesne): Boolean;
+function Konumlan(AFDNesne: PFDNesne; AIz, AKafa: TSayi1): Boolean;
 procedure DisketSurucuMotorunuKontrolEt;
 procedure SektoruAyristir(ASektorNo: TSayi2; var AKafa, AIz, ASektor: TSayi1);
-function TekSektorOku(AFizikselDepolama: PFizikselDepolama; ASektorNo: TSayi4): Boolean;
-function TekSektorYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo: TSayi4): Boolean;
+function TekSektorOku(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
+function TekSektorYaz(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
 function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   AHedefBellek: Isaretci): TISayi4;
 function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
@@ -72,7 +72,7 @@ uses irq, zamanlayici, aygityonetimi, islevler, sistemmesaj;
  ==============================================================================}
 procedure Yukle;
 var
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   i, j: TSayi1;
 begin
 
@@ -104,7 +104,7 @@ begin
     if(j > 0) then
     begin
 
-      FD := FizikselDepolamaAygitiOlustur(SURUCUTIP_DISKET);
+      FD := FizikselDepolama0.FDAygitiOlustur(SURUCUTIP_DISKET);
       if(FD <> nil) then
       begin
 
@@ -133,7 +133,7 @@ begin
     if(j > 0) then
     begin
 
-      FD := FizikselDepolamaAygitiOlustur(SURUCUTIP_DISKET);
+      FD := FizikselDepolama0.FDAygitiOlustur(SURUCUTIP_DISKET);
       if(FD <> nil) then
       begin
 
@@ -168,11 +168,11 @@ end;
 {==============================================================================
   disket sürücü motorunu çalýþtýrýr
  ==============================================================================}
-procedure MotorAc(AFizikselDepolama: PFizikselDepolama);
+procedure MotorAc(AFDNesne: PFDNesne);
 begin
 
   // eðer aygýt ile ilgili iþlem yapýlmakta ise çýk (motor zaten açýk)
-  if(AFizikselDepolama^.IslemYapiliyor) then
+  if(AFDNesne^.IslemYapiliyor) then
   begin
 
     //SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 1', []);
@@ -181,21 +181,21 @@ begin
 
   // eðer aygýt ile ilgili iþlem tamamlanmýþ ve motorun kapanmasý için geri sayým
   // gerçekleþmekte ise geri sayým iþlemini iptal et
-  if(AFizikselDepolama^.IslemYapiliyor = False) and (AFizikselDepolama^.MotorSayac > 0) then
+  if(AFDNesne^.IslemYapiliyor = False) and (AFDNesne^.MotorSayac > 0) then
   begin
 
-    AFizikselDepolama^.IslemYapiliyor := True;
+    AFDNesne^.IslemYapiliyor := True;
     //SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 2', []);
     Exit;
   end;
 
   // motor açma iþlemlerini gerçekleþtir
-  AFizikselDepolama^.IslemYapiliyor := True;
+  AFDNesne^.IslemYapiliyor := True;
 
   PortYaz1(DISKET_CIKISYAZMAC, 0);
 
   // motor'u aç
-  if(AFizikselDepolama^.Aygit.Kanal = 0) then
+  if(AFDNesne^.Aygit.Kanal = 0) then
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $1C);
@@ -217,11 +217,11 @@ end;
 {==============================================================================
   disket sürücü motorunu durdurur
  ==============================================================================}
-procedure MotorKapat(AFizikselDepolama: PFizikselDepolama);
+procedure MotorKapat(AFDNesne: PFDNesne);
 begin
 
   // motor'u kapat
-  if(AFizikselDepolama^.Aygit.Kanal = 0) then
+  if(AFDNesne^.Aygit.Kanal = 0) then
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $C);
@@ -288,7 +288,7 @@ begin
     end;
   end;
 
-  SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Disket->DurumOku zaman aþýmý', []);
+  //SISTEM_MESAJ(mtHata, RENK_SIYAH, 'Disket->DurumOku zaman aþýmý', []);
 end;
 
 {==============================================================================
@@ -310,7 +310,7 @@ begin
     end;
   end;
 
-  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Disket->DurumYaz zaman aþýmý', []);
+  //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Disket->DurumYaz zaman aþýmý', []);
 end;
 
 {==============================================================================
@@ -354,7 +354,7 @@ end;
 {==============================================================================
   disket okuma kafasýný baþlangýç konumuna (0. sektör) getirir (calibrate)
  ==============================================================================}
-function Konumlan0(AFizikselDepolama: PFizikselDepolama): Boolean;
+function Konumlan0(AFDNesne: PFDNesne): Boolean;
 var
   _Iz: TSayi1;
 begin
@@ -363,7 +363,7 @@ begin
   IRQ6Tetiklendi := False;
 
   DurumYaz(7);                                      // Konumlan0
-  DurumYaz(AFizikselDepolama^.Aygit.Kanal);           // kafa no (0) + sürücü
+  DurumYaz(AFDNesne^.Aygit.Kanal);                  // kafa no (0) + sürücü
 
   // iþlemin bitmesini bekle
   Bekle;
@@ -385,7 +385,7 @@ end;
 {==============================================================================
   floppy okuma kafasýný belirtilen iz'e (track) konumlandýrýr
  ==============================================================================}
-function Konumlan(AFizikselDepolama: PFizikselDepolama; AIz, AKafa: TSayi1): Boolean;
+function Konumlan(AFDNesne: PFDNesne; AIz, AKafa: TSayi1): Boolean;
 var
   _Iz: TSayi1;
 begin
@@ -396,7 +396,7 @@ begin
   IRQ6Tetiklendi := False;
 
   DurumYaz($F);                                                   // Konumlan
-  DurumYaz((AKafa shl 2) or AFizikselDepolama^.Aygit.Kanal);        // kafa no + sürücü
+  DurumYaz((AKafa shl 2) or AFDNesne^.Aygit.Kanal);               // kafa no + sürücü
   DurumYaz(AIz);
 
   // iþlemin bitmesini bekle
@@ -484,7 +484,7 @@ end;
 {==============================================================================
   disketten tek bir sektör okuma iþlevini gerçekleþtirir
  ==============================================================================}
-function TekSektorOku(AFizikselDepolama: PFizikselDepolama; ASektorNo: TSayi4): Boolean;
+function TekSektorOku(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
 var
   _Kafa, _Iz, _Sektor: TSayi1;
 begin
@@ -513,7 +513,7 @@ begin
   end;
 }
   // kafanýn konumlandýðý izi kaydet
-  AFizikselDepolama^.SonIzKonumu := _Iz;
+  AFDNesne^.SonIzKonumu := _Iz;
 
   // DMA2'yi aygýttan okuma için ayarla
   DMA2Yukle(DMA_OKU);
@@ -523,7 +523,7 @@ begin
 
   // MFS sektör oku
   DurumYaz($E6);
-  DurumYaz((_Kafa shl 2) or AFizikselDepolama^.Aygit.Kanal);
+  DurumYaz((_Kafa shl 2) or AFDNesne^.Aygit.Kanal);
   DurumYaz(_Iz);
   DurumYaz(_Kafa);
   DurumYaz(_Sektor);
@@ -549,7 +549,7 @@ end;
 {==============================================================================
   diskete tek bir sektör yazma iþlevini gerçekleþtirir
  ==============================================================================}
-function TekSektorYaz(AFizikselDepolama: PFizikselDepolama; ASektorNo: TSayi4): Boolean;
+function TekSektorYaz(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
 const
   s: string = 'merhaba';
 var
@@ -582,7 +582,7 @@ begin
   end;
 }
   // kafanýn konumlandýðý izi kaydet
-  AFizikselDepolama^.SonIzKonumu := _Iz;
+  AFDNesne^.SonIzKonumu := _Iz;
 
   // DMA2'yi aygýttan okuma için ayarla
   DMA2Yukle(DMA_YAZ);
@@ -592,7 +592,7 @@ begin
 
   // MFS sektör oku
   DurumYaz($45);
-  DurumYaz((_Kafa shl 2) or AFizikselDepolama^.Aygit.Kanal);
+  DurumYaz((_Kafa shl 2) or AFDNesne^.Aygit.Kanal);
   DurumYaz(_Iz);
   DurumYaz(_Kafa);
   DurumYaz(_Sektor);
@@ -624,7 +624,7 @@ end;
 function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   AHedefBellek: Isaretci): TISayi4;
 var
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   _BellekAdresi: Isaretci;
   _OkumaSonuc: Boolean;
   _OkunacakSektor, _SektorSayisi, i: TSayi4;
@@ -694,7 +694,7 @@ end;
 function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 var
-  FD: PFizikselDepolama;
+  FD: PFDNesne;
   _BellekAdresi: Isaretci;
   _OkumaSonuc: Boolean;
   _OkunacakSektor, _SektorSayisi, i: TSayi4;

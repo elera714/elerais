@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 13/07/2025
+  Güncelleme Tarihi: 29/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -185,6 +185,7 @@ end;
  ==============================================================================}
 procedure TSistemMesaj.Temizle;
 var
+  M: PMesajKayit;
   i: TSayi4;
 begin
 
@@ -196,7 +197,13 @@ begin
   for i := 0 to USTSINIR_MESAJ - 1 do
   begin
 
-    if not(Mesaj[i] = nil) then FreeMem(Mesaj[i]);
+    M := Mesaj[i];
+    if not(M = nil) then
+    begin
+
+      Mesaj[i] := nil;
+      FreeMem(M);
+    end;
   end;
 
   KritikBolgedenCik(SistemMesajKilit);
