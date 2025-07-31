@@ -233,7 +233,7 @@ begin
   Izgara^.FDikeyKCubugu^.DegerleriBelirle(0, 10);
   Izgara^.FDikeyKCubugu^.OlayYonlendirmeAdresi := @KaydirmaCubuguOlaylariniIsle;
 
-  Izgara^.FDegerler := Izgara^.FDegerler^.Olustur;
+  Izgara^.FDegerler := YaziListesi0.Olustur;
 
   // nesnenin kullanacaðý diðer deðerler
   Izgara^.FGorunenIlkSiraNo := 0;
@@ -265,7 +265,7 @@ begin
   Izgara := PIzgara(GorselNesneler0.NesneAl(Kimlik));
   if(Izgara = nil) then Exit;
 
-  if(Izgara^.FDegerler <> nil) then Izgara^.FDegerler^.YokEt;
+  if(Izgara^.FDegerler <> nil) then YaziListesi0.YokEt(Izgara^.FDegerler^.Kimlik);
 
   GorselNesneler0.YokEt(AKimlik);
 end;
@@ -405,7 +405,7 @@ begin
       else Izgara^.DikdortgenDoldur(Izgara, Alan, RENK_BEYAZ, RENK_BEYAZ);
 
       // baþlýk
-      Izgara^.AlanaYaziYaz(Izgara, Alan, 4, 3, FDegerler^.Eleman[(i * (Izgara^.FSutunSayisi)) + j],
+      Izgara^.AlanaYaziYaz(Izgara, Alan, 4, 3, FDegerler^.Yazi[(i * (Izgara^.FSutunSayisi)) + j],
         RENK_LACIVERT);
 
       Alan.Sol += Izgara^.FSutunGenislik + 1;
@@ -606,7 +606,7 @@ begin
 
   if(FSeciliSutun = -1) or (FSeciliSutun > FDegerler^.ElemanSayisi) then Exit('');
 
-  Result := Izgara^.FDegerler^.Eleman[FSeciliSutun];
+  Result := Izgara^.FDegerler^.Yazi[FSeciliSutun];
 end;
 
 {==============================================================================

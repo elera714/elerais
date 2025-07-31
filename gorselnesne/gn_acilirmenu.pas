@@ -44,7 +44,7 @@ function NesneOlustur(AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi
 
 implementation
 
-uses genel, temelgorselnesne, gorev;
+uses genel, temelgorselnesne, gorev, sistemmesaj;
 
 {==============================================================================
   açýlýr menü kesme çaðrýlarýný yönetir

@@ -6,7 +6,7 @@
   Dosya Adı: n_sayilistesi.pas
   Dosya İşlevi: sayı liste nesne işlevlerini gerçekleştirir.
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 31/07/2025
 
   Bilgi: sistem tasarlama yönünden FPC'nin sağladığı imkanlarından yararlanamama
   konusunda kısıtlamaları aşmak amacıyla (dinamik bellek yönetiminin kullanılamamasına
@@ -20,95 +20,146 @@ interface
 
 uses paylasim;
 
+const
+  USTSINIR_SAYILISTESI = 128;    // 4096 byte / 32 byte = 128 adet liste
+
 type
   PSayiListesi = ^TSayiListesi;
   TSayiListesi = object
   private
-    FTanimlayici: TISayi4;
-    FNesneKullanilabilir: Boolean;    // kullanılabilir = boşta = kullanıma hazır
+    FKimlik: TKimlik;
+    FElemanSayisi: TISayi4;
     FBellekBaslangicAdresi,
     FMevcutBellekAdresi: PISayi4;
     FBellekUzunlugu: TISayi4;
-    FElemanSayisi: TISayi4;
-    function ElemanAl(ASiraNo: TISayi4): TISayi4;
+    function SayiAl(ASiraNo: TISayi4): TISayi4;
   public
-    function Olustur: PSayiListesi;
-    procedure YokEt;
-    function KullanilabilirNesneBul: PSayiListesi;
     procedure Temizle;
     function Ekle(ADeger: TISayi4): TISayi4;
-    property Eleman[SiraNo: TISayi4]: TISayi4 read ElemanAl;
+    property Sayi[SiraNo: TISayi4]: TISayi4 read SayiAl;
+    property Kimlik: TKimlik read FKimlik write FKimlik;
+    property ElemanSayisi: TISayi4 read FElemanSayisi write FElemanSayisi;
     property BellekBaslangicAdresi: PISayi4 read FBellekBaslangicAdresi write FBellekBaslangicAdresi;
     property MevcutBellekAdresi: PISayi4 read FMevcutBellekAdresi write FMevcutBellekAdresi;
     property BellekUzunlugu: TISayi4 read FBellekUzunlugu write FBellekUzunlugu;
-  published
-    property Tanimlayici: TISayi4 read FTanimlayici write FTanimlayici;
-    property NesneKullanilabilir: Boolean read FNesneKullanilabilir write FNesneKullanilabilir;
-    property ElemanSayisi: TISayi4 read FElemanSayisi write FElemanSayisi;
   end;
+
+type
+  PSayiListeleri = ^TSayiListeleri;
+  TSayiListeleri = object
+  private
+    FSayiListesi: array[0..USTSINIR_SAYILISTESI - 1] of PSayiListesi;
+    function SayiListesiAl(ASiraNo: TSayi4): PSayiListesi;
+    procedure SayiListesiYaz(ASiraNo: TSayi4; ASayiListesi: PSayiListesi);
+  public
+    procedure Yukle;
+    function Olustur: PSayiListesi;
+    procedure YokEt(AKimlik: TKimlik);
+    function BosNesneBul: PSayiListesi;
+    property SayiListesi[ASiraNo: TSayi4]: PSayiListesi read SayiListesiAl write SayiListesiYaz;
+  end;
+
+var
+  SayiListesi0: TSayiListeleri;
 
 implementation
 
-uses genel;
+{==============================================================================
+  sayı nesne listesini ilk değerlerle yükler
+ ==============================================================================}
+procedure TSayiListeleri.Yukle;
+var
+  i: TSayi4;
+begin
+
+  // bellek girişlerini nesne yapı girişleriyle eşleştir
+  for i := 0 to USTSINIR_SAYILISTESI - 1 do SayiListesi[i] := nil;
+end;
+
+function TSayiListeleri.SayiListesiAl(ASiraNo: TSayi4): PSayiListesi;
+begin
+
+  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_SAYILISTESI) then
+    Result := FSayiListesi[ASiraNo]
+  else Result := nil;
+end;
+
+procedure TSayiListeleri.SayiListesiYaz(ASiraNo: TSayi4; ASayiListesi: PSayiListesi);
+begin
+
+  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_SAYILISTESI) then
+    FSayiListesi[ASiraNo] := ASayiListesi;
+end;
 
 {==============================================================================
   sayı liste nesnesini oluşturur
  ==============================================================================}
-function TSayiListesi.Olustur: PSayiListesi;
+function TSayiListeleri.Olustur: PSayiListesi;
 var
-  p: PSayiListesi;
-  p2: Isaretci;
+  SL: PSayiListesi;
+  p: Isaretci;
 begin
 
   // kullanılabilir nesne bul
-  p := KullanilabilirNesneBul;
-  if not(p = nil) then
+  SL := BosNesneBul;
+  if not(SL = nil) then
   begin
 
     // nesne ve nesnenin işleyeceği veriler için 4K bellek bölgesi ayır
-    p2 := GGercekBellek.Ayir(4096);
-    if not(p2 = nil) then
+    p := GetMem(4096);
+    if not(p = nil) then
     begin
 
       // nesne değişkenlerini ilk değerlerle yükle.
-      p^.BellekBaslangicAdresi := p2;
-      p^.MevcutBellekAdresi := p2;
-      p^.BellekUzunlugu := 4096;
-      p^.ElemanSayisi := 0;
+      SL^.BellekBaslangicAdresi := p;
+      SL^.MevcutBellekAdresi := p;
+      SL^.BellekUzunlugu := 4096;
 
-      Result := p;
+      Exit(SL);
     end
     else
     begin
 
-      YokEt;
-      p := nil;
+      YokEt(SL^.Kimlik);
+      Exit(nil);
     end;
   end;
 
-  Result := p;
+  Result := nil;
 end;
 
 {==============================================================================
   sayı liste nesnesini yok eder.
  ==============================================================================}
-procedure TSayiListesi.YokEt;
+procedure TSayiListeleri.YokEt(AKimlik: TKimlik);
+var
+  SL: PSayiListesi;
 begin
 
-  // bellek tahsis edilmişse öncelikle belleği serbest bırak
-  if not(BellekBaslangicAdresi = nil) then
-    GGercekBellek.YokEt(FBellekBaslangicAdresi, 4096);
+  if(AKimlik >= 0) and (AKimlik < USTSINIR_SAYILISTESI) then
+  begin
 
-  // nesnenin kullanılabilir özelliğini aktifleştir
-  GSayiListesi[Tanimlayici]^.NesneKullanilabilir := True;
+    SL := SayiListesi[AKimlik];
+
+    // bellek tahsis edilmişse belleği bırak
+    if not(SL^.BellekBaslangicAdresi = nil) then
+      FreeMem(SL^.FBellekBaslangicAdresi, 4096);
+
+    FreeMem(SL, SizeOf(TSayiListesi));
+
+    // nesne dizi sırasını nil olarak ata
+    SayiListesi[AKimlik] := nil;
+  end;
 end;
 
 {==============================================================================
   kullanılabilir (boşta) sayı nesnesi bulur
  ==============================================================================}
-function TSayiListesi.KullanilabilirNesneBul: PSayiListesi;
+function TSayiListeleri.BosNesneBul: PSayiListesi;
 var
-  p: PSayiListesi;
+  SL: PSayiListesi;
   i: TSayi4;
 begin
 
@@ -116,15 +167,19 @@ begin
   for i := 0 to USTSINIR_SAYILISTESI - 1 do
   begin
 
-    p := GSayiListesi[i];
+    SL := SayiListesi[i];
 
     // nesne kullanılabilir ise, nesneyi tahsis et
-    if(P^.NesneKullanilabilir) then
+    if(SL = nil) then
     begin
 
-      P^.NesneKullanilabilir := False;
-      Result := p;
-      Exit;
+      SL := GetMem(SizeOf(TSayiListesi));
+      SayiListesi[i] := SL;
+
+      SL^.Kimlik := i;
+      SL^.ElemanSayisi := 0;
+
+      Exit(SL);
     end;
   end;
 
@@ -174,7 +229,7 @@ end;
 {==============================================================================
   listenin belirtilen elemanını geriye döndürür
  ==============================================================================}
-function TSayiListesi.ElemanAl(ASiraNo: TISayi4): TISayi4;
+function TSayiListesi.SayiAl(ASiraNo: TISayi4): TISayi4;
 var
   p: PISayi4;
 begin

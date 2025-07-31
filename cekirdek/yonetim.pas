@@ -15,7 +15,8 @@ unit yonetim;
 
 interface
 
-uses paylasim, gn_pencere, zamanlayici, dns, gorselnesne, irq, arge, thread;
+uses paylasim, gn_pencere, zamanlayici, dns, gorselnesne, irq, arge, thread,
+  n_sayilistesi, n_yazilistesi;
 
 type
 
@@ -69,6 +70,7 @@ procedure SistemAnaKontrol;
 procedure CekirdekDosyaTSDegeriniKaydet;
 procedure KaydedilenProgramlariYenidenYukle;
 procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
+procedure ListeleriIlkDegerlerleYukle;
 
 implementation
 
@@ -740,6 +742,16 @@ begin
 
   inherited Create(CreateSuspended);
   //FreeOnTerminate := True;
+end;
+
+{==============================================================================
+  çalýþtýrýlacak iþlemlerin ana yükleme iþlevlerini içerir
+ ==============================================================================}
+procedure ListeleriIlkDegerlerleYukle;
+begin
+
+  YaziListesi0.Yukle;
+  SayiListesi0.Yukle;
 end;
 
 end.

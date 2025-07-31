@@ -183,8 +183,6 @@ function TDegerListesi.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselN
   ASol, AUst, AGenislik, AYukseklik: TISayi4): PDegerListesi;
 var
   DegerListesi: PDegerListesi;
-  KolonAdlari, Degerler, DegerDizisi: PYaziListesi;
-  KolonUzunluklari: PSayiListesi;
 begin
 
   DegerListesi := PDegerListesi(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
@@ -201,21 +199,10 @@ begin
 
   DegerListesi^.OlayCagriAdresi := @OlaylariIsle;
 
-  DegerListesi^.FKolonAdlari := nil;
-  KolonAdlari := KolonAdlari^.Olustur;
-  if(KolonAdlari <> nil) then DegerListesi^.FKolonAdlari := KolonAdlari;
-
-  DegerListesi^.FKolonUzunluklari := nil;
-  KolonUzunluklari := KolonUzunluklari^.Olustur;
-  if(KolonUzunluklari <> nil) then DegerListesi^.FKolonUzunluklari := KolonUzunluklari;
-
-  DegerListesi^.FDegerler := nil;
-  Degerler := Degerler^.Olustur;
-  if(Degerler <> nil) then DegerListesi^.FDegerler := Degerler;
-
-  DegerListesi^.FDegerDizisi := nil;
-  DegerDizisi := DegerDizisi^.Olustur;
-  if(DegerDizisi <> nil) then DegerListesi^.FDegerDizisi := DegerDizisi;
+  DegerListesi^.FKolonAdlari := YaziListesi0.Olustur;
+  DegerListesi^.FKolonUzunluklari := SayiListesi0.Olustur;
+  DegerListesi^.FDegerler := YaziListesi0.Olustur;
+  DegerListesi^.FDegerDizisi := YaziListesi0.Olustur;
 
   // nesnenin kullanacağı diğer değerler
   DegerListesi^.FGorunenIlkSiraNo := 0;
@@ -239,10 +226,10 @@ begin
   DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(Kimlik));
   if(DegerListesi = nil) then Exit;
 
-  if(DegerListesi^.FDegerler <> nil) then DegerListesi^.FDegerler^.YokEt;
-  if(DegerListesi^.FDegerDizisi <> nil) then DegerListesi^.FDegerDizisi^.YokEt;
-  if(DegerListesi^.FKolonAdlari <> nil) then DegerListesi^.FKolonAdlari^.YokEt;
-  if(DegerListesi^.FKolonUzunluklari <> nil) then DegerListesi^.FKolonUzunluklari^.YokEt;
+  if(DegerListesi^.FDegerler <> nil) then YaziListesi0.YokEt(DegerListesi^.FDegerler^.Kimlik);
+  if(DegerListesi^.FDegerDizisi <> nil) then YaziListesi0.YokEt(DegerListesi^.FDegerDizisi^.Kimlik);
+  if(DegerListesi^.FKolonAdlari <> nil) then YaziListesi0.YokEt(DegerListesi^.FKolonAdlari^.Kimlik);
+  if(DegerListesi^.FKolonUzunluklari <> nil) then SayiListesi0.YokEt(DegerListesi^.FKolonUzunluklari^.Kimlik);
 
   GorselNesneler0.YokEt(AKimlik);
 end;
@@ -283,7 +270,7 @@ begin
   if(DegerListesi^.FKolonUzunluklari^.ElemanSayisi = 2) then
   begin
 
-    Kolon1U := DegerListesi^.FKolonUzunluklari^.Eleman[0];
+    Kolon1U := DegerListesi^.FKolonUzunluklari^.Sayi[0];
     DegerListesi^.FKolonUzunluklari^.Temizle;
 
     DegerListesi^.FKolonUzunluklari^.Ekle(Kolon1U);
@@ -330,20 +317,20 @@ begin
   for i := 0 to KolonUzunluklari^.ElemanSayisi - 1 do
   begin
 
-    Sol += KolonUzunluklari^.Eleman[i];
+    Sol += KolonUzunluklari^.Sayi[i];
 
     // dikey kılavuz çizgisi
     DegerListesi^.Cizgi(DegerListesi, ctDuz, Sol, Alan1.Ust + 1, Sol, Alan1.Alt - 1, $F0F0F0);
 
     // başlık dolgusu
-    Alan2.Sol := Sol - KolonUzunluklari^.Eleman[i];
+    Alan2.Sol := Sol - KolonUzunluklari^.Sayi[i];
     Alan2.Ust := Alan1.Ust + 1;
     Alan2.Sag := Sol - 1;
     Alan2.Alt := Alan1.Ust + 1 + 22;
     DegerListesi^.EgimliDoldur3(DegerListesi, Alan2, $EAECEE, $ABB2B9);
 
     // başlık
-    DegerListesi^.AlanaYaziYaz(DegerListesi, Alan2, 4, 3, KolonAdlari^.Eleman[i], RENK_LACIVERT);
+    DegerListesi^.AlanaYaziYaz(DegerListesi, Alan2, 4, 3, KolonAdlari^.Yazi[i], RENK_LACIVERT);
 
     Inc(Sol);    // 1 px çizgi kalınlığı
   end;
@@ -377,8 +364,8 @@ begin
   begin
 
     // değeri belirtilen karakter ile bölümle
-    Bolumle(FDegerler^.Eleman[SatirNo], '|', FDegerDizisi);
-    RY := FDegerler^.ElemanAl2(SatirNo);
+    Bolumle(FDegerler^.Yazi[SatirNo], '|', FDegerDizisi);
+    RY := FDegerler^.RenkYaziAl(SatirNo);
 
     Sol := Alan1.Sol + 1;
     if(FDegerDizisi^.ElemanSayisi > 0) then
@@ -391,10 +378,10 @@ begin
       for j := 0 to DegerSayisi - 1 do
       begin
 
-        s := FDegerDizisi^.Eleman[j];
+        s := FDegerDizisi^.Yazi[j];
         Alan2.Sol := Sol + 1;
         Alan2.Ust := Ust - 20 + 1;
-        Alan2.Sag := Sol + KolonUzunluklari^.Eleman[j] - 1;
+        Alan2.Sag := Sol + KolonUzunluklari^.Sayi[j] - 1;
         Alan2.Alt := Ust - 1;
 
         // satır verisini boyama ve yazma işlemi
@@ -413,7 +400,7 @@ begin
 
         DegerListesi^.AlanaYaziYaz(DegerListesi, Alan2, 2, 2, s, RY.Renk);
 
-        Sol += 1 + KolonUzunluklari^.Eleman[j];
+        Sol += 1 + KolonUzunluklari^.Sayi[j];
       end;
     end;
 
@@ -611,7 +598,7 @@ begin
 
   if(FSeciliSiraNo = -1) or (FSeciliSiraNo > FDegerler^.ElemanSayisi) then Exit('');
 
-  Result := DegerListesi^.FDegerler^.Eleman[FSeciliSiraNo];
+  Result := DegerListesi^.FDegerler^.Yazi[FSeciliSiraNo];
 end;
 
 {==============================================================================

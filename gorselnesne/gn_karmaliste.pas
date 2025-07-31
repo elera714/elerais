@@ -6,7 +6,7 @@
   Dosya Adý: gn_karmaliste.pas
   Dosya Ýþlevi: karma liste (açýlýr / kapanýr liste kutusu (TComboBox)) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 31/07/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -54,7 +54,7 @@ var
   KarmaListe: PKarmaListe;
   Hiza: THiza;
   p: PKarakterKatari;
-  i: ISayi4;
+  i: TISayi4;
 begin
 
   case AIslevNo of
@@ -203,7 +203,7 @@ begin
   KarmaListe^.OlayCagriAdresi := @OlaylariIsle;
 
   KarmaListe^.FAcilirMenu := KarmaListe^.FAcilirMenu^.Olustur(KarmaListe, 0, 0,
-    AGenislik, (24 * 2) + 2, 24, RENK_GRI, RENK_BEYAZ, RENK_SARI, RENK_SIYAH, RENK_LACIVERT);
+    AGenislik, (24 * 1) + 2, 24, RENK_GRI, RENK_BEYAZ, RENK_SARI, RENK_SIYAH, RENK_LACIVERT);
   KarmaListe^.FAcilirMenu^.FYardimciNesne := True;
   KarmaListe^.FAcilirMenu^.FAcilirMenuOlayGeriDonusAdresi := @AcilirMenuOlaylariniIsle;
 
@@ -352,7 +352,7 @@ begin
 
     KarmaListe := PKarmaListe(AcilirMenu^.AtaNesne);
 
-    SeciliEleman := AcilirMenu^.FMenuBaslikListesi^.Eleman[AcilirMenu^.FSeciliSiraNo];
+    SeciliEleman := AcilirMenu^.FMenuBaslikListesi^.Yazi[AcilirMenu^.FSeciliSiraNo];
     KarmaListe^.Baslik := SeciliEleman;
     KarmaListe^.Ciz;
 
@@ -401,11 +401,8 @@ begin
   KarmaListe^.FAcilirMenu^.MenuEkle(ADeger, -1, True);
 
   i := KarmaListe^.FAcilirMenu^.FMenuBaslikListesi^.ElemanSayisi;
-  if(i > 0) then
-  begin
 
-    KarmaListe^.FAcilirMenu^.FBoyut.Yukseklik := (i * 24);
-  end;
+  if(i > 0) then KarmaListe^.FAcilirMenu^.FBoyut.Yukseklik := (i * 24) + 2;
 end;
 
 procedure TKarmaListe.ListeyiTemizle;
@@ -421,7 +418,7 @@ begin
   KarmaListe^.Ciz;
 
   KarmaListe^.FAcilirMenu^.Temizle;
-  KarmaListe^.FAcilirMenu^.FBoyut.Yukseklik := 6;
+  KarmaListe^.FAcilirMenu^.FBoyut.Yukseklik := (1 * 24) + 2;
 end;
 
 procedure TKarmaListe.BaslikSiraNoYaz(ASiraNo: TISayi4);
@@ -435,7 +432,7 @@ begin
   if(KarmaListe = nil) then Exit;
 
   KarmaListe^.FAcilirMenu^.FSeciliSiraNo := ASiraNo;
-  KarmaListe^.Baslik := KarmaListe^.FAcilirMenu^.FMenuBaslikListesi^.Eleman[ASiraNo];
+  KarmaListe^.Baslik := KarmaListe^.FAcilirMenu^.FMenuBaslikListesi^.Yazi[ASiraNo];
   KarmaListe^.Ciz;
 
   // uygulamaya veya efendi nesneye mesaj gönder

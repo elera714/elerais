@@ -14,12 +14,7 @@ unit genel;
 
 interface
 
-uses gercekbellek, src_vesa20, src_ps2, gorev, paylasim, olayyonetim, gorselnesne,
-  gn_masaustu, n_yazilistesi, n_sayilistesi, dns, fdepolama;
-
-const
-  USTSINIR_YAZILISTESI = 128;    // 4096 byte / 32 byte = 128 adet liste
-  USTSINIR_SAYILISTESI = 128;    // 4096 byte / 32 byte = 128 adet liste
+uses gercekbellek, src_vesa20, src_ps2, paylasim, olayyonetim, gorselnesne, gn_masaustu, dns;
 
 var
   GGercekBellek: TGercekBellek;
@@ -41,55 +36,6 @@ var
   GDNSBaglantilari: array[0..USTSINIR_DNSBAGLANTI - 1] of PDNS;
   GMasaustuListesi: array[0..USTSINIR_MASAUSTU - 1] of PMasaustu = (nil, nil, nil, nil);
 
-  // sistem içerisinde kullanılacak görsel olmayan listeler
-  GYaziListesi: array[0..USTSINIR_YAZILISTESI - 1] of PYaziListesi;
-  GSayiListesi: array[0..USTSINIR_SAYILISTESI - 1] of PSayiListesi;
-
-procedure ListeleriIlkDegerlerleYukle;
-
 implementation
-
-{==============================================================================
-  çalıştırılacak işlemlerin ana yükleme işlevlerini içerir
- ==============================================================================}
-procedure ListeleriIlkDegerlerleYukle;
-var
-  YL: PYaziListesi;
-  SL: PSayiListesi;
-  i: TISayi4;
-begin
-
-  // 1. görsel olmayan yazı listesi için bellekte yer ayır
-  YL := GetMem(Align(SizeOf(TYaziListesi), 16) * USTSINIR_YAZILISTESI);
-
-  // bellek girişlerini nesne yapı girişleriyle eşleştir
-  for i := 0 to USTSINIR_YAZILISTESI - 1 do
-  begin
-
-    GYaziListesi[i] := YL;
-
-    // nesneyi kullanılabilir olarak işaretle
-    YL^.NesneKullanilabilir := True;
-    YL^.Tanimlayici := i;
-
-    Inc(YL);
-  end;
-
-  // 2. görsel olmayan sayı listesi için bellekte yer ayır
-  SL := GetMem(Align(SizeOf(TSayiListesi), 16) * USTSINIR_SAYILISTESI);
-
-  // bellek girişlerini nesne yapı girişleriyle eşleştir
-  for i := 0 to USTSINIR_SAYILISTESI - 1 do
-  begin
-
-    GSayiListesi[i] := SL;
-
-    // nesneyi kullanılabilir olarak işaretle
-    SL^.NesneKullanilabilir := True;
-    SL^.Tanimlayici := i;
-
-    Inc(SL);
-  end;
-end;
 
 end.

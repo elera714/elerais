@@ -175,16 +175,12 @@ begin
     Exit;
   end;
 
-  Menu^.FMenuBaslikListesi := FMenuBaslikListesi^.Olustur;
-  Menu^.FMenuResimListesi := FMenuResimListesi^.Olustur;
+  Menu^.FMenuBaslikListesi := YaziListesi0.Olustur;
+  Menu^.FMenuResimListesi := SayiListesi0.Olustur;
 
   // nesnenin kullanacağı diğer değerler
   Menu^.FIlkSiraNo := 0;
   Menu^.FSeciliSiraNo := -1;     // seçili sıra yok
-
-  // menüde görüntülenecek eleman sayısı
-  Menu^.FMenuBaslikListesi^.ElemanSayisi := (AYukseklik + (Menu^.FElemanYukseklik - 1)) div
-    Menu^.FElemanYukseklik;
 
   // nesne adresini geri döndür
   Result := Menu;
@@ -201,8 +197,8 @@ begin
   Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
   if(Menu = nil) then Exit;
 
-  if(Menu^.FMenuBaslikListesi <> nil) then Menu^.FMenuBaslikListesi^.YokEt;
-  if(Menu^.FMenuResimListesi <> nil) then Menu^.FMenuResimListesi^.YokEt;
+  if(Menu^.FMenuBaslikListesi <> nil) then YaziListesi0.YokEt(FMenuBaslikListesi^.Kimlik);
+  if(Menu^.FMenuResimListesi <> nil) then SayiListesi0.YokEt(Menu^.FMenuResimListesi^.Kimlik);
 
   GorselNesneler0.YokEt(AKimlik);
 end;
@@ -304,8 +300,8 @@ end;
 procedure TMenu.Ciz;
 var
   Menu: PMenu = nil;
-  YL: PYaziListesi = nil;
-  SL: PSayiListesi = nil;
+  YL: PYaziListesi;
+  SL: PSayiListesi;
   Alan: TAlan;
   SiraNo, Sol, Ust, Genislik,
   MenudekiElemanSayisi: TISayi4;
@@ -346,6 +342,7 @@ begin
       Sol := 3;
       Genislik := Alan.Sag - 3;
     end;
+
     Ust := Alan.Ust + 08;           // 08 = dikey ortalama için
 
     // menü kutusunda görüntülenecek eleman sayısı
@@ -358,7 +355,7 @@ begin
     begin
 
       // belirtilen elemanın karakter katar değerini al
-      s := YL^.Eleman[SiraNo];
+      s := YL^.Yazi[SiraNo];
 
       // elemanın seçili olması durumunda seçili olduğunu belirt
       // belirtilen sıra seçili değilse sadece eleman değerini yaz
@@ -374,7 +371,7 @@ begin
       begin
 
         // menü resmini çiz
-        if(SiraNo >= 0) and (SiraNo <= 15) then KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Eleman[SiraNo]);
+        if(SiraNo >= 0) and (SiraNo <= 15) then KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Sayi[SiraNo]);
       end;
 
       // bir sonraki eleman...
@@ -406,7 +403,9 @@ begin
       OlayYakalamayaBasla(Menu);
 
       // fare basım işleminin gerçekleştiği menü sıra numarası
-      Menu^.FSeciliSiraNo := (AOlay.Deger2 - 4) div Menu^.FElemanYukseklik;
+      if(Menu^.FMenuBaslikListesi^.ElemanSayisi > 0) then
+        Menu^.FSeciliSiraNo := (AOlay.Deger2 - 4) div Menu^.FElemanYukseklik
+      else Menu^.FSeciliSiraNo := -1;
 
       // menüyü gizle
       Menu^.Gorunum := False;
@@ -428,7 +427,9 @@ begin
   begin
 
     // seçilen elemanın index numarasını belirle
-    Menu^.FSeciliSiraNo := (AOlay.Deger2 - 4) div Menu^.FElemanYukseklik;
+    if(Menu^.FMenuBaslikListesi^.ElemanSayisi > 0) then
+      Menu^.FSeciliSiraNo := (AOlay.Deger2 - 4) div Menu^.FElemanYukseklik
+    else Menu^.FSeciliSiraNo := -1;
   end;
 
   // geçerli fare göstergesini güncelle

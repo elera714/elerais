@@ -194,18 +194,8 @@ begin
   // üstteki açýklama durumu deðiþkenin 1024 olarak deðiþtirilmesiyle pasifleþtirilmiþtir
   GN_UZUNLUK := 1024; //Align(SizeOf(TPencere) + 64, 16);
 
-  // 0. bit    : 1 = nesne Kullanýlýyor, 0 = nesne kullanýlmýyor
-  // 1..9 bit  : düþük 12 bit sistem kontrol amacýyla sürekli 1 olacak
-  // 10..31 bit: nesne kimlik numarasý. (kimlik sýralamasý: 0, 1, 2 ...)
-  // 00000000 00000000 00000010 1010101K
-  j := %1010101010;
-
   // nesneye ait iþaretçileri bellek bölgeleriyle eþleþtir
-  for i := 0 to USTSINIR_GORSELNESNE - 1 do
-  begin
-
-    GorselNesneler0.GorselNesne[i] := nil;
-  end;
+  for i := 0 to USTSINIR_GORSELNESNE - 1 do GorselNesneler0.GorselNesne[i] := nil;
 
   // görsel nesne deðiþkenlerini ilk deðerlerle yükle
   ToplamMasaustu := 0;
@@ -596,7 +586,7 @@ begin
   if(GN^.FCizimModel > 0) then
   begin
 
-    // FCizimModel = 3 = kenarlýðý çiz ve içeriði doldur
+    // FCizimModel = 2 = kenarlýðý çiz ve içeriði doldur
     if(GN^.FCizimModel = 2) then
 
       GN^.DikdortgenDoldur(GN, CizimAlan, FGovdeRenk1, FGovdeRenk2)

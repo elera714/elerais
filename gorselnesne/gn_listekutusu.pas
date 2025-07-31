@@ -159,7 +159,7 @@ begin
       begin
 
         p := PKarakterKatari(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-        p^ := ListeKutusu^.FYaziListesi^.Eleman[PSayi4(ADegiskenler + 04)^];
+        p^ := ListeKutusu^.FYaziListesi^.Yazi[PSayi4(ADegiskenler + 04)^];
       end;
     end
 
@@ -190,7 +190,7 @@ function TListeKutusu.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNe
   ASol, AUst, AGenislik, AYukseklik: TISayi4): PListeKutusu;
 var
   ListeKutusu: PListeKutusu = nil;
-  YL: PYaziListesi = nil;
+  YL: PYaziListesi;
 begin
 
   ListeKutusu := PListeKutusu(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
@@ -214,7 +214,7 @@ begin
     ListeKutusu^.AtaNesne^.FKalinlik.Ust + AUst;
 
   ListeKutusu^.FYaziListesi := nil;
-  YL := YL^.Olustur;
+  YL := YaziListesi0.Olustur;
   if(YL <> nil) then ListeKutusu^.FYaziListesi := YL;
 
   // nesnenin kullanacağı diğer değerler
@@ -240,7 +240,7 @@ begin
   ListeKutusu := PListeKutusu(GorselNesneler0.NesneAl(Kimlik));
   if(ListeKutusu = nil) then Exit;
 
-  if(ListeKutusu^.FYaziListesi <> nil) then ListeKutusu^.FYaziListesi^.YokEt;
+  if(ListeKutusu^.FYaziListesi <> nil) then YaziListesi0.YokEt(ListeKutusu^.FYaziListesi^.Kimlik);
 
   GorselNesneler0.YokEt(AKimlik);
 end;
@@ -306,7 +306,7 @@ end;
 procedure TListeKutusu.Ciz;
 var
   ListeKutusu: PListeKutusu = nil;
-  YL: PYaziListesi = nil;
+  YL: PYaziListesi;
   Alan: TAlan;
   SiraNo, Sol, Ust,
   GorunenElemanSayisi: TISayi4;
@@ -352,7 +352,7 @@ begin
     begin
 
       // belirtilen elemanın karakter katar değerini al
-      s := YL^.Eleman[SiraNo];
+      s := YL^.Yazi[SiraNo];
 
       // elemanın seçili olması durumunda seçili olduğunu belirt
       // belirtilen sıra seçili değilse sadece eleman değerini yaz
@@ -538,7 +538,7 @@ end;
 function TListeKutusu.SeciliYaziyiAl: string;
 var
   ListeKutusu: PListeKutusu = nil;
-  YL: PYaziListesi = nil;
+  YL: PYaziListesi;
 begin
 
   Result := '';
@@ -555,7 +555,7 @@ begin
 
     if(FSeciliSiraNo < YL^.ElemanSayisi) then
 
-      Result := YL^.Eleman[FSeciliSiraNo]
+      Result := YL^.Yazi[FSeciliSiraNo]
     else Result := '';
   end;
 end;

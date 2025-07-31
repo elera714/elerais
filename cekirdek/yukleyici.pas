@@ -71,6 +71,9 @@ begin
 
   // NOT: SISTEM_MESAJ_'ler buradan itibaren sistem içerisine yönlendiriliyor
 
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Sistem içerisinde kullanýlacak görsel olmayan nesneler yükleniyor.', []);
+  ListeleriIlkDegerlerleYukle;
+
   //SISTEM_MESAJ(RENK_LACIVERT, '+ Sistem mesaj servisi baþlatýlýyor...', []);
   SistemMesaj0.Yukle;
 
@@ -134,9 +137,6 @@ begin
 
   // olay nesnesini ilk deðerlerini yükle
   GOlayYonetim := TOlayYonetim.Create;
-
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Sistem içerisinde kullanýlacak görsel olmayan nesneler yükleniyor.', []);
-  ListeleriIlkDegerlerleYukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Görsel nesne için bellek iþlemleri yapýlýyor.', []);
   GorselNesneler0.Yukle;

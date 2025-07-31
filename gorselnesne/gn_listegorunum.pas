@@ -218,19 +218,19 @@ begin
   ListeGorunum^.OlayCagriAdresi := @OlaylariIsle;
 
   ListeGorunum^.FKolonAdlari := nil;
-  KolonAdlari := KolonAdlari^.Olustur;
+  KolonAdlari := YaziListesi0.Olustur;
   if(KolonAdlari <> nil) then ListeGorunum^.FKolonAdlari := KolonAdlari;
 
   ListeGorunum^.FKolonUzunluklari := nil;
-  KolonUzunluklari := KolonUzunluklari^.Olustur;
+  KolonUzunluklari := SayiListesi0.Olustur;
   if(KolonUzunluklari <> nil) then ListeGorunum^.FKolonUzunluklari := KolonUzunluklari;
 
   ListeGorunum^.FDegerler := nil;
-  Degerler := Degerler^.Olustur;
+  Degerler := YaziListesi0.Olustur;
   if(Degerler <> nil) then ListeGorunum^.FDegerler := Degerler;
 
   ListeGorunum^.FDegerDizisi := nil;
-  DegerDizisi := DegerDizisi^.Olustur;
+  DegerDizisi := YaziListesi0.Olustur;
   if(DegerDizisi <> nil) then ListeGorunum^.FDegerDizisi := DegerDizisi;
 
   // nesnenin kullanacaðý diðer deðerler
@@ -258,10 +258,10 @@ begin
   ListeGorunum := PListeGorunum(GorselNesneler0.NesneAl(Kimlik));
   if(ListeGorunum = nil) then Exit;
 
-  if(ListeGorunum^.FDegerler <> nil) then ListeGorunum^.FDegerler^.YokEt;
-  if(ListeGorunum^.FDegerDizisi <> nil) then ListeGorunum^.FDegerDizisi^.YokEt;
-  if(ListeGorunum^.FKolonAdlari <> nil) then ListeGorunum^.FKolonAdlari^.YokEt;
-  if(ListeGorunum^.FKolonUzunluklari <> nil) then ListeGorunum^.FKolonUzunluklari^.YokEt;
+  if(ListeGorunum^.FDegerler <> nil) then YaziListesi0.YokEt(ListeGorunum^.FDegerler^.Kimlik);
+  if(ListeGorunum^.FDegerDizisi <> nil) then YaziListesi0.YokEt(ListeGorunum^.FDegerDizisi^.Kimlik);
+  if(ListeGorunum^.FKolonAdlari <> nil) then YaziListesi0.YokEt(ListeGorunum^.FKolonAdlari^.Kimlik);
+  if(ListeGorunum^.FKolonUzunluklari <> nil) then SayiListesi0.YokEt(ListeGorunum^.FKolonUzunluklari^.Kimlik);
 
   GorselNesneler0.YokEt(AKimlik);
 end;
@@ -337,20 +337,20 @@ begin
   for i := 0 to KolonUzunluklari^.ElemanSayisi - 1 do
   begin
 
-    Sol += KolonUzunluklari^.Eleman[i];
+    Sol += KolonUzunluklari^.Sayi[i];
 
     // dikey kýlavuz çizgisi
     ListeGorunum^.Cizgi(ListeGorunum, ctDuz, Sol, Alan1.Ust + 1, Sol, Alan1.Alt - 1, $F0F0F0);
 
     // baþlýk dolgusu
-    Alan2.Sol := Sol - KolonUzunluklari^.Eleman[i];
+    Alan2.Sol := Sol - KolonUzunluklari^.Sayi[i];
     Alan2.Ust := Alan1.Ust + 1;
     Alan2.Sag := Sol - 1;
     Alan2.Alt := Alan1.Ust + 1 + 22;
     ListeGorunum^.EgimliDoldur3(ListeGorunum, Alan2, $EAECEE, $ABB2B9);
 
     // baþlýk
-    ListeGorunum^.AlanaYaziYaz(ListeGorunum, Alan2, 4, 3, KolonAdlari^.Eleman[i], RENK_LACIVERT);
+    ListeGorunum^.AlanaYaziYaz(ListeGorunum, Alan2, 4, 3, KolonAdlari^.Yazi[i], RENK_LACIVERT);
 
     Inc(Sol);    // 1 px çizgi kalýnlýðý
   end;
@@ -384,8 +384,8 @@ begin
   begin
 
     // deðeri belirtilen karakter ile bölümle
-    Bolumle(FDegerler^.Eleman[SatirNo], '|', FDegerDizisi);
-    RY := FDegerler^.ElemanAl2(SatirNo);
+    Bolumle(FDegerler^.Yazi[SatirNo], '|', FDegerDizisi);
+    RY := FDegerler^.RenkYaziAl(SatirNo);
 
     Sol := Alan1.Sol + 1;
     if(FDegerDizisi^.ElemanSayisi > 0) then
@@ -394,10 +394,10 @@ begin
       for j := 0 to FDegerDizisi^.ElemanSayisi - 1 do
       begin
 
-        s := FDegerDizisi^.Eleman[j];
+        s := FDegerDizisi^.Yazi[j];
         Alan2.Sol := Sol + 1;
         Alan2.Ust := Ust - 20 + 1;
-        Alan2.Sag := Sol + KolonUzunluklari^.Eleman[j] - 1;
+        Alan2.Sag := Sol + KolonUzunluklari^.Sayi[j] - 1;
         Alan2.Alt := Ust - 1;
 
         // satýr verisini boyama ve yazma iþlemi
@@ -419,7 +419,7 @@ begin
 
         ListeGorunum^.AlanaYaziYaz(ListeGorunum, Alan2, 2, 2, s, RY.Renk);
 
-        Sol += 1 + KolonUzunluklari^.Eleman[j];
+        Sol += 1 + KolonUzunluklari^.Sayi[j];
       end;
     end;
 
@@ -632,7 +632,7 @@ begin
 
   if(FSeciliSiraNo = -1) or (FSeciliSiraNo > FDegerler^.ElemanSayisi) then Exit('');
 
-  Result := ListeGorunum^.FDegerler^.Eleman[FSeciliSiraNo];
+  Result := ListeGorunum^.FDegerler^.Yazi[FSeciliSiraNo];
 end;
 
 {==============================================================================

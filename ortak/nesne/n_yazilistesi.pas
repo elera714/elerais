@@ -6,7 +6,7 @@
   Dosya Adı: n_yazilistesi.pas
   Dosya İşlevi: yazı liste nesne işlevlerini gerçekleştirir.
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 31/07/2025
 
   Bilgi: sistem tasarlama yönünden FPC'nin sağladığı imkanlarından yararlanamama
   konusunda kısıtlamaları aşmak amacıyla (dinamik bellek yönetiminin kullanılamamasına
@@ -21,6 +21,9 @@ interface
 
 uses paylasim;
 
+const
+  USTSINIR_YAZILISTESI = 128;    // 4096 byte / 32 byte = 128 adet liste
+
 type
   TRenkYazi = record
     Renk: TRenk;
@@ -31,92 +34,142 @@ type
   PYaziListesi = ^TYaziListesi;
   TYaziListesi = object
   private
-    FTanimlayici: TISayi4;
-    FNesneKullanilabilir: Boolean;    // kullanılabilir = boşta = kullanıma hazır
+    FKimlik: TKimlik;
+    FElemanSayisi: TISayi4;
     FBellekBaslangicAdresi,
     FMevcutBellekAdresi: Isaretci;
     FBellekUzunlugu: TISayi4;
-    FElemanSayisi: TISayi4;
-    function ElemanAl(ASiraNo: TISayi4): string;
+    function YaziAl(ASiraNo: TISayi4): string;
   public
-    function Olustur: PYaziListesi;
-    procedure YokEt;
-    function KullanilmayanNesneBul: PYaziListesi;
     procedure Temizle;
     function Ekle(ADeger: string; AYaziRengi: TRenk = RENK_SIYAH): TISayi4;
-    function ElemanAl2(ASiraNo: TISayi4): TRenkYazi;
-    property Eleman[SiraNo: TISayi4]: string read ElemanAl;
+    function RenkYaziAl(ASiraNo: TISayi4): TRenkYazi;
+    property Yazi[SiraNo: TISayi4]: string read YaziAl;
+    property Kimlik: TKimlik read FKimlik write FKimlik;
+    property ElemanSayisi: TISayi4 read FElemanSayisi write FElemanSayisi;
     property BellekBaslangicAdresi: Isaretci read FBellekBaslangicAdresi write FBellekBaslangicAdresi;
     property MevcutBellekAdresi: Isaretci read FMevcutBellekAdresi write FMevcutBellekAdresi;
     property BellekUzunlugu: TISayi4 read FBellekUzunlugu write FBellekUzunlugu;
-  published
-    property Tanimlayici: TISayi4 read FTanimlayici write FTanimlayici;
-    property NesneKullanilabilir: Boolean read FNesneKullanilabilir write FNesneKullanilabilir;
-    property ElemanSayisi: TISayi4 read FElemanSayisi write FElemanSayisi;
   end;
+
+type
+  PYaziListeleri = ^TYaziListeleri;
+  TYaziListeleri = object
+  private
+    FYaziListeleri: array[0..USTSINIR_YAZILISTESI - 1] of PYaziListesi;
+    function YaziListesiAl(ASiraNo: TSayi4): PYaziListesi;
+    procedure YaziListesiYaz(ASiraNo: TSayi4; AYaziListesi: PYaziListesi);
+  public
+    procedure Yukle;
+    function Olustur: PYaziListesi;
+    procedure YokEt(AKimlik: TKimlik);
+    function BosNesneBul: PYaziListesi;
+    property YaziListesi[ASiraNo: TSayi4]: PYaziListesi read YaziListesiAl write YaziListesiYaz;
+  end;
+
+var
+  YaziListesi0: TYaziListeleri;
 
 implementation
 
-uses genel, islevler;
+uses islevler;
+
+{==============================================================================
+  yazı nesne listesini ilk değerlerle yükler
+ ==============================================================================}
+procedure TYaziListeleri.Yukle;
+var
+  i: TSayi4;
+begin
+
+  // dizi nesne girişlerini ilk değerlerle yükle
+  for i := 0 to USTSINIR_YAZILISTESI - 1 do YaziListesi[i] := nil;
+end;
+
+function TYaziListeleri.YaziListesiAl(ASiraNo: TSayi4): PYaziListesi;
+begin
+
+  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_YAZILISTESI) then
+    Result := FYaziListeleri[ASiraNo]
+  else Result := nil;
+end;
+
+procedure TYaziListeleri.YaziListesiYaz(ASiraNo: TSayi4; AYaziListesi: PYaziListesi);
+begin
+
+  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_YAZILISTESI) then
+    FYaziListeleri[ASiraNo] := AYaziListesi;
+end;
 
 {==============================================================================
   yazı liste nesnesini oluşturur
  ==============================================================================}
-function TYaziListesi.Olustur: PYaziListesi;
+function TYaziListeleri.Olustur: PYaziListesi;
 var
-  p: PYaziListesi;
-  p2: Isaretci;
+  YL: PYaziListesi;
+  p: Isaretci;
 begin
 
   // kullanılabilir nesne bul
-  p := KullanilmayanNesneBul;
-  if not(p = nil) then
+  YL := BosNesneBul;
+  if not(YL = nil) then
   begin
 
     // nesne ve nesnenin işleyeceği veriler için 4K bellek bölgesi ayır
-    p2 := GGercekBellek.Ayir(4096);
-    if not(p2 = nil) then
+    p := GetMem(4096);
+    if not(p = nil) then
     begin
 
       // nesne değişkenlerini ilk değerlerle yükle.
-      p^.BellekBaslangicAdresi := p2;
-      p^.MevcutBellekAdresi := p2;
-      p^.BellekUzunlugu := 4096;
-      p^.ElemanSayisi := 0;
+      YL^.BellekBaslangicAdresi := p;
+      YL^.MevcutBellekAdresi := p;
+      YL^.BellekUzunlugu := 4096;
 
-      Result := p;
+      Exit(YL);
     end
     else
     begin
 
-      YokEt;
-      p := nil;
+      YokEt(YL^.Kimlik);
+      Exit(nil);
     end;
   end;
 
-  Result := p;
+  Result := nil;
 end;
 
 {==============================================================================
   yazı liste nesnesini yok eder.
  ==============================================================================}
-procedure TYaziListesi.YokEt;
+procedure TYaziListeleri.YokEt(AKimlik: TKimlik);
+var
+  YL: PYaziListesi;
 begin
 
-  // bellek tahsis edilmişse öncelikle belleği bırak
-  if not(BellekBaslangicAdresi = nil) then
-    GGercekBellek.YokEt(FBellekBaslangicAdresi, 4096);
+  if(AKimlik >= 0) and (AKimlik < USTSINIR_YAZILISTESI) then
+  begin
 
-  // nesnenin kullanılabilir özelliğini aktifleştir
-  GYaziListesi[Tanimlayici]^.NesneKullanilabilir := True;
+    YL := YaziListesi[AKimlik];
+
+    // bellek tahsis edilmişse belleği bırak
+    if not(YL^.BellekBaslangicAdresi = nil) then
+      FreeMem(YL^.FBellekBaslangicAdresi, 4096);
+
+    FreeMem(YL, SizeOf(TYaziListesi));
+
+    // nesne dizi sırasını nil olarak ata
+    YaziListesi[AKimlik] := nil;
+  end;
 end;
 
 {==============================================================================
-  kullanılabilir (boşta) sayı nesnesi bulur
+  kullanılabilir (boşta) yazı nesnesi bulur
  ==============================================================================}
-function TYaziListesi.KullanilmayanNesneBul: PYaziListesi;
+function TYaziListeleri.BosNesneBul: PYaziListesi;
 var
-  p: PYaziListesi;
+  YL: PYaziListesi;
   i: TSayi4;
 begin
 
@@ -124,15 +177,19 @@ begin
   for i := 0 to USTSINIR_YAZILISTESI - 1 do
   begin
 
-    p := GYaziListesi[i];
+    YL := YaziListesi[i];
 
     // nesne kullanılabilir ise, nesneyi tahsis et
-    if(P^.NesneKullanilabilir) then
+    if(YL = nil) then
     begin
 
-      P^.NesneKullanilabilir := False;
-      Result := p;
-      Exit;
+      YL := GetMem(SizeOf(TYaziListesi));
+      YaziListesi[i] := YL;
+
+      YL^.Kimlik := i;
+      YL^.ElemanSayisi := 0;
+
+      Exit(YL);
     end;
   end;
 
@@ -156,7 +213,7 @@ end;
  ==============================================================================}
 function TYaziListesi.Ekle(ADeger: string; AYaziRengi: TRenk = RENK_SIYAH): TISayi4;
 var
-  Uzunluk: TSayi1;
+  Uzunluk: TSayi4;
   p: PKarakterKatari;
 begin
 
@@ -164,7 +221,7 @@ begin
   Uzunluk := Length(ADeger);
 
   // 4 byte yazı rengi + 1 byte yazı uzunluk değeri
-  if(Uzunluk = 0) or (Uzunluk + (4 + 1) > BellekUzunlugu) then Exit;
+  if(Uzunluk = 0) or (Uzunluk + (4 + 1) > BellekUzunlugu) then Exit(-1);
 
   // yazı uzunluğunu kaydet
   p := MevcutBellekAdresi;
@@ -192,11 +249,11 @@ end;
 {==============================================================================
   listenin belirtilen yazı elemanını ve rengini geriye döndürür
  ==============================================================================}
-function TYaziListesi.ElemanAl2(ASiraNo: TISayi4): TRenkYazi;
+function TYaziListesi.RenkYaziAl(ASiraNo: TISayi4): TRenkYazi;
 var
   p: PSayi1;
   i: TSayi2;
-  Uzunluk: TSayi1;
+  Uzunluk: TSayi4;
 begin
 
   // 1. eğer eleman yok ise
@@ -232,12 +289,12 @@ end;
 {==============================================================================
   listenin belirtilen yazı elemanını geriye döndürür
  ==============================================================================}
-function TYaziListesi.ElemanAl(ASiraNo: TISayi4): string;
+function TYaziListesi.YaziAl(ASiraNo: TISayi4): string;
 var
   RY: TRenkYazi;
 begin
 
-  RY := ElemanAl2(ASiraNo);
+  RY := RenkYaziAl(ASiraNo);
   Result := RY.Yazi;
 end;
 
