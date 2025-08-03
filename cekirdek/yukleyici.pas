@@ -24,17 +24,15 @@ procedure YukleIslevindenSonraCalistir;
 
 implementation
 
-uses yonetim, gdt, idt, irq, pic, aygityonetimi, pci, src_klavye, genel, gorev,
+uses yonetim, gdt, idt, irq, pic, pci, src_klavye, genel, gorev, fdepolama, gercekbellek,
   gorselnesne, dosya, sistemmesaj, mdepolama, islemci, paylasim, usb, zamanlayici,
   ag, src_vesa20, src_com, src_sb, bmp, acpi, k_giysi, giysi_mac, giysi_normal,
-  olayyonetim, fdepolama;
+  olayyonetim;
 
 {==============================================================================
   çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
  ==============================================================================}
 procedure Yukle;
-var
-  Gorev: PGorev;
 begin
 
   CokluGorevBasladi := 0;
@@ -67,7 +65,7 @@ begin
   // belleði ilk kullaným için hazýrla
   // Önemli: GGercekBellek.Yukle iþlevinin diðer iþlevlere zemin hazýrlamasý için
   // öncelikle yüklenmesi gerekmektedir.
-  GGercekBellek.Yukle;
+  GercekBellek0.Yukle;
 
   // NOT: SISTEM_MESAJ_'ler buradan itibaren sistem içerisine yönlendiriliyor
 
@@ -84,7 +82,7 @@ begin
   yonetim.Yukle;
 
   // vesa 2.0 grafik sürücüsünü yükle
-  GEkranKartSurucusu.Yukle;
+  EkranKartSurucusu0.Yukle;
 
   // Bilgi: SISTEM_MESAJ_'ler buradan itibaren kullanýlabilir
 

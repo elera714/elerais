@@ -20,7 +20,7 @@ function EkranCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel, gorev;
+uses genel, gorev, src_vesa20;
 
 {==============================================================================
   ekran kesme çağrılarını yönetir
@@ -48,8 +48,8 @@ begin
       Konum := PKonum(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
 
 
-      Konum^.Sol := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;
-      Konum^.Ust := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
+      Konum^.Sol := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk;
+      Konum^.Ust := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk;
 
       // işlev başarı kodunu geri döndür
       Result := 1;

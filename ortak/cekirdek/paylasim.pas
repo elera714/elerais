@@ -42,6 +42,8 @@ var
   OnDegerMasaustuProgram: string = 'muyntcs.c';
   GeciciDeger: string = '';
 
+  GorevDegistirme: TSayi4 = 0;
+
 type
   PObject = ^TObject;
 
@@ -881,8 +883,6 @@ function KritikBolgeyeGir(var ABellek: TSayi4): Boolean;
 procedure KritikBolgedenCik(var ABellek: TSayi4);
 
 implementation
-
-uses src_klavye;
 
 function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 begin

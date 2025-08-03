@@ -48,6 +48,7 @@ type
   end;
 
 var
+  GercekBellek0: TGercekBellek;
   BellekYonetimFPC: TMemoryManager;
   GercekBellekKilit: TSayi4 = 0;
 
@@ -329,7 +330,7 @@ end;
 function ELRGetMem(AUzunluk: TSayi4): Isaretci;
 begin
 
-  Result := GGercekBellek.Ayir(AUzunluk);
+  Result := GercekBellek0.Ayir(AUzunluk);
 
   if(BellekDegeriniGoster) then begin
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem.Result: $%x', [Result]);
@@ -344,7 +345,7 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize.ABellek: $%x', [ABellek]);
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize.AUzunluk: %d', [AUzunluk]); end;
 
-  GGercekBellek.YokEt(ABellek, AUzunluk);
+  GercekBellek0.YokEt(ABellek, AUzunluk);
   Result := 0;
 end;
 
@@ -399,7 +400,7 @@ begin
 
         FillByte(PChar(Isaretci(Hafiza1) + SizeOf(THafiza))^, AUzunluk, 0);
 
-        GGercekBellek.FKullanilanYBYBellek += AUzunluk + 12;
+        GercekBellek0.FKullanilanYBYBellek += AUzunluk + 12;
 
         KritikBolgedenCik(GercekBellekKilit);
 
@@ -416,7 +417,7 @@ begin
 
           Hafiza1^.U := AUzunluk;
 
-          GGercekBellek.FKullanilanYBYBellek += AUzunluk + 12;
+          GercekBellek0.FKullanilanYBYBellek += AUzunluk + 12;
 
           KritikBolgedenCik(GercekBellekKilit);
 
@@ -442,7 +443,7 @@ begin
           Hafiza1^.BS := HafizaYeni;
           Hafiza1^.U := AUzunluk;
 
-          GGercekBellek.FKullanilanYBYBellek += AUzunluk + 12;
+          GercekBellek0.FKullanilanYBYBellek += AUzunluk + 12;
 
           KritikBolgedenCik(GercekBellekKilit);
 
@@ -496,7 +497,7 @@ begin
     if(Hafiza1^.BO = nil) then
     begin
 
-      GGercekBellek.FKullanilanYBYBellek -= AUzunluk + 12;
+      GercekBellek0.FKullanilanYBYBellek -= AUzunluk + 12;
 
       Hafiza1^.U := 0;
 
@@ -521,7 +522,7 @@ begin
     else if(Hafiza1^.BS = nil) then
     begin
 
-      GGercekBellek.FKullanilanYBYBellek -= AUzunluk + 12;
+      GercekBellek0.FKullanilanYBYBellek -= AUzunluk + 12;
 
       // baðlantýnýn bir önceki baðlantýsýyla iliþkisini kes
       Hafiza2 := Hafiza1^.BO;
@@ -551,7 +552,7 @@ begin
     // ortaki kaydýn silinmesi
     begin
 
-      GGercekBellek.FKullanilanYBYBellek -= AUzunluk + 12;
+      GercekBellek0.FKullanilanYBYBellek -= AUzunluk + 12;
 
       // kayýt son kayýt deðilse sadece kaydýn uzunluðunu sýfýrla
       Hafiza1^.U := 0;

@@ -48,14 +48,14 @@ type
     BaglantiDurum: TBaglantiDurum;
     ProtokolTipi: TProtokolTipi;
     PencereU: TSayi2;
-    SiraNo,                      // TCP sýra no (sequence number)
-    OnayNo: TSayi4;              // TCP onay no (acknowledgment number)
+    SiraNo,                       // TCP sýra no (sequence number)
+    OnayNo: TSayi4;               // TCP onay no (acknowledgment number)
     HedefMACAdres: TMACAdres;
     HedefIPAdres: TIPAdres;
     YerelPort, UzakPort: TSayi2;
     Bagli: Boolean;
     Bellek: Isaretci;
-    BellekUzunlugu: TSayi4;
+    VeriUzunlugu: TSayi4;         // Bellek'te mevcut veri uzunluðu
   end;
 
 type
@@ -77,7 +77,7 @@ type
     function TCPBaglantiAl(AYerelPort, AUzakPort: TSayi2): PBaglanti;
     function UDPBaglantiAl(AYerelPort: TSayi2): PBaglanti;
     procedure BellegeEkle(ABaglanti: PBaglanti; AKaynakBellek: Isaretci;
-      ABellekUzunlugu: TSayi4);
+      AVeriUzunlugu: TSayi4);
     function VeriUzunlugu(AKimlik: TKimlik): TSayi4;
     function Oku(AKimlik: TKimlik; ABellek: Isaretci): TSayi4;
     procedure Yaz(AKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TISayi4);
@@ -176,15 +176,15 @@ begin
     B^.SiraNo := TCPIlkSiraNoAl;
     B^.OnayNo := 0;
 
-    B^.BellekUzunlugu := 0;
-    B^.Bellek := GetMem(4096); //Bag^.FPencereU);
+    B^.VeriUzunlugu := 0;
+    B^.Bellek := GetMem(4096 * 4); //Bag^.FPencereU);
     if(B^.Bellek = nil) then SISTEM_MESAJ(mtHata, RENK_SIYAH, 'BAGLANTI.PAS: Bellek yok', []);
   end
   else if(AProtokolTipi = ptUDP) then
   begin
 
-    B^.BellekUzunlugu := 0;
-    B^.Bellek := GetMem(4096);
+    B^.VeriUzunlugu := 0;
+    B^.Bellek := GetMem(4096 * 4);
 
     {SISTEM_MESAJ(RENK_MOR, 'BAGLANTI.PAS: Protokol -> UDP', []);
     SISTEM_MESAJ(RENK_MOR, 'BAGLANTI.PAS: Kimlik %d', [Bag^.FKimlik]);
@@ -349,7 +349,7 @@ begin
       B^.YerelPort := 0;
       B^.UzakPort := 0;
 
-      FreeMem(B^.Bellek, B^.BellekUzunlugu);
+      FreeMem(B^.Bellek, 4096 * 4);
       B^.Bagli := False;
 
       Result := 0;
@@ -430,23 +430,23 @@ end;
   baðlantý kurulan bilgisayardan gelen verileri programýn kullanmasý için belleðe kaydeder
  ==============================================================================}
 procedure TBaglantilar.BellegeEkle(ABaglanti: PBaglanti; AKaynakBellek: Isaretci;
-  ABellekUzunlugu: TSayi4);
+  AVeriUzunlugu: TSayi4);
 var
   p: PChar;
   i: TSayi4;
 begin
 
-  if(ABellekUzunlugu = 0) then Exit;
+  if(AVeriUzunlugu = 0) then Exit;
 
-  if(ABaglanti^.BellekUzunlugu + ABellekUzunlugu < 4096) then
+  if(ABaglanti^.VeriUzunlugu + AVeriUzunlugu < (4096 * 4)) then
   begin
 
-    p := ABaglanti^.Bellek + ABaglanti^.BellekUzunlugu;
+    p := ABaglanti^.Bellek + ABaglanti^.VeriUzunlugu;
 
-    Tasi2(AKaynakBellek, p, ABellekUzunlugu);
-    i := ABaglanti^.BellekUzunlugu;
-    i += ABellekUzunlugu;
-    ABaglanti^.BellekUzunlugu := i;
+    Tasi2(AKaynakBellek, p, AVeriUzunlugu);
+    i := ABaglanti^.VeriUzunlugu;
+    i += AVeriUzunlugu;
+    ABaglanti^.VeriUzunlugu := i;
   end;
 end;
 
@@ -461,7 +461,7 @@ begin
   B := Baglanti[AKimlik];
 
   if not(B = nil) and (B^.Kimlik >= 0) and (B^.Kimlik < USTSINIR_BAGLANTI) then
-    Exit(B^.BellekUzunlugu)
+    Exit(B^.VeriUzunlugu)
   else Result := 0;
 end;
 
@@ -479,13 +479,13 @@ begin
   if not(B = nil) then
   begin
 
-    i := B^.BellekUzunlugu;
+    i := B^.VeriUzunlugu;
     if(i > 0) then
     begin
 
       Tasi2(B^.Bellek, ABellek, i);
-      Result := B^.BellekUzunlugu;
-      B^.BellekUzunlugu := 0;
+      Result := B^.VeriUzunlugu;
+      B^.VeriUzunlugu := 0;
       Exit(i);
     end;
   end;

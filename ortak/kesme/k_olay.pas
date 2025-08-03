@@ -41,6 +41,12 @@ begin
   begin
 
     G := GorevAl;
+    if(G = nil) then
+    begin
+
+      ElleGorevDegistir;
+      Exit(0);
+    end;
 
     // çalýþan proses'e ait olay var mý ?
     if(Gorevler0.OlayAl(G^.Kimlik, O)) then
@@ -76,6 +82,21 @@ begin
   begin
 
     G := GorevAl;
+
+    { TODO - tanýmsýz olay ile geri dön
+      buradaki kodlar hiç bir zaman çalýþmayacaktýr, bir durumun testi için eklenmiþtir (kaldýrýlabilir)  }
+    if(G = nil) then
+    begin
+
+      O2 := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
+      O2^.Kimlik := -1;
+      O2^.Olay := -1;
+      O2^.Deger1 := -1;
+      O2^.Deger2 := -1;
+
+      Result := 0;
+      Exit;
+    end;
 
     // uygulama için olay üretilinceye kadar bekle
     // olay olmamasý durumda bir sonraki göreve geç (mevcut görev olay bekliyor)

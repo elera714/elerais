@@ -132,7 +132,12 @@ begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit;
+  if(DI = nil) then
+  begin
+
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    Exit;
+  end;
 
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -729,7 +734,12 @@ begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit;
+  if(DI = nil) then
+  begin
+
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    Exit;
+  end;
 
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -751,19 +761,19 @@ begin
 
   OkumaSonuc := False;
 
-  GetMem(Bellek, 2048);
+  GetMem(Bellek, 512 * ZincirBasinaSektor);
 
   HedefBellekSN := 0;
 
   repeat
 
     // okunacak byte'ý sektör sayýsýna çevir
-    if(VeriU >= (ZincirBasinaSektor * 512)) then
+    if(VeriU >= (512 * ZincirBasinaSektor)) then
     begin
 
       OkunacakSektorSayisi := ZincirBasinaSektor;
-      KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
-      VeriU -= (ZincirBasinaSektor * 512);
+      KopyalanacakVeriUzunlugu := 512 * ZincirBasinaSektor;
+      VeriU -= (512 * ZincirBasinaSektor);
     end
     else
     begin
@@ -807,7 +817,7 @@ begin
   // eðer 0xfff8..0xffff aralýðýndaysa bu dosyanýn en son cluster'idir
   until (Zincir = ELR_ZD_SON) or (VeriU = 0);
 
-  FreeMem(Bellek, 2048);
+  FreeMem(Bellek, 512 * ZincirBasinaSektor);
 end;
 
 {==============================================================================

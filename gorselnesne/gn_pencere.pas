@@ -192,7 +192,7 @@ end;
 function TPencere.Olustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk): PPencere;
 var
-  Gorev: PGorev = nil;
+  G: PGorev = nil;
   Masaustu: PMasaustu = nil;
   Pencere: PPencere = nil;
   Genislik, Yukseklik: TSayi4;
@@ -211,8 +211,8 @@ begin
   if(Masaustu = nil) then Exit(nil);
 
   // pencerenin ana pencere olup olmadýðýný tespit et
-  Gorev := Gorevler0.GorevBul(FAktifGorev);
-  if not(Gorev = nil) and (Gorev^.AktifPencere = nil) then
+  G := Gorevler0.GorevBul(FAktifGorev);
+  if not(G = nil) and (G^.AktifPencere = nil) then
     AnaPencere := True
   else AnaPencere := False;
 
@@ -261,11 +261,11 @@ begin
   Pencere^.FTuvalNesne := Pencere;
 
   // ana pencerenin aktif penceresini belirle (alt penceresi olan ana pencere için)
-  Pencere^.FAtaPencere := PPencere(Gorev^.AktifPencere);
+  Pencere^.FAtaPencere := PPencere(G^.AktifPencere);
 
   // görevin aktif masaüstü ve penceresini belirle
-  Gorev^.AktifMasaustu := Masaustu;
-  Gorev^.AktifPencere := PObject(Pencere);
+  G^.AktifMasaustu := Masaustu;
+  G^.AktifPencere := PObject(Pencere);
 
   Pencere^.Odaklanilabilir := False;
   Pencere^.Odaklanildi := False;
@@ -455,7 +455,7 @@ begin
     begin
 
       GorunurNesne := AltNesneler[i];
-      if(GorunurNesne^.Gorunum) then
+      if not(GorunurNesne = nil) and (GorunurNesne^.Gorunum) then
       begin
 
         // yeni eklenecek görsel nesne - görsel nesneyi buraya ekle...
@@ -793,7 +793,7 @@ begin
     begin
 
       GorunurNesne := AltNesneler[i];
-      if(GorunurNesne^.Gorunum) and ((GorunurNesne^.Kimlik and 1) = 1) then
+      if not(GorunurNesne = nil) and (GorunurNesne^.Gorunum) and ((GorunurNesne^.Kimlik and 1) = 1) then
       begin
 
         // yeni eklenecek görsel nesne - görsel nesneyi buraya ekle...

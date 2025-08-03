@@ -148,7 +148,7 @@ begin
   if(DI = nil) then
   begin
 
-    Result := 1;
+    Result := HATA_KIMLIK;
     Exit;
   end;
 
@@ -349,7 +349,12 @@ begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit;
+  if(DI = nil) then
+  begin
+
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    Exit;
+  end;
 
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
@@ -605,6 +610,7 @@ var
 begin
 
   AktifGorev := GorevAl(-1);
+  if(AktifGorev = nil) then Exit(HATA_KIMLIK);
 
   Result := AktifGorev^.DosyaSonIslemDurum;
 
@@ -846,6 +852,12 @@ begin
   Result := DI^.Kimlik;
 
   DI^.Gorev := GorevAl(-1);
+  if(DI = nil) then
+  begin
+
+    DosyaIsleminiSonlandir(DI^.Kimlik);
+    Exit;
+  end;
 
   // iþlem yapýlacak sürücü
   DI^.MantiksalDepolama := MD;
@@ -1009,8 +1021,8 @@ begin
 
     AssignFile(DosyaKimlik, AHedefDosya);
     ReWrite(DosyaKimlik);
-    Sonuc := IOResult;
-    if(Sonuc = 0) then
+    {Sonuc := IOResult;
+    if(Sonuc = HATA_DOSYA_ISLEM_BASARILI) then
     begin
 
       Write(DosyaKimlik, Bellek, U);
@@ -1020,7 +1032,7 @@ begin
 
       Result := Sonuc;
       //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Hedef Dosya Hatasý: %d', [Sonuc]);
-    end;
+    end;}
 
     CloseFile(DosyaKimlik);
 

@@ -182,7 +182,6 @@ function TDefter.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
   AMetinSarmala: Boolean): PDefter;
 var
   Defter: PDefter;
-  YaziBellekAdresi: Isaretci;
 begin
 
   Defter := PDefter(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
@@ -214,8 +213,7 @@ begin
   Defter^.FDikeyKCubugu^.OlayYonlendirmeAdresi := @KaydirmaCubuguOlaylariniIsle;
 
   // defter nesnesinin içeriði için bellek ayýr
-  YaziBellekAdresi := GGercekBellek.Ayir((4096 * 10) - 1);
-  Defter^.FYaziBellekAdresi := YaziBellekAdresi;
+  Defter^.FYaziBellekAdresi := GetMem(4096 * 10);
 
   Defter^.FYaziUzunlugu := 0;
   Defter^.FYatayKarSay := 0;
@@ -240,8 +238,7 @@ begin
   Defter := PDefter(GorselNesneler0.NesneAl(AKimlik));
   if(Defter = nil) then Exit;
 
-  if(Defter^.FYaziBellekAdresi <> nil) then
-    GGercekBellek.YokEt(Defter^.FYaziBellekAdresi, (4096 * 10) - 1);
+  if(Defter^.FYaziBellekAdresi <> nil) then FreeMem(Defter^.FYaziBellekAdresi, 4096 * 10);
 
   GorselNesneler0.YokEt(AKimlik);
 end;

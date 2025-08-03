@@ -20,7 +20,7 @@ function CizimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses gorselnesne, genel;
+uses gorselnesne, genel, src_vesa20;
 
 {==============================================================================
   görsel nesne çizim kesmelerini içerir
@@ -50,7 +50,7 @@ begin
     Ust := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
 
     // belirtilen koordinatı işaretle
-    GEkranKartSurucusu.NoktaYaz(GN, Sol, Ust, PRenk(ADegiskenler + 12)^, True);
+    EkranKartSurucusu0.NoktaYaz(GN, Sol, Ust, PRenk(ADegiskenler + 12)^, True);
 
     // başarı kodunu geri döndür
     Result := 1;

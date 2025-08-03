@@ -21,7 +21,7 @@ interface
 uses paylasim;
 
 const
-  USTSINIR_MESAJ = 32;
+  USTSINIR_MESAJ = 16;
 
 type
   PMesajTipi = ^TMesajTipi;

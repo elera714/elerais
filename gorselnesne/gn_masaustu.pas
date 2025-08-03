@@ -43,7 +43,7 @@ function NesneOlustur(AMasaustuAdi: string): TKimlik;
 
 implementation
 
-uses gn_islevler, genel, bmp, temelgorselnesne, gn_pencere, gorev;
+uses gn_islevler, genel, bmp, temelgorselnesne, gn_pencere, gorev, src_vesa20;
 
 {==============================================================================
   masaüstü kesme çaðrýlarýný yönetir
@@ -182,8 +182,7 @@ begin
   Masaustu^.FMasaustuRenk := RENK_ZEYTINYESILI;
 
   // masaüstünün çizileceði bellek adresi
-  Masaustu^.FCizimBellekAdresi := GGercekBellek.Ayir(Masaustu^.FBoyut.Genislik *
-    Masaustu^.FBoyut.Yukseklik * 4);
+  Masaustu^.FCizimBellekAdresi := GetMem(Masaustu^.FBoyut.Genislik * Masaustu^.FBoyut.Yukseklik * 4);
 
   // masaüstüne çizilecek resmin bellek bilgileri
   Masaustu^.FGoruntuYapi.BellekAdresi := nil;
@@ -207,8 +206,8 @@ begin
   // tüm masaüstü nesneleri oluþturulduysa çýk
   if(GorselNesneler0.ToplamMasaustu >= USTSINIR_MASAUSTU) then Exit;
 
-  Genislik := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;
-  Yukseklik := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
+  Genislik := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk;
+  Yukseklik := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk;
 
   Masaustu := PMasaustu(inherited Olustur(ktTuvalNesne, nil, 0, 0,
     Genislik, Yukseklik, 0, 0, 0, 0, ''));
@@ -438,7 +437,7 @@ begin
     for Sol := Masaustu^.FCizimAlan.Sol to Masaustu^.FCizimAlan.Sag do
     begin
 
-      GEkranKartSurucusu.NoktaYaz(Masaustu, Sol, Ust, Renk, False);
+      EkranKartSurucusu0.NoktaYaz(Masaustu, Sol, Ust, Renk, False);
     end;
   end;
 end;
@@ -472,6 +471,8 @@ begin
   Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
+  GorevDegistirme := 1;
+
   // masaüstü resmini deðiþtir
   Masaustu^.FMasaustuArkaPlan := 2;
 
@@ -479,7 +480,7 @@ begin
   if not(Masaustu^.FGoruntuYapi.BellekAdresi = nil) then
   begin
 
-    GGercekBellek.YokEt(Masaustu^.FGoruntuYapi.BellekAdresi, Masaustu^.FGoruntuYapi.Genislik *
+    FreeMem(Masaustu^.FGoruntuYapi.BellekAdresi, Masaustu^.FGoruntuYapi.Genislik *
       Masaustu^.FGoruntuYapi.Yukseklik * 4);
 
     Masaustu^.FGoruntuYapi.BellekAdresi := nil;
@@ -497,6 +498,8 @@ begin
   end;
 
   if(Masaustu^.Gorunum) then Masaustu^.Ciz;
+
+  GorevDegistirme := 0;
 end;
 
 end.

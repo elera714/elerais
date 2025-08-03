@@ -197,7 +197,7 @@ begin
   MD := DI^.MantiksalDepolama;
 
   // FAT tablosu için bellekte yer ayýr
-  DATBellekAdresi := GGercekBellek.Ayir(MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
+  DATBellekAdresi := GetMem(MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
 
   // depolama aygýtýnýn ilk FAT kopyasýnýn tümünü belleðe yükle
   OkumaSonuc := MD^.FD^.SektorOku(MD^.FD, MD^.Acilis.DosyaAyirmaTablosu.IlkSektor,
@@ -245,7 +245,7 @@ begin
   // eðer 0xFF8..0xFFF aralýðýndaysa bu dosyanýn en son zinciridir
   until (Zincir >= $FF8) or (OkumaSonuc = 0);
 
-  GGercekBellek.YokEt(DATBellekAdresi, MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
+  FreeMem(DATBellekAdresi, MD^.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
 end;
 
 {==============================================================================

@@ -50,7 +50,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj;
+uses gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj;
 
 {==============================================================================
   renk seçici nesne kesme çaðrýlarýný yönetir

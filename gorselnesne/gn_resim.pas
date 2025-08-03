@@ -39,7 +39,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, bmp, gorev;
+uses gn_pencere, gn_islevler, bmp, gorev;
 
 {==============================================================================
   resim nesnesi kesme çağrılarını yönetir
@@ -169,7 +169,19 @@ end;
   resim nesnesini yok eder
  ==============================================================================}
 procedure TResim.YokEt(AKimlik: TKimlik);
+var
+  R: PResim;
 begin
+
+  R := PResim(GorselNesneler0.NesneAl(Kimlik));
+  if(R = nil) then Exit;
+
+  if not(R^.FGoruntuYapi.BellekAdresi = nil) then
+  begin
+
+    FreeMem(R^.FGoruntuYapi.BellekAdresi, R^.FGoruntuYapi.Genislik *
+      R^.FGoruntuYapi.Yukseklik * 4);
+  end;
 
   GorselNesneler0.YokEt(AKimlik);
 end;
@@ -308,8 +320,9 @@ begin
   if not(Resim^.FGoruntuYapi.BellekAdresi = nil) then
   begin
 
-    GGercekBellek.YokEt(Resim^.FGoruntuYapi.BellekAdresi, Resim^.FGoruntuYapi.Genislik *
+    FreeMem(Resim^.FGoruntuYapi.BellekAdresi, Resim^.FGoruntuYapi.Genislik *
       Resim^.FGoruntuYapi.Yukseklik * 4);
+
     Resim^.FGoruntuYapi.BellekAdresi := nil;
   end;
 

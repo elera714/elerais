@@ -135,10 +135,26 @@ end;
 procedure NesneKontrol;
 var
   G: PGorselNesne;
-  i, j: TKimlik;
+  i, j, k: TKimlik;
 begin
 
+  j := 0;
+  k := 0;
   for i := 0 to USTSINIR_GORSELNESNE - 1 do
+  begin
+
+    G := GorselNesneler0.GorselNesne[i];
+    if(G = nil) then
+    begin
+
+      k := i;
+      Inc(j);
+    end;
+  end;
+
+  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Son: %d, Toplam: %d', [k, j]);
+
+{  for i := 0 to USTSINIR_GORSELNESNE - 1 do
   begin
 
     G := GorselNesneler0.GorselNesne[i];
@@ -153,7 +169,7 @@ begin
         Break;
       end;
     end;
-  end;
+  end;}
 end;
 
 end.

@@ -179,6 +179,7 @@ begin
   else if(IslevNo = $A) then
   begin
 
+    p := GorevAl;
     s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
     p^.ProgramAdi := s;
   end

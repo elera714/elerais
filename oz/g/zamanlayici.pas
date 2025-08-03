@@ -217,7 +217,7 @@ end;
  ==============================================================================}
 procedure ZamanlayicilariKontrolEt;
 var
-  Gorev: PGorev;
+  G: PGorev;
   Z: PZamanlayici;
   Olay: TOlay;
   GeriSayimSayaci, i: TISayi4;
@@ -261,8 +261,8 @@ begin
         else
         begin
 
-          Gorev := GorevAl(Z^.GorevKimlik);
-          Gorevler0.OlayEkle(Gorev^.Kimlik, Olay);
+          G := GorevAl(Z^.GorevKimlik);
+          Gorevler0.OlayEkle(G^.Kimlik, Olay);
         end;
       end;
     end;
@@ -348,6 +348,10 @@ asm
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
   mov   es,ax
+
+  mov   eax,GorevDegistirme
+  cmp   eax,1
+  je    @@cik
 
   // zamanlayýcý sayacýný artýr.
   mov   ecx,ZamanlayiciSayaci

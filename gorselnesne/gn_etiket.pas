@@ -36,7 +36,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, gorev;
+uses gn_pencere, gn_islevler, temelgorselnesne, gorev;
 
 {==============================================================================
   etiket nesne kesme çağrılarını yönetir

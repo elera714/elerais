@@ -20,7 +20,7 @@ function SistemCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses genel, sistem, gorev;
+uses genel, sistem, gorev, src_vesa20;
 
 function SistemCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -43,8 +43,8 @@ begin
     SB^.DerlemeBilgisi := DerlemeTarihi;
     SB^.FPCMimari := FPCMimari;
     SB^.FPCSurum := FPCSurum;
-    SB^.YatayCozunurluk := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;
-    SB^.DikeyCozunurluk := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
+    SB^.YatayCozunurluk := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk;
+    SB^.DikeyCozunurluk := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk;
   end
   // işlemci bilgisini al
   else if(IslevNo = 2) then

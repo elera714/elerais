@@ -163,7 +163,7 @@ var
 implementation
 
 uses genel, genel8x16, donusum, bmp, gn_islevler, sistemmesaj, gn_pencere,
-  hamresim, giysi_normal, giysi_mac, gorev;
+  hamresim, giysi_normal, giysi_mac, gorev, src_vesa20;
 
 var
   GiysiResimler: array[0..11] of THamResim = (
@@ -212,7 +212,7 @@ end;
 function TGorselNesneler.Olustur(AGNTip: TGNTip): PGorselNesne;
 var
   GN: PGorselNesne;
-  i, j: TSayi4;
+  i: TSayi4;
 begin
 
   while KritikBolgeyeGir(GorselNesnelerKilit) = False do;
@@ -233,14 +233,12 @@ begin
       // nesne içeriðini sýfýrla
       FillByte(GN^, 1024, 0);
 
-      GN^.Kimlik := (i * 1024) + %1010101011;
-
+      GN^.FSiraNo := i;
+      GN^.Kimlik := (i shl 10) or %1010101011;
       GN^.NesneTipi := AGNTip;
 
-      // oluþturulmuþ nesne sayýsýný 1 artýr ve çýk
-      j := ToplamGNSayisi;
-      Inc(j);
-      ToplamGNSayisi := j;
+      // oluþturulmuþ nesne sayýsýný 1 artýr
+      Inc(FToplamGNSayisi);
 
       KritikBolgedenCik(GorselNesnelerKilit);
 
@@ -262,7 +260,6 @@ end;
 procedure TGorselNesneler.YokEt(AKimlik: TKimlik);
 var
   i: TKimlik;
-  j: TSayi4;
   GN: PGorselNesne;
 begin
 
@@ -271,18 +268,16 @@ begin
   i := AKimlik shr 10;
 
   // eðer nesne istenen aralýkta ise yok et
-
-  // nesne kimliðini Kullanýldý bitini sýfýrla
   GN := GorselNesne[i];
   if not(GN = nil) then
   begin
 
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: %s', [GN^.NesneAdi]);
+
     GorselNesne[i] := nil;
     FreeMem(GN, 1024);
 
-    j := ToplamGNSayisi;
-    Dec(j);
-    ToplamGNSayisi := j;
+    Dec(FToplamGNSayisi);
     //Result := True;
   end; //else Result := False;
 
@@ -895,7 +890,7 @@ end;
 procedure TGorselNesne.PixelYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; ARenk: TRenk);
 begin
 
-  GEkranKartSurucusu.NoktaYaz(AGorselNesne, ASol, AUst, ARenk, True);
+  EkranKartSurucusu0.NoktaYaz(AGorselNesne, ASol, AUst, ARenk, True);
 end;
 
 {==============================================================================
@@ -936,7 +931,7 @@ begin
     begin
 
       // ilgili pixeli belirtilen renkle iþaretle (boya)
-			if(KarakterAdres^ = 1) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, i, j,
+			if(KarakterAdres^ = 1) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, i, j,
         ARenk, True);
 
       // bir sonraki pixele konumlan
@@ -1250,7 +1245,7 @@ begin
     for i := Sol to Sag do
     begin
 
-      GEkranKartSurucusu.NoktaYaz(@Self, i, j, ADolguRengi, True);
+      EkranKartSurucusu0.NoktaYaz(@Self, i, j, ADolguRengi, True);
     end;
   end;
 end;
@@ -1295,7 +1290,7 @@ begin
     for i := AAlan.Sol to AAlan.Sag do
     begin
 
-      GEkranKartSurucusu.NoktaYaz(AGorselNesne, i, j, ADolguRengi, True);
+      EkranKartSurucusu0.NoktaYaz(AGorselNesne, i, j, ADolguRengi, True);
     end;
   end;
 end;
@@ -1382,7 +1377,7 @@ begin
   for i := 0 to a do
   begin                   // draw the a+1 pixels
 
-    if(Isaretle) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, x, y,
+    if(Isaretle) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, x, y,
       ACizgiRengi, True);
 
     if(ACizgiTipi = ctNokta) then
@@ -1439,14 +1434,14 @@ begin
       Dec(Ust);
     end;
 
-    GEkranKartSurucusu.NoktaYaz(@Self, ASol + Sol, AUst - Ust, ARenk, True); // Top
-    GEkranKartSurucusu.NoktaYaz(@Self, ASol - Sol, AUst - Ust, ARenk, True);
-    GEkranKartSurucusu.NoktaYaz(@Self, ASol + Ust, AUst - Sol, ARenk, True); // Upper middle
-    GEkranKartSurucusu.NoktaYaz(@Self, ASol - Ust, AUst - Sol, ARenk, True);
-    GEkranKartSurucusu.NoktaYaz(@Self, ASol + Ust, AUst + Sol, ARenk, True); // Lower middle
-    GEkranKartSurucusu.NoktaYaz(@Self, ASol - Ust, AUst + Sol, ARenk, True);
-    GEkranKartSurucusu.NoktaYaz(@Self, ASol + Sol, AUst + Ust, ARenk, True); // Bottom
-    GEkranKartSurucusu.NoktaYaz(@Self, ASol - Sol, AUst + Ust, ARenk, True);
+    EkranKartSurucusu0.NoktaYaz(@Self, ASol + Sol, AUst - Ust, ARenk, True); // Top
+    EkranKartSurucusu0.NoktaYaz(@Self, ASol - Sol, AUst - Ust, ARenk, True);
+    EkranKartSurucusu0.NoktaYaz(@Self, ASol + Ust, AUst - Sol, ARenk, True); // Upper middle
+    EkranKartSurucusu0.NoktaYaz(@Self, ASol - Ust, AUst - Sol, ARenk, True);
+    EkranKartSurucusu0.NoktaYaz(@Self, ASol + Ust, AUst + Sol, ARenk, True); // Lower middle
+    EkranKartSurucusu0.NoktaYaz(@Self, ASol - Ust, AUst + Sol, ARenk, True);
+    EkranKartSurucusu0.NoktaYaz(@Self, ASol + Sol, AUst + Ust, ARenk, True); // Bottom
+    EkranKartSurucusu0.NoktaYaz(@Self, ASol - Sol, AUst + Ust, ARenk, True);
     Inc(Sol);
   end;
 end;
@@ -1516,7 +1511,7 @@ begin
       end;
     end;
 
-    if(Isaretle) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, i, AUst, ARenk, True);
+    if(Isaretle) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, i, AUst, ARenk, True);
   end;
 end;
 
@@ -1561,7 +1556,7 @@ begin
       end;
     end;
 
-    if(Isaretle) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, ASol, i, ARenk, True);
+    if(Isaretle) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, ASol, i, ARenk, True);
   end;
 end;
 

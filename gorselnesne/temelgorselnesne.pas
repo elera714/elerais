@@ -38,6 +38,8 @@ type
   public
     // nesne kimliði. kimlik deðeri
     Kimlik: TKimlik;
+    // nesnenin dizi içerisindeki sýra numarasý
+    FSiraNo: TSayi4;
     // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
     FareImlecTipi: TFareImlecTipi;
     // nesnenin alt nesne sayýsý

@@ -47,6 +47,9 @@ type
     procedure EkranBelleginiGuncelle;
   end;
 
+var
+  EkranKartSurucusu0: TEkranKartSurucusu;
+
 implementation
 
 uses genel, donusum, gn_menu, gn_acilirmenu, fareimlec, gdt;
@@ -65,8 +68,8 @@ begin
   //GDTRGirdisiEkle(SECICI_GRAFIK_LFB, KartBilgisi.BellekAdresi, $FFFFFF, $92, $D0);
 
   // arka plan için bellek ayır
-  ArkaBellek := GetMem(GEkranKartSurucusu.KartBilgisi.YatayCozunurluk *
-    GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk * (KartBilgisi.PixelBasinaBitSayisi div 8));
+  ArkaBellek := GetMem(EkranKartSurucusu0.KartBilgisi.YatayCozunurluk *
+    EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk * (KartBilgisi.PixelBasinaBitSayisi div 8));
 
   case KartBilgisi.PixelBasinaBitSayisi of
     16: begin NoktaOkuIslev := @NoktaOku16; NoktaYazIslev := @NoktaYaz16; end;
@@ -352,7 +355,7 @@ begin
     begin
 
       GN := PencereBellekAdresi[i];
-      if not(GN^.NesneTipi = gntMenu) and not(GN^.NesneTipi = gntAcilirMenu) then
+      if not(GN = nil) and not(GN^.NesneTipi = gntMenu) and not(GN^.NesneTipi = gntAcilirMenu) then
       begin
 
         Pencere := PPencere(GN);
@@ -540,8 +543,8 @@ begin
 
   // imleç yatay bitiş değerlerinin hesaplanması
   Deger := GFareSurucusu.YatayKonum + (FareImlec.Genislik - FareImlec.YatayOdak);
-  if(Deger > GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1) then
-    ImlecYatayBitis := FareImlec.Genislik - (Deger - GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1)
+  if(Deger > EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1) then
+    ImlecYatayBitis := FareImlec.Genislik - (Deger - EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1)
   else ImlecYatayBitis := FareImlec.Genislik - 1;
 
   // fare dikey başlangıç ve imleç dikey başlangıç değerlerinin hesaplanması
@@ -552,8 +555,8 @@ begin
 
   // imleç dikey bitiş değerlerinin hesaplanması
   Deger := GFareSurucusu.DikeyKonum + (FareImlec.Yukseklik - FareImlec.DikeyOdak);
-  if(Deger > GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1) then
-    ImlecDikeyBitis := FareImlec.Yukseklik - (Deger - GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1)
+  if(Deger > EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1) then
+    ImlecDikeyBitis := FareImlec.Yukseklik - (Deger - EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1)
   else ImlecDikeyBitis := FareImlec.Yukseklik - 1;
 
   for Dikey := ImlecDikeyBaslangic to ImlecDikeyBitis do
@@ -566,10 +569,10 @@ begin
       ImlecBellekAdresi := FareImlec.BellekAdresi + (Dikey * FareImlec.Genislik) + Yatay;
 
       if(ImlecBellekAdresi^ = 1) then
-        GEkranKartSurucusu.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
+        EkranKartSurucusu0.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
           RENK_SIYAH, True)
       else if(ImlecBellekAdresi^ = 2) then
-        GEkranKartSurucusu.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
+        EkranKartSurucusu0.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
           RENK_BEYAZ, True);
     end;
   end;

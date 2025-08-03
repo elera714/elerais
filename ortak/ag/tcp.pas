@@ -48,7 +48,7 @@ procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIPAdres;
 
 implementation
 
-uses genel, donusum, ip, islevler, sistemmesaj;
+uses genel, donusum, ip, islevler, sistemmesaj, gercekbellek;
 
 procedure TCPPaketleriniIsle(AIPPaket: PIPPaket);
 var
@@ -158,7 +158,7 @@ begin
         B^.YerelPort := 0;
         B^.UzakPort := 0;
 
-        GGercekBellek.YokEt(B^.Bellek, B^.BellekUzunlugu);
+        GercekBellek0.YokEt(B^.Bellek, 4096 * 4);
         B^.Bagli := False;
         B^.BaglantiDurum := bdYok;
       end;
@@ -176,7 +176,7 @@ var
   p: PByte;
 begin
 
-  TCPPaket := GGercekBellek.Ayir(TCP_BASLIK_U + AVeriU);
+  TCPPaket := GercekBellek0.Ayir(TCP_BASLIK_U + AVeriU);
 
   // tcp için ek baþlýk hesaplanýyor
   EkBaslik.KaynakIP := AKaynakIPAdres;
@@ -212,7 +212,7 @@ begin
   IPPaketGonder(ABaglanti^.HedefMACAdres, AKaynakIPAdres, ABaglanti^.HedefIPAdres,
     ptTCP, $4000, TCPPaket, TCP_BASLIK_U + AVeriU);
 
-  GGercekBellek.YokEt(TCPPaket, TCP_BASLIK_U + AVeriU);
+  GercekBellek0.YokEt(TCPPaket, TCP_BASLIK_U + AVeriU);
 end;
 
 end.

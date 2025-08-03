@@ -40,7 +40,7 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi
 implementation
 
 uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, islevler, genel,
-  dhcp, dhcp_s, gorev;
+  dhcp, dhcp_s, gorev, gercekbellek;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
@@ -246,7 +246,7 @@ begin
   begin
 
     // veri paketi için bellekte yer ayýr
-    EthernetPaket := GGercekBellek.Ayir(AVeriUzunlugu + ETHERNET_BASLIKU);
+    EthernetPaket := GercekBellek0.Ayir(AVeriUzunlugu + ETHERNET_BASLIKU);
 
     EthernetPaket^.HedefMACAdres := AHedefMAC;
     EthernetPaket^.KaynakMACAdres := GAgBilgisi.MACAdres;
@@ -273,7 +273,7 @@ begin
     GonderilenByte += AVeriUzunlugu + ETHERNET_BASLIKU;
 
     // ayrýlan belleði serbest býrak
-    GGercekBellek.YokEt(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
+    GercekBellek0.YokEt(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
   end;
 end;
 

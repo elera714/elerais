@@ -20,7 +20,7 @@ function BellekCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses genel, islevler, gorev;
+uses genel, islevler, gorev, gercekbellek;
 
 {==============================================================================
   bellek kesme çağrılarını yönetir
@@ -53,13 +53,13 @@ begin
   begin
 
     p := PSayi4(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
-    p^ := GGercekBellek.ToplamBlok;
+    p^ := GercekBellek0.ToplamBlok;
     p := PSayi4(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-    p^ := GGercekBellek.AyrilmisBlok;
+    p^ := GercekBellek0.AyrilmisBlok;
     p := PSayi4(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-    p^ := GGercekBellek.KullanilmisBlok;
+    p^ := GercekBellek0.KullanilmisBlok;
     p := PSayi4(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
-    p^ := GGercekBellek.ToplamBlok - GGercekBellek.KullanilmisBlok;
+    p^ := GercekBellek0.ToplamBlok - GercekBellek0.KullanilmisBlok;
     p := PSayi4(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
     p^ := 4096;
 

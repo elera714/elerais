@@ -319,7 +319,7 @@ begin
   Gorev := GorevAl(AGorselNesne^.GorevKimlik);
 
   // görev çalýþmýyorsa nesneye olay gönderme
-  if(Gorev^.Durum <> gdCalisiyor) then Exit;
+  if(Gorev = nil) or (Gorev^.Durum <> gdCalisiyor) then Exit;
 
   // aktif nesneyi belirle
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then

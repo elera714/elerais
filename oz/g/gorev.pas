@@ -80,6 +80,8 @@ type
     HataESP,                              // esp
     HataBayrak: TISayi4;                  // flags
 
+//    KullanilanBellek: TSayi4;             // görevin byte olarak kullandýðý tüm kaynaklar toplamý (TODO - kodlanacak }
+
     DosyaAdi,                             // görev dosya adý
     ProgramAdi: string;                   // program adý
   end;
@@ -481,9 +483,8 @@ begin
       Gorev[i] := G;
 
       // görevi boþ olarak belirle
-      //G^.FGorevDurum := gdBos;
-      G^.DosyaSonIslemDurum := HATA_DOSYA_ISLEM_BASARILI;
       G^.Kimlik := i;
+      G^.DosyaSonIslemDurum := HATA_DOSYA_ISLEM_BASARILI;
       G^.AktifMasaustu := nil;
       G^.AktifPencere := nil;
 
@@ -936,7 +937,7 @@ begin
     G := Gorev[i];
 
     // eðer görev giriþi boþ ise
-    if(G^.Durum = gdCalisiyor) and (G^.Kimlik = AGorevKimlik) then
+    if not(G = nil) and (G^.Durum = gdCalisiyor) and (G^.Kimlik = AGorevKimlik) then
       Exit(G);
   end;
 
@@ -984,7 +985,7 @@ begin
     G := Gorevler0.Gorev[i];
 
     // görev çalýþýyor ise görev sýra numarasýný bir artýr
-    if(G^.Durum = gdCalisiyor) then Inc(j);
+    if not(G = nil) and (G^.Durum = gdCalisiyor) then Inc(j);
 
     // görev sýra no aranan görev ise iþlem bellek bölgesini geri döndür
     if(AGorevSiraNo = j) then Exit(i);
@@ -1016,7 +1017,7 @@ begin
     G := Gorevler0.Gorev[GorevKimlik];
 
     // çalýþan görev aranan görev ise çaðýran iþleve geri dön
-    if(G^.Durum = gdCalisiyor) then Break;
+    if not(G = nil) and (G^.Durum = gdCalisiyor) then Break;
   end;
 
   Result := GorevKimlik;

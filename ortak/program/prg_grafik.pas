@@ -14,7 +14,7 @@ unit prg_grafik;
 
 interface
 
-uses paylasim, fdepolama;
+uses paylasim;
 
 const
   P_BASLIK_YUKSEKLIK = 24;
@@ -26,7 +26,8 @@ procedure SistemDegerleriOlayIsle;
 
 implementation
 
-uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, mdepolama, elr1, sistemmesaj;
+uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, mdepolama, elr1, sistemmesaj,
+  gorselnesne, gercekbellek, src_vesa20;
 
 var
   SDPencere: PPencere = nil;
@@ -48,7 +49,7 @@ begin
 
     SistemDegerleriOlayIsle;
 
-    GEkranKartSurucusu.EkranBelleginiGuncelle;
+    EkranKartSurucusu0.EkranBelleginiGuncelle;
   end;
 end;
 
@@ -65,7 +66,7 @@ begin
   etkBellek^.Goster;
 
   igBellek := igBellek^.Olustur(ktNesne, SDPencere, 60, 65, 85, 16);
-  igBellek^.DegerleriBelirle(0, GGercekBellek.ToplamBlok * 4096);
+  igBellek^.DegerleriBelirle(0, GercekBellek0.FToplamYBYBellek);
   igBellek^.MevcutDegerYaz(0);
   igBellek^.Goster;
 
@@ -87,13 +88,12 @@ var
   ToplamKullanimByte: TSayi4;
 begin
 
-  // $1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
+  // 100 döngüde bir bellek kullaným kapasitesinin hesaplanmasý
   Inc(BellekSayac);
-  if(BellekSayac = 2000) then
+  if(BellekSayac = 100) then
   begin
 
-    igBellek^.MevcutDegerYaz(GGercekBellek.KullanilmisBlok * 4096);
-
+    igBellek^.MevcutDegerYaz(GercekBellek0.FKullanilanYBYBellek);
     BellekSayac := 0;
   end;
 
@@ -122,17 +122,13 @@ begin
   CizimAlan.Ust += P_BASLIK_YUKSEKLIK;
   CizimAlan.Alt := CizimAlan.Ust + 60;
   SDPencere^.DikdortgenDoldur(SDPencere, CizimAlan, RENK_SIYAH, RENK_BEYAZ);
+
   SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'ÇKRDK:', RENK_TURKUAZ);
-  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, True, 8, SistemSayaci, RENK_GRI);
-  {SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'ÇAÐRI:', RENK_TURKUAZ);
-  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, True, 8, CagriSayaci, RENK_GRI);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'GRAFK:', RENK_TURKUAZ);
-  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, True, 8, GrafikSayaci, RENK_GRI);}
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'YBTOP:', RENK_TURKUAZ);
-  SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, GGercekBellek.FToplamYBYBellek, RENK_MAVI);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'YBKUL:', RENK_TURKUAZ);
-  SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, ZamanlayiciSayaci, RENK_MAVI);
-  //SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, GGercekBellek.FKullanilanYBYBellek, RENK_MAVI);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, False, 8, SistemSayaci, RENK_MAVI);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'ÇAÐRI:', RENK_TURKUAZ);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, False, 8, CagriSayaci, RENK_MAVI);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'NESNE:', RENK_TURKUAZ);
+  SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, GorselNesneler0.ToplamGNSayisi, RENK_MAVI);
 end;
 
 end.

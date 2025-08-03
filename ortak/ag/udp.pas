@@ -39,7 +39,7 @@ procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 implementation
 
 uses dhcp_s, dhcp_i, donusum, sistemmesaj, dhcp, baglanti, dns, netbios,
-  genel, islevler;
+  genel, islevler, gercekbellek;
 
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir
@@ -118,7 +118,7 @@ var
   B1: PSayi1;
 begin
 
-  UDPPaket := GGercekBellek.Ayir(AVeriUzunlugu + UDP_BASLIK_U);
+  UDPPaket := GercekBellek0.Ayir(AVeriUzunlugu + UDP_BASLIK_U);
 
   // udp için ek baþlýk hesaplanýyor
   EkBaslik.KaynakIP := AKaynakIPAdres;
@@ -141,7 +141,7 @@ begin
   IPPaketGonder(AMACAdres, AKaynakIPAdres, AHedefIPAdres, ptUDP, 0, UDPPaket,
     AVeriUzunlugu + UDP_BASLIK_U);
 
-  GGercekBellek.YokEt(UDPPaket, AVeriUzunlugu + UDP_BASLIK_U);
+  GercekBellek0.YokEt(UDPPaket, AVeriUzunlugu + UDP_BASLIK_U);
 end;
 
 {==============================================================================

@@ -17,7 +17,7 @@ unit bmp;
 
 interface
 
-uses dosya, genel, paylasim, gn_pencere, gorselnesne;
+uses dosya, paylasim, gn_pencere, gorselnesne;
 
 type
   PRGBRenk = ^TRGBRenk;
@@ -49,7 +49,7 @@ procedure ResimCiz(AGNTip: TGNTip; AGorselNesne: PGorselNesne; AGoruntuYapi: TGo
 
 implementation
 
-uses gn_masaustu, gn_resim, islevler, gn_islevler, sistemmesaj;
+uses gn_masaustu, gn_resim, islevler, gn_islevler, sistemmesaj, src_vesa20;
 
 // bmp biçimindeki dosyayı resim olarak belleğe yükler
 function BMPDosyasiYukle(ADosyaTamYol: string): TGoruntuYapi;
@@ -97,7 +97,7 @@ begin
       // dosya uzunluğunu al
       DosyaUzunlugu := FileSize(DosyaKimlik);
 
-      // dosyanın belleğe Ustüklenmesi için bellekte yer ayır
+      // dosyanın belleğe yüklenmesi için bellekte yer ayır
       DosyaBellek := GetMem(DosyaUzunlugu);
       if(DosyaBellek = nil) then
       begin
@@ -117,8 +117,7 @@ begin
       GoruntuYapi.Genislik := BMPBicim^.Genislik;
       GoruntuYapi.Yukseklik := BMPBicim^.Yukseklik;
 
-      GoruntuYapi.BellekAdresi := GetMem(GoruntuYapi.Genislik *
-        GoruntuYapi.Yukseklik * 4);
+      GoruntuYapi.BellekAdresi := GetMem(GoruntuYapi.Genislik * GoruntuYapi.Yukseklik * 4);
       if(GoruntuYapi.BellekAdresi = nil) then Exit;
 
       // resim dosyasındaki her bir satırdaki byte sayısı
@@ -166,6 +165,8 @@ var
   YatayArtis, DikeyArtis, Sol: Double;
 begin
 
+  if(AGoruntuYapi.BellekAdresi = nil) then Exit;
+
   if(AGNTip = gntMasaustu) then
   begin
 
@@ -188,7 +189,7 @@ begin
       for TuvalA1 := 0 to Genislik - 1 do
       begin
 
-        GEkranKartSurucusu.NoktaYaz(Masaustu, Alan.Sol + TuvalA1, Alan.Ust + TuvalB1,
+        EkranKartSurucusu0.NoktaYaz(Masaustu, Alan.Sol + TuvalA1, Alan.Ust + TuvalB1,
           Renk1^, True);
         Inc(Renk1);
       end;
@@ -240,7 +241,7 @@ begin
         Renk2 := Renk1;
         Inc(Renk2, Round(Sol));
 
-        GEkranKartSurucusu.NoktaYaz(Resim, Alan.Sol + TuvalA1, Alan.Ust + TuvalB1,
+        EkranKartSurucusu0.NoktaYaz(Resim, Alan.Sol + TuvalA1, Alan.Ust + TuvalB1,
           Renk2^, True);
       end;
     end;

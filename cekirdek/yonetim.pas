@@ -94,17 +94,17 @@ begin
   GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
 
   // video bilgilerini al
-  GEkranKartSurucusu.KartBilgisi.BellekUzunlugu := GMBilgi^.VideoBellekUzunlugu;
-  GEkranKartSurucusu.KartBilgisi.EkranMod := GMBilgi^.VideoEkranMod;
-  GEkranKartSurucusu.KartBilgisi.YatayCozunurluk := GMBilgi^.VideoYatayCozunurluk;
-  GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk := GMBilgi^.VideoDikeyCozunurluk;
-  GEkranKartSurucusu.KartBilgisi.BellekAdresi := GMBilgi^.VideoBellekAdresi;
+  EkranKartSurucusu0.KartBilgisi.BellekUzunlugu := GMBilgi^.VideoBellekUzunlugu;
+  EkranKartSurucusu0.KartBilgisi.EkranMod := GMBilgi^.VideoEkranMod;
+  EkranKartSurucusu0.KartBilgisi.YatayCozunurluk := GMBilgi^.VideoYatayCozunurluk;
+  EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk := GMBilgi^.VideoDikeyCozunurluk;
+  EkranKartSurucusu0.KartBilgisi.BellekAdresi := GMBilgi^.VideoBellekAdresi;
   //VIDEO_MEM_ADDR;
-  GEkranKartSurucusu.KartBilgisi.PixelBasinaBitSayisi :=
+  EkranKartSurucusu0.KartBilgisi.PixelBasinaBitSayisi :=
     GMBilgi^.VideoPixelBasinaBitSayisi;
-  GEkranKartSurucusu.KartBilgisi.NoktaBasinaByteSayisi :=
+  EkranKartSurucusu0.KartBilgisi.NoktaBasinaByteSayisi :=
     (GMBilgi^.VideoPixelBasinaBitSayisi div 8);
-  GEkranKartSurucusu.KartBilgisi.SatirdakiByteSayisi :=
+  EkranKartSurucusu0.KartBilgisi.SatirdakiByteSayisi :=
     GMBilgi^.VideoSatirdakiByteSayisi;
 
   // çekirdek bilgilerini al
@@ -165,7 +165,7 @@ begin
   G^.ProgramAdi := 'Sistem Çekirdeði';
 
   // görev olaylarý için bellekte yer ayýr
-  Olay := POlay(GGercekBellek.Ayir(4096));
+  Olay := POlay(GercekBellek0.Ayir(4096));
   if not(Olay = nil) then
     G^.OlayBellekAdresi := Olay
   else G^.OlayBellekAdresi := nil;
@@ -237,6 +237,7 @@ var
   T: TMyThread;
   A, B: TAracTipiSinif;
   G: PGorev;
+  DosyaKimlik: TKimlik;
   //T: TMyThread;
   //T2: TMyThread2;
 begin
@@ -330,7 +331,20 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            CalisanUygulamalariKaydet;
+            Gorevler0.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
+
+            {AssignFile(DosyaKimlik, 'disk2:\3.bmp');
+            ReWrite(DosyaKimlik);
+            if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then Write(DosyaKimlik, Isaretci(60*1024*1024), 2359350);
+            CloseFile(DosyaKimlik);}
+
+
+            //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
+
+            //CalisanUygulamalariKaydet;
+
+            //Gorevler0.Calistir('dugmeler.c', CALISMA_SEVIYE3)
+            //Gorevler0.Calistir('dsybil.c', CALISMA_SEVIYE3)
 
             //p4 := PCIAygiti0.Oku4(0, 8, 0, $10);
             {p4 := SizeOf(TIPAdres);
@@ -626,7 +640,7 @@ begin
   begin
 
     U := FileSize(DosyaKimlik);
-    Bellek0 := GGercekBellek.Ayir(U);
+    Bellek0 := GercekBellek0.Ayir(U);
     //GetMem(Bellek0, U);
 
     Read(DosyaKimlik, Bellek0);
@@ -702,7 +716,7 @@ begin
     until i = 0;
 
     //FreeMem(Bellek0, U);
-    GGercekBellek.YokEt(Bellek0, U);
+    GercekBellek0.YokEt(Bellek0, U);
   end;
 
   CloseFile(DosyaKimlik);

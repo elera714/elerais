@@ -55,7 +55,7 @@ procedure FareKesmeCagrisi;
 
 implementation
 
-uses genel, irq, port;
+uses genel, irq, port, src_vesa20;
 
 const
   KLAVYE_VERI_PORT    = $60;        // okunabilir / yazılabilir
@@ -83,9 +83,9 @@ begin
   FAygitPaketUzunlugu := 3;
 
   // fare kursor pozisyonu
-  FYatayDeger := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk div 2;
+  FYatayDeger := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk div 2;
   FYatayKonum := Round(FYatayDeger);
-  FDikeyDeger := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk div 2;
+  FDikeyDeger := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk div 2;
   FDikeyKonum := Round(FDikeyDeger);
   FHiz := 1.8;
   FFareDugmeleri := 0;
@@ -198,8 +198,8 @@ begin
       // x limit denetimi
       if(FYatayDeger < 0) then
         FYatayDeger := 0
-      else if(FYatayDeger > GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1) then
-        FYatayDeger := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1;
+      else if(FYatayDeger > EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1) then
+        FYatayDeger := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1;
 
       FYatayKonum := Round(FYatayDeger);
 
@@ -221,8 +221,8 @@ begin
       // x limit denetimi
       if(FDikeyDeger < 0) then
         FDikeyDeger := 0
-      else if(FDikeyDeger > GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1) then
-        FDikeyDeger := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1;
+      else if(FDikeyDeger > EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1) then
+        FDikeyDeger := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1;
 
       FDikeyKonum := Round(FDikeyDeger);
 

@@ -391,7 +391,7 @@ begin
 
   HataDurumu := HATA_YOK;
 
-//  asm sti end;
+  //asm cli end;
 
   // okuma iþlevini gerçekleþtir
   repeat
@@ -422,6 +422,8 @@ begin
     end;
 
   until (ASektorSayisi = 0) or (HataDurumu <> HATA_YOK);
+
+  //asm sti end;
 
   KritikBolgedenCik(SektorOkuYazKilit);
 
