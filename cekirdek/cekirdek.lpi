@@ -50,8 +50,8 @@
         <Filename Value="yonetim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="726"/>
-        <CursorPos X="44" Y="386"/>
+        <TopLine Value="725"/>
+        <CursorPos X="57" Y="736"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -59,8 +59,8 @@
         <Filename Value="yukleyici.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="154"/>
-        <CursorPos X="55" Y="81"/>
+        <TopLine Value="120"/>
+        <CursorPos X="31" Y="137"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -133,10 +133,11 @@
       <Unit12>
         <Filename Value="..\ortak\cekirdek\gn_islevler.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="34"/>
-        <CursorPos X="41" Y="134"/>
+        <EditorIndex Value="12"/>
+        <TopLine Value="375"/>
+        <CursorPos X="3" Y="380"/>
         <UsageCount Value="224"/>
+        <Loaded Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\ortak\cekirdek\idt.pas"/>
@@ -176,9 +177,9 @@
       <Unit18>
         <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="852"/>
-        <CursorPos Y="887"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="120"/>
+        <CursorPos X="52" Y="135"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit18>
@@ -191,9 +192,9 @@
       <Unit20>
         <Filename Value="..\ortak\cekirdek\gercekbellek.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="4"/>
-        <CursorPos X="45" Y="20"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="308"/>
+        <CursorPos X="83" Y="320"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit20>
@@ -228,7 +229,7 @@
       <Unit25>
         <Filename Value="..\ortak\cekirdek\dosya.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="3"/>
         <CursorPos X="3" Y="536"/>
         <UsageCount Value="224"/>
@@ -279,8 +280,8 @@
         <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="545"/>
-        <CursorPos X="26" Y="361"/>
+        <TopLine Value="91"/>
+        <CursorPos X="39" Y="572"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit32>
@@ -288,7 +289,6 @@
         <Filename Value="..\ortak\suruculer\fare\src_ps2.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="207"/>
         <CursorPos X="42" Y="225"/>
         <UsageCount Value="224"/>
       </Unit33>
@@ -303,16 +303,17 @@
         <Filename Value="..\ortak\diger\fareimlec.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="244"/>
         <CursorPos X="43" Y="272"/>
         <UsageCount Value="224"/>
       </Unit35>
       <Unit36>
         <Filename Value="..\ortak\dosyabicim\bmp.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="25" Y="168"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="51"/>
+        <CursorPos X="56" Y="61"/>
         <UsageCount Value="224"/>
+        <Loaded Value="True"/>
       </Unit36>
       <Unit37>
         <Filename Value="..\ortak\karakter\genel8x16.pas"/>
@@ -385,7 +386,6 @@
         <Filename Value="..\ortak\ag\udp.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="115"/>
         <CursorPos X="64" Y="121"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
@@ -607,60 +607,58 @@
       <Unit76>
         <Filename Value="..\gorselnesne\gn_pencere.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="11"/>
-        <TopLine Value="1587"/>
-        <CursorPos X="60" Y="1514"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="16"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
       </Unit76>
       <Unit77>
         <Filename Value="..\gorselnesne\gn_resim.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="298"/>
-        <CursorPos X="48" Y="315"/>
+        <CursorPos X="30" Y="326"/>
         <UsageCount Value="224"/>
+        <Loaded Value="True"/>
       </Unit77>
       <Unit78>
         <Filename Value="..\gorselnesne\gn_secimdugmesi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="159"/>
-        <CursorPos X="33" Y="167"/>
+        <TopLine Value="34"/>
+        <CursorPos Y="171"/>
         <UsageCount Value="224"/>
       </Unit78>
       <Unit79>
         <Filename Value="..\gorselnesne\gorselnesne.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="10"/>
-        <TopLine Value="209"/>
-        <CursorPos X="3" Y="217"/>
+        <EditorIndex Value="13"/>
+        <CursorPos X="57" Y="659"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit79>
       <Unit80>
         <Filename Value="..\gorselnesne\temelgorselnesne.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="59"/>
-        <CursorPos X="58" Y="79"/>
+        <EditorIndex Value="14"/>
+        <TopLine Value="18"/>
+        <CursorPos X="74" Y="58"/>
         <UsageCount Value="224"/>
+        <Loaded Value="True"/>
       </Unit80>
       <Unit81>
         <Filename Value="..\gorselnesne\gn_baglanti.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="136"/>
-        <CursorPos X="33" Y="144"/>
+        <TopLine Value="238"/>
+        <CursorPos X="56" Y="251"/>
         <UsageCount Value="224"/>
       </Unit81>
       <Unit82>
         <Filename Value="..\gorselnesne\gn_defter.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="238"/>
-        <CursorPos X="22" Y="243"/>
+        <TopLine Value="525"/>
+        <CursorPos X="68" Y="536"/>
         <UsageCount Value="224"/>
       </Unit82>
       <Unit83>
@@ -674,16 +672,16 @@
       <Unit84>
         <Filename Value="..\gorselnesne\gn_dugme.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="97"/>
-        <CursorPos X="43" Y="114"/>
+        <EditorIndex Value="15"/>
+        <TopLine Value="182"/>
+        <CursorPos X="54" Y="206"/>
         <UsageCount Value="224"/>
+        <Loaded Value="True"/>
       </Unit84>
       <Unit85>
         <Filename Value="..\gorselnesne\gn_durumcubugu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="132"/>
         <CursorPos X="33" Y="140"/>
         <UsageCount Value="224"/>
       </Unit85>
@@ -691,16 +689,14 @@
         <Filename Value="..\gorselnesne\gn_etiket.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="117"/>
-        <CursorPos X="28" Y="135"/>
         <UsageCount Value="224"/>
       </Unit86>
       <Unit87>
         <Filename Value="..\gorselnesne\gn_giriskutusu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="186"/>
-        <CursorPos X="60" Y="204"/>
+        <TopLine Value="347"/>
+        <CursorPos X="59" Y="365"/>
         <UsageCount Value="224"/>
       </Unit87>
       <Unit88>
@@ -739,16 +735,16 @@
         <Filename Value="..\gorselnesne\gn_listekutusu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="19" Y="541"/>
+        <TopLine Value="16"/>
+        <CursorPos X="27" Y="592"/>
         <UsageCount Value="224"/>
       </Unit92>
       <Unit93>
         <Filename Value="..\gorselnesne\gn_masaustu.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
-        <CursorPos X="36" Y="486"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="68" Y="16"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
       </Unit93>
       <Unit94>
         <Filename Value="..\gorselnesne\gn_menu.pas"/>
@@ -784,25 +780,25 @@
       <Unit98>
         <Filename Value="..\oz\g\gorev.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="759"/>
-        <CursorPos X="64" Y="773"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="168"/>
+        <CursorPos X="68" Y="180"/>
         <UsageCount Value="201"/>
+        <Loaded Value="True"/>
       </Unit98>
       <Unit99>
         <Filename Value="..\gorselnesne\gn_panel.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="129"/>
-        <CursorPos X="3" Y="138"/>
+        <TopLine Value="7"/>
+        <CursorPos X="53" Y="293"/>
         <UsageCount Value="200"/>
       </Unit99>
       <Unit100>
         <Filename Value="..\gorselnesne\gn_resimdugmesi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="145"/>
-        <CursorPos X="33" Y="153"/>
+        <CursorPos X="32" Y="25"/>
         <UsageCount Value="200"/>
       </Unit100>
       <Unit101>
@@ -815,8 +811,8 @@
         <Filename Value="..\gorselnesne\gn_kaydirmacubugu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="193"/>
-        <CursorPos X="33" Y="201"/>
+        <TopLine Value="380"/>
+        <CursorPos X="19" Y="413"/>
         <UsageCount Value="203"/>
       </Unit102>
       <Unit103>
@@ -830,7 +826,6 @@
         <Filename Value="..\gorselnesne\gn_acilirmenu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="269"/>
         <CursorPos X="61" Y="287"/>
         <UsageCount Value="200"/>
       </Unit104>
@@ -846,8 +841,8 @@
         <Filename Value="..\gorselnesne\gn_izgara.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="611"/>
-        <CursorPos X="3" Y="616"/>
+        <TopLine Value="7"/>
+        <CursorPos X="45" Y="25"/>
         <UsageCount Value="206"/>
       </Unit106>
       <Unit107>
@@ -923,7 +918,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="13"/>
         <CursorPos X="31" Y="32"/>
-        <UsageCount Value="85"/>
+        <UsageCount Value="83"/>
       </Unit116>
       <Unit117>
         <Filename Value="..\ortak\program\prg_grafik.pas"/>
@@ -943,9 +938,10 @@
       <Unit119>
         <Filename Value="..\ortak\dosyasistemi\elr1.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="8"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="9"/>
         <TopLine Value="124"/>
-        <CursorPos X="79" Y="138"/>
+        <CursorPos X="47" Y="138"/>
         <UsageCount Value="246"/>
         <Loaded Value="True"/>
       </Unit119>
@@ -982,8 +978,8 @@
         <Filename Value="arge.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="60"/>
-        <CursorPos X="5" Y="79"/>
+        <TopLine Value="344"/>
+        <CursorPos X="51" Y="351"/>
         <UsageCount Value="205"/>
       </Unit124>
       <Unit125>
@@ -999,132 +995,68 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="14"/>
         <CursorPos X="3" Y="32"/>
-        <UsageCount Value="47"/>
+        <UsageCount Value="45"/>
       </Unit126>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="SISTEM_SUNUCU}"/>
     </OtherDefines>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="14" HistoryIndex="13">
       <Position1>
-        <Filename Value="..\gorselnesne\gn_masaustu.pas"/>
-        <Caret Line="25" Column="5" TopLine="6"/>
+        <Filename Value="..\ortak\cekirdek\gn_islevler.pas"/>
+        <Caret Line="25" Column="58"/>
       </Position1>
       <Position2>
-        <Filename Value="..\gorselnesne\gn_masaustu.pas"/>
-        <Caret Line="338" Column="24" TopLine="316"/>
+        <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
+        <Caret Line="468" Column="30" TopLine="519"/>
       </Position2>
       <Position3>
-        <Filename Value="..\gorselnesne\gn_masaustu.pas"/>
-        <Caret Line="338" Column="24" TopLine="335"/>
+        <Filename Value="..\gorselnesne\gn_resim.pas"/>
+        <Caret Line="113" Column="22" TopLine="98"/>
       </Position3>
       <Position4>
-        <Filename Value="yukleyici.pas"/>
-        <Caret Line="66" Column="32" TopLine="48"/>
+        <Filename Value="..\gorselnesne\gn_resim.pas"/>
       </Position4>
       <Position5>
-        <Filename Value="cekirdek.lpr"/>
-        <Caret Line="53" Column="14" TopLine="23"/>
+        <Filename Value="..\gorselnesne\gn_resim.pas"/>
+        <Caret Line="37" Column="22" TopLine="7"/>
       </Position5>
       <Position6>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="168" Column="26" TopLine="150"/>
+        <Filename Value="..\gorselnesne\gn_resim.pas"/>
+        <Caret Line="63" Column="29" TopLine="33"/>
       </Position6>
       <Position7>
-        <Filename Value="..\ortak\ag\udp.pas"/>
-        <Caret Line="121" Column="28" TopLine="102"/>
+        <Filename Value="..\gorselnesne\gn_resim.pas"/>
+        <Caret Line="159" Column="32" TopLine="141"/>
       </Position7>
       <Position8>
-        <Filename Value="..\ortak\ag\udp.pas"/>
+        <Filename Value="..\gorselnesne\gn_resim.pas"/>
+        <Caret Line="33" Column="15" TopLine="14"/>
       </Position8>
       <Position9>
-        <Filename Value="..\ortak\ag\udp.pas"/>
-        <Caret Line="121" Column="21" TopLine="91"/>
+        <Filename Value="..\gorselnesne\gn_resim.pas"/>
+        <Caret Line="326" Column="30" TopLine="298"/>
       </Position9>
       <Position10>
-        <Filename Value="..\ortak\cekirdek\gercekbellek.pas"/>
-        <Caret Line="367" TopLine="351"/>
+        <Filename Value="..\ortak\dosyabicim\bmp.pas"/>
+        <Caret Line="47" Column="10" TopLine="29"/>
       </Position10>
       <Position11>
-        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
-        <Caret Line="882" Column="10" TopLine="864"/>
+        <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
+        <Caret Line="572" Column="39" TopLine="91"/>
       </Position11>
       <Position12>
-        <Filename Value="..\ortak\cekirdek\gercekbellek.pas"/>
-        <Caret Line="367" TopLine="351"/>
+        <Filename Value="..\gorselnesne\gn_dugme.pas"/>
+        <Caret Line="173" Column="31" TopLine="189"/>
       </Position12>
       <Position13>
-        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
-        <Caret Line="882" Column="10" TopLine="864"/>
+        <Filename Value="..\gorselnesne\gn_dugme.pas"/>
+        <Caret Line="206" Column="54" TopLine="182"/>
       </Position13>
       <Position14>
-        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
-        <Caret Line="1175" Column="3" TopLine="1153"/>
+        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
+        <Caret Line="52" Column="57" TopLine="21"/>
       </Position14>
-      <Position15>
-        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
-        <Caret Line="882" Column="10" TopLine="864"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
-        <Caret Line="1175" Column="3" TopLine="1153"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\ortak\cekirdek\gercekbellek.pas"/>
-        <Caret Line="382" Column="14" TopLine="373"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\ortak\cekirdek\gercekbellek.pas"/>
-        <Caret Line="361" Column="3" TopLine="342"/>
-      </Position18>
-      <Position19>
-        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
-        <Caret Line="55" Column="25" TopLine="39"/>
-      </Position19>
-      <Position20>
-        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
-        <Caret Line="393" Column="3" TopLine="382"/>
-      </Position20>
-      <Position21>
-        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
-        <Caret Line="146" Column="14" TopLine="128"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
-        <Caret Line="1773" Column="62" TopLine="1755"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
-        <Caret Line="56" Column="7" TopLine="54"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
-        <Caret Line="393" Column="3" TopLine="382"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
-        <Caret Line="55" Column="14" TopLine="40"/>
-      </Position25>
-      <Position26>
-        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
-        <Caret Line="393" Column="3" TopLine="382"/>
-      </Position26>
-      <Position27>
-        <Filename Value="..\gorselnesne\gorselnesne.pas"/>
-        <Caret Line="146" Column="14" TopLine="128"/>
-      </Position27>
-      <Position28>
-        <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
-        <Caret Line="444" Column="97" TopLine="423"/>
-      </Position28>
-      <Position29>
-        <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
-        <Caret Line="267" Column="47" TopLine="247"/>
-      </Position29>
-      <Position30>
-        <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
-        <Caret Line="37" Column="15" TopLine="19"/>
-      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

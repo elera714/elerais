@@ -20,9 +20,6 @@ type
   PListeKutusu = ^TListeKutusu;
   TListeKutusu = object(TPanel)
   private
-    FSeciliSiraNo: TISayi4;               // seçili sıra değeri
-    FGorunenIlkSiraNo: TISayi4;           // görünen ilk elemanın sıra numarası
-    FGorunenElemanSayisi: TISayi4;        // nesne içindeki görünen eleman sayısı
     FYaziListesi: PYaziListesi;
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
@@ -36,6 +33,12 @@ type
     function SeciliYaziyiAl: string;
     procedure ListeyeEkle(ADeger: string);
     procedure SeciliSiraNoYaz(ASiraNo: TISayi4);
+    // seçili sıra değeri
+    property SeciliSiraNo: TISayi4 read FIDeger1 write FIDeger1;
+    // görünen ilk elemanın sıra numarası
+    property GorunenIlkSiraNo: TISayi4 read FIDeger2 write FIDeger2;
+    // nesne içindeki görünen eleman sayısı
+    property GorunenElemanSayisi: TISayi4 read FIDeger3 write FIDeger3;
   end;
 
 function ListeKutusuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -114,8 +117,8 @@ begin
       begin
 
         // eğer daha önce bellek ayrıldıysa
-        ListeKutusu^.FGorunenIlkSiraNo := 0;
-        ListeKutusu^.FSeciliSiraNo := -1;
+        ListeKutusu^.GorunenIlkSiraNo := 0;
+        ListeKutusu^.SeciliSiraNo := -1;
 
         ListeKutusu^.FYaziListesi^.Temizle;
         if(ListeKutusu^.Gorunum) then ListeKutusu^.Ciz;
@@ -137,7 +140,7 @@ begin
 
       ListeKutusu := PListeKutusu(GorselNesneler0.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntListeKutusu));
-      if(ListeKutusu <> nil) then Result := ListeKutusu^.FSeciliSiraNo;
+      if(ListeKutusu <> nil) then Result := ListeKutusu^.SeciliSiraNo;
     end;
 
     // seçilen sıra değerini yaz
@@ -218,11 +221,11 @@ begin
   if(YL <> nil) then ListeKutusu^.FYaziListesi := YL;
 
   // nesnenin kullanacağı diğer değerler
-  ListeKutusu^.FGorunenIlkSiraNo := 0;
-  ListeKutusu^.FSeciliSiraNo := -1;
+  ListeKutusu^.GorunenIlkSiraNo := 0;
+  ListeKutusu^.SeciliSiraNo := -1;
 
   // liste kutusunda görüntülenecek eleman sayısı
-  ListeKutusu^.FGorunenElemanSayisi := (AYukseklik + 17) div 18;
+  ListeKutusu^.GorunenElemanSayisi := (AYukseklik + 17) div 18;
 
   // nesne adresini geri döndür
   Result := ListeKutusu;
@@ -309,7 +312,7 @@ var
   YL: PYaziListesi;
   Alan: TAlan;
   SiraNo, Sol, Ust,
-  GorunenElemanSayisi: TISayi4;
+  ListedekiElemanSayisi: TISayi4;
   s: string;
 begin
 
@@ -339,16 +342,16 @@ begin
     Sol := Alan.Sol + 4;
     Ust := Alan.Ust + 4;
 
-    ListeKutusu^.FGorunenElemanSayisi := ((ListeKutusu^.FCizimAlan.Alt -
+    ListeKutusu^.GorunenElemanSayisi := ((ListeKutusu^.FCizimAlan.Alt -
       ListeKutusu^.FCizimAlan.Ust) + 17) div 18;
 
     // liste kutusunda görüntülenecek eleman sayısı
-    if(YL^.ElemanSayisi > ListeKutusu^.FGorunenElemanSayisi) then
-      GorunenElemanSayisi := ListeKutusu^.FGorunenElemanSayisi + ListeKutusu^.FGorunenIlkSiraNo
-    else GorunenElemanSayisi := YL^.ElemanSayisi + ListeKutusu^.FGorunenIlkSiraNo;
+    if(YL^.ElemanSayisi > ListeKutusu^.GorunenElemanSayisi) then
+      ListedekiElemanSayisi := ListeKutusu^.GorunenElemanSayisi + ListeKutusu^.GorunenIlkSiraNo
+    else ListedekiElemanSayisi := YL^.ElemanSayisi + ListeKutusu^.GorunenIlkSiraNo;
 
     // listenin ilk elemanın sıra numarası
-    for SiraNo := ListeKutusu^.FGorunenIlkSiraNo to GorunenElemanSayisi - 1 do
+    for SiraNo := ListeKutusu^.GorunenIlkSiraNo to ListedekiElemanSayisi - 1 do
     begin
 
       // belirtilen elemanın karakter katar değerini al
@@ -356,7 +359,7 @@ begin
 
       // elemanın seçili olması durumunda seçili olduğunu belirt
       // belirtilen sıra seçili değilse sadece eleman değerini yaz
-      if(SiraNo = ListeKutusu^.FSeciliSiraNo) then
+      if(SiraNo = ListeKutusu^.SeciliSiraNo) then
       begin
 
         ListeKutusu^.DikdortgenDoldur(ListeKutusu, Sol, Ust, Sol + ListeKutusu^.FBoyut.Genislik - 4 - 4,
@@ -377,7 +380,7 @@ procedure TListeKutusu.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
   Pencere: PPencere = nil;
   ListeKutusu: PListeKutusu = nil;
-  i, SeciliSiraNo: TISayi4;
+  i, SSN: TISayi4;
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
@@ -406,10 +409,10 @@ begin
       OlayYakalamayaBasla(ListeKutusu);
 
       // seçilen sıra numarasını belirle
-      SeciliSiraNo := (AOlay.Deger2 - 4) div 18;
+      SSN := (AOlay.Deger2 - 4) div 18;
 
       // bu değere kaydırılan değeri de ekle
-      ListeKutusu^.FSeciliSiraNo := SeciliSiraNo + ListeKutusu^.FGorunenIlkSiraNo;
+      ListeKutusu^.SeciliSiraNo := SSN + ListeKutusu^.GorunenIlkSiraNo;
     end;
   end
 
@@ -422,7 +425,7 @@ begin
 
     // fare bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
     if(ListeKutusu^.FareNesneOlayAlanindaMi(ListeKutusu)) then
-      ListeKutusu^.SeciliSiraNoYaz(ListeKutusu^.FSeciliSiraNo);
+      ListeKutusu^.SeciliSiraNoYaz(ListeKutusu^.SeciliSiraNo);
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
@@ -443,13 +446,13 @@ begin
       if(AOlay.Deger2 < 0) then
       begin
 
-        SeciliSiraNo := ListeKutusu^.FGorunenIlkSiraNo;
-        Dec(SeciliSiraNo);
-        if(SeciliSiraNo >= 0) then
+        SSN := ListeKutusu^.GorunenIlkSiraNo;
+        Dec(SSN);
+        if(SSN >= 0) then
         begin
 
-          ListeKutusu^.FGorunenIlkSiraNo := SeciliSiraNo;
-          ListeKutusu^.FSeciliSiraNo := SeciliSiraNo;
+          ListeKutusu^.GorunenIlkSiraNo := SSN;
+          ListeKutusu^.SeciliSiraNo := SSN;
         end;
       end
 
@@ -458,17 +461,17 @@ begin
       begin
 
         // azami kaydırma değeri
-        i := ListeKutusu^.FYaziListesi^.ElemanSayisi - ListeKutusu^.FGorunenElemanSayisi;
+        i := ListeKutusu^.FYaziListesi^.ElemanSayisi - ListeKutusu^.GorunenElemanSayisi;
         if(i < 0) then i := 0;
 
-        SeciliSiraNo := ListeKutusu^.FGorunenIlkSiraNo;
-        Inc(SeciliSiraNo);
-        if(SeciliSiraNo < i) then
+        SSN := ListeKutusu^.GorunenIlkSiraNo;
+        Inc(SSN);
+        if(SSN < i) then
         begin
 
-          ListeKutusu^.FGorunenIlkSiraNo := SeciliSiraNo;
+          ListeKutusu^.GorunenIlkSiraNo := SSN;
           i := (AOlay.Deger2 - 4) div 18;
-          ListeKutusu^.FSeciliSiraNo := i + ListeKutusu^.FGorunenIlkSiraNo;
+          ListeKutusu^.SeciliSiraNo := i + ListeKutusu^.GorunenIlkSiraNo;
         end
       end
 
@@ -477,7 +480,7 @@ begin
       begin
 
         i := (AOlay.Deger2 - 4) div 18;
-        ListeKutusu^.FSeciliSiraNo := i + ListeKutusu^.FGorunenIlkSiraNo;
+        ListeKutusu^.SeciliSiraNo := i + ListeKutusu^.GorunenIlkSiraNo;
       end;
 
       // liste kutusunu yeniden çiz
@@ -507,9 +510,9 @@ begin
     if(AOlay.Deger1 < 0) then
     begin
 
-      SeciliSiraNo := ListeKutusu^.FGorunenIlkSiraNo;
-      Dec(SeciliSiraNo);
-      if(SeciliSiraNo >= 0) then ListeKutusu^.FGorunenIlkSiraNo := SeciliSiraNo;
+      SSN := ListeKutusu^.GorunenIlkSiraNo;
+      Dec(SSN);
+      if(SSN >= 0) then ListeKutusu^.GorunenIlkSiraNo := SSN;
     end
 
     // listeyi aşağıya kaydırma. son elemana doğru
@@ -517,12 +520,12 @@ begin
     begin
 
       // azami kaydırma değeri
-      i := ListeKutusu^.FYaziListesi^.ElemanSayisi - ListeKutusu^.FGorunenElemanSayisi;
+      i := ListeKutusu^.FYaziListesi^.ElemanSayisi - ListeKutusu^.GorunenElemanSayisi;
       if(i < 0) then i := 0;
 
-      SeciliSiraNo := ListeKutusu^.FGorunenIlkSiraNo;
-      Inc(SeciliSiraNo);
-      if(SeciliSiraNo < i) then ListeKutusu^.FGorunenIlkSiraNo := SeciliSiraNo;
+      SSN := ListeKutusu^.GorunenIlkSiraNo;
+      Inc(SSN);
+      if(SSN < i) then ListeKutusu^.GorunenIlkSiraNo := SSN;
     end;
 
     ListeKutusu^.Ciz;
@@ -553,9 +556,9 @@ begin
   if(YL^.ElemanSayisi > 0) then
   begin
 
-    if(FSeciliSiraNo < YL^.ElemanSayisi) then
+    if(ListeKutusu^.SeciliSiraNo < YL^.ElemanSayisi) then
 
-      Result := YL^.Yazi[FSeciliSiraNo]
+      Result := YL^.Yazi[ListeKutusu^.SeciliSiraNo]
     else Result := '';
   end;
 end;
@@ -585,13 +588,13 @@ begin
   ListeKutusu := PListeKutusu(GorselNesneler0.NesneAl(Kimlik));
   if(ListeKutusu = nil) then Exit;
 
-  ListeKutusu^.FSeciliSiraNo := ASiraNo;
+  ListeKutusu^.SeciliSiraNo := ASiraNo;
   ListeKutusu^.Ciz;
 
   // nesneye FO_TIKLAMA mesajı gönder
   Olay.Kimlik := ListeKutusu^.Kimlik;
   Olay.Olay := FO_TIKLAMA;
-  Olay.Deger1 := ListeKutusu^.FSeciliSiraNo;
+  Olay.Deger1 := ListeKutusu^.SeciliSiraNo;
   Olay.Deger2 := 0;
   if not(ListeKutusu^.OlayYonlendirmeAdresi = nil) then
     ListeKutusu^.OlayYonlendirmeAdresi(ListeKutusu, Olay)

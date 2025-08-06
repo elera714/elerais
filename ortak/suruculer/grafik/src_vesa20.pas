@@ -303,14 +303,15 @@ var
   BaslatMenu: PMenu;
   GN: PGorselNesne;
   MasaustuMenu: PAcilirMenu;
-  PencereBellekAdresi: PPGorselNesne;
+  GNBellekAdresi: PPGorselNesne;
   KaynakBellek, HedefBellek, CizimBellekAdresi: Isaretci;
   Sol, KaynakA2,            // nesnelerin taşınması için
   Ust, KaynakB2,            // nesnelerin taşınması için
   HedefA1, HedefB1,         // nesnelerin taşınması için
   Yukseklik, Genislik, KaynakSatirdakiByteSayisi,
   HedefSatirdakiByteSayisi,
-  NoktaBasinaByteSayisi, i, i2, j: TISayi4;
+  NoktaBasinaByteSayisi, i2: TISayi4;
+  i, j: TSayi4;
   MenuCiz: Boolean;
 begin
 
@@ -349,12 +350,12 @@ begin
   if(Masaustu^.AltNesneSayisi > 0) then
   begin
 
-    PencereBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
+    GNBellekAdresi := Masaustu^.AltNesneBellekAdresi;
 
     for i := 0 to Masaustu^.AltNesneSayisi - 1 do
     begin
 
-      GN := PencereBellekAdresi[i];
+      GN := GNBellekAdresi[i];
       if not(GN = nil) and not(GN^.NesneTipi = gntMenu) and not(GN^.NesneTipi = gntAcilirMenu) then
       begin
 

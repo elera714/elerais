@@ -419,7 +419,7 @@ procedure TPencere.Boyutlandir;
 var
   Pencere: PPencere;
   GorunurNesne: PGorselNesne;
-  AltNesneler: PPGorselNesne;
+  GNBellekAdresi: PPGorselNesne;
   i: TSayi4;
 begin
 
@@ -447,14 +447,14 @@ begin
   if(Pencere^.AltNesneSayisi > 0) then
   begin
 
-    AltNesneler := Pencere^.FAltNesneBellekAdresi;
+    GNBellekAdresi := Pencere^.AltNesneBellekAdresi;
 
     // ilk oluþturulan alt nesneden son oluþturulan alt nesneye doðru
     // pencerenin alt nesnelerini yeniden boyutlandýr
     for i := 0 to Pencere^.AltNesneSayisi - 1 do
     begin
 
-      GorunurNesne := AltNesneler[i];
+      GorunurNesne := GNBellekAdresi[i];
       if not(GorunurNesne = nil) and (GorunurNesne^.Gorunum) then
       begin
 
@@ -511,7 +511,7 @@ var
   Sol, Sag, Genislik, Ust, Alt, i, j: TISayi4;
   Renk, BaslikRengi: TRenk;
   PencereAktif: Boolean;
-  AltNesneler: PPGorselNesne;
+  GNBellekAdresi: PPGorselNesne;
   GorunurNesne: PGorselNesne;
   RenkBellek: PRenk;
 begin
@@ -783,7 +783,7 @@ begin
     end;
   end;
 
-  AltNesneler := Pencere^.FAltNesneBellekAdresi;
+  GNBellekAdresi := Pencere^.AltNesneBellekAdresi;
   if(Pencere^.AltNesneSayisi > 0) then
   begin
 
@@ -792,7 +792,7 @@ begin
     for i := 0 to Pencere^.AltNesneSayisi - 1 do
     begin
 
-      GorunurNesne := AltNesneler[i];
+      GorunurNesne := GNBellekAdresi[i];
       if not(GorunurNesne = nil) and (GorunurNesne^.Gorunum) and ((GorunurNesne^.Kimlik and 1) = 1) then
       begin
 
@@ -1440,7 +1440,7 @@ procedure TPencere.EnUsteGetir(APencere: PPencere);
 var
   Masaustu: PMasaustu;
   BirOncekiPencere: PPencere;
-  AltNesneBellekAdresi: PPGorselNesne;
+  GNBellekAdresi: PPGorselNesne;
   GN: PGorselNesne;
   i, j: TISayi4;
 begin
@@ -1457,20 +1457,20 @@ begin
   // aktif masaüstünü al
   Masaustu := GAktifMasaustu;
 
-  // masaüstünün alt nesne bellek deðerini al
-  AltNesneBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
-
   // nesnenin alt nesne sayýsý var ise
   if(Masaustu^.AltNesneSayisi > 1) then
   begin
 
-    BirOncekiPencere := PPencere(AltNesneBellekAdresi[Masaustu^.AltNesneSayisi - 1]);
+    // masaüstünün alt nesne bellek deðerini al
+    GNBellekAdresi := Masaustu^.AltNesneBellekAdresi;
+
+    BirOncekiPencere := PPencere(GNBellekAdresi[Masaustu^.AltNesneSayisi - 1]);
 
     // alt nesneler içerisinde pencere nesnesini ara
     for i := (Masaustu^.AltNesneSayisi - 1) downto 0 do
     begin
 
-      if(PPencere(AltNesneBellekAdresi[i]) = APencere) then Break;
+      if(PPencere(GNBellekAdresi[i]) = APencere) then Break;
     end;
 
     // eðer pencere nesnesi en üstte deðil ise
@@ -1481,9 +1481,9 @@ begin
       for j := i to Masaustu^.AltNesneSayisi - 2 do
       begin
 
-        GN := AltNesneBellekAdresi[j + 0];
-        AltNesneBellekAdresi[j + 0] := AltNesneBellekAdresi[j + 1];
-        AltNesneBellekAdresi[j + 1] := GN;
+        GN := GNBellekAdresi[j + 0];
+        GNBellekAdresi[j + 0] := GNBellekAdresi[j + 1];
+        GNBellekAdresi[j + 1] := GN;
       end;
     end;
 

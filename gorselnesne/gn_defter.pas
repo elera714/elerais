@@ -25,12 +25,9 @@ type
   TDefter = object(TPanel)
   private
     FYatayKCubugu, FDikeyKCubugu: PKaydirmaCubugu;
-    // yatay & dikey karakter sayýsý
-    FYatayKarSay, FDikeyKarSay: TSayi4;
     // yazýlacak metni görünür ortamda görüntülenecek þekilde sarmala
     FMetinSarmala: Boolean;
     FYaziBellekAdresi: Isaretci;
-    FYaziUzunlugu: TSayi4;
     procedure YatayDikeyKarakterSayisiniAl;
     procedure KaydirmaCubuguOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   public
@@ -46,6 +43,10 @@ type
     procedure YaziEkle(AYaziBellekAdresi: Isaretci);
     procedure YaziEkle(ADeger: string);
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    property YaziUzunlugu: TSayi4 read FDeger1 write FDeger1;
+    // yatay & dikey karakter sayýsý
+    property YatayKarSay: TSayi4 read FDeger2 write FDeger2;
+    property DikeyKarSay: TSayi4 read FDeger3 write FDeger3;
   end;
 
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
@@ -215,9 +216,9 @@ begin
   // defter nesnesinin içeriði için bellek ayýr
   Defter^.FYaziBellekAdresi := GetMem(4096 * 10);
 
-  Defter^.FYaziUzunlugu := 0;
-  Defter^.FYatayKarSay := 0;
-  Defter^.FDikeyKarSay := 0;
+  Defter^.YaziUzunlugu := 0;
+  Defter^.YatayKarSay := 0;
+  Defter^.DikeyKarSay := 0;
 
   Defter^.FMetinSarmala := AMetinSarmala;
   Defter^.FYaziRenk := AYaziRenk;
@@ -337,12 +338,12 @@ begin
 
   // eðer defter nesnesi için bellek ayrýldýysa defter içeriðini nesne içeriðine
   // eklenen bilgilerle doldur
-  if(Defter^.FYaziBellekAdresi <> nil) and (Defter^.FYaziUzunlugu > 0) then
+  if(Defter^.FYaziBellekAdresi <> nil) and (Defter^.YaziUzunlugu > 0) then
   begin
 
     // sütun / satýr ilk deðerler
-    AktifSutunNo := -Defter^.FYatayKCubugu^.FMevcutDeger;
-    AktifSatirNo := -Defter^.FDikeyKCubugu^.FMevcutDeger;
+    AktifSutunNo := -Defter^.FYatayKCubugu^.MevcutDeger;
+    AktifSatirNo := -Defter^.FDikeyKCubugu^.MevcutDeger;
 
     // sýnýr deðerleri
     SinirSutunIlk := Alan.Sol;
@@ -364,7 +365,7 @@ begin
       else if(YaziBellekAdresi^ = #10) then
       begin
 
-        AktifSutunNo := -Defter^.FYatayKCubugu^.FMevcutDeger;
+        AktifSutunNo := -Defter^.FYatayKCubugu^.MevcutDeger;
         Inc(AktifSatirNo);
       end
       else
@@ -389,7 +390,7 @@ begin
         if(AktifSutunNo > SinirSutunSon) and (Defter^.FMetinSarmala) then
         begin
 
-          AktifSutunNo := -Defter^.FYatayKCubugu^.FMevcutDeger;
+          AktifSutunNo := -Defter^.FYatayKCubugu^.MevcutDeger;
           Inc(AktifSatirNo);
 
           // yazma iþlemi alt sýnýrý aþmasý durumunda zaten yazým yapýlamayacaðýndan
@@ -413,10 +414,10 @@ end;
 procedure TDefter.Temizle;
 begin
 
-  Self.FYaziUzunlugu := 0;
+  Self.YaziUzunlugu := 0;
 
-  Self.FDikeyKCubugu^.FMevcutDeger := 0;
-  Self.FYatayKCubugu^.FMevcutDeger := 0;
+  Self.FDikeyKCubugu^.MevcutDeger := 0;
+  Self.FYatayKCubugu^.MevcutDeger := 0;
 
   BellekDoldur(Self.FYaziBellekAdresi, 4096 * 10, 0);
 
@@ -431,7 +432,7 @@ end;
 procedure TDefter.YaziEkle(AYaziBellekAdresi: Isaretci);
 var
   p: PSayi1;
-  i: TSayi4;
+  i, j: TSayi4;
   function StrLen2: TSayi4;
   var
     p: PChar;
@@ -453,12 +454,14 @@ begin
   if(i = 0) or (i > (4096 * 10)) then Exit;
 
   // karakter katarýný hedef bölgeye kopyala
-  p := PByte(Self.FYaziBellekAdresi + Self.FYaziUzunlugu);
+  p := PByte(Self.FYaziBellekAdresi + Self.YaziUzunlugu);
   Tasi2(AYaziBellekAdresi, p, i);
 
   // sýfýr sonlandýrma iþaretini ekle
-  Self.FYaziUzunlugu += i;
-  p := PByte(Self.FYaziBellekAdresi + Self.FYaziUzunlugu);
+  j := Self.YaziUzunlugu;
+  j += i;
+  Self.YaziUzunlugu := j;
+  p := PByte(Self.FYaziBellekAdresi + Self.YaziUzunlugu);
   p^ := 0;
 
   YatayDikeyKarakterSayisiniAl;
@@ -472,7 +475,7 @@ end;
 procedure TDefter.YaziEkle(ADeger: string);
 var
   p: PSayi1;
-  i: TSayi4;
+  i, j: TSayi4;
 begin
 
   // karakter katarý için bellek ayrýlmýþ mý ?
@@ -483,12 +486,14 @@ begin
   if(i = 0) or (i > (4096 * 10)) then Exit;
 
   // karakter katarýný hedef bölgeye kopyala
-  p := PByte(TSayi4(Self.FYaziBellekAdresi) + Self.FYaziUzunlugu);
+  p := PByte(TSayi4(Self.FYaziBellekAdresi) + Self.YaziUzunlugu);
   Tasi2(@ADeger[1], p, i);
 
   // sýfýr sonlandýrma iþaretini ekle
-  Self.FYaziUzunlugu += i;
-  p := PByte(TSayi4(Self.FYaziBellekAdresi) + Self.FYaziUzunlugu);
+  j := Self.YaziUzunlugu;
+  j += i;
+  Self.YaziUzunlugu := j;
+  p := PByte(TSayi4(Self.FYaziBellekAdresi) + Self.YaziUzunlugu);
   p^ := 0;
 
   YatayDikeyKarakterSayisiniAl;
@@ -499,13 +504,13 @@ end;
 procedure TDefter.YatayDikeyKarakterSayisiniAl;
 var
   p: PChar;
-  i: TSayi4;
+  i, j: TSayi4;
 begin
 
-  Self.FYatayKarSay := 0;
-  Self.FDikeyKarSay := 0;
+  Self.YatayKarSay := 0;
+  Self.DikeyKarSay := 0;
 
-  if(Self.FYaziUzunlugu = 0) then Exit;
+  if(Self.YaziUzunlugu = 0) then Exit;
 
   p := PChar(Self.FYaziBellekAdresi);
   i := 0;
@@ -515,26 +520,28 @@ begin
     if(p^ = #10) then
     begin
 
-      if(i > Self.FYatayKarSay) then Self.FYatayKarSay := i;
+      if(i > Self.YatayKarSay) then Self.YatayKarSay := i;
       i := 0;
-      Inc(Self.FDikeyKarSay);
+      j := Self.DikeyKarSay;
+      Inc(j);
+      Self.DikeyKarSay := j;
     end
     else
     begin
 
       Inc(i);
-      if(i > Self.FYatayKarSay) then Self.FYatayKarSay := i;
+      if(i > Self.YatayKarSay) then Self.YatayKarSay := i;
     end;
 
     Inc(p);
   end;
 
   // en düþük deðer 1 olmalý - en azýndan þu anda
-  if(Self.FYatayKarSay = 0) then Self.FYatayKarSay := 1;
-  if(Self.FDikeyKarSay = 0) then Self.FDikeyKarSay := 1;
+  if(Self.YatayKarSay = 0) then Self.YatayKarSay := 1;
+  if(Self.DikeyKarSay = 0) then Self.DikeyKarSay := 1;
 
-  Self.FYatayKCubugu^.FUstDeger := Self.FYatayKarSay;
-  Self.FDikeyKCubugu^.FUstDeger := Self.FDikeyKarSay;
+  Self.FYatayKCubugu^.UstDeger := Self.YatayKarSay;
+  Self.FDikeyKCubugu^.UstDeger := Self.DikeyKarSay;
 end;
 
 {==============================================================================
@@ -571,9 +578,9 @@ begin
     if(AOlay.Deger1 < 0) then
     begin
 
-      i := Defter^.FDikeyKCubugu^.FMevcutDeger;
+      i := Defter^.FDikeyKCubugu^.MevcutDeger;
       Dec(i);
-      if(i >= 0) then Defter^.FDikeyKCubugu^.FMevcutDeger := i;
+      if(i >= 0) then Defter^.FDikeyKCubugu^.MevcutDeger := i;
 
       Defter^.Ciz;
     end
@@ -582,12 +589,12 @@ begin
     else if(AOlay.Deger1 > 0) then
     begin
 
-      i := Defter^.FDikeyKCubugu^.FMevcutDeger;
+      i := Defter^.FDikeyKCubugu^.MevcutDeger;
       Inc(i);
-      if(i < Defter^.FDikeyKCubugu^.FUstDeger) then
+      if(i < Defter^.FDikeyKCubugu^.UstDeger) then
       begin
 
-        Defter^.FDikeyKCubugu^.FMevcutDeger := i;
+        Defter^.FDikeyKCubugu^.MevcutDeger := i;
         Defter^.Ciz;
       end;
     end;

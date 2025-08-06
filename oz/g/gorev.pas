@@ -128,7 +128,8 @@ function GorevAl(AGorevKimlik: TKimlik = -1): PGorev;
 
 implementation
 
-uses gdt, dosya, sistemmesaj, donusum, zamanlayici, gn_islevler, gn_pencere, islevler;
+uses gdt, dosya, sistemmesaj, donusum, zamanlayici, gn_islevler, gn_pencere, islevler,
+  gorselnesne;
 
 const
   IstisnaAciklamaListesi: array[0..15] of string = (
@@ -765,8 +766,8 @@ begin
   { TODO : Görsel olmayan nesnelerin bellekten atýlmasýnda (TGorev.Sonlandir)
     görsel iþlevlerin çalýþmamasý saðlanacak }
 
-  // göreve ait görsel nesneleri yok et
-  GorevGorselNesneleriniYokEt(AGorevKimlik);
+  // göreve ait pencere ve alt görsel nesneleri yok et
+  GorselNesneler0.PencereyiYokEt(AGorevKimlik);
 
   // göreve ait olay bellek bölgesini iptal et
   { TODO : 1. bu iþlev olay yönetim sistem nesnesinin içerisine dahil edilecek

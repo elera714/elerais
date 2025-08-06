@@ -20,7 +20,6 @@ var
   YakalananGorselNesne: PGorselNesne;   // farenin, üzerine sol tuş ile basılıp seçildiği nesne
 
 function GorselNesneIslevCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-procedure GorevGorselNesneleriniYokEt(AGorevKimlik: TKimlik);
 procedure PencereleriYenidenCiz;
 function GorselNesneBul(var AKonum: TKonum): PGorselNesne;
 function EnUstNesneyiAl(AGorselNesne: PGorselNesne): PGorselNesne;
@@ -88,97 +87,6 @@ begin
 end;
 
 {==============================================================================
-  çalışan işleme ait pencere ve tüm alt nesneleri yok eder
-  { TODO : bu işlev çoklu pencere ve çoklu alt nesneye göre yeniden kodlanacaktır - 18072020 }
- ==============================================================================}
-procedure GorevGorselNesneleriniYokEt(AGorevKimlik: TKimlik);
-var
-  Masaustu: PMasaustu;
-  Pencere: PGorselNesne;
-  MasaustuGNBellekAdresi,
-  PencereGNBellekAdresi: PPGorselNesne;
-  PencereSiraNo, PencereAltNesneSiraNo, i: TISayi4;
-begin
-
-  // geçerli bir masaüstü var mı ?
-  Masaustu := GAktifMasaustu;
-  if not(Masaustu = nil) then
-  begin
-
-    // masaüstü nesnesinin alt nesnesi var ise
-    if(Masaustu^.AltNesneSayisi > 0) then
-    begin
-
-      // masaüstünün alt nesnelerinin bellek adresini al
-      MasaustuGNBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
-
-      // masaüstü alt nesnelerini teker teker ara
-      for PencereSiraNo := 0 to Masaustu^.AltNesneSayisi - 1 do
-      begin
-
-        Pencere := MasaustuGNBellekAdresi[PencereSiraNo];
-
-        // aranan pencerenin sahibi olan görev ile araştırılan görev kimliği eşit mi?
-        // öyle ise pencere ve alt nesnelerini yok et
-        if(Pencere^.GorevKimlik = AGorevKimlik) then
-        begin
-
-          // pencere nesnesinin alt nesnesi var mı?
-          if(Pencere^.AltNesneSayisi > 0) then
-          begin
-
-            // pencere nesnesinin alt nesne bellek bölgesine konumlan
-            PencereGNBellekAdresi := Pencere^.FAltNesneBellekAdresi;
-            for PencereAltNesneSiraNo := Pencere^.AltNesneSayisi - 1 downto 0 do
-            begin
-
-              GorselNesneler0.YokEt(PencereGNBellekAdresi[PencereAltNesneSiraNo]^.Kimlik);
-            end;
-
-            // pencere nesnesinin alt nesne için ayrılan bellek bloğunu iptal et
-            { TODO : bu işlev buradan çıkarılarak nesnenin yoketme işlevine eklenecektir }
-            FreeMem(Pencere^.FAltNesneBellekAdresi, 4096);
-          end;
-
-          // bulunan pencereyi masaüstü listesinden çıkart
-          MasaustuGNBellekAdresi[PencereSiraNo] := nil;
-
-          // pencere ve alt görsel nesneler için ayrılan çizim bellek alanının yok et
-          FreeMem(Pencere^.FCizimBellekAdresi, Pencere^.FCizimBellekUzunlugu);
-
-          // pencereyi yok et
-          GorselNesneler0.YokEt(Pencere^.Kimlik);
-
-          // masaüstü alt nesne sayısını bir azalt
-          i := Masaustu^.AltNesneSayisi;
-          Dec(i);
-          Masaustu^.AltNesneSayisi := i;
-
-          // eğer alt nesne sayısı halen mevcut ise
-          // sıralamayı tekrar gözden geçir
-          if(Masaustu^.AltNesneSayisi > 0) then
-          begin
-
-            for i := 0 to Masaustu^.AltNesneSayisi - 1 do
-            begin
-
-              if(MasaustuGNBellekAdresi[i] = nil) then
-                MasaustuGNBellekAdresi[i] := MasaustuGNBellekAdresi[i + 1];
-            end;
-          end
-
-          // aksi durumda masaüstü alt nesne bellek bölgesini iptal et
-          else FreeMem(Masaustu^.FAltNesneBellekAdresi, 4096);
-
-          // bir sonraki döngüye devam etmeden çık
-          Exit;
-        end;
-      end;
-    end;
-  end;
-end;
-
-{==============================================================================
   tüm pencere nesnelerini yeniden çizer
   bilgi: pencere giysi (skin) işlemleri için kodlanmıştır
  ==============================================================================}
@@ -186,7 +94,7 @@ procedure PencereleriYenidenCiz;
 var
   Masaustu: PMasaustu;
   Pencere: PGorselNesne;
-  AltNesneBellekAdresi: PPGorselNesne;
+  GNBellekAdresi: PPGorselNesne;
   i: TISayi4;
 begin
 
@@ -200,13 +108,13 @@ begin
     begin
 
       // masaüstünün alt nesnelerinin bellek adresini al
-      AltNesneBellekAdresi := Masaustu^.FAltNesneBellekAdresi;
+      GNBellekAdresi := Masaustu^.AltNesneBellekAdresi;
 
       // masaüstü alt nesnelerini teker teker ara
       for i := 0 to Masaustu^.AltNesneSayisi - 1 do
       begin
 
-        Pencere := AltNesneBellekAdresi[i];
+        Pencere := GNBellekAdresi[i];
         if(Pencere^.NesneTipi = gntPencere) then PPencere(Pencere)^.Ciz;
       end;
     end;
@@ -220,7 +128,7 @@ function GorselNesneBul(var AKonum: TKonum): PGorselNesne;
 var
   PencereGN, SonBulunanGN, SorgulananGN,
   GenelGN: PGorselNesne;
-  i, j: TISayi4;
+  i, j: TSayi4;
   SonNesneA, NesneA: TAlan;
   PencereTipi: TPencereTipi;
 
@@ -290,7 +198,7 @@ begin
     begin
 
       // görsel nesneyi al
-      PencereGN := SonBulunanGN^.FAltNesneBellekAdresi[i];
+      PencereGN := PPGorselNesne(SonBulunanGN^.AltNesneBellekAdresi)[i];
 
       if(PencereGN^.NesneTipi = gntPencere) then
       begin
@@ -385,7 +293,7 @@ begin
                 begin
 
                   // görsel nesneyi al
-                  SorgulananGN := SonBulunanGN^.FAltNesneBellekAdresi[j];
+                  SorgulananGN := PPGorselNesne(SonBulunanGN^.AltNesneBellekAdresi)[j];
 
                   // görsel nesne görünür durumda mı ?
                   if(SorgulananGN^.Gorunum) then

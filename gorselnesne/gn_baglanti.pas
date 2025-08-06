@@ -19,8 +19,6 @@ uses gorselnesne, paylasim, gn_panel;
 type
   PBaglanti = ^TBaglanti;
   TBaglanti = object(TPanel)
-  private
-    FOdakMevcut: Boolean;
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst: TISayi4; ANormalRenk, AOdakRenk: TRenk; ABaslik: string): PBaglanti;
@@ -30,6 +28,7 @@ type
     procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    property OdakMevcut: Boolean read FDurum1 write FDurum1;
   end;
 
 function BaglantiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -112,7 +111,7 @@ begin
 
   Baglanti^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  Baglanti^.FOdakMevcut := False;
+  Baglanti^.OdakMevcut := False;
 
   Baglanti^.Odaklanilabilir := False;
   Baglanti^.Odaklanildi := False;
@@ -129,7 +128,7 @@ begin
   Baglanti^.FGovdeRenk1 := ANormalRenk;
   Baglanti^.FGovdeRenk2 := AOdakRenk;
   Baglanti^.FYaziRenk := ANormalRenk;
-  Baglanti^.FOdakMevcut := False;
+  Baglanti^.OdakMevcut := False;
 
   // nesne adresini geri döndür
   Result := Baglanti;
@@ -188,7 +187,7 @@ begin
   if(Baglanti = nil) then Exit;
 
   // düğme başlığı
-  if(Baglanti^.FOdakMevcut) then
+  if(Baglanti^.OdakMevcut) then
     Baglanti^.FYaziRenk := Baglanti^.FGovdeRenk2
   else Baglanti^.FYaziRenk := Baglanti^.FGovdeRenk1;
 
@@ -253,7 +252,7 @@ begin
   else if(AOlay.Olay = CO_ODAKKAZANILDI) then
   begin
 
-    Baglanti^.FOdakMevcut := True;
+    Baglanti^.OdakMevcut := True;
 
     // bağlantı nesnesini yeniden çiz
     Baglanti^.Ciz;
@@ -261,7 +260,7 @@ begin
   else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
   begin
 
-    Baglanti^.FOdakMevcut := False;
+    Baglanti^.OdakMevcut := False;
 
     // bağlantı nesnesini yeniden çiz
     Baglanti^.Ciz;

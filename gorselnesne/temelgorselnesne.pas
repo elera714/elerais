@@ -42,9 +42,10 @@ type
     FSiraNo: TSayi4;
     // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
     FareImlecTipi: TFareImlecTipi;
-    // nesnenin alt nesne sayýsý
-    AltNesneSayisi: TSayi4;
-
+    // ata nesnenin alt nesne sayýsý
+    FAltNesneSayisi: TSayi4;
+    // ata nesnenin alt nesnelerinin yerleþtirileceði bellek adresi
+    FAltNesneBellekAdresi: Isaretci;    // PPGorselNesne;
     // nesnenin kullaným tipi
     FKullanimTipi: TKullanimTipi;
     // nesnenin ilk oluþturulmasýnda atanan deðerler
@@ -72,9 +73,17 @@ type
     // nesnenin o anda çizilip çizilmediðini belirten deðiþken.
     // bilgi: pencere çiziminin kontrolü için eklendi
     FCiziliyor: Boolean;
+
+    // aþaðýdaki deðiþkenler görsel nesnelerin genel kullaným deðiþkenleridir
+    FDeger1, FDeger2, FDeger3: TSayi4;
+    FIDeger1, FIDeger2, FIDeger3: TISayi4;
+    FDurum1, FDurum2: Boolean;
   private
     procedure NesneTipiYaz(AGNTip: TGNTip);
     procedure BaslikYaz(ABaslik: string);
+  public
+    property AltNesneSayisi: TSayi4 read FAltNesneSayisi write FAltNesneSayisi;
+    property AltNesneBellekAdresi: Isaretci read FAltNesneBellekAdresi write FAltNesneBellekAdresi;
   published
     property GorevKimlik: TKimlik read FGorevKimlik write FGorevKimlik;
     property NesneTipi: TGNTip read FNesneTipi write NesneTipiYaz;

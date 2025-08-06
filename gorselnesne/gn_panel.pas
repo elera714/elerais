@@ -186,7 +186,7 @@ procedure TPanel.Hizala;
 var
   Panel: PPanel = nil;
   GorunurNesne: PGorselNesne = nil;
-  AltNesneler: PPGorselNesne;
+  GNBellekAdresi: PPGorselNesne;
   i: TSayi4;
 begin
 
@@ -199,14 +199,14 @@ begin
   if(Panel^.AltNesneSayisi > 0) then
   begin
 
-    AltNesneler := Panel^.FAltNesneBellekAdresi;
+    GNBellekAdresi := Panel^.AltNesneBellekAdresi;
 
     // ilk oluşturulan alt nesneden son oluşturulan alt nesneye doğru
     // panelin alt nesnelerini yeniden boyutlandır
     for i := 0 to Panel^.AltNesneSayisi - 1 do
     begin
 
-      GorunurNesne := AltNesneler[i];
+      GorunurNesne := GNBellekAdresi[i];
       if(GorunurNesne^.Gorunum) then
       begin
 
@@ -251,9 +251,9 @@ end;
 procedure TPanel.Ciz;
 var
   GN: PGorselNesne = nil;
-  AltGorselNesne: PGorselNesne = nil;
-  AltNesneBellekAdresi: PPGorselNesne;
-  i: TISayi4;
+  AltGorselNesne: PGorselNesne;
+  GNBellekAdresi: PPGorselNesne;
+  i: TSayi4;
 begin
 
   GN := GorselNesneler0.NesneAl(Kimlik);
@@ -263,12 +263,13 @@ begin
 
   if(GN^.AltNesneSayisi = 0) then Exit;
 
+  GNBellekAdresi := GN^.AltNesneBellekAdresi;
+
   // mevcut görsel nesneyi kaydet
   for i := 0 to GN^.AltNesneSayisi - 1 do
   begin
 
-    AltNesneBellekAdresi := GN^.FAltNesneBellekAdresi;
-    AltGorselNesne := AltNesneBellekAdresi[i];
+    AltGorselNesne := GNBellekAdresi[i];
 
     if(AltGorselNesne^.Gorunum) then
     begin

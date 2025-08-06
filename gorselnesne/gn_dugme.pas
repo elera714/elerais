@@ -22,7 +22,6 @@ type
   private
     FDurum: TDugmeDurumu;
     FDolguluCizim: Boolean;         // dolgulu çizim mi, normal çizim mi?
-    FYaziRenkNormal, FYaziRenkBasili: TRenk;
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PDugme;
@@ -34,6 +33,8 @@ type
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure CizimModelDegistir(ADolguluCizim: Boolean; AGovdeRenk1, AGovdeRenk2,
       AYaziRenkNormal, AYaziRenkBasili: TRenk);
+    property YaziRenkNormal: TRenk read FDeger1 write FDeger1;
+    property YaziRenkBasili: TRenk read FDeger2 write FDeger2;
   end;
 
 function DugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -209,8 +210,8 @@ begin
   Dugme^.FDolguluCizim := True;
   Dugme^.FGovdeRenk1 := DUGME_NORMAL_ILKRENK;
   Dugme^.FGovdeRenk2 := DUGME_NORMAL_SONRENK;
-  Dugme^.FYaziRenkNormal := DUGME_NORMAL_YAZIRENK;
-  Dugme^.FYaziRenkBasili := DUGME_BASILI_YAZIRENK;
+  Dugme^.YaziRenkNormal := DUGME_NORMAL_YAZIRENK;
+  Dugme^.YaziRenkBasili := DUGME_BASILI_YAZIRENK;
 
   // nesne adresini geri döndür
   Result := Dugme;
@@ -271,8 +272,8 @@ begin
 
   // düðme baþlýðý
   if(Dugme^.FDurum = ddNormal) then
-    Dugme^.FYaziRenk := FYaziRenkNormal
-  else Dugme^.FYaziRenk := FYaziRenkBasili;
+    Dugme^.FYaziRenk := Dugme^.YaziRenkNormal
+  else Dugme^.FYaziRenk := Dugme^.YaziRenkBasili;
 
   inherited Ciz;
 
@@ -409,8 +410,8 @@ begin
 
   Dugme^.FGovdeRenk1 := AGovdeRenk1;
   Dugme^.FGovdeRenk2 := AGovdeRenk2;
-  Dugme^.FYaziRenkNormal := AYaziRenkNormal;
-  Dugme^.FYaziRenkBasili := AYaziRenkBasili;
+  Dugme^.YaziRenkNormal := AYaziRenkNormal;
+  Dugme^.YaziRenkBasili := AYaziRenkBasili;
 end;
 
 end.

@@ -27,8 +27,6 @@ type
 
   TOlaylariIsle = procedure(AGonderici: PGorselNesne; AOlay: TOlay) of object;
 
-  { TGorselNesne }
-
   TGorselNesne = object(TTemelGorselNesne)
   public
     // FCizimModel
@@ -43,7 +41,6 @@ type
 
     FTuvalNesne: PGorselNesne;                  // nesnenin çizim yapýlacaðý en üst çizim nesnesi
     FAtaNesne: PGorselNesne;                    // nesnenin atasý
-    FAltNesneBellekAdresi: PPGorselNesne;       // ata nesnenin alt nesneleri yerleþtireceði bellek adresi
     FCizimBellekAdresi: Isaretci;               // pencere ve alt görsel nesnelerin çizileceði bellek adresi
     FCizimBellekUzunlugu: TSayi4;               // FCizimBellekAdresi deðiþkeninin iþaret ettiði belleðin uzunluðu
 
@@ -146,9 +143,10 @@ type
     function Olustur(AGNTip: TGNTip): PGorselNesne;
     procedure YokEt(AKimlik: TKimlik);
     function AtaNesneyeEkle(AGorselNesne, AAtaNesne: PGorselNesne): Boolean;
-    function AtaNesnedenCikar: Boolean;
+    function AtaNesnedenCikar(AGorselNesne: PGorselNesne): Boolean;
     function NesneAl(AKimlik: TKimlik): PGorselNesne;
     function NesneTipiniKontrolEt(AKimlik: TKimlik; AGNTip: TGNTip): PGorselNesne;
+    procedure PencereyiYokEt(AGorevKimlik: TKimlik);
     property GorselNesne[ASiraNo: TSayi4]: PGorselNesne read GorselNesneAl write GorselNesneYaz;
   published
     property ToplamGNSayisi: TSayi4 read FToplamGNSayisi write FToplamGNSayisi;
@@ -163,7 +161,7 @@ var
 implementation
 
 uses genel, genel8x16, donusum, bmp, gn_islevler, sistemmesaj, gn_pencere,
-  hamresim, giysi_normal, giysi_mac, gorev, src_vesa20;
+  hamresim, giysi_normal, giysi_mac, gorev, src_vesa20, gn_masaustu;
 
 var
   GiysiResimler: array[0..11] of THamResim = (
@@ -288,42 +286,130 @@ end;
   nesneyi ata nesnesine alt nesne olarak ekler
  ==============================================================================}
 function TGorselNesneler.AtaNesneyeEkle(AGorselNesne, AAtaNesne: PGorselNesne): Boolean;
-var
-  AltNesneBellekAdresi: PPGorselNesne;
-  i: TISayi4;
 begin
 
+  Result := False;
+
   // ata nesnenin alt nesneleri için bellek oluþturulmuþ mu ?
-  if(AAtaNesne^.FAltNesneBellekAdresi = nil) then
+  if(AAtaNesne^.AltNesneBellekAdresi = nil) then
   begin
 
     // ata nesne için bellek oluþtur
-    AltNesneBellekAdresi := GetMem(4096);
-    AAtaNesne^.FAltNesneBellekAdresi := AltNesneBellekAdresi;
+    AAtaNesne^.AltNesneBellekAdresi := GetMem(4096);
+  end;
+
+  if(AAtaNesne^.AltNesneBellekAdresi = nil) then
+  begin
+
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'GORSELNESNE.PAS: Hata: Nesne için ata nesnede bellek alaný ayrýlamýyor!', []);
+    Exit;
   end;
 
   // alt nesne toplam nesne sayýsý aþýlmamýþsa ...
   if(AAtaNesne^.AltNesneSayisi < 1024) then
   begin
 
-    // üst nesnenin bellek adresini al
-    AltNesneBellekAdresi := AAtaNesne^.FAltNesneBellekAdresi;
-
     // nesneyi üst nesneye kaydet
-    AltNesneBellekAdresi[AAtaNesne^.AltNesneSayisi] := AGorselNesne;
+    PPGorselNesne(AAtaNesne^.AltNesneBellekAdresi)[AAtaNesne^.AltNesneSayisi] := AGorselNesne;
 
     // üst nesnenin nesne saysýný 1 artýr
-    i := AAtaNesne^.AltNesneSayisi;
-    Inc(i);
-    AAtaNesne^.AltNesneSayisi := i;
+    AAtaNesne^.FAltNesneSayisi += 1;
+
     Result := True;
-  end else Result := False;
+  end;
 end;
 
-function TGorselNesneler.AtaNesnedenCikar: Boolean;
+{==============================================================================
+  gorsel nesneyi ata nesne dizisinden çýkarýr
+  iþlev aþaðýdaki alt iþlevleri yerine getirir
+  1. gorsel nesneyi ata nesne dizisinden çýkarýr
+  2. dizidyi sola dayalý olarak yeniden sýralar
+  3. ata nesnenin alt nesne sayýsýný 1 azaltýr
+  4. ata nesne alt nesne sayýsýnýn 0 olmasý durumunda alt nesne için ayrýlan bellek
+     gölgesini serbest býrakarak deðiþken bölgesine nil deðeri atamasý gerçekleþtirir
+  5. nesneyi yok eder
+ ==============================================================================}
+function TGorselNesneler.AtaNesnedenCikar(AGorselNesne: PGorselNesne): Boolean;
+var
+  AGN, GN: PGorselNesne;
+  GNBellekAdresi: PPGorselNesne;
+  i, j: TSayi4;
 begin
 
-  { TODO - gerektiðinde kodlar yazýlabilir }
+  Result := False;
+
+  AGN := GorselNesneler0.GorselNesne[AGorselNesne^.AtaNesne^.FSiraNo];
+  if(AGN = nil) then Exit;
+
+  GNBellekAdresi := AGN^.AltNesneBellekAdresi;
+  if(AGN^.AltNesneSayisi = 1) then
+  begin
+
+    GN := GNBellekAdresi[0];
+    if not(GN = nil) and (GN = AGorselNesne) then
+    begin
+
+      GNBellekAdresi[0] := nil;
+      AGN^.AltNesneSayisi := 0;
+
+      // alt nesne bellek adresini serbest býrak
+      FreeMem(AGN^.AltNesneBellekAdresi, 4096);
+      AGN^.AltNesneBellekAdresi := nil;
+
+      YokEt(GN^.Kimlik);
+      Exit(True);
+    end;
+  end
+  else
+  begin
+
+    for i := 0 to AGN^.AltNesneSayisi - 1 do
+    begin
+
+      GN := GNBellekAdresi[i];
+      if not(GN = nil) and (GN = AGorselNesne) then
+      begin
+
+        // 1.1 dizinin son nesnesi çýkarýlacaksa
+        if((i + 1) = AGN^.AltNesneSayisi) then
+        begin
+
+          GNBellekAdresi[i] := nil;
+        end
+        else
+        // 1.2 dizinin diðer nesneleri çýkarýlacaksa
+        begin
+
+          // çýkarýlacak nesnenin saðýndaki tüm nesneleri sola kaydýr
+          for j := i + 1 to AGN^.AltNesneSayisi - 1 do
+          begin
+
+            GNBellekAdresi[j - 1] := GNBellekAdresi[j];
+          end;
+
+          // son nesneyi nil olarak iþaretle
+          GNBellekAdresi[j] := nil;
+        end;
+
+        // alt nesne sayýsýný bir azalt
+        AGN^.FAltNesneSayisi -= -1;
+
+        // alt nesne sayýsýnýn 0 olmasý durumunda bellek adresini serbest býrak
+        if(AGN^.AltNesneSayisi = 0) then
+        begin
+
+          FreeMem(AGN^.AltNesneBellekAdresi, 4096);
+          AGN^.AltNesneBellekAdresi := nil;
+        end;
+
+        YokEt(GN^.Kimlik);
+
+        Exit(True);
+      end;
+    end;
+
+    Result := False;
+  end;
 end;
 
 function TGorselNesneler.GorselNesneAl(ASiraNo: TSayi4): PGorselNesne;
@@ -379,6 +465,60 @@ begin
 
   // nesne kimlik, tipini kontrol et
   if(GN^.Kimlik = AKimlik) and (GN^.NesneTipi = AGNTip) then Exit(GN);
+end;
+
+{==============================================================================
+  görevin ana penceresi ve pencereye ait tüm alt nesneleri yok eder
+  { TODO : bu iþlev çoklu pencere ve çoklu alt nesneye göre yeniden kodlanacaktýr - 18072020 }
+ ==============================================================================}
+procedure TGorselNesneler.PencereyiYokEt(AGorevKimlik: TKimlik);
+var
+  Masaustu: PMasaustu;
+  Pencere: PGorselNesne;
+  i, j: TSayi4;
+begin
+
+  // geçerli bir masaüstü var mý ?
+  Masaustu := GAktifMasaustu;
+  if not(Masaustu = nil) then
+  begin
+
+    // masaüstü nesnesinin alt nesnesi var ise
+    if(Masaustu^.AltNesneSayisi > 0) then
+    begin
+
+      // masaüstü alt nesnelerini teker teker ara
+      for i := 0 to Masaustu^.AltNesneSayisi - 1 do
+      begin
+
+        Pencere := PPGorselNesne(Masaustu^.AltNesneBellekAdresi)[i];
+
+        // aranan pencerenin sahibi olan görev ile araþtýrýlan görev kimliði eþit mi?
+        // öyle ise pencere ve alt nesnelerini yok et
+        if(Pencere^.GorevKimlik = AGorevKimlik) then
+        begin
+
+          // pencere nesnesinin alt nesnesi var mý?
+          if(Pencere^.AltNesneSayisi > 0) then
+          begin
+
+            // pencere nesnesinin alt nesnelerini ata nesneden çýkar (yoket)
+            for j := Pencere^.AltNesneSayisi - 1 downto 0 do
+              GorselNesneler0.AtaNesnedenCikar(PPGorselNesne(Pencere^.AltNesneBellekAdresi)[j]);
+          end;
+
+          // pencere ve alt görsel nesneler için ayrýlan çizim bellek alanýný yok et
+          FreeMem(Pencere^.FCizimBellekAdresi, Pencere^.FCizimBellekUzunlugu);
+
+          // pencereyi ata nesneden çýkar
+          GorselNesneler0.AtaNesnedenCikar(Pencere);
+
+          // bir sonraki döngüye devam etmeden çýk
+          Exit;
+        end;
+      end;
+    end;
+  end;
 end;
 
 function TGorselNesne.Olustur(AKullanimTipi: TKullanimTipi; AGNTip: TGNTip;
@@ -476,7 +616,7 @@ begin
   GN^.FHizaAlani := GN^.FCizimAlan;
 
   // alt nesnelerin bellek adresi (nil = bellek oluþturulmadý)
-  GN^.FAltNesneBellekAdresi := nil;
+  GN^.AltNesneBellekAdresi := nil;
 
   // nesnenin alt nesne sayýsý
   GN^.AltNesneSayisi := 0;

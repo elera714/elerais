@@ -23,7 +23,6 @@ type
     procedure ResimDugmesiOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   public
     FYon: TYon;
-    FMevcutDeger, FAltDeger, FUstDeger: TISayi4;
     FEksiltmeDugmesi, FArtirmaDugmesi: PResimDugmesi;
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne; ASol, AUst,
       AGenislik, AYukseklik: TISayi4; AYon: TYon): PKaydirmaCubugu;
@@ -34,6 +33,9 @@ type
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure DegerleriBelirle(AAltDeger, AUstDeger: TISayi4);
+    property MevcutDeger: TISayi4 read FIDeger1 write FIDeger1;
+    property AltDeger: TISayi4 read FIDeger2 write FIDeger2;
+    property UstDeger: TISayi4 read FIDeger3 write FIDeger3;
   end;
 
 function KaydirmaCubuguCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -184,9 +186,9 @@ begin
     KaydirmaCubugu^.FArtirmaDugmesi^.OlayYonlendirmeAdresi := @ResimDugmesiOlaylariniIsle;
   end;
 
-  KaydirmaCubugu^.FMevcutDeger := 0;
-  KaydirmaCubugu^.FAltDeger := 0;
-  KaydirmaCubugu^.FUstDeger := 100;
+  KaydirmaCubugu^.MevcutDeger := 0;
+  KaydirmaCubugu^.AltDeger := 0;
+  KaydirmaCubugu^.UstDeger := 100;
 
   // nesne adresini geri döndür
   Result := KaydirmaCubugu;
@@ -293,9 +295,9 @@ begin
   begin
 
     AraBoslukU := KaydirmaCubugu^.FBoyut.Yukseklik - (16 * 3);
-    Frekans := AraBoslukU / KaydirmaCubugu^.FUstDeger;
+    Frekans := AraBoslukU / KaydirmaCubugu^.UstDeger;
 
-    i := Round(KaydirmaCubugu^.FMevcutDeger * Frekans);
+    i := Round(KaydirmaCubugu^.MevcutDeger * Frekans);
 
     DikdortgenDoldur(KaydirmaCubugu, Alan.Sol + 2, Alan.Ust + 16 + i,
       Alan.Sag - 2, Alan.Ust + 16 + i + 16, $7F7F7F, $7F7F7F);
@@ -304,9 +306,9 @@ begin
   begin
 
     AraBoslukU := KaydirmaCubugu^.FBoyut.Genislik - (16 * 3);
-    Frekans := AraBoslukU / KaydirmaCubugu^.FUstDeger;
+    Frekans := AraBoslukU / KaydirmaCubugu^.UstDeger;
 
-    i := Round(KaydirmaCubugu^.FMevcutDeger * Frekans);
+    i := Round(KaydirmaCubugu^.MevcutDeger * Frekans);
 
     DikdortgenDoldur(KaydirmaCubugu, Alan.Sol + 16 + i, Alan.Ust + 2,
       Alan.Sol + 16 + i + 16, Alan.Alt - 2, $7F7F7F, $7F7F7F);
@@ -366,24 +368,24 @@ begin
     if(AOlay.Kimlik = KaydirmaCubugu^.FEksiltmeDugmesi^.Kimlik) then
     begin
 
-      i := KaydirmaCubugu^.FMevcutDeger;
+      i := KaydirmaCubugu^.MevcutDeger;
       Dec(i);
-      if(i < KaydirmaCubugu^.FAltDeger) then i := KaydirmaCubugu^.FAltDeger;
+      if(i < KaydirmaCubugu^.AltDeger) then i := KaydirmaCubugu^.AltDeger;
     end
     else
     begin
 
-      i := KaydirmaCubugu^.FMevcutDeger;
+      i := KaydirmaCubugu^.MevcutDeger;
       Inc(i);
-      if(i > KaydirmaCubugu^.FUstDeger) then i := KaydirmaCubugu^.FUstDeger;
+      if(i > KaydirmaCubugu^.UstDeger) then i := KaydirmaCubugu^.UstDeger;
     end;
 
-    KaydirmaCubugu^.FMevcutDeger := i;
+    KaydirmaCubugu^.MevcutDeger := i;
 
     KaydirmaCubugu^.Ciz;
 
     AOlay.Kimlik := KaydirmaCubugu^.Kimlik;
-    AOlay.Deger1 := KaydirmaCubugu^.FMevcutDeger;
+    AOlay.Deger1 := KaydirmaCubugu^.MevcutDeger;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(KaydirmaCubugu^.OlayYonlendirmeAdresi = nil) then
@@ -406,9 +408,9 @@ begin
   KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneAl(Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
-  KaydirmaCubugu^.FAltDeger := AAltDeger;
-  KaydirmaCubugu^.FUstDeger := AUstDeger;
-  KaydirmaCubugu^.FMevcutDeger := AAltDeger;
+  KaydirmaCubugu^.AltDeger := AAltDeger;
+  KaydirmaCubugu^.UstDeger := AUstDeger;
+  KaydirmaCubugu^.MevcutDeger := AAltDeger;
 end;
 
 end.

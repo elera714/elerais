@@ -359,7 +359,7 @@ begin
       P4KaydirmaCubugu := P4KaydirmaCubugu^.Olustur(ktNesne, P2Pencere,
         SonKonumY, SonKonumD, 100, 24, yYatay);
       P4KaydirmaCubugu^.DegerleriBelirle(0, 100);
-      P4KaydirmaCubugu^.FMevcutDeger := 50;
+      P4KaydirmaCubugu^.MevcutDeger := 50;
       P4KaydirmaCubugu^.Goster;
     end
     else if(SonSecim = 9) then

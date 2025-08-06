@@ -375,11 +375,11 @@ begin
   if(FDegerler^.ElemanSayisi = 0) then Exit;
 
   if(Izgara^.FYatayKCGoster) then
-    SolIlk := Izgara^.FYatayKCubugu^.FMevcutDeger
+    SolIlk := Izgara^.FYatayKCubugu^.MevcutDeger
   else SolIlk := 0;
 
   if(Izgara^.FDikeyKCGoster) then
-    UstIlk := Izgara^.FDikeyKCubugu^.FMevcutDeger
+    UstIlk := Izgara^.FDikeyKCubugu^.MevcutDeger
   else UstIlk := 0;
 
   Alan.Sol := 1;
@@ -454,8 +454,8 @@ begin
       OlayYakalamayaBasla(Izgara);
 
       // seçili sütün ve satýr deðerini yeniden belirle
-      i := (AOlay.Deger1 + (Izgara^.FYatayKCubugu^.FMevcutDeger * Izgara^.FSutunGenislik)) div Izgara^.FSutunGenislik;
-      j := (AOlay.Deger2 + (Izgara^.FDikeyKCubugu^.FMevcutDeger * Izgara^.FSatirYukseklik)) div Izgara^.FSatirYukseklik;
+      i := (AOlay.Deger1 + (Izgara^.FYatayKCubugu^.MevcutDeger * Izgara^.FSutunGenislik)) div Izgara^.FSutunGenislik;
+      j := (AOlay.Deger2 + (Izgara^.FDikeyKCubugu^.MevcutDeger * Izgara^.FSatirYukseklik)) div Izgara^.FSatirYukseklik;
       if(i >= Izgara^.FSabitSutunSayisi) and (j >= Izgara^.FSabitSatirSayisi) then
       begin
 

@@ -21,8 +21,6 @@ type
   TGirisKutusu = object(TPanel)
   private
     FSilmeDugmesi: PDugme;
-    FYazilamaz: Boolean;
-    FSadeceRakam: Boolean;
     procedure SilmeDugmeOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
@@ -33,6 +31,8 @@ type
     procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    property Yazilamaz: Boolean read FDurum1 write FDurum1;
+    property SadeceRakam: Boolean read FDurum2 write FDurum2;
   end;
 
 function GirisKutusuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -96,7 +96,7 @@ begin
 
       GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p2 := PLongBool(ADegiskenler + 04);
-      GirisKutusu^.FYazilamaz := p2^;
+      GirisKutusu^.Yazilamaz := p2^;
       GirisKutusu^.Ciz;
     end;
 
@@ -106,7 +106,7 @@ begin
 
       GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       p2 := PLongBool(ADegiskenler + 04);
-      GirisKutusu^.FSadeceRakam := p2^;
+      GirisKutusu^.SadeceRakam := p2^;
     end;
 
     // giriþ kutusuna odaklan. (klavye giriþlerini almasýný saðla)
@@ -178,8 +178,8 @@ begin
 
   GirisKutusu^.FareImlecTipi := fitGiris;
 
-  GirisKutusu^.FYazilamaz := False;
-  GirisKutusu^.FSadeceRakam := False;
+  GirisKutusu^.Yazilamaz := False;
+  GirisKutusu^.SadeceRakam := False;
 
   GirisKutusu^.FSilmeDugmesi := GirisKutusu^.FSilmeDugmesi^.Olustur(ktBilesen, GirisKutusu,
     AGenislik - 12, 2, 10, 16, 'X');
@@ -269,7 +269,7 @@ begin
   Alan := GirisKutusu^.FCizimAlan;
 
   // nesnenin içerik deðeri.
-  if(GirisKutusu^.FYazilamaz) then
+  if(GirisKutusu^.Yazilamaz) then
 
     GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik, RENK_SIYAH)
   else
@@ -324,7 +324,7 @@ begin
 
     Tus := (AOlay.Deger1 and $FF);
 
-    if not(FYazilamaz) then
+    if not(GirisKutusu^.Yazilamaz) then
     begin
 
       C := Char(Tus);
@@ -362,7 +362,7 @@ begin
       else
       begin
 
-        if(FSadeceRakam) then
+        if(GirisKutusu^.SadeceRakam) then
         begin
 
           if(C in ['0'..'9', 'A'..'F', 'a'..'f']) then

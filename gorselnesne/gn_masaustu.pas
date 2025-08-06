@@ -20,8 +20,6 @@ type
   PMasaustu = ^TMasaustu;
   TMasaustu = object(TPanel)
   public
-    FMasaustuArkaPlan: TISayi4;       // 1 = renk deðeri, 2 = resim
-    FMasaustuRenk: TRenk;
     FGoruntuYapi: TGoruntuYapi;
     function Olustur(AMasaustuAdi: string): PMasaustu;
     function Olustur2(AMasaustuAdi: string): PMasaustu;
@@ -36,6 +34,9 @@ type
     procedure MasaustunuRenkIleDoldur;
     procedure MasaustuRenginiDegistir(ARenk: TRenk);
     procedure MasaustuResminiDegistir(ADosyaYolu: string);
+    // MasaustuArkaPlan: 1 = renk deðeri, 2 = resim
+    property MasaustuArkaPlan: TISayi4 read FIDeger1 write FIDeger1;
+    property MasaustuRenk: TRenk read FDeger1 write FDeger1;
   end;
 
 function MasaustuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -178,8 +179,8 @@ begin
     Exit;
   end;
 
-  Masaustu^.FMasaustuArkaPlan := 1;        // masaüstü arkaplan renk deðeri kullanýlacak
-  Masaustu^.FMasaustuRenk := RENK_ZEYTINYESILI;
+  Masaustu^.MasaustuArkaPlan := 1;        // masaüstü arkaplan renk deðeri kullanýlacak
+  Masaustu^.MasaustuRenk := RENK_ZEYTINYESILI;
 
   // masaüstünün çizileceði bellek adresi
   Masaustu^.FCizimBellekAdresi := GetMem(Masaustu^.FBoyut.Genislik * Masaustu^.FBoyut.Yukseklik * 4);
@@ -259,7 +260,7 @@ end;
 procedure TMasaustu.Goster;
 var
   Masaustu: PMasaustu = nil;
-  AltNesneler: PPGorselNesne;
+  GNBellekAdresi: PPGorselNesne;
   Pencere: PGorselNesne = nil;
   i: Integer;
 begin
@@ -279,13 +280,13 @@ begin
   if(Masaustu^.AltNesneSayisi > 0) then
   begin
 
-    AltNesneler := Masaustu^.FAltNesneBellekAdresi;
+    GNBellekAdresi := Masaustu^.AltNesneBellekAdresi;
 
     // ilk oluþturulan pencereden son oluþturulan pencereye doðru nesneleri çiz
     for i := 0 to Masaustu^.AltNesneSayisi - 1 do
     begin
 
-      Pencere := AltNesneler[i];
+      Pencere := GNBellekAdresi[i];
       if(Pencere^.Gorunum) and (Pencere^.NesneTipi = gntPencere) then
         PPencere(Pencere)^.Ciz;
     end;
@@ -333,7 +334,7 @@ begin
   if(Masaustu^.Gorunum) then
   begin
 
-    if(Masaustu^.FMasaustuArkaPlan = 1) then
+    if(Masaustu^.MasaustuArkaPlan = 1) then
       MasaustunuRenkIleDoldur
     else BMPGoruntusuCiz(gntMasaustu, Masaustu, Masaustu^.FGoruntuYapi);
   end;
@@ -427,9 +428,9 @@ begin
   Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
   if(Masaustu = nil) then Exit;
 
-  Masaustu^.FMasaustuArkaPlan := 1;
+  Masaustu^.MasaustuArkaPlan := 1;
 
-  Renk := Masaustu^.FMasaustuRenk;
+  Renk := Masaustu^.MasaustuRenk;
 
   for Ust := Masaustu^.FCizimAlan.Ust to Masaustu^.FCizimAlan.Alt do
   begin
@@ -454,8 +455,8 @@ begin
   if(Masaustu = nil) then Exit;
 
   // masaüstünün renk deðerini deðiþtir
-  Masaustu^.FMasaustuArkaPlan := 1;
-  Masaustu^.FMasaustuRenk := ARenk;
+  Masaustu^.MasaustuArkaPlan := 1;
+  Masaustu^.MasaustuRenk := ARenk;
 
   if(Masaustu^.Gorunum) then Masaustu^.Ciz;
 end;
@@ -474,7 +475,7 @@ begin
   GorevDegistirme := 1;
 
   // masaüstü resmini deðiþtir
-  Masaustu^.FMasaustuArkaPlan := 2;
+  Masaustu^.MasaustuArkaPlan := 2;
 
   // daha önce masaüstü resmi için bellek ayrýldýysa belleði iptal et
   if not(Masaustu^.FGoruntuYapi.BellekAdresi = nil) then
@@ -493,8 +494,8 @@ begin
   if(Masaustu^.FGoruntuYapi.BellekAdresi = nil) then
   begin
 
-    Masaustu^.FMasaustuArkaPlan := 1;
-    Masaustu^.FMasaustuRenk := RENK_SIYAH;
+    Masaustu^.MasaustuArkaPlan := 1;
+    Masaustu^.MasaustuRenk := RENK_SIYAH;
   end;
 
   if(Masaustu^.Gorunum) then Masaustu^.Ciz;
