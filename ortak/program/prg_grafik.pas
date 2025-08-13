@@ -58,7 +58,7 @@ var
   Sol: TISayi4;
 begin
 
-  Sol := GAktifMasaustu^.FBoyut.Genislik - 166;
+  Sol := GAktifMasaustu^.FAtananAlan.Genislik - 166;
 
   SDPencere := SDPencere^.Olustur(nil, Sol, 10, 150, 105, ptIletisim, 'Sistem Durumu', RENK_BEYAZ);
 

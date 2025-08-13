@@ -21,11 +21,10 @@ type
   TResimDugmesi = object(TPanel)
   private
     FDurum: TDugmeDurumu;
-    // FDeger: $00ABCDEF - ABCDEF renk değeri ile içeriği boya
-    // FDeger: $10ABCDEF - ABCDEF sıra numaralı çekirdekteki ham resmi çiz
-    // FDeger: $20ABCDEF - ABCDEF sıra numaralı çekirdekteki giysi ham resmini çiz
-    // FDeger: $80ABCDEF - ABCDEF sıra numaralı çekirdekteki bitmap resmi çiz
-    FDeger: TSayi4;
+    // Deger: $00ABCDEF - ABCDEF renk değeri ile içeriği boya
+    // Deger: $10ABCDEF - ABCDEF sıra numaralı çekirdekteki ham resmi çiz
+    // Deger: $20ABCDEF - ABCDEF sıra numaralı çekirdekteki giysi ham resmini çiz
+    // Deger: $80ABCDEF - ABCDEF sıra numaralı çekirdekteki bitmap resmi çiz
     FKenarlikCiz: Boolean;
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
@@ -37,7 +36,7 @@ type
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
   published
-    property Deger: TSayi4 read FDeger write FDeger;
+    property Deger: TSayi4 read FDeger1 write FDeger1;
   end;
 
 function ResimDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -134,7 +133,7 @@ begin
 
   ResimDugmesi^.OlayCagriAdresi := @OlaylariIsle;
 
-  ResimDugmesi^.FDeger := AResimSiraNo;
+  ResimDugmesi^.Deger := AResimSiraNo;
 
   ResimDugmesi^.FDurum := ddNormal;
 
@@ -202,29 +201,21 @@ begin
 
   Alan := ResimDugmesi^.FCizimAlan;
 
-  CizimTipi := ResimDugmesi^.FDeger shr 24;
+  CizimTipi := ResimDugmesi^.Deger shr 24;
 
   // resim düğmesi içeriğinin ham resim ile çizilmesi
   if(CizimTipi = $10) then
   begin
 
-    ResimSiraNo := ResimDugmesi^.FDeger and $FFFFFF;
+    ResimSiraNo := ResimDugmesi^.Deger and $FFFFFF;
 
-    KaynaktanResimCiz(1, ResimDugmesi, Alan, ResimSiraNo);
-  end
-  // resim düğmesi içeriğinin giysi resim ile çizilmesi
-  else if(CizimTipi = $20) then
-  begin
-
-    ResimSiraNo := ResimDugmesi^.FDeger and $FFFFFF;
-
-    KaynaktanResimCiz(2, ResimDugmesi, Alan, ResimSiraNo);
+    KaynaktanResimCiz(ResimDugmesi, Alan, ResimSiraNo);
   end
   // resim düğmesi içeriğinin çizilmesi - çekirdek içi çalışma için
   else if(CizimTipi = $30) then
   begin
 
-    ResimSiraNo := ResimDugmesi^.FDeger and $FFFFFF;
+    ResimSiraNo := ResimDugmesi^.Deger and $FFFFFF;
 
     KaynaktanResimCiz21(ResimDugmesi, Alan.Sol, Alan.Ust, ResimSiraNo);
   end
@@ -232,14 +223,14 @@ begin
   else if(CizimTipi = $80) then
   begin
 
-    ResimSiraNo := ResimDugmesi^.FDeger and $FFFFFF;
+    ResimSiraNo := ResimDugmesi^.Deger and $FFFFFF;
 
     KaynaktanResimCiz2(ResimDugmesi, Alan.Sol + 1, Alan.Ust + 1, ResimSiraNo);
   end
   // resim düğmesi içeriğinin renk ile doldurulması
   else DikdortgenDoldur(ResimDugmesi, Alan.Sol + 1, Alan.Ust + 1,
 
-    Alan.Sag - 1, Alan.Alt - 1, ResimDugmesi^.FDeger, ResimDugmesi^.FDeger);
+    Alan.Sag - 1, Alan.Alt - 1, ResimDugmesi^.Deger, ResimDugmesi^.Deger);
 
   // kenarlık çizimi
   if(ResimDugmesi^.FKenarlikCiz) then

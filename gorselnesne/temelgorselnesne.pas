@@ -48,14 +48,12 @@ type
     FAltNesneBellekAdresi: Isaretci;    // PPGorselNesne;
     // nesnenin kullaným tipi
     FKullanimTipi: TKullanimTipi;
-    // nesnenin ilk oluþturulmasýnda atanan deðerler
+    // nesnelerin oluþturulmasý esnasýnda atanan ilk nazari (bir nokta baz alýnarak) deðerler
+    // sol, üst, geniþlik, yükseklik deðerleri
+    FAtananAlan: TAlan;
+    // nesnenin ilk oluþturulmasýnda atanan deðerler. FIlkAtananAlan = FAtananAlan
     // þu aþamada sadece hizalanan nesnenin normal durumuna döndürülmesi için kullanýlmaktadýr
-    FIlkKonum: TKonum;
-    FIlkBoyut: TBoyut;
-    // nesnenin sol / üst baþlangýç koordinatlarý
-    FKonum: TKonum;
-    // nesnenin geniþlik / yükseklik boyutlarý
-    FBoyut: TBoyut;
+    FIlkAtananAlan: TAlan;
     // nesnenin sol, üst, sað, alt kalýnlýklarý
     FKalinlik: TAlan;
     // nesnenin sol / üst çizim baþlangýç koordinatý

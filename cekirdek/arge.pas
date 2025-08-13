@@ -262,8 +262,8 @@ begin
   if(AOlay.Olay = CO_CIZIM) then
   begin
 
-    G := AGonderici^.FBoyut.Genislik;
-    Y := AGonderici^.FBoyut.Yukseklik - 28;
+    G := AGonderici^.FAtananAlan.Genislik;
+    Y := AGonderici^.FAtananAlan.Yukseklik - 28;
 
     // yatay çizgiler
     Ust := 5 + 28;

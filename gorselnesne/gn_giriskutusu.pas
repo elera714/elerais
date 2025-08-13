@@ -242,10 +242,10 @@ begin
   GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
   if(GirisKutusu = nil) then Exit;
 
-  GirisKutusu^.FSilmeDugmesi^.FKonum.Sol := GirisKutusu^.FBoyut.Genislik - 13;
-  GirisKutusu^.FSilmeDugmesi^.FKonum.Ust := 3;
-  GirisKutusu^.FSilmeDugmesi^.FBoyut.Genislik := 10;
-  GirisKutusu^.FSilmeDugmesi^.FBoyut.Yukseklik := 16;
+  GirisKutusu^.FSilmeDugmesi^.FAtananAlan.Sol := GirisKutusu^.FAtananAlan.Genislik - 13;
+  GirisKutusu^.FSilmeDugmesi^.FAtananAlan.Ust := 3;
+  GirisKutusu^.FSilmeDugmesi^.FAtananAlan.Genislik := 10;
+  GirisKutusu^.FSilmeDugmesi^.FAtananAlan.Yukseklik := 16;
   GirisKutusu^.FSilmeDugmesi^.BoyutlariYenidenHesapla;
 
   inherited Hizala;

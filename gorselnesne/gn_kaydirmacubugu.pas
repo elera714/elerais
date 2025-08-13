@@ -243,31 +243,31 @@ begin
   if(KaydirmaCubugu^.FYon = yYatay) then
   begin
 
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FKonum.Sol := 0;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FKonum.Ust := 0;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FBoyut.Genislik := 16;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FBoyut.Yukseklik := 16;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Sol := 0;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Ust := 0;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Genislik := 16;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Yukseklik := 16;
     KaydirmaCubugu^.FEksiltmeDugmesi^.BoyutlariYenidenHesapla;
 
-    KaydirmaCubugu^.FArtirmaDugmesi^.FKonum.Sol := KaydirmaCubugu^.FBoyut.Genislik - 16;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FKonum.Ust := 0;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FBoyut.Genislik := 16;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FBoyut.Yukseklik := 16;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Sol := KaydirmaCubugu^.FAtananAlan.Genislik - 16;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Ust := 0;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Genislik := 16;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Yukseklik := 16;
     KaydirmaCubugu^.FArtirmaDugmesi^.BoyutlariYenidenHesapla;
   end
   else if(KaydirmaCubugu^.FYon = yDikey) then
   begin
 
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FKonum.Sol := 0;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FKonum.Ust := 0;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FBoyut.Genislik := 16;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FBoyut.Yukseklik := 16;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Sol := 0;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Ust := 0;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Genislik := 16;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Yukseklik := 16;
     KaydirmaCubugu^.FEksiltmeDugmesi^.BoyutlariYenidenHesapla;
 
-    KaydirmaCubugu^.FArtirmaDugmesi^.FKonum.Sol := 0;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FKonum.Ust := KaydirmaCubugu^.FBoyut.Yukseklik - 16;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FBoyut.Genislik := 16;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FBoyut.Yukseklik := 16;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Sol := 0;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Ust := KaydirmaCubugu^.FAtananAlan.Yukseklik - 16;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Genislik := 16;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Yukseklik := 16;
     KaydirmaCubugu^.FArtirmaDugmesi^.BoyutlariYenidenHesapla;
   end;
 end;
@@ -294,7 +294,7 @@ begin
   if(KaydirmaCubugu^.FYon = yDikey) then
   begin
 
-    AraBoslukU := KaydirmaCubugu^.FBoyut.Yukseklik - (16 * 3);
+    AraBoslukU := KaydirmaCubugu^.FAtananAlan.Yukseklik - (16 * 3);
     Frekans := AraBoslukU / KaydirmaCubugu^.UstDeger;
 
     i := Round(KaydirmaCubugu^.MevcutDeger * Frekans);
@@ -305,7 +305,7 @@ begin
   else
   begin
 
-    AraBoslukU := KaydirmaCubugu^.FBoyut.Genislik - (16 * 3);
+    AraBoslukU := KaydirmaCubugu^.FAtananAlan.Genislik - (16 * 3);
     Frekans := AraBoslukU / KaydirmaCubugu^.UstDeger;
 
     i := Round(KaydirmaCubugu^.MevcutDeger * Frekans);

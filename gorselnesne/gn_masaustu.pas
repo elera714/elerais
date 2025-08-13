@@ -183,7 +183,7 @@ begin
   Masaustu^.MasaustuRenk := RENK_ZEYTINYESILI;
 
   // masaüstünün çizileceði bellek adresi
-  Masaustu^.FCizimBellekAdresi := GetMem(Masaustu^.FBoyut.Genislik * Masaustu^.FBoyut.Yukseklik * 4);
+  Masaustu^.FCizimBellekAdresi := GetMem(Masaustu^.FAtananAlan.Genislik * Masaustu^.FAtananAlan.Yukseklik * 4);
 
   // masaüstüne çizilecek resmin bellek bilgileri
   Masaustu^.FGoruntuYapi.BellekAdresi := nil;

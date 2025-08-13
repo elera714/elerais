@@ -362,7 +362,7 @@ begin
       if(SiraNo = ListeKutusu^.SeciliSiraNo) then
       begin
 
-        ListeKutusu^.DikdortgenDoldur(ListeKutusu, Sol, Ust, Sol + ListeKutusu^.FBoyut.Genislik - 4 - 4,
+        ListeKutusu^.DikdortgenDoldur(ListeKutusu, Sol, Ust, Sol + ListeKutusu^.FAtananAlan.Genislik - 4 - 4,
           Ust + 18, $3EC5FF, $3EC5FF);
       end;
 
@@ -457,7 +457,7 @@ begin
       end
 
       // fare liste kutusunun aşağısında ise
-      else if(AOlay.Deger2 > ListeKutusu^.FBoyut.Yukseklik) then
+      else if(AOlay.Deger2 > ListeKutusu^.FAtananAlan.Yukseklik) then
       begin
 
         // azami kaydırma değeri

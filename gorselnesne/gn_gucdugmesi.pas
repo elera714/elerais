@@ -92,10 +92,10 @@ begin
 
         Konum := PKonum(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-        GucDugmesi^.FIlkKonum.Sol := Konum^.Sol;
-        GucDugmesi^.FIlkKonum.Ust := Konum^.Ust;
-        GucDugmesi^.FIlkBoyut.Genislik := Boyut^.Genislik;
-        GucDugmesi^.FIlkBoyut.Yukseklik := Boyut^.Yukseklik;
+        GucDugmesi^.FIlkAtananAlan.Sol := Konum^.Sol;
+        GucDugmesi^.FIlkAtananAlan.Ust := Konum^.Ust;
+        GucDugmesi^.FIlkAtananAlan.Genislik := Boyut^.Genislik;
+        GucDugmesi^.FIlkAtananAlan.Yukseklik := Boyut^.Yukseklik;
 
         Pencere := PPencere(GucDugmesi^.AtaNesne);
         Pencere^.Ciz;

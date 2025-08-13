@@ -165,7 +165,7 @@ begin
   Menu^.FCizimBaslangic.Ust := 0;
 
   // menü çizimi için bellekte yer ayır
-  Menu^.FCizimBellekAdresi := GetMem(Menu^.FBoyut.Genislik * Menu^.FBoyut.Yukseklik * 4);
+  Menu^.FCizimBellekAdresi := GetMem(Menu^.FAtananAlan.Genislik * Menu^.FAtananAlan.Yukseklik * 4);
   if(Menu^.FCizimBellekAdresi = nil) then
   begin
 
@@ -280,11 +280,11 @@ begin
 
   Menu^.FCizimAlan.Sol := 0;
   Menu^.FCizimAlan.Ust := 0;
-  Menu^.FCizimAlan.Sag := Menu^.FBoyut.Genislik - 1;
-  Menu^.FCizimAlan.Alt := Menu^.FBoyut.Yukseklik - 1;
+  Menu^.FCizimAlan.Sag := Menu^.FAtananAlan.Genislik - 1;
+  Menu^.FCizimAlan.Alt := Menu^.FAtananAlan.Yukseklik - 1;
 
   // menü çizimi için bellekte yer ayır
-  Menu^.FCizimBellekAdresi := GetMem(Menu^.FBoyut.Genislik * Menu^.FBoyut.Yukseklik * 4);
+  Menu^.FCizimBellekAdresi := GetMem(Menu^.FAtananAlan.Genislik * Menu^.FAtananAlan.Yukseklik * 4);
   if(Menu^.FCizimBellekAdresi = nil) then
   begin
 

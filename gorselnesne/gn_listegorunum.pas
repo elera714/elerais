@@ -529,7 +529,7 @@ begin
       end
 
       // fare liste görünüm nesnesinin aþaðýsýnda ise
-      else if(AOlay.Deger2 > ListeGorunum^.FBoyut.Yukseklik) then
+      else if(AOlay.Deger2 > ListeGorunum^.FAtananAlan.Yukseklik) then
       begin
 
         // azami kaydýrma deðeri

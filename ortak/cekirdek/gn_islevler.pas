@@ -158,16 +158,16 @@ begin
     if(SonBulunanGN^.Gorunum) then
     begin
 
-      SonNesneA.Sol := SonBulunanGN^.FKonum.Sol;
-      SonNesneA.Ust := SonBulunanGN^.FKonum.Ust;
-      SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.FBoyut.Genislik;
-      SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.FBoyut.Yukseklik;
+      SonNesneA.Sol := SonBulunanGN^.FAtananAlan.Sol;
+      SonNesneA.Ust := SonBulunanGN^.FAtananAlan.Ust;
+      SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.FAtananAlan.Genislik;
+      SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.FAtananAlan.Yukseklik;
 
       if(AlanIcindeMi(SonNesneA)) then
       begin
 
-        AKonum.Sol := AKonum.Sol - SonBulunanGN^.FKonum.Sol;
-        AKonum.Ust := AKonum.Ust - SonBulunanGN^.FKonum.Ust;
+        AKonum.Sol := AKonum.Sol - SonBulunanGN^.FAtananAlan.Sol;
+        AKonum.Ust := AKonum.Ust - SonBulunanGN^.FAtananAlan.Ust;
         Exit(SonBulunanGN);
       end;
     end;
@@ -176,16 +176,16 @@ begin
   // 2. aktif masaüstünün sorgulanması
   SonBulunanGN := GAktifMasaustu;
 
-  SonNesneA.Sol := SonBulunanGN^.FKonum.Sol + SonBulunanGN^.FKalinlik.Sol;
-  SonNesneA.Ust := SonBulunanGN^.FKonum.Ust + SonBulunanGN^.FKalinlik.Ust;
-  SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.FBoyut.Genislik;
-  SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.FBoyut.Yukseklik;
+  SonNesneA.Sol := SonBulunanGN^.FAtananAlan.Sol + SonBulunanGN^.FKalinlik.Sol;
+  SonNesneA.Ust := SonBulunanGN^.FAtananAlan.Ust + SonBulunanGN^.FKalinlik.Ust;
+  SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.FAtananAlan.Genislik;
+  SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.FAtananAlan.Yukseklik;
 
   if(SonBulunanGN^.AltNesneSayisi = 0) then
   begin
 
-    AKonum.Sol := AKonum.Sol - SonBulunanGN^.FKonum.Sol;
-    AKonum.Ust := AKonum.Ust - SonBulunanGN^.FKonum.Ust;
+    AKonum.Sol := AKonum.Sol - SonBulunanGN^.FAtananAlan.Sol;
+    AKonum.Ust := AKonum.Ust - SonBulunanGN^.FAtananAlan.Ust;
     Exit(SonBulunanGN);
   end;
 
@@ -207,10 +207,10 @@ begin
         if(PencereGN^.Gorunum) then
         begin
 
-          NesneA.Sol := SonNesneA.Sol + PencereGN^.FKonum.Sol;
-          NesneA.Ust := SonNesneA.Ust + PencereGN^.FKonum.Ust;
-          NesneA.Sag := NesneA.Sol + PencereGN^.FBoyut.Genislik;
-          NesneA.Alt := NesneA.Ust + PencereGN^.FBoyut.Yukseklik;
+          NesneA.Sol := SonNesneA.Sol + PencereGN^.FAtananAlan.Sol;
+          NesneA.Ust := SonNesneA.Ust + PencereGN^.FAtananAlan.Ust;
+          NesneA.Sag := NesneA.Sol + PencereGN^.FAtananAlan.Genislik;
+          NesneA.Alt := NesneA.Ust + PencereGN^.FAtananAlan.Yukseklik;
 
           // fare görsel nesne alan içerisinde mi ?
           if(AlanIcindeMi(NesneA)) then
@@ -226,10 +226,10 @@ begin
 
               // kapatma düğmesinin sorgulanması
               SorgulananGN := PPencere(PencereGN)^.FKapatmaDugmesi;
-              NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FKonum.Sol;
-              NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FKonum.Ust;
-              NesneA.Sag := NesneA.Sol + SorgulananGN^.FBoyut.Genislik;
-              NesneA.Alt := NesneA.Ust + SorgulananGN^.FBoyut.Yukseklik;
+              NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FAtananAlan.Sol;
+              NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FAtananAlan.Ust;
+              NesneA.Sag := NesneA.Sol + SorgulananGN^.FAtananAlan.Genislik;
+              NesneA.Alt := NesneA.Ust + SorgulananGN^.FAtananAlan.Yukseklik;
 
               if(AlanIcindeMi(NesneA)) then
               begin
@@ -244,10 +244,10 @@ begin
 
                 // küçültme düğmesinin sorgulanması
                 SorgulananGN := PPencere(PencereGN)^.FKucultmeDugmesi;
-                NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FKonum.Sol;
-                NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FKonum.Ust;
-                NesneA.Sag := NesneA.Sol + SorgulananGN^.FBoyut.Genislik;
-                NesneA.Alt := NesneA.Ust + SorgulananGN^.FBoyut.Yukseklik;
+                NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FAtananAlan.Sol;
+                NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FAtananAlan.Ust;
+                NesneA.Sag := NesneA.Sol + SorgulananGN^.FAtananAlan.Genislik;
+                NesneA.Alt := NesneA.Ust + SorgulananGN^.FAtananAlan.Yukseklik;
 
                 if(AlanIcindeMi(NesneA)) then
                 begin
@@ -259,10 +259,10 @@ begin
 
                 // büyütme düğmesinin sorgulanması
                 SorgulananGN := PPencere(PencereGN)^.FBuyutmeDugmesi;
-                NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FKonum.Sol;
-                NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FKonum.Ust;
-                NesneA.Sag := NesneA.Sol + SorgulananGN^.FBoyut.Genislik;
-                NesneA.Alt := NesneA.Ust + SorgulananGN^.FBoyut.Yukseklik;
+                NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FAtananAlan.Sol;
+                NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FAtananAlan.Ust;
+                NesneA.Sag := NesneA.Sol + SorgulananGN^.FAtananAlan.Genislik;
+                NesneA.Alt := NesneA.Ust + SorgulananGN^.FAtananAlan.Yukseklik;
 
                 if(AlanIcindeMi(NesneA)) then
                 begin
@@ -299,10 +299,10 @@ begin
                   if(SorgulananGN^.Gorunum) then
                   begin
 
-                    NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FKonum.Sol;
-                    NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FKonum.Ust;
-                    NesneA.Sag := NesneA.Sol + SorgulananGN^.FBoyut.Genislik;
-                    NesneA.Alt := NesneA.Ust + SorgulananGN^.FBoyut.Yukseklik;
+                    NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FAtananAlan.Sol;
+                    NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FAtananAlan.Ust;
+                    NesneA.Sag := NesneA.Sol + SorgulananGN^.FAtananAlan.Genislik;
+                    NesneA.Alt := NesneA.Ust + SorgulananGN^.FAtananAlan.Yukseklik;
 
                     // fare görsel nesne alan içerisinde mi ?
                     if(AlanIcindeMi(NesneA)) then
@@ -366,8 +366,8 @@ begin
       end;
     end;
 
-    AKonum.Sol := AKonum.Sol - SonBulunanGN^.FKonum.Sol;
-    AKonum.Ust := AKonum.Ust - SonBulunanGN^.FKonum.Ust;
+    AKonum.Sol := AKonum.Sol - SonBulunanGN^.FAtananAlan.Sol;
+    AKonum.Ust := AKonum.Ust - SonBulunanGN^.FAtananAlan.Ust;
     Exit(SonBulunanGN);
   end;
 end;

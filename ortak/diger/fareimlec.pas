@@ -6,7 +6,7 @@
   Dosya Adı: fareimlec.pas
   Dosya İşlevi: sistem fare gösterge resimlerini içerir
 
-  Güncelleme Tarihi: 06/10/2019
+  Güncelleme Tarihi: 07/08/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -264,7 +264,7 @@ const
   fare gösterge tanım tablosu
  ==============================================================================}
 const
-  CursorList: array[0..10] of TFareImlec = (
+  FareImlecleri: array[0..10] of TFareImlec = (
     (Genislik: 12;  Yukseklik: 21;  YatayOdak: 0;   DikeyOdak: 0;   BellekAdresi: @ImlecOK),
     (Genislik: 7;   Yukseklik: 16;  YatayOdak: 4;   DikeyOdak: 8;   BellekAdresi: @ImlecGiris),
     (Genislik: 17;  Yukseklik: 22;  YatayOdak: 5;   DikeyOdak: 0;   BellekAdresi: @ImlecEl),

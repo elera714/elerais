@@ -19,7 +19,7 @@ unit giysi_mac;
 
 interface
 
-uses paylasim;
+uses paylasim, giysi;
 
 const
   // başlık = taşıma çubuğu sabitleri
@@ -323,6 +323,8 @@ var
 
 var
   GiysiMac: TGiysi = (
+    Ad                      : 'MAC Giysi';
+
     BaslikYukseklik         : BASLIK_Y;
 
     ResimSolUstGenislik     : RESIM_SOLUST_G;
@@ -377,12 +379,12 @@ var
     ResimSagAltA: (Genislik: RESIM_SAGALT_G;  Yukseklik: RESIM_SAGALT_Y;  BellekAdresi: @ResimSagAltA);
     ResimSagAltP: (Genislik: RESIM_SAGALT_G;  Yukseklik: RESIM_SAGALT_Y;  BellekAdresi: @ResimSagAltP);
 
-    AKapatmaDugmesiRSNo   : 0;
-    ABuyutmeDugmesiRSNo   : 2;
-    AKucultmeDugmesiRSNo  : 4;
-    PKapatmaDugmesiRSNo   : 1;
-    PBuyutmeDugmesiRSNo   : 3;
-    PKucultmeDugmesiRSNo  : 5);
+    AKapatmaDugmesiRSNo   : 21;
+    ABuyutmeDugmesiRSNo   : 23;
+    AKucultmeDugmesiRSNo  : 25;
+    PKapatmaDugmesiRSNo   : 22;
+    PBuyutmeDugmesiRSNo   : 24;
+    PKucultmeDugmesiRSNo  : 26);
 
 implementation
 

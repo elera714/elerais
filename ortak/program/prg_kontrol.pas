@@ -93,7 +93,7 @@ begin
       if(CekirdekYuklemeTS <> TarihSaat) then
       begin
 
-        G := GAktifMasaustu^.FBoyut.Genislik;
+        G := GAktifMasaustu^.FAtananAlan.Genislik;
 
         if(Pencere = nil) then
           Pencere := Pencere^.Olustur(GAktifMasaustu, G - 162, 122 + 24, 152, 18,

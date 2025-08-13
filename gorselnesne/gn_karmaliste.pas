@@ -316,8 +316,8 @@ begin
     begin
 
       // menüyü farenin bulunduðu konumda görüntüle
-      KarmaListe^.FAcilirMenu^.FKonum.Sol := Pencere^.FKonum.Sol + KarmaListe^.FCizimBaslangic.Sol;
-      KarmaListe^.FAcilirMenu^.FKonum.Ust := Pencere^.FKonum.Ust + KarmaListe^.FCizimBaslangic.Ust + 21;
+      KarmaListe^.FAcilirMenu^.FAtananAlan.Sol := Pencere^.FAtananAlan.Sol + KarmaListe^.FCizimBaslangic.Sol;
+      KarmaListe^.FAcilirMenu^.FAtananAlan.Ust := Pencere^.FAtananAlan.Ust + KarmaListe^.FCizimBaslangic.Ust + 21;
 
       // açýlýr menünün görünürlüðünü aktifleþtir
       KarmaListe^.FAcilirMenu^.Goster;
@@ -402,7 +402,7 @@ begin
 
   i := KarmaListe^.FAcilirMenu^.FMenuBaslikListesi^.ElemanSayisi;
 
-  if(i > 0) then KarmaListe^.FAcilirMenu^.FBoyut.Yukseklik := (i * 24) + 2;
+  if(i > 0) then KarmaListe^.FAcilirMenu^.FAtananAlan.Yukseklik := (i * 24) + 2;
 end;
 
 procedure TKarmaListe.ListeyiTemizle;
@@ -418,7 +418,7 @@ begin
   KarmaListe^.Ciz;
 
   KarmaListe^.FAcilirMenu^.Temizle;
-  KarmaListe^.FAcilirMenu^.FBoyut.Yukseklik := (1 * 24) + 2;
+  KarmaListe^.FAcilirMenu^.FAtananAlan.Yukseklik := (1 * 24) + 2;
 end;
 
 procedure TKarmaListe.BaslikSiraNoYaz(ASiraNo: TISayi4);

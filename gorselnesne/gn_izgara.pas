@@ -313,18 +313,18 @@ begin
   begin
 
     // yatay kaydýrma çubuðunu elle yeniden konumlandýr
-    Izgara^.FYatayKCubugu^.FKonum.Sol := 0;
-    Izgara^.FYatayKCubugu^.FKonum.Ust := Izgara^.FBoyut.Yukseklik - 16;
-    Izgara^.FYatayKCubugu^.FBoyut.Genislik := Izgara^.FBoyut.Genislik - 16;
-    Izgara^.FYatayKCubugu^.FBoyut.Yukseklik := 16;
+    Izgara^.FYatayKCubugu^.FAtananAlan.Sol := 0;
+    Izgara^.FYatayKCubugu^.FAtananAlan.Ust := Izgara^.FAtananAlan.Yukseklik - 16;
+    Izgara^.FYatayKCubugu^.FAtananAlan.Genislik := Izgara^.FAtananAlan.Genislik - 16;
+    Izgara^.FYatayKCubugu^.FAtananAlan.Yukseklik := 16;
 
     Izgara^.FYatayKCubugu^.FCizimAlan.Sol := 0;
     Izgara^.FYatayKCubugu^.FCizimAlan.Ust := 0;
-    Izgara^.FYatayKCubugu^.FCizimAlan.Sag := Izgara^.FYatayKCubugu^.FBoyut.Genislik - 1;
-    Izgara^.FYatayKCubugu^.FCizimAlan.Alt := Izgara^.FYatayKCubugu^.FBoyut.Yukseklik - 1;
+    Izgara^.FYatayKCubugu^.FCizimAlan.Sag := Izgara^.FYatayKCubugu^.FAtananAlan.Genislik - 1;
+    Izgara^.FYatayKCubugu^.FCizimAlan.Alt := Izgara^.FYatayKCubugu^.FAtananAlan.Yukseklik - 1;
 
-    Izgara^.FYatayKCubugu^.FCizimBaslangic.Sol := Izgara^.FCizimBaslangic.Sol + Izgara^.FYatayKCubugu^.FKonum.Sol;
-    Izgara^.FYatayKCubugu^.FCizimBaslangic.Ust := Izgara^.FCizimBaslangic.Ust + Izgara^.FYatayKCubugu^.FKonum.Ust;
+    Izgara^.FYatayKCubugu^.FCizimBaslangic.Sol := Izgara^.FCizimBaslangic.Sol + Izgara^.FYatayKCubugu^.FAtananAlan.Sol;
+    Izgara^.FYatayKCubugu^.FCizimBaslangic.Ust := Izgara^.FCizimBaslangic.Ust + Izgara^.FYatayKCubugu^.FAtananAlan.Ust;
     Izgara^.FYatayKCubugu^.Hizala;
   end;
 
@@ -332,18 +332,18 @@ begin
   begin
 
     // dikey kaydýrma çubuðunu elle yeniden konumlandýr
-    Izgara^.FDikeyKCubugu^.FKonum.Sol := Izgara^.FBoyut.Genislik - 16;
-    Izgara^.FDikeyKCubugu^.FKonum.Ust := 0;
-    Izgara^.FDikeyKCubugu^.FBoyut.Genislik := 16;
-    Izgara^.FDikeyKCubugu^.FBoyut.Yukseklik := Izgara^.FBoyut.Yukseklik - 16;
+    Izgara^.FDikeyKCubugu^.FAtananAlan.Sol := Izgara^.FAtananAlan.Genislik - 16;
+    Izgara^.FDikeyKCubugu^.FAtananAlan.Ust := 0;
+    Izgara^.FDikeyKCubugu^.FAtananAlan.Genislik := 16;
+    Izgara^.FDikeyKCubugu^.FAtananAlan.Yukseklik := Izgara^.FAtananAlan.Yukseklik - 16;
 
     Izgara^.FDikeyKCubugu^.FCizimAlan.Sol := 0;
     Izgara^.FDikeyKCubugu^.FCizimAlan.Ust := 0;
-    Izgara^.FDikeyKCubugu^.FCizimAlan.Sag := Izgara^.FDikeyKCubugu^.FBoyut.Genislik - 1;
-    Izgara^.FDikeyKCubugu^.FCizimAlan.Alt := Izgara^.FDikeyKCubugu^.FBoyut.Yukseklik - 1;
+    Izgara^.FDikeyKCubugu^.FCizimAlan.Sag := Izgara^.FDikeyKCubugu^.FAtananAlan.Genislik - 1;
+    Izgara^.FDikeyKCubugu^.FCizimAlan.Alt := Izgara^.FDikeyKCubugu^.FAtananAlan.Yukseklik - 1;
 
-    Izgara^.FDikeyKCubugu^.FCizimBaslangic.Sol := Izgara^.FCizimBaslangic.Sol + Izgara^.FDikeyKCubugu^.FKonum.Sol;
-    Izgara^.FDikeyKCubugu^.FCizimBaslangic.Ust := Izgara^.FCizimBaslangic.Ust + Izgara^.FDikeyKCubugu^.FKonum.Ust;
+    Izgara^.FDikeyKCubugu^.FCizimBaslangic.Sol := Izgara^.FCizimBaslangic.Sol + Izgara^.FDikeyKCubugu^.FAtananAlan.Sol;
+    Izgara^.FDikeyKCubugu^.FCizimBaslangic.Ust := Izgara^.FCizimBaslangic.Ust + Izgara^.FDikeyKCubugu^.FAtananAlan.Ust;
     Izgara^.FDikeyKCubugu^.Hizala;
   end;
 end;

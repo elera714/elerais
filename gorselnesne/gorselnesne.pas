@@ -114,8 +114,7 @@ type
       AKalinlik: TSayi4);
     procedure HamResimCiz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
       AHamResimBellekAdresi: Isaretci);
-    procedure KaynaktanResimCiz(AKaynak: TSayi4; AGorselNesne: PGorselNesne;
-      AAlan: TAlan; AResimSiraNo: TISayi4);
+    procedure KaynaktanResimCiz(AGorselNesne: PGorselNesne; AAlan: TAlan; AResimSiraNo: TISayi4);
     procedure KaynaktanResimCiz2(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
       AResimSiraNo: TISayi4);
     procedure KaynaktanResimCiz21(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
@@ -162,21 +161,6 @@ implementation
 
 uses genel, genel8x16, donusum, bmp, gn_islevler, sistemmesaj, gn_pencere,
   hamresim, giysi_normal, giysi_mac, gorev, src_vesa20, gn_masaustu;
-
-var
-  GiysiResimler: array[0..11] of THamResim = (
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.KapatmaDugmesiA),
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.KapatmaDugmesiP),
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.BuyutmeDugmesiA),
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.BuyutmeDugmesiP),
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.KucultmeDugmesiA),
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.KucultmeDugmesiP),
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.KapatmaDugmesiA),
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.KapatmaDugmesiP),
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.BuyutmeDugmesiA),
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.BuyutmeDugmesiP),
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.KucultmeDugmesiA),
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.KucultmeDugmesiP));
 
 {==============================================================================
   görsel nesne yükleme iþlevlerini gerçekleþtirir
@@ -568,13 +552,12 @@ begin
   GN^.FKalinlik.Sag := 0;
   GN^.FKalinlik.Alt := 0;
 
-  GN^.FKonum.Sol := ASol;
-  GN^.FKonum.Ust := AUst;
-  GN^.FBoyut.Genislik := AGenislik;
-  GN^.FBoyut.Yukseklik := AYukseklik;
+  GN^.FAtananAlan.Sol := ASol;
+  GN^.FAtananAlan.Ust := AUst;
+  GN^.FAtananAlan.Genislik := AGenislik;
+  GN^.FAtananAlan.Yukseklik := AYukseklik;
 
-  GN^.FIlkKonum := GN^.FKonum;
-  GN^.FIlkBoyut := GN^.FBoyut;
+  GN^.FIlkAtananAlan := GN^.FAtananAlan;
 
   GN^.FKullanimTipi := AKullanimTipi;
 
@@ -582,8 +565,8 @@ begin
   // nesnenin kendisi bu deðeri deðiþtirebilir
   GN^.FCizimAlan.Sol := 0;
   GN^.FCizimAlan.Ust := 0;
-  GN^.FCizimAlan.Sag := GN^.FBoyut.Genislik - 1;
-  GN^.FCizimAlan.Alt := GN^.FBoyut.Yukseklik - 1;
+  GN^.FCizimAlan.Sag := GN^.FAtananAlan.Genislik - 1;
+  GN^.FCizimAlan.Alt := GN^.FAtananAlan.Yukseklik - 1;
 
 
   if(GN^.FKullanimTipi = ktNesne) then
@@ -753,24 +736,24 @@ begin
 
   GN^.FCizimAlan.Sol := 0;
   GN^.FCizimAlan.Ust := 0;
-  GN^.FCizimAlan.Sag := GN^.FBoyut.Genislik - 1;
-  GN^.FCizimAlan.Alt := GN^.FBoyut.Yukseklik - 1;
+  GN^.FCizimAlan.Sag := GN^.FAtananAlan.Genislik - 1;
+  GN^.FCizimAlan.Alt := GN^.FAtananAlan.Yukseklik - 1;
 
   GorselAtaNesne := GN^.AtaNesne;
 
   if(GorselAtaNesne^.NesneTipi = gntPencere) then
   begin
 
-    GN^.FCizimBaslangic.Sol := GN^.AtaNesne^.FKalinlik.Sol + GN^.FKonum.Sol;
-    GN^.FCizimBaslangic.Ust := GN^.AtaNesne^.FKalinlik.Ust + GN^.FKonum.Ust;
+    GN^.FCizimBaslangic.Sol := GN^.AtaNesne^.FKalinlik.Sol + GN^.FAtananAlan.Sol;
+    GN^.FCizimBaslangic.Ust := GN^.AtaNesne^.FKalinlik.Ust + GN^.FAtananAlan.Ust;
   end
   else
   begin
 
     GN^.FCizimBaslangic.Sol := GN^.AtaNesne^.FCizimBaslangic.Sol +
-      GN^.AtaNesne^.FKalinlik.Sol + GN^.FKonum.Sol;
+      GN^.AtaNesne^.FKalinlik.Sol + GN^.FAtananAlan.Sol;
     GN^.FCizimBaslangic.Ust := GN^.AtaNesne^.FCizimBaslangic.Ust +
-      GN^.AtaNesne^.FKalinlik.Ust + GN^.FKonum.Ust;
+      GN^.AtaNesne^.FKalinlik.Ust + GN^.FAtananAlan.Ust;
   end;
 end;
 
@@ -793,13 +776,12 @@ var
   GorselAtaNesne, GN: PGorselNesne;
 begin
 
-  GN := PGorselNesne(@Self); // GorselNesne^.NesneAl(Kimlik);
+  GN := GorselNesneler0.NesneAl(Kimlik);
   if(GN = nil) then Exit;
 
   GorselAtaNesne := GN^.AtaNesne;
 
-  GN^.FBoyut := GN^.FIlkBoyut;
-  GN^.FKonum := GN^.FIlkKonum;
+  GN^.FAtananAlan := GN^.FIlkAtananAlan;
 
   if(GN^.FHiza = hzSol) then
   begin
@@ -807,57 +789,57 @@ begin
     //SISTEM_MESAJ(RENK_KIRMIZI, 'Boyut: %d', [GorselAtaNesne^.FBoyut.Yukseklik]);
 
     // nesnenin hesaplanmasý
-    GN^.FKonum.Sol := GorselAtaNesne^.FHizaAlani.Sol;
-    GN^.FKonum.Ust := GorselAtaNesne^.FHizaAlani.Ust;
+    GN^.FAtananAlan.Sol := GorselAtaNesne^.FHizaAlani.Sol;
+    GN^.FAtananAlan.Ust := GorselAtaNesne^.FHizaAlani.Ust;
     // nesnenin kendi geniþliði kullanýlacak
-    GN^.FBoyut.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
+    GN^.FAtananAlan.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
     GN^.BoyutlariYenidenHesapla;
 
     // üst nesnenin yeniden boyutlandýrýlmasý
-    GorselAtaNesne^.FHizaAlani.Sol += GN^.FBoyut.Genislik;
+    GorselAtaNesne^.FHizaAlani.Sol += GN^.FAtananAlan.Genislik;
   end
   else if(GN^.FHiza = hzUst) then
   begin
 
-    GN^.FKonum.Sol := GorselAtaNesne^.FHizaAlani.Sol;
-    GN^.FKonum.Ust := GorselAtaNesne^.FHizaAlani.Ust;
-    GN^.FBoyut.Genislik := (GorselAtaNesne^.FHizaAlani.Sag - GorselAtaNesne^.FHizaAlani.Sol) + 1;
+    GN^.FAtananAlan.Sol := GorselAtaNesne^.FHizaAlani.Sol;
+    GN^.FAtananAlan.Ust := GorselAtaNesne^.FHizaAlani.Ust;
+    GN^.FAtananAlan.Genislik := (GorselAtaNesne^.FHizaAlani.Sag - GorselAtaNesne^.FHizaAlani.Sol) + 1;
     // nesnenin kendi yüksekliði kullanýlacak
     GN^.BoyutlariYenidenHesapla;
 
-    GorselAtaNesne^.FHizaAlani.Ust += GN^.FBoyut.Yukseklik;
+    GorselAtaNesne^.FHizaAlani.Ust += GN^.FAtananAlan.Yukseklik;
   end
   else if(GN^.FHiza = hzSag) then
   begin
 
     // nesnenin hesaplanmasý
-    GN^.FKonum.Sol := (GorselAtaNesne^.FHizaAlani.Sag - GN^.FBoyut.Genislik) + 1;
-    GN^.FKonum.Ust := GorselAtaNesne^.FHizaAlani.Ust;
+    GN^.FAtananAlan.Sol := (GorselAtaNesne^.FHizaAlani.Sag - GN^.FAtananAlan.Genislik) + 1;
+    GN^.FAtananAlan.Ust := GorselAtaNesne^.FHizaAlani.Ust;
     // nesnenin kendi geniþliði kullanýlacak
-    GN^.FBoyut.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
+    GN^.FAtananAlan.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
     GN^.BoyutlariYenidenHesapla;
 
     // üst nesnenin yeniden boyutlandýrýlmasý
-    GorselAtaNesne^.FHizaAlani.Sag -= GN^.FBoyut.Genislik;
+    GorselAtaNesne^.FHizaAlani.Sag -= GN^.FAtananAlan.Genislik;
   end
   else if(GN^.FHiza = hzAlt) then
   begin
 
-    GN^.FKonum.Sol := GorselAtaNesne^.FHizaAlani.Sol;
-    GN^.FKonum.Ust := (GorselAtaNesne^.FHizaAlani.Alt - GN^.FBoyut.Yukseklik) + 1;
-    GN^.FBoyut.Genislik := (GorselAtaNesne^.FHizaAlani.Sag - GorselAtaNesne^.FHizaAlani.Sol) + 1;
+    GN^.FAtananAlan.Sol := GorselAtaNesne^.FHizaAlani.Sol;
+    GN^.FAtananAlan.Ust := (GorselAtaNesne^.FHizaAlani.Alt - GN^.FAtananAlan.Yukseklik) + 1;
+    GN^.FAtananAlan.Genislik := (GorselAtaNesne^.FHizaAlani.Sag - GorselAtaNesne^.FHizaAlani.Sol) + 1;
     // nesnenin kendi yüksekliði kullanýlacak
     GN^.BoyutlariYenidenHesapla;
 
-    GorselAtaNesne^.FHizaAlani.Alt -= GN^.FBoyut.Yukseklik;
+    GorselAtaNesne^.FHizaAlani.Alt -= GN^.FAtananAlan.Yukseklik;
   end
   else if(GN^.FHiza = hzTum) then
   begin
 
-    GN^.FKonum.Sol := GorselAtaNesne^.FHizaAlani.Sol;
-    GN^.FKonum.Ust := GorselAtaNesne^.FHizaAlani.Ust;
-    GN^.FBoyut.Genislik := (GorselAtaNesne^.FHizaAlani.Sag - GorselAtaNesne^.FHizaAlani.Sol) + 1;
-    GN^.FBoyut.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
+    GN^.FAtananAlan.Sol := GorselAtaNesne^.FHizaAlani.Sol;
+    GN^.FAtananAlan.Ust := GorselAtaNesne^.FHizaAlani.Ust;
+    GN^.FAtananAlan.Genislik := (GorselAtaNesne^.FHizaAlani.Sag - GorselAtaNesne^.FHizaAlani.Sol) + 1;
+    GN^.FAtananAlan.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
     GN^.BoyutlariYenidenHesapla;
 
 //    GorselAtaNesne^.FHizaAlani.Alt -= GorselNesne^.FBoyut.Yukseklik;
@@ -883,8 +865,8 @@ begin
     // geniþlik ve yükseklik deðerleri alýnýyor
     Result.Sol := GN^.FKalinlik.Sol;
     Result.Ust := GN^.FKalinlik.Ust;
-    Result.Sag := Result.Sol + GN^.FBoyut.Genislik;
-    Result.Alt := Result.Ust + GN^.FBoyut.Yukseklik;
+    Result.Sag := Result.Sol + GN^.FAtananAlan.Genislik;
+    Result.Alt := Result.Ust + GN^.FAtananAlan.Yukseklik;
   end
   else
   begin
@@ -982,8 +964,8 @@ begin
     (GN^.FTuvalNesne^.NesneTipi = gntAcilirMenu) then
   begin
 
-    Alan.Sol += GN^.FTuvalNesne^.FKonum.Sol;
-    Alan.Ust += GN^.FTuvalNesne^.FKonum.Ust;
+    Alan.Sol += GN^.FTuvalNesne^.FAtananAlan.Sol;
+    Alan.Ust += GN^.FTuvalNesne^.FAtananAlan.Ust;
   end;
 
   Alan.Sag := Alan.Sol + GN^.FCizimAlan.Sag;
@@ -1906,8 +1888,7 @@ end;
 
 // görsel nesneye sistem kaynak resimlerinden resim çizer
 // bilgi: hamresim.pas dosyasýndaki resimleri çizer
-procedure TGorselNesne.KaynaktanResimCiz(AKaynak: TSayi4; AGorselNesne: PGorselNesne;
-  AAlan: TAlan; AResimSiraNo: TISayi4);
+procedure TGorselNesne.KaynaktanResimCiz(AGorselNesne: PGorselNesne; AAlan: TAlan; AResimSiraNo: TISayi4);
 var
   Renk: TSayi4;
   ResimAdresi: PSayi4;
@@ -1920,20 +1901,9 @@ begin
   begin
 
     // HamResimler - AKaynak = 1 ve iliþkili herþey iptal edilerek
-    if(AKaynak = 1) then
-    begin
-
-      RGenislik := HamResimler[AResimSiraNo].Genislik;
-      RYukseklik := HamResimler[AResimSiraNo].Yukseklik;
-      ResimAdresi := HamResimler[AResimSiraNo].BellekAdresi;
-    end
-    else
-    begin
-
-      RGenislik := GiysiResimler[AResimSiraNo].Genislik;
-      RYukseklik := GiysiResimler[AResimSiraNo].Yukseklik;
-      ResimAdresi := GiysiResimler[AResimSiraNo].BellekAdresi;
-    end;
+    RGenislik := HamResimler[AResimSiraNo].Genislik;
+    RYukseklik := HamResimler[AResimSiraNo].Yukseklik;
+    ResimAdresi := HamResimler[AResimSiraNo].BellekAdresi;
 
     TGenislik := AAlan.Sag; // - AAlan.Sol;
     TYukseklik := AAlan.Alt; // - AAlan.Ust;

@@ -66,7 +66,7 @@ uses genel, gorev, gn_islevler, gn_masaustu, gn_gucdugmesi, gn_listekutusu,
   gn_defter, gn_islemgostergesi, gn_onaykutusu, gn_giriskutusu, gn_degerdugmesi,
   gn_etiket, gn_durumcubugu, gn_secimdugmesi, gn_baglanti, gn_resim, gn_listegorunum,
   gn_kaydirmacubugu, gn_karmaliste, gn_degerlistesi, gn_izgara, gn_araccubugu,
-  gn_renksecici, gn_sayfakontrol, temelgorselnesne, sistemmesaj;
+  gn_renksecici, gn_sayfakontrol, temelgorselnesne, sistemmesaj, giysi;
 
 const
   PENCERE_ALTLIMIT_GENISLIK = 110;
@@ -195,6 +195,7 @@ var
   G: PGorev = nil;
   Masaustu: PMasaustu = nil;
   Pencere: PPencere = nil;
+  AktifGiysi: PGiysi;
   Genislik, Yukseklik: TSayi4;
   Sol, Ust: TISayi4;
   i: TISayi4;
@@ -216,6 +217,8 @@ begin
     AnaPencere := True
   else AnaPencere := False;
 
+  AktifGiysi := Giysiler0.AktifGiysi;
+
   // pencere limit kontrolleri - baþlýksýz pencere hariç
   if not(APencereTipi = ptBasliksiz) then
   begin
@@ -223,12 +226,12 @@ begin
     // pencere geniþliðinin en alt sýnýr deðerinin altýnda olup olmadýðýný kontrol et
     if(AGenislik < PENCERE_ALTLIMIT_GENISLIK) then
       Genislik := PENCERE_ALTLIMIT_GENISLIK
-    else Genislik := AGenislik + (AktifGiysi.ResimSolGenislik + AktifGiysi.ResimSagGenislik);
+    else Genislik := AGenislik + (AktifGiysi^.ResimSolGenislik + AktifGiysi^.ResimSagGenislik);
 
     // pencere yüksekliðinin en alt sýnýr deðerinin altýnda olup olmadýðýný kontrol et
     if(AYukseklik < PENCERE_ALTLIMIT_YUKSEKLIK) then
       Yukseklik := PENCERE_ALTLIMIT_YUKSEKLIK
-    else Yukseklik := AYukseklik + (AktifGiysi.BaslikYukseklik + AktifGiysi.ResimAltYukseklik);
+    else Yukseklik := AYukseklik + (AktifGiysi^.BaslikYukseklik + AktifGiysi^.ResimAltYukseklik);
   end
   else
   begin
@@ -245,8 +248,8 @@ begin
     if AnaPencereyiOrtala and AnaPencere then
     begin
 
-      Sol := (Masaustu^.FBoyut.Genislik div 2) - (AGenislik div 2);
-      Ust := (Masaustu^.FBoyut.Yukseklik div 2) - (AYukseklik div 2);
+      Sol := (Masaustu^.FAtananAlan.Genislik div 2) - (AGenislik div 2);
+      Ust := (Masaustu^.FAtananAlan.Yukseklik div 2) - (AYukseklik div 2);
     end;
   end;
 
@@ -291,24 +294,24 @@ begin
     // pencere çizim alaný
     Pencere^.FCizimAlan.Sol := 0;
     Pencere^.FCizimAlan.Ust := 0;
-    Pencere^.FCizimAlan.Sag := Pencere^.FBoyut.Genislik - 1;
-    Pencere^.FCizimAlan.Alt := Pencere^.FBoyut.Yukseklik - 1;
+    Pencere^.FCizimAlan.Sag := Pencere^.FAtananAlan.Genislik - 1;
+    Pencere^.FCizimAlan.Alt := Pencere^.FAtananAlan.Yukseklik - 1;
   end
   else
   begin
 
     // pencere kalýnlýklarý
-    Pencere^.FKalinlik.Sol := AktifGiysi.ResimSolGenislik;
-    Pencere^.FKalinlik.Ust := AktifGiysi.BaslikYukseklik;
-    Pencere^.FKalinlik.Sag := AktifGiysi.ResimSagGenislik;
-    Pencere^.FKalinlik.Alt := AktifGiysi.ResimAltYukseklik;
+    Pencere^.FKalinlik.Sol := AktifGiysi^.ResimSolGenislik;
+    Pencere^.FKalinlik.Ust := AktifGiysi^.BaslikYukseklik;
+    Pencere^.FKalinlik.Sag := AktifGiysi^.ResimSagGenislik;
+    Pencere^.FKalinlik.Alt := AktifGiysi^.ResimAltYukseklik;
 
     // pencere çizim alaný
     Pencere^.FCizimAlan.Sol := 0;
     Pencere^.FCizimAlan.Ust := 0;
-    Pencere^.FCizimAlan.Sag := Pencere^.FBoyut.Genislik -
+    Pencere^.FCizimAlan.Sag := Pencere^.FAtananAlan.Genislik -
       (Pencere^.FKalinlik.Sol + Pencere^.FKalinlik.Sag) - 1;
-    Pencere^.FCizimAlan.Alt := Pencere^.FBoyut.Yukseklik -
+    Pencere^.FCizimAlan.Alt := Pencere^.FAtananAlan.Yukseklik -
       (Pencere^.FKalinlik.Ust + Pencere^.FKalinlik.Alt) - 1;
 
     // pencere kontrol düðmeleri
@@ -316,36 +319,36 @@ begin
     begin
 
       // küçültme düðmesi
-      i := AktifGiysi.KucultmeDugmesiSol;
+      i := AktifGiysi^.KucultmeDugmesiSol;
       if(i < 0) then
-        i := AGenislik - AktifGiysi.KucultmeDugmesiSol
+        i := AGenislik - AktifGiysi^.KucultmeDugmesiSol
       else i := ASol + i;
-      Pencere^.FKucultmeDugmesi := FKucultmeDugmesi^.Olustur(ktBilesen, Pencere,
-        i, AktifGiysi.KucultmeDugmesiUst, AktifGiysi.KucultmeDugmesiGenislik,
-        AktifGiysi.KucultmeDugmesiYukseklik, $20000000 + 4, False);
+      Pencere^.FKucultmeDugmesi := Pencere^.FKucultmeDugmesi^.Olustur(ktBilesen, Pencere,
+        i, AktifGiysi^.KucultmeDugmesiUst, AktifGiysi^.KucultmeDugmesiGenislik,
+        AktifGiysi^.KucultmeDugmesiYukseklik, $10000000 + 13, False);
       Pencere^.FKucultmeDugmesi^.OlayYonlendirmeAdresi := @KontrolDugmesiOlaylariniIsle;
       Pencere^.FKucultmeDugmesi^.Goster;
 
       // büyütme düðmesi
-      i := AktifGiysi.BuyutmeDugmesiSol;
+      i := AktifGiysi^.BuyutmeDugmesiSol;
       if(i < 0) then
-        i := AGenislik - AktifGiysi.BuyutmeDugmesiSol
+        i := AGenislik - AktifGiysi^.BuyutmeDugmesiSol
       else i := ASol + i;
-      Pencere^.FBuyutmeDugmesi := FBuyutmeDugmesi^.Olustur(ktBilesen, Pencere,
-        i, AktifGiysi.BuyutmeDugmesiUst, AktifGiysi.BuyutmeDugmesiGenislik,
-        AktifGiysi.BuyutmeDugmesiYukseklik, $20000000 + 2, False);
+      Pencere^.FBuyutmeDugmesi := Pencere^.FBuyutmeDugmesi^.Olustur(ktBilesen, Pencere,
+        i, AktifGiysi^.BuyutmeDugmesiUst, AktifGiysi^.BuyutmeDugmesiGenislik,
+        AktifGiysi^.BuyutmeDugmesiYukseklik, $10000000 + 11, False);
       Pencere^.FBuyutmeDugmesi^.OlayYonlendirmeAdresi := @KontrolDugmesiOlaylariniIsle;
       Pencere^.FBuyutmeDugmesi^.Goster;
     end;
 
     // kapatma düðmesi
-    i := AktifGiysi.KapatmaDugmesiSol;
+    i := AktifGiysi^.KapatmaDugmesiSol;
     if(i < 0) then
-      i := AGenislik - AktifGiysi.KapatmaDugmesiSol
+      i := AGenislik - AktifGiysi^.KapatmaDugmesiSol
     else i := ASol + i;
-    Pencere^.FKapatmaDugmesi := FKapatmaDugmesi^.Olustur(ktBilesen, Pencere,
-      i, AktifGiysi.KapatmaDugmesiUst, AktifGiysi.KapatmaDugmesiGenislik,
-      AktifGiysi.KapatmaDugmesiYukseklik, $20000000 + 0, False);
+    Pencere^.FKapatmaDugmesi := Pencere^.FKapatmaDugmesi^.Olustur(ktBilesen, Pencere,
+      i, AktifGiysi^.KapatmaDugmesiUst, AktifGiysi^.KapatmaDugmesiGenislik,
+      AktifGiysi^.KapatmaDugmesiYukseklik, $10000000 + 09, False);
     Pencere^.FKapatmaDugmesi^.OlayYonlendirmeAdresi := @KontrolDugmesiOlaylariniIsle;
     Pencere^.FKapatmaDugmesi^.Goster;
   end;
@@ -359,8 +362,8 @@ begin
   Pencere^.FAktifNesne := nil;
 
   // pencere çizimi için gereken bellek uzunluðu
-  Pencere^.FCizimBellekUzunlugu := (Pencere^.FBoyut.Genislik *
-    Pencere^.FBoyut.Yukseklik * 4);
+  Pencere^.FCizimBellekUzunlugu := (Pencere^.FAtananAlan.Genislik *
+    Pencere^.FAtananAlan.Yukseklik * 4);
 
   // pencere çizimi için bellekte yer ayýr
   Pencere^.FCizimBellekAdresi := GetMem(Pencere^.FCizimBellekUzunlugu);
@@ -434,9 +437,9 @@ begin
   // aksi durumda SADECE hiza alanýný belirle
   begin
 
-    Pencere^.FCizimAlan.Sag := Pencere^.FBoyut.Genislik -
+    Pencere^.FCizimAlan.Sag := Pencere^.FAtananAlan.Genislik -
       (Pencere^.FKalinlik.Sol + Pencere^.FKalinlik.Sag) - 1;
-    Pencere^.FCizimAlan.Alt := Pencere^.FBoyut.Yukseklik -
+    Pencere^.FCizimAlan.Alt := Pencere^.FAtananAlan.Yukseklik -
       (Pencere^.FKalinlik.Ust + Pencere^.FKalinlik.Alt) - 1;
 
     // alt nesnelerin sýnýrlanacaðý hiza alanýný sýfýrla
@@ -503,9 +506,10 @@ end;
 procedure TPencere.Ciz;
 var
   Pencere: PPencere = nil;
+  AktifGiysi: PGiysi;
   GRSolUst, GRUst, GRSagUst,
   GRSol, GRSag,
-  GRSolAlt, GRAlt, GRSagAlt: TGiysiResim;
+  GRSolAlt, GRAlt, GRSagAlt: THamResim;
   Olay: TOlay;
   Alan: TAlan;
   Sol, Sag, Genislik, Ust, Alt, i, j: TISayi4;
@@ -529,6 +533,8 @@ begin
   Alan.Sag += (Pencere^.FKalinlik.Sol + Pencere^.FKalinlik.Sag);
   Alan.Alt += (Pencere^.FKalinlik.Ust + Pencere^.FKalinlik.Alt);
 
+  AktifGiysi := Giysiler0.AktifGiysi;
+
   // pencere tipi baþlýksýz ise, artan renk ile (eðimli) doldur
   if(Pencere^.FPencereTipi = ptBasliksiz) then
 
@@ -543,44 +549,44 @@ begin
     if(PencereAktif) then
     begin
 
-      GRSolUst := AktifGiysi.ResimSolUstA;
-      GRUst := AktifGiysi.ResimUstA;
-      GRSagUst := AktifGiysi.ResimSagUstA;
-      GRSol := AktifGiysi.ResimSolA;
-      GRSag := AktifGiysi.ResimSagA;
-      GRSolAlt := AktifGiysi.ResimSolAltA;
-      GRAlt := AktifGiysi.ResimAltA;
-      GRSagAlt := AktifGiysi.ResimSagAltA;
-      BaslikRengi := AktifGiysi.AktifBaslikYaziRengi;
+      GRSolUst := AktifGiysi^.ResimSolUstA;
+      GRUst := AktifGiysi^.ResimUstA;
+      GRSagUst := AktifGiysi^.ResimSagUstA;
+      GRSol := AktifGiysi^.ResimSolA;
+      GRSag := AktifGiysi^.ResimSagA;
+      GRSolAlt := AktifGiysi^.ResimSolAltA;
+      GRAlt := AktifGiysi^.ResimAltA;
+      GRSagAlt := AktifGiysi^.ResimSagAltA;
+      BaslikRengi := AktifGiysi^.AktifBaslikYaziRengi;
 
       // kontrol düðmelerini aktifleþtir
       if not(Pencere^.FKucultmeDugmesi = nil) then
-        Pencere^.FKucultmeDugmesi^.Deger := $20000000 + AktifGiysi.AKucultmeDugmesiRSNo;
+        Pencere^.FKucultmeDugmesi^.Deger := $10000000 + AktifGiysi^.AKucultmeDugmesiRSNo;
       if not(Pencere^.FBuyutmeDugmesi = nil) then
-        Pencere^.FBuyutmeDugmesi^.Deger := $20000000 + AktifGiysi.ABuyutmeDugmesiRSNo;
+        Pencere^.FBuyutmeDugmesi^.Deger := $10000000 + AktifGiysi^.ABuyutmeDugmesiRSNo;
       if not(Pencere^.FKapatmaDugmesi = nil) then
-        Pencere^.FKapatmaDugmesi^.Deger := $20000000 + AktifGiysi.AKapatmaDugmesiRSNo;
+        Pencere^.FKapatmaDugmesi^.Deger := $10000000 + AktifGiysi^.AKapatmaDugmesiRSNo;
     end
     else
     begin
 
-      GRSolUst := AktifGiysi.ResimSolUstP;
-      GRUst := AktifGiysi.ResimUstP;
-      GRSagUst := AktifGiysi.ResimSagUstP;
-      GRSol := AktifGiysi.ResimSolP;
-      GRSag := AktifGiysi.ResimSagP;
-      GRSolAlt := AktifGiysi.ResimSolAltP;
-      GRAlt := AktifGiysi.ResimAltP;
-      GRSagAlt := AktifGiysi.ResimSagAltP;
-      BaslikRengi := AktifGiysi.PasifBaslikYaziRengi;
+      GRSolUst := AktifGiysi^.ResimSolUstP;
+      GRUst := AktifGiysi^.ResimUstP;
+      GRSagUst := AktifGiysi^.ResimSagUstP;
+      GRSol := AktifGiysi^.ResimSolP;
+      GRSag := AktifGiysi^.ResimSagP;
+      GRSolAlt := AktifGiysi^.ResimSolAltP;
+      GRAlt := AktifGiysi^.ResimAltP;
+      GRSagAlt := AktifGiysi^.ResimSagAltP;
+      BaslikRengi := AktifGiysi^.PasifBaslikYaziRengi;
 
       // kontrol düðmelerini pasifleþtir
       if not(Pencere^.FKucultmeDugmesi = nil) then
-        Pencere^.FKucultmeDugmesi^.Deger := $20000000 + AktifGiysi.PKucultmeDugmesiRSNo;
+        Pencere^.FKucultmeDugmesi^.Deger := $10000000 + AktifGiysi^.PKucultmeDugmesiRSNo;
       if not(Pencere^.FBuyutmeDugmesi = nil) then
-        Pencere^.FBuyutmeDugmesi^.Deger := $20000000 + AktifGiysi.PBuyutmeDugmesiRSNo;
+        Pencere^.FBuyutmeDugmesi^.Deger := $10000000 + AktifGiysi^.PBuyutmeDugmesiRSNo;
       if not(Pencere^.FKapatmaDugmesi = nil) then
-        Pencere^.FKapatmaDugmesi^.Deger := $20000000 + AktifGiysi.PKapatmaDugmesiRSNo;
+        Pencere^.FKapatmaDugmesi^.Deger := $10000000 + AktifGiysi^.PKapatmaDugmesiRSNo;
     end;
 
     // pencerenin giydirilmesi
@@ -600,8 +606,8 @@ begin
     end;
 
     // 2. üst yatay bölümün giydirilmesi
-    Sol := AktifGiysi.ResimSolUstGenislik;
-    Sag := Alan.Sag - AktifGiysi.ResimSagUstGenislik + 1;
+    Sol := AktifGiysi^.ResimSolUstGenislik;
+    Sag := Alan.Sag - AktifGiysi^.ResimSagUstGenislik + 1;
     while True do
     begin
 
@@ -641,8 +647,8 @@ begin
     end;
 
     // 4. sol köþenin giydirilmesi
-    Ust := AktifGiysi.BaslikYukseklik;
-    Alt := Alan.Alt - AktifGiysi.ResimSolAltYukseklik + 1;
+    Ust := AktifGiysi^.BaslikYukseklik;
+    Alt := Alan.Alt - AktifGiysi^.ResimSolAltYukseklik + 1;
     while True do
     begin
 
@@ -667,9 +673,9 @@ begin
     end;
 
     // 5. sað köþenin giydirilmesi
-    Ust := AktifGiysi.BaslikYukseklik;
-    Alt := Alan.Alt - AktifGiysi.ResimSagAltYukseklik + 1;
-    Sol := Alan.Sag - AktifGiysi.ResimSagGenislik + 1;
+    Ust := AktifGiysi^.BaslikYukseklik;
+    Alt := Alan.Alt - AktifGiysi^.ResimSagAltYukseklik + 1;
+    Sol := Alan.Sag - AktifGiysi^.ResimSagGenislik + 1;
     while True do
     begin
 
@@ -709,9 +715,9 @@ begin
     end;
 
     // 7. alt köþenin giydirilmesi
-    Sol := AktifGiysi.ResimSolAltGenislik;
+    Sol := AktifGiysi^.ResimSolAltGenislik;
     Ust := Alan.Alt - GRAlt.Yukseklik + 1;
-    Sag := Alan.Sag - AktifGiysi.ResimSagAltGenislik + 1;
+    Sag := Alan.Sag - AktifGiysi^.ResimSagAltGenislik + 1;
     while True do
     begin
 
@@ -752,20 +758,20 @@ begin
     end;
 
     // pencere iç bölüm boyama
-    Renk := AktifGiysi.IcDolguRengi;
+    Renk := AktifGiysi^.IcDolguRengi;
     if(Renk = $FFFFFFFF) then Renk := Pencere^.FGovdeRenk1;
 
-    DikdortgenDoldur(Pencere, AktifGiysi.ResimSolGenislik, AktifGiysi.BaslikYukseklik,
-      Alan.Sag - AktifGiysi.ResimSagGenislik, Alan.Alt - AktifGiysi.ResimAltYukseklik, Renk, Renk);
+    DikdortgenDoldur(Pencere, AktifGiysi^.ResimSolGenislik, AktifGiysi^.BaslikYukseklik,
+      Alan.Sag - AktifGiysi^.ResimSagGenislik, Alan.Alt - AktifGiysi^.ResimAltYukseklik, Renk, Renk);
 
     // pencere baþlýðýný yaz
-    i := AktifGiysi.BaslikYaziSol;
+    i := AktifGiysi^.BaslikYaziSol;
     if(i = -1) then
-      i := (Pencere^.FBoyut.Genislik div 2) - ((Length(Pencere^.Baslik) * 8) div 2);
+      i := (Pencere^.FAtananAlan.Genislik div 2) - ((Length(Pencere^.Baslik) * 8) div 2);
 
-    j := AktifGiysi.BaslikYaziUst;
+    j := AktifGiysi^.BaslikYaziUst;
     if(j = -1) then
-      j := (AktifGiysi.BaslikYukseklik div 2) - (16 div 2);
+      j := (AktifGiysi^.BaslikYukseklik div 2) - (16 div 2);
 
     YaziYaz(Pencere, i, j, Pencere^.Baslik, BaslikRengi);
 
@@ -1072,10 +1078,10 @@ begin
         SonFareYatayKoordinat := GFareSurucusu.YatayKonum;
         SonFareDikeyKoordinat := GFareSurucusu.DikeyKonum;
 
-        APencere^.FKonum.Sol += Alan.Sol;
-        APencere^.FBoyut.Genislik += Alan.Sag;
-        APencere^.FKonum.Ust += Alan.Ust;
-        APencere^.FBoyut.Yukseklik += Alan.Alt;
+        APencere^.FAtananAlan.Sol += Alan.Sol;
+        APencere^.FAtananAlan.Genislik += Alan.Sag;
+        APencere^.FAtananAlan.Ust += Alan.Ust;
+        APencere^.FAtananAlan.Yukseklik += Alan.Alt;
 
         GecerliFareGostegeTipi := fitBoyutTum;
 
@@ -1182,11 +1188,11 @@ begin
       begin
 
         // fare < sað çizgi kalýnlýk
-        if(AOlay.Deger1 < (APencere^.FBoyut.Genislik - APencere^.FKalinlik.Sag)) then
+        if(AOlay.Deger1 < (APencere^.FAtananAlan.Genislik - APencere^.FKalinlik.Sag)) then
         begin
 
           // fare < alt çizgi kalýnlýk
-          if(AOlay.Deger2 < (APencere^.FBoyut.Yukseklik - APencere^.FKalinlik.Alt)) then
+          if(AOlay.Deger2 < (APencere^.FAtananAlan.Yukseklik - APencere^.FKalinlik.Alt)) then
           begin
 
             // fare > alt çizgi kalýnlýk
@@ -1245,7 +1251,7 @@ begin
             FareKonumu := fkSagUst;
             GecerliFareGostegeTipi := fitBoyutKDGB;
           end
-          else if(AOlay.Deger2 > (APencere^.FBoyut.Yukseklik - APencere^.FKalinlik.Alt)) then
+          else if(AOlay.Deger2 > (APencere^.FAtananAlan.Yukseklik - APencere^.FKalinlik.Alt)) then
           begin
 
             // fare göstergesi sað & alt boyutlandýrmada
@@ -1272,7 +1278,7 @@ begin
           FareKonumu := fkSolUst;
           GecerliFareGostegeTipi := fitBoyutKBGD;
         end
-        else if(AOlay.Deger2 > (APencere^.FBoyut.Yukseklik - APencere^.FKalinlik.Alt)) then
+        else if(AOlay.Deger2 > (APencere^.FAtananAlan.Yukseklik - APencere^.FKalinlik.Alt)) then
         begin
 
           // fare göstergesi alt & sol kýsým boyutlandýrmada
@@ -1379,15 +1385,15 @@ begin
         SonFareYatayKoordinat := GFareSurucusu.YatayKonum;
         SonFareDikeyKoordinat := GFareSurucusu.DikeyKonum;
 
-        APencere^.FKonum.Sol += Alan.Sol;
-        APencere^.FBoyut.Genislik += Alan.Sag;
-        APencere^.FKonum.Ust += Alan.Ust;
-        APencere^.FBoyut.Yukseklik += Alan.Alt;
+        APencere^.FAtananAlan.Sol += Alan.Sol;
+        APencere^.FAtananAlan.Genislik += Alan.Sag;
+        APencere^.FAtananAlan.Ust += Alan.Ust;
+        APencere^.FAtananAlan.Yukseklik += Alan.Alt;
 
         APencere^.FCizimAlan.Sol := 0;
         APencere^.FCizimAlan.Ust := 0;
-        APencere^.FCizimAlan.Sag := APencere^.FBoyut.Genislik - 1;
-        APencere^.FCizimAlan.Alt := APencere^.FBoyut.Yukseklik - 1;
+        APencere^.FCizimAlan.Sag := APencere^.FAtananAlan.Genislik - 1;
+        APencere^.FCizimAlan.Alt := APencere^.FAtananAlan.Yukseklik - 1;
 
         //if(APencere^.FCiziliyor) then Exit;
 
@@ -1397,7 +1403,7 @@ begin
         { TODO : ileride çizimlerin daha hýzlý olmasý için APencere küçülmesi için bellek ayrýlmayabilir }
         FreeMem(APencere^.FCizimBellekAdresi, APencere^.FCizimBellekUzunlugu);
 
-        APencere^.FCizimBellekUzunlugu := (APencere^.FBoyut.Genislik * APencere^.FBoyut.Yukseklik * 4);
+        APencere^.FCizimBellekUzunlugu := (APencere^.FAtananAlan.Genislik * APencere^.FAtananAlan.Yukseklik * 4);
         APencere^.FCizimBellekAdresi := GetMem(APencere^.FCizimBellekUzunlugu);
 
         APencere^.Ciz;
@@ -1511,10 +1517,10 @@ var
   Alan: TAlan;
 begin
 
-  Alan.Sol := APencere^.FKonum.Sol + APencere^.FKalinlik.Sol;
-  Alan.Ust := APencere^.FKonum.Ust + APencere^.FKalinlik.Ust;
-  Alan.Sag := Alan.Sol + (APencere^.FBoyut.Genislik + APencere^.FKalinlik.Sag);
-  Alan.Alt := Alan.Ust + (APencere^.FBoyut.Yukseklik + APencere^.FKalinlik.Alt);
+  Alan.Sol := APencere^.FAtananAlan.Sol + APencere^.FKalinlik.Sol;
+  Alan.Ust := APencere^.FAtananAlan.Ust + APencere^.FKalinlik.Ust;
+  Alan.Sag := Alan.Sol + (APencere^.FAtananAlan.Genislik + APencere^.FKalinlik.Sag);
+  Alan.Alt := Alan.Ust + (APencere^.FAtananAlan.Yukseklik + APencere^.FKalinlik.Alt);
 
   // öndeðer dönüþ deðeri
   Result := False;
@@ -1533,56 +1539,59 @@ end;
  ==============================================================================}
 procedure TPencere.IcBilesenleriKonumlandir(var APencere: PPencere);
 var
+  AktifGiysi: PGiysi;
   i: TISayi4;
 begin
 
-  APencere^.FCizimAlan.Sag := APencere^.FBoyut.Genislik -
+  APencere^.FCizimAlan.Sag := APencere^.FAtananAlan.Genislik -
     (APencere^.FKalinlik.Sol + APencere^.FKalinlik.Sag) - 1;
-  APencere^.FCizimAlan.Alt := APencere^.FBoyut.Yukseklik -
+  APencere^.FCizimAlan.Alt := APencere^.FAtananAlan.Yukseklik -
     (APencere^.FKalinlik.Ust + APencere^.FKalinlik.Alt) - 1;
 
   // alt nesnelerin sýnýrlanacaðý hiza alanýný sýfýrla
   APencere^.HizaAlaniniSifirla;
 
+  AktifGiysi := Giysiler0.AktifGiysi;
+
   if(APencere^.FPencereTipi = ptBoyutlanabilir) then
   begin
 
-    i := AktifGiysi.KucultmeDugmesiSol;
+    i := AktifGiysi^.KucultmeDugmesiSol;
     if(i < 0) then
-      i := APencere^.FBoyut.Genislik + AktifGiysi.KucultmeDugmesiSol;
-    APencere^.FKucultmeDugmesi^.FKonum.Sol := i;
-    APencere^.FKucultmeDugmesi^.FKonum.Ust := AktifGiysi.KucultmeDugmesiUst;
+      i := APencere^.FAtananAlan.Genislik + AktifGiysi^.KucultmeDugmesiSol;
+    APencere^.FKucultmeDugmesi^.FAtananAlan.Sol := i;
+    APencere^.FKucultmeDugmesi^.FAtananAlan.Ust := AktifGiysi^.KucultmeDugmesiUst;
 
-    i := AktifGiysi.BuyutmeDugmesiSol;
+    i := AktifGiysi^.BuyutmeDugmesiSol;
     if(i < 0) then
-      i := APencere^.FBoyut.Genislik + AktifGiysi.BuyutmeDugmesiSol;
-    APencere^.FBuyutmeDugmesi^.FKonum.Sol := i;
-    APencere^.FKucultmeDugmesi^.FKonum.Ust := AktifGiysi.BuyutmeDugmesiUst;
+      i := APencere^.FAtananAlan.Genislik + AktifGiysi^.BuyutmeDugmesiSol;
+    APencere^.FBuyutmeDugmesi^.FAtananAlan.Sol := i;
+    APencere^.FBuyutmeDugmesi^.FAtananAlan.Ust := AktifGiysi^.BuyutmeDugmesiUst;
 
-    i := AktifGiysi.KapatmaDugmesiSol;
+    i := AktifGiysi^.KapatmaDugmesiSol;
     if(i < 0) then
-      i := APencere^.FBoyut.Genislik + AktifGiysi.KapatmaDugmesiSol;
-    APencere^.FKapatmaDugmesi^.FKonum.Sol := i;
-    APencere^.FKapatmaDugmesi^.FKonum.Ust := AktifGiysi.KapatmaDugmesiUst;
+      i := APencere^.FAtananAlan.Genislik + AktifGiysi^.KapatmaDugmesiSol;
+    APencere^.FKapatmaDugmesi^.FAtananAlan.Sol := i;
+    APencere^.FKapatmaDugmesi^.FAtananAlan.Ust := AktifGiysi^.KapatmaDugmesiUst;
 
-    APencere^.FKucultmeDugmesi^.FCizimBaslangic.Sol := APencere^.FCizimBaslangic.Sol + APencere^.FKucultmeDugmesi^.FKonum.Sol;
-    APencere^.FKucultmeDugmesi^.FCizimBaslangic.Ust := APencere^.FCizimBaslangic.Ust + APencere^.FKucultmeDugmesi^.FKonum.Ust;
-    APencere^.FBuyutmeDugmesi^.FCizimBaslangic.Sol := APencere^.FCizimBaslangic.Sol + APencere^.FBuyutmeDugmesi^.FKonum.Sol;
-    APencere^.FBuyutmeDugmesi^.FCizimBaslangic.Ust := APencere^.FCizimBaslangic.Ust + APencere^.FBuyutmeDugmesi^.FKonum.Ust;
-    APencere^.FKapatmaDugmesi^.FCizimBaslangic.Sol := APencere^.FCizimBaslangic.Sol + APencere^.FKapatmaDugmesi^.FKonum.Sol;
-    APencere^.FKapatmaDugmesi^.FCizimBaslangic.Ust := APencere^.FCizimBaslangic.Ust + APencere^.FKapatmaDugmesi^.FKonum.Ust;
+    APencere^.FKucultmeDugmesi^.FCizimBaslangic.Sol := APencere^.FCizimBaslangic.Sol + APencere^.FKucultmeDugmesi^.FAtananAlan.Sol;
+    APencere^.FKucultmeDugmesi^.FCizimBaslangic.Ust := APencere^.FCizimBaslangic.Ust + APencere^.FKucultmeDugmesi^.FAtananAlan.Ust;
+    APencere^.FBuyutmeDugmesi^.FCizimBaslangic.Sol := APencere^.FCizimBaslangic.Sol + APencere^.FBuyutmeDugmesi^.FAtananAlan.Sol;
+    APencere^.FBuyutmeDugmesi^.FCizimBaslangic.Ust := APencere^.FCizimBaslangic.Ust + APencere^.FBuyutmeDugmesi^.FAtananAlan.Ust;
+    APencere^.FKapatmaDugmesi^.FCizimBaslangic.Sol := APencere^.FCizimBaslangic.Sol + APencere^.FKapatmaDugmesi^.FAtananAlan.Sol;
+    APencere^.FKapatmaDugmesi^.FCizimBaslangic.Ust := APencere^.FCizimBaslangic.Ust + APencere^.FKapatmaDugmesi^.FAtananAlan.Ust;
   end
   else if(APencere^.FPencereTipi = ptIletisim) then
   begin
 
-    i := AktifGiysi.KapatmaDugmesiSol;
+    i := AktifGiysi^.KapatmaDugmesiSol;
     if(i < 0) then
-      i := APencere^.FBoyut.Genislik + AktifGiysi.KapatmaDugmesiSol;
-    APencere^.FKapatmaDugmesi^.FKonum.Sol := i;
-    APencere^.FKapatmaDugmesi^.FKonum.Ust := AktifGiysi.KapatmaDugmesiUst;
+      i := APencere^.FAtananAlan.Genislik + AktifGiysi^.KapatmaDugmesiSol;
+    APencere^.FKapatmaDugmesi^.FAtananAlan.Sol := i;
+    APencere^.FKapatmaDugmesi^.FAtananAlan.Ust := AktifGiysi^.KapatmaDugmesiUst;
 
-    APencere^.FKapatmaDugmesi^.FCizimBaslangic.Sol := APencere^.FCizimBaslangic.Sol + APencere^.FKapatmaDugmesi^.FKonum.Sol;
-    APencere^.FKapatmaDugmesi^.FCizimBaslangic.Ust := APencere^.FCizimBaslangic.Ust + APencere^.FKapatmaDugmesi^.FKonum.Ust;
+    APencere^.FKapatmaDugmesi^.FCizimBaslangic.Sol := APencere^.FCizimBaslangic.Sol + APencere^.FKapatmaDugmesi^.FAtananAlan.Sol;
+    APencere^.FKapatmaDugmesi^.FCizimBaslangic.Ust := APencere^.FCizimBaslangic.Ust + APencere^.FKapatmaDugmesi^.FAtananAlan.Ust;
   end;
 end;
 

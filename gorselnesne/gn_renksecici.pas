@@ -31,9 +31,6 @@ const
 type
   PRenkSecici = ^TRenkSecici;
   TRenkSecici = object(TPanel)
-  private
-    FRenkKutuG, FRenkKutuY,
-    FSeciliRenkSiraNo: TISayi4;
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TSayi4): PRenkSecici;
@@ -43,6 +40,9 @@ type
     procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    property FRenkKutuG: TISayi4 read FIDeger1 write FIDeger1;
+    property FRenkKutuY: TISayi4 read FIDeger2 write FIDeger2;
+    property FSeciliRenkSiraNo: TISayi4 read FIDeger3 write FIDeger3;
   end;
 
 function RenkSeciciCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;

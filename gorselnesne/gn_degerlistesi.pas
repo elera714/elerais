@@ -274,7 +274,7 @@ begin
     DegerListesi^.FKolonUzunluklari^.Temizle;
 
     DegerListesi^.FKolonUzunluklari^.Ekle(Kolon1U);
-    DegerListesi^.FKolonUzunluklari^.Ekle(DegerListesi^.FBoyut.Genislik - Kolon1U - 3);
+    DegerListesi^.FKolonUzunluklari^.Ekle(DegerListesi^.FAtananAlan.Genislik - Kolon1U - 3);
   end;
 end;
 
@@ -506,7 +506,7 @@ begin
       end
 
       // fare değer listesi nesnesinin aşağısında ise
-      else if(AOlay.Deger2 > DegerListesi^.FBoyut.Yukseklik) then
+      else if(AOlay.Deger2 > DegerListesi^.FAtananAlan.Yukseklik) then
       begin
 
         // azami kaydırma değeri
@@ -656,7 +656,7 @@ begin
   DegerListesi^.FKolonUzunluklari^.Ekle(AKolon1U);
 
   DegerListesi^.FKolonAdlari^.Ekle(AKolon2);
-  DegerListesi^.FKolonUzunluklari^.Ekle(DegerListesi^.FBoyut.Genislik - AKolon1U - 3);
+  DegerListesi^.FKolonUzunluklari^.Ekle(DegerListesi^.FAtananAlan.Genislik - AKolon1U - 3);
 
   Result := True;
 end;

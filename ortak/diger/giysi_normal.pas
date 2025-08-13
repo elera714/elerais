@@ -19,7 +19,7 @@ unit giysi_normal;
 
 interface
 
-uses paylasim;
+uses paylasim, giysi;
 
 const
   // başlık = taşıma çubuğu sabitleri
@@ -419,6 +419,8 @@ const
 
 var
   GiysiNormal: TGiysi = (
+    Ad                      : 'Normal Giysi';
+
     BaslikYukseklik         : BASLIK_Y;
 
     ResimSolUstGenislik     : RESIM_SOLUST_G;
@@ -473,12 +475,12 @@ var
     ResimSagAltA: (Genislik: RESIM_SAGALT_G;  Yukseklik: RESIM_SAGALT_Y;  BellekAdresi: @ResimSagAltA);
     ResimSagAltP: (Genislik: RESIM_SAGALT_G;  Yukseklik: RESIM_SAGALT_Y;  BellekAdresi: @ResimSagAltP);
 
-    AKapatmaDugmesiRSNo   : 6;
-    ABuyutmeDugmesiRSNo   : 8;
-    AKucultmeDugmesiRSNo  : 10;
-    PKapatmaDugmesiRSNo   : 7;
-    PBuyutmeDugmesiRSNo   : 9;
-    PKucultmeDugmesiRSNo  : 11;
+    AKapatmaDugmesiRSNo   : 15;
+    ABuyutmeDugmesiRSNo   : 17;
+    AKucultmeDugmesiRSNo  : 19;
+    PKapatmaDugmesiRSNo   : 16;
+    PBuyutmeDugmesiRSNo   : 18;
+    PKucultmeDugmesiRSNo  : 20;
 );
 
 implementation

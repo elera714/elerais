@@ -101,10 +101,10 @@ begin
         if not(GN = nil) then
         begin
 
-          s += ';' + IntToStr(GN^.FKonum.Sol);
-          s += ';' + IntToStr(GN^.FKonum.Ust);
-          s += ';' + IntToStr(GN^.FBoyut.Genislik);
-          s += ';' + IntToStr(GN^.FBoyut.Yukseklik);
+          s += ';' + IntToStr(GN^.FAtananAlan.Sol);
+          s += ';' + IntToStr(GN^.FAtananAlan.Ust);
+          s += ';' + IntToStr(GN^.FAtananAlan.Genislik);
+          s += ';' + IntToStr(GN^.FAtananAlan.Yukseklik);
 
           WriteLn(DosyaKimlik, s);
         end;

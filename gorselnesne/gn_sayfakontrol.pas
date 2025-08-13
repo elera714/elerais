@@ -352,7 +352,7 @@ begin
 
     // sekme paneli
     SayfaKontrol^.FPaneller[0] := SayfaKontrol^.FPaneller[0]^.Olustur(ktBilesen,
-      SayfaKontrol, 0, 20, SayfaKontrol^.FBoyut.Genislik, SayfaKontrol^.FBoyut.Yukseklik - 20,
+      SayfaKontrol, 0, 20, SayfaKontrol^.FAtananAlan.Genislik, SayfaKontrol^.FAtananAlan.Yukseklik - 20,
       3, RENK_SIYAH, RENK_BEYAZ, 0, '');
     //SayfaKontrol^.FPaneller[i]^.FHiza := hzTum;
     SayfaKontrol^.FPaneller[0]^.Gorunum := True;
@@ -377,7 +377,7 @@ begin
 
     // sekme paneli
     SayfaKontrol^.FPaneller[1] := SayfaKontrol^.FPaneller[1]^.Olustur(ktBilesen,
-      SayfaKontrol, 0, 20, SayfaKontrol^.FBoyut.Genislik, SayfaKontrol^.FBoyut.Yukseklik - 20,
+      SayfaKontrol, 0, 20, SayfaKontrol^.FAtananAlan.Genislik, SayfaKontrol^.FAtananAlan.Yukseklik - 20,
       3, RENK_SIYAH, RENK_BEYAZ, 0, '');
     //SayfaKontrol^.FPaneller[i]^.FHiza := hzTum;
     SayfaKontrol^.FPaneller[1]^.Gorunum := True;
@@ -402,7 +402,7 @@ begin
 
     // sekme paneli
     SayfaKontrol^.FPaneller[2] := SayfaKontrol^.FPaneller[2]^.Olustur(ktBilesen,
-      SayfaKontrol, 0, 20, SayfaKontrol^.FBoyut.Genislik, SayfaKontrol^.FBoyut.Yukseklik - 20,
+      SayfaKontrol, 0, 20, SayfaKontrol^.FAtananAlan.Genislik, SayfaKontrol^.FAtananAlan.Yukseklik - 20,
       3, RENK_SIYAH, RENK_BEYAZ, 0, '');
     //SayfaKontrol^.FPaneller[i]^.FHiza := hzTum;
     SayfaKontrol^.FPaneller[2]^.Gorunum := True;
@@ -427,7 +427,7 @@ begin
 
     // sekme paneli
     SayfaKontrol^.FPaneller[3] := SayfaKontrol^.FPaneller[3]^.Olustur(ktBilesen,
-      SayfaKontrol, 0, 20, SayfaKontrol^.FBoyut.Genislik, SayfaKontrol^.FBoyut.Yukseklik - 20,
+      SayfaKontrol, 0, 20, SayfaKontrol^.FAtananAlan.Genislik, SayfaKontrol^.FAtananAlan.Yukseklik - 20,
       3, RENK_SIYAH, RENK_BEYAZ, 0, '');
     //SayfaKontrol^.FPaneller[i]^.FHiza := hzTum;
     SayfaKontrol^.FPaneller[3]^.Gorunum := True;

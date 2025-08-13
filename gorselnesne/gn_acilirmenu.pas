@@ -187,8 +187,8 @@ begin
   begin
 
     // menüyü farenin bulunduğu konumda görüntüle
-    AcilirMenu^.FKonum.Sol := GFareSurucusu.YatayKonum;
-    AcilirMenu^.FKonum.Ust := GFareSurucusu.DikeyKonum;
+    AcilirMenu^.FAtananAlan.Sol := GFareSurucusu.YatayKonum;
+    AcilirMenu^.FAtananAlan.Ust := GFareSurucusu.DikeyKonum;
   end;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
@@ -293,13 +293,13 @@ begin
     // genişliğin yeniden belirlenmesi
     i := Length(ADeger) * 8;
     if(i > 100) then i := 100;
-    if(i > AcilirMenu^.FBoyut.Genislik) then AcilirMenu^.FBoyut.Genislik := i;
+    if(i > AcilirMenu^.FAtananAlan.Genislik) then AcilirMenu^.FAtananAlan.Genislik := i;
 
     // yüksekliğin yeniden belirlenmesi. en fazla 5 eleman görüntülenebilir
     i := AcilirMenu^.FMenuBaslikListesi^.ElemanSayisi;
     if(i > 5) then i := 5;
     i := i * 24;
-    if(i > AcilirMenu^.FBoyut.Yukseklik) then AcilirMenu^.FBoyut.Yukseklik := i;
+    if(i > AcilirMenu^.FAtananAlan.Yukseklik) then AcilirMenu^.FAtananAlan.Yukseklik := i;
   end;
 
   AcilirMenu^.Boyutlandir;

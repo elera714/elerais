@@ -32,9 +32,6 @@ program cekirdek;
 
 uses paylasim, yukleyici, gorev, yonetim, genel, sistemmesaj, bmp, sanalbellek;
 
-var
-  MUGorev: PGorev = nil;    // masaüstü görevi
-
 begin
 
   // belleði sayfalama iþlevine hazýrla

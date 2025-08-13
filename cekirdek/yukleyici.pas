@@ -27,7 +27,7 @@ implementation
 uses yonetim, gdt, idt, irq, pic, pci, src_klavye, genel, gorev, fdepolama, gercekbellek,
   gorselnesne, dosya, sistemmesaj, mdepolama, islemci, paylasim, usb, zamanlayici,
   ag, src_vesa20, src_com, src_sb, bmp, acpi, k_giysi, giysi_mac, giysi_normal,
-  olayyonetim;
+  olayyonetim, giysi;
 
 {==============================================================================
   çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
@@ -142,9 +142,8 @@ begin
   // çekirdek yükleme sonrasý iþlevleri gerçekleþtir
   YukleIslevindenSonraCalistir;
 
-  // aktif pencere giysisi tanýmlanýyor
-  AktifGiysiSiraNo := 0;
-  AktifGiysi := GiysiListesi[AktifGiysiSiraNo].Adres^;
+  // pencere giysi birimini yükle
+  Giysiler0.Yukle;
 
   // sistem mesajlarýný görmek için bekleme süresi.
   BekleMS(50);

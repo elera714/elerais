@@ -494,7 +494,9 @@ type
 type
   PAlan = ^TAlan;
   TAlan = record
-    Sol, Ust, Sag, Alt: TISayi4;
+    case TSayi1 of
+      0: (Sol, Ust, Sag, Alt: TISayi4);
+      1: (Yatay, Dikey, Genislik, Yukseklik: TISayi4);
   end;
 
 type
@@ -544,12 +546,6 @@ type { Görsel Nesne Tipi }
     gntEtiket, gntDurumCubugu, gntSecimDugmesi, gntBaglanti, gntResim, gntListeGorunum,
     gntPanel, gntResimDugmesi, gntKaydirmaCubugu, gntKarmaListe, gntAcilirMenu,
     gntDegerListesi, gntIzgara, gntAracCubugu, gntRenkSecici, gntSayfaKontrol);
-
-type
-  THamResim = record
-    Genislik, Yukseklik: TSayi4;
-    BellekAdresi: Isaretci;
-  end;
 
 const
   ISLEV_OLUSTUR     = $0001;
@@ -642,70 +638,6 @@ const
   DUGME_BASILI_ILKRENK      = $609FCC;
   DUGME_BASILI_SONRENK      = $2C6187;
   DUGME_BASILI_YAZIRENK     = RENK_BEYAZ;
-
-type
-  TGiysiResim = record
-    Genislik, Yukseklik: TSayi4;
-    BellekAdresi: Isaretci;
-  end;
-
-type
-  PGiysi = ^TGiysi;
-  TGiysi = record
-    BaslikYukseklik,
-
-    ResimSolUstGenislik,
-    ResimUstGenislik,
-    ResimSagUstGenislik,
-
-    ResimSolGenislik,
-    ResimSolYukseklik,
-    ResimSagGenislik,
-    ResimSagYukseklik,
-
-    ResimSolAltGenislik,
-    ResimSolAltYukseklik,
-    ResimAltGenislik,
-    ResimAltYukseklik,
-    ResimSagAltGenislik,
-    ResimSagAltYukseklik,
-
-    AktifBaslikYaziRengi,
-    PasifBaslikYaziRengi,
-    IcDolguRengi,
-    BaslikYaziSol,
-    BaslikYaziUst,
-
-    KapatmaDugmesiSol,
-    KapatmaDugmesiUst,
-    KapatmaDugmesiGenislik,
-    KapatmaDugmesiYukseklik,
-    BuyutmeDugmesiSol,
-    BuyutmeDugmesiUst,
-    BuyutmeDugmesiGenislik,
-    BuyutmeDugmesiYukseklik,
-    KucultmeDugmesiSol,
-    KucultmeDugmesiUst,
-    KucultmeDugmesiGenislik,
-    KucultmeDugmesiYukseklik: TISayi4;
-
-    ResimSolUstA, ResimSolUstP,
-    ResimUstA, ResimUstP,
-    ResimSagUstA, ResimSagUstP,
-    ResimSolA, ResimSolP,
-    ResimSagA, ResimSagP,
-    ResimSolAltA, ResimSolAltP,
-    ResimAltA, ResimAltP,
-    ResimSagAltA, ResimSagAltP: TGiysiResim;
-
-    // A(ktif), (P)asif kontrol düðme (R)esim (S)ýra numaralarý
-    AKapatmaDugmesiRSNo, ABuyutmeDugmesiRSNo, AKucultmeDugmesiRSNo,
-    PKapatmaDugmesiRSNo, PBuyutmeDugmesiRSNo, PKucultmeDugmesiRSNo: TSayi4;
-  end;
-
-var
-  AktifGiysi: TGiysi;
-  AktifGiysiSiraNo: TISayi4 = 0;
 
 type
   PTSS = ^TTSS;

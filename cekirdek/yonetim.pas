@@ -704,10 +704,10 @@ begin
 
           GN := GorselNesneler0.NesneAl(PPencere(MUGorev^.AktifPencere)^.Kimlik);
 
-          PPencere(GN)^.FKonum.Sol := Konum.Sol;
-          PPencere(GN)^.FKonum.Ust := Konum.Ust;
-          PPencere(GN)^.FBoyut.Genislik := Boyut.Genislik;
-          PPencere(GN)^.FBoyut.Yukseklik := Boyut.Yukseklik;
+          PPencere(GN)^.FAtananAlan.Sol := Konum.Sol;
+          PPencere(GN)^.FAtananAlan.Ust := Konum.Ust;
+          PPencere(GN)^.FAtananAlan.Genislik := Boyut.Genislik;
+          PPencere(GN)^.FAtananAlan.Yukseklik := Boyut.Yukseklik;
           PPencere(GN)^.Guncelle;
 
           PMasaustu(GN^.AtaNesne)^.Ciz;

@@ -4,9 +4,9 @@
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
   Dosya Adı: k_giysi.pas
-  Dosya İşlevi: giysi (skin) işlevlerini yönetir
+  Dosya İşlevi: giysi (skin) kesme işlevlerini yönetir
 
-  Güncelleme Tarihi: 11/08/2020
+  Güncelleme Tarihi: 07/08/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,21 +14,7 @@ unit k_giysi;
 
 interface
 
-uses giysi_normal, giysi_mac, paylasim;
-
-type
-  TGiysiler = record
-    Ad: string;
-    Adres: PGiysi;
-  end;
-
-const
-  TOPLAM_GIYSISAYISI = 2;
-
-var
-  GiysiListesi: array[0..TOPLAM_GIYSISAYISI - 1] of TGiysiler = (
-    (Ad: 'Normal Giysi'; Adres: @GiysiNormal),
-    (Ad: 'MAC Giysi'; Adres: @GiysiMac));
+uses giysi, paylasim;
 
 function GiysiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
@@ -38,7 +24,7 @@ uses genel, gorev;
 
 function GiysiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  Islev, GiysiNo: TSayi4;
+  Islev, GiysiSN: TSayi4;
   p: PKarakterKatari;
 begin
 
@@ -49,33 +35,33 @@ begin
   if(Islev = 1) then
   begin
 
-    Result := TOPLAM_GIYSISAYISI;
+    Result := Giysiler0.ToplamGiysi;
   end
   else if(Islev = 2) then
   begin
 
-    GiysiNo := PSayi4(ADegiskenler + 00)^;
-    if(GiysiNo < TOPLAM_GIYSISAYISI) then
+    GiysiSN := PSayi4(ADegiskenler + 00)^;
+    if(GiysiSN < Giysiler0.ToplamGiysi) then
     begin
 
       p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-      p^ := GiysiListesi[GiysiNo].Ad;
+      p^ := Giysiler0.Giysi[GiysiSN]^.Ad;
     end;
   end
   else if(Islev = 3) then
   begin
 
-    Result := AktifGiysiSiraNo;
+    Result :=  Giysiler0.AktifGiysiSN;
   end
   else if(Islev = 4) then
   begin
 
-    GiysiNo := PSayi4(ADegiskenler + 00)^;
-    if(GiysiNo < TOPLAM_GIYSISAYISI) then
+    GiysiSN := PSayi4(ADegiskenler + 00)^;
+    if(GiysiSN < Giysiler0.ToplamGiysi) then
     begin
 
-      AktifGiysiSiraNo := GiysiNo;
-      AktifGiysi := GiysiListesi[AktifGiysiSiraNo].Adres^;
+      Giysiler0.AktifGiysiSN := GiysiSN;
+      Giysiler0.AktifGiysi := Giysiler0.Giysi[Giysiler0.AktifGiysiSN];
       GAktifMasaustu^.Ciz;
     end;
   end

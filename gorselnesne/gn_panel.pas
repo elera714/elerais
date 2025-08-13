@@ -37,7 +37,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gorev, gn_islevler, temelgorselnesne, gn_pencere, gn_resimdugmesi,
+uses gorev, gn_islevler, temelgorselnesne, gn_pencere, gn_resimdugmesi,
   gn_kaydirmacubugu, gn_dugme, gn_gucdugmesi, gn_defter, gn_baglanti, gn_degerdugmesi,
   gn_durumcubugu, gn_etiket, gn_giriskutusu, gn_islemgostergesi, gn_karmaliste,
   gn_listegorunum, gn_listekutusu, gn_onaykutusu, gn_resim, gn_secimdugmesi,
@@ -96,10 +96,10 @@ begin
 
         Konum := PKonum(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-        Konum^.Sol := Panel^.FKonum.Sol;
-        Konum^.Ust := Panel^.FKonum.Ust;
-        Boyut^.Genislik := Panel^.FBoyut.Genislik;
-        Boyut^.Yukseklik := Panel^.FBoyut.Yukseklik;
+        Konum^.Sol := Panel^.FAtananAlan.Sol;
+        Konum^.Ust := Panel^.FAtananAlan.Ust;
+        Boyut^.Genislik := Panel^.FAtananAlan.Genislik;
+        Boyut^.Yukseklik := Panel^.FAtananAlan.Yukseklik;
       end;
     end
 
