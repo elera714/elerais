@@ -59,9 +59,9 @@ type
     // nesnenin sol / üst çizim baþlangýç koordinatý
     FCizimBaslangic: TKonum;
     // nesnenin 0 baþlangýcýna sahip iç çizim alan kordinatlarý
-    // bilgi: nesnenin gerçek fiziksel koordinatlarý FCizimAlan deðerine FCizimBaslangic
+    // bilgi: nesnenin gerçek fiziksel koordinatlarý FCizimAlani deðerine FCizimBaslangic
     //   deðerinin eklenmesiyle elde edilir
-    FCizimAlan: TAlan;
+    FCizimAlani: TAlan;
     // nesnenin alt nesne için hiza alaný (alt nesne içeren nesneler için)
     FHizaAlani: TAlan;
     // nesnenin hizalanacaðý yön

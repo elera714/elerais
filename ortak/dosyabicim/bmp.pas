@@ -25,6 +25,7 @@ type
     R, G, B: TSayi1;
   end;
 
+type
   PBMPBicim = ^TBMPBicim;
   TBMPBicim = packed record
     Tip: TSayi2;	                  // dosya tipi "BM".
@@ -159,7 +160,7 @@ var
   Pencere: PPencere;
   Resim: PResim;
   Renk1, Renk2: PRenk;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   Yukseklik, Genislik, SatirdakiByteSayisi,
   TuvalA1, TuvalB1: TISayi4;
   YatayArtis, DikeyArtis, Sol: Double;
@@ -173,13 +174,13 @@ begin
     Masaustu := PMasaustu(AGorselNesne);
     if(Masaustu = nil) then Exit;
 
-    Alan := Masaustu^.FCizimAlan;
+    CizimAlani := Masaustu^.FCizimAlani;
 
     Genislik := AGoruntuYapi.Genislik;
     SatirdakiByteSayisi := Genislik * 4;
-    if(Genislik > Alan.Sag) then Genislik := Alan.Sag;
+    if(Genislik > CizimAlani.Sag) then Genislik := CizimAlani.Sag;
     Yukseklik := AGoruntuYapi.Yukseklik;
-    if(Yukseklik > Alan.Alt) then Yukseklik := Alan.Alt;
+    if(Yukseklik > CizimAlani.Alt) then Yukseklik := CizimAlani.Alt;
 
     for TuvalB1 := 0 to Yukseklik - 1 do
     begin
@@ -189,7 +190,7 @@ begin
       for TuvalA1 := 0 to Genislik - 1 do
       begin
 
-        EkranKartSurucusu0.NoktaYaz(Masaustu, Alan.Sol + TuvalA1, Alan.Ust + TuvalB1,
+        EkranKartSurucusu0.NoktaYaz(Masaustu, CizimAlani.Sol + TuvalA1, CizimAlani.Ust + TuvalB1,
           Renk1^, True);
         Inc(Renk1);
       end;
@@ -205,7 +206,7 @@ begin
     Pencere := EnUstPencereNesnesiniAl(Resim);
     if(Pencere = nil) then Exit;
 
-    Alan := Resim^.FCizimAlan;
+    CizimAlani := Resim^.FCizimAlani;
 
     if(Resim^.FTuvaleSigdir) then
     begin
@@ -213,17 +214,17 @@ begin
       Genislik := AGoruntuYapi.Genislik;
       SatirdakiByteSayisi := Genislik * 4;
       Yukseklik := AGoruntuYapi.Yukseklik;
-      YatayArtis := Genislik / (Alan.Sag - Alan.Sol);
-      DikeyArtis := Yukseklik / (Alan.Alt - Alan.Ust);
+      YatayArtis := Genislik / (CizimAlani.Sag - CizimAlani.Sol);
+      DikeyArtis := Yukseklik / (CizimAlani.Alt - CizimAlani.Ust);
     end
     else
     begin
 
       Genislik := AGoruntuYapi.Genislik;
       SatirdakiByteSayisi := Genislik * 4;
-      if(Genislik > Alan.Sag) then Genislik := Alan.Sag;
+      if(Genislik > CizimAlani.Sag) then Genislik := CizimAlani.Sag;
       Yukseklik := AGoruntuYapi.Yukseklik;
-      if(Yukseklik > Alan.Alt) then Yukseklik := Alan.Alt;
+      if(Yukseklik > CizimAlani.Alt) then Yukseklik := CizimAlani.Alt;
       YatayArtis := 1.0;
       DikeyArtis := 1.0;
     end;
@@ -241,7 +242,7 @@ begin
         Renk2 := Renk1;
         Inc(Renk2, Round(Sol));
 
-        EkranKartSurucusu0.NoktaYaz(Resim, Alan.Sol + TuvalA1, Alan.Ust + TuvalB1,
+        EkranKartSurucusu0.NoktaYaz(Resim, CizimAlani.Sol + TuvalA1, CizimAlani.Ust + TuvalB1,
           Renk2^, True);
       end;
     end;

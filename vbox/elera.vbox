@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-08-13T18:55:17Z">
+  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-08-18T14:55:45Z">
     <MediaRegistry>
       <HardDisks>
         <HardDisk uuid="{769293a2-a8b3-4206-ae16-497c497b6f33}" location="elera.vdi" format="VDI" type="Normal"/>
@@ -37,11 +37,11 @@
       <Network>
         <Adapter slot="0" enabled="true" MACAddress="0800ABCDEF01">
           <DisabledModes>
-            <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
+            <NAT localhost-reachable="true"/>
             <InternalNetwork name="intnet"/>
             <NATNetwork name="NatNetwork"/>
           </DisabledModes>
-          <NAT localhost-reachable="true"/>
+          <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
         </Adapter>
         <Adapter slot="1" MACAddress="0800ABCDEF02" type="82540EM">
           <DisabledModes>
@@ -55,7 +55,7 @@
       <AudioAdapter useDefault="true" driver="WAS" enabledOut="true"/>
       <Clipboard/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1755111265881947600" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1755528879712958100" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="IDE" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">

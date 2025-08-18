@@ -179,7 +179,7 @@ end;
 procedure TRenkSecici.Ciz;
 var
   RenkSecici: PRenkSecici;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   i, j, k: TISayi4;
 begin
 
@@ -195,15 +195,15 @@ begin
     for j := 0 to 7 do
     begin
 
-      Alan.Sol := j * FRenkKutuG;
-      Alan.Ust := i * FRenkKutuY;
-      Alan.Sag := Alan.Sol + FRenkKutuG - 1;
-      Alan.Alt := Alan.Ust + FRenkKutuY - 1;
-      RenkSecici^.DikdortgenDoldur(RenkSecici, Alan, SecimRenkleri[(i * 8) + j],
+      CizimAlani.Sol := j * FRenkKutuG;
+      CizimAlani.Ust := i * FRenkKutuY;
+      CizimAlani.Sag := CizimAlani.Sol + FRenkKutuG - 1;
+      CizimAlani.Alt := CizimAlani.Ust + FRenkKutuY - 1;
+      RenkSecici^.DikdortgenDoldur(RenkSecici, CizimAlani, SecimRenkleri[(i * 8) + j],
         SecimRenkleri[(i * 8) + j]);
 
       if(k = FSeciliRenkSiraNo) then
-        RenkSecici^.Dikdortgen(RenkSecici, ctDuz, Alan, KenarRenkleri[FSeciliRenkSiraNo]);
+        RenkSecici^.Dikdortgen(RenkSecici, ctDuz, CizimAlani, KenarRenkleri[FSeciliRenkSiraNo]);
 
       Inc(k);
     end;
@@ -213,8 +213,8 @@ begin
   if(RenkSecici^.Odaklanildi) then
   begin
 
-    Alan := RenkSecici^.FCizimAlan;
-    RenkSecici^.Dikdortgen(RenkSecici, ctNokta, Alan, RENK_SIYAH);
+    CizimAlani := RenkSecici^.FCizimAlani;
+    RenkSecici^.Dikdortgen(RenkSecici, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
 

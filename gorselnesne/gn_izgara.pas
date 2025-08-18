@@ -318,10 +318,10 @@ begin
     Izgara^.FYatayKCubugu^.FAtananAlan.Genislik := Izgara^.FAtananAlan.Genislik - 16;
     Izgara^.FYatayKCubugu^.FAtananAlan.Yukseklik := 16;
 
-    Izgara^.FYatayKCubugu^.FCizimAlan.Sol := 0;
-    Izgara^.FYatayKCubugu^.FCizimAlan.Ust := 0;
-    Izgara^.FYatayKCubugu^.FCizimAlan.Sag := Izgara^.FYatayKCubugu^.FAtananAlan.Genislik - 1;
-    Izgara^.FYatayKCubugu^.FCizimAlan.Alt := Izgara^.FYatayKCubugu^.FAtananAlan.Yukseklik - 1;
+    Izgara^.FYatayKCubugu^.FCizimAlani.Sol := 0;
+    Izgara^.FYatayKCubugu^.FCizimAlani.Ust := 0;
+    Izgara^.FYatayKCubugu^.FCizimAlani.Sag := Izgara^.FYatayKCubugu^.FAtananAlan.Genislik - 1;
+    Izgara^.FYatayKCubugu^.FCizimAlani.Alt := Izgara^.FYatayKCubugu^.FAtananAlan.Yukseklik - 1;
 
     Izgara^.FYatayKCubugu^.FCizimBaslangic.Sol := Izgara^.FCizimBaslangic.Sol + Izgara^.FYatayKCubugu^.FAtananAlan.Sol;
     Izgara^.FYatayKCubugu^.FCizimBaslangic.Ust := Izgara^.FCizimBaslangic.Ust + Izgara^.FYatayKCubugu^.FAtananAlan.Ust;
@@ -337,10 +337,10 @@ begin
     Izgara^.FDikeyKCubugu^.FAtananAlan.Genislik := 16;
     Izgara^.FDikeyKCubugu^.FAtananAlan.Yukseklik := Izgara^.FAtananAlan.Yukseklik - 16;
 
-    Izgara^.FDikeyKCubugu^.FCizimAlan.Sol := 0;
-    Izgara^.FDikeyKCubugu^.FCizimAlan.Ust := 0;
-    Izgara^.FDikeyKCubugu^.FCizimAlan.Sag := Izgara^.FDikeyKCubugu^.FAtananAlan.Genislik - 1;
-    Izgara^.FDikeyKCubugu^.FCizimAlan.Alt := Izgara^.FDikeyKCubugu^.FAtananAlan.Yukseklik - 1;
+    Izgara^.FDikeyKCubugu^.FCizimAlani.Sol := 0;
+    Izgara^.FDikeyKCubugu^.FCizimAlani.Ust := 0;
+    Izgara^.FDikeyKCubugu^.FCizimAlani.Sag := Izgara^.FDikeyKCubugu^.FAtananAlan.Genislik - 1;
+    Izgara^.FDikeyKCubugu^.FCizimAlani.Alt := Izgara^.FDikeyKCubugu^.FAtananAlan.Yukseklik - 1;
 
     Izgara^.FDikeyKCubugu^.FCizimBaslangic.Sol := Izgara^.FCizimBaslangic.Sol + Izgara^.FDikeyKCubugu^.FAtananAlan.Sol;
     Izgara^.FDikeyKCubugu^.FCizimBaslangic.Ust := Izgara^.FCizimBaslangic.Ust + Izgara^.FDikeyKCubugu^.FAtananAlan.Ust;
@@ -355,7 +355,7 @@ procedure TIzgara.Ciz;
 var
   Pencere: PPencere = nil;
   Izgara: PIzgara = nil;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   i, j, SolIlk, UstIlk: TISayi4;
 begin
 
@@ -365,7 +365,7 @@ begin
   inherited Ciz;
 
   // kaydýrma çubuðunun çizim alan koordinatlarýný al
-  Alan := Izgara^.FCizimAlan;
+  CizimAlani := Izgara^.FCizimAlani;
 
   // ata nesne bir pencere mi?
   Pencere := EnUstPencereNesnesiniAl(Izgara);
@@ -382,8 +382,8 @@ begin
     UstIlk := Izgara^.FDikeyKCubugu^.MevcutDeger
   else UstIlk := 0;
 
-  Alan.Sol := 1;
-  Alan.Ust := 1;
+  CizimAlani.Sol := 1;
+  CizimAlani.Ust := 1;
 
   // veriye göre yapýlan döngü
   for i := UstIlk to FSatirSayisi - 1 do
@@ -392,27 +392,27 @@ begin
     for j := SolIlk to FSutunSayisi - 1 do
     begin
 
-      Alan.Sag := Alan.Sol + Izgara^.FSutunGenislik - 1;
-      Alan.Alt := Alan.Ust + Izgara^.FSatirYukseklik - 1;
+      CizimAlani.Sag := CizimAlani.Sol + Izgara^.FSutunGenislik - 1;
+      CizimAlani.Alt := CizimAlani.Ust + Izgara^.FSatirYukseklik - 1;
 
       if(i < Izgara^.FSabitSatirSayisi) then
-        Izgara^.EgimliDoldur3(Izgara, Alan, $EAECEE, $ABB2B9)
+        Izgara^.EgimliDoldur3(Izgara, CizimAlani, $EAECEE, $ABB2B9)
       else if(j < Izgara^.FSabitSutunSayisi) then
-        Izgara^.EgimliDoldur3(Izgara, Alan, $EAECEE, $ABB2B9)
+        Izgara^.EgimliDoldur3(Izgara, CizimAlani, $EAECEE, $ABB2B9)
 
       else if(Izgara^.FSeciliSatir = i) and (Izgara^.FSeciliSutun = j) then
-        Izgara^.DikdortgenDoldur(Izgara, Alan, RENK_KIRMIZI, RENK_BEYAZ)
-      else Izgara^.DikdortgenDoldur(Izgara, Alan, RENK_BEYAZ, RENK_BEYAZ);
+        Izgara^.DikdortgenDoldur(Izgara, CizimAlani, RENK_KIRMIZI, RENK_BEYAZ)
+      else Izgara^.DikdortgenDoldur(Izgara, CizimAlani, RENK_BEYAZ, RENK_BEYAZ);
 
       // baþlýk
-      Izgara^.AlanaYaziYaz(Izgara, Alan, 4, 3, FDegerler^.Yazi[(i * (Izgara^.FSutunSayisi)) + j],
+      Izgara^.AlanaYaziYaz(Izgara, CizimAlani, 4, 3, FDegerler^.Yazi[(i * (Izgara^.FSutunSayisi)) + j],
         RENK_LACIVERT);
 
-      Alan.Sol += Izgara^.FSutunGenislik + 1;
+      CizimAlani.Sol += Izgara^.FSutunGenislik + 1;
     end;
 
-    Alan.Sol := 1;
-    Alan.Ust += Izgara^.FSatirYukseklik + 1;
+    CizimAlani.Sol := 1;
+    CizimAlani.Ust += Izgara^.FSatirYukseklik + 1;
   end;
 
   // kaydýrma çubuklarýný en son çiz

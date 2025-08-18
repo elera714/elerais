@@ -192,14 +192,14 @@ end;
 procedure TResimDugmesi.Ciz;
 var
   ResimDugmesi: PResimDugmesi;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   ResimSiraNo, CizimTipi: TSayi4;
 begin
 
   ResimDugmesi := PResimDugmesi(GorselNesneler0.NesneAl(Kimlik));
   if(ResimDugmesi = nil) then Exit;
 
-  Alan := ResimDugmesi^.FCizimAlan;
+  CizimAlani := ResimDugmesi^.FCizimAlani;
 
   CizimTipi := ResimDugmesi^.Deger shr 24;
 
@@ -209,7 +209,7 @@ begin
 
     ResimSiraNo := ResimDugmesi^.Deger and $FFFFFF;
 
-    KaynaktanResimCiz(ResimDugmesi, Alan, ResimSiraNo);
+    KaynaktanResimCiz(ResimDugmesi, CizimAlani, ResimSiraNo);
   end
   // resim düğmesi içeriğinin çizilmesi - çekirdek içi çalışma için
   else if(CizimTipi = $30) then
@@ -217,7 +217,7 @@ begin
 
     ResimSiraNo := ResimDugmesi^.Deger and $FFFFFF;
 
-    KaynaktanResimCiz21(ResimDugmesi, Alan.Sol, Alan.Ust, ResimSiraNo);
+    KaynaktanResimCiz21(ResimDugmesi, CizimAlani.Sol, CizimAlani.Ust, ResimSiraNo);
   end
   // resim düğmesi içeriğinin bitmap resim ile çizilmesi
   else if(CizimTipi = $80) then
@@ -225,20 +225,20 @@ begin
 
     ResimSiraNo := ResimDugmesi^.Deger and $FFFFFF;
 
-    KaynaktanResimCiz2(ResimDugmesi, Alan.Sol + 1, Alan.Ust + 1, ResimSiraNo);
+    KaynaktanResimCiz2(ResimDugmesi, CizimAlani.Sol + 1, CizimAlani.Ust + 1, ResimSiraNo);
   end
   // resim düğmesi içeriğinin renk ile doldurulması
-  else DikdortgenDoldur(ResimDugmesi, Alan.Sol + 1, Alan.Ust + 1,
+  else DikdortgenDoldur(ResimDugmesi, CizimAlani.Sol + 1, CizimAlani.Ust + 1,
 
-    Alan.Sag - 1, Alan.Alt - 1, ResimDugmesi^.Deger, ResimDugmesi^.Deger);
+    CizimAlani.Sag - 1, CizimAlani.Alt - 1, ResimDugmesi^.Deger, ResimDugmesi^.Deger);
 
   // kenarlık çizimi
   if(ResimDugmesi^.FKenarlikCiz) then
   begin
 
     if(ResimDugmesi^.FDurum = ddNormal) then
-      Dikdortgen(ResimDugmesi, ctDuz, Alan, RENK_GUMUS)
-    else Dikdortgen(ResimDugmesi, ctDuz, Alan, RENK_SIYAH);
+      Dikdortgen(ResimDugmesi, ctDuz, CizimAlani, RENK_GUMUS)
+    else Dikdortgen(ResimDugmesi, ctDuz, CizimAlani, RENK_SIYAH);
   end;
 end;
 

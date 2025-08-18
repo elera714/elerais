@@ -265,7 +265,7 @@ end;
 procedure TKarmaListe.Ciz;
 var
   KarmaListe: PKarmaListe;
-  Alan: TAlan;
+  CizimAlani: TAlan;
 begin
 
   inherited Ciz;
@@ -275,11 +275,11 @@ begin
   if(KarmaListe = nil) then Exit;
 
   // karma listenin çizim alan koordinatlarýný al
-  Alan := KarmaListe^.FCizimAlan;
+  CizimAlani := KarmaListe^.FCizimAlani;
 
-  OkResminiCiz(KarmaListe, Alan);
+  OkResminiCiz(KarmaListe, CizimAlani);
 
-  KarmaListe^.YaziYaz(KarmaListe, Alan.Sol + 4, Alan.Ust + 4, KarmaListe^.Baslik,
+  KarmaListe^.YaziYaz(KarmaListe, CizimAlani.Sol + 4, CizimAlani.Ust + 4, KarmaListe^.Baslik,
     RENK_SIYAH);
 end;
 

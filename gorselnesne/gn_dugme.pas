@@ -264,7 +264,7 @@ end;
 procedure TDugme.Ciz;
 var
   Dugme: PDugme = nil;
-  CizimAlan: TAlan;
+  CizimAlani: TAlan;
 begin
 
   Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
@@ -281,8 +281,8 @@ begin
   if(Dugme^.Odaklanildi) then
   begin
 
-    CizimAlan := Dugme^.FCizimAlan;
-    Dugme^.Dikdortgen(Dugme, ctNokta, CizimAlan, RENK_SIYAH);
+    CizimAlani := Dugme^.FCizimAlani;
+    Dugme^.Dikdortgen(Dugme, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
 

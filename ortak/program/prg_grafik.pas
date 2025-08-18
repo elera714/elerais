@@ -84,7 +84,7 @@ end;
 procedure SistemDegerleriOlayIsle;
 var
   MD: PMDNesne;
-  CizimAlan: TAlan;
+  CizimAlani: TAlan;
   ToplamKullanimByte: TSayi4;
 begin
 
@@ -116,12 +116,12 @@ begin
     DiskSayac := 0;
   end;
 
-  CizimAlan := SDPencere^.FCizimAlan;
-  CizimAlan.Sol += 5;
-  CizimAlan.Sag += 5;
-  CizimAlan.Ust += P_BASLIK_YUKSEKLIK;
-  CizimAlan.Alt := CizimAlan.Ust + 60;
-  SDPencere^.DikdortgenDoldur(SDPencere, CizimAlan, RENK_SIYAH, RENK_BEYAZ);
+  CizimAlani := SDPencere^.FCizimAlani;
+  CizimAlani.Sol += 5;
+  CizimAlani.Sag += 5;
+  CizimAlani.Ust += P_BASLIK_YUKSEKLIK;
+  CizimAlani.Alt := CizimAlani.Ust + 60;
+  SDPencere^.DikdortgenDoldur(SDPencere, CizimAlani, RENK_SIYAH, RENK_BEYAZ);
 
   SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'ÇKRDK:', RENK_TURKUAZ);
   SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, False, 8, SistemSayaci, RENK_MAVI);

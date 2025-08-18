@@ -278,10 +278,10 @@ begin
   Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
   if(Menu = nil) then Exit;
 
-  Menu^.FCizimAlan.Sol := 0;
-  Menu^.FCizimAlan.Ust := 0;
-  Menu^.FCizimAlan.Sag := Menu^.FAtananAlan.Genislik - 1;
-  Menu^.FCizimAlan.Alt := Menu^.FAtananAlan.Yukseklik - 1;
+  Menu^.FCizimAlani.Sol := 0;
+  Menu^.FCizimAlani.Ust := 0;
+  Menu^.FCizimAlani.Sag := Menu^.FAtananAlan.Genislik - 1;
+  Menu^.FCizimAlani.Alt := Menu^.FAtananAlan.Yukseklik - 1;
 
   // menü çizimi için bellekte yer ayır
   Menu^.FCizimBellekAdresi := GetMem(Menu^.FAtananAlan.Genislik * Menu^.FAtananAlan.Yukseklik * 4);
@@ -302,7 +302,7 @@ var
   Menu: PMenu = nil;
   YL: PYaziListesi;
   SL: PSayiListesi;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   SiraNo, Sol, Ust, Genislik,
   MenudekiElemanSayisi: TISayi4;
   ResimCiz: Boolean;
@@ -315,7 +315,7 @@ begin
   if(Menu = nil) then Exit;
 
   // menü nesnesinin çizim alan koordinatlarını al
-  Alan := Menu^.FCizimAlan;
+  CizimAlani := Menu^.FCizimAlani;
 
   YL := Menu^.FMenuBaslikListesi;
   SL := Menu^.FMenuResimListesi;
@@ -333,17 +333,17 @@ begin
     if(ResimCiz) then
     begin
 
-      Sol := Alan.Sol + 30;         // 30 pixel soldan sağa doğru. menü resimleri için
-      Genislik := Alan.Sag - 3;
+      Sol := CizimAlani.Sol + 30;         // 30 pixel soldan sağa doğru. menü resimleri için
+      Genislik := CizimAlani.Sag - 3;
     end
     else
     begin
 
       Sol := 3;
-      Genislik := Alan.Sag - 3;
+      Genislik := CizimAlani.Sag - 3;
     end;
 
-    Ust := Alan.Ust + 08;           // 08 = dikey ortalama için
+    Ust := CizimAlani.Ust + 08;           // 08 = dikey ortalama için
 
     // menü kutusunda görüntülenecek eleman sayısı
     if(YL^.ElemanSayisi > Menu^.FMenuBaslikListesi^.ElemanSayisi) then

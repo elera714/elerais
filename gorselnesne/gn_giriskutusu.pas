@@ -257,7 +257,7 @@ end;
 procedure TGirisKutusu.Ciz;
 var
   GirisKutusu: PGirisKutusu;
-  Alan: TAlan;
+  CizimAlani: TAlan;
 begin
 
   GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
@@ -266,19 +266,21 @@ begin
   inherited Ciz;
 
   // giriþ kutusunun çizim alan koordinatlarýný al
-  Alan := GirisKutusu^.FCizimAlan;
+  CizimAlani := GirisKutusu^.FCizimAlani;
 
   // nesnenin içerik deðeri.
   if(GirisKutusu^.Yazilamaz) then
 
-    GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik, RENK_SIYAH)
+    GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3, GirisKutusu^.Baslik, RENK_SIYAH)
   else
   begin
 
     // nesne odak kazanmýþsa sonuna #255 = klavye kursörü ekle
     if(GirisKutusu^.Odaklanildi) then
-      GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik + #255, RENK_SIYAH)
-    else GirisKutusu^.YaziYaz(GirisKutusu, Alan.Sol + 2, Alan.Ust + 3, GirisKutusu^.Baslik, RENK_SIYAH)
+      GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3,
+        GirisKutusu^.Baslik + #255, RENK_SIYAH)
+    else GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3,
+      GirisKutusu^.Baslik, RENK_SIYAH)
   end;
 
   GirisKutusu^.FSilmeDugmesi^.Ciz;

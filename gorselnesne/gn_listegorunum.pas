@@ -307,7 +307,7 @@ var
   ListeGorunum: PListeGorunum;
   KolonAdlari: PYaziListesi;
   KolonUzunluklari: PSayiListesi;
-  Alan1, Alan2: TAlan;
+  CizimAlani, CizimAlani2: TAlan;
   ElemanSayisi, SatirNo, i, j,
   Sol, Ust: TISayi4;
   RY: TRenkYazi;
@@ -320,7 +320,7 @@ begin
   inherited Ciz;
 
   // liste kutusunun üst nesneye baðlý olarak koordinatlarýný al
-  Alan1 := ListeGorunum^.FCizimAlan;
+  CizimAlani := ListeGorunum^.FCizimAlani;
 
   // ata nesne bir pencere mi?
   Pencere := EnUstPencereNesnesiniAl(ListeGorunum);
@@ -333,48 +333,48 @@ begin
   if(KolonAdlari^.ElemanSayisi = 0) then Exit;
 
   // kolon baþlýk ve deðerleri
-  Sol := Alan1.Sol + 1;
+  Sol := CizimAlani.Sol + 1;
   for i := 0 to KolonUzunluklari^.ElemanSayisi - 1 do
   begin
 
     Sol += KolonUzunluklari^.Sayi[i];
 
     // dikey kýlavuz çizgisi
-    ListeGorunum^.Cizgi(ListeGorunum, ctDuz, Sol, Alan1.Ust + 1, Sol, Alan1.Alt - 1, $F0F0F0);
+    ListeGorunum^.Cizgi(ListeGorunum, ctDuz, Sol, CizimAlani.Ust + 1, Sol, CizimAlani.Alt - 1, $F0F0F0);
 
     // baþlýk dolgusu
-    Alan2.Sol := Sol - KolonUzunluklari^.Sayi[i];
-    Alan2.Ust := Alan1.Ust + 1;
-    Alan2.Sag := Sol - 1;
-    Alan2.Alt := Alan1.Ust + 1 + 22;
-    ListeGorunum^.EgimliDoldur3(ListeGorunum, Alan2, $EAECEE, $ABB2B9);
+    CizimAlani2.Sol := Sol - KolonUzunluklari^.Sayi[i];
+    CizimAlani2.Ust := CizimAlani.Ust + 1;
+    CizimAlani2.Sag := Sol - 1;
+    CizimAlani2.Alt := CizimAlani.Ust + 1 + 22;
+    ListeGorunum^.EgimliDoldur3(ListeGorunum, CizimAlani2, $EAECEE, $ABB2B9);
 
     // baþlýk
-    ListeGorunum^.AlanaYaziYaz(ListeGorunum, Alan2, 4, 3, KolonAdlari^.Yazi[i], RENK_LACIVERT);
+    ListeGorunum^.AlanaYaziYaz(ListeGorunum, CizimAlani2, 4, 3, KolonAdlari^.Yazi[i], RENK_LACIVERT);
 
     Inc(Sol);    // 1 px çizgi kalýnlýðý
   end;
 
   // yatay kýlavuz çizgileri
-  Ust := Alan1.Ust + 1 + 22;
+  Ust := CizimAlani.Ust + 1 + 22;
   Ust += 20;
-  while Ust < Alan1.Alt do
+  while Ust < CizimAlani.Alt do
   begin
 
-    ListeGorunum^.Cizgi(ListeGorunum, ctDuz, Alan1.Sol + 1, Ust, Alan1.Sag - 1, Ust, $F0F0F0);
+    ListeGorunum^.Cizgi(ListeGorunum, ctDuz, CizimAlani.Sol + 1, Ust, CizimAlani.Sag - 1, Ust, $F0F0F0);
     Ust += 1 + 20;
   end;
 
   // liste görünüm nesnesinde görüntülenecek eleman sayýsý
-  ListeGorunum^.FGorunenElemanSayisi := ((ListeGorunum^.FCizimAlan.Alt -
-    ListeGorunum^.FCizimAlan.Ust) - 24) div 21;
+  ListeGorunum^.FGorunenElemanSayisi := ((ListeGorunum^.FCizimAlani.Alt -
+    ListeGorunum^.FCizimAlani.Ust) - 24) div 21;
 
   // liste görünüm kutusunda görüntülenecek eleman sayýsýnýn belirlenmesi
   if(FDegerler^.ElemanSayisi > ListeGorunum^.FGorunenElemanSayisi) then
     ElemanSayisi := ListeGorunum^.FGorunenElemanSayisi + ListeGorunum^.FGorunenIlkSiraNo
   else ElemanSayisi := FDegerler^.ElemanSayisi + ListeGorunum^.FGorunenIlkSiraNo;
 
-  Ust := Alan1.Ust + 1 + 22;
+  Ust := CizimAlani.Ust + 1 + 22;
   Ust += 20;
   SatirNo := 0;
   KolonUzunluklari := ListeGorunum^.FKolonUzunluklari;
@@ -387,7 +387,7 @@ begin
     Bolumle(FDegerler^.Yazi[SatirNo], '|', FDegerDizisi);
     RY := FDegerler^.RenkYaziAl(SatirNo);
 
-    Sol := Alan1.Sol + 1;
+    Sol := CizimAlani.Sol + 1;
     if(FDegerDizisi^.ElemanSayisi > 0) then
     begin
 
@@ -395,29 +395,29 @@ begin
       begin
 
         s := FDegerDizisi^.Yazi[j];
-        Alan2.Sol := Sol + 1;
-        Alan2.Ust := Ust - 20 + 1;
-        Alan2.Sag := Sol + KolonUzunluklari^.Sayi[j] - 1;
-        Alan2.Alt := Ust - 1;
+        CizimAlani2.Sol := Sol + 1;
+        CizimAlani2.Ust := Ust - 20 + 1;
+        CizimAlani2.Sag := Sol + KolonUzunluklari^.Sayi[j] - 1;
+        CizimAlani2.Alt := Ust - 1;
 
         // satýr verisini boyama ve yazma iþlemi
         if(SatirNo = ListeGorunum^.FSeciliSiraNo) then
         begin
 
           if(ListeGorunum^.Odaklanildi) then
-            ListeGorunum^.DikdortgenDoldur(ListeGorunum, Alan2.Sol - 1, Alan2.Ust - 1,
-              Alan2.Sag, Alan2.Alt, $3EC5FF, $3EC5FF)
-          else ListeGorunum^.DikdortgenDoldur(ListeGorunum, Alan2.Sol - 1, Alan2.Ust - 1,
-            Alan2.Sag, Alan2.Alt, RENK_GRI, RENK_GRI);
+            ListeGorunum^.DikdortgenDoldur(ListeGorunum, CizimAlani2.Sol - 1, CizimAlani2.Ust - 1,
+              CizimAlani2.Sag, CizimAlani2.Alt, $3EC5FF, $3EC5FF)
+          else ListeGorunum^.DikdortgenDoldur(ListeGorunum, CizimAlani2.Sol - 1, CizimAlani2.Ust - 1,
+            CizimAlani2.Sag, CizimAlani2.Alt, RENK_GRI, RENK_GRI);
         end
         else
         begin
 
-          ListeGorunum^.DikdortgenDoldur(ListeGorunum, Alan2.Sol - 1, Alan2.Ust - 1,
-            Alan2.Sag, Alan2.Alt, RENK_BEYAZ, RENK_BEYAZ);
+          ListeGorunum^.DikdortgenDoldur(ListeGorunum, CizimAlani2.Sol - 1, CizimAlani2.Ust - 1,
+            CizimAlani2.Sag, CizimAlani2.Alt, RENK_BEYAZ, RENK_BEYAZ);
         end;
 
-        ListeGorunum^.AlanaYaziYaz(ListeGorunum, Alan2, 2, 2, s, RY.Renk);
+        ListeGorunum^.AlanaYaziYaz(ListeGorunum, CizimAlani2, 2, 2, s, RY.Renk);
 
         Sol += 1 + KolonUzunluklari^.Sayi[j];
       end;

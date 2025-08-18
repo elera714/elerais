@@ -287,7 +287,7 @@ var
   DegerListesi: PDegerListesi;
   KolonAdlari: PYaziListesi;
   KolonUzunluklari: PSayiListesi;
-  Alan1, Alan2: TAlan;
+  CizimAlani, CizimAlani2: TAlan;
   ElemanSayisi, SatirNo, i, j,
   Sol, Ust, DegerSayisi: TISayi4;
   s: string;
@@ -300,7 +300,7 @@ begin
   inherited Ciz;
 
   // liste kutusunun üst nesneye bağlı olarak koordinatlarını al
-  Alan1 := DegerListesi^.FCizimAlan;
+  CizimAlani := DegerListesi^.FCizimAlani;
 
   // ata nesne bir pencere mi?
   Pencere := EnUstPencereNesnesiniAl(DegerListesi);
@@ -313,48 +313,48 @@ begin
   if(KolonAdlari^.ElemanSayisi = 0) then Exit;
 
   // kolon başlık ve değerleri
-  Sol := Alan1.Sol + 1;
+  Sol := CizimAlani.Sol + 1;
   for i := 0 to KolonUzunluklari^.ElemanSayisi - 1 do
   begin
 
     Sol += KolonUzunluklari^.Sayi[i];
 
     // dikey kılavuz çizgisi
-    DegerListesi^.Cizgi(DegerListesi, ctDuz, Sol, Alan1.Ust + 1, Sol, Alan1.Alt - 1, $F0F0F0);
+    DegerListesi^.Cizgi(DegerListesi, ctDuz, Sol, CizimAlani.Ust + 1, Sol, CizimAlani.Alt - 1, $F0F0F0);
 
     // başlık dolgusu
-    Alan2.Sol := Sol - KolonUzunluklari^.Sayi[i];
-    Alan2.Ust := Alan1.Ust + 1;
-    Alan2.Sag := Sol - 1;
-    Alan2.Alt := Alan1.Ust + 1 + 22;
-    DegerListesi^.EgimliDoldur3(DegerListesi, Alan2, $EAECEE, $ABB2B9);
+    CizimAlani2.Sol := Sol - KolonUzunluklari^.Sayi[i];
+    CizimAlani2.Ust := CizimAlani.Ust + 1;
+    CizimAlani2.Sag := Sol - 1;
+    CizimAlani2.Alt := CizimAlani.Ust + 1 + 22;
+    DegerListesi^.EgimliDoldur3(DegerListesi, CizimAlani2, $EAECEE, $ABB2B9);
 
     // başlık
-    DegerListesi^.AlanaYaziYaz(DegerListesi, Alan2, 4, 3, KolonAdlari^.Yazi[i], RENK_LACIVERT);
+    DegerListesi^.AlanaYaziYaz(DegerListesi, CizimAlani2, 4, 3, KolonAdlari^.Yazi[i], RENK_LACIVERT);
 
     Inc(Sol);    // 1 px çizgi kalınlığı
   end;
 
   // yatay kılavuz çizgileri
-  Ust := Alan1.Ust + 1 + 22;
+  Ust := CizimAlani.Ust + 1 + 22;
   Ust += 20;
-  while Ust < Alan1.Alt do
+  while Ust < CizimAlani.Alt do
   begin
 
-    DegerListesi^.Cizgi(DegerListesi, ctDuz, Alan1.Sol + 1, Ust, Alan1.Sag - 1, Ust, $F0F0F0);
+    DegerListesi^.Cizgi(DegerListesi, ctDuz, CizimAlani.Sol + 1, Ust, CizimAlani.Sag - 1, Ust, $F0F0F0);
     Ust += 1 + 20;
   end;
 
   // değer listesi nesnesinde görüntülenecek eleman sayısı
-  DegerListesi^.FGorunenElemanSayisi := ((DegerListesi^.FCizimAlan.Alt -
-    DegerListesi^.FCizimAlan.Ust) - 24) div 21;
+  DegerListesi^.FGorunenElemanSayisi := ((DegerListesi^.FCizimAlani.Alt -
+    DegerListesi^.FCizimAlani.Ust) - 24) div 21;
 
   // değer listesi kutusunda görüntülenecek eleman sayısının belirlenmesi
   if(FDegerler^.ElemanSayisi > DegerListesi^.FGorunenElemanSayisi) then
     ElemanSayisi := DegerListesi^.FGorunenElemanSayisi + DegerListesi^.FGorunenIlkSiraNo
   else ElemanSayisi := FDegerler^.ElemanSayisi + DegerListesi^.FGorunenIlkSiraNo;
 
-  Ust := Alan1.Ust + 1 + 22;
+  Ust := CizimAlani.Ust + 1 + 22;
   Ust += 20;
   SatirNo := 0;
   KolonUzunluklari := DegerListesi^.FKolonUzunluklari;
@@ -367,7 +367,7 @@ begin
     Bolumle(FDegerler^.Yazi[SatirNo], '|', FDegerDizisi);
     RY := FDegerler^.RenkYaziAl(SatirNo);
 
-    Sol := Alan1.Sol + 1;
+    Sol := CizimAlani.Sol + 1;
     if(FDegerDizisi^.ElemanSayisi > 0) then
     begin
 
@@ -379,26 +379,26 @@ begin
       begin
 
         s := FDegerDizisi^.Yazi[j];
-        Alan2.Sol := Sol + 1;
-        Alan2.Ust := Ust - 20 + 1;
-        Alan2.Sag := Sol + KolonUzunluklari^.Sayi[j] - 1;
-        Alan2.Alt := Ust - 1;
+        CizimAlani2.Sol := Sol + 1;
+        CizimAlani2.Ust := Ust - 20 + 1;
+        CizimAlani2.Sag := Sol + KolonUzunluklari^.Sayi[j] - 1;
+        CizimAlani2.Alt := Ust - 1;
 
         // satır verisini boyama ve yazma işlemi
         if(SatirNo = DegerListesi^.FSeciliSiraNo) then
         begin
 
-          DegerListesi^.DikdortgenDoldur(DegerListesi, Alan2.Sol - 1, Alan2.Ust - 1,
-            Alan2.Sag, Alan2.Alt, $3EC5FF, $3EC5FF);
+          DegerListesi^.DikdortgenDoldur(DegerListesi, CizimAlani2.Sol - 1, CizimAlani2.Ust - 1,
+            CizimAlani2.Sag, CizimAlani2.Alt, $3EC5FF, $3EC5FF);
         end
         else
         begin
 
-          DegerListesi^.DikdortgenDoldur(DegerListesi, Alan2.Sol - 1, Alan2.Ust - 1,
-            Alan2.Sag, Alan2.Alt, RENK_BEYAZ, RENK_BEYAZ);
+          DegerListesi^.DikdortgenDoldur(DegerListesi, CizimAlani2.Sol - 1, CizimAlani2.Ust - 1,
+            CizimAlani2.Sag, CizimAlani2.Alt, RENK_BEYAZ, RENK_BEYAZ);
         end;
 
-        DegerListesi^.AlanaYaziYaz(DegerListesi, Alan2, 2, 2, s, RY.Renk);
+        DegerListesi^.AlanaYaziYaz(DegerListesi, CizimAlani2, 2, 2, s, RY.Renk);
 
         Sol += 1 + KolonUzunluklari^.Sayi[j];
       end;

@@ -563,10 +563,10 @@ begin
 
   // öndeðer olarak çizim alaný ve alt çizim alaný eþit olarak deðerlendiriliyor
   // nesnenin kendisi bu deðeri deðiþtirebilir
-  GN^.FCizimAlan.Sol := 0;
-  GN^.FCizimAlan.Ust := 0;
-  GN^.FCizimAlan.Sag := GN^.FAtananAlan.Genislik - 1;
-  GN^.FCizimAlan.Alt := GN^.FAtananAlan.Yukseklik - 1;
+  GN^.FCizimAlani.Sol := 0;
+  GN^.FCizimAlani.Ust := 0;
+  GN^.FCizimAlani.Sag := GN^.FAtananAlan.Genislik - 1;
+  GN^.FCizimAlani.Alt := GN^.FAtananAlan.Yukseklik - 1;
 
 
   if(GN^.FKullanimTipi = ktNesne) then
@@ -596,7 +596,7 @@ begin
   end;
 
   GN^.FHiza := hzYok;
-  GN^.FHizaAlani := GN^.FCizimAlan;
+  GN^.FHizaAlani := GN^.FCizimAlani;
 
   // alt nesnelerin bellek adresi (nil = bellek oluþturulmadý)
   GN^.AltNesneBellekAdresi := nil;
@@ -692,13 +692,13 @@ end;
 procedure TGorselNesne.Ciz;
 var
   GN: PGorselNesne;
-  CizimAlan: TAlan;
+  CizimAlani: TAlan;
 begin
 
   GN := GorselNesneler0.NesneAl(Kimlik);
   if(GN = nil) then Exit;
 
-  CizimAlan := GN^.FCizimAlan;
+  CizimAlani := GN^.FCizimAlani;
 
   // FCizimModel = 0 = hiçbir çizim yapma
   if(GN^.FCizimModel > 0) then
@@ -707,21 +707,21 @@ begin
     // FCizimModel = 2 = kenarlýðý çiz ve içeriði doldur
     if(GN^.FCizimModel = 2) then
 
-      GN^.DikdortgenDoldur(GN, CizimAlan, FGovdeRenk1, FGovdeRenk2)
+      GN^.DikdortgenDoldur(GN, CizimAlani, FGovdeRenk1, FGovdeRenk2)
 
     // FCizimModel = 3 = kenarlýðý çiz ve içeriði doldur
     else if(GN^.FCizimModel = 3) then
 
-      GN^.DikdortgenDoldur(GN, CizimAlan.Sol, CizimAlan.Ust, CizimAlan.Sag,
-        CizimAlan.Alt, FGovdeRenk1, FGovdeRenk2)
+      GN^.DikdortgenDoldur(GN, CizimAlani.Sol, CizimAlani.Ust, CizimAlani.Sag,
+        CizimAlani.Alt, FGovdeRenk1, FGovdeRenk2)
 
     // FCizimModel = 4 = artan renk ile (eðimli) doldur
     else if(GN^.FCizimModel = 4) then
-      GN^.EgimliDoldur3(GN, CizimAlan, FGovdeRenk1, FGovdeRenk2);
+      GN^.EgimliDoldur3(GN, CizimAlani, FGovdeRenk1, FGovdeRenk2);
 
     // görsel ana yapý baþlýðýný yaz
     if not(GN^.FCizimModel = 2) then
-      if(Length(GN^.Baslik) > 0) then YaziYaz(GN, GN^.FYaziHiza, CizimAlan,
+      if(Length(GN^.Baslik) > 0) then YaziYaz(GN, GN^.FYaziHiza, CizimAlani,
         Baslik, FYaziRenk);
   end;
 end;
@@ -734,10 +734,10 @@ begin
   GN := GorselNesneler0.NesneAl(Kimlik);
   if(GN = nil) then Exit;
 
-  GN^.FCizimAlan.Sol := 0;
-  GN^.FCizimAlan.Ust := 0;
-  GN^.FCizimAlan.Sag := GN^.FAtananAlan.Genislik - 1;
-  GN^.FCizimAlan.Alt := GN^.FAtananAlan.Yukseklik - 1;
+  GN^.FCizimAlani.Sol := 0;
+  GN^.FCizimAlani.Ust := 0;
+  GN^.FCizimAlani.Sag := GN^.FAtananAlan.Genislik - 1;
+  GN^.FCizimAlani.Alt := GN^.FAtananAlan.Yukseklik - 1;
 
   GorselAtaNesne := GN^.AtaNesne;
 
@@ -765,10 +765,10 @@ begin
   GN := GorselNesneler0.NesneAl(Kimlik);
   if(GN = nil) then Exit;
 
-  GN^.FHizaAlani.Sol := GN^.FCizimAlan.Sol;
-  GN^.FHizaAlani.Ust := GN^.FCizimAlan.Ust;
-  GN^.FHizaAlani.Sag := GN^.FCizimAlan.Sag;
-  GN^.FHizaAlani.Alt := GN^.FCizimAlan.Alt;
+  GN^.FHizaAlani.Sol := GN^.FCizimAlani.Sol;
+  GN^.FHizaAlani.Ust := GN^.FCizimAlani.Ust;
+  GN^.FHizaAlani.Sag := GN^.FCizimAlani.Sag;
+  GN^.FHizaAlani.Alt := GN^.FCizimAlani.Alt;
 end;
 
 procedure TGorselNesne.Hizala;
@@ -892,10 +892,10 @@ begin
 
     Pencere := EnUstPencereNesnesiniAl(GN);
 
-    Result.Sol := GN^.FCizimAlan.Sol - Pencere^.FCizimAlan.Sol;
-    Result.Ust := GN^.FCizimAlan.Ust - Pencere^.FCizimAlan.Ust;
-    Result.Sag := GN^.FCizimAlan.Sag - Pencere^.FCizimAlan.Sol;
-    Result.Alt := GN^.FCizimAlan.Alt - Pencere^.FCizimAlan.Ust;
+    Result.Sol := GN^.FCizimAlani.Sol - Pencere^.FCizimAlani.Sol;
+    Result.Ust := GN^.FCizimAlani.Ust - Pencere^.FCizimAlani.Ust;
+    Result.Sag := GN^.FCizimAlani.Sag - Pencere^.FCizimAlani.Sol;
+    Result.Alt := GN^.FCizimAlani.Alt - Pencere^.FCizimAlani.Ust;
   end;
 end;
 
@@ -968,8 +968,8 @@ begin
     Alan.Ust += GN^.FTuvalNesne^.FAtananAlan.Ust;
   end;
 
-  Alan.Sag := Alan.Sol + GN^.FCizimAlan.Sag;
-  Alan.Alt := Alan.Ust + GN^.FCizimAlan.Alt;
+  Alan.Sag := Alan.Sol + GN^.FCizimAlani.Sag;
+  Alan.Alt := Alan.Ust + GN^.FCizimAlani.Alt;
 
   //SISTEM_MESAJ(RENK_KIRMIZI, 'Sol %d', [Alan.Sol]);
   //SISTEM_MESAJ(RENK_KIRMIZI, 'Ust %d', [Alan.Ust]);

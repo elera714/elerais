@@ -100,12 +100,9 @@ begin
   EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk := GMBilgi^.VideoDikeyCozunurluk;
   EkranKartSurucusu0.KartBilgisi.BellekAdresi := GMBilgi^.VideoBellekAdresi;
   //VIDEO_MEM_ADDR;
-  EkranKartSurucusu0.KartBilgisi.PixelBasinaBitSayisi :=
-    GMBilgi^.VideoPixelBasinaBitSayisi;
-  EkranKartSurucusu0.KartBilgisi.NoktaBasinaByteSayisi :=
-    (GMBilgi^.VideoPixelBasinaBitSayisi div 8);
-  EkranKartSurucusu0.KartBilgisi.SatirdakiByteSayisi :=
-    GMBilgi^.VideoSatirdakiByteSayisi;
+  EkranKartSurucusu0.KartBilgisi.PixelBasinaBitSayisi := GMBilgi^.VideoPixelBasinaBitSayisi;
+  EkranKartSurucusu0.KartBilgisi.NoktaBasinaByteSayisi := (GMBilgi^.VideoPixelBasinaBitSayisi div 8);
+  EkranKartSurucusu0.KartBilgisi.SatirdakiByteSayisi := GMBilgi^.VideoSatirdakiByteSayisi;
 
   // çekirdek bilgilerini al
   CekirdekBaslangicAdresi := GMBilgi^.CekirdekBaslangicAdresi;

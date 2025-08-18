@@ -188,6 +188,7 @@ procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
   MD: PMDNesne;
   DI: PDosyaIslem;
+  Bellek: Isaretci;
   DATBellekAdresi: array[0..511] of Byte;
   OkunacakSektorSayisi, i: TSayi2;
   ZincirBasinaSektor, OkunacakVeri,
@@ -237,11 +238,17 @@ begin
     i := (Zincir - 2) * ZincirBasinaSektor;
     i += MD^.Acilis.IlkVeriSektorNo;
 
+    //GetMem(Bellek, ZincirBasinaSektor * 512);
+
     // sektörü belleðe oku
     MD^.FD^.SektorOku(MD^.FD, i, OkunacakSektorSayisi, AHedefBellek);
 
+    //Tasi2(Bellek, AHedefBellek, KopyalanacakVeriUzunlugu);
+
     // okunacak bilginin yerleþtirileceði bir sonraki adresi belirle
     AHedefBellek += KopyalanacakVeriUzunlugu;
+
+    //FreeMem(Bellek, ZincirBasinaSektor * 512);
 
     OkunacakFAT := (Zincir * 4) div 512;
 

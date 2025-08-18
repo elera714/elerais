@@ -254,7 +254,7 @@ end;
 procedure TGucDugmesi.Ciz;
 var
   GucDugmesi: PGucDugmesi;
-  CizimAlan: TAlan;
+  CizimAlani: TAlan;
 begin
 
   GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(Kimlik));
@@ -271,8 +271,8 @@ begin
   if(GucDugmesi^.Odaklanildi) then
   begin
 
-    CizimAlan := GucDugmesi^.FCizimAlan;
-    GucDugmesi^.Dikdortgen(GucDugmesi, ctNokta, CizimAlan, RENK_SIYAH);
+    CizimAlani := GucDugmesi^.FCizimAlani;
+    GucDugmesi^.Dikdortgen(GucDugmesi, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
 

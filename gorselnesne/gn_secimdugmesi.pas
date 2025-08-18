@@ -199,7 +199,7 @@ end;
 procedure TSecimDugmesi.Ciz;
 var
   SecimDugmesi: PSecimDugmesi;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   Y, D: TISayi4;      // Yatay / Dikey
   p1: PSayi1;
 begin
@@ -208,7 +208,7 @@ begin
   if(SecimDugmesi = nil) then Exit;
 
   // seçim düğmesi üst nesneye bağlı olarak koordinatlarını al
-  Alan := SecimDugmesi^.FCizimAlan;
+  CizimAlani := SecimDugmesi^.FCizimAlani;
 
   // seçim düğmesi çizim
   if(SecimDugmesi^.FSecimDurumu = sdNormal) then
@@ -221,7 +221,7 @@ begin
       for Y := 1 to 12 do
       begin
 
-        if(p1^ = 1) then PixelYaz(SecimDugmesi, Alan.Sol + 1 + Y, Alan.Ust + 1 + D, $6485B5);
+        if(p1^ = 1) then PixelYaz(SecimDugmesi, CizimAlani.Sol + 1 + Y, CizimAlani.Ust + 1 + D, $6485B5);
         Inc(p1);
       end;
     end;
@@ -236,15 +236,15 @@ begin
       for Y := 1 to 12 do
       begin
 
-        if(p1^ = 1) then PixelYaz(SecimDugmesi, Alan.Sol + 1 + Y, Alan.Ust + 1 + D, $6485B5);
+        if(p1^ = 1) then PixelYaz(SecimDugmesi, CizimAlani.Sol + 1 + Y, CizimAlani.Ust + 1 + D, $6485B5);
         Inc(p1);
       end;
     end;
   end;
 
   // seçim düğmesi başlığı
-  if(Length(SecimDugmesi^.Baslik) > 0) then YaziYaz(SecimDugmesi, Alan.Sol + 20,
-    Alan.Ust + 2, SecimDugmesi^.Baslik, RENK_SIYAH);
+  if(Length(SecimDugmesi^.Baslik) > 0) then YaziYaz(SecimDugmesi, CizimAlani.Sol + 20,
+    CizimAlani.Ust + 2, SecimDugmesi^.Baslik, RENK_SIYAH);
 end;
 
 {==============================================================================

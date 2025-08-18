@@ -292,10 +292,10 @@ begin
     Pencere^.FKalinlik.Alt := 0;
 
     // pencere çizim alaný
-    Pencere^.FCizimAlan.Sol := 0;
-    Pencere^.FCizimAlan.Ust := 0;
-    Pencere^.FCizimAlan.Sag := Pencere^.FAtananAlan.Genislik - 1;
-    Pencere^.FCizimAlan.Alt := Pencere^.FAtananAlan.Yukseklik - 1;
+    Pencere^.FCizimAlani.Sol := 0;
+    Pencere^.FCizimAlani.Ust := 0;
+    Pencere^.FCizimAlani.Sag := Pencere^.FAtananAlan.Genislik - 1;
+    Pencere^.FCizimAlani.Alt := Pencere^.FAtananAlan.Yukseklik - 1;
   end
   else
   begin
@@ -307,11 +307,11 @@ begin
     Pencere^.FKalinlik.Alt := AktifGiysi^.ResimAltYukseklik;
 
     // pencere çizim alaný
-    Pencere^.FCizimAlan.Sol := 0;
-    Pencere^.FCizimAlan.Ust := 0;
-    Pencere^.FCizimAlan.Sag := Pencere^.FAtananAlan.Genislik -
+    Pencere^.FCizimAlani.Sol := 0;
+    Pencere^.FCizimAlani.Ust := 0;
+    Pencere^.FCizimAlani.Sag := Pencere^.FAtananAlan.Genislik -
       (Pencere^.FKalinlik.Sol + Pencere^.FKalinlik.Sag) - 1;
-    Pencere^.FCizimAlan.Alt := Pencere^.FAtananAlan.Yukseklik -
+    Pencere^.FCizimAlani.Alt := Pencere^.FAtananAlan.Yukseklik -
       (Pencere^.FKalinlik.Ust + Pencere^.FKalinlik.Alt) - 1;
 
     // pencere kontrol düðmeleri
@@ -437,9 +437,9 @@ begin
   // aksi durumda SADECE hiza alanýný belirle
   begin
 
-    Pencere^.FCizimAlan.Sag := Pencere^.FAtananAlan.Genislik -
+    Pencere^.FCizimAlani.Sag := Pencere^.FAtananAlan.Genislik -
       (Pencere^.FKalinlik.Sol + Pencere^.FKalinlik.Sag) - 1;
-    Pencere^.FCizimAlan.Alt := Pencere^.FAtananAlan.Yukseklik -
+    Pencere^.FCizimAlani.Alt := Pencere^.FAtananAlan.Yukseklik -
       (Pencere^.FKalinlik.Ust + Pencere^.FKalinlik.Alt) - 1;
 
     // alt nesnelerin sýnýrlanacaðý hiza alanýný sýfýrla
@@ -511,7 +511,7 @@ var
   GRSol, GRSag,
   GRSolAlt, GRAlt, GRSagAlt: THamResim;
   Olay: TOlay;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   Sol, Sag, Genislik, Ust, Alt, i, j: TISayi4;
   Renk, BaslikRengi: TRenk;
   PencereAktif: Boolean;
@@ -528,17 +528,17 @@ begin
   Pencere^.Boyutlandir;
 
   // pencerenin kendi deðerlerine baðlý (0, 0) koordinatlarýný al
-  Alan := Pencere^.FCizimAlan;
+  CizimAlani := Pencere^.FCizimAlani;
 
-  Alan.Sag += (Pencere^.FKalinlik.Sol + Pencere^.FKalinlik.Sag);
-  Alan.Alt += (Pencere^.FKalinlik.Ust + Pencere^.FKalinlik.Alt);
+  CizimAlani.Sag += (Pencere^.FKalinlik.Sol + Pencere^.FKalinlik.Sag);
+  CizimAlani.Alt += (Pencere^.FKalinlik.Ust + Pencere^.FKalinlik.Alt);
 
   AktifGiysi := Giysiler0.AktifGiysi;
 
   // pencere tipi baþlýksýz ise, artan renk ile (eðimli) doldur
   if(Pencere^.FPencereTipi = ptBasliksiz) then
 
-    EgimliDoldur3(Pencere, Alan, $D0DBFB, $B9C9F9)
+    EgimliDoldur3(Pencere, CizimAlani, $D0DBFB, $B9C9F9)
   else
   // baþlýklý pencere nesnesinin çizimi
   begin
@@ -607,7 +607,7 @@ begin
 
     // 2. üst yatay bölümün giydirilmesi
     Sol := AktifGiysi^.ResimSolUstGenislik;
-    Sag := Alan.Sag - AktifGiysi^.ResimSagUstGenislik + 1;
+    Sag := CizimAlani.Sag - AktifGiysi^.ResimSagUstGenislik + 1;
     while True do
     begin
 
@@ -633,7 +633,7 @@ begin
 
     // 3. sað üst köþenin giydirilmesi
     RenkBellek := GRSagUst.BellekAdresi;
-    i := Alan.Sag - GRSagUst.Genislik + 1;
+    i := CizimAlani.Sag - GRSagUst.Genislik + 1;
     for Ust := 0 to GRSagUst.Yukseklik - 1 do
     begin
 
@@ -648,7 +648,7 @@ begin
 
     // 4. sol köþenin giydirilmesi
     Ust := AktifGiysi^.BaslikYukseklik;
-    Alt := Alan.Alt - AktifGiysi^.ResimSolAltYukseklik + 1;
+    Alt := CizimAlani.Alt - AktifGiysi^.ResimSolAltYukseklik + 1;
     while True do
     begin
 
@@ -674,8 +674,8 @@ begin
 
     // 5. sað köþenin giydirilmesi
     Ust := AktifGiysi^.BaslikYukseklik;
-    Alt := Alan.Alt - AktifGiysi^.ResimSagAltYukseklik + 1;
-    Sol := Alan.Sag - AktifGiysi^.ResimSagGenislik + 1;
+    Alt := CizimAlani.Alt - AktifGiysi^.ResimSagAltYukseklik + 1;
+    Sol := CizimAlani.Sag - AktifGiysi^.ResimSagGenislik + 1;
     while True do
     begin
 
@@ -701,7 +701,7 @@ begin
 
     // 6. sol alt köþenin giydirilmesi
     RenkBellek := GRSolAlt.BellekAdresi;
-    Ust := Alan.Alt - GRSolAlt.Yukseklik + 1;
+    Ust := CizimAlani.Alt - GRSolAlt.Yukseklik + 1;
     for i := 0 to GRSolAlt.Yukseklik - 1 do
     begin
 
@@ -716,8 +716,8 @@ begin
 
     // 7. alt köþenin giydirilmesi
     Sol := AktifGiysi^.ResimSolAltGenislik;
-    Ust := Alan.Alt - GRAlt.Yukseklik + 1;
-    Sag := Alan.Sag - AktifGiysi^.ResimSagAltGenislik + 1;
+    Ust := CizimAlani.Alt - GRAlt.Yukseklik + 1;
+    Sag := CizimAlani.Sag - AktifGiysi^.ResimSagAltGenislik + 1;
     while True do
     begin
 
@@ -743,8 +743,8 @@ begin
 
     // 8. sað alt köþenin giydirilmesi
     RenkBellek := GRSagAlt.BellekAdresi;
-    Sol := Alan.Sag - GRSagAlt.Genislik + 1;
-    Ust := Alan.Alt - GRSagAlt.Yukseklik + 1;
+    Sol := CizimAlani.Sag - GRSagAlt.Genislik + 1;
+    Ust := CizimAlani.Alt - GRSagAlt.Yukseklik + 1;
     for i := 0 to GRSagAlt.Yukseklik - 1 do
     begin
 
@@ -762,7 +762,7 @@ begin
     if(Renk = $FFFFFFFF) then Renk := Pencere^.FGovdeRenk1;
 
     DikdortgenDoldur(Pencere, AktifGiysi^.ResimSolGenislik, AktifGiysi^.BaslikYukseklik,
-      Alan.Sag - AktifGiysi^.ResimSagGenislik, Alan.Alt - AktifGiysi^.ResimAltYukseklik, Renk, Renk);
+      CizimAlani.Sag - AktifGiysi^.ResimSagGenislik, CizimAlani.Alt - AktifGiysi^.ResimAltYukseklik, Renk, Renk);
 
     // pencere baþlýðýný yaz
     i := AktifGiysi^.BaslikYaziSol;
@@ -1390,10 +1390,10 @@ begin
         APencere^.FAtananAlan.Ust += Alan.Ust;
         APencere^.FAtananAlan.Yukseklik += Alan.Alt;
 
-        APencere^.FCizimAlan.Sol := 0;
-        APencere^.FCizimAlan.Ust := 0;
-        APencere^.FCizimAlan.Sag := APencere^.FAtananAlan.Genislik - 1;
-        APencere^.FCizimAlan.Alt := APencere^.FAtananAlan.Yukseklik - 1;
+        APencere^.FCizimAlani.Sol := 0;
+        APencere^.FCizimAlani.Ust := 0;
+        APencere^.FCizimAlani.Sag := APencere^.FAtananAlan.Genislik - 1;
+        APencere^.FCizimAlani.Alt := APencere^.FAtananAlan.Yukseklik - 1;
 
         //if(APencere^.FCiziliyor) then Exit;
 
@@ -1543,9 +1543,9 @@ var
   i: TISayi4;
 begin
 
-  APencere^.FCizimAlan.Sag := APencere^.FAtananAlan.Genislik -
+  APencere^.FCizimAlani.Sag := APencere^.FAtananAlan.Genislik -
     (APencere^.FKalinlik.Sol + APencere^.FKalinlik.Sag) - 1;
-  APencere^.FCizimAlan.Alt := APencere^.FAtananAlan.Yukseklik -
+  APencere^.FCizimAlani.Alt := APencere^.FAtananAlan.Yukseklik -
     (APencere^.FKalinlik.Ust + APencere^.FKalinlik.Alt) - 1;
 
   // alt nesnelerin sýnýrlanacaðý hiza alanýný sýfýrla

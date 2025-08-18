@@ -178,7 +178,7 @@ end;
 procedure TDurumCubugu.Ciz;
 var
   DurumCubugu: PDurumCubugu;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   Renk: PRenk;
   Sol, Ust, Yatay, Dikey: TISayi4;
 begin
@@ -189,10 +189,10 @@ begin
   inherited Ciz;
 
   // durum çubuğunun çizim alan koordinatlarını al
-  Alan := DurumCubugu^.FCizimAlan;
+  CizimAlani := DurumCubugu^.FCizimAlani;
 
-  Yatay := Alan.Sag - 12 - 1;
-  Dikey := Alan.Alt - 12 - 1;
+  Yatay := CizimAlani.Sag - 12 - 1;
+  Dikey := CizimAlani.Alt - 12 - 1;
 
   Renk := PRenk(@DurumCubuguResim);
   for Ust := 1 to 12 do
@@ -207,7 +207,7 @@ begin
   end;
 
   // durum çubuğu başlığı
-  YaziYaz(DurumCubugu, Alan.Sol + 3, Alan.Ust + 2, DurumCubugu^.Baslik, RENK_SIYAH);
+  YaziYaz(DurumCubugu, CizimAlani.Sol + 3, CizimAlani.Ust + 2, DurumCubugu^.Baslik, RENK_SIYAH);
 end;
 
 {==============================================================================

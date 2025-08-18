@@ -289,10 +289,10 @@ begin
   Defter^.FYatayKCubugu^.FAtananAlan.Genislik := Defter^.FAtananAlan.Genislik - 16;
   Defter^.FYatayKCubugu^.FAtananAlan.Yukseklik := 16;
 
-  Defter^.FYatayKCubugu^.FCizimAlan.Sol := 0;
-  Defter^.FYatayKCubugu^.FCizimAlan.Ust := 0;
-  Defter^.FYatayKCubugu^.FCizimAlan.Sag := Defter^.FYatayKCubugu^.FAtananAlan.Genislik - 1;
-  Defter^.FYatayKCubugu^.FCizimAlan.Alt := Defter^.FYatayKCubugu^.FAtananAlan.Yukseklik - 1;
+  Defter^.FYatayKCubugu^.FCizimAlani.Sol := 0;
+  Defter^.FYatayKCubugu^.FCizimAlani.Ust := 0;
+  Defter^.FYatayKCubugu^.FCizimAlani.Sag := Defter^.FYatayKCubugu^.FAtananAlan.Genislik - 1;
+  Defter^.FYatayKCubugu^.FCizimAlani.Alt := Defter^.FYatayKCubugu^.FAtananAlan.Yukseklik - 1;
 
   Defter^.FYatayKCubugu^.FCizimBaslangic.Sol := Defter^.FCizimBaslangic.Sol + Defter^.FYatayKCubugu^.FAtananAlan.Sol;
   Defter^.FYatayKCubugu^.FCizimBaslangic.Ust := Defter^.FCizimBaslangic.Ust + Defter^.FYatayKCubugu^.FAtananAlan.Ust;
@@ -304,10 +304,10 @@ begin
   Defter^.FDikeyKCubugu^.FAtananAlan.Genislik := 16;
   Defter^.FDikeyKCubugu^.FAtananAlan.Yukseklik := Defter^.FAtananAlan.Yukseklik - 16;
 
-  Defter^.FDikeyKCubugu^.FCizimAlan.Sol := 0;
-  Defter^.FDikeyKCubugu^.FCizimAlan.Ust := 0;
-  Defter^.FDikeyKCubugu^.FCizimAlan.Sag := Defter^.FDikeyKCubugu^.FAtananAlan.Genislik - 1;
-  Defter^.FDikeyKCubugu^.FCizimAlan.Alt := Defter^.FDikeyKCubugu^.FAtananAlan.Yukseklik - 1;
+  Defter^.FDikeyKCubugu^.FCizimAlani.Sol := 0;
+  Defter^.FDikeyKCubugu^.FCizimAlani.Ust := 0;
+  Defter^.FDikeyKCubugu^.FCizimAlani.Sag := Defter^.FDikeyKCubugu^.FAtananAlan.Genislik - 1;
+  Defter^.FDikeyKCubugu^.FCizimAlani.Alt := Defter^.FDikeyKCubugu^.FAtananAlan.Yukseklik - 1;
 
   Defter^.FDikeyKCubugu^.FCizimBaslangic.Sol := Defter^.FCizimBaslangic.Sol + Defter^.FDikeyKCubugu^.FAtananAlan.Sol;
   Defter^.FDikeyKCubugu^.FCizimBaslangic.Ust := Defter^.FCizimBaslangic.Ust + Defter^.FDikeyKCubugu^.FAtananAlan.Ust;
@@ -320,7 +320,7 @@ end;
 procedure TDefter.Ciz;
 var
   Defter: PDefter = nil;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   pxSol, pxUst: TISayi4;      // defter nesnesine yazýlacak karakterin pixel olarak sol / üst deðerleri
   YaziBellekAdresi: PChar;
   SinirSutunIlk, SinirSutunSon,
@@ -334,7 +334,7 @@ begin
   inherited Ciz;
 
   // defter nesnesinin çizim alan koordinatlarýný al
-  Alan := Defter^.FCizimAlan;
+  CizimAlani := Defter^.FCizimAlani;
 
   // eðer defter nesnesi için bellek ayrýldýysa defter içeriðini nesne içeriðine
   // eklenen bilgilerle doldur
@@ -346,10 +346,10 @@ begin
     AktifSatirNo := -Defter^.FDikeyKCubugu^.MevcutDeger;
 
     // sýnýr deðerleri
-    SinirSutunIlk := Alan.Sol;
-    SinirSutunSon := (Alan.Sag div 8) - 3;      // 2 boþluk yatay kaydýrma çubuðu + 1 boþluk = 3 boþluk karakteri
-    SinirSatirIlk := Alan.Ust;
-    SinirSatirSon := (Alan.Alt div 16) - 2;     // 1 boþluk dikey kaydýrma çubuðu + 1 boþluk = 2 boþluk karakteri
+    SinirSutunIlk := CizimAlani.Sol;
+    SinirSutunSon := (CizimAlani.Sag div 8) - 3;      // 2 boþluk yatay kaydýrma çubuðu + 1 boþluk = 3 boþluk karakteri
+    SinirSatirIlk := CizimAlani.Ust;
+    SinirSatirSon := (CizimAlani.Alt div 16) - 2;     // 1 boþluk dikey kaydýrma çubuðu + 1 boþluk = 2 boþluk karakteri
 
     // defter içerik bellek bölgesine konumlan
     YaziBellekAdresi := PChar(Defter^.FYaziBellekAdresi);
@@ -378,10 +378,10 @@ begin
         begin
 
           pxSol := AktifSutunNo * 8;
-          pxSol += Alan.Sol + 4;
+          pxSol += CizimAlani.Sol + 4;
 
           pxUst := AktifSatirNo * 16;
-          pxUst += Alan.Ust + 4;
+          pxUst += CizimAlani.Ust + 4;
 
           HarfYaz(Defter, pxSol, pxUst, YaziBellekAdresi^, Defter^.FYaziRenk);
         end;

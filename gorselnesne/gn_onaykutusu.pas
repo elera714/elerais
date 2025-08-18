@@ -179,7 +179,7 @@ end;
 procedure TOnayKutusu.Ciz;
 var
   OnayKutusu: POnayKutusu;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   Y, D: TISayi4;      // Yatay / Dikey
   p1: PSayi1;
 begin
@@ -188,21 +188,21 @@ begin
   if(OnayKutusu = nil) then Exit;
 
   // nesne çizim alanı
-  Alan := OnayKutusu^.FCizimAlan;
+  CizimAlani := OnayKutusu^.FCizimAlani;
 
-  Alan.Sag := Alan.Sol + 15;
-  Alan.Alt := Alan.Ust + 15;
+  CizimAlani.Sag := CizimAlani.Sol + 15;
+  CizimAlani.Alt := CizimAlani.Ust + 15;
 
   // onay kutusu normal durum çizimi
   if(OnayKutusu^.FSecimDurumu = sdNormal) then
 
-    DikdortgenDoldur(OnayKutusu, Alan, RENK_GUMUS, RENK_BEYAZ)
+    DikdortgenDoldur(OnayKutusu, CizimAlani, RENK_GUMUS, RENK_BEYAZ)
 
   else if(OnayKutusu^.FSecimDurumu = sdSecili) then
   // onay kutusu seçilmiş durum çizimi
   begin
 
-    DikdortgenDoldur(OnayKutusu, Alan, RENK_GUMUS, $6485B5);
+    DikdortgenDoldur(OnayKutusu, CizimAlani, RENK_GUMUS, $6485B5);
 
     p1 := PByte(@ResimOnay);
     for D := 1 to 10 do
@@ -211,7 +211,7 @@ begin
       for Y := 1 to 10 do
       begin
 
-        if(p1^ = 1) then PixelYaz(OnayKutusu, Alan.Sol + 2 + Y, Alan.Ust + 1 + D, RENK_BEYAZ);
+        if(p1^ = 1) then PixelYaz(OnayKutusu, CizimAlani.Sol + 2 + Y, CizimAlani.Ust + 1 + D, RENK_BEYAZ);
         Inc(p1);
       end;
     end;
@@ -219,14 +219,14 @@ begin
 
   // onay kutusu başlığı
   if(Length(OnayKutusu^.Baslik) > 0) then
-    YaziYaz(OnayKutusu, Alan.Sag + 3, Alan.Ust + 1, OnayKutusu^.Baslik, RENK_SIYAH);
+    YaziYaz(OnayKutusu, CizimAlani.Sag + 3, CizimAlani.Ust + 1, OnayKutusu^.Baslik, RENK_SIYAH);
 
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
   if(OnayKutusu^.Odaklanildi) then
   begin
 
-    Alan := OnayKutusu^.FCizimAlan;
-    OnayKutusu^.Dikdortgen(OnayKutusu, ctNokta, Alan, RENK_SIYAH);
+    CizimAlani := OnayKutusu^.FCizimAlani;
+    OnayKutusu^.Dikdortgen(OnayKutusu, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
 

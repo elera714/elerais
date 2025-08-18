@@ -188,7 +188,7 @@ end;
 procedure TIslemGostergesi.Ciz;
 var
   IslemGostergesi: PIslemGostergesi;
-  Alan, Alan2: TAlan;
+  CizimAlani, CizimAlani2: TAlan;
   i1, i2, Aralik, Deger: TISayi4;
   s: string;
   i: TISayi4;
@@ -198,10 +198,10 @@ begin
   if(IslemGostergesi = nil) then Exit;
 
   // giriş kutusunun çizim alan koordinatlarını al
-  Alan := IslemGostergesi^.FCizimAlan;
+  CizimAlani := IslemGostergesi^.FCizimAlani;
 
   i1 := (FUstDeger - FAltDeger) + 1;
-  i2 := Alan.Sag;
+  i2 := CizimAlani.Sag;
   if(i1 > i2) then
   begin
 
@@ -216,20 +216,20 @@ begin
   end;
 
   // ön renk doldurma işlemi. dolgu öncesi çizim
-  IslemGostergesi^.DikdortgenDoldur(IslemGostergesi, Alan.Sol, Alan.Ust,
-    Alan.Sag, Alan.Alt, $F1F1F1, RENK_BEYAZ);
+  IslemGostergesi^.DikdortgenDoldur(IslemGostergesi, CizimAlani.Sol, CizimAlani.Ust,
+    CizimAlani.Sag, CizimAlani.Alt, $F1F1F1, RENK_BEYAZ);
 
   // artan renk ile (eğimli) doldur
-  Alan2 := Alan;
-  Alan2.Sag := Alan2.Sol + Deger;
-  IslemGostergesi^.EgimliDoldur(IslemGostergesi, Alan2, DUGME_NORMAL_ILKRENK,
+  CizimAlani2 := CizimAlani;
+  CizimAlani2.Sag := CizimAlani2.Sol + Deger;
+  IslemGostergesi^.EgimliDoldur(IslemGostergesi, CizimAlani2, DUGME_NORMAL_ILKRENK,
     DUGME_NORMAL_SONRENK);
 
   // gösterge değerini yaz
-  Alan2 := Alan;
+  CizimAlani2 := CizimAlani;
   s := IntToStr(IslemGostergesi^.FMevcutDeger);
-  i := (Alan2.Sag - (Length(s) * 8)) div 2;
-  IslemGostergesi^.YaziYaz(IslemGostergesi, Alan2.Sol + i, Alan2.Ust, s, RENK_SIYAH);
+  i := (CizimAlani2.Sag - (Length(s) * 8)) div 2;
+  IslemGostergesi^.YaziYaz(IslemGostergesi, CizimAlani2.Sol + i, CizimAlani2.Ust, s, RENK_SIYAH);
 end;
 
 {==============================================================================

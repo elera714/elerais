@@ -8,7 +8,7 @@ uses n_gorev, gn_pencere, n_zamanlayici, n_genel, _forms, n_ekran, gn_masaustu,
 
 const
   // görev çubuðunda gösterilecek program sayýsý
-  CALISAN_PROGRAM_SAYISI = 20;
+  USTSINIR_GOREVSAYISI = 20;
 
 type
   // tüm pencereye sahip programlarýn kayýtlarýnýn tutulduðu deðiþken yapý
@@ -52,8 +52,8 @@ var
   FMasaustu: TMasaustu;
   FGorevPenceresi: TPencere;
   FSolPanel, FSagPanel, FOrtaPanel: TPanel;
-  FCalisanProgramlar: array[0..CALISAN_PROGRAM_SAYISI - 1] of TCalisanProgramlar;
-  GucDugmeleri: array[0..CALISAN_PROGRAM_SAYISI - 1] of TDugmeler;
+  FCalisanProgramlar: array[0..USTSINIR_GOREVSAYISI - 1] of TCalisanProgramlar;
+  GucDugmeleri: array[0..USTSINIR_GOREVSAYISI - 1] of TDugmeler;
   FBaslatMenusu: TMenu;
   FAcilirMenu: TAcilirMenu;
   FELERA: TGucDugmesi;
@@ -122,7 +122,7 @@ begin
 
   OncekiGBD := 0;
 
-  for i := 0 to CALISAN_PROGRAM_SAYISI - 1 do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     FCalisanProgramlar[i].DugmeSN := -1;
@@ -378,7 +378,7 @@ begin
 
   // 1. program listede mevcut ise silinecek özelliðini kaldýr
   IlkBosSN := -1;
-  for i := 0 to CALISAN_PROGRAM_SAYISI - 1 do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     if(FCalisanProgramlar[i].ProgramKayit.PencereKimlik = AProgramKayit.PencereKimlik) then
@@ -444,7 +444,7 @@ begin
 
 
   // 1. GC'de olabilecek tüm programlarý silinecek olarak iþaretle
-  for i := 0 to CALISAN_PROGRAM_SAYISI - 1 do FCalisanProgramlar[i].Silinecek := True;
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do FCalisanProgramlar[i].Silinecek := True;
 
   // 2. çalýþan program listesini sistemden alarak GC'ye ekle, daha önce GC'de silinecek
   // olarak iþaretlenen çalýþan programlarý silinmeyecek olarak iþaretle
@@ -466,7 +466,7 @@ begin
 
   // 3. GC'den silinen programlarý yok et
   i := 0;
-  while i < CALISAN_PROGRAM_SAYISI do
+  while i < USTSINIR_GOREVSAYISI do
   begin
 
     if(FCalisanProgramlar[i].Silinecek) and (FCalisanProgramlar[i].ProgramKayit.PencereKimlik <> -1) then
@@ -493,7 +493,7 @@ begin
   // 4. programýn yok edilmesinden kaynaklý deðiþken yapýlarýnda oluþan boþluklarý,
   // saðda kalan uygulamalarý sola kaydýrarak doldur
   i := 0;
-  while i < CALISAN_PROGRAM_SAYISI do
+  while i < USTSINIR_GOREVSAYISI do
   begin
 
     // kullanýlmayan ilk bellek bölgesi ara
@@ -502,7 +502,7 @@ begin
 
       // bölgeye taþýnacak veri var mý
       j := i + 1;
-      while j < CALISAN_PROGRAM_SAYISI do
+      while j < USTSINIR_GOREVSAYISI do
       begin
 
         // varsa ilk boþ bölgeye taþý
@@ -544,7 +544,7 @@ begin
   AktifPencereKimlik := FGorevPenceresi.AktifPencereyiAl;
 
   i := 0;
-  while i < CALISAN_PROGRAM_SAYISI do
+  while i < USTSINIR_GOREVSAYISI do
   begin
 
     // kullanýlmayan ilk bellek bölgesi ara
@@ -591,7 +591,7 @@ var
   i: TSayi4;
 begin
 
-  for i := 0 to CALISAN_PROGRAM_SAYISI - 1 do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     if not(FCalisanProgramlar[i].ProgramKayit.PencereKimlik = -1) then
@@ -611,7 +611,7 @@ var
 begin
 
   i := 0;
-  while i < CALISAN_PROGRAM_SAYISI do
+  while i < USTSINIR_GOREVSAYISI do
   begin
 
     if not(GucDugmeleri[i].Kullanimda) then
@@ -635,7 +635,7 @@ var
   i: TSayi4;
 begin
 
-  for i := 0 to CALISAN_PROGRAM_SAYISI - 1 do
+  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
     if(FCalisanProgramlar[i].ProgramKayit.PencereKimlik = APencereKimlik) then

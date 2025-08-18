@@ -278,7 +278,7 @@ end;
 procedure TKaydirmaCubugu.Ciz;
 var
   KaydirmaCubugu: PKaydirmaCubugu = nil;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   Frekans: Double;
   AraBoslukU, i: TISayi4;
 begin
@@ -289,7 +289,7 @@ begin
   if(KaydirmaCubugu = nil) then Exit;
 
   // kaydýrma çubuðunun çizim alan koordinatlarýný al
-  Alan := KaydirmaCubugu^.FCizimAlan;
+  CizimAlani := KaydirmaCubugu^.FCizimAlani;
 
   if(KaydirmaCubugu^.FYon = yDikey) then
   begin
@@ -299,8 +299,8 @@ begin
 
     i := Round(KaydirmaCubugu^.MevcutDeger * Frekans);
 
-    DikdortgenDoldur(KaydirmaCubugu, Alan.Sol + 2, Alan.Ust + 16 + i,
-      Alan.Sag - 2, Alan.Ust + 16 + i + 16, $7F7F7F, $7F7F7F);
+    DikdortgenDoldur(KaydirmaCubugu, CizimAlani.Sol + 2, CizimAlani.Ust + 16 + i,
+      CizimAlani.Sag - 2, CizimAlani.Ust + 16 + i + 16, $7F7F7F, $7F7F7F);
   end
   else
   begin
@@ -310,8 +310,8 @@ begin
 
     i := Round(KaydirmaCubugu^.MevcutDeger * Frekans);
 
-    DikdortgenDoldur(KaydirmaCubugu, Alan.Sol + 16 + i, Alan.Ust + 2,
-      Alan.Sol + 16 + i + 16, Alan.Alt - 2, $7F7F7F, $7F7F7F);
+    DikdortgenDoldur(KaydirmaCubugu, CizimAlani.Sol + 16 + i, CizimAlani.Ust + 2,
+      CizimAlani.Sol + 16 + i + 16, CizimAlani.Alt - 2, $7F7F7F, $7F7F7F);
   end;
 end;
 

@@ -310,7 +310,7 @@ procedure TListeKutusu.Ciz;
 var
   ListeKutusu: PListeKutusu = nil;
   YL: PYaziListesi;
-  Alan: TAlan;
+  CizimAlani: TAlan;
   SiraNo, Sol, Ust,
   ListedekiElemanSayisi: TISayi4;
   s: string;
@@ -323,14 +323,14 @@ begin
   if not(ListeKutusu^.Gorunum) then Exit;
 
   // liste kutusunun üst nesneye bağlı olarak koordinatlarını al
-  Alan := ListeKutusu^.FCizimAlan;
+  CizimAlani := ListeKutusu^.FCizimAlani;
 
   // kenarlık çizgisini çiz
-  KenarlikCiz(ListeKutusu, Alan, 2);
+  KenarlikCiz(ListeKutusu, CizimAlani, 2);
 
   // iç dolgu rengi
-  ListeKutusu^.DikdortgenDoldur(ListeKutusu, Alan.Sol + 2, Alan.Ust + 2,
-    Alan.Sag - 2, Alan.Alt - 2, RENK_BEYAZ, RENK_BEYAZ);
+  ListeKutusu^.DikdortgenDoldur(ListeKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 2,
+    CizimAlani.Sag - 2, CizimAlani.Alt - 2, RENK_BEYAZ, RENK_BEYAZ);
 
   YL := ListeKutusu^.FYaziListesi;
 
@@ -339,11 +339,11 @@ begin
   begin
 
     // çizim / yazım için kullanılacak Sol & Ust koordinatları
-    Sol := Alan.Sol + 4;
-    Ust := Alan.Ust + 4;
+    Sol := CizimAlani.Sol + 4;
+    Ust := CizimAlani.Ust + 4;
 
-    ListeKutusu^.GorunenElemanSayisi := ((ListeKutusu^.FCizimAlan.Alt -
-      ListeKutusu^.FCizimAlan.Ust) + 17) div 18;
+    ListeKutusu^.GorunenElemanSayisi := ((ListeKutusu^.FCizimAlani.Alt -
+      ListeKutusu^.FCizimAlani.Ust) + 17) div 18;
 
     // liste kutusunda görüntülenecek eleman sayısı
     if(YL^.ElemanSayisi > ListeKutusu^.GorunenElemanSayisi) then

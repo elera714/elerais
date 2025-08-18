@@ -432,10 +432,10 @@ begin
 
   Renk := Masaustu^.MasaustuRenk;
 
-  for Ust := Masaustu^.FCizimAlan.Ust to Masaustu^.FCizimAlan.Alt do
+  for Ust := Masaustu^.FCizimAlani.Ust to Masaustu^.FCizimAlani.Alt do
   begin
 
-    for Sol := Masaustu^.FCizimAlan.Sol to Masaustu^.FCizimAlan.Sag do
+    for Sol := Masaustu^.FCizimAlani.Sol to Masaustu^.FCizimAlani.Sag do
     begin
 
       EkranKartSurucusu0.NoktaYaz(Masaustu, Sol, Ust, Renk, False);
