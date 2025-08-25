@@ -6,16 +6,17 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-08-18T14:55:45Z">
+  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2025-08-25T15:23:02Z">
     <MediaRegistry>
       <HardDisks>
         <HardDisk uuid="{769293a2-a8b3-4206-ae16-497c497b6f33}" location="elera.vdi" format="VDI" type="Normal"/>
         <HardDisk uuid="{4266f554-c8aa-40bc-90c0-96799576edc2}" location="320mb2.vhd" format="VHD" type="Normal"/>
+        <HardDisk uuid="{d910b5b5-5c14-4d3a-b3bb-84ddf3653dc1}" location="320mb.vhd" format="VHD" type="Normal"/>
       </HardDisks>
     </MediaRegistry>
     <ExtraData>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="854,117,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="872,109,1024,808"/>
     </ExtraData>
     <Hardware>
       <CPU>
@@ -37,11 +38,11 @@
       <Network>
         <Adapter slot="0" enabled="true" MACAddress="0800ABCDEF01">
           <DisabledModes>
-            <NAT localhost-reachable="true"/>
+            <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
             <InternalNetwork name="intnet"/>
             <NATNetwork name="NatNetwork"/>
           </DisabledModes>
-          <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
+          <NAT localhost-reachable="true"/>
         </Adapter>
         <Adapter slot="1" MACAddress="0800ABCDEF02" type="82540EM">
           <DisabledModes>
@@ -55,15 +56,15 @@
       <AudioAdapter useDefault="true" driver="WAS" enabledOut="true"/>
       <Clipboard/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1755528879712958100" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1756135374529234900" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="IDE" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">
-          <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="0">
-            <Image uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}"/>
-          </AttachedDevice>
           <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="1">
             <Image uuid="{4266f554-c8aa-40bc-90c0-96799576edc2}"/>
+          </AttachedDevice>
+          <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="0">
+            <Image uuid="{d910b5b5-5c14-4d3a-b3bb-84ddf3653dc1}"/>
           </AttachedDevice>
         </StorageController>
         <StorageController name="Floppy" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">

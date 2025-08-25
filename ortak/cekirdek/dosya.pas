@@ -168,12 +168,13 @@ begin
 
   s := AAramaSuzgec;
 
+  // AAramaSuzgec -> örnek: disk2:\klasör1\*.*
   i := Pos(':', s);
   if(i > 0) then
   begin
 
-    Surucu := Copy(s, 1, i - 1);
-    s := Copy(s, i + 1, Length(s) - i);
+    Surucu := Copy(s, 1, i - 1);            // disk2
+    s := Copy(s, i + 1, Length(s) - i);     // s = \klasör1\*.*
   end;
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Sürücü: ''%s''', [Surucu]);
 
@@ -184,7 +185,7 @@ begin
     Result := 1;
     Exit;
   end;
-  s := Copy(s, 2, Length(s) - 1);
+  s := Copy(s, 2, Length(s) - 1);           // s = klasör1\*.*
 
   // sürücüyü arama bellek bölgesine ekle
   //DI := Dosyalar0.DosyaIslem[DosyaKimlik];
@@ -198,6 +199,7 @@ begin
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SektorNo: ''%d''', [SektorNo]);
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AyrilmisSektor: ''%d''', [AyrilmisSektor]);
 
+  // bu aþamada s = klasör1\*.*
   repeat
 
     i := Pos('\', s);

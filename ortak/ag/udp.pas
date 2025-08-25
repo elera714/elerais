@@ -116,6 +116,7 @@ var
   EkBaslik: TEkBaslik;
   SaglamaToplami: TSayi2;
   B1: PSayi1;
+  i: TSayi4;
 begin
 
   UDPPaket := GercekBellek0.Ayir(AVeriUzunlugu + UDP_BASLIK_U);

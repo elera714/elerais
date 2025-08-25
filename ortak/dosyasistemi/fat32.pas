@@ -480,6 +480,8 @@ end;
 {==============================================================================
   dizin giriþinden dosya / klasör bilgilerini bulup, geriye ilgili giriþin küme
   numarasýný döndürür
+
+  { TODO - bu iþlev (dosya / dizin arama iþlevi) tüm dosya sistemlerinde olacak }
  ==============================================================================}
 function DizinGirisindeAra(ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TSayi4;
 var

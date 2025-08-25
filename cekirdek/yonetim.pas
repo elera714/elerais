@@ -328,7 +328,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            Gorevler0.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
+            //Gorevler0.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
 
             {AssignFile(DosyaKimlik, 'disk2:\3.bmp');
             ReWrite(DosyaKimlik);
