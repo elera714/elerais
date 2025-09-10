@@ -1103,9 +1103,9 @@ end;
 function KritikBolgeyeGir(var ABellek: TSayi4): Boolean;
 begin
 
-  {if(ABellek = 1) then Exit(False);
+  if(ABellek = 1) then Exit(False);
 
-  ABellek := 1;}
+  ABellek := 1;
 
   Result := True;
 end;
@@ -1113,7 +1113,7 @@ end;
 procedure KritikBolgedenCik(var ABellek: TSayi4);
 begin
 
-  //ABellek := 0;
+  ABellek := 0;
 end;
 
 end.

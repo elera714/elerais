@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 07/07/2025
+  Güncelleme Tarihi: 10/09/2025
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -160,7 +160,11 @@ var
 implementation
 
 uses genel, genel8x16, donusum, bmp, gn_islevler, sistemmesaj, gn_pencere,
-  hamresim, giysi_normal, giysi_mac, gorev, src_vesa20, gn_masaustu;
+  hamresim, giysi_normal, giysi_mac, gorev, src_vesa20, gn_masaustu, gn_araccubugu,
+  gn_baglanti, gn_defter, gn_degerdugmesi, gn_degerlistesi, gn_dugme, gn_durumcubugu,
+  gn_etiket, gn_giriskutusu, gn_gucdugmesi, gn_islemgostergesi, gn_izgara,
+  gn_karmaliste, gn_kaydirmacubugu, gn_listegorunum, gn_listekutusu, gn_onaykutusu,
+  gn_panel, gn_renksecici, gn_resim, gn_resimdugmesi, gn_sayfakontrol, gn_secimdugmesi;
 
 {==============================================================================
   görsel nesne yükleme iþlevlerini gerçekleþtirir
@@ -307,7 +311,7 @@ end;
   gorsel nesneyi ata nesne dizisinden çýkarýr
   iþlev aþaðýdaki alt iþlevleri yerine getirir
   1. gorsel nesneyi ata nesne dizisinden çýkarýr
-  2. dizidyi sola dayalý olarak yeniden sýralar
+  2. diziyi sola dayalý olarak yeniden sýralar
   3. ata nesnenin alt nesne sayýsýný 1 azaltýr
   4. ata nesne alt nesne sayýsýnýn 0 olmasý durumunda alt nesne için ayrýlan bellek
      gölgesini serbest býrakarak deðiþken bölgesine nil deðeri atamasý gerçekleþtirir
@@ -318,6 +322,40 @@ var
   AGN, GN: PGorselNesne;
   GNBellekAdresi: PPGorselNesne;
   i, j: TSayi4;
+
+  procedure NesneyiYokEt(AKimlik: TKimlik);
+  begin
+
+    case GN^.NesneTipi of
+      //gntAcilirMenu     :
+      gntAracCubugu     : PAracCubugu(GN)^.YokEt(AKimlik);
+      gntBaglanti       : PBaglanti(GN)^.YokEt(AKimlik);
+      gntDefter         : PDefter(GN)^.YokEt(AKimlik);
+      gntDegerDugmesi   : PDegerDugmesi(GN)^.YokEt(AKimlik);
+      gntDegerListesi   : PDegerListesi(GN)^.YokEt(AKimlik);
+      gntDugme          : PDugme(GN)^.YokEt(AKimlik);
+      gntDurumCubugu    : PDurumCubugu(GN)^.YokEt(AKimlik);
+      gntEtiket         : PEtiket(GN)^.YokEt(AKimlik);
+      gntGirisKutusu    : PGirisKutusu(GN)^.YokEt(AKimlik);
+      gntGucDugmesi     : PGucDugmesi(GN)^.YokEt(AKimlik);
+      gntIslemGostergesi: PIslemGostergesi(GN)^.YokEt(AKimlik);
+      gntIzgara         : PIzgara(GN)^.YokEt(AKimlik);
+      gntKarmaListe     : PKarmaListe(GN)^.YokEt(AKimlik);
+      gntKaydirmaCubugu : PKaydirmaCubugu(GN)^.YokEt(AKimlik);
+      gntListeGorunum   : PListeGorunum(GN)^.YokEt(AKimlik);
+      gntListeKutusu    : PListeKutusu(GN)^.YokEt(AKimlik);
+      //gntMasaustu;
+      //gntMenu;
+      gntOnayKutusu     : POnayKutusu(GN)^.YokEt(AKimlik);
+      gntPanel          : PPanel(GN)^.YokEt(AKimlik);
+      gntPencere        : PPencere(GN)^.YokEt(AKimlik);
+      gntRenkSecici     : PRenkSecici(GN)^.YokEt(AKimlik);
+      gntResim          : PResim(GN)^.YokEt(AKimlik);
+      gntResimDugmesi   : PResimDugmesi(GN)^.YokEt(AKimlik);
+      gntSayfaKontrol   : PSayfaKontrol(GN)^.YokEt(AKimlik);
+      gntSecimDugmesi   : PSecimDugmesi(GN)^.YokEt(AKimlik);
+    end;
+  end;
 begin
 
   Result := False;
@@ -340,7 +378,8 @@ begin
       FreeMem(AGN^.AltNesneBellekAdresi, 4096);
       AGN^.AltNesneBellekAdresi := nil;
 
-      YokEt(GN^.Kimlik);
+      NesneyiYokEt(GN^.Kimlik);
+
       Exit(True);
     end;
   end
@@ -386,7 +425,7 @@ begin
           AGN^.AltNesneBellekAdresi := nil;
         end;
 
-        YokEt(GN^.Kimlik);
+        NesneyiYokEt(GN^.Kimlik);
 
         Exit(True);
       end;
@@ -453,13 +492,13 @@ end;
 
 {==============================================================================
   görevin ana penceresi ve pencereye ait tüm alt nesneleri yok eder
-  { TODO : bu iþlev çoklu pencere ve çoklu alt nesneye göre yeniden kodlanacaktýr - 18072020 }
  ==============================================================================}
 procedure TGorselNesneler.PencereyiYokEt(AGorevKimlik: TKimlik);
 var
   Masaustu: PMasaustu;
-  Pencere: PGorselNesne;
-  i, j: TSayi4;
+  Pencere,
+  GN, GN2: PGorselNesne;
+  i, j, k: TSayi4;
 begin
 
   // geçerli bir masaüstü var mý ?
@@ -488,7 +527,22 @@ begin
 
             // pencere nesnesinin alt nesnelerini ata nesneden çýkar (yoket)
             for j := Pencere^.AltNesneSayisi - 1 downto 0 do
-              GorselNesneler0.AtaNesnedenCikar(PPGorselNesne(Pencere^.AltNesneBellekAdresi)[j]);
+            begin
+
+              GN := PPGorselNesne(Pencere^.AltNesneBellekAdresi)[j];
+              if(GN^.NesneTipi = gntPanel) and (GN^.AltNesneSayisi > 0) then
+              begin
+
+                for k := GN^.AltNesneSayisi - 1 downto 0 do
+                begin
+
+                  GN2 := PPGorselNesne(GN^.AltNesneBellekAdresi)[k];
+                  GorselNesneler0.AtaNesnedenCikar(GN2);
+                end;
+              end;
+
+              GorselNesneler0.AtaNesnedenCikar(GN);
+            end;
           end;
 
           // pencere ve alt görsel nesneler için ayrýlan çizim bellek alanýný yok et

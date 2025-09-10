@@ -194,13 +194,13 @@ var
   Menu: PMenu = nil;
 begin
 
-  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
+  Menu := PMenu(GorselNesneler0.NesneAl(AKimlik));
   if(Menu = nil) then Exit;
 
   if(Menu^.FMenuBaslikListesi <> nil) then YaziListesi0.YokEt(FMenuBaslikListesi^.Kimlik);
   if(Menu^.FMenuResimListesi <> nil) then SayiListesi0.YokEt(Menu^.FMenuResimListesi^.Kimlik);
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

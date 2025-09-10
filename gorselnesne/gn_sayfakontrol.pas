@@ -130,6 +130,7 @@ function TSayfaKontrol.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselN
   ASol, AUst, AGenislik, AYukseklik: TISayi4): PSayfaKontrol;
 var
   SayfaKontrol: PSayfaKontrol = nil;
+  i: TSayi4;
 begin
 
   SayfaKontrol := PSayfaKontrol(inherited Olustur(AKullanimTipi, AAtaNesne,
@@ -145,6 +146,13 @@ begin
   SayfaKontrol^.FSayfaSayisi := 0;
   SayfaKontrol^.FAktifSayfa := -1;
 
+  for i := 0 to AZAMI_SEKMESAYISI - 1 do
+  begin
+
+    SayfaKontrol^.FPaneller[i] := nil;
+    SayfaKontrol^.FDugmeler[i] := nil;
+  end;
+
   // nesne adresini geri döndür
   Result := SayfaKontrol;
 end;
@@ -153,9 +161,25 @@ end;
   sayfa kontrol nesnesini yok eder
  ==============================================================================}
 procedure TSayfaKontrol.YokEt(AKimlik: TKimlik);
+var
+  SayfaKontrol: PSayfaKontrol;
+  i: TSayi4;
 begin
 
-  GorselNesneler0.YokEt(AKimlik);
+  SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(AKimlik));
+  if(SayfaKontrol = nil) then Exit;
+
+  for i := 0 to AZAMI_SEKMESAYISI - 1 do
+  begin
+
+    if not(SayfaKontrol^.FPaneller[i] = nil) then
+      SayfaKontrol^.FPaneller[i]^.YokEt(SayfaKontrol^.FPaneller[i]^.Kimlik);
+
+    if not(SayfaKontrol^.FDugmeler[i] = nil) then
+      SayfaKontrol^.FDugmeler[i]^.YokEt(SayfaKontrol^.FDugmeler[i]^.Kimlik);
+  end;
+
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

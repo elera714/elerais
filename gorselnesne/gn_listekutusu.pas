@@ -240,12 +240,12 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  ListeKutusu := PListeKutusu(GorselNesneler0.NesneAl(Kimlik));
+  ListeKutusu := PListeKutusu(GorselNesneler0.NesneAl(AKimlik));
   if(ListeKutusu = nil) then Exit;
 
   if(ListeKutusu^.FYaziListesi <> nil) then YaziListesi0.YokEt(ListeKutusu^.FYaziListesi^.Kimlik);
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

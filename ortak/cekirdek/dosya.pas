@@ -46,12 +46,15 @@ type
     { TODO - iptal edilecek }
     AktifDG: array[0..63] of TSayi1;
 
+
     // iþlem yapýlan sektör numarasý (-1 = sektör henüz okunmadý)
     SektorNo,       { TODO - bu deðiþken iptal edilecek, KumeNo deðiþkeniyle devam edilecek }
+
+
     // dosya / klasörün okunan dizin sektöründeki (SektorNo) kayýt sýra numarasý
     // -1 sektör okunacak (kayýt sýra numarasý yok)
-    KayitSN: TISayi4;
-    KumeNo: TSayi4;
+    KayitSN,
+    KumeNo: TISayi4;
     ZincirNo: TSayi4;
     DosyaDurumu: TDosyaDurumu;
 
@@ -250,7 +253,7 @@ begin
   until Length(AranacakKlasor) = 0;
 
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
-  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ýlk Dizin Küme No: %d', [SektorNo]);
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ýlk Dizin Küme No: $%x', [SektorNo]);
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'XXYYTT: %d', [MD^.Acilis.DizinGirisi.IlkSektor + MD^.Acilis.DizinGirisi.ToplamSektor]);
 
   if(AramaSuzgeci = '*.*') then
@@ -259,6 +262,7 @@ begin
     // dosya sistem tipine göre iþlevi yönlendir
     DST := DI^.MantiksalDepolama^.MD3.DST;
 
+    DI^.KumeNo := -1;
     DI^.SektorNo := -1;
     DI^.ZincirNo := 0;
     DI^.KayitSN := -1;

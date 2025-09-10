@@ -239,9 +239,12 @@ begin
   Defter := PDefter(GorselNesneler0.NesneAl(AKimlik));
   if(Defter = nil) then Exit;
 
+  Defter^.FYatayKCubugu^.YokEt(Defter^.FYatayKCubugu^.Kimlik);
+  Defter^.FDikeyKCubugu^.YokEt(Defter^.FDikeyKCubugu^.Kimlik);
+
   if(Defter^.FYaziBellekAdresi <> nil) then FreeMem(Defter^.FYaziBellekAdresi, 4096 * 10);
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

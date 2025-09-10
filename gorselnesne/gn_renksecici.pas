@@ -138,7 +138,7 @@ end;
 procedure TRenkSecici.YokEt(AKimlik: TKimlik);
 begin
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

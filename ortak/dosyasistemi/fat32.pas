@@ -36,7 +36,7 @@ function RemoveDir(ADosyaKimlik: TKimlik): Boolean;
 function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
-  var ADosyaArama: TDosyaArama): TSayi1;
+  var ADosyaArama: TDosyaArama): TSayi4;
 function DizinGirisindeAra(ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TSayi4;
 
 implementation
@@ -44,7 +44,7 @@ implementation
 uses genel, donusum, gercekbellek, sistemmesaj;
 
 var
-  DizinBellekAdresi: array[0..511] of TSayi1;
+  DizinBellekAdresi0: array[0..511] of TSayi1;
 
 {==============================================================================
   dosya arama iþlevini baþlatýr
@@ -336,7 +336,7 @@ end;
   dizin giriþinden ilgili bilgileri alýr
  ==============================================================================}
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
- var ADosyaArama: TDosyaArama): TSayi1;
+ var ADosyaArama: TDosyaArama): TSayi4;
 var
   MD: PMDNesne;
   DizinGirdisi: PDizinGirdisi;
@@ -366,7 +366,7 @@ begin
 
       // bir sonraki dizin giriþini oku
       MD^.FD^.SektorOku(MD^.FD, ADizinGirisi^.IlkSektor + DI^.ZincirNo,
-        1, @DizinBellekAdresi);
+        1, @DizinBellekAdresi0);
 
       Inc(DI^.ZincirNo);
 
@@ -374,7 +374,7 @@ begin
     end;
 
     // dosya giriþ tablosuna konumlan
-    DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi);
+    DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi0);
     Inc(DizinGirdisi, DI^.KayitSN);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
@@ -503,16 +503,17 @@ begin
     begin
 
       // bir sonraki dizin giriþini oku
-      MD^.FD^.SektorOku(MD^.FD, ADosyaIslem^.DizinGirisi.IlkSektor +
-        ADosyaIslem^.ZincirNo, 1, @DizinBellekAdresi);
+      MD^.FD^.SektorOku(MD^.FD, ADosyaIslem^.DizinGirisi.IlkSektor + ADosyaIslem^.ZincirNo,
+        1, @DizinBellekAdresi0);
 
-      Inc(ADosyaIslem^.SektorNo);
+      //Inc(ADosyaIslem^.SektorNo);
+      Inc(ADosyaIslem^.ZincirNo);
 
       ADosyaIslem^.KayitSN := 0;
     end;
 
     // dosya giriþ tablosuna konumlan
-    DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi);
+    DizinGirdisi := PDizinGirdisi(@DizinBellekAdresi0);
     Inc(DizinGirdisi, ADosyaIslem^.KayitSN);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir

@@ -198,9 +198,17 @@ end;
   kaydýrma çubuðu nesnesini yok eder
  ==============================================================================}
 procedure TKaydirmaCubugu.YokEt(AKimlik: TKimlik);
+var
+  KaydirmaCubugu: PKaydirmaCubugu;
 begin
 
-  GorselNesneler0.YokEt(AKimlik);
+  KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneAl(AKimlik));
+  if(KaydirmaCubugu = nil) then Exit;
+
+  KaydirmaCubugu^.FArtirmaDugmesi^.YokEt(KaydirmaCubugu^.FArtirmaDugmesi^.Kimlik);
+  KaydirmaCubugu^.FEksiltmeDugmesi^.YokEt(KaydirmaCubugu^.FEksiltmeDugmesi^.Kimlik);
+
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

@@ -262,12 +262,15 @@ var
   Izgara: PIzgara = nil;
 begin
 
-  Izgara := PIzgara(GorselNesneler0.NesneAl(Kimlik));
+  Izgara := PIzgara(GorselNesneler0.NesneAl(AKimlik));
   if(Izgara = nil) then Exit;
+
+  Izgara^.FYatayKCubugu^.YokEt(Izgara^.FYatayKCubugu^.Kimlik);
+  Izgara^.FDikeyKCubugu^.YokEt(Izgara^.FDikeyKCubugu^.Kimlik);
 
   if(Izgara^.FDegerler <> nil) then YaziListesi0.YokEt(Izgara^.FDegerler^.Kimlik);
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

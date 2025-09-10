@@ -131,13 +131,13 @@ var
 begin
 
   // nesnenin kimlik, tip deðerlerini denetle.
-  DegerDugmesi := PDegerDugmesi(GorselNesneler0.NesneAl(Kimlik));
+  DegerDugmesi := PDegerDugmesi(GorselNesneler0.NesneAl(AKimlik));
   if(DegerDugmesi = nil) then Exit;
 
-  GorselNesneler0.YokEt(DegerDugmesi^.FArtirmaDugmesi^.Kimlik);
-  GorselNesneler0.YokEt(DegerDugmesi^.FEksiltmeDugmesi^.Kimlik);
+  DegerDugmesi^.FArtirmaDugmesi^.YokEt(DegerDugmesi^.FArtirmaDugmesi^.Kimlik);
+  DegerDugmesi^.FEksiltmeDugmesi^.YokEt(DegerDugmesi^.FEksiltmeDugmesi^.Kimlik);
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

@@ -140,7 +140,7 @@ end;
 procedure TBaglanti.YokEt(AKimlik: TKimlik);
 begin
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

@@ -45,7 +45,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne;
+uses genel, gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj;
 
 {==============================================================================
   resim düğmesi kesme çağrılarını yönetir
@@ -149,7 +149,7 @@ end;
 procedure TResimDugmesi.YokEt(AKimlik: TKimlik);
 begin
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

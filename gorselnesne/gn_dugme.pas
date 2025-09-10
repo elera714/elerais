@@ -223,7 +223,7 @@ end;
 procedure TDugme.YokEt(AKimlik: TKimlik);
 begin
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

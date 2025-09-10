@@ -223,7 +223,7 @@ var
   DegerListesi: PDegerListesi;
 begin
 
-  DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(Kimlik));
+  DegerListesi := PDegerListesi(GorselNesneler0.NesneAl(AKimlik));
   if(DegerListesi = nil) then Exit;
 
   if(DegerListesi^.FDegerler <> nil) then YaziListesi0.YokEt(DegerListesi^.FDegerler^.Kimlik);
@@ -231,7 +231,7 @@ begin
   if(DegerListesi^.FKolonAdlari <> nil) then YaziListesi0.YokEt(DegerListesi^.FKolonAdlari^.Kimlik);
   if(DegerListesi^.FKolonUzunluklari <> nil) then SayiListesi0.YokEt(DegerListesi^.FKolonUzunluklari^.Kimlik);
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

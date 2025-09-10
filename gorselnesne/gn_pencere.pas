@@ -43,6 +43,7 @@ type
     FKucultmeDugmesi, FBuyutmeDugmesi, FKapatmaDugmesi: PResimDugmesi;
     function Olustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
       APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk): PPencere;
+    procedure YokEt(AKimlik: TKimlik);
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
@@ -378,6 +379,24 @@ begin
 
   // nesne adresini geri döndür
   Result := Pencere;
+end;
+
+procedure TPencere.YokEt(AKimlik: TKimlik);
+var
+  Pencere: PPencere;
+begin
+
+  Pencere := PPencere(GorselNesneler0.NesneAl(AKimlik));
+  if(Pencere = nil) then Exit;
+
+  if not(Pencere^.FKapatmaDugmesi = nil) then
+    Pencere^.FKapatmaDugmesi^.YokEt(Pencere^.FKapatmaDugmesi^.Kimlik);
+  if not(Pencere^.FBuyutmeDugmesi = nil) then
+    Pencere^.FBuyutmeDugmesi^.YokEt(Pencere^.FBuyutmeDugmesi^.Kimlik);
+  if not(Pencere^.FKucultmeDugmesi = nil) then
+    Pencere^.FKucultmeDugmesi^.YokEt(Pencere^.FKucultmeDugmesi^.Kimlik);
+
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

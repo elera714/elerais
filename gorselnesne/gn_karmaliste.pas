@@ -219,12 +219,12 @@ var
   KarmaListe: PKarmaListe;
 begin
 
-  KarmaListe := PKarmaListe(GorselNesneler0.NesneAl(Kimlik));
+  KarmaListe := PKarmaListe(GorselNesneler0.NesneAl(AKimlik));
   if(KarmaListe = nil) then Exit;
 
   KarmaListe^.FAcilirMenu^.YokEt(KarmaListe^.FAcilirMenu^.Kimlik);
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

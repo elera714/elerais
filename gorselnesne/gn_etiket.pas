@@ -36,7 +36,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne, gorev;
+uses gn_pencere, gn_islevler, temelgorselnesne, gorev, sistemmesaj;
 
 {==============================================================================
   etiket nesne kesme çağrılarını yönetir
@@ -154,7 +154,7 @@ end;
 procedure TEtiket.YokEt(AKimlik: TKimlik);
 begin
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

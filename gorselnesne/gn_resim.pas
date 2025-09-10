@@ -173,7 +173,7 @@ var
   R: PResim;
 begin
 
-  R := PResim(GorselNesneler0.NesneAl(Kimlik));
+  R := PResim(GorselNesneler0.NesneAl(AKimlik));
   if(R = nil) then Exit;
 
   if not(R^.FGoruntuYapi.BellekAdresi = nil) then
@@ -183,7 +183,7 @@ begin
       R^.FGoruntuYapi.Yukseklik * 4);
   end;
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

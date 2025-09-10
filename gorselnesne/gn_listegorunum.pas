@@ -255,7 +255,7 @@ var
   ListeGorunum: PListeGorunum;
 begin
 
-  ListeGorunum := PListeGorunum(GorselNesneler0.NesneAl(Kimlik));
+  ListeGorunum := PListeGorunum(GorselNesneler0.NesneAl(AKimlik));
   if(ListeGorunum = nil) then Exit;
 
   if(ListeGorunum^.FDegerler <> nil) then YaziListesi0.YokEt(ListeGorunum^.FDegerler^.Kimlik);
@@ -263,7 +263,7 @@ begin
   if(ListeGorunum^.FKolonAdlari <> nil) then YaziListesi0.YokEt(ListeGorunum^.FKolonAdlari^.Kimlik);
   if(ListeGorunum^.FKolonUzunluklari <> nil) then SayiListesi0.YokEt(ListeGorunum^.FKolonUzunluklari^.Kimlik);
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

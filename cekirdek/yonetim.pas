@@ -76,7 +76,8 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
-  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci, sistem;
+  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci,
+  sistem, elr1;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -235,6 +236,9 @@ var
   A, B: TAracTipiSinif;
   G: PGorev;
   DosyaKimlik: TKimlik;
+  Durum: Boolean;
+  FD: PFDNesne;
+  ii: TISayi4;
   //T: TMyThread;
   //T2: TMyThread2;
 begin
@@ -328,6 +332,16 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
+            elr1.SistemKlasorleriniOlustur;
+
+            {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
+            if not(MD = nil) then
+            begin
+
+              ii := SHTBosKumeTahsisEt(MD);
+              SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Küme No: %x', [ii]);
+            end;}
+
             //Gorevler0.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
 
             {AssignFile(DosyaKimlik, 'disk2:\3.bmp');
@@ -417,11 +431,27 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
-            for i := 0 to AracTipleri.Toplam - 1 do
+            {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
+            if not(MD = nil) then
+            begin
+
+              GetMem(Bellek1, 512);
+
+              // dosya tablosunu oluþtur
+              FillChar(Bellek1^, 512, 0);
+
+              FD := MD^.FD;
+              FD^.SektorYaz(FD, $601, 1, Bellek1);
+
+              FreeMem(Bellek1, 512);
+            end;}
+
+
+            {for i := 0 to AracTipleri.Toplam - 1 do
             begin
 
               SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [AracTipleri.AracTipi[i].Kimlik]);
-            end;
+            end;}
             //iiiii := Align(SizeOf(TIzgara) + 64, 16);
             //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %d', [iiiii]);
 
@@ -629,7 +659,7 @@ var
   Bellek0: Isaretci;
   SiraNo, Kod,
   i, j, k: TSayi4;
-begin
+begin                                                            exit;
 
   AssignFile(DosyaKimlik, 'disk2:\yuklenecek_programlar.ini');
   Reset(DosyaKimlik);

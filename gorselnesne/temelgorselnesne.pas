@@ -6,7 +6,7 @@
   Dosya Adý: temelgorselnesne.pas
   Dosya Ýþlevi: temel görsel nesne yapýsýný içerir
 
-  Güncelleme Tarihi: 07/07/2025
+  Güncelleme Tarihi: 10/09/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -80,6 +80,7 @@ type
     procedure NesneTipiYaz(AGNTip: TGNTip);
     procedure BaslikYaz(ABaslik: string);
   public
+    procedure YokEt(AKimlik: TKimlik); virtual; abstract;
     property AltNesneSayisi: TSayi4 read FAltNesneSayisi write FAltNesneSayisi;
     property AltNesneBellekAdresi: Isaretci read FAltNesneBellekAdresi write FAltNesneBellekAdresi;
   published
@@ -125,7 +126,7 @@ function NesneAdiAl(AGNTip: TGNTip): string;
 
 implementation
 
-uses donusum;
+uses donusum, sistemmesaj;
 
 {==============================================================================
   görsel nesneler için isim üretir

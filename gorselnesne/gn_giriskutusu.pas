@@ -41,7 +41,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses gn_islevler, gn_pencere, genel, temelgorselnesne, gorev;
+uses gn_islevler, gn_pencere, genel, temelgorselnesne, gorev, sistemmesaj;
 
 {==============================================================================
   giriþ kutusu kesme çaðrýlarýný yönetir
@@ -198,12 +198,12 @@ var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
+  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(AKimlik));
   if(GirisKutusu = nil) then Exit;
 
-  GorselNesneler0.YokEt(GirisKutusu^.FSilmeDugmesi^.Kimlik);
+  GirisKutusu^.FSilmeDugmesi^.YokEt(GirisKutusu^.FSilmeDugmesi^.Kimlik);
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

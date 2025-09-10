@@ -44,7 +44,7 @@ function RemoveDir(const ADosyaKimlik: TKimlik): Boolean;
 function DeleteFile(const ADosyaKimlik: TKimlik): Boolean;
 
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
-  var ADosyaArama: TDosyaArama): TSayi1;
+  var ADosyaArama: TDosyaArama): TSayi4;
 
 procedure ELR1DiskBicimle(AMDNesne: PMDNesne);
 procedure ELR1VerileriSil(AMDNesne: PMDNesne);
@@ -56,6 +56,7 @@ function SHTKumeyiBirOncekiKumeyeBagla(AMDNesne: PMDNesne; ABirOncekiKumeNo,
  AKumeNo: TSayi4): Boolean;
 function SHTBirSonrakiKumeyiAl(AMDNesne: PMDNesne; AKumeNo: TSayi4): TSayi4;
 function SHTToplamKullanim(AMDNesne: PMDNesne): TSayi4;
+procedure SistemKlasorleriniOlustur;
 function ELRDosyaAdiniAl(ADizinGirdisi: PDizinGirdisiELR): string;
 
 implementation
@@ -863,136 +864,72 @@ function CreateDir(ADosyaKimlik: TKimlik): Boolean;
 var
   MD: PMDNesne;
   DG: PDizinGirdisiELR;
-  DosyaIslem: PDosyaIslem;
-  YeniKumeNo: TISayi4;
-  KumeNo, i, ZincirNo,
+  DosyaIslem, DosyaIslem2: PDosyaIslem;
+  i,
   ZincirBasinaSektor: TSayi4;
-  KlasorAdi: string;
-  TumGirislerOkundu,
-  KlasorBulundu: Boolean;
   Gun, Ay, Yil, HG: TSayi2;
   Saat, Dakika, Saniye: TSayi1;
+  AramaKaydi: TDosyaArama;
 begin
 
   // ilk deðer atamalarý
   Result := False;
 
-  KlasorBulundu := False;
-
-  TumGirislerOkundu := False;
-
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
 
-  MD := DosyaIslem^.MantiksalDepolama;
-
-  ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
-  KumeNo := MD^.Acilis.DizinGirisi.IlkSektor div ZincirBasinaSektor;
-
-  DosyaIslem^.SektorNo := -1;
-  DosyaIslem^.KayitSN := -1;
-  ZincirNo := 0;
-
-  repeat
-
-    if(DosyaIslem^.KayitSN = -1) then
-    begin
-
-      DosyaIslem^.SektorNo := (KumeNo * ZincirBasinaSektor) + ZincirNo;
-
-      // dizin giriþ sektörünü oku
-      MD^.FD^.SektorOku(MD^.FD, DosyaIslem^.SektorNo, 1, DosyaIslem^.TekSektorIcerik);
-
-      DosyaIslem^.KayitSN := 0;
-    end;
-
-    // dizin giriþ tablosuna konumlan
-    DG := PDizinGirdisiELR(DosyaIslem^.TekSektorIcerik);
-    Inc(DG, DosyaIslem^.KayitSN);
-
-    // klasör giriþinin ilk karakteri #0 ise tüm giriþler okunmuþ demektir
-    if(DG^.DosyaAdi[0] = #00) then
-    begin
-
-      TumGirislerOkundu := True;
-    end
-    // silinmiþ dosya / klasör
-    else if(DG^.Ozellikler = ELR_O_SILINMIS) then
-    begin
-
-      // silinen girdiye klasör oluþtur
-      TumGirislerOkundu := True;
-    end
-    else
-    begin
-
-      KlasorAdi := ELRDosyaAdiniAl(DG);
-
-      if(DG^.GirdiTipi = ELR_GT_KLASOR) and (KlasorAdi = DosyaIslem^.DosyaAdi) then
-        Exit(False);
-    end;
-
-    if not(TumGirislerOkundu) then
-    begin
-
-      // bir sonraki girdiye konumlan
-      Inc(DosyaIslem^.KayitSN);
-      if(DosyaIslem^.KayitSN = DIZIN_GIRDI_SAYISI) then
-      begin
-
-        // yeni sektörün okunmasý için KayitSN deðiþkenini -1 olarak ayarla
-        DosyaIslem^.KayitSN := -1;
-
-        Inc(ZincirNo);
-        if(ZincirNo = ZincirBasinaSektor) then
-        begin
-
-          i := SHTBirSonrakiKumeyiAl(DosyaIslem^.MantiksalDepolama, KumeNo);
-          if(i = ELR_ZD_SON) then
-          begin
-
-            YeniKumeNo := SHTBosKumeTahsisEt(DosyaIslem^.MantiksalDepolama);
-            if(YeniKumeNo < HATA_YOK) then Exit(False);
-
-            SHTKumeyiBirOncekiKumeyeBagla(DosyaIslem^.MantiksalDepolama, KumeNo, YeniKumeNo);
-            KumeNo := YeniKumeNo;
-          end else KumeNo := i;
-
-          ZincirNo := 0;
-        end;
-      end else Inc(DG);
-    end;
-
-  until TumGirislerOkundu;
-
-  // klasör oluþturma iþlemi
-  if not(KlasorBulundu) then
+  i := dosya.FindFirst(DosyaIslem^.MantiksalDepolama^.MD3.AygitAdi + ':\*.*', 0, AramaKaydi);
+  while i = 0 do
   begin
 
-    if(DosyaIslem^.KayitSN >= 0) and (DosyaIslem^.KayitSN < DIZIN_GIRDI_SAYISI) then
+    if(AramaKaydi.DosyaAdi = DosyaIslem^.DosyaAdi) then
     begin
 
-      // aktif tarih / saat bilgilerini al
-      TarihAl(Gun, Ay, Yil, HG);
-      SaatAl(Saat, Dakika, Saniye);
-
-      // dosya adýný hedef bölgeye kopyala
-      Tasi2(@DosyaIslem^.AktifDG[0], DG, ELR_DG_U);
-
-      DG^.GirdiTipi := ELR_GT_KLASOR;
-      DG^.Ozellikler := ELR_O_NORMAL;
-      DG^.OlusturmaTarihi := ELRTarih(Gun, Ay, Yil);
-      DG^.OlusturmaSaati := ELRSaat(Saat, Dakika, Saniye);
-      DG^.DegisimTarihi := ELRTarih(Gun, Ay, Yil);
-      DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
-      DG^.BaslangicKumeNo := ELR_ZD_SON;
-      DG^.DosyaUzunlugu := 0;
-
-      // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-      MD^.FD^.SektorYaz(MD^.FD, DosyaIslem^.SektorNo, 1, DosyaIslem^.TekSektorIcerik);
-
-      Result := True;
+      dosya.FindClose(AramaKaydi);
+      Exit;
     end;
+
+    i := dosya.FindNext(AramaKaydi);
+  end;
+
+  DosyaIslem := Dosyalar0.DosyaIslem[AramaKaydi.Kimlik];
+
+  DosyaIslem2 := Dosyalar0.DosyaIslem[ADosyaKimlik];
+
+  // dizin giriþ tablosuna konumlan
+  DG := PDizinGirdisiELR(DosyaIslem^.TekSektorIcerik);
+  Inc(DG, DosyaIslem^.KayitSN);
+
+  if(DosyaIslem^.KayitSN >= 0) and (DosyaIslem^.KayitSN < DIZIN_GIRDI_SAYISI) then
+  begin
+
+    // aktif tarih / saat bilgilerini al
+    TarihAl(Gun, Ay, Yil, HG);
+    SaatAl(Saat, Dakika, Saniye);
+
+    // dosya adýný hedef bölgeye kopyala
+    Tasi2(@DosyaIslem2^.AktifDG[0], DG, ELR_DG_U);
+
+    DG^.GirdiTipi := ELR_GT_KLASOR;
+    DG^.Ozellikler := ELR_O_NORMAL;
+    DG^.OlusturmaTarihi := ELRTarih(Gun, Ay, Yil);
+    DG^.OlusturmaSaati := ELRSaat(Saat, Dakika, Saniye);
+    DG^.DegisimTarihi := ELRTarih(Gun, Ay, Yil);
+    DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
+    DG^.BaslangicKumeNo := ELR_ZD_SON;
+    DG^.DosyaUzunlugu := 0;
+
+    MD := DosyaIslem^.MantiksalDepolama;
+    ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
+
+    DosyaIslem^.SektorNo := (DosyaIslem^.KumeNo * ZincirBasinaSektor) + DosyaIslem^.ZincirNo;
+
+    // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
+    MD^.FD^.SektorYaz(MD^.FD, DosyaIslem^.SektorNo, 1, DosyaIslem^.TekSektorIcerik);
+
+    dosya.FindClose(AramaKaydi);
+
+    Result := True;
   end;
 end;
 
@@ -1000,6 +937,63 @@ end;
   klasör silme iþlevini gerçekleþtirir
  ==============================================================================}
 function RemoveDir(const ADosyaKimlik: TKimlik): Boolean;
+var
+  MD: PMDNesne;
+  DG: PDizinGirdisiELR;
+  DosyaIslem: PDosyaIslem;
+  i,
+  ZincirBasinaSektor: TSayi4;
+  AramaKaydi: TDosyaArama;
+begin
+
+  // ilk deðer atamalarý
+  Result := False;
+
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaKimlik];
+
+  i := dosya.FindFirst(DosyaIslem^.MantiksalDepolama^.MD3.AygitAdi + ':\*.*', 0, AramaKaydi);
+  while i = 0 do
+  begin
+
+    if(AramaKaydi.DosyaAdi = DosyaIslem^.DosyaAdi) and (AramaKaydi.Ozellikler = $10) then
+    begin
+
+      DosyaIslem := Dosyalar0.DosyaIslem[AramaKaydi.Kimlik];
+
+      // dizin giriþ tablosuna konumlan
+      DG := PDizinGirdisiELR(DosyaIslem^.TekSektorIcerik);
+      Inc(DG, DosyaIslem^.KayitSN);
+
+      // klasörü silindi olarak iþaretle
+      DG^.Ozellikler := ELR_O_SILINMIS;
+
+      MD := DosyaIslem^.MantiksalDepolama;
+
+      ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
+
+      DosyaIslem^.SektorNo := (DosyaIslem^.KumeNo * ZincirBasinaSektor) + DosyaIslem^.ZincirNo;
+
+      // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
+      MD^.FD^.SektorYaz(MD^.FD, DosyaIslem^.SektorNo, 1, DosyaIslem^.TekSektorIcerik);
+
+      dosya.FindClose(AramaKaydi);
+
+      Exit(True);
+    end;
+
+    i := dosya.FindNext(AramaKaydi);
+  end;
+
+  dosya.FindClose(AramaKaydi);
+
+  Result := False;
+end;
+
+{==============================================================================
+  klasör silme iþlevini gerçekleþtirir
+ ==============================================================================}
+function RemoveDirEski(const ADosyaKimlik: TKimlik): Boolean;
 var
   MD: PMDNesne;
   DG: PDizinGirdisiELR;
@@ -1224,14 +1218,15 @@ end;
   dizin giriþinden ilgili bilgileri alýr
  ==============================================================================}
 function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
-  var ADosyaArama: TDosyaArama): TSayi1;
+  var ADosyaArama: TDosyaArama): TSayi4;
 var
   MD: PMDNesne;
   AktifDG: PDizinGirdisiELR;
   TumGirislerOkundu: Boolean;
   DosyaIslem: PDosyaIslem;
   ZincirBasinaSektor: TSayi1;
-  KumeNo: TSayi4;
+  i: TSayi4;
+  YeniKumeNo: TISayi4;
 begin
 
   // 0 = bir sonraki girdi mevcut, 1 = tüm girdiler okundu
@@ -1249,14 +1244,158 @@ begin
   MD := DosyaIslem^.MantiksalDepolama;
 
   ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
-  KumeNo := MD^.Acilis.DizinGirisi.IlkSektor div ZincirBasinaSektor;
+
+  if(DosyaIslem^.KumeNo = -1) then
+  begin
+
+    DosyaIslem^.KumeNo := MD^.Acilis.DizinGirisi.IlkSektor div ZincirBasinaSektor;
+    DosyaIslem^.ZincirNo := 0;
+    DosyaIslem^.KayitSN := -1;
+
+    //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Ýlk Küme->Sektör No: %x', [DosyaIslem^.KumeNo*4]);
+  end;
+
+  repeat
+
+    // bir sonraki girdiye konumlan
+    Inc(DosyaIslem^.KayitSN);
+    if(DosyaIslem^.KayitSN = DIZIN_GIRDI_SAYISI) then
+    begin
+
+      // yeni sektörün okunmasý için KayitSN deðiþkenini 0 olarak ayarla
+      DosyaIslem^.KayitSN := 0;
+
+      Inc(DosyaIslem^.ZincirNo);
+      if(DosyaIslem^.ZincirNo = ZincirBasinaSektor) then
+      begin
+
+        DosyaIslem^.ZincirNo := 0;
+
+        i := SHTBirSonrakiKumeyiAl(MD, DosyaIslem^.KumeNo);
+
+        //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'SHTBirSonrakiKume: %x', [i]);
+
+        if(i = ELR_ZD_SON) then
+        begin
+
+          YeniKumeNo := SHTBosKumeTahsisEt(MD);
+          if(YeniKumeNo < HATA_YOK) then
+          begin
+
+            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Boþ Küme->Sektör No: %x', [YeniKumeNo*4]);
+
+            TumGirislerOkundu := True;
+            Result := 1;
+            Exit;
+          end;
+
+          SHTKumeyiBirOncekiKumeyeBagla(MD, DosyaIslem^.KumeNo, YeniKumeNo);
+          DosyaIslem^.KumeNo := YeniKumeNo;
+
+        end else DosyaIslem^.KumeNo := i;
+
+        SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Küme->Sektör No: %x', [DosyaIslem^.KumeNo]);
+
+      end;
+    end; // else Inc(AktifDG);
+
+    if(DosyaIslem^.KayitSN = 0) then
+    begin
+
+      DosyaIslem^.SektorNo := (DosyaIslem^.KumeNo * ZincirBasinaSektor) + DosyaIslem^.ZincirNo;
+
+      // dizin giriþ sektörünü oku
+      MD^.FD^.SektorOku(MD^.FD, DosyaIslem^.SektorNo, 1, DosyaIslem^.TekSektorIcerik);
+
+      //DosyaIslem^.KayitSN := 0;
+    end;
+
+    // dosya giriþ tablosuna konumlan
+    AktifDG := PDizinGirdisiELR(DosyaIslem^.TekSektorIcerik);
+    Inc(AktifDG, DosyaIslem^.KayitSN);
+
+    // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
+    if(AktifDG^.DosyaAdi[0] = #00) then
+    begin
+
+      Result := 1;
+      TumGirislerOkundu := True;
+    end
+    // silinmiþ dosya / klasör
+    else if(AktifDG^.Ozellikler = ELR_O_SILINMIS) then
+    begin
+
+      // bir sonraki giriþle devam et
+    end
+    else
+    begin
+
+      ADosyaArama.DosyaAdi := ELRDosyaAdiniAl(AktifDG);
+      if(AktifDG^.GirdiTipi = ELR_GT_KLASOR) then
+        ADosyaArama.Ozellikler := $10     { TODO - çekirdek ve uygulama alanýnda yapýlandýr }
+      else ADosyaArama.Ozellikler := 0;
+      ADosyaArama.OlusturmaTarihi := AktifDG^.OlusturmaTarihi;
+      ADosyaArama.OlusturmaSaati := AktifDG^.OlusturmaSaati;
+      ADosyaArama.SonErisimTarihi := 0;
+      ADosyaArama.SonDegisimTarihi := AktifDG^.DegisimTarihi;
+      ADosyaArama.SonDegisimSaati := AktifDG^.DegisimSaati;
+
+      // dosya uzunluðu ve cluster baþlangýcýný geri dönüþ deðerine ekle
+      ADosyaArama.DosyaUzunlugu := AktifDG^.DosyaUzunlugu;
+      ADosyaArama.BaslangicKumeNo := AktifDG^.BaslangicKumeNo;
+
+      Result := 0;
+      TumGirislerOkundu := True;
+    end;
+
+  until TumGirislerOkundu;
+end;
+
+{==============================================================================
+  dizin giriþinden ilgili bilgileri alýr
+ ==============================================================================}
+function DizinGirdisiOkuEski(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
+  var ADosyaArama: TDosyaArama): TSayi4;
+var
+  MD: PMDNesne;
+  AktifDG: PDizinGirdisiELR;
+  TumGirislerOkundu: Boolean;
+  DosyaIslem: PDosyaIslem;
+  ZincirBasinaSektor: TSayi1;
+  i: TSayi4;
+  YeniKumeNo: TISayi4;
+begin
+
+  // 0 = bir sonraki girdi mevcut, 1 = tüm girdiler okundu
+  Result := 1;
+
+  ADosyaArama.DosyaAdi := '';
+
+  // ilk deðer atamalarý
+  TumGirislerOkundu := False;
+
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DosyaIslem := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+
+  // aramanýn yapýlacaðý sürücü
+  MD := DosyaIslem^.MantiksalDepolama;
+
+  ZincirBasinaSektor := MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
+
+  if(DosyaIslem^.KumeNo = -1) then
+  begin
+
+    DosyaIslem^.KumeNo := MD^.Acilis.DizinGirisi.IlkSektor div ZincirBasinaSektor;
+    DosyaIslem^.ZincirNo := 0;
+    DosyaIslem^.KayitSN := -1;
+  end;
 
   repeat
 
     if(DosyaIslem^.KayitSN = -1) then
     begin
 
-      DosyaIslem^.SektorNo := (KumeNo * ZincirBasinaSektor) + DosyaIslem^.ZincirNo;
+      DosyaIslem^.SektorNo := (DosyaIslem^.KumeNo * ZincirBasinaSektor) + DosyaIslem^.ZincirNo;
 
       // dizin giriþ sektörünü oku
       MD^.FD^.SektorOku(MD^.FD, DosyaIslem^.SektorNo, 1, DosyaIslem^.TekSektorIcerik);
@@ -1302,29 +1441,43 @@ begin
       TumGirislerOkundu := True;
     end;
 
-    // bir sonraki girdiye konumlan
-    Inc(DosyaIslem^.KayitSN);
-    if(DosyaIslem^.KayitSN = DIZIN_GIRDI_SAYISI) then
+    // tüm giriþler okunmadýysa bir sonraki giriþe konumlan
+    //if not(TumGirislerOkundu) then
     begin
 
-      // yeni sektörün okunmasý için KayitSN deðiþkenini -1 olarak ayarla
-      DosyaIslem^.KayitSN := -1;
-
-      Inc(DosyaIslem^.ZincirNo);
-      if(DosyaIslem^.ZincirNo = ZincirBasinaSektor) then
+      // bir sonraki girdiye konumlan
+      Inc(DosyaIslem^.KayitSN);
+      if(DosyaIslem^.KayitSN = DIZIN_GIRDI_SAYISI) then
       begin
 
-        DosyaIslem^.ZincirNo := 0;
+        // yeni sektörün okunmasý için KayitSN deðiþkenini -1 olarak ayarla
+        DosyaIslem^.KayitSN := -1;
 
-        KumeNo := SHTBirSonrakiKumeyiAl(MD, KumeNo);
-        if(KumeNo = ELR_ZD_SON) then
+        Inc(DosyaIslem^.ZincirNo);
+        if(DosyaIslem^.ZincirNo = ZincirBasinaSektor) then
         begin
 
-          TumGirislerOkundu := True;
-          Result := 1;
+          DosyaIslem^.ZincirNo := 0;
+
+          i := SHTBirSonrakiKumeyiAl(MD, DosyaIslem^.KumeNo);
+          if(i = ELR_ZD_SON) then
+          begin
+
+            YeniKumeNo := SHTBosKumeTahsisEt(MD);
+            if(YeniKumeNo < HATA_YOK) then
+            begin
+
+              TumGirislerOkundu := True;
+              Result := 1;
+              Exit;
+            end;
+
+            SHTKumeyiBirOncekiKumeyeBagla(MD, DosyaIslem^.KumeNo, YeniKumeNo);
+            DosyaIslem^.KumeNo := YeniKumeNo;
+          end else DosyaIslem^.KumeNo := i;
         end;
-      end;
-    end else Inc(AktifDG);
+      end else Inc(AktifDG);
+    end;
 
   until TumGirislerOkundu;
 end;
@@ -1368,10 +1521,10 @@ var
   KumeNo, i: TSayi4;
 begin
 
-  GetMem(Bellek, 512);
+  GetMem(Bellek, 4 * 512);
 
   // dosya tablosunu oluþtur
-  FillChar(Bellek^, 512, 0);
+  FillChar(Bellek^, 4 * 512, 0);
 
   FD := AMDNesne^.FD;
 
@@ -1384,7 +1537,7 @@ begin
     FD^.SektorYaz(FD, (KumeNo + i) * 4, 4, Bellek);
   end;
 
-  FreeMem(Bellek, 512);
+  FreeMem(Bellek, 4 * 512);
 end;
 
 {==============================================================================
@@ -1647,6 +1800,20 @@ begin
   FreeMem(Bellek, 512);
 
   Result := KullanilanSektor * 4; // 4 = zincirdeki sektör sayýsý
+end;
+
+procedure SistemKlasorleriniOlustur;
+var
+  Durum: Boolean;
+begin
+
+  Durum := dosya.CreateDir('disk2:\progrmlr');
+  Durum := dosya.CreateDir('disk2:\resimler');
+  Durum := dosya.CreateDir('disk2:\belgeler');
+  Durum := dosya.CreateDir('disk2:\gecici');
+  Durum := dosya.CreateDir('disk2:\kisiler');
+  Durum := dosya.CreateDir('disk2:\suruculr');
+  Durum := dosya.CreateDir('disk2:\kodlar');
 end;
 
 end.
