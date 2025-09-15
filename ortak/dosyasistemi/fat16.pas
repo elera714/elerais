@@ -152,7 +152,7 @@ begin
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Reset: %d', [DosyaArama.DosyaUzunlugu]);
 
     DI^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
-    DI^.Uzunluk := DosyaArama.DosyaUzunlugu;
+    DI^.Uzunluk2 := DosyaArama.DosyaUzunlugu;
   end else DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
@@ -200,7 +200,7 @@ begin
   // üzerinde işlem yapılacak sürücü
   MD := DI^.MantiksalDepolama;
 
-  OkunacakVeri := DI^.Uzunluk;
+  OkunacakVeri := DI^.Uzunluk2;
 
   Zincir := DI^.IlkZincirSektor;
 

@@ -149,7 +149,7 @@ begin
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Reset: %d', [DosyaArama.DosyaUzunlugu]);
 
     DI^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
-    DI^.Uzunluk := DosyaArama.DosyaUzunlugu;
+    DI^.Uzunluk2 := DosyaArama.DosyaUzunlugu;
   end else DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
@@ -205,7 +205,7 @@ begin
 
   if(OkumaSonuc <> 0) then SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
 
-  OkunacakVeri := DI^.Uzunluk;
+  OkunacakVeri := DI^.Uzunluk2;
 
   Zincir := DI^.IlkZincirSektor;
 

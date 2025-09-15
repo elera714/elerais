@@ -258,7 +258,7 @@ begin
   if not(GN = nil) then
   begin
 
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: %s', [GN^.NesneAdi]);
+    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: %s', [GN^.NesneAdi]);
 
     GorselNesne[i] := nil;
     FreeMem(GN, 1024);

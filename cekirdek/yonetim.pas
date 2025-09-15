@@ -431,6 +431,8 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
+            elr1.SistemKlasorleriniSil;
+
             {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
             if not(MD = nil) then
             begin

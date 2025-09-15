@@ -483,7 +483,7 @@ type
     DosyaUzunlugu: TSayi4;
     Kimlik: TKimlik;                  // arama kimliði
     BaslangicKumeNo: TSayi4;          // geçici
-    Ozellikler: TSayi1;
+    Ozellikler: TSayi1;               { TODO: bu deðiþken deðerleri sistem tanýmlarýyla ayný olacak }
     OlusturmaSaati: TSayi4;
     OlusturmaTarihi: TSayi4;
     SonErisimTarihi: TSayi4;

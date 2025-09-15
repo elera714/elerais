@@ -28,13 +28,14 @@ type
   TDosyaIslem = record
     MantiksalDepolama: PMDNesne;
     Klasor, DosyaAdi: string;
-    DATBellekAdresi: Isaretci;    // Dosya Ayýrma Tablosu bellek adresi
-    IlkZincirSektor: Word;
-    Uzunluk: TISayi4;
-    Konum: TSayi4;
 
+    // alt 2 satýr iptal edilecek
+    IlkZincirSektor: Word;
+    Uzunluk2: TISayi4;
+
+    DATBellekAdresi: Isaretci;    // Dosya Ayýrma Tablosu bellek adresi
     // dizin giriþinin tek sektörlük içeriði, iþlevler arasý veri alýþveriþi için
-    TekSektorIcerik: Isaretci;
+    TekSektorIcerik2: Isaretci;
 
     Kimlik: TKimlik;
     Gorev: PGorev;            // dosya iþlemini gerçekleþtiren görev
@@ -46,17 +47,17 @@ type
     { TODO - iptal edilecek }
     AktifDG: array[0..63] of TSayi1;
 
-
-    // iþlem yapýlan sektör numarasý (-1 = sektör henüz okunmadý)
-    SektorNo,       { TODO - bu deðiþken iptal edilecek, KumeNo deðiþkeniyle devam edilecek }
-
-
     // dosya / klasörün okunan dizin sektöründeki (SektorNo) kayýt sýra numarasý
     // -1 sektör okunacak (kayýt sýra numarasý yok)
     KayitSN,
     KumeNo: TISayi4;
     ZincirNo: TSayi4;
     DosyaDurumu: TDosyaDurumu;
+
+    // silinmiþ ilk girdi deðiþkenleri
+    SilinenKumeNo,
+    SilinenZincirNo,
+    SilinenKayitSN: TISayi4;
 
     // dosya arama iþlemleri için - yukarýdaki yapýlarla birliktelik saðlanacak
     DizinGirisi: TDizinGirisi;
@@ -69,7 +70,7 @@ type
   end;
 
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
-  var ADosyaArama: TDosyaArama): TISayi4;
+  var ADosyaArama: TDosyaArama; ADIOlustur: Boolean = True): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
 procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
@@ -129,9 +130,11 @@ end;
 
 {==============================================================================
   dosya arama iþlevini baþlatýr
+  ADIOlustur: yeni DosyaIslem kaydý oluþtur. (Bu deðiþken uyum amaçlý olup,
+    geçicidir ve iptal edilecektir. mevcut DosyaIslem yapýsýnýn kullanýmýný amaçlar)
  ==============================================================================}
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
-  var ADosyaArama: TDosyaArama): TISayi4;
+  var ADosyaArama: TDosyaArama; ADIOlustur: Boolean = True): TISayi4;
 var
   MD: PMDNesne;
   DST: TSayi4;
@@ -147,13 +150,17 @@ begin
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AAramaSuzgec: %s', [AAramaSuzgec]);
 
   // arama için arama bilgilerinin saklanacaðý bellek bölgesi tahsis et
-  DI := Dosyalar0.Yeni;
-  if(DI = nil) then
+  if(ADIOlustur) then
   begin
 
-    Result := HATA_KIMLIK;
-    Exit;
-  end;
+    DI := Dosyalar0.Yeni;
+    if(DI = nil) then
+    begin
+
+      Result := HATA_KIMLIK;
+      Exit;
+    end;
+  end else DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
 
   // arama kaydýný, çaðýran iþlevin deðiþkenine sakla
   ADosyaArama.Kimlik := DI^.Kimlik;
@@ -232,7 +239,6 @@ begin
       begin
 
         DI^.DizinGirisi.IlkSektor := SektorNo;
-        DI^.SektorNo := -1;
         DI^.ZincirNo := 0;
         DI^.KayitSN := -1;
 
@@ -263,7 +269,6 @@ begin
     DST := DI^.MantiksalDepolama^.MD3.DST;
 
     DI^.KumeNo := -1;
-    DI^.SektorNo := -1;
     DI^.ZincirNo := 0;
     DI^.KayitSN := -1;
 
@@ -439,52 +444,15 @@ begin
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // en son iþlem hatalý ise çýk
-{
 
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := @GDosyaIslemleri[ADosyaKimlik];
-
-  DST := DosyaIslem^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MantiksalDepolama^.MD3.DST;
 
   if(DST = DST_ELR1) then
 
     elr1.Reset(ADosyaKimlik)
 
-  else}
-  begin
+  else fat32.Reset(ADosyaKimlik);
 
-    // en son iþlem hatalý ise çýk
-    if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
-
-    // tam dosya adýný al
-    TamAramaYolu := DI^.MantiksalDepolama^.MD3.AygitAdi + ':' + DI^.Klasor + '*.*';
-
-    // dosyayý dosya tablosunda bul
-    Bulundu := False;
-    if(FindFirst(TamAramaYolu, 0, DosyaArama) = 0) then
-    begin
-
-      repeat
-
-        if(DosyaArama.DosyaAdi = DI^.DosyaAdi) then Bulundu := True;
-      until (Bulundu) or (FindNext(DosyaArama) <> 0);
-
-      FindClose(DosyaArama);
-    end;
-
-    // dosyanýn tabloda bulunmasý halinde
-    // dosyanýn ilk dizi ve uzunluðunu al
-    if(Bulundu) then
-    begin
-
-      DI^.IlkZincirSektor := DosyaArama.BaslangicKumeNo;
-      DI^.Uzunluk := DosyaArama.DosyaUzunlugu;
-
-      // dosya durumunu, "dosya okuma için açýldý" olarak güncelle
-      DI^.DosyaDurumu := ddOkumaIcinAcik;
-
-    end else DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
-  end;
 end;
 
 {==============================================================================
@@ -637,7 +605,7 @@ begin
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
   if(DI = nil) then Exit(0);
 
-  Result := DI^.Uzunluk;
+  Result := DI^.Uzunluk2;
 end;
 
 {==============================================================================
@@ -802,7 +770,8 @@ begin
       // ilk deðer atamalarýný gerçekleþtir
       DI^.DosyaDurumu := ddKapali;
       DI^.Kimlik := i;
-      DI^.TekSektorIcerik := GetMem(512);
+      DI^.TekSektorIcerik2 := GetMem(512);
+      DI^.DATBellekAdresi := GetMem(512);
 
       Exit(DI);
     end;
@@ -824,7 +793,10 @@ begin
   if not(DI = nil) then
   begin
 
-    FreeMem(DI^.TekSektorIcerik, 512);
+    //SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'DI YokEt Kimlik: %d', [DI^.Kimlik]);
+
+    FreeMem(DI^.TekSektorIcerik2, 512);
+    FreeMem(DI^.DATBellekAdresi, 512);
     FreeMem(DI, SizeOf(TDosyaIslem));
     Dosyalar0.DosyaIslem[ADosyaKimlik] := nil;
   end;
@@ -856,6 +828,8 @@ begin
 
   // dosya tanýmlayýcýyý kaydet
   Result := DI^.Kimlik;
+
+  //SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'DI Oluþtur Kimlik: %d', [DI^.Kimlik]);
 
   DI^.Gorev := GorevAl(-1);
   if(DI = nil) then
@@ -890,8 +864,12 @@ begin
   DI^.DosyaDurumu := ddKapali;
   DI^.DATBellekAdresi := nil;
   DI^.IlkZincirSektor := 0;
-  DI^.Uzunluk := 0;
-  DI^.Konum := 0;
+  DI^.Uzunluk2 := 0;
+
+  // oluþturulacak ilk klasör için listeleme aþamasýnda kaydedilen bilgiler
+  DI^.SilinenKumeNo := -1;
+  DI^.SilinenZincirNo := -1;
+  DI^.SilinenKayitSN := -1;
 end;
 
 function HamDosyaAdiniDosyaAdinaCevir2(ADizinGirdisi: PDizinGirdisi): string;
