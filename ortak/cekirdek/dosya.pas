@@ -26,26 +26,14 @@ type
 
   PDosyaIslem = ^TDosyaIslem;
   TDosyaIslem = record
-    MantiksalDepolama: PMDNesne;
+    MD: TMDNesne;
     Klasor, DosyaAdi: string;
 
-    // alt 2 satýr iptal edilecek
-    IlkZincirSektor: Word;
-    Uzunluk2: TISayi4;
-
-    DATBellekAdresi: Isaretci;    // Dosya Ayýrma Tablosu bellek adresi
-    // dizin giriþinin tek sektörlük içeriði, iþlevler arasý veri alýþveriþi için
-    TekSektorIcerik2: Isaretci;
+    // dizin / dosya giriþinin Tek Sektörlük Içeriði. (iþlevler arasý veri alýþveriþi için)
+    TSI: Isaretci;
 
     Kimlik: TKimlik;
     Gorev: PGorev;            // dosya iþlemini gerçekleþtiren görev
-
-    // üzerinde iþlem yapýlan aktif dosya / klasör için dizin giriþi
-    // tüm dosya iþlemleri bu yapý üzerinde olacak, daha sonra sektörün ilgili sýrasýna aktarýlacak
-    // tüm iþlevler dosya açýk olduðu müddetçe tekrar tekrar dizin giriþini okumadan bu yapýya bakarak
-    // karar mekanizmalarýný oluþturacak
-    { TODO - iptal edilecek }
-    AktifDG: array[0..63] of TSayi1;
 
     // dosya / klasörün okunan dizin sektöründeki (SektorNo) kayýt sýra numarasý
     // -1 sektör okunacak (kayýt sýra numarasý yok)
@@ -70,7 +58,7 @@ type
   end;
 
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
-  var ADosyaArama: TDosyaArama; ADIOlustur: Boolean = True): TISayi4;
+  var ADosyaArama: TDosyaArama; AYDAKOlustur: Boolean = True): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
 procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
@@ -80,7 +68,7 @@ procedure Reset(ADosyaKimlik: TKimlik);
 procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
 procedure WriteLn(ADosyaKimlik: TKimlik; AVeri: string);
 procedure Write(ADosyaKimlik: TKimlik; ABellekAdresi: Isaretci; AUzunluk: TSayi4);
-function Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci): TISayi4;
+procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 function IOResult: TISayi4;
 function FileSize(ADosyaKimlik: TKimlik): TISayi8;
 function EOF(ADosyaKimlik: TKimlik): Boolean;
@@ -114,7 +102,7 @@ var
 
 implementation
 
-uses elr1, fat12, fat16, fat32, sistemmesaj, islevler, donusum, genel;
+uses elr1, fat12, fat16, fat32, sistemmesaj, islevler, donusum, genel, gercekbellek;
 
 {==============================================================================
   dosya sistem iþlevlerinin kullanacaðý deðiþkenleri ilk deðerlerle yükle
@@ -130,11 +118,9 @@ end;
 
 {==============================================================================
   dosya arama iþlevini baþlatýr
-  ADIOlustur: yeni DosyaIslem kaydý oluþtur. (Bu deðiþken uyum amaçlý olup,
-    geçicidir ve iptal edilecektir. mevcut DosyaIslem yapýsýnýn kullanýmýný amaçlar)
  ==============================================================================}
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
-  var ADosyaArama: TDosyaArama; ADIOlustur: Boolean = True): TISayi4;
+  var ADosyaArama: TDosyaArama; AYDAKOlustur: Boolean = True): TISayi4;
 var
   MD: PMDNesne;
   DST: TSayi4;
@@ -144,26 +130,26 @@ var
   DI: PDosyaIslem;
 begin
 
+  Result := HATA_KIMLIK;
+
   // AAramaSuzgec
   // örnek: disk1:\klasör1\dizin1\*.*
 
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AAramaSuzgec: %s', [AAramaSuzgec]);
 
-  // arama için arama bilgilerinin saklanacaðý bellek bölgesi tahsis et
-  if(ADIOlustur) then
+  // AYDAKOlustur deðiþkeninin True olmasý durumunda, arama için yeni dosya iþlem kaydý oluþturulur.
+  // False olmasý durumunda daha önce oluþturukmuþ kayýt kullanýlýr
+  // (Bu deðiþken uyum amaçlý olup, geçicidir ve iptal edilecektir)
+  if(AYDAKOlustur) then
   begin
 
     DI := Dosyalar0.Yeni;
-    if(DI = nil) then
-    begin
+    if(DI = nil) then Exit;
 
-      Result := HATA_KIMLIK;
-      Exit;
-    end;
+    // arama kaydýný, çaðýran iþlevin deðiþkenine sakla
+    ADosyaArama.Kimlik := DI^.Kimlik;
+
   end else DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
-
-  // arama kaydýný, çaðýran iþlevin deðiþkenine sakla
-  ADosyaArama.Kimlik := DI^.Kimlik;
 
   // arama iþlevinin yapýlacaðý sürücüyü al
   MD := MantiksalDepolama0.SurucuAl(AAramaSuzgec);
@@ -172,8 +158,7 @@ begin
 
     // arama için kullanýlan bellek bölgesini serbest býrak
     DosyaIsleminiSonlandir(DI^.Kimlik);
-    Result := 1;
-    Exit;
+    Exit(1);
   end;
 
   s := AAramaSuzgec;
@@ -192,26 +177,27 @@ begin
   begin
 
     SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: Arama süzgeç söz dizilimi hatalý!', []);
-    Result := 1;
-    Exit;
+    Exit(1);
   end;
   s := Copy(s, 2, Length(s) - 1);           // s = klasör1\*.*
 
   // sürücüyü arama bellek bölgesine ekle
-  //DI := Dosyalar0.DosyaIslem[DosyaKimlik];
-  DI^.MantiksalDepolama := MD;
+  DI^.MD := MD^;
 
   SektorNo := MD^.Acilis.DizinGirisi.IlkSektor;
 
   // AyrilmisSektor = zincir deðerine eklenecek deðer
-  AyrilmisSektor := MD^.Acilis.DizinGirisi.IlkSektor + MD^.Acilis.DizinGirisi.ToplamSektor;
+  AyrilmisSektor := SektorNo + MD^.Acilis.DizinGirisi.ToplamSektor;
 
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SektorNo: ''%d''', [SektorNo]);
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AyrilmisSektor: ''%d''', [AyrilmisSektor]);
 
   // bu aþamada s = klasör1\*.*
+
+  // istenen (alt) klasörün dizin tablosunda aranmasý
   repeat
 
+    // arama süzgecinden sýradaki klasörün alýnmasý
     i := Pos('\', s);
     if(i > 0) then
     begin
@@ -227,8 +213,9 @@ begin
       AramaSuzgeci := s;
     end;
 
-    DST := DI^.MantiksalDepolama^.MD3.DST;
+    DST := DI^.MD.MD3.DST;
 
+    // klasörün dizin giriþinde aranmasý
     if(Length(AranacakKlasor) > 0) then
     begin
 
@@ -266,7 +253,7 @@ begin
   begin
 
     // dosya sistem tipine göre iþlevi yönlendir
-    DST := DI^.MantiksalDepolama^.MD3.DST;
+    DST := DI^.MD.MD3.DST;
 
     DI^.KumeNo := -1;
     DI^.ZincirNo := 0;
@@ -308,7 +295,7 @@ var
 begin
 
   DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
-  DST := DI^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -370,7 +357,7 @@ begin
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -400,12 +387,17 @@ begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit;
+  if(DI = nil) then
+  begin
+
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    Exit;
+  end;
 
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -431,9 +423,6 @@ procedure Reset(ADosyaKimlik: TKimlik);
 var
   DI: PDosyaIslem;
   DST: TSayi4;
-  DosyaArama: TDosyaArama;
-  TamAramaYolu: string;
-  Bulundu: Boolean;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
@@ -445,14 +434,13 @@ begin
 
   // en son iþlem hatalý ise çýk
 
-  DST := DI^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
     elr1.Reset(ADosyaKimlik)
 
   else fat32.Reset(ADosyaKimlik);
-
 end;
 
 {==============================================================================
@@ -466,12 +454,17 @@ begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit;
+  if(DI = nil) then
+  begin
+
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    Exit;
+  end;
 
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -515,7 +508,7 @@ begin
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -539,22 +532,25 @@ end;
 {==============================================================================
   dosya okuma iþlemini gerçekleþtirir
  ==============================================================================}
-function Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci): TISayi4;
+procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
   DI: PDosyaIslem;
   DST: TSayi4;
 begin
 
-  Result := 0;
-
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit;
+  if(DI = nil) then
+  begin
+
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    Exit;
+  end;
 
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -571,8 +567,6 @@ begin
   else if(DST = DST_FAT32) or (DST = DST_FAT32LBA) then
 
     fat32.Read(ADosyaKimlik, AHedefBellek);
-
-  Result := 1;
 end;
 
 {==============================================================================
@@ -599,13 +593,38 @@ end;
 function FileSize(ADosyaKimlik: TKimlik): TISayi8;
 var
   DI: PDosyaIslem;
+  DST: TSayi4;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit(0);
+  if(DI = nil) then
+  begin
 
-  Result := DI^.Uzunluk2;
+    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    Exit(-1);
+  end;
+
+  // en son iþlem hatalý ise çýk
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit(-1);
+
+  DST := DI^.MD.MD3.DST;
+
+  if(DST = DST_ELR1) then
+
+    Result := elr1.FileSize(ADosyaKimlik)
+
+  else if(DST = DST_FAT12) then
+
+    Result := fat12.FileSize(ADosyaKimlik)
+
+  else if(DST = DST_FAT16) then
+
+    Result := fat16.FileSize(ADosyaKimlik)
+
+  else if(DST = DST_FAT32) or (DST = DST_FAT32LBA) then
+
+    Result := fat32.FileSize(ADosyaKimlik);
 end;
 
 {==============================================================================
@@ -631,7 +650,7 @@ end;
  ==============================================================================}
 function CreateDir(AKlasorAdi: string): Boolean;
 var
-  DosyaIslem: PDosyaIslem;
+  DI: PDosyaIslem;
   DST: TSayi4;
   DosyaKimlik: TKimlik;
 begin
@@ -643,9 +662,9 @@ begin
   if(DosyaKimlik = HATA_KIMLIK) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[DosyaKimlik];
+  DI := Dosyalar0.DosyaIslem[DosyaKimlik];
 
-  DST := DosyaIslem^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -671,7 +690,7 @@ end;
  ==============================================================================}
 function RemoveDir(const AKlasorAdi: string): Boolean;
 var
-  DosyaIslem: PDosyaIslem;
+  DI: PDosyaIslem;
   DST: TSayi4;
   DosyaKimlik: TKimlik;
 begin
@@ -683,9 +702,9 @@ begin
   if(DosyaKimlik = HATA_KIMLIK) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[DosyaKimlik];
+  DI := Dosyalar0.DosyaIslem[DosyaKimlik];
 
-  DST := DosyaIslem^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -711,7 +730,7 @@ end;
  ==============================================================================}
 function DeleteFile(const ADosyaAdi: string): Boolean;
 var
-  DosyaIslem: PDosyaIslem;
+  DI: PDosyaIslem;
   DST: TSayi4;
   DosyaKimlik: TKimlik;
 begin
@@ -723,9 +742,9 @@ begin
   if(DosyaKimlik = HATA_KIMLIK) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DosyaIslem := Dosyalar0.DosyaIslem[DosyaKimlik];
+  DI := Dosyalar0.DosyaIslem[DosyaKimlik];
 
-  DST := DosyaIslem^.MantiksalDepolama^.MD3.DST;
+  DST := DI^.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -770,8 +789,7 @@ begin
       // ilk deðer atamalarýný gerçekleþtir
       DI^.DosyaDurumu := ddKapali;
       DI^.Kimlik := i;
-      DI^.TekSektorIcerik2 := GetMem(512);
-      DI^.DATBellekAdresi := GetMem(512);
+      DI^.TSI := GercekBellek0.Ayir(512); //GetMem(512);   (GetMem ile hata veriyor)
 
       Exit(DI);
     end;
@@ -795,8 +813,7 @@ begin
 
     //SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'DI YokEt Kimlik: %d', [DI^.Kimlik]);
 
-    FreeMem(DI^.TekSektorIcerik2, 512);
-    FreeMem(DI^.DATBellekAdresi, 512);
+    FreeMem(DI^.TSI, 512);
     FreeMem(DI, SizeOf(TDosyaIslem));
     Dosyalar0.DosyaIslem[ADosyaKimlik] := nil;
   end;
@@ -840,7 +857,7 @@ begin
   end;
 
   // iþlem yapýlacak sürücü
-  DI^.MantiksalDepolama := MD;
+  DI^.MD := MD^;
 
   // dosya yolunu ayrýþtýr
   DosyaYolunuParcala2(ADosyaAdi, Surucu, Klasor, DosyaAdi);
@@ -853,18 +870,8 @@ begin
   DI^.Klasor := Klasor;
   DI^.DosyaAdi := DosyaAdi;
 
-  FillChar(DI^.AktifDG[0], ELR_DOSYA_U, #0);
-
-  DI^.AktifDG[0] := Length(DI^.DosyaAdi);
-
-  for i := 1 to Length(DI^.DosyaAdi) do
-    DI^.AktifDG[i] := Ord(DI^.DosyaAdi[i]);
-
   // diðer deðerleri sýfýrla
   DI^.DosyaDurumu := ddKapali;
-  DI^.DATBellekAdresi := nil;
-  DI^.IlkZincirSektor := 0;
-  DI^.Uzunluk2 := 0;
 
   // oluþturulacak ilk klasör için listeleme aþamasýnda kaydedilen bilgiler
   DI^.SilinenKumeNo := -1;
@@ -928,7 +935,7 @@ var
   DosyaSayisi: TSayi4;
   i, Sonuc: TISayi4;
 begin
-
+                        exit;
   DosyaSayisi := 0;
 
   i := FindFirst('disk1:\progrmlr\*.*', 0, AramaKaydi);

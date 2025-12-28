@@ -77,7 +77,7 @@ implementation
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
   src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci,
-  sistem, elr1;
+  sistem;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -224,7 +224,7 @@ var
   TusKontrolDegeri: TSayi1;
   TusKarakterDegeri: char;
   TusDurum: TTusDurum;
-  i, p4: TSayi4;
+  i, ii, p4: TSayi4;
   Masaustu: PMasaustu;
   GN: PGorselNesne;
   Olay: TOlay;
@@ -238,13 +238,13 @@ var
   DosyaKimlik: TKimlik;
   Durum: Boolean;
   FD: PFDNesne;
-  ii: TISayi4;
   //T: TMyThread;
   //T2: TMyThread2;
 begin
 
   AracTipleri := TAracTipleriSinif.Create;
   i := 100;
+  ii := 1;
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
   BekleMS(100);
@@ -332,7 +332,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            elr1.SistemKlasorleriniOlustur;
+            //elr1.SistemKlasorleriniOlustur;
 
             {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
             if not(MD = nil) then
@@ -344,18 +344,17 @@ begin
 
             //Gorevler0.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
 
-            {AssignFile(DosyaKimlik, 'disk2:\3.bmp');
-            ReWrite(DosyaKimlik);
-            if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then Write(DosyaKimlik, Isaretci(60*1024*1024), 2359350);
-            CloseFile(DosyaKimlik);}
+            dosya.AssignFile(DosyaKimlik, 'disk2:\yazma_deneme.ini');
+            dosya.Append(DosyaKimlik);
+            if(dosya.IOResult <> HATA_DOSYA_ISLEM_BASARILI) then dosya.ReWrite(DosyaKimlik);
 
+            dosya.WriteLn(DosyaKimlik, 'Merhaba' + IntToStr(ii));
+            Inc(ii);
+            //Write(DosyaKimlik, Isaretci(60*1024*1024), 2359350);
+
+            dosya.CloseFile(DosyaKimlik);
 
             //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
-
-            //CalisanUygulamalariKaydet;
-
-            //Gorevler0.Calistir('dugmeler.c', CALISMA_SEVIYE3)
-            //Gorevler0.Calistir('dsybil.c', CALISMA_SEVIYE3)
 
             //p4 := PCIAygiti0.Oku4(0, 8, 0, $10);
             {p4 := SizeOf(TIPAdres);
@@ -431,7 +430,11 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
-            elr1.SistemKlasorleriniSil;
+            Gorevler0.Calistir('disket1:\smsjgor.c', CALISMA_SEVIYE3);
+            Gorevler0.Calistir('disket1:\dsyyntcs.c', CALISMA_SEVIYE3);
+            //Gorevler0.Calistir('disket1:\dskbolum.c', CALISMA_SEVIYE3);
+
+            //elr1.SistemKlasorleriniSil;
 
             {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
             if not(MD = nil) then
@@ -661,8 +664,8 @@ var
   Bellek0: Isaretci;
   SiraNo, Kod,
   i, j, k: TSayi4;
-begin                                                            exit;
-
+begin
+                   exit;
   AssignFile(DosyaKimlik, 'disk2:\yuklenecek_programlar.ini');
   Reset(DosyaKimlik);
   if(IOResult = HATA_YOK) then

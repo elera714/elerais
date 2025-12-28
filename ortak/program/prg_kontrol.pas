@@ -56,7 +56,7 @@ begin
 
     DosyaBulundu := False;
 
-    i := FindFirst('disket1:\*.*', 0, AramaKaydi);
+    i := dosya.FindFirst('disket1:\*.*', 0, AramaKaydi);
     while i = 0 do
     begin
 

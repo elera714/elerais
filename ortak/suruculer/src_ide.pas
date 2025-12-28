@@ -6,7 +6,7 @@
   Dosya Adý: src_ide.pas
   Dosya Ýþlevi: ide aygýt sürücüsü
 
-  Güncelleme Tarihi: 01/07/2025
+  Güncelleme Tarihi: 15/09/2025
 
  ==============================================================================}
 {$mode objfpc}
@@ -342,7 +342,7 @@ var
   FD: PFDNesne;
   PortNo: TSayi2;
   i: TSayi1;
-  HataDurumu: TISayi4;
+  SektorIS: TISayi4;    // sektör iþlem sonucu
 begin
 
   //SISTEM_MESAJ(RENK_SIYAH, 'AIlkSektor: %d', [AIlkSektor]);
@@ -361,10 +361,6 @@ begin
     KritikBolgedenCik(SektorOkuYazKilit);
     Exit(HATA_AYGITMESGUL);
   end;
-
-  //SISTEM_MESAJ(RENK_SIYAH, 'Tamam1', []);
-
-//  asm cli end;
 
   //okunacak sektör sayýsý
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORSAYISI, ASektorSayisi);
@@ -389,9 +385,7 @@ begin
 
   Bekle(@FD^.Aygit);
 
-  HataDurumu := HATA_YOK;
-
-  //asm cli end;
+  SektorIS := HATA_YOK;
 
   // okuma iþlevini gerçekleþtir
   repeat
@@ -405,29 +399,25 @@ begin
       begin
 
         asm
-          cli
           pushad
           mov edi,ABellek
-          mov ecx,256
+          mov ecx,512 / 2
           mov dx,PortNo
           cld
           rep insw
           popad
-          sti
         end;
 
         Dec(ASektorSayisi);
         ABellek += 512;
-      end else HataDurumu := HATA_AYGITMESGUL;
-    end;
+      end else SektorIS := HATA_AYGITHAZIRDEGIL;
+    end else SektorIS := HATA_AYGITMESGUL;
 
-  until (ASektorSayisi = 0) or (HataDurumu <> HATA_YOK);
-
-  //asm sti end;
+  until (ASektorSayisi = 0) or (SektorIS <> HATA_YOK);
 
   KritikBolgedenCik(SektorOkuYazKilit);
 
-  Result := HataDurumu;
+  Result := SektorIS;
 end;
 
 {==============================================================================
@@ -439,7 +429,7 @@ var
   FD: PFDNesne;
   PortNo: TSayi2;
   i: TSayi1;
-  HataDurumu: TISayi4;
+  SektorIS: TISayi4;    // sektör iþlem sonucu
 begin
 
   while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
@@ -454,8 +444,6 @@ begin
     KritikBolgedenCik(SektorOkuYazKilit);
     Exit(HATA_AYGITMESGUL);
   end;
-
-//  asm cli end;
 
   //okunacak sektör sayýsý
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORSAYISI, ASektorSayisi);
@@ -480,9 +468,7 @@ begin
 
   Bekle(@FD^.Aygit);
 
-  HataDurumu := HATA_YOK;
-
-//  asm sti end;
+  SektorIS := HATA_YOK;
 
   // okuma iþlevini gerçekleþtir
   repeat
@@ -496,27 +482,25 @@ begin
       begin
 
         asm
-          cli
           pushad
           mov esi,ABellek
-          mov ecx,256
+          mov ecx,512 / 2
           mov dx,PortNo
           cld
           rep outsw
           popad
-          sti
         end;
 
         Dec(ASektorSayisi);
         ABellek += 512;
-      end else HataDurumu := HATA_AYGITMESGUL;
-    end;
+      end else SektorIS := HATA_AYGITHAZIRDEGIL;
+    end else SektorIS := HATA_AYGITMESGUL;
 
-  until (ASektorSayisi = 0) or (HataDurumu <> HATA_YOK);
+  until (ASektorSayisi = 0) or (SektorIS <> HATA_YOK);
 
   KritikBolgedenCik(SektorOkuYazKilit);
 
-  Result := HataDurumu;
+  Result := SektorIS;
 end;
 
 end.

@@ -156,7 +156,7 @@ end;
 
 procedure TGenel.FarePozisyonunuAl(ANokta: PNokta); assembler;
 asm
-  push  ANokta
+  push  DWORD ANokta
   mov   eax,FARE_KONUMAL
   int   $34
   add   esp,4
@@ -403,11 +403,11 @@ end;
 
 procedure TGenel.PCIYaz4(AYol, AAygit, AIslev, ASiraNo, ADeger: TSayi4); assembler;
 asm
-  push  ADeger
-  push  ASiraNo
-  push  AIslev
-  push  AAygit
-  push  AYol
+  push  DWORD ADeger
+  push  DWORD ASiraNo
+  push  DWORD AIslev
+  push  DWORD AAygit
+  push  DWORD AYol
   mov   eax,PCI_YAZ4
   int   $34
   add   esp,20
@@ -475,7 +475,7 @@ asm
   push  DWORD ABilgiSN
   mov	  eax,SISTEM_YAPIBILGISI_AL
   int	  $34
-  add	  esp,4
+  add	  esp,8
 end;
 
 procedure TGenel.YenidenBaslat; assembler;

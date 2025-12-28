@@ -169,18 +169,14 @@ begin
   _Daire(FKimlik, ASol, AUst, AYariCap, ARenk, ADoldur);
 end;
 
-var
-  _eax: TSayi4;
-
 procedure _HarfYaz(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk; AKarakter: Char);
 asm
-  mov   _eax,eax
   movzx eax,AKarakter
-  push  DWORD eax
+  push  eax
   push  DWORD ARenk
   push  DWORD AUst
   push  DWORD ASol
-  push  DWORD _eax
+  push  DWORD AKimlik
   mov   eax,HARF_YAZ
   int   $34
   add   esp,20

@@ -64,7 +64,7 @@ procedure ElleGorevDegistir;
 
 implementation
 
-uses gorev, idt, irq, pit, pic;
+uses gorev, idt, irq, pit, pic, sistemmesaj;
 
 {==============================================================================
   zamanlayýcý nesnelerinin ana yükleme iþlevlerini içerir

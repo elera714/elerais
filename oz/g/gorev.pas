@@ -292,7 +292,9 @@ begin
     end;
 
     // dosyayý hedef adrese kopyala
-    if(Read(DosyaKimlik, DosyaBellek) = 0) then
+    Read(DosyaKimlik, DosyaBellek);
+
+    if(IOResult <> HATA_DOSYA_ISLEM_BASARILI) then
     begin
 
       // dosyayý kapat

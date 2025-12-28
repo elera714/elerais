@@ -99,8 +99,8 @@ end;
 function _MantiksalDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
   AMantiksalDepolama: PMantiksalDepolama3): Boolean;
 asm
-  push  AMantiksalDepolama
-  push  ASiraNo
+  push  DWORD AMantiksalDepolama
+  push  DWORD ASiraNo
   mov   eax,DEPOLAMA_MDEPO_AYG_BILGIAL
   int   $34
   add   esp,8
@@ -115,8 +115,8 @@ end;
 function _FizikselDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
   AFizikselDepolama: PFizikselDepolama3): TSayi4;
 asm
-  push  AFizikselDepolama
-  push  ASiraNo
+  push  DWORD AFizikselDepolama
+  push  DWORD ASiraNo
   mov   eax,DEPOLAMA_FDEPO_AYG_BILGIAL
   int   $34
   add   esp,8
@@ -125,10 +125,10 @@ end;
 function _FizikselDepolamaVeriOku(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 asm
-  push  ABellek
-  push  ASektorSayisi
-  push  ASektorNo
-  push  AKimlik
+  push  DWORD ABellek
+  push  DWORD ASektorSayisi
+  push  DWORD ASektorNo
+  push  DWORD AKimlik
   mov   eax,DEPOLAMA_FDEPO_VERIOKU
   int   $34
   add   esp,16
@@ -137,10 +137,10 @@ end;
 function _FizikselDepolamaVeriYaz(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 asm
-  push  ABellek
-  push  ASektorSayisi
-  push  ASektorNo
-  push  AKimlik
+  push  DWORD ABellek
+  push  DWORD ASektorSayisi
+  push  DWORD ASektorNo
+  push  DWORD AKimlik
   mov   eax,DEPOLAMA_FDEPO_VERIYAZ
   int   $34
   add   esp,16
