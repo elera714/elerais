@@ -236,8 +236,6 @@ begin
     // sektörü belleðe oku
     SektorIS := DI^.MD.FD^.SektorOku(DI^.MD.FD, i, OkunacakSektorSayisi, AHedefBellek);
 
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SN: %d', [i]);
-
     {if(SektorIS < HATA_YOK) then
     begin
 

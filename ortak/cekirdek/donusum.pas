@@ -162,6 +162,7 @@ end;
 {==============================================================================
   10lu sayı sistem sayı değerini karakter katarına dönüştürür
  ==============================================================================}
+{ TODO - 64 bitlik olarak kodlanacak }
 function IntToStr(ADeger: TISayi4): string;
 var
   Bellek: array[0..11] of Char;

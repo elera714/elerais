@@ -6,19 +6,7 @@
   Dosya Adý: gercekbellek.pas
   Dosya Ýþlevi: gerçek (fiziksel) bellek yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/08/2025
-
-  Bilgi-1: yeni bellek modeli iþlevler tarafýndan THafiza yapýsý ile yönetilmektedir. Yapý mevcut
-    tüm belleði aþaðýdaki yapý dahilinde deðerlendirerek bellek ayýrma iþlemi yapmaktadýr
-  Bilgi-2: tüm bellek ayýrma iþlemlerinde geriye döndürülen iþaretçi deðeri 4'ün katlarý
-    olarak gerçekleþmektedir
-
-    Bellek Hücresi    0    4    8    12   16   20   24   28   32   36   40   44
-                     +----+----+----+----+----+----+----+----+----+----+----+
-    Açýklama         | U  | F  | BO | BS |VERÝ| U  | F  | BO | BS |VERÝ|...
-                     +----+----+----+----+----+----+----+----+----+----+----+
-    Bellek Ýçeriði   | 4  | 0  | 0  | 20 |ABCD| 3  | 1  | 0  | 40 |ABC |...
-                     +----+----+----+----+----+----+----+----+----+----+----+
+  Güncelleme Tarihi: 04/01/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -44,8 +32,6 @@ type
     FToplamRAM, FToplamBlok,
     FAyrilmisBlok, FKullanilmisBlok: TSayi4;
   public
-    FToplamYBYBellek,
-    FKullanilanYBYBellek: TSayi4;
     procedure Yukle;
     function ToplamBellekMiktariniAl: TSayi4;
     function BosBellekBul(AIstenenBlokSayisi: TSayi4): TISayi4;
@@ -66,23 +52,15 @@ var
 function ELRGetMem(AUzunluk: TSayi4): Isaretci;
 function ELRFreeMemSize(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
 
-function ELRGetMemYeni(AUzunluk: TSayi4): Isaretci;
-function ELRFreeMemYeni(ABellek: Isaretci): TSayi4;
-function ELRFreeMemSizeYeni(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
-function ELRAllocMemYeni(AUzunluk: TSayi4): Isaretci;
-function ELRReAllocMemYeni(var ABellek: Isaretci; AUzunluk: TSayi4): Isaretci;
-function ELRMemSizeYeni(ABellek: Isaretci): TSayi4;
-procedure BilgiVer;
+function ELRFreeMem(ABellek: Isaretci): TSayi4;
+function ELRAllocMem(AUzunluk: TSayi4): Isaretci;
+function ELRReAllocMem(var ABellek: Isaretci; AUzunluk: TSayi4): Isaretci;
+function ELRMemSize(ABellekAdresi: Isaretci): TSayi4;
 function Yasla4Byte(ADeger: TSayi4): TSayi4;
 
 implementation
 
 uses sistemmesaj;
-
-var
-  // yeni bellek yöneticisi
-  YBYAdresIlk,
-  YBYAdresSon: Isaretci;
 
 {==============================================================================
   bellek yükleme / haritalama iþlevlerini gerçekleþtirir
@@ -90,19 +68,8 @@ var
 procedure TGercekBellek.Yukle;
 var
   i, ToplamBellekMiktari: TSayi4;
-  Bellek: PSayi1;
+  Bellek: PSayi4;
 begin
-
-  { TODO - þu aþamada 40 .. 60 mb arasý Yeni Bellek Yönetimine tahsis edildi
-    önemli: 2 bellek yönetimi tekleþtirilmeli }
-  YBYAdresIlk := Isaretci(40 * 1024 * 1024);      // $2800000
-  YBYAdresSon := Isaretci(64 * 1024 * 1024);      // $4000000
-
-  FToplamYBYBellek := (64 - 40) * 1024 * 1024;
-  FKullanilanYBYBellek := 0;
-
-  // kullanýlacak bellek bölgesini sýfýrla
-  FillByte(Isaretci(YBYAdresIlk)^, (YBYAdresSon - YBYAdresIlk) + 1, 0);
 
   ToplamBellekMiktari := ToplamBellekMiktariniAl;
 
@@ -131,18 +98,18 @@ begin
   for i := 0 to AyrilmisBlok - 1 do
   begin
 
-    Bellek^ := 1;
+    Bellek^ := $FFFFFFFF;
     Inc(Bellek);
   end;
 
   // çekirdek bellek yönetim iþlevlerini yükle
   BellekYonetimFPC.NeedLock := False;     // eski iþlev
-  BellekYonetimFPC.GetMem := @ELRGetMemYeni;
-  BellekYonetimFPC.FreeMem := @ELRFreeMemYeni;
-  BellekYonetimFPC.FreeMemSize := @ELRFreeMemSizeYeni;
-  BellekYonetimFPC.AllocMem := @ELRAllocMemYeni;
-  BellekYonetimFPC.ReAllocMem := @ELRReAllocMemYeni;
-  BellekYonetimFPC.MemSize := @ELRMemSizeYeni;
+  BellekYonetimFPC.GetMem := @ELRGetMem;
+  BellekYonetimFPC.FreeMem := @ELRFreeMem;
+  BellekYonetimFPC.FreeMemSize := @ELRFreeMemSize;
+  BellekYonetimFPC.AllocMem := @ELRAllocMem;
+  BellekYonetimFPC.ReAllocMem := @ELRReAllocMem;
+  BellekYonetimFPC.MemSize := @ELRMemSize;
   BellekYonetimFPC.InitThread := nil;
   BellekYonetimFPC.DoneThread := nil;
   BellekYonetimFPC.RelocateHeap := nil;
@@ -199,7 +166,7 @@ var
   IlkBlok: TISayi4;
   IstenenBellek, BlokSayisi,
   i: TSayi4;
-  Bellek: PByte;
+  Bellek: PSayi4;
 begin
 
   // istenen bellek boyutu 0 ise hata vererek çýk
@@ -222,7 +189,7 @@ begin
   for i := 0 to BlokSayisi - 1 do
   begin
 
-    Bellek^ := 1;
+    Bellek^ := AIstenenBellek;
     Inc(Bellek);
   end;
 
@@ -245,11 +212,23 @@ procedure TGercekBellek.YokEt(ABellekAdresi: Isaretci; ABellekUzunlugu: TSayi4);
 var
   IlkBlok, BlokSayisi,
   BellekUzunlugu,
-  i: TSayi4;
-  Bellek: PByte;
+  i, BU, BlokNo: TSayi4;
+  Bellek: PSayi4;
 begin
 
-  BellekUzunlugu := ABellekUzunlugu - 1;
+  if(ABellekUzunlugu = 0) then
+  begin
+
+    BlokNo := (TSayi4(ABellekAdresi) shr 12);
+
+    Bellek := BELLEK_HARITA_ADRESI;
+    Inc(Bellek, BlokNo);
+
+    BU := PSayi4(Bellek)^;
+
+  end else BU := ABellekUzunlugu;
+
+  BellekUzunlugu := BU - 1;
 
   // bellek adresini ve uzunluðunu blok numarasýna çevir
   IlkBlok := (TSayi4(ABellekAdresi) shr 12);
@@ -277,7 +256,7 @@ end;
  ==============================================================================}
 function TGercekBellek.BosBellekBul(AIstenenBlokSayisi: TSayi4): TISayi4;
 var
-  Bellek: PSayi1;
+  Bellek: PSayi4;
   AranacakIlkBlok, AranacakSonBlok,
   BulunanIlkBlok, i: TSayi4;
   BellekBulundu: Boolean;
@@ -306,7 +285,7 @@ begin
       begin
 
         // eðer aranan blok daha önce ayrýldýysa arama iþlemini durdur
-        if(Bellek^ = 1) then
+        if(Bellek^ <> 0) then
         begin
 
           BellekBulundu := False;
@@ -364,344 +343,45 @@ begin
   Result := 0;
 end;
 
-function ELRFreeMemYeni(ABellek: Isaretci): TSayi4;
+function ELRFreeMem(ABellek: Isaretci): TSayi4;
 begin
 
-  ELRFreeMemSizeYeni(ABellek, 0);
+  ELRFreeMemSize(ABellek, 0);
   Result := 0;
 end;
 
-function ELRGetMemYeni(AUzunluk: TSayi4): Isaretci;
+function ELRMemSize(ABellekAdresi: Isaretci): TSayi4;
 var
-  Hafiza1, Hafiza2,
-  HafizaYeni: PHafiza;
-  YBYAdresMevcut: Isaretci;
-  SiraNo, i, Fark,
-  Uzunluk: TSayi4;
+  BlokNo: TSayi4;
+  BellekAdresi: PSayi4;
 begin
 
-  while KritikBolgeyeGir(GercekBellekKilit) = False do;
+  // bellek adresinin blok numarasýný belirle
+  BlokNo := (TSayi4(ABellekAdresi) shr 12);
 
-  if(AUzunluk = 0) then
-  begin
+  BellekAdresi := BELLEK_HARITA_ADRESI;
+  Inc(BellekAdresi, BlokNo);
 
-    KritikBolgedenCik(GercekBellekKilit);
-    Exit(nil);
-  end;
-
-  // uzunluk deðeri 4 byte'ýn katlarýna yuvarlanýyor
-  Uzunluk := Yasla4Byte(AUzunluk);
-  // fark deðeri = istenen bellek miktarýndan, 4 katýna yuvarlanýlan fark deðeri
-  Fark := Uzunluk - AUzunluk;
-
-  Hafiza1 := YBYAdresIlk;
-  Hafiza2 := nil;
-  SiraNo := 0;
-
-  repeat
-
-    if(Hafiza1^.U = 0) then
-    begin
-
-      // 1. yeni kayýt ekleme - eklenecek veri kayýt yapýsýnýn bir sonraki kaydýnýn nil olmasý durumu
-      // (ilk veya en sona kayýt ekleme iþlemi)
-      if(Hafiza1^.BS = nil) then
-      begin
-
-        // yeterince bellek mevcut mu?
-        YBYAdresMevcut := Isaretci(Hafiza1) + SizeOf(THafiza) + Uzunluk;
-        if(YBYAdresMevcut > YBYAdresSon) then Break;
-
-        // yeni veri kayýt yapýsý oluþtur
-        Hafiza1^.U := AUzunluk;
-        Hafiza1^.F := Fark;
-        Hafiza1^.BO := Hafiza2;
-        Hafiza1^.BS := nil;
-
-        // en sona eklenen bu veri kayýt yapýsýný bir önceki veri kayýt yapýsýna baðla
-        if not(Hafiza2 = nil) then Hafiza2^.BS := Hafiza1;
-
-        FillByte(PChar(Isaretci(Hafiza1) + SizeOf(THafiza))^, Uzunluk, 0);
-
-        GercekBellek0.FKullanilanYBYBellek += SizeOf(THafiza) + Uzunluk;
-
-        KritikBolgedenCik(GercekBellekKilit);
-
-        Exit(Isaretci(Hafiza1) + SizeOf(THafiza));
-      end
-      else
-      // 2. silinmiþ bir veri kayýt yapýsýnýn yeni veri kayýt yapýsýyla güncellenmesi
-      begin
-
-        i := TSayi4(Hafiza1^.BS) - TSayi4(Hafiza1) - SizeOf(THafiza);
-
-        // 2.1. boþ bellek miktarý ile istenen bellek miktarý ayný ise
-        if(Uzunluk = i) then
-        begin
-
-          Hafiza1^.U := AUzunluk;
-          Hafiza1^.F := Fark;
-
-          GercekBellek0.FKullanilanYBYBellek += Uzunluk + SizeOf(THafiza);
-
-          KritikBolgedenCik(GercekBellekKilit);
-
-          Exit(Isaretci(Hafiza1) + SizeOf(THafiza));
-        end
-        // 2.2. boþ bellek miktarý istenen bellek miktarýndan büyük ve
-        //  yeni bir veri kayýt yapýsý oluþturacak kadar geniþlikte ise
-        else if(Uzunluk < i) and ((i - Uzunluk) >= SizeOf(THafiza)) then
-        begin                                    { SizeOf(THafiza) -> yeni bir veri kayýt yapýsý oluþturulabilmeli}
-
-          // daha önce ayrýlan ve serbest býrakýlan veri kayýt yapýsý için
-          // sýnýr veri kayýt yapýsý oluþturuluyor
-          // (bu kýsým 2 (baþ ve son) veri kayýt yapýsý arasýna yeni bir sonlandýrma veri kayýt yapýsý oluþturur)
-          HafizaYeni := Isaretci(Hafiza1) + SizeOf(THafiza) + Uzunluk;
-          HafizaYeni^.BO := Hafiza1;
-          HafizaYeni^.BS := Hafiza1^.BS;
-          HafizaYeni^.U := i - Uzunluk - SizeOf(THafiza);
-          HafizaYeni^.F := 0;
-
-          // sondaki veri kayýt yapýsýnýn bir önceki veri kayýt yapýsý belirleniyor
-          // (sondaki veri kayýt yapýsýnýn güncellenmesi)
-          Hafiza2 := Hafiza1^.BS;
-          Hafiza2^.BO := HafizaYeni;
-
-          // baþtaki veri kayýt yapýsýnýn bir sonraki veri kayýt yapýsý belirleniyor
-          // (baþlangýç veri kayýt yapýsýnýn güncellenmesi - iþlev için bu veri kayýt yapýsý geri döndürülecektir)
-          Hafiza1^.BS := HafizaYeni;
-          Hafiza1^.U := Uzunluk;
-          Hafiza1^.F := Fark;
-
-          GercekBellek0.FKullanilanYBYBellek += Uzunluk + SizeOf(THafiza);
-
-          KritikBolgedenCik(GercekBellekKilit);
-
-          Exit(Isaretci(Hafiza1) + SizeOf(THafiza));
-        end
-        else
-        // 2.3. boþ bellek ve/veya istenen miktar bulunamadýðý için bir sonraki yapýya konumlan
-        begin
-
-          Hafiza2 := Hafiza1;
-          Hafiza1 := Hafiza1^.BS;
-        end;
-      end;
-    end
-    else
-    begin
-
-      // Hafiza2 = bir önceki veri kayýt yapýsý
-      Hafiza2 := Hafiza1;
-      Hafiza1 := Isaretci(Hafiza1) + SizeOf(THafiza) + Hafiza1^.U + Hafiza1^.F;
-    end;
-
-    Inc(SiraNo);
-
-  until True = False;
-
-  KritikBolgedenCik(GercekBellekKilit);
-
-  Result := nil;
+  Result := PSayi4(BellekAdresi)^;
 end;
 
-function ELRFreeMemSizeYeni(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
-var
-  Hafiza1,
-  Hafiza2: PHafiza;
+function ELRAllocMem(AUzunluk: TSayi4): Isaretci;
 begin
 
-  while KritikBolgeyeGir(GercekBellekKilit) = False do;
-
-  // bellek yönetimi, her zaman için bir sonrakini silme, bir öncekine eklenme
-  // mantýðý içerisinde çalýþmaktadýr
-
-  Hafiza1 := Isaretci(ABellek) - SizeOf(THafiza);
-
-  // uzunluk deðerinin 0 verilmesi durumunda uzunluk deðerini yapý içerisinden al
-  if(AUzunluk = 0) then AUzunluk := Hafiza1^.U;
-
-  if(Hafiza1^.U = AUzunluk) then
-  begin
-
-    // en baþtaki veri kayýt yapýsýnýn silinmesi
-    if(Hafiza1^.BO = nil) then
-    begin
-
-      GercekBellek0.FKullanilanYBYBellek -= Hafiza1^.U + Hafiza1^.F + SizeOf(THafiza);
-
-      Hafiza1^.U := 0;
-      Hafiza1^.F := 0;
-
-      // baþtaki veri kayýt yapýsýnýn bir sonraki veri kayýt yapýsýnýn da silinmiþ olmasý halinde
-      Hafiza2 := Hafiza1^.BS;
-      if(Hafiza2^.U = 0) then
-      begin
-
-        // 1. veri kayýt yapýsý = silinmesi istenen veri kayýt yapýsý
-        // 2. veri kayýt yapýsý = daha önce silinen veri kayýt yapýsý
-        // 3. veri kayýt yapýsý = mevcut veri kayýt yapýsý
-
-        // 3. veri kayýt yapýsýný 1. veri kayýt yapýsýna baðla
-        Hafiza1^.BS := Hafiza2^.BS;
-
-        // 2. veri kayýt yapýsýný sil
-        Hafiza2^.BO := nil;
-        Hafiza2^.BS := nil;
-        Hafiza2^.F := 0;
-
-        // 1. veri kayýt yapýsýný 3. veri kayýt yapýsýna baðla
-        Hafiza2 := Hafiza1^.BS;
-        Hafiza2^.BO := Hafiza1;
-      end;
-    end
-    // en sondaki veri kayýt yapýsýnýn silinmesi
-    else if(Hafiza1^.BS = nil) then
-    begin
-
-      GercekBellek0.FKullanilanYBYBellek -= Hafiza1^.U + Hafiza1^.F + SizeOf(THafiza);
-
-      // 1. veri kayýt yapýsý = mevcut veri kayýt yapýsý
-      // 2. veri kayýt yapýsý = mevcut veya daha önce silinen veri kayýt yapýsý
-      // 3. veri kayýt yapýsý = silinmesi istenen veri kayýt yapýsý
-
-      // 3. veri kayýt yapýsýnýn 2. veri kayýt yapýsýyla baðlantýsýný kes
-      Hafiza2 := Hafiza1^.BO;
-      if not(Hafiza2 = nil) then Hafiza2^.BS := nil;
-
-      // 3. veri kayýt yapýsýný sil
-      Hafiza1^.BO := nil;
-      Hafiza1^.BS := nil;
-      Hafiza1^.U := 0;
-      Hafiza1^.F := 0;
-
-      // 2. veri kayýt yapýsý daha önce silinmiþse (0 olarak iþaretlenmiþse)
-      // 2. veri kayýt yapýsýný tamamen bellekten kaldýr / sil
-      if not(Hafiza2 = nil) and (Hafiza2^.U = 0) then
-      begin
-
-        // 2. veri kayýt yapýsýný silmeden önce 1. veri kayýt yapýsýyla baðlantýsýný kes
-        Hafiza1 := Hafiza2^.BO;
-        Hafiza1^.BS := nil;
-
-        // 2. veri kayýt yapýsýný da sil
-        Hafiza2^.BO := nil;
-        Hafiza2^.BS := nil;
-        Hafiza2^.U := 0;
-        Hafiza2^.F := 0;
-      end;
-    end
-    else
-    // ortaki veri kayýt yapýsýnýn silinmesi
-    begin
-
-      GercekBellek0.FKullanilanYBYBellek -= Hafiza1^.U + Hafiza1^.F + SizeOf(THafiza);
-
-      // 1. veri kayýt yapýsý = bir önceki silinmiþ veri kayýt yapýsý
-      // 2. veri kayýt yapýsý = silinmesi istenen veri kayýt yapýsý
-      // 3. veri kayýt yapýsý = bir sonraki silinmiþ veri kayýt yapýsý
-
-      // 2. veri kayýt yapýsýnýn uzunluðunu sýfýrla (sil)
-      Hafiza1^.U := 0;
-      Hafiza1^.F := 0;
-
-      // 3. veri kayýt yapýsýnýn da silinmiþ olmasý halinde
-      Hafiza2 := Hafiza1^.BS;
-      if(Hafiza2^.U = 0) then
-      begin
-
-        // 3. veri kayýt yapýsýnýn bir sonraki veri kayýt yapýsýný 2. veri kayýt yapýsýna baðla
-        Hafiza1^.BS := Hafiza2^.BS;
-
-        // 3. veri kayýt yapýsýný sil
-        Hafiza2^.BO := nil;
-        Hafiza2^.BS := nil;
-        Hafiza2^.U := 0;
-        Hafiza2^.F := 0;
-
-        // 2. veri kayýt yapýsýný, 3. veri kayýt yapýsýnýn bir sonraki veri kayýt yapýsýna baðla
-        Hafiza2 := Hafiza1^.BS;
-        Hafiza2^.BO := Hafiza1;
-      end;
-
-      // 1. veri kayýt yapýsýnýn da silinmiþ olmasý halinde
-      Hafiza2 := Hafiza1^.BO;
-      if(Hafiza2^.U = 0) then
-      begin
-
-        // 1. veri kayýt yapýsýnýn bir sonraki veri kayýt yapýsýný, 3. veri kayýt yapýsýna baðla
-        Hafiza2^.BS := Hafiza1^.BS;
-
-        // 3. veri kayýt yapýsýnýn bir önceki veri kayýt yapýsýný, 1. veri kayýt yapýsýna baðla
-        Hafiza2 := Hafiza1^.BS;
-        Hafiza2^.BO := Hafiza1^.BO;
-
-        // 2. veri kayýt yapýsýný sil
-        Hafiza1^.BO := nil;
-        Hafiza1^.BS := nil;
-      end;
-    end;
-
-    Result := 0;
-  end
-  else
-  begin
-
-    //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELRFreeMemSizeYeni.Uzunluk Hatalý', []);
-    Result := 1;
-  end;
-
-  KritikBolgedenCik(GercekBellekKilit);
+  Result := ELRGetMem(AUzunluk);
 end;
 
-function ELRMemSizeYeni(ABellek: Isaretci): TSayi4;
-var
-  Hafiza: PHafiza;
-begin
-
-  Hafiza := Isaretci(ABellek) - SizeOf(THafiza);
-  Result := Hafiza^.U;
-end;
-
-procedure BilgiVer;
-var
-  i: TSayi4;
-  P: PHafiza;
-begin
-
-  i := 1;
-
-  P := YBYAdresIlk;
-
-  while P <> nil do
-  begin
-
-    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Bellek%d BÖ: %x', [i, TSayi4(P^.BO)]);
-    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Bellek%d BS: %x', [i, TSayi4(P^.BS)]);
-    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Bellek%d U: %d', [i, TSayi4(P^.U)]);
-
-    P := P^.BS;
-    Inc(i);
-  end;
-end;
-
-function ELRAllocMemYeni(AUzunluk: TSayi4): Isaretci;
-begin
-
-  Result := ELRGetMemYeni(AUzunluk);
-end;
-
-function ELRReAllocMemYeni(var ABellek: Isaretci; AUzunluk: TSayi4): Isaretci;
+function ELRReAllocMem(var ABellek: Isaretci; AUzunluk: TSayi4): Isaretci;
 begin
 
   if(ABellek = nil) then
 
-    Result := ELRGetMemYeni(AUzunluk)
+    Result := ELRGetMem(AUzunluk)
   else
   begin
 
-    ELRFreeMemSizeYeni(ABellek, AUzunluk);
-    Result := ELRGetMemYeni(AUzunluk);
+    ELRFreeMemSize(ABellek, AUzunluk);
+    Result := ELRGetMem(AUzunluk);
   end;
 end;
 

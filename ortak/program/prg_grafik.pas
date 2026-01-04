@@ -6,7 +6,7 @@
   Dosya Adý: prg_grafik.pas
   Dosya Ýþlevi: dahili çekirdek programý: nesnelerin grafik kartýna çizimi için
 
-  Güncelleme Tarihi: 31/05/2025
+  Güncelleme Tarihi: 04/01/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -66,7 +66,7 @@ begin
   etkBellek^.Goster;
 
   igBellek := igBellek^.Olustur(ktNesne, SDPencere, 60, 65, 85, 16);
-  igBellek^.DegerleriBelirle(0, GercekBellek0.FToplamYBYBellek);
+  igBellek^.DegerleriBelirle(0, GercekBellek0.ToplamBlok * 4096);
   igBellek^.MevcutDegerYaz(0);
   igBellek^.Goster;
 
@@ -93,7 +93,7 @@ begin
   if(BellekSayac = 100) then
   begin
 
-    igBellek^.MevcutDegerYaz(GercekBellek0.FKullanilanYBYBellek);
+    igBellek^.MevcutDegerYaz(GercekBellek0.KullanilmisBlok * 4096);
     BellekSayac := 0;
   end;
 

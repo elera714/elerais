@@ -59,7 +59,7 @@ English:
 * Windows 7 Professional - 64 / 32 bit
 * Lazarus 2.0.8 - FPC 3.0.4
 * ImDisk
-* Virtualbox 7.0.22
+* Virtualbox 7.0.10
 
 ## Telif Hakkı (Copyright)
 

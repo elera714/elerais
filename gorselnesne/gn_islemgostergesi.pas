@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 25/05/2025
+  Güncelleme Tarihi: 04/01/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ type
   PIslemGostergesi = ^TIslemGostergesi;
   TIslemGostergesi = object(TPanel)
   public
-    FAltDeger, FUstDeger, FMevcutDeger: TISayi4;
+    FAltDeger, FUstDeger, FMevcutDeger: TISayi8;
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4): PIslemGostergesi;
     procedure YokEt(AKimlik: TKimlik);
@@ -29,8 +29,8 @@ type
     procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
-    procedure DegerleriBelirle(AAltDeger, AUstDeger: TISayi4);
-    procedure MevcutDegerYaz(AMevcutDeger: TISayi4);
+    procedure DegerleriBelirle(AAltDeger, AUstDeger: TISayi8);
+    procedure MevcutDegerYaz(AMevcutDeger: TISayi8);
   end;
 
 function IslemGostergesiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -189,9 +189,10 @@ procedure TIslemGostergesi.Ciz;
 var
   IslemGostergesi: PIslemGostergesi;
   CizimAlani, CizimAlani2: TAlan;
-  i1, i2, Aralik, Deger: TISayi4;
+  i1: TISayi8;
   s: string;
   i: TISayi4;
+  d1, d2: Double;
 begin
 
   IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
@@ -200,20 +201,10 @@ begin
   // giriş kutusunun çizim alan koordinatlarını al
   CizimAlani := IslemGostergesi^.FCizimAlani;
 
-  i1 := (FUstDeger - FAltDeger) + 1;
-  i2 := CizimAlani.Sag;
-  if(i1 > i2) then
-  begin
-
-    Aralik := i1 div i2;
-    Deger := FMevcutDeger div Aralik;
-  end
-  else
-  begin
-
-    Aralik := i2 div i1;
-    Deger := FMevcutDeger * Aralik;
-  end;
+  i1 := (IslemGostergesi^.FUstDeger - IslemGostergesi^.FAltDeger) + 1;
+  d1 := (IslemGostergesi^.FMevcutDeger * 100) div i1;
+  d2 := (CizimAlani.Sag / 100);
+  d2 := d1 * d2;
 
   // ön renk doldurma işlemi. dolgu öncesi çizim
   IslemGostergesi^.DikdortgenDoldur(IslemGostergesi, CizimAlani.Sol, CizimAlani.Ust,
@@ -221,7 +212,7 @@ begin
 
   // artan renk ile (eğimli) doldur
   CizimAlani2 := CizimAlani;
-  CizimAlani2.Sag := CizimAlani2.Sol + Deger;
+  CizimAlani2.Sag := CizimAlani2.Sol + Round(d2);
   IslemGostergesi^.EgimliDoldur(IslemGostergesi, CizimAlani2, DUGME_NORMAL_ILKRENK,
     DUGME_NORMAL_SONRENK);
 
@@ -229,7 +220,8 @@ begin
   CizimAlani2 := CizimAlani;
   s := IntToStr(IslemGostergesi^.FMevcutDeger);
   i := (CizimAlani2.Sag - (Length(s) * 8)) div 2;
-  IslemGostergesi^.YaziYaz(IslemGostergesi, CizimAlani2.Sol + i, CizimAlani2.Ust, s, RENK_SIYAH);
+  IslemGostergesi^.YaziYaz(IslemGostergesi, CizimAlani2.Sol + i, CizimAlani2.Ust,
+    s, RENK_SIYAH);
 end;
 
 {==============================================================================
@@ -244,7 +236,7 @@ end;
 {==============================================================================
   işlem göstergesi en alt, en üst değerlerini belirler
  ==============================================================================}
-procedure TIslemGostergesi.DegerleriBelirle(AAltDeger, AUstDeger: TISayi4);
+procedure TIslemGostergesi.DegerleriBelirle(AAltDeger, AUstDeger: TISayi8);
 begin
 
   FAltDeger := AAltDeger;
@@ -256,7 +248,7 @@ end;
 {==============================================================================
   işlem göstergesi mevcut konum değerini belirler
  ==============================================================================}
-procedure TIslemGostergesi.MevcutDegerYaz(AMevcutDeger: TISayi4);
+procedure TIslemGostergesi.MevcutDegerYaz(AMevcutDeger: TISayi8);
 begin
 
   FMevcutDeger := AMevcutDeger;

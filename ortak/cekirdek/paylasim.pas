@@ -101,7 +101,7 @@ type
 const
   SISTEME_AYRILMIS_RAM  = $0A00000;             // sistem için ayrýlmýþ RAM = 10MB
 
-  BELLEK_HARITA_ADRESI: PByte = PByte($510000);
+  BELLEK_HARITA_ADRESI: PSayi4 = PSayi4($510000);
 
   SISTEM_ESP        = $300000 + $1000;
 

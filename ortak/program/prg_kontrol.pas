@@ -41,7 +41,6 @@ begin
 
     NesneKontrol;
 
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '1', []);
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareX: %d', [GFareSurucusu.YatayKonum]);
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareY: %d', [GFareSurucusu.DikeyKonum]);
 
@@ -90,8 +89,24 @@ begin
     if(DosyaBulundu) then
     begin
 
-      if(CekirdekYuklemeTS <> TarihSaat) then
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Gun]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Gun]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Ay]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Ay]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Yil]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Yil]);
+
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Saat]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Saat]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Dakika]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Dakika]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Saniye]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Saniye]);
+
+      if not(CekirdekYuklemeTS = TarihSaat) then
       begin
+
+        SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '4', []);
 
         G := GAktifMasaustu^.FAtananAlan.Genislik;
 
