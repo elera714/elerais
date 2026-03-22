@@ -20,9 +20,8 @@ const
   USTSINIR_FIZIKSELDEPOLAMA       = 6;
   ILKDEGER_FDKIMLIK               = $1000;    // fiziksel depolama
 
-// fiziksel depolama aygýt yapýsý - program için
+// fiziksel depolama nesnesi - program için
 type
-  { TODO - TFizikselDepolama3 -> TFDNesne3 olarak deðiþtirildi, programlar güncellenecek }
   PFDNesne3 = ^TFDNesne3;
   TFDNesne3 = packed record
     Kimlik: TKimlik;
@@ -34,7 +33,7 @@ type
     ToplamSektorSayisi: TSayi4;
   end;
 
-// fiziksel depolama aygýt yapýsý - sistem için
+// fiziksel depolama nesnesi - sistem için
 type
   PFDNesne = ^TFDNesne;
   TFDNesne = record
@@ -54,8 +53,8 @@ type
     // fiziksel sürücü listesi. en fazla 2 floppy sürücüsü + 4 disk sürücüsü
     FFDAygitSayisi: TSayi4;
     FFDAygitListesi: array[0..USTSINIR_FIZIKSELDEPOLAMA - 1] of PFDNesne;
-    function FDAygitiAl(ASiraNo: TSayi4): PFDNesne;
-    procedure FDAygitiYaz(ASiraNo: TSayi4; AFDNesne: PFDNesne);
+    function FDAygitiAl(ASiraNo: TISayi4): PFDNesne;
+    procedure FDAygitiYaz(ASiraNo: TISayi4; AFDNesne: PFDNesne);
   public
     procedure Yukle;
     function FDAygitiOlustur(AAygitTipi: TSayi4): PFDNesne;
@@ -66,7 +65,7 @@ type
     function FizikselDepolamaVeriYaz(AFDNesne: PFDNesne; ASektorNo,
       ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
     property FDAygitSayisi: TSayi4 read FFDAygitSayisi write FFDAygitSayisi;
-    property FDAygiti[ASiraNo: TSayi4]: PFDNesne read FDAygitiAl write FDAygitiYaz;
+    property FDAygiti[ASiraNo: TISayi4]: PFDNesne read FDAygitiAl write FDAygitiYaz;
   end;
 
 var
@@ -98,7 +97,7 @@ begin
   src_ide.Yukle;
 end;
 
-function TFizikselDepolama.FDAygitiAl(ASiraNo: TSayi4): PFDNesne;
+function TFizikselDepolama.FDAygitiAl(ASiraNo: TISayi4): PFDNesne;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -107,7 +106,7 @@ begin
   else Result := nil;
 end;
 
-procedure TFizikselDepolama.FDAygitiYaz(ASiraNo: TSayi4; AFDNesne: PFDNesne);
+procedure TFizikselDepolama.FDAygitiYaz(ASiraNo: TISayi4; AFDNesne: PFDNesne);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et

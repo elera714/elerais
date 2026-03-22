@@ -35,7 +35,7 @@ var
   FizikselAygitSayisi, DiskAygitSayisi,
   i: TSayi4;
   // FizikselDepolamaListesi: 0 = genel / geçici kullaným, 1 = disk1, 2 = disk2
-  FizikselDepolamaListesi: array[0..2] of TFizikselDepolama3;
+  FizikselDepolamaListesi: array[0..2] of TFDNesne3;
   DiskBellek: array[0..511] of TSayi1;
 
 procedure TfrmAnaSayfa.Olustur;

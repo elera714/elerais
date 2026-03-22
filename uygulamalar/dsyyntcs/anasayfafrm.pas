@@ -39,7 +39,7 @@ const
   PencereAdi: string = 'Dosya Yöneticisi';
 
 var
-  MantiksalDepolama: TMantiksalDepolama3;
+  MantiksalDepolama: TMDNesne3;
   AygitSayisi: TSayi4;
   GecerliSurucu, GecerliKlasor,
   GecerliSuzgec, SeciliYazi,

@@ -153,20 +153,19 @@ begin
   G^.BellekBaslangicAdresi := CekirdekBaslangicAdresi;
   G^.CalismaSuresiMS := 20;
   G^.CalismaSuresiSayacMS := 20;
+
+  { TODO - CekirdekUzunlugu -> *4K olarak hesaplanacak }
   G^.BellekUzunlugu := CekirdekUzunlugu;
+
+  // çekirdek için olay iþlemleri gerçekleþmeyecek
   G^.OlaySayisi := 0;
   G^.OlayBellekAdresi := nil;
+
   G^.AktifMasaustu := nil;
   G^.AktifPencere := nil;
 
   G^.DosyaAdi := 'cekirdek.bin';
   G^.ProgramAdi := 'Sistem Çekirdeði';
-
-  // görev olaylarý için bellekte yer ayýr
-  Olay := POlay(GercekBellek0.Ayir(4096));
-  if not(Olay = nil) then
-    G^.OlayBellekAdresi := Olay
-  else G^.OlayBellekAdresi := nil;
 
   // görev olay sayýsý
   G^.OlaySayisi := 0;
@@ -430,10 +429,6 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
-            Gorevler0.Calistir('disket1:\smsjgor.c', CALISMA_SEVIYE3);
-            Gorevler0.Calistir('disket1:\dsyyntcs.c', CALISMA_SEVIYE3);
-            //Gorevler0.Calistir('disket1:\dskbolum.c', CALISMA_SEVIYE3);
-
             //elr1.SistemKlasorleriniSil;
 
             {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
@@ -626,7 +621,7 @@ var
   j: TSayi2;
 begin
 
-  i := dosya.FindFirst('disket1:\*.*', 0, AramaKaydi);
+  i := FindFirst('disket1:\*.*', 0, AramaKaydi);
   while i = 0 do
   begin
 
@@ -646,10 +641,10 @@ begin
       Break;
     end;
 
-    i := dosya.FindNext(AramaKaydi);
+    i := FindNext(AramaKaydi);
   end;
 
-  dosya.FindClose(AramaKaydi);
+  FindClose(AramaKaydi);
 end;
 
 procedure KaydedilenProgramlariYenidenYukle;
@@ -665,7 +660,7 @@ var
   SiraNo, Kod,
   i, j, k: TSayi4;
 begin
-                   exit;
+
   AssignFile(DosyaKimlik, 'disk2:\yuklenecek_programlar.ini');
   Reset(DosyaKimlik);
   if(IOResult = HATA_YOK) then

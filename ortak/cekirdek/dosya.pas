@@ -20,6 +20,13 @@ uses paylasim, gorev, mdepolama;
 const
   USTSINIR_DOSYAISLEM = 10;
 
+type
+  // dosya yükleme iþlem bilgileri
+  TDosyaYukleme = record
+    Durum: Boolean;
+    Uzunluk: TSayi4;
+  end;
+
 // tüm dosya iþlevleri için gereken yapý
 type
   TDosyaDurumu = (ddKapali, ddOkumaIcinAcik, ddYazmaIcinAcik);
@@ -84,21 +91,23 @@ procedure IzKaydiOlustur(ADosyaAdi, AKayit: string);
 procedure ELR1DiskBicimle(AMDNesne: PMDNesne);
 procedure DosyalariKopyala;
 function DosyaKopyala(AKaynakDosya, AHedefDosya: string): TISayi4;
+function DosyaOku(ADosyaTamYol: string; var ABellekAdresi: Isaretci): TDosyaYukleme;
 
 type
   TDosyalar = object
   private
     FDosyaIslemleri: array[0..USTSINIR_DOSYAISLEM - 1] of PDosyaIslem;
-    function DosyaIslemAl(ASiraNo: TSayi4): PDosyaIslem;
-    procedure DosyaIslemYaz(ASiraNo: TSayi4; ADosyaIslem: PDosyaIslem);
+    function DosyaIslemAl(ASiraNo: TISayi4): PDosyaIslem;
+    procedure DosyaIslemYaz(ASiraNo: TISayi4; ADosyaIslem: PDosyaIslem);
   public
     procedure Yukle;
     function Yeni: PDosyaIslem;
-    property DosyaIslem[ASiraNo: TSayi4]: PDosyaIslem read DosyaIslemAl write DosyaIslemYaz;
+    property DosyaIslem[ASiraNo: TISayi4]: PDosyaIslem read DosyaIslemAl write DosyaIslemYaz;
   end;
 
 var
   Dosyalar0: TDosyalar;
+  DosyaUyari: TDosyaYukleme;
 
 implementation
 
@@ -1041,7 +1050,7 @@ end;
 
 { TDosyalar }
 
-function TDosyalar.DosyaIslemAl(ASiraNo: TSayi4): PDosyaIslem;
+function TDosyalar.DosyaIslemAl(ASiraNo: TISayi4): PDosyaIslem;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -1050,12 +1059,40 @@ begin
   else Result := nil;
 end;
 
-procedure TDosyalar.DosyaIslemYaz(ASiraNo: TSayi4; ADosyaIslem: PDosyaIslem);
+procedure TDosyalar.DosyaIslemYaz(ASiraNo: TISayi4; ADosyaIslem: PDosyaIslem);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DOSYAISLEM) then
     FDosyaIslemleri[ASiraNo] := ADosyaIslem;
+end;
+
+// dosyayý belirtilen bellek bölgesine kopyalar
+function DosyaOku(ADosyaTamYol: string; var ABellekAdresi: Isaretci): TDosyaYukleme;
+var
+  DosyaKimlik: TKimlik;
+begin
+
+  Result.Durum := False;
+
+  AssignFile(DosyaKimlik, ADosyaTamYol);
+  Reset(DosyaKimlik);
+  if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then
+  begin
+
+    // dosya uzunluðunu al
+    Result.Uzunluk := FileSize(DosyaKimlik);
+
+    if(ABellekAdresi = nil) then ABellekAdresi := GetMem(Result.Uzunluk);
+
+    // dosyayý hedef adrese kopyala
+    if not(ABellekAdresi = nil) then Read(DosyaKimlik, ABellekAdresi);
+
+    // dosyayý kapat
+    CloseFile(DosyaKimlik);
+
+    if not(ABellekAdresi = nil) then Result.Durum := True;
+  end;
 end;
 
 end.

@@ -32,7 +32,7 @@ const
 var
   DiskSayisi, SeciliDisk,
   DugmeA1, i: TISayi4;
-  MantiksalDepolamaListesi: array[0..5] of TMantiksalDepolama3;
+  MantiksalDepolamaListesi: array[0..5] of TMDNesne3;
 
 procedure TfrmAnaSayfa.Olustur;
 begin
@@ -125,7 +125,7 @@ end;
 
 procedure TfrmAnaSayfa.AygitBilgileriniYaz(ASiraNo: TSayi4);
 var
-  MD: PMantiksalDepolama3;
+  MD: PMDNesne3;
 begin
 
   MD := @MantiksalDepolamaListesi[ASiraNo];
@@ -147,15 +147,15 @@ begin
   // sürücü dosya sistemi
   FPencere.Tuval.KalemRengi := RENK_SIYAH;
   FPencere.Tuval.YaziYaz(0, 4 * 16, 'Dosya Sistemi :');
-  if(MD^.DosyaSistemTipi = DST_ELR1) then
+  if(MD^.DST = DST_ELR1) then
     FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'ELR-1')
-  else if(MD^.DosyaSistemTipi = DST_FAT12) then
+  else if(MD^.DST = DST_FAT12) then
     FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'FAT12')
-  else if(MD^.DosyaSistemTipi = DST_FAT16) then
+  else if(MD^.DST = DST_FAT16) then
     FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'FAT16')
-  else if(MD^.DosyaSistemTipi = DST_FAT32) then
+  else if(MD^.DST = DST_FAT32) then
     FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'FAT32')
-  else if(MD^.DosyaSistemTipi = DST_FAT32LBA) then
+  else if(MD^.DST = DST_FAT32LBA) then
     FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'FAT32+LBA')
   else FPencere.Tuval.YaziYaz(16 * 8, 4 * 16, 'Bilinmeyen Dosya Sistemi');
 

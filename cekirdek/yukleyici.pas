@@ -184,6 +184,9 @@ begin
   // 24 x 24 sistem resimlerini yükle
   GSistemResimler := BMPDosyasiYukle('disk1:\resimler\sistem.bmp');
   GSistemResimler2 := BMPDosyasiYukle('disk1:\resimler\sistem2.bmp');
+
+  SistemUyariBellekAdresi := Isaretci($3200000);
+  DosyaUyari := DosyaOku('disket1:\suyari.c', SistemUyariBellekAdresi);
 end;
 
 end.

@@ -197,8 +197,8 @@ const   // DST = dosya sistem tipi (FAT)
 
 // fiziksel depolama aygýt yapýsý - program için
 type
-  PFizikselDepolama3 = ^TFizikselDepolama3;
-  TFizikselDepolama3 = packed record
+  PFDNesne3 = ^TFDNesne3;
+  TFDNesne3 = packed record
     Kimlik: TKimlik;
     SurucuTipi: TSayi4;
     AygitAdi: string[16];
@@ -207,18 +207,18 @@ type
     IzBasinaSektorSayisi: TSayi4;
     ToplamSektorSayisi: TSayi4;
   end;
-
+  
 // mantýksal depolama aygýt yapýsý - program için
 type
-  PMantiksalDepolama3 = ^TMantiksalDepolama3;
-  TMantiksalDepolama3 = packed record
+  PMDNesne3 = ^TMDNesne3;
+  TMDNesne3 = packed record
     Kimlik: TKimlik;
-    SurucuTipi: TSayi4;
+    SurucuTipi: TSayi4;         
     AygitAdi: string[16];
-    DosyaSistemTipi: TSayi4;
+    DST: TSayi4;              
     BolumIlkSektor: TSayi4;
     BolumToplamSektor: TSayi4
-  end;
+  end;  
 
 type
   PMACAdres = ^TMACAdres;

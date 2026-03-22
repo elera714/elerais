@@ -6,7 +6,7 @@
   Dosya Adý: gn_pencere.pas
   Dosya Ýþlevi: pencere (TForm) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/06/2025
+  Güncelleme Tarihi: 22/03/2026
 
   Önemli Bilgiler:
 
@@ -1135,6 +1135,7 @@ end;
 procedure TPencere.BoyutlanabilirPencereOlaylariniIsle(APencere: PPencere; AOlay: TOlay);
 var
   Alan: TAlan;
+  YenidenCiz: Boolean;
 begin
 
   // sol tuþa basým iþlemi
@@ -1318,6 +1319,8 @@ begin
     // FO_HAREKET - nesne yakalanmýþ - taþýma, boyutlandýrma
     begin
 
+      YenidenCiz := True;
+
       if(FareKonumu = fkGovde) then
       begin
 
@@ -1327,6 +1330,11 @@ begin
       end
       else
       begin
+
+        Alan.Sol := 0;
+        Alan.Ust := 0;
+        Alan.Sag := 0;
+        Alan.Alt := 0;
 
         if(FareKonumu = fkSolUst) then
         begin
@@ -1399,6 +1407,7 @@ begin
           Alan.Ust := GFareSurucusu.DikeyKonum - SonFareDikeyKoordinat;
           Alan.Sag := 0;
           Alan.Alt := 0;
+          YenidenCiz := False;
         end;
 
         SonFareYatayKoordinat := GFareSurucusu.YatayKonum;
@@ -1414,18 +1423,22 @@ begin
         APencere^.FCizimAlani.Sag := APencere^.FAtananAlan.Genislik - 1;
         APencere^.FCizimAlani.Alt := APencere^.FAtananAlan.Yukseklik - 1;
 
-        //if(APencere^.FCiziliyor) then Exit;
+        if(YenidenCiz) then
+        begin
 
-        APencere^.Boyutlandir;
+          //if(APencere^.FCiziliyor) then Exit;
 
-        // çizim için ayrýlan belleði yok et ve yeni bellek ayýr
-        { TODO : ileride çizimlerin daha hýzlý olmasý için APencere küçülmesi için bellek ayrýlmayabilir }
-        FreeMem(APencere^.FCizimBellekAdresi, APencere^.FCizimBellekUzunlugu);
+          APencere^.Boyutlandir;
 
-        APencere^.FCizimBellekUzunlugu := (APencere^.FAtananAlan.Genislik * APencere^.FAtananAlan.Yukseklik * 4);
-        APencere^.FCizimBellekAdresi := GetMem(APencere^.FCizimBellekUzunlugu);
+          // çizim için ayrýlan belleði yok et ve yeni bellek ayýr
+          { TODO : ileride çizimlerin daha hýzlý olmasý için APencere küçülmesi için bellek ayrýlmayabilir }
+          FreeMem(APencere^.FCizimBellekAdresi, APencere^.FCizimBellekUzunlugu);
 
-        APencere^.Ciz;
+          APencere^.FCizimBellekUzunlugu := (APencere^.FAtananAlan.Genislik * APencere^.FAtananAlan.Yukseklik * 4);
+          APencere^.FCizimBellekAdresi := GetMem(APencere^.FCizimBellekUzunlugu);
+
+          APencere^.Ciz;
+        end;
       end;
     end;
   end

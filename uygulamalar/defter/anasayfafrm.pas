@@ -34,7 +34,7 @@ implementation
 
 const
   PencereAdi: string = 'Dijital Defter';
-  DOSYA_BELLEK_KAPASITESI = Integer(4096 * 10);
+  DOSYA_BELLEK_KAPASITESI = TSayi4(4096 * 10);
 
 var
   DosyaKimlik: TKimlik;

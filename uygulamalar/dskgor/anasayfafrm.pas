@@ -42,7 +42,7 @@ var
   FizikselDepolamaAygitSayisi, DugmeA1: TSayi4;
   SeciliAygitSN, i: TISayi4;
   AygitOkumaDurumu, ToplamSektor, MevcutSektor: TISayi4;
-  FizikselDepolamaListesi: array[0..5] of TFizikselDepolama3;
+  FizikselDepolamaListesi: array[0..5] of TFDNesne3;
   DiskBellek: array[0..511] of TSayi1;
   s: string;
 

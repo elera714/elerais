@@ -27,10 +27,10 @@ type
   public
     function MantiksalDepolamaAygitSayisiAl: TSayi4;
     function MantiksalDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
-      AMantiksalDepolama: PMantiksalDepolama3): Boolean;
+      AMDNesne: PMDNesne3): Boolean;
     function FizikselDepolamaAygitSayisiAl: TSayi4;
     function FizikselDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
-      AFizikselDepolama: PFizikselDepolama3): TSayi4;
+      AFDNesne: PFDNesne3): TSayi4;
     function FizikselDepolamaVeriOku(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
       ABellek: Isaretci): TISayi4;
     function FizikselDepolamaVeriYaz(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
@@ -39,10 +39,10 @@ type
 
 function _MantiksalDepolamaAygitSayisiAl: TSayi4; assembler;
 function _MantiksalDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
-  AMantiksalDepolama: PMantiksalDepolama3): Boolean; assembler;
+  AMDNesne: PMDNesne3): Boolean; assembler;
 function _FizikselDepolamaAygitSayisiAl: TSayi4; assembler;
 function _FizikselDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
-  AFizikselDepolama: PFizikselDepolama3): TSayi4; assembler;
+  AFDNesne: PFDNesne3): TSayi4; assembler;
 function _FizikselDepolamaVeriOku(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4; assembler;
 function _FizikselDepolamaVeriYaz(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
@@ -57,10 +57,10 @@ begin
 end;
 
 function TDepolama.MantiksalDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
-  AMantiksalDepolama: PMantiksalDepolama3): Boolean;
+  AMDNesne: PMDNesne3): Boolean;
 begin
 
-  Result := _MantiksalDepolamaAygitBilgisiAl(ASiraNo, AMantiksalDepolama);
+  Result := _MantiksalDepolamaAygitBilgisiAl(ASiraNo, AMDNesne);
 end;
 
 function TDepolama.FizikselDepolamaAygitSayisiAl: TSayi4;
@@ -70,10 +70,10 @@ begin
 end;
 
 function TDepolama.FizikselDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
-  AFizikselDepolama: PFizikselDepolama3): TSayi4;
+  AFDNesne: PFDNesne3): TSayi4;
 begin
 
-  Result := _FizikselDepolamaAygitBilgisiAl(ASiraNo, AFizikselDepolama);
+  Result := _FizikselDepolamaAygitBilgisiAl(ASiraNo, AFDNesne);
 end;
 
 function TDepolama.FizikselDepolamaVeriOku(AKimlik, ASektorNo, ASektorSayisi: TSayi4;
@@ -97,9 +97,9 @@ asm
 end;
 
 function _MantiksalDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
-  AMantiksalDepolama: PMantiksalDepolama3): Boolean;
+  AMDNesne: PMDNesne3): Boolean;
 asm
-  push  DWORD AMantiksalDepolama
+  push  DWORD AMDNesne
   push  DWORD ASiraNo
   mov   eax,DEPOLAMA_MDEPO_AYG_BILGIAL
   int   $34
@@ -113,9 +113,9 @@ asm
 end;
 
 function _FizikselDepolamaAygitBilgisiAl(ASiraNo: TSayi4;
-  AFizikselDepolama: PFizikselDepolama3): TSayi4;
+  AFDNesne: PFDNesne3): TSayi4;
 asm
-  push  DWORD AFizikselDepolama
+  push  DWORD AFDNesne
   push  DWORD ASiraNo
   mov   eax,DEPOLAMA_FDEPO_AYG_BILGIAL
   int   $34

@@ -111,7 +111,7 @@ begin
         FD^.Ozellikler := j;
         FD^.SektorOku := @SektorOku;
         FD^.SektorYaz := @SektorYaz;
-        FD^.Aygit.AnaPort:= $3F0;
+        FD^.Aygit.AnaPort := $3F0;
         FD^.Aygit.Kanal := 0;
         FD^.SonIzKonumu := -1;
 

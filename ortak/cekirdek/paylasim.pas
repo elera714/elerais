@@ -461,14 +461,6 @@ type
   end;
 
 type
-  PAcilis = ^TAcilis;     // acilis = boot
-  TAcilis = record
-    DizinGirisi: TDizinGirisi;
-    DosyaAyirmaTablosu: TDosyaAyirmaTablosu;
-    IlkVeriSektorNo: TSayi4;
-  end;
-
-type
   PIDEDisk = ^TIDEDisk;
   TIDEDisk = record
     AnaPort, KontrolPort: TSayi2;
@@ -726,7 +718,7 @@ type
     GorevKimlik: TKimlik;               // görev kimliði - sýra numarasý
     GorevSayaci: TSayi4;                // görevin kaç kez çalýþtýðý
     BellekBaslangicAdresi: TSayi4;      // görevin yerleþtirildiði bellek adresi
-    BellekUzunlugu: TSayi4;             // görev bellek uzunluðu
+    BellekUzunlugu: TSayi4;             // görev bellek uzunluðu + yýðýn bellek uzunluðu
     OlaySayisi: TSayi4;                 // görev için iþlenmeyi bekleyen olay sayýsý
     DosyaAdi: string;                   // programýn yüklendiði dosya adý
   end;
@@ -807,6 +799,8 @@ var
 
   // TGirisKutusu nesnesinden Ctrl + C ile alýnan içerik verisi
   PanoDegeri: string = '';
+
+  SistemUyariBellekAdresi: Isaretci;
 
 function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;

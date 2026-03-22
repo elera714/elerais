@@ -30,7 +30,7 @@ var
   IslemGostergesi: PIslemGostergesi = nil;
   AramaKaydi: TDosyaArama;
   i, G: TISayi4;
-  j: TSayi2;
+  j, j2: TSayi2;
   TarihSaat: TTarihSaat;
   DosyaBulundu: Boolean;
   Sayac: TSayi4;
@@ -55,7 +55,7 @@ begin
 
     DosyaBulundu := False;
 
-    i := dosya.FindFirst('disket1:\*.*', 0, AramaKaydi);
+    i := FindFirst('disket1:\*.*', 0, AramaKaydi);
     while i = 0 do
     begin
 
@@ -69,10 +69,10 @@ begin
         TarihSaat.Ay := (j shr 5) and 15;
         TarihSaat.Yil := ((j shr 9) and 127) + 1980;
 
-        j := AramaKaydi.SonDegisimSaati;
-        TarihSaat.Saniye := (j and 31) * 2;
-        TarihSaat.Dakika := (j shr 5) and 63;
-        TarihSaat.Saat := (j shr 11) and 31;
+        j2 := AramaKaydi.SonDegisimSaati;
+        TarihSaat.Saniye := (j2 and 31) * 2;
+        TarihSaat.Dakika := (j2 shr 5) and 63;
+        TarihSaat.Saat := (j2 shr 11) and 31;
 
         Break;
       end;
@@ -89,7 +89,10 @@ begin
     if(DosyaBulundu) then
     begin
 
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Gun]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [j]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [j2]);
+
+      {SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Gun]);
       SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Gun]);
       SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Ay]);
       SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Ay]);
@@ -101,7 +104,7 @@ begin
       SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Dakika]);
       SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Dakika]);
       SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Saniye]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Saniye]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Saniye]);}
 
       if not(CekirdekYuklemeTS = TarihSaat) then
       begin

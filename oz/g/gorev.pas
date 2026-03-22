@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 23/07/2025
+  Güncelleme Tarihi: 14/01/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,8 +28,8 @@ const
   // bir görev için tanýmlanan üst sýnýr olay sayýsý
   // olay belleði 4K olarak tanýmlanmýþtýr. 4096 / SizeOf(TOlay)
   USTSINIR_OLAY         = 64;
-  PROGRAM_YIGIN_BELLEK  = (4096 * 5) - 1;             // program yýðýný (stack) için ayrýlacak bellek
-  DEFTER_BELLEK_U       = TSayi4((4096 * 10) - 1);    // defter programý için program belleðinde ayrýlacak alan
+  PROGRAM_YIGIN_BELLEK  = TSayi4(4096 * 5);       // program yýðýný (stack) için ayrýlacak bellek (*4K)
+  DEFTER_BELLEK_U       = TSayi4(4096 * 10);      // defter programý için program belleðinde ayrýlacak alan (*4K)
 
 var
   { TODO - object yapýsýnýn içerisine dahil edilecek }
@@ -57,7 +57,8 @@ type
     Durum: TGorevDurum;                   // görev çalýþma durumu
 
     BellekBaslangicAdresi: TSayi4;        // görevin yüklendiði bellek baþlangýç adresi
-    BellekUzunlugu: TSayi4;               // görevin kullandýðý bellek uzunluðu
+    BellekUzunlugu: TSayi4;               // görevin kullandýðý bellek uzunluðu (*4K)
+    YiginBellekUzunlugu: TSayi4;          // görev yýðýnýnýn bellek uzunluðu (*4K)
     KodBaslangicAdresi: TSayi4;           // görev kodlarýnýn ilk çalýþmaya baþlayacaðý bellek adresi
     YiginBaslangicAdresi: TSayi4;         // iþlemin yýðýn baþlangýç adresi
 
@@ -90,8 +91,8 @@ type
   TGorevler = object
   private
     FGorevListesi: array[0..USTSINIR_GOREVSAYISI - 1] of PGorev;
-    function GorevAl(ASiraNo: TSayi4): PGorev;
-    procedure GorevYaz(ASiraNo: TSayi4; AGorev: PGorev);
+    function GorevAl(ASiraNo: TISayi4): PGorev;
+    procedure GorevYaz(ASiraNo: TISayi4; AGorev: PGorev);
   public
     procedure Yukle;
     function Olustur: PGorev;
@@ -108,7 +109,7 @@ type
     procedure GorevSayaciYaz(AGorevKimlik: TKimlik; ASayacDegeri: TSayi4);
     procedure OlaySayisiYaz(AGorevKimlik: TKimlik; AOlaySayisi: TSayi4);
     function OlayAl(AKimlik: TSayi4; var AOlay: TOlay): Boolean;
-    property Gorev[ASiraNo: TSayi4]: PGorev read GorevAl write GorevYaz;
+    property Gorev[ASiraNo: TISayi4]: PGorev read GorevAl write GorevYaz;
   end;
 
 var
@@ -186,7 +187,7 @@ begin
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do Gorev[i] := nil;
 end;
 
-function TGorevler.GorevAl(ASiraNo: TSayi4): PGorev;
+function TGorevler.GorevAl(ASiraNo: TISayi4): PGorev;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -195,7 +196,7 @@ begin
   else Result := nil;
 end;
 
-procedure TGorevler.GorevYaz(ASiraNo: TSayi4; AGorev: PGorev);
+procedure TGorevler.GorevYaz(ASiraNo: TISayi4; AGorev: PGorev);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -209,9 +210,10 @@ end;
 function TGorevler.Calistir(ATamDosyaYolu: string; ASeviyeNo: TSayi4): PGorev;
 var
   G: PGorev;
+  GeciciDosyaBellek,
   DosyaBellek: Isaretci;
   Olay: POlay;
-  DosyaU, i, ProgramBellekU: TSayi4;
+  i, j, ProgramBellekU: TSayi4;
   Surucu, Klasor,
   DosyaAdi, IzKayitDosyaAdi: string;
   DosyaKimlik: TKimlik;
@@ -223,13 +225,14 @@ var
   AygitSurucusu: PAygitSurucusu;
 begin
 
-//  while KritikBolgeyeGir(GorevKilit) = False do;
+  { TODO - sistemin kilitlenmesine sebebiyet veriyor }
+  //while KritikBolgeyeGir(GorevKilit) = False do;
 
   // dosyayý, sürücü + Klasor + dosya adý parçalarýna ayýr
   DosyaYolunuParcala2(ATamDosyaYolu, Surucu, Klasor, DosyaAdi);
 
   // dosya adýnýn uzunluðunu al
-  DosyaU := Length(DosyaAdi);
+  j := Length(DosyaAdi);
 
   { TODO : .c dosyalarý ileride .ç (çalýþtýrýlabilir) olarak deðiþtirilecek. }
 
@@ -237,7 +240,7 @@ begin
   i := Pos('.', DosyaAdi);
   if(i > 0) then
 
-    DosyaUzanti := Copy(DosyaAdi, i + 1, DosyaU - i)
+    DosyaUzanti := Copy(DosyaAdi, i + 1, j - i)
   else DosyaUzanti := '';
 
   IliskiliProgram := IliskiliProgramAl(DosyaUzanti);
@@ -263,188 +266,168 @@ begin
     TamDosyaYolu := AcilisSurucuAygiti + ':\' + KLASOR_PROGRAM + '\' + DosyaAdi;
   end;
 
-  // çalýþtýrýlacak dosyayý tanýmla ve aç
-  AssignFile(DosyaKimlik, TamDosyaYolu);
-  Reset(DosyaKimlik);
-  if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then
+  // program dosyasýný belleðe oku
+  GeciciDosyaBellek := nil;
+  DosyaUyari := DosyaOku(TamDosyaYolu, GeciciDosyaBellek);
+  if(DosyaUyari.Durum = False) or (GeciciDosyaBellek = nil) then
   begin
 
-    // dosya uzunluðunu al
-    DosyaU := FileSize(DosyaKimlik);
-
-    // dosyanýn çalýþtýrýlmasý için bellekte yer rezerv et
-    // defter.c programýna verileri iþlemesi için fazladan 40K yer tahsis et
-    if(DosyaAdi = 'defter.c') then
-      ProgramBellekU := DosyaU + PROGRAM_YIGIN_BELLEK + DEFTER_BELLEK_U
-    else ProgramBellekU := DosyaU + PROGRAM_YIGIN_BELLEK;
-
-    //ProgramBellekU := ((ProgramBellekU shr 12) + 1) shl 12;
-
-    GetMem(DosyaBellek, ProgramBellekU);
-    if(DosyaBellek = nil) then
-    begin
-
-      SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
-      Result := nil;
-      KritikBolgedenCik(GorevKilit);
-      asm sti end;
-      Exit;
-    end;
-
-    // dosyayý hedef adrese kopyala
-    Read(DosyaKimlik, DosyaBellek);
-
-    if(IOResult <> HATA_DOSYA_ISLEM_BASARILI) then
-    begin
-
-      // dosyayý kapat
-      CloseFile(DosyaKimlik);
-      SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + TamDosyaYolu + ' dosyasý okunamýyor!', []);
-      Result := nil;
-      KritikBolgedenCik(GorevKilit);
-      asm sti end;
-      Exit;
-    end;
-
-    // dosyayý kapat
-    CloseFile(DosyaKimlik);
-
-    // boþ iþlem giriþi bul
-    G := Gorevler0.Olustur;
-    if(G = nil) then
-    begin
-
-      SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için görev oluþturulamýyor!', []);
-      Result := nil;
-      KritikBolgedenCik(GorevKilit);
-      asm sti end;
-      Exit;
-    end;
-
-    // ELF biçimindeki dosyanýn baþ tarafýna konumlan
-    ELFBaslik := DosyaBellek;
-
-    // aygýt sürücüsü çalýþmalarý - test - 31012019
-    // testsrc.s çalýþtýrýlabilir aygýt sürücüsü dosyasý çalýþmalar devam etmektedir
-    if(IliskiliProgram.DosyaTip = dtSurucu) then
-    begin
-
-      AygitSurucusu := PAygitSurucusu(DosyaBellek + PSayi4(DosyaBellek + $100 + 8)^);
-      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Aygýt sürücüsü / açýklama', []);
-      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, AygitSurucusu^.AygitAdi, []);
-      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, AygitSurucusu^.Aciklama, []);
-      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer-1: $%.8x', [AygitSurucusu^.Deger1]);
-      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer-2: $%.8x', [AygitSurucusu^.Deger2]);
-      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer-3: $%.8x', [AygitSurucusu^.Deger3]);
-      KritikBolgedenCik(GorevKilit);
-      asm sti end;
-      Exit;
-    end;
-
-    // olay iþlemleri için bellekte yer ayýr
-    Olay := GetMem(4096);
-    if(Olay = nil) then
-    begin
-
-      SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: olay bilgisi için bellek ayrýlamýyor!', []);
-      Result := nil;
-      KritikBolgedenCik(GorevKilit);
-      asm sti end;
-      Exit;
-    end;
-
-    // iþlemin olay bellek bölgesini ata
-    G^.OlayBellekAdresi := Olay;
-
-    // görev olay sayacýný sýfýrla
-    G^.OlaySayisi := 0;
-
-    // görev çalýþma seviye numarasý - öncelik derecesi
-    G^.SeviyeNo := ASeviyeNo;
-
-    // görev deðiþim sayacýný sýfýrla
-    G^.GorevSayaci := 0;
-
-    // bellek baþlangýç adresi
-    G^.BellekBaslangicAdresi := TSayi4(DosyaBellek);
-
-    // görev çalýþma süreleri
-    G^.CalismaSuresiMS := 2;
-    G^.CalismaSuresiSayacMS := 2;
-
-    // bellek miktarý
-    G^.BellekUzunlugu := ProgramBellekU;
-
-    // iþlem baþlangýç adresi
-    G^.KodBaslangicAdresi := ELFBaslik^.KodBaslangicAdresi;
-
-    // iþlemin yýðýn adresi
-    if(DosyaAdi = 'defter.c') then
-      G^.YiginBaslangicAdresi := (ProgramBellekU - DEFTER_BELLEK_U) - 512
-    else G^.YiginBaslangicAdresi := ProgramBellekU - 512;
-
-    // dosyanýn çalýþtýrýlmasý için seçicileri oluþtur
-    Gorevler0.SecicileriOlustur(G^.Kimlik, G^.BellekUzunlugu,
-      G^.BellekBaslangicAdresi, G^.KodBaslangicAdresi, G^.YiginBaslangicAdresi);
-
-    // iþlemin adý
-    G^.DosyaAdi := DosyaAdi;
-
-    // program öndeðer adý
-    G^.ProgramAdi := '';
-
-    // deðiþken gönderimi
-    // ilk deðiþken - çalýþan iþlemin adý
-
-    // program bellek baþlangýcýnýn ilk 32 byte'ý çekirdeðin programa
-    // bilgi vermesi amacýyla ayrýlmýþtýr.
-    PSayi4(DosyaBellek + 00)^ := TSayi4(DosyaBellek);
-    if(DosyaAdi = 'defter.c') then
-      PSayi4(DosyaBellek + 04)^ := ProgramBellekU - DEFTER_BELLEK_U
-    else PSayi4(DosyaBellek + 04)^ := ProgramBellekU;
-
-    PSayi4(DosyaBellek + 32)^ := 0;
-    p1 := PChar(DosyaBellek + 32 + 4);
-    Tasi2(@TamDosyaYolu[1], p1, Length(TamDosyaYolu));
-    p1 += Length(TamDosyaYolu);
-    p1^ := #0;
-
-    // eðer varsa ikinci deðiþken - çalýþan programýn kullanacaðý deðer
-    if(Degiskenler <> '') then
-    begin
-
-      PSayi4(DosyaBellek + 32)^ := 1;
-      Inc(p1);
-      Tasi2(@Degiskenler[1], p1, Length(Degiskenler));
-      p1 += Length(Degiskenler);
-      p1^ := #0;
-    end;
-
-    // görevin durumunu çalýþýyor olarak belirle
-    G^.Durum := gdCalisiyor;
-
-    // görev iþlem sayýsýný bir artýr
-    Inc(FCalisanGorevSayisi);
-
-    // görev bayrak deðerini artýr
-    Inc(GorevBayrakDegeri);
-
-    // programýn iz kayýt dosyasýný oluþtur
-    {IzKayitDosyaAdi := DosyaAdiniAl(DosyaAdi);
-    IzKayitDosyaAdi += '.log'; //izkayit';
-    IzKaydiOlustur(IzKayitDosyaAdi, IzKayitDosyaAdi + ' uygulamasý çalýþtýrýldý');}
-
-    // görev bellek adresini geri döndür
-    Result := G;
-
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
     KritikBolgedenCik(GorevKilit);
-  end
-  else
+    Exit(nil);
+
+    //GeciciDosyaBellek := SistemUyariBellekAdresi;
+  end;
+
+  // program için gereken bellek miktarýnýn *4K olarak hesaplanmasý
+  ProgramBellekU := DosyaUyari.Uzunluk;
+  ProgramBellekU := ProgramBellekU - 1;
+  ProgramBellekU := ((ProgramBellekU shr 12) + 1) shl 12;
+
+  // dosyanýn çalýþtýrýlmasý için bellekte yer rezerv et
+  // defter.c programýna verileri iþlemesi için fazladan 40K yer tahsis et
+  if(DosyaAdi = 'defter.c') then ProgramBellekU += DEFTER_BELLEK_U;
+
+  GetMem(DosyaBellek, ProgramBellekU + PROGRAM_YIGIN_BELLEK);
+  if(DosyaBellek = nil) then
   begin
 
-    CloseFile(DosyaKimlik);
-    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + TamDosyaYolu + ' dosya okuma hatasý!', []);
+    if not(GeciciDosyaBellek = nil) then FreeMem(GeciciDosyaBellek);
+
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
+    KritikBolgedenCik(GorevKilit);
+    Exit(nil);
   end;
+
+  // program dosyasýný çalýþacaðý hedef belleðe kopyala
+  Tasi2(GeciciDosyaBellek, DosyaBellek, DosyaUyari.Uzunluk);
+
+  // programýn kopyalandýðý önceki belleði serbest býrak
+  if not(GeciciDosyaBellek = nil) then FreeMem(GeciciDosyaBellek);
+
+  // boþ iþlem giriþi bul
+  G := Gorevler0.Olustur;
+  if(G = nil) then
+  begin
+
+    FreeMem(DosyaBellek);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için görev oluþturulamýyor!', []);
+    KritikBolgedenCik(GorevKilit);
+    Exit(nil);
+  end;
+
+  // ELF biçimindeki dosyanýn baþ tarafýna konumlan
+  ELFBaslik := DosyaBellek;
+
+  // aygýt sürücüsü çalýþmalarý - test - 31012019
+  // testsrc.s çalýþtýrýlabilir aygýt sürücüsü dosyasý çalýþmalar devam etmektedir
+  if(IliskiliProgram.DosyaTip = dtSurucu) then
+  begin
+
+    AygitSurucusu := PAygitSurucusu(DosyaBellek + PSayi4(DosyaBellek + $100 + 8)^);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Aygýt sürücüsü / açýklama', []);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, AygitSurucusu^.AygitAdi, []);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, AygitSurucusu^.Aciklama, []);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer-1: $%.8x', [AygitSurucusu^.Deger1]);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer-2: $%.8x', [AygitSurucusu^.Deger2]);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Deðer-3: $%.8x', [AygitSurucusu^.Deger3]);
+    KritikBolgedenCik(GorevKilit);
+    Exit(nil);
+  end;
+
+  // olay iþlemleri için bellekte yer ayýr
+  Olay := GetMem(4096);
+  if(Olay = nil) then
+  begin
+
+    FreeMem(DosyaBellek);
+    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: olay bilgisi için bellek ayrýlamýyor!', []);
+    KritikBolgedenCik(GorevKilit);
+    Exit(nil);
+  end;
+
+  // iþlemin olay bellek bölgesini ata
+  G^.OlayBellekAdresi := Olay;
+
+  // görev olay sayacýný sýfýrla
+  G^.OlaySayisi := 0;
+
+  // görev çalýþma seviye numarasý - öncelik derecesi
+  G^.SeviyeNo := ASeviyeNo;
+
+  // görev deðiþim sayacýný sýfýrla
+  G^.GorevSayaci := 0;
+
+  // bellek baþlangýç adresi
+  G^.BellekBaslangicAdresi := TSayi4(DosyaBellek);
+
+  // görev çalýþma süreleri
+  G^.CalismaSuresiMS := 2;
+  G^.CalismaSuresiSayacMS := 2;
+
+  // bellek miktarý
+  G^.BellekUzunlugu := ProgramBellekU;
+  G^.YiginBellekUzunlugu := PROGRAM_YIGIN_BELLEK;
+
+  // iþlem baþlangýç adresi
+  G^.KodBaslangicAdresi := ELFBaslik^.KodBaslangicAdresi;
+
+  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'A: %x', [G^.KodBaslangicAdresi]);
+
+  // iþlemin yýðýn adresi
+  G^.YiginBaslangicAdresi := (G^.BellekUzunlugu + G^.YiginBellekUzunlugu) - 64;
+
+  // dosyanýn çalýþtýrýlmasý için seçicileri oluþtur
+  Gorevler0.SecicileriOlustur(G^.Kimlik, G^.BellekUzunlugu + G^.YiginBellekUzunlugu,
+    G^.BellekBaslangicAdresi, G^.KodBaslangicAdresi, G^.YiginBaslangicAdresi);
+
+  // iþlemin adý
+  G^.DosyaAdi := DosyaAdi;
+
+  // program öndeðer adý
+  G^.ProgramAdi := '';
+
+  // deðiþken gönderimi
+  // ilk deðiþken - çalýþan iþlemin adý
+
+  // program bellek baþlangýcýnýn ilk 32 byte'ý çekirdeðin programa
+  // bilgi vermesi amacýyla ayrýlmýþtýr.
+  PSayi4(DosyaBellek + 00)^ := TSayi4(DosyaBellek);
+  PSayi4(DosyaBellek + 04)^ := G^.BellekUzunlugu - DEFTER_BELLEK_U;
+
+  PSayi4(DosyaBellek + 32)^ := 0;
+  p1 := PChar(DosyaBellek + 32 + 4);
+  Tasi2(@TamDosyaYolu[1], p1, Length(TamDosyaYolu));
+  p1 += Length(TamDosyaYolu);
+  p1^ := #0;
+
+  // eðer varsa ikinci deðiþken - çalýþan programýn kullanacaðý deðer
+  if(Degiskenler <> '') then
+  begin
+
+    PSayi4(DosyaBellek + 32)^ := 1;
+    Inc(p1);
+    Tasi2(@Degiskenler[1], p1, Length(Degiskenler));
+    p1 += Length(Degiskenler);
+    p1^ := #0;
+  end;
+
+  // görevin durumunu çalýþýyor olarak belirle
+  G^.Durum := gdCalisiyor;
+
+  // görev iþlem sayýsýný bir artýr
+  Inc(FCalisanGorevSayisi);
+
+  // görev bayrak deðerini artýr
+  Inc(GorevBayrakDegeri);
+
+  // programýn iz kayýt dosyasýný oluþtur
+  {IzKayitDosyaAdi := DosyaAdiniAl(DosyaAdi);
+  IzKayitDosyaAdi += '.log'; //izkayit';
+  IzKaydiOlustur(IzKayitDosyaAdi, IzKayitDosyaAdi + ' uygulamasý çalýþtýrýldý');}
+
+  // görev bellek adresini geri döndür
+  Result := G;
 
   KritikBolgedenCik(GorevKilit);
 end;
@@ -627,7 +610,8 @@ begin
     Exit;
   end;
 
-  if(G^.Durum = gdCalisiyor) then
+  // görev çalýþýyor ve olay bellek adresi tanýmlandýysa
+  if(G^.Durum = gdCalisiyor) and not(G^.OlayBellekAdresi = nil) then
   begin
 
     // olay belleði dolu deðilse olayý kaydet
