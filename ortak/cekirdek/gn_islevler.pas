@@ -6,7 +6,7 @@
   Dosya Adı: gn_islevler.pas
   Dosya İşlevi: görsel nesne (visual object) işlevlerini içerir
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 13/04/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -40,7 +40,6 @@ var
   Kimlik: TKimlik;
   BellekAdresi: Isaretci;
   Konum: TKonum;
-  s: string;
 begin
 
   // yatay & dikey koordinattaki nesneyi al
@@ -77,12 +76,9 @@ begin
     Konum.Sol := PISayi4(ADegiskenler + 00)^;
     Konum.Ust := PISayi4(ADegiskenler + 04)^;
 
-    { TODO - GN yapısı object'den class'a çevrildi. api yeniden düzenlencek }
     GN := GorselNesneBul(Konum);
-    s := IntToStr(GN^.Kimlik);
     BellekAdresi := Isaretci(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-    Tasi2(@s[0], BellekAdresi, Length(s) + 1);
-    //Tasi2(@GN^.NesneAdi[0], BellekAdresi, Length(GN^.NesneAdi) + 1);
+    Tasi2(@GN^.NesneAdi[0], BellekAdresi, Length(GN^.NesneAdi) + 1);
   end;
 end;
 

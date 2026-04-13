@@ -6,7 +6,7 @@
   Dosya Adý: gn_dugme.pas
   Dosya Ýþlevi: düðme (TButton) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 13/04/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -384,6 +384,46 @@ begin
     if not(Dugme^.OlayYonlendirmeAdresi = nil) then
       Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
     else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
+  end
+  // nesnenin odaðý kaybetmesi durumu
+  else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
+  begin
+
+    // düðme'nin sahibi olan pencere en üstte mi ? kontrol et
+    Pencere := EnUstPencereNesnesiniAl(Dugme);
+
+    // en üstte olmamasý durumunda en üste getir
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak iþaretle
+    Pencere^.FAktifNesne := nil;
+    Dugme^.Odaklanildi := False;
+
+    // düðme'nin durumunu BASILI olarak belirle
+    Dugme^.FDurum := ddNormal;
+
+    // düðme nesnesini yeniden çiz
+    Dugme^.Ciz;
+  end
+  // nesnenin odaðý yeniden kazanmasý durumu
+  else if(AOlay.Olay = CO_ODAKKAZANILDI) then
+  begin
+
+    // düðme'nin sahibi olan pencere en üstte mi ? kontrol et
+    Pencere := EnUstPencereNesnesiniAl(Dugme);
+
+    // en üstte olmamasý durumunda en üste getir
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak iþaretle
+    Pencere^.FAktifNesne := Dugme;
+    Dugme^.Odaklanildi := True;
+
+    // düðme'nin durumunu BASILI olarak belirle
+    Dugme^.FDurum := ddBasili;
+
+    // düðme nesnesini yeniden çiz
+    Dugme^.Ciz;
   end;
 
   // geçerli fare göstergesini güncelle
