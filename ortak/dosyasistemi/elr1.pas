@@ -619,24 +619,23 @@ begin
 
   ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
-  GetMem(Bellek, 512 * ZincirBasinaSektor);
-
   HedefBellekSN := 0;
+
+  GetMem(Bellek, 512 * ZincirBasinaSektor);
 
   repeat
 
     // okunacak byte'ý sektör sayýsýna çevir
-    if(VeriU >= (512 * ZincirBasinaSektor)) then
+    OkunacakSektorSayisi := ZincirBasinaSektor;
+    if(VeriU >= (ZincirBasinaSektor * 512)) then
     begin
 
-      OkunacakSektorSayisi := ZincirBasinaSektor;
-      KopyalanacakVeriUzunlugu := 512 * ZincirBasinaSektor;
-      VeriU -= (512 * ZincirBasinaSektor);
+      KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
+      VeriU -= KopyalanacakVeriUzunlugu;
     end
     else
     begin
 
-      OkunacakSektorSayisi := ((VeriU - 1) div 512) + 1;
       KopyalanacakVeriUzunlugu := VeriU;
       VeriU := 0;
     end;

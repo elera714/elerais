@@ -51,7 +51,7 @@ begin
 
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-Y: %d', [GFareSurucusu.DikeyKonum]);
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '2', []);
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '1', []);
 
     DosyaBulundu := False;
 
@@ -89,8 +89,10 @@ begin
     if(DosyaBulundu) then
     begin
 
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [j]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [j2]);
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '1.1', []);
+
+      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [j]);
+      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [j2]);
 
       {SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Gun]);
       SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Gun]);
@@ -170,7 +172,7 @@ begin
     end;
   end;
 
-  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Son: %d, Toplam: %d', [k, j]);
+  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Son GN SN: %d, Toplam GN: %d', [k, j]);
 
 {  for i := 0 to USTSINIR_GORSELNESNE - 1 do
   begin

@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 04/01/2026
+  Güncelleme Tarihi: 15/04/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -191,7 +191,7 @@ var
   CizimAlani, CizimAlani2: TAlan;
   i1: TISayi8;
   s: string;
-  i: TISayi4;
+  i, j: TISayi4;
   d1, d2: Double;
 begin
 
@@ -220,7 +220,8 @@ begin
   CizimAlani2 := CizimAlani;
   s := IntToStr(IslemGostergesi^.FMevcutDeger);
   i := (CizimAlani2.Sag - (Length(s) * 8)) div 2;
-  IslemGostergesi^.YaziYaz(IslemGostergesi, CizimAlani2.Sol + i, CizimAlani2.Ust,
+  j := ((CizimAlani2.Alt - 16) div 2) + 1;
+  IslemGostergesi^.YaziYaz(IslemGostergesi, CizimAlani2.Sol + i, CizimAlani2.Ust + j,
     s, RENK_SIYAH);
 end;
 

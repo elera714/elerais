@@ -37,7 +37,7 @@ function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 
 implementation
 
-uses fat32, sistemmesaj, dosya;
+uses fat32, sistemmesaj, dosya, islevler;
 
 {==============================================================================
   dosya arama işlevini başlatır
@@ -168,14 +168,16 @@ end;
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
   DI: PDosyaIslem;
-  DATBellekAdresi: Isaretci;
   DATSiraNo: TSayi2;
-  OkunacakSektorSayisi,
   Zincir, i: TSayi2;
-  OkunacakVeri, OkunacakFAT,
+  OkunacakFAT,
   YeniDATSiraNo: TISayi4;
   OkumaSonuc: Boolean;
   DG: PDizinGirdisi;
+  ZincirBasinaSektor,
+  OkunacakSektorSayisi,
+  KopyalanacakVeriUzunlugu,
+  VeriU: TSayi4;
 begin
 
   // dosya işlem yapısı bellek bölgesine konumlan
@@ -188,64 +190,63 @@ begin
   DG := PDizinGirdisi(DI^.TSI);
   Inc(DG, DI^.KayitSN);
 
-  OkunacakVeri := DG^.DosyaUzunlugu;
+  VeriU := DG^.DosyaUzunlugu;
+  if(VeriU = 0) then Exit;
+
   Zincir := DG^.BaslangicKumeNo;
+
+  // FAT tablosu için bellekte yer ayır
+  GetMem(DI^.Bellek1, 512);
+
+  ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
   OkumaSonuc := False;
 
   repeat
 
     // okunacak byte'ı sektör sayısına çevir
-    OkunacakSektorSayisi := (OkunacakVeri div 512);
-
-    if(OkunacakSektorSayisi = 0) then
+    OkunacakSektorSayisi := ZincirBasinaSektor;
+    if(VeriU >= (ZincirBasinaSektor * 512)) then
     begin
 
-      //OkunacakVeri := 0;
-      //Inc(OkunacakSektorSayisi);
-      OkumaSonuc := True;
+      KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
+      VeriU -= KopyalanacakVeriUzunlugu;
     end
     else
-
-    // aksi durumda zincir sayısınca sektör oku
     begin
 
-      OkunacakSektorSayisi := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
-      OkunacakVeri -= (OkunacakSektorSayisi * 512);
+      KopyalanacakVeriUzunlugu := VeriU;
+      VeriU := 0;
     end;
 
-    if not(OkumaSonuc) then
-    begin
+    // okunacak zincir numarası
+    i := (Zincir - 2) * ZincirBasinaSektor;
 
-      // okunacak zincir numarası
-      i := (Zincir - 2) * DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
+    // sektörü belleğe oku
+    GetMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
+    DI^.MD.FD^.SektorOku(DI^.MD.FD, i + DI^.MD.Acilis.IlkVeriSektorNo, OkunacakSektorSayisi, DI^.Bellek2);
+    Tasi2(DI^.Bellek2, AHedefBellek, KopyalanacakVeriUzunlugu);
+    FreeMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
 
-      // sektörü belleğe oku
-      DI^.MD.FD^.SektorOku(DI^.MD.FD, i + DI^.MD.Acilis.IlkVeriSektorNo,
-        OkunacakSektorSayisi, AHedefBellek);
+    // okunacak bilginin yerleştirileceği bir sonraki adresi belirle
+    AHedefBellek += (OkunacakSektorSayisi * 512);
 
-      // okunacak bilginin yerleştirileceği bir sonraki adresi belirle
-      AHedefBellek += (OkunacakSektorSayisi * 512);
+    OkunacakFAT := (Zincir * 2) div 512;
 
-      OkunacakFAT := (Zincir * 2) div 512;
+    // depolama aygıtının ilk FAT kopyasının tümünü belleğe yükle
+    DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor + OkunacakFAT,
+      1, DI^.Bellek1);
 
-      GetMem(DATBellekAdresi, 512);
+    // zincir değerini 2 ile çarp ve bir sonraki zincir değerini al
+    YeniDATSiraNo := (Zincir * 2) mod 512;
+    DATSiraNo := PSayi2(DI^.Bellek1 + YeniDATSiraNo)^;
 
-      // depolama aygıtının ilk FAT kopyasının tümünü belleğe yükle
-      DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor + OkunacakFAT,
-        1, DATBellekAdresi);
-
-      // zincir değerini 2 ile çarp ve bir sonraki zincir değerini al
-      YeniDATSiraNo := (Zincir * 2) mod 512;
-      DATSiraNo := PSayi2(DATBellekAdresi + YeniDATSiraNo)^;
-
-      Zincir := DATSiraNo;
-
-      FreeMem(DATBellekAdresi, 512);
-    end;
+    Zincir := DATSiraNo;
 
   // eğer 0xFFF8..0xFFFF aralığındaysa bu dosyanın en son zinciridir
   until (Zincir >= $FFF8) or (OkumaSonuc);
+
+  FreeMem(DI^.Bellek1, 512);
 end;
 
 {==============================================================================

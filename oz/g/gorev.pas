@@ -372,7 +372,7 @@ begin
   // iþlem baþlangýç adresi
   G^.KodBaslangicAdresi := ELFBaslik^.KodBaslangicAdresi;
 
-  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'A: %x', [G^.KodBaslangicAdresi]);
+  //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'A: %x', [G^.KodBaslangicAdresi]);
 
   // iþlemin yýðýn adresi
   G^.YiginBaslangicAdresi := (G^.BellekUzunlugu + G^.YiginBellekUzunlugu) - 64;

@@ -37,7 +37,7 @@ function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 
 implementation
 
-uses genel, gercekbellek, sistemmesaj, fat32, src_com, dosya;
+uses genel, gercekbellek, sistemmesaj, fat32, src_com, dosya, islevler;
 
 {==============================================================================
   dosya arama iþlevini baþlatýr
@@ -173,12 +173,13 @@ end;
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
   DI: PDosyaIslem;
-  DATBellekAdresi: Isaretci;
   Zincir, DATSiraNo: TSayi2;
   YeniDATSiraNo: TSayi4;
-  OkunacakSektorSayisi, i: TSayi2;
-  OkunacakVeri: TISayi4;
-  OkumaSonuc: TSayi4;
+  i: TSayi2;
+  OkumaSonuc, VeriU,
+  OkunacakSektorSayisi,
+  KopyalanacakVeriUzunlugu,
+  ZincirBasinaSektor: TSayi4;
   DG: PDizinGirdisi;
 begin
 
@@ -189,43 +190,62 @@ begin
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  // FAT tablosu için bellekte yer ayýr
-  DATBellekAdresi := GetMem(DI^.MD.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
-
-  // depolama aygýtýnýn ilk FAT kopyasýnýn tümünü belleðe yükle
-  OkumaSonuc := DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor,
-    DI^.MD.Acilis.DosyaAyirmaTablosu.ToplamSektor, DATBellekAdresi);
-
-  if(OkumaSonuc <> 0) then SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
-
   DG := PDizinGirdisi(DI^.TSI);
   Inc(DG, DI^.KayitSN);
 
-  OkunacakVeri := DG^.DosyaUzunlugu;
+  VeriU := DG^.DosyaUzunlugu;
+  if(VeriU = 0) then Exit;
+
   Zincir := DG^.BaslangicKumeNo;
 
-  OkunacakSektorSayisi := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
+  // FAT tablosu için bellekte yer ayýr
+  GetMem(DI^.Bellek1, DI^.MD.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
+
+  // depolama aygýtýnýn ilk FAT kopyasýnýn tümünü belleðe yükle
+  OkumaSonuc := DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor,
+    DI^.MD.Acilis.DosyaAyirmaTablosu.ToplamSektor, DI^.Bellek1);
+
+  if(OkumaSonuc <> 0) then SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
+
+  ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
   OkumaSonuc := 1;
 
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IlkVeriSektoru: %d', [DI^.MD.Acilis.IlkVeriSektorNo]);
+  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IlkVeriSektoru: %d', [DI^.MD.Acilis.IlkVeriSektorNo]);
 
   repeat
+
+    // okunacak byte'ý sektör sayýsýna çevir
+    OkunacakSektorSayisi := ZincirBasinaSektor;
+    if(VeriU >= (ZincirBasinaSektor * 512)) then
+    begin
+
+      KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
+      VeriU -= KopyalanacakVeriUzunlugu;
+    end
+    else
+    begin
+
+      KopyalanacakVeriUzunlugu := VeriU;
+      VeriU := 0;
+    end;
 
     // okunacak sektör zincir numarasý
     i := (Zincir - 2) * DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
     // sektörü belleðe oku
-    DI^.MD.FD^.SektorOku(DI^.MD.FD, i + DI^.MD.Acilis.IlkVeriSektorNo,
-      OkunacakSektorSayisi, AHedefBellek);
+    GetMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
+    DI^.MD.FD^.SektorOku(DI^.MD.FD, i + DI^.MD.Acilis.IlkVeriSektorNo, ZincirBasinaSektor, DI^.Bellek2);
+    Tasi2(DI^.Bellek2, AHedefBellek, KopyalanacakVeriUzunlugu);
+    FreeMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
 
     //src_com.Yaz(1, AHedefBellek, OkunacakSektorSayisi * 512);
 
     // okunacak bilginin yerleþtirileceði bir sonraki adresi belirle
-    AHedefBellek += (OkunacakSektorSayisi * 512);
+    AHedefBellek += (ZincirBasinaSektor * 512);
 
     // zincir deðerini 1.5 ile çarp ve bir sonraki zincir deðerini al
-    YeniDATSiraNo := (Zincir shr 1) + Zincir + TSayi4(DATBellekAdresi);
+    YeniDATSiraNo := (Zincir shr 1) + Zincir + TSayi4(DI^.Bellek1);
     DATSiraNo := PSayi2(YeniDATSiraNo)^;
 
     if((Zincir and 1) = 1) then
@@ -234,13 +254,13 @@ begin
 
     Zincir := DATSiraNo;
 
-    OkunacakVeri -= (OkunacakSektorSayisi * 512);
-    if(OkunacakSektorSayisi <= 0) then OkumaSonuc := 0;
+    VeriU -= (ZincirBasinaSektor * 512);
+    if(ZincirBasinaSektor <= 0) then OkumaSonuc := 0;
 
   // eðer 0xFF8..0xFFF aralýðýndaysa bu dosyanýn en son zinciridir
   until (Zincir >= $FF8) or (OkumaSonuc = 0);
 
-  FreeMem(DATBellekAdresi, DI^.MD.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
+  FreeMem(DI^.Bellek1, DI^.MD.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
 end;
 
 {==============================================================================

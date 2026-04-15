@@ -187,46 +187,54 @@ end;
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
   DI: PDosyaIslem;
-  OkunacakSektorSayisi, i: TSayi2;
-  ZincirBasinaSektor, OkunacakVeri,
-  KopyalanacakVeriUzunlugu,
   YeniDATSiraNo, OkunacakFAT,
   DATSiraNo, Zincir,
   SektorIS: TISayi4;
   OkumaSonuc: Boolean;
   DG: PDizinGirdisi;
-  DATBellek: Isaretci;
+  ZincirBasinaSektor,
+  OkunacakSektorSayisi,
+  KopyalanacakVeriUzunlugu,
+  VeriU, i: TSayi4;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  if(DI = nil) then Exit;
+
+  // en son iþlem hatalý ise çýk
+  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   DG := PDizinGirdisi(DI^.TSI);
   Inc(DG, DI^.KayitSN);
 
-  OkunacakVeri := DG^.DosyaUzunlugu;
+  VeriU := DG^.DosyaUzunlugu;
+  if(VeriU = 0) then Exit;
+
   Zincir := DG^.BaslangicKumeNo;
 
   ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
+
+  // FAT tablosu için bellekte yer ayýr
+  GetMem(DI^.Bellek1, 512);
 
   OkumaSonuc := False;
 
   repeat
 
     // okunacak byte'ý sektör sayýsýna çevir
-    if(OkunacakVeri >= (ZincirBasinaSektor * 512)) then
+    OkunacakSektorSayisi := ZincirBasinaSektor;
+    if(VeriU >= (ZincirBasinaSektor * 512)) then
     begin
 
-      OkunacakSektorSayisi := ZincirBasinaSektor;
       KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
-      OkunacakVeri -= (ZincirBasinaSektor * 512);
+      VeriU -= KopyalanacakVeriUzunlugu;
     end
     else
     begin
 
-      OkunacakSektorSayisi := (OkunacakVeri div 512) + 1;
-      KopyalanacakVeriUzunlugu := OkunacakVeri;
-      OkunacakVeri := 0;
+      KopyalanacakVeriUzunlugu := VeriU;
+      VeriU := 0;
     end;
 
     // okunacak cluster numarasý
@@ -234,7 +242,10 @@ begin
     i += DI^.MD.Acilis.IlkVeriSektorNo;
 
     // sektörü belleðe oku
-    SektorIS := DI^.MD.FD^.SektorOku(DI^.MD.FD, i, OkunacakSektorSayisi, AHedefBellek);
+    GetMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
+    SektorIS := DI^.MD.FD^.SektorOku(DI^.MD.FD, i, OkunacakSektorSayisi, DI^.Bellek2);
+    Tasi2(DI^.Bellek2, AHedefBellek, KopyalanacakVeriUzunlugu);
+    FreeMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
 
     {if(SektorIS < HATA_YOK) then
     begin
@@ -248,11 +259,9 @@ begin
 
     OkunacakFAT := (Zincir * 4) div 512;
 
-    GetMem(DATBellek, 512);
-
     // depolama aygýtýnýn ilk FAT kopyasýnýn tümünü belleðe yükle
     SektorIS := DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor +
-      OkunacakFAT, 1, DATBellek);
+      OkunacakFAT, 1, DI^.Bellek1);
 {    if(SektorIS < HATA_YOK) then
     begin
 
@@ -263,14 +272,14 @@ begin
 }
     // zincir deðerini 4 ile çarp ve bir sonraki zincir deðerini al
     YeniDATSiraNo := (Zincir * 4) mod 512;
-    DATSiraNo := PSayi4(DATBellek + YeniDATSiraNo)^;
-
-    FreeMem(DATBellek, 512);
+    DATSiraNo := PSayi4(DI^.Bellek1 + YeniDATSiraNo)^;
 
     Zincir := DATSiraNo;
 
   // eðer 0xfff8..0xffff aralýðýndaysa bu dosyanýn en son cluster'idir
-  until (Zincir = $FFFFFFF) or (OkunacakVeri = 0) or (OkumaSonuc);
+  until (Zincir = $FFFFFFF) or (VeriU = 0) or (OkumaSonuc);
+
+  FreeMem(DI^.Bellek1, 512);
 end;
 
 {==============================================================================

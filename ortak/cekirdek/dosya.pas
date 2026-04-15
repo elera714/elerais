@@ -39,6 +39,9 @@ type
     // dizin / dosya giriþinin Tek Sektörlük Içeriði. (iþlevler arasý veri alýþveriþi için)
     TSI: Isaretci;
 
+    // iþlevler için kullanýlacak genel bellek iþaretçileri
+    Bellek1, Bellek2: Isaretci;
+
     Kimlik: TKimlik;
     Gorev: PGorev;            // dosya iþlemini gerçekleþtiren görev
 
