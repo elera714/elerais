@@ -63,8 +63,8 @@ type
   TBaglantilar = object
   private
     FBaglantiListesi: array[0..USTSINIR_BAGLANTI - 1] of PBaglanti;
-    function BaglantiAl(ASiraNo: TSayi4): PBaglanti;
-    procedure BaglantiYaz(ASiraNo: TSayi4; ABaglanti: PBaglanti);
+    function BaglantiAl(ASiraNo: TISayi4): PBaglanti;
+    procedure BaglantiYaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
   public
     procedure Yukle;
     function BaglantiOlustur(AProtokolTipi: TProtokolTipi; ABaglantiAdresi: string;
@@ -81,7 +81,7 @@ type
     function VeriUzunlugu(AKimlik: TKimlik): TSayi4;
     function Oku(AKimlik: TKimlik; ABellek: Isaretci): TSayi4;
     procedure Yaz(AKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TISayi4);
-    property Baglanti[ASiraNo: TSayi4]: PBaglanti read BaglantiAl write BaglantiYaz;
+    property Baglanti[ASiraNo: TISayi4]: PBaglanti read BaglantiAl write BaglantiYaz;
     function YerelPortAl: TSayi2;
   end;
 
@@ -108,7 +108,7 @@ begin
   YerelPortNo := ILK_YERELPORTNO;
 end;
 
-function TBaglantilar.BaglantiAl(ASiraNo: TSayi4): PBaglanti;
+function TBaglantilar.BaglantiAl(ASiraNo: TISayi4): PBaglanti;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -117,7 +117,7 @@ begin
   else Result := nil;
 end;
 
-procedure TBaglantilar.BaglantiYaz(ASiraNo: TSayi4; ABaglanti: PBaglanti);
+procedure TBaglantilar.BaglantiYaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -138,7 +138,7 @@ var
   IPAdresi: TIPAdres;
 begin
 
-  while KritikBolgeyeGir(BaglantilarKilit) = False do;
+//  while KritikBolgeyeGir(BaglantilarKilit) = False do;
 
   B := BaglantiYapisiOlustur;
   if(B = nil) then Exit(nil);
@@ -186,11 +186,11 @@ begin
     B^.VeriUzunlugu := 0;
     B^.Bellek := GetMem(4096 * 4);
 
-    {SISTEM_MESAJ(RENK_MOR, 'BAGLANTI.PAS: Protokol -> UDP', []);
-    SISTEM_MESAJ(RENK_MOR, 'BAGLANTI.PAS: Kimlik %d', [Bag^.FKimlik]);
-    SISTEM_MESAJ_IP(RENK_LACIVERT, 'Hedef IP: ', AHedefIPAdres);
-    SISTEM_MESAJ(RENK_LACIVERT, 'Kaynak Port: %d', [AYerelPort]);
-    SISTEM_MESAJ(RENK_LACIVERT, 'Hedef Port: %d', [AUzakPort]); }
+    SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Protokol -> UDP', []);
+    SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Kimlik %d', [B^.Kimlik]);
+    SISTEM_MESAJ_IP(mtBilgi, RENK_LACIVERT, 'Hedef IP: ', IPAdresi);
+    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Kaynak Port: %d', [AYerelPort]);
+    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Hedef Port: %d', [AUzakPort]);
   end
   else
   begin
@@ -204,7 +204,7 @@ begin
 
   Result := B;
 
-  KritikBolgedenCik(BaglantilarKilit);
+//  KritikBolgedenCik(BaglantilarKilit);
 end;
 
 {==============================================================================

@@ -6,7 +6,7 @@
   Dosya Adý: elr1.pas
   Dosya Ýþlevi: ELERA Ýþletim Sistemi'nin dosya sistemi
 
-  Güncelleme Tarihi: 26/05/2025
+  Güncelleme Tarihi: 18/04/2026
 
   Kaynaklar: https://wiki.freepascal.org/File_Handling_In_Pascal
 
@@ -1415,19 +1415,29 @@ var
   FD: PFDNesne;
   i, j, KullanilanSektor: TSayi4;
   Deger: PSayi4;
+  Sonuc: TISayi4;
 begin
 
   Bellek := GetMem(512);
+  if(Bellek = nil) then
+  begin
+
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'SHTToplamKullanim yeterli bellek yok!', []);
+    Exit(0);
+  end;
 
   // tüm sektörler dolu
   KullanilanSektor := 0;
 
   FD := AMDNesne^.FD;
 
+  Sonuc := HATA_YOK;
+
   for i := 256 to (256 + 1280) - 1 do
   begin
 
-    FD^.SektorOku(FD, i, 1, Bellek);
+    Sonuc := FD^.SektorOku(FD, i, 1, Bellek);
+    if(Sonuc <> HATA_YOK) then Break;
 
     Deger := Bellek;
     for j := 0 to 128 - 1 do
@@ -1439,6 +1449,9 @@ begin
   end;
 
   FreeMem(Bellek, 512);
+
+  if not(Sonuc = HATA_YOK) then
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'SHTToplamKullanim disk hatasý!', []);
 
   Result := KullanilanSektor * 4; // 4 = zincirdeki sektör sayýsý
 end;

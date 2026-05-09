@@ -77,7 +77,7 @@ implementation
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
   src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci,
-  sistem;
+  sistem, src_pcnet32;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -429,6 +429,9 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
+            //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'PCNET32 çip adý: %s', [AygitPCNET32.CipAdi]);
+            SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'PCNET32 MAC Adres: ', AygitPCNET32.MACAdres);
+
             //elr1.SistemKlasorleriniSil;
 
             {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
@@ -563,9 +566,10 @@ begin
             Olay.Olay := CO_SONLANDIR;
             Olay.Deger1 := 0;
             Olay.Deger2 := 0;
-            if not(GAktifPencere^.OlayYonlendirmeAdresi = nil) then
+            {if not(GAktifPencere^.OlayYonlendirmeAdresi = nil) then
               GAktifPencere^.OlayYonlendirmeAdresi(GAktifPencere, Olay)
-            else Gorevler0.OlayEkle(GAktifPencere^.GorevKimlik, Olay);
+            else Gorevler0.OlayEkle(GAktifPencere^.GorevKimlik, Olay);}
+            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '112', []);
           end;
         end
         else
@@ -578,7 +582,7 @@ begin
 
           { TODO - burada kontrol tuþlarý ve karakter tuþlarý ayrý ayrý deðerlendirilerek
             farklý olaylar olarak uygulamalara gönderilecek }
-          //if((TusDegeri and $FF00) = 0) then
+          if((TusDegeri and $FF00) = 0) then
             GOlayYonetim.KlavyeOlaylariniIsle(TusDegeri, TusDurum);
         end;
       end

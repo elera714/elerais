@@ -3,7 +3,8 @@ unit anasayfafrm;
 
 interface
 
-uses n_gorev, gn_pencere, n_genel, _forms, gn_dugme, gn_degerlistesi, n_tuval;
+uses n_gorev, gn_pencere, n_genel, _forms, gn_dugme, gn_degerlistesi,
+  n_tuval, n_zamanlayici;
 
 type
   TfrmAnaSayfa = object(TForm)
@@ -14,6 +15,7 @@ type
     FDegerListesi: TDegerListesi;
     FYenile: TDugme;
     FAgBilgisi: TAgBilgisi;
+    FZamanlayici: TZamanlayici;
     procedure IcerigiGuncelle;
   public
     procedure Olustur;
@@ -48,8 +50,8 @@ begin
 
   FPencere.Gorunum := True;
 
-  FGenel.AgBilgisiAl(@FAgBilgisi);
-  IcerigiGuncelle;
+  FZamanlayici.Olustur(100);
+  FZamanlayici.Baslat;
 end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
@@ -60,6 +62,12 @@ begin
   begin
 
     FGorev.Sonlandir(-1);
+  end
+  else if(AOlay.Olay = CO_ZAMANLAYICI) then
+  begin
+
+    FGenel.AgBilgisiAl(@FAgBilgisi);
+    IcerigiGuncelle;
   end
   else if(AOlay.Olay = FO_TIKLAMA) then
   begin

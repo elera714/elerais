@@ -600,7 +600,7 @@ var
   Olay: POlay;
 begin
 
-  while KritikBolgeyeGir(OlayKilit) = False do;
+  //while KritikBolgeyeGir(OlayKilit) = False do;
 
   G := Gorev[AGorevKimlik];
   if(G = nil) then
@@ -633,7 +633,7 @@ begin
     end;
   end;
 
-  KritikBolgedenCik(OlayKilit);
+  //KritikBolgedenCik(OlayKilit);
 end;
 
 {==============================================================================
@@ -714,6 +714,10 @@ var
   G: PGorev = nil;
 begin
 
+{  Exit(1);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Görev Kimlik: %d', [AGorevKimlik]);
+  Exit(1);}
+
 //  while KritikBolgeyeGir(GorevKilit) = False do;
 
   G := Gorev[AGorevKimlik];
@@ -787,9 +791,11 @@ begin
   G := Gorev[AGorevKimlik];
   if(G = nil) then Exit;
 
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Görev KimlikX: %d', [AGorevKimlik]);
+
+  G^.Durum := gdSonlandiriliyor;
   G^.HataKodu := -1;
   G^.HataESP := -1;
-  G^.Durum := gdSonlandiriliyor;
 end;
 
 {==============================================================================
@@ -1047,7 +1053,7 @@ var
   i: TISayi4;
 begin
 
-  while KritikBolgeyeGir(GorevKilit) = False do;
+//  while KritikBolgeyeGir(GorevKilit) = False do;
 
   // bellek giriþlerini görev yapýlarýyla eþleþtir
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do
@@ -1058,7 +1064,7 @@ begin
       Gorevler0.Sonlandir(G^.Kimlik, G^.HataKodu);
   end;
 
-  KritikBolgedenCik(GorevKilit);
+//  KritikBolgedenCik(GorevKilit);
 end;
 
 {==============================================================================

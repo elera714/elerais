@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 23/07/2025
+  Güncelleme Tarihi: 16/04/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -191,7 +191,7 @@ var
   i: TSayi4;
 begin
 
-  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
+//  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
 
   // eðer zamanlayýcý nesnesinin durumu boþ deðil ise
   if not(AZamanlayici = nil) then
@@ -209,7 +209,7 @@ begin
     OlusturulanZamanlayici := i;
   end;
 
-  KritikBolgedenCik(ZamanlayicilarKilit);
+//  KritikBolgedenCik(ZamanlayicilarKilit);
 end;
 
 {==============================================================================
@@ -280,7 +280,7 @@ var
   i: TSayi4;
 begin
 
-  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
+//  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
 
   // tüm zamanlayýcý nesnelerini ara
   for i := 0 to USTSINIR_ZAMANLAYICI - 1 do
@@ -297,7 +297,7 @@ begin
     end;
   end;
 
-  KritikBolgedenCik(ZamanlayicilarKilit);
+//  KritikBolgedenCik(ZamanlayicilarKilit);
 end;
 
 {==============================================================================
@@ -455,7 +455,7 @@ asm
   inc   ecx
   imul  ecx,3
   shl   ecx,3
-  add   ecx,3
+//  add   ecx,3
   mov   @@SECICI,cx
   jmp   @@son
 
@@ -562,7 +562,7 @@ asm
   inc   ecx
   imul  ecx,3
   shl   ecx,3
-  add   ecx,3
+//  add   ecx,3
   mov   @@SECICI,cx
   jmp   @@son
 

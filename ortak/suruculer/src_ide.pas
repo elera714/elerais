@@ -354,7 +354,7 @@ begin
   //SISTEM_MESAJ(RENK_SIYAH, 'ASektorSayisi: %d', [ASektorSayisi]);
   //SISTEM_MESAJ(RENK_SIYAH, 'ABellek: %d', [TSayi4(ABellek)]);
 
-  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
+//  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
 
   // sürücü bilgisine konumlan
   FD := AFizikselSurucu;
@@ -363,7 +363,7 @@ begin
   if(IDEAygitiMesgulMu(@FD^.Aygit)) then
   begin
 
-    KritikBolgedenCik(SektorOkuYazKilit);
+//    KritikBolgedenCik(SektorOkuYazKilit);
     Exit(HATA_AYGITMESGUL);
   end;
 
@@ -436,7 +436,7 @@ begin
 
   until (OkunacakSektorSayisi = 0) or (TekrarSayisi = 3);
 
-  KritikBolgedenCik(SektorOkuYazKilit);
+//  KritikBolgedenCik(SektorOkuYazKilit);
 
   Result := SektorIS;
 end;

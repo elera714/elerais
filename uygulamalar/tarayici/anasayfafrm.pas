@@ -42,7 +42,7 @@ var
   Port: TSayi4;
   VeriUzunlugu: TSayi4;
   SayfaIstendi: Boolean;
-  Veriler: array[0..4095] of TSayi1;
+  Veriler: array[0..(4 * 4096) - 1] of TSayi1;    // 4Kb bellek
 
 // bu iþlev rtl'de problem çýkardýðý için ilgili yere eklenmemiþtir
 function StrToInt(const ADeger: string): TSayi4;

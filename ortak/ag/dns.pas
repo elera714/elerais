@@ -161,6 +161,8 @@ var
   B4: PSayi4;
 begin
 
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DNS paket işleme', []);
+
   HedefPort := ntohs(AUDPPaket^.HedefPort);
   Uzunluk := ntohs(AUDPPaket^.Uzunluk) - 8;
 
@@ -277,8 +279,12 @@ begin
     if not(DNS^.FBaglanti = nil) then
     begin
 
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'merhaba4', []);
+
       if(Baglantilar0.Baglan(DNS^.FKimlik, btYayin) <> -1) then
       begin
+
+        SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'merhaba3', []);
 
         Baglantilar0.Yaz(DNS^.FKimlik, @DNSPaket[0], 12 + ToplamUzunluk + 4);
 

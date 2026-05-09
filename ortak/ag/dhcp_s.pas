@@ -180,7 +180,7 @@ var
   IstemciAdi, SaticiSTanitici: string;
 begin
 
-  while KritikBolgeyeGir(DHCPSunucuKilit) = False do;
+//  while KritikBolgeyeGir(DHCPSunucuKilit) = False do;
 
   IstenenIPAdres.Sifirla;
   MACAdres.Sifirla;
@@ -275,7 +275,7 @@ begin
     end;
   end;
 
-  KritikBolgedenCik(DHCPSunucuKilit);
+//  KritikBolgedenCik(DHCPSunucuKilit);
 end;
 
 end.

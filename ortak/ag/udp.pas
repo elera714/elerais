@@ -67,11 +67,11 @@ begin
     DNSPaketleriniIsle(UDPPaket)
 
   // verileri dhcp sunucu protokolüne yönlendir
-  {$IFDEF SISTEM_SUNUCU}
+//  {$IFDEF SISTEM_SUNUCU}
   else if(HedefPort = 67) then
 
     DHCPSunucu0.DHCPSunucuPaketleriniIsle(@UDPPaket^.Veri)
-  {$ENDIF}
+//  {$ENDIF}
   // verileri dhcp istemci protokolüne yönlendir
   else if(HedefPort = 68) then
 

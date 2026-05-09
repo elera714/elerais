@@ -6,7 +6,7 @@
   Dosya Adý: src_pcnet32.pas
   Dosya Ýþlevi: PCNET32 að (network) sürücüsü
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 09/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -25,7 +25,12 @@ type
     BellekDegeri: TSayi4;
     IRQNo: TSayi1;
     CipSurum: TSayi4;
-    CipAdi: PChar;
+    CipAdi: string;
+    Secenekler: TSayi4;
+    FullDuplex: TSayi4;
+    FDX: TSayi4;
+    MII: TSayi4;
+    FSET: TSayi4;
     MACAdres: TMACAdres;
   end;
 
@@ -36,7 +41,7 @@ function Yukle(APCI: PPCI): TISayi4;
 procedure VeriAl(ABellek: Isaretci; var AVeriUzunlugu: TSayi2);
 procedure VeriGonder(AEthernetPaket: PEthernetPaket; AVeriUzunlugu: TSayi2);
 procedure PCNET32YukleniciIslev;
-procedure DMAErisiminiAktiflestir(APCI: PPCI);
+procedure IOVeriYoluYonetiminiEtkinlestir(APCI: PPCI);
 procedure MACAdresiAl;
 
 function WIOCSROku(ASiraNo: TSayi4): TSayi4;
@@ -62,6 +67,17 @@ implementation
 uses gercekbellek, irq, genel, islevler, sistemmesaj;
 
 const
+  PCNET32_PORT_AUI        = $00;
+  PCNET32_PORT_10BT       = $01;
+  PCNET32_PORT_GPSI       = $02;
+  PCNET32_PORT_MII        = $03;
+  PCNET32_PORT_PORTSEL    = $03;
+  PCNET32_PORT_ASEL       = $04;
+  PCNET32_PORT_100        = $40;
+  PCNET32_PORT_FD         = $80;
+  PCNET32_DMA_MASK        = $FFFFFFFF;
+
+
   PCNET32_WIO_RDP         = $10;
   PCNET32_WIO_RAP         = $12;
   PCNET32_WIO_RESET       = $14;
@@ -178,15 +194,15 @@ var
   BirSonrakiGelisSiraNo: TSayi4;
 
 const
-  CipAdi2420        = 'AMD PCI 79C970';
-  CipAdi2430        = 'AMD PCI 79C970';
-  CipAdi2621        = 'AMD PCI II 79C970A';
-  CipAdi2623        = 'AMD FAST 79C971';
-  CipAdi2624        = 'AMD FAST+ 79C972';
-  CipAdi2625        = 'AMD FAST III 79C973';
-  CipAdi2626        = 'AMD Home 79C978';
-  CipAdi2627        = 'AMD FAST III 79C975';
-  CipAdiBilinmiyor  = 'Bilinmeyen Çip';
+  CipAdi2420        : string = 'AMD PCI 79C970';
+  CipAdi2430        : string = 'AMD PCI 79C970';
+  CipAdi2621        : string = 'AMD PCI II 79C970A';
+  CipAdi2623        : string = 'AMD FAST 79C971';
+  CipAdi2624        : string = 'AMD FAST+ 79C972';
+  CipAdi2625        : string = 'AMD FAST III 79C973';    // !
+  CipAdi2626        : string = 'AMD Home 79C978';
+  CipAdi2627        : string = 'AMD FAST III 79C975';
+  CipAdiBilinmiyor  : string = 'Bilinmeyen Çip';
 
 type
   TCSROku = function(ASiraNo: TSayi4): TSayi4;
@@ -262,9 +278,6 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 IRQ: $%x', [AygitPCNET32.IRQNo]);
   {$ENDIF}
 
-  // DMA eriþimini aktifleþtir
-  DMAErisiminiAktiflestir(APCI);
-
   // çipi resetle (16 bit)
   WIOSifirla;
 
@@ -282,13 +295,7 @@ begin
     RAPOku  := @WIORAPOku;
     RAPYaz  := @WIORAPYaz;
     Sifirla := @WIOSifirla;
-
-    { TODO - yeniden baþlatýldýðýnda GeciciDeger := '3'; alanýna düþülmektedir }
-    // ilk çalýþtýrmada 16 bitlik olarak yükleniyor
-    // vm yeniden baþlatýldýðýnda aygýt yeniden yüklenemiyor
-    // GeciciDeger := '1';
   end
-
   // eðer 32 bit ise iþlevleri belirle
   else
   begin
@@ -309,13 +316,9 @@ begin
       RAPOku  := @DWIORAPOku;
       RAPYaz  := @DWIORAPYaz;
       Sifirla := @DWIOSifirla;
-
-      //GeciciDeger := '2';
     end
     else
     begin
-
-      //GeciciDeger := '3';
 
       {$IFDEF PCNET32_BILGI}
       SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'PCNET32: aygýt mevcut deðil(1)!', []);
@@ -324,13 +327,12 @@ begin
     end;
   end;
 
-  GeciciDeger := '4';
-
   // çip sürüm bilgisini al
-  AygitPCNet32.CipSurum := (CSROku(CIP_KIMLIK_UST) shl 16);
-  AygitPCNet32.CipSurum += CSROku(CIP_KIMLIK_ALT);
+  i := CSROku(CIP_KIMLIK_ALT);
+  j := CSROku(CIP_KIMLIK_UST) shl 16;
+  i := i or j;
 
-  if((AygitPCNet32.CipSurum and $3) = 0) then
+  if((i and 3) <> 3) then
   begin
 
     {$IFDEF PCNET32_BILGI}
@@ -339,10 +341,9 @@ begin
     Exit;
   end;
 
-  AygitPCNet32.CipSurum := (AygitPCNet32.CipSurum shr 12) and $FFFF;
+  AygitPCNet32.CipSurum := (i shr 12) and $FFFF;
 
   case AygitPCNet32.CipSurum of
-
     $2420:  AygitPCNet32.CipAdi := CipAdi2420;
     $2430:  AygitPCNet32.CipAdi := CipAdi2430;
     $2621:  AygitPCNet32.CipAdi := CipAdi2621;
@@ -355,11 +356,34 @@ begin
   end;
 
   {$IFDEF PCNET32_BILGI}
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'PCNET32 çip sürüm: $%.4x', [AygitPCNET32.CipSurum]);
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'PCNET32 çip adý: %s', [AygitPCNET32.CipAdi]);
   {$ENDIF}
 
+  AygitPCNet32.FDX := 0;
+  AygitPCNet32.MII := 0;
+  AygitPCNet32.FSET := 0;
+
+  if(AygitPCNet32.CipSurum = $2621) then
+  begin
+
+    AygitPCNet32.FDX := 1;
+  end
+  else if(AygitPCNet32.CipSurum = $2625) then
+  begin
+
+    AygitPCNet32.FDX := 1;
+    AygitPCNet32.MII := 1;
+  end;
+
+  // pci i/o space ve bus master bayraklarýný etkinleþtir
+  IOVeriYoluYonetiminiEtkinlestir(APCI);
+
   // aygýtýn mac adresini al
   MACAdresiAl;
+
+  AygitPCNet32.Secenekler := PCNET32_PORT_ASEL;
+  AygitPCNet32.FullDuplex := 1;
 
   // init_block içeriðini doldur
   BlokYukle._Mod := $80;
@@ -400,16 +424,31 @@ begin
   // IRQ kanalýný aktifleþtir
   IRQIsleviAta(AygitPCNet32.IRQNo, @PCNET32YukleniciIslev);
 
+  // aygýt sýfýrlama iþlemleri
+
   // aygýtý sýfýrla
   Sifirla;
 
   // 32 bit mod'a geç
   BCRYaz(20, 2);
 
-  // full duplex
-  j := BCROku(9);
-  j := (j and (not 3)) or 1;
-  BCRYaz(9, j);
+  // otomatik seçim bitinin deðer almasý
+  j := BCROku(2);
+  j := (j and (not 2));
+  if(AygitPCNet32.Secenekler <> PCNET32_PORT_ASEL) then j := j or 2;
+  BCRYaz(2, j);
+
+  if(AygitPCNet32.FullDuplex = 1) then
+  begin
+
+    j := BCROku(9);
+    j := (j and (not 3));
+    j := j or 1;
+    BCRYaz(9, j);
+  end;
+
+  j := CSROku(124);
+  CSRYaz(124, j);
 
   CSRYaz(INIT_BLOCK_ADDRESS_LOW, TSayi4(@BlokYukle) and $FFFF);
   CSRYaz(INIT_BLOCK_ADDRESS_HIGH, (TSayi4(@BlokYukle) shr 16) and $FFFF);
@@ -424,7 +463,9 @@ begin
     if((j and CSR_IDON) <> 0) then Break;
   end;
 
-  CSRYaz(0, CSR_IENA or CSR_STRT);
+  CSRYaz(0, {CSR_IENA or} CSR_STRT);
+
+  j := CSROku(0);
 
   // aygýtý yüklendi olarak iþaretle
   PCNET32Yuklendi := True;
@@ -535,16 +576,19 @@ begin
 end;
 
 {==============================================================================
-  pci aygýtýný DMA'yý direkt eriþim saðlayýcý (bus master) olarak ayarlar
+  pci i/o space ve bus master bayraklarýný etkinleþtirir
  ==============================================================================}
-procedure DMAErisiminiAktiflestir(APCI: PPCI);
+procedure IOVeriYoluYonetiminiEtkinlestir(APCI: PPCI);
 var
-  Deger: TSayi2;
+  Deger,
+  i: TSayi2;
 begin
 
   Deger := PCIAygiti0.Oku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
-  if((Deger and 4) = 4) then Exit;
-  PCIAygiti0.Yaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger and 4));
+
+  i := 4 or 1;        // 4 = bus master, 1 = i/o space
+  if((Deger and i) = i) then Exit;
+  PCIAygiti0.Yaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger or i));
 end;
 
 {==============================================================================

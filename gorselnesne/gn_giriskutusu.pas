@@ -6,7 +6,7 @@
   Dosya Adý: gn_giriskutusu.pas
   Dosya Ýþlevi: giriþ kutusu (TEdit) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 16/04/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -268,6 +268,9 @@ begin
   // giriþ kutusunun çizim alan koordinatlarýný al
   CizimAlani := GirisKutusu^.FCizimAlani;
 
+  // nesne odaklanýlmýþ ise nesnenin kenarlarýný iþaretle
+  if(GirisKutusu^.Odaklanildi) then GirisKutusu^.Dikdortgen(GirisKutusu, ctNokta, CizimAlani, RENK_SIYAH);
+
   // nesnenin içerik deðeri.
   if(GirisKutusu^.Yazilamaz) then
 
@@ -393,6 +396,42 @@ begin
 
       GirisKutusu^.Ciz;
     end;
+  end
+
+
+  // nesnenin odaðý kaybetmesi durumu
+  else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
+  begin
+
+    // giriþ kutusu nesnesinin sahibi olan pencere en üstte mi ? kontrol et
+    Pencere := EnUstPencereNesnesiniAl(GirisKutusu);
+
+    // en üstte olmamasý durumunda en üste getir
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak iþaretle
+    Pencere^.FAktifNesne := nil;
+    GirisKutusu^.Odaklanildi := False;
+
+    // giriþ kutusu nesnesini yeniden çiz
+    GirisKutusu^.Ciz;
+  end
+  // nesnenin odaðý yeniden kazanmasý durumu
+  else if(AOlay.Olay = CO_ODAKKAZANILDI) then
+  begin
+
+    // giriþ kutusu nesnesinin sahibi olan pencere en üstte mi ? kontrol et
+    Pencere := EnUstPencereNesnesiniAl(GirisKutusu);
+
+    // en üstte olmamasý durumunda en üste getir
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+
+    // ve nesneyi aktif nesne olarak iþaretle
+    Pencere^.FAktifNesne := GirisKutusu;
+    GirisKutusu^.Odaklanildi := True;
+
+    // giriþ kutusu nesnesini yeniden çiz
+    GirisKutusu^.Ciz;
   end;
 
   // geçerli fare göstergesini güncelle
