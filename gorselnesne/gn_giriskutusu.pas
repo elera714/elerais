@@ -6,7 +6,7 @@
   Dosya Adý: gn_giriskutusu.pas
   Dosya Ýþlevi: giriþ kutusu (TEdit) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 16/04/2026
+  Güncelleme Tarihi: 19/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -201,7 +201,7 @@ begin
   GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(AKimlik));
   if(GirisKutusu = nil) then Exit;
 
-  GirisKutusu^.FSilmeDugmesi^.YokEt(GirisKutusu^.FSilmeDugmesi^.Kimlik);
+  GorselNesneler0.AtaNesnedenCikar(GirisKutusu^.FSilmeDugmesi);
 
   inherited YokEt(AKimlik);
 end;

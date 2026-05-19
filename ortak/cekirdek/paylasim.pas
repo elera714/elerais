@@ -103,7 +103,7 @@ const
 
   BELLEK_HARITA_ADRESI: PSayi4 = PSayi4($510000);
 
-  SISTEM_ESP        = $300000 + $1000;
+  SISTEM_ESP        = $400000 - $100;
 
   // program için ESP bellek adresi ve ESP uzunluðu
   // $2000 (GOREV3_ESP_U) * $20 (USTSINIR_GOREVSAYISI) = $40000
@@ -183,7 +183,6 @@ type
     function IPAgAraligiIcinde(AAgIPAdresi: TIPAdres): Boolean;
     class operator = (const IP1, IP2: TIPAdresIslev): Boolean;
   end;
-
 
 type
   PMACAdres = ^TMACAdres;

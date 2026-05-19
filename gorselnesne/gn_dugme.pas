@@ -6,7 +6,7 @@
   Dosya Adý: gn_dugme.pas
   Dosya Ýþlevi: düðme (TButton) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 13/04/2026
+  Güncelleme Tarihi: 19/05/2026
 
  ==============================================================================}
 {$mode objfpc}

@@ -292,7 +292,7 @@ begin
   if(DosyaBellek = nil) then
   begin
 
-    if not(GeciciDosyaBellek = nil) then FreeMem(GeciciDosyaBellek);
+    if not(GeciciDosyaBellek = nil) then FreeMem(GeciciDosyaBellek, DosyaUyari.Uzunluk);
 
     SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
     KritikBolgedenCik(GorevKilit);
@@ -303,7 +303,7 @@ begin
   Tasi2(GeciciDosyaBellek, DosyaBellek, DosyaUyari.Uzunluk);
 
   // programýn kopyalandýðý önceki belleði serbest býrak
-  if not(GeciciDosyaBellek = nil) then FreeMem(GeciciDosyaBellek);
+  if not(GeciciDosyaBellek = nil) then FreeMem(GeciciDosyaBellek, DosyaUyari.Uzunluk);
 
   // boþ iþlem giriþi bul
   G := Gorevler0.Olustur;
@@ -762,11 +762,10 @@ begin
   // göreve ait olay bellek bölgesini iptal et
   { TODO : 1. bu iþlev olay yönetim sistem nesnesinin içerisine dahil edilecek
            2. olay bellek bölgesi iptal edilmeden önce önceden oluþturulan olaylar da kayýtlardan çýkarýlacak }
-  //FreeMem(Gorev^.OlayBellekAdresi, 4096);
   FreeMem(G^.OlayBellekAdresi, 4096);
 
   // görev için ayrýlan bellek bölgesini serbest býrak
-  FreeMem(Isaretci(G^.BellekBaslangicAdresi), G^.BellekUzunlugu);
+  FreeMem(Isaretci(G^.BellekBaslangicAdresi), G^.BellekUzunlugu + G^.YiginBellekUzunlugu);
 
   // görevi iþlem listesinden çýkart
   Gorev[G^.Kimlik] := nil;

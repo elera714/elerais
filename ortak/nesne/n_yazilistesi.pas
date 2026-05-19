@@ -221,7 +221,7 @@ begin
   Uzunluk := Length(ADeger);
 
   // 4 byte yazı rengi + 1 byte yazı uzunluk değeri
-  if(Uzunluk = 0) or (Uzunluk + (4 + 1) > BellekUzunlugu) then Exit(-1);
+  if(Uzunluk = 0) or (TISayi4(Uzunluk + (4 + 1)) > BellekUzunlugu) then Exit(-1);
 
   // yazı uzunluğunu kaydet
   p := MevcutBellekAdresi;
@@ -238,7 +238,7 @@ begin
   MevcutBellekAdresi := MevcutBellekAdresi + Uzunluk + (4 + 1);
 
   // bellek kapasitesini azalt
-  BellekUzunlugu := BellekUzunlugu - (Uzunluk + (4 + 1));
+  BellekUzunlugu := BellekUzunlugu - TISayi4((Uzunluk + (4 + 1)));
 
   // eleman sayısını 1 artır
   Inc(FElemanSayisi);

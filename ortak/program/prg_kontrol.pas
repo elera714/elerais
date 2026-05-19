@@ -14,14 +14,18 @@ unit prg_kontrol;
 
 interface
 
-uses paylasim, genel, gn_pencere, gn_islemgostergesi, gorselnesne, sistemmesaj, dosya;
+uses paylasim, genel, gn_pencere, gn_islemgostergesi, gorselnesne, gn_masaustu,
+  sistemmesaj, dosya;
 
 procedure KontrolYonetimi;
 procedure NesneKontrol;
 
 implementation
 
-uses sistem;
+uses sistem, donusum;
+
+var
+  ResimNo: TSayi4 = 1;
 
 // rutin kontrol denetimlerin yapýldýðý nokta
 procedure KontrolYonetimi;
@@ -156,6 +160,7 @@ procedure NesneKontrol;
 var
   G: PGorselNesne;
   i, j, k: TKimlik;
+  Masaustu: PMasaustu;
 begin
 
   j := 0;
@@ -173,6 +178,13 @@ begin
   end;
 
   SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Son GN SN: %d, Toplam GN: %d', [k, j]);
+
+  Masaustu := GAktifMasaustu;
+  //Masaustu^.MasaustuResminiDegistir('disk1:\resimler\' + IntToStr(ResimNo) + '.bmp');
+
+  Inc(ResimNo);
+  if(ResimNo > 7) then ResimNo := 1;
+
 
 {  for i := 0 to USTSINIR_GORSELNESNE - 1 do
   begin

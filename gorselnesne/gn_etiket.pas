@@ -6,7 +6,7 @@
   Dosya Adı: gn_etiket.pas
   Dosya İşlevi: etiket (TLabel) nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 19/05/2026
 
  ==============================================================================}
 {$mode objfpc}

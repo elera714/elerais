@@ -77,7 +77,7 @@ implementation
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
   src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci,
-  sistem, src_pcnet32;
+  sistem, src_pcnet32, gn_giriskutusu;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -219,6 +219,7 @@ var
 procedure SistemAnaKontrol;
 var
   Gorev: PGorev = nil;
+  TestGK: PGirisKutusu;
   TusDegeri, IRR: TSayi2;
   TusKontrolDegeri: TSayi1;
   TusKarakterDegeri: char;
@@ -331,6 +332,11 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
+            TestGK := TestGK^.Olustur(ktNesne, SonOlusturulanP, 2, 2, 100, 20, 'M');
+            TestGK^.Goster;
+            SonOlusturulanP^.Guncelle;
+
+
             //elr1.SistemKlasorleriniOlustur;
 
             {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
@@ -343,7 +349,7 @@ begin
 
             //Gorevler0.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
 
-            dosya.AssignFile(DosyaKimlik, 'disk2:\yazma_deneme.ini');
+            {dosya.AssignFile(DosyaKimlik, 'disk2:\yazma_deneme.ini');
             dosya.Append(DosyaKimlik);
             if(dosya.IOResult <> HATA_DOSYA_ISLEM_BASARILI) then dosya.ReWrite(DosyaKimlik);
 
@@ -351,7 +357,7 @@ begin
             Inc(ii);
             //Write(DosyaKimlik, Isaretci(60*1024*1024), 2359350);
 
-            dosya.CloseFile(DosyaKimlik);
+            dosya.CloseFile(DosyaKimlik);}
 
             //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
 
@@ -429,9 +435,9 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
-            //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'PCNET32 çip adý: %s', [AygitPCNET32.CipAdi]);
-            SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'PCNET32 MAC Adres: ', AygitPCNET32.MACAdres);
-
+            TestGK^.YokEt(TestGK^.Kimlik);
+            SonOlusturulanP^.Guncelle;
+            //Gorevler0.Calistir('disk1:\dskgor.c', CALISMA_SEVIYE3)
             //elr1.SistemKlasorleriniSil;
 
             {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');

@@ -6,7 +6,7 @@
   Dosya Adı: giysi.pas
   Dosya İşlevi: giysi (skin) işlevlerini yönetir
 
-  Güncelleme Tarihi: 07/08/2025
+  Güncelleme Tarihi: 14/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -85,17 +85,17 @@ type
   PGiysiler = ^TGiysiler;
   TGiysiler = object
   private
-    FToplamGiysi,
-    FAktifGiysiSN: TSayi4;
+    FToplamGiysi: TSayi4;
+    FAktifGiysiSN: TISayi4;
     FAktifGiysi: PGiysi;
     FGiysiListesi: array[0..USTSINIR_GIYSI - 1] of PGiysi;
-    function GiysiAl(ASiraNo: TSayi4): PGiysi;
-    procedure GiysiYaz(ASiraNo: TSayi4; AGiysi: PGiysi);
+    function GiysiAl(ASiraNo: TISayi4): PGiysi;
+    procedure GiysiYaz(ASiraNo: TISayi4; AGiysi: PGiysi);
   public
     procedure Yukle;
     property ToplamGiysi: TSayi4 read FToplamGiysi;
-    property Giysi[ASiraNo: TSayi4]: PGiysi read GiysiAl write GiysiYaz;
-    property AktifGiysiSN: TSayi4 read FAktifGiysiSN write FAktifGiysiSN;
+    property Giysi[ASiraNo: TISayi4]: PGiysi read GiysiAl write GiysiYaz;
+    property AktifGiysiSN: TISayi4 read FAktifGiysiSN write FAktifGiysiSN;
     property AktifGiysi: PGiysi read FAktifGiysi write FAktifGiysi;
   end;
 
@@ -120,7 +120,7 @@ begin
   AktifGiysi := Giysi[AktifGiysiSN];
 end;
 
-function TGiysiler.GiysiAl(ASiraNo: TSayi4): PGiysi;
+function TGiysiler.GiysiAl(ASiraNo: TISayi4): PGiysi;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -129,7 +129,7 @@ begin
   else Result := nil;
 end;
 
-procedure TGiysiler.GiysiYaz(ASiraNo: TSayi4; AGiysi: PGiysi);
+procedure TGiysiler.GiysiYaz(ASiraNo: TISayi4; AGiysi: PGiysi);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et

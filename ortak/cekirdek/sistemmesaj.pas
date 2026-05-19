@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 29/07/2025
+  Güncelleme Tarihi: 15/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -77,7 +77,7 @@ function UzunlukAl16(ADeger: TSayi4): TSayi4;
 
 implementation
 
-uses genel, cmos, donusum;
+uses genel, cmos, donusum, zamanlayici;
 
 {==============================================================================
   oluşturulacak mesajların ana yükleme işlevlerini içerir
@@ -130,7 +130,7 @@ begin
 
   if not(ServisCalisiyor) then Exit;
 
-  while KritikBolgeyeGir(SistemMesajKilit) = False do;
+//  while KritikBolgeyeGir(SistemMesajKilit) = False do;
 
   // kaydedilecek mesaj sıra numarasını belirle
   Inc(FMesajSN);
@@ -177,7 +177,7 @@ begin
   Inc(i);
   FToplamMesaj := i;
 
-  KritikBolgedenCik(SistemMesajKilit);
+//  KritikBolgedenCik(SistemMesajKilit);
 end;
 
 {==============================================================================
@@ -189,7 +189,7 @@ var
   i: TSayi4;
 begin
 
-  while KritikBolgeyeGir(SistemMesajKilit) = False do;
+//  while KritikBolgeyeGir(SistemMesajKilit) = False do;
 
   FMesajSN := 0;
   FToplamMesaj := 0;
@@ -206,7 +206,7 @@ begin
     end;
   end;
 
-  KritikBolgedenCik(SistemMesajKilit);
+//  KritikBolgedenCik(SistemMesajKilit);
 end;
 
 {==============================================================================

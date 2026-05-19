@@ -60,6 +60,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 var
   GAktifPencere: PPencere = nil;        // aktif olan pencere
+  SonOlusturulanP: PPencere = nil;
 
 implementation
 
@@ -376,6 +377,8 @@ begin
     Result := nil;
     Exit;
   end;
+
+  if(Pencere^.Baslik[1] = 'T') then SonOlusturulanP := Pencere;
 
   // nesne adresini geri döndür
   Result := Pencere;

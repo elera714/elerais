@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 10/09/2025
+  Güncelleme Tarihi: 19/05/2026
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -201,7 +201,7 @@ var
   i: TSayi4;
 begin
 
-  while KritikBolgeyeGir(GorselNesnelerKilit) = False do;
+//  while KritikBolgeyeGir(GorselNesnelerKilit) = False do;
 
   // tüm nesneleri ara
   for i := 0 to USTSINIR_GORSELNESNE - 1 do
@@ -226,7 +226,7 @@ begin
       // oluþturulmuþ nesne sayýsýný 1 artýr
       Inc(FToplamGNSayisi);
 
-      KritikBolgedenCik(GorselNesnelerKilit);
+//      KritikBolgedenCik(GorselNesnelerKilit);
 
       // geri dönecek deðer
       Result := GN;
@@ -235,7 +235,7 @@ begin
     end;
   end;
 
-  KritikBolgedenCik(GorselNesnelerKilit);
+//  KritikBolgedenCik(GorselNesnelerKilit);
 
   Result := nil;
 end;
@@ -247,9 +247,43 @@ procedure TGorselNesneler.YokEt(AKimlik: TKimlik);
 var
   i: TKimlik;
   GN: PGorselNesne;
+
+  procedure Mesaj(AKimlik: TKimlik);
+  begin
+
+    case GN^.NesneTipi of
+      //gntAcilirMenu     :
+      gntAracCubugu     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntAracCubugu', []);
+      gntBaglanti       : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntBaglanti', []);
+      gntDefter         : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDefter', []);
+      gntDegerDugmesi   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDegerDugmesi', []);
+      gntDegerListesi   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDegerListesi', []);
+      gntDugme          : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDugme', []);
+      gntDurumCubugu    : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDurumCubugu', []);
+      gntEtiket         : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntEtiket', []);
+      gntGirisKutusu    : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntGirisKutusu', []);
+      gntGucDugmesi     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntGucDugmesi', []);
+      gntIslemGostergesi: SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntIslemGostergesi', []);
+      gntIzgara         : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntIzgara', []);
+      gntKarmaListe     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntKarmaListe', []);
+      gntKaydirmaCubugu : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntKaydirmaCubugu', []);
+      gntListeGorunum   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntListeGorunum', []);
+      gntListeKutusu    : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntListeKutusu', []);
+      //gntMasaustu;
+      //gntMenu;
+      gntOnayKutusu     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntOnayKutusu', []);
+      gntPanel          : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntPanel', []);
+      gntPencere        : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntPencere', []);
+      gntRenkSecici     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntRenkSecici', []);
+      gntResim          : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntResim', []);
+      gntResimDugmesi   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntResimDugmesi', []);
+      gntSayfaKontrol   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntSayfaKontrol', []);
+      gntSecimDugmesi   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntSecimDugmesi', []);
+    end;
+  end;
 begin
 
-  while KritikBolgeyeGir(GorselNesnelerKilit) = False do;
+//  while KritikBolgeyeGir(GorselNesnelerKilit) = False do;
 
   i := AKimlik shr 10;
 
@@ -257,6 +291,8 @@ begin
   GN := GorselNesne[i];
   if not(GN = nil) then
   begin
+
+    Mesaj(GN^.Kimlik);
 
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: %s', [GN^.NesneAdi]);
 
@@ -267,7 +303,7 @@ begin
     //Result := True;
   end; //else Result := False;
 
-  KritikBolgedenCik(GorselNesnelerKilit);
+//  KritikBolgedenCik(GorselNesnelerKilit);
 end;
 
 {==============================================================================
@@ -314,7 +350,7 @@ end;
   2. diziyi sola dayalý olarak yeniden sýralar
   3. ata nesnenin alt nesne sayýsýný 1 azaltýr
   4. ata nesne alt nesne sayýsýnýn 0 olmasý durumunda alt nesne için ayrýlan bellek
-     gölgesini serbest býrakarak deðiþken bölgesine nil deðeri atamasý gerçekleþtirir
+     bölgesini serbest býrakarak deðiþken bölgesine nil deðeri atamasý gerçekleþtirir
   5. nesneyi yok eder
  ==============================================================================}
 function TGorselNesneler.AtaNesnedenCikar(AGorselNesne: PGorselNesne): Boolean;
@@ -430,8 +466,6 @@ begin
         Exit(True);
       end;
     end;
-
-    Result := False;
   end;
 end;
 
@@ -543,6 +577,8 @@ begin
 
               GorselNesneler0.AtaNesnedenCikar(GN);
             end;
+
+            FreeMem(Pencere^.AltNesneBellekAdresi, 4096);
           end;
 
           // pencere ve alt görsel nesneler için ayrýlan çizim bellek alanýný yok et
