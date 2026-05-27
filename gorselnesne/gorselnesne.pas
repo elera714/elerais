@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 19/05/2026
+  Güncelleme Tarihi: 27/05/2026
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -247,40 +247,6 @@ procedure TGorselNesneler.YokEt(AKimlik: TKimlik);
 var
   i: TKimlik;
   GN: PGorselNesne;
-
-  procedure Mesaj(AKimlik: TKimlik);
-  begin
-
-    case GN^.NesneTipi of
-      //gntAcilirMenu     :
-      gntAracCubugu     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntAracCubugu', []);
-      gntBaglanti       : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntBaglanti', []);
-      gntDefter         : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDefter', []);
-      gntDegerDugmesi   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDegerDugmesi', []);
-      gntDegerListesi   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDegerListesi', []);
-      gntDugme          : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDugme', []);
-      gntDurumCubugu    : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntDurumCubugu', []);
-      gntEtiket         : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntEtiket', []);
-      gntGirisKutusu    : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntGirisKutusu', []);
-      gntGucDugmesi     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntGucDugmesi', []);
-      gntIslemGostergesi: SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntIslemGostergesi', []);
-      gntIzgara         : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntIzgara', []);
-      gntKarmaListe     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntKarmaListe', []);
-      gntKaydirmaCubugu : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntKaydirmaCubugu', []);
-      gntListeGorunum   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntListeGorunum', []);
-      gntListeKutusu    : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntListeKutusu', []);
-      //gntMasaustu;
-      //gntMenu;
-      gntOnayKutusu     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntOnayKutusu', []);
-      gntPanel          : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntPanel', []);
-      gntPencere        : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntPencere', []);
-      gntRenkSecici     : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntRenkSecici', []);
-      gntResim          : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntResim', []);
-      gntResimDugmesi   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntResimDugmesi', []);
-      gntSayfaKontrol   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntSayfaKontrol', []);
-      gntSecimDugmesi   : SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: gntSecimDugmesi', []);
-    end;
-  end;
 begin
 
 //  while KritikBolgeyeGir(GorselNesnelerKilit) = False do;
@@ -292,14 +258,19 @@ begin
   if not(GN = nil) then
   begin
 
-    Mesaj(GN^.Kimlik);
+    //Mesaj(GN^.Kimlik);
 
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: %s', [GN^.NesneAdi]);
 
-    GorselNesne[i] := nil;
-    FreeMem(GN, 1024);
+    if(AtaNesnedenCikar(GN)) then
+    begin
 
-    Dec(FToplamGNSayisi);
+      GorselNesne[i] := nil;
+      FreeMem(GN, 1024);
+      GN := nil;
+
+      Dec(FToplamGNSayisi);
+    end;
     //Result := True;
   end; //else Result := False;
 
@@ -337,7 +308,7 @@ begin
     PPGorselNesne(AAtaNesne^.AltNesneBellekAdresi)[AAtaNesne^.AltNesneSayisi] := AGorselNesne;
 
     // üst nesnenin nesne saysýný 1 artýr
-    AAtaNesne^.FAltNesneSayisi += 1;
+    AAtaNesne^.FAltNesneSayisi := AAtaNesne^.FAltNesneSayisi + 1;
 
     Result := True;
   end;
@@ -351,47 +322,12 @@ end;
   3. ata nesnenin alt nesne sayýsýný 1 azaltýr
   4. ata nesne alt nesne sayýsýnýn 0 olmasý durumunda alt nesne için ayrýlan bellek
      bölgesini serbest býrakarak deðiþken bölgesine nil deðeri atamasý gerçekleþtirir
-  5. nesneyi yok eder
  ==============================================================================}
 function TGorselNesneler.AtaNesnedenCikar(AGorselNesne: PGorselNesne): Boolean;
 var
   AGN, GN: PGorselNesne;
   GNBellekAdresi: PPGorselNesne;
   i, j: TSayi4;
-
-  procedure NesneyiYokEt(AKimlik: TKimlik);
-  begin
-
-    case GN^.NesneTipi of
-      //gntAcilirMenu     :
-      gntAracCubugu     : PAracCubugu(GN)^.YokEt(AKimlik);
-      gntBaglanti       : PBaglanti(GN)^.YokEt(AKimlik);
-      gntDefter         : PDefter(GN)^.YokEt(AKimlik);
-      gntDegerDugmesi   : PDegerDugmesi(GN)^.YokEt(AKimlik);
-      gntDegerListesi   : PDegerListesi(GN)^.YokEt(AKimlik);
-      gntDugme          : PDugme(GN)^.YokEt(AKimlik);
-      gntDurumCubugu    : PDurumCubugu(GN)^.YokEt(AKimlik);
-      gntEtiket         : PEtiket(GN)^.YokEt(AKimlik);
-      gntGirisKutusu    : PGirisKutusu(GN)^.YokEt(AKimlik);
-      gntGucDugmesi     : PGucDugmesi(GN)^.YokEt(AKimlik);
-      gntIslemGostergesi: PIslemGostergesi(GN)^.YokEt(AKimlik);
-      gntIzgara         : PIzgara(GN)^.YokEt(AKimlik);
-      gntKarmaListe     : PKarmaListe(GN)^.YokEt(AKimlik);
-      gntKaydirmaCubugu : PKaydirmaCubugu(GN)^.YokEt(AKimlik);
-      gntListeGorunum   : PListeGorunum(GN)^.YokEt(AKimlik);
-      gntListeKutusu    : PListeKutusu(GN)^.YokEt(AKimlik);
-      //gntMasaustu;
-      //gntMenu;
-      gntOnayKutusu     : POnayKutusu(GN)^.YokEt(AKimlik);
-      gntPanel          : PPanel(GN)^.YokEt(AKimlik);
-      gntPencere        : PPencere(GN)^.YokEt(AKimlik);
-      gntRenkSecici     : PRenkSecici(GN)^.YokEt(AKimlik);
-      gntResim          : PResim(GN)^.YokEt(AKimlik);
-      gntResimDugmesi   : PResimDugmesi(GN)^.YokEt(AKimlik);
-      gntSayfaKontrol   : PSayfaKontrol(GN)^.YokEt(AKimlik);
-      gntSecimDugmesi   : PSecimDugmesi(GN)^.YokEt(AKimlik);
-    end;
-  end;
 begin
 
   Result := False;
@@ -413,8 +349,6 @@ begin
       // alt nesne bellek adresini serbest býrak
       FreeMem(AGN^.AltNesneBellekAdresi, 4096);
       AGN^.AltNesneBellekAdresi := nil;
-
-      NesneyiYokEt(GN^.Kimlik);
 
       Exit(True);
     end;
@@ -451,7 +385,9 @@ begin
         end;
 
         // alt nesne sayýsýný bir azalt
-        AGN^.FAltNesneSayisi -= -1;
+        j := AGN^.FAltNesneSayisi;
+        Dec(j);
+        AGN^.FAltNesneSayisi := j;
 
         // alt nesne sayýsýnýn 0 olmasý durumunda bellek adresini serbest býrak
         if(AGN^.AltNesneSayisi = 0) then
@@ -460,8 +396,6 @@ begin
           FreeMem(AGN^.AltNesneBellekAdresi, 4096);
           AGN^.AltNesneBellekAdresi := nil;
         end;
-
-        NesneyiYokEt(GN^.Kimlik);
 
         Exit(True);
       end;
@@ -532,7 +466,42 @@ var
   Masaustu: PMasaustu;
   Pencere,
   GN, GN2: PGorselNesne;
-  i, j, k: TSayi4;
+  i, j, k,
+  ANSayisi: TSayi4;
+
+  procedure NesneyiYokEt(ANesne: PGorselNesne);
+  begin
+
+    case ANesne^.NesneTipi of
+      //gntAcilirMenu     :
+      gntAracCubugu     : PAracCubugu(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntBaglanti       : PBaglanti(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntDefter         : PDefter(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntDegerDugmesi   : PDegerDugmesi(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntDegerListesi   : PDegerListesi(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntDugme          : PDugme(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntDurumCubugu    : PDurumCubugu(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntEtiket         : PEtiket(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntGirisKutusu    : PGirisKutusu(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntGucDugmesi     : PGucDugmesi(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntIslemGostergesi: PIslemGostergesi(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntIzgara         : PIzgara(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntKarmaListe     : PKarmaListe(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntKaydirmaCubugu : PKaydirmaCubugu(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntListeGorunum   : PListeGorunum(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntListeKutusu    : PListeKutusu(ANesne)^.YokEt(ANesne^.Kimlik);
+      //gntMasaustu;
+      //gntMenu;
+      gntOnayKutusu     : POnayKutusu(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntPanel          : PPanel(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntPencere        : PPencere(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntRenkSecici     : PRenkSecici(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntResim          : PResim(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntResimDugmesi   : PResimDugmesi(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntSayfaKontrol   : PSayfaKontrol(ANesne)^.YokEt(ANesne^.Kimlik);
+      gntSecimDugmesi   : PSecimDugmesi(ANesne)^.YokEt(ANesne^.Kimlik);
+    end;
+  end;
 begin
 
   // geçerli bir masaüstü var mý ?
@@ -555,15 +524,21 @@ begin
         if(Pencere^.GorevKimlik = AGorevKimlik) then
         begin
 
+          // pencere nesnesinin SADECE alt nesnelerini yok et
+          ANSayisi := Pencere^.AltNesneSayisi;
+          ANSayisi := ANSayisi - Pencere^.AltBilesenSayisi;
+
           // pencere nesnesinin alt nesnesi var mý?
-          if(Pencere^.AltNesneSayisi > 0) then
+          if(ANSayisi > 0) then
           begin
 
-            // pencere nesnesinin alt nesnelerini ata nesneden çýkar (yoket)
-            for j := Pencere^.AltNesneSayisi - 1 downto 0 do
+            // pencere nesnesinin alt nesnelerini ata nesneden çýkar (yok et)
+            for j := Pencere^.AltNesneSayisi - 1 downto Pencere^.AltBilesenSayisi do
             begin
 
               GN := PPGorselNesne(Pencere^.AltNesneBellekAdresi)[j];
+
+              // nesnenin panel olmasý durumunda panele ait alt nesneleri yok et
               if(GN^.NesneTipi = gntPanel) and (GN^.AltNesneSayisi > 0) then
               begin
 
@@ -571,21 +546,17 @@ begin
                 begin
 
                   GN2 := PPGorselNesne(GN^.AltNesneBellekAdresi)[k];
-                  GorselNesneler0.AtaNesnedenCikar(GN2);
+                  NesneyiYokEt(GN2);
                 end;
               end;
 
-              GorselNesneler0.AtaNesnedenCikar(GN);
+              // panel nesnesini yok et
+              NesneyiYokEt(GN);
             end;
-
-            FreeMem(Pencere^.AltNesneBellekAdresi, 4096);
           end;
 
-          // pencere ve alt görsel nesneler için ayrýlan çizim bellek alanýný yok et
-          FreeMem(Pencere^.FCizimBellekAdresi, Pencere^.FCizimBellekUzunlugu);
-
-          // pencereyi ata nesneden çýkar
-          GorselNesneler0.AtaNesnedenCikar(Pencere);
+          // pencereyi nesnesini yok et
+          NesneyiYokEt(Pencere);
 
           // bir sonraki döngüye devam etmeden çýk
           Exit;
@@ -687,6 +658,9 @@ begin
 
   GN^.FHiza := hzYok;
   GN^.FHizaAlani := GN^.FCizimAlani;
+
+  // nesnenin alt bileþen sayýsý
+  GN^.AltBilesenSayisi := 0;
 
   // alt nesnelerin bellek adresi (nil = bellek oluþturulmadý)
   GN^.AltNesneBellekAdresi := nil;
@@ -886,7 +860,7 @@ begin
     GN^.BoyutlariYenidenHesapla;
 
     // üst nesnenin yeniden boyutlandýrýlmasý
-    GorselAtaNesne^.FHizaAlani.Sol += GN^.FAtananAlan.Genislik;
+    GorselAtaNesne^.FHizaAlani.Sol := GorselAtaNesne^.FHizaAlani.Sol + GN^.FAtananAlan.Genislik;
   end
   else if(GN^.FHiza = hzUst) then
   begin
@@ -897,7 +871,7 @@ begin
     // nesnenin kendi yüksekliði kullanýlacak
     GN^.BoyutlariYenidenHesapla;
 
-    GorselAtaNesne^.FHizaAlani.Ust += GN^.FAtananAlan.Yukseklik;
+    GorselAtaNesne^.FHizaAlani.Ust := GorselAtaNesne^.FHizaAlani.Ust + GN^.FAtananAlan.Yukseklik;
   end
   else if(GN^.FHiza = hzSag) then
   begin
@@ -910,7 +884,7 @@ begin
     GN^.BoyutlariYenidenHesapla;
 
     // üst nesnenin yeniden boyutlandýrýlmasý
-    GorselAtaNesne^.FHizaAlani.Sag -= GN^.FAtananAlan.Genislik;
+    GorselAtaNesne^.FHizaAlani.Sag := GorselAtaNesne^.FHizaAlani.Sag - GN^.FAtananAlan.Genislik;
   end
   else if(GN^.FHiza = hzAlt) then
   begin
@@ -921,7 +895,7 @@ begin
     // nesnenin kendi yüksekliði kullanýlacak
     GN^.BoyutlariYenidenHesapla;
 
-    GorselAtaNesne^.FHizaAlani.Alt -= GN^.FAtananAlan.Yukseklik;
+    GorselAtaNesne^.FHizaAlani.Alt := GorselAtaNesne^.FHizaAlani.Alt - GN^.FAtananAlan.Yukseklik;
   end
   else if(GN^.FHiza = hzTum) then
   begin
@@ -932,7 +906,7 @@ begin
     GN^.FAtananAlan.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
     GN^.BoyutlariYenidenHesapla;
 
-//    GorselAtaNesne^.FHizaAlani.Alt -= GorselNesne^.FBoyut.Yukseklik;
+//    GorselAtaNesne^.FHizaAlani.Alt := GorselAtaNesne^.FHizaAlani.Alt - GorselNesne^.FBoyut.Yukseklik;
   end else GN^.BoyutlariYenidenHesapla;
 end;
 
@@ -968,15 +942,15 @@ begin
     Result.Alt := 0;
     repeat
 
-      Result.Sol += GorselNesne2^.FKonum.Sol;
-      Result.Ust += GorselNesne2^.FBoyutlar.Ust2;
+      Result.Sol := Result.Sol + GorselNesne2^.FKonum.Sol;
+      Result.Ust := Result.Ust + GorselNesne2^.FBoyutlar.Ust2;
 
       GorselNesne2 := GorselNesne2^.AtaNesne;
       NTip := GorselNesne2^.NesneTipi;
     until (NTip = gntMasaustu) or (NTip = gntPencere) or (NTip = gntMenu) or (NTip = gntAcilirMenu);
 
-    Result.Sol += GorselNesne2^.FAltNesneCizimAlan.Sol;
-    Result.Ust += GorselNesne2^.FAltNesneCizimAlan.Ust;
+    Result.Sol := Result.Sol + GorselNesne2^.FAltNesneCizimAlan.Sol;
+    Result.Ust := Result.Ust + GorselNesne2^.FAltNesneCizimAlan.Ust;
     Result.Sag := Result.Sol + GorselNesne^.FBoyutlar.Genislik2;
     Result.Alt := Result.Ust + GorselNesne^.FBoyut.Yukseklik;}
 
@@ -1054,8 +1028,8 @@ begin
     (GN^.FTuvalNesne^.NesneTipi = gntAcilirMenu) then
   begin
 
-    Alan.Sol += GN^.FTuvalNesne^.FAtananAlan.Sol;
-    Alan.Ust += GN^.FTuvalNesne^.FAtananAlan.Ust;
+    Alan.Sol := Alan.Sol + GN^.FTuvalNesne^.FAtananAlan.Sol;
+    Alan.Ust := Alan.Ust + GN^.FTuvalNesne^.FAtananAlan.Ust;
   end;
 
   Alan.Sag := Alan.Sol + GN^.FCizimAlani.Sag;
@@ -1124,10 +1098,10 @@ begin
   if(Karakter.Yukseklik = 0) or (Karakter.Genislik = 0) then Exit;
 
   // karakterin ASol deðerine yatay tolerans koordinatýný ekle
-  ASol += Karakter.YT;
+  ASol := ASol + Karakter.YT;
 
   // karakterin AUst deðerine dikey tolerans koordinatýný ekle
-  AUst += Karakter.DT;
+  AUst := AUst + Karakter.DT;
 
   // karakterin geniþlik ve yükseklik deðerlerini hesapla
   Genislik := ASol + Karakter.Genislik;
@@ -1186,7 +1160,7 @@ begin
     HarfYaz(AGorselNesne, Ust, AUst, AYazi[Sol], ARenk);
 
     // karakter geniþliðini geniþlik deðerine ekle
-    Ust += 8;
+    Ust := Ust + 8;
   end;
 end;
 
@@ -1224,7 +1198,7 @@ begin
     HarfYaz(AGorselNesne, Sol, Ust, AYazi[i], ARenk);
 
     // karakter geniþliðini geniþlik deðerine ekle
-    Sol += 8;
+    Sol := Sol + 8;
   end;
 end;
 
@@ -1265,7 +1239,7 @@ begin
     HarfYaz(AGorselNesne, Sol, Ust, AKarakterDizi[i], ARenk);
 
     // karakter geniþliðini x deðerine ekle
-    Sol += 8;
+    Sol := Sol + 8;
   end;
 end;
 
@@ -2001,12 +1975,12 @@ begin
     if(TGenislik >= RGenislik) then
       Sol := (TGenislik div 2) - (RGenislik div 2)
     else Sol := 0;
-    Sol += AAlan.Sol;
+    Sol := Sol + AAlan.Sol;
 
     if(TYukseklik >= RYukseklik) then
       Ust := (TYukseklik div 2) - (RYukseklik div 2)
     else Ust := 0;
-    Ust += AAlan.Ust;
+    Ust := Ust + AAlan.Ust;
 
     for Ust2 := 1 to RYukseklik do
     begin

@@ -6,7 +6,7 @@
   Dosya Adý: gn_renksecici.pas
   Dosya Ýþlevi: renk seçim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 26/05/2026
 
  ==============================================================================}
 {$mode objfpc}

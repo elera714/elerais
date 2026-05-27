@@ -6,7 +6,7 @@
   Dosya Adı: src_vesa20.pas
   Dosya İşlevi: genel vesa 2.0 grafik kartı sürücüsü
 
-  Güncelleme Tarihi: 11/05/2025
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -126,7 +126,7 @@ begin
 
   // belirtilen koordinata konumlan
   BellekAdresi := (ADikey * KartBilgisi.SatirdakiByteSayisi) + (AYatay * 2);
-  BellekAdresi += TSayi4(ArkaBellek);
+  BellekAdresi := BellekAdresi + TSayi4(ArkaBellek);
 
   //  noktanın renk değerini al
   Result := PRenk(BellekAdresi)^ and $FFFF;
@@ -151,8 +151,8 @@ begin
   // belirtilen koordinata konumlan
   BellekAdresi := (ADikey * SatirBasinaBitSayisi) + (AYatay * 2);
   if(AGorselNesne = nil) then
-    BellekAdresi += TSayi4(ArkaBellek)
-  else BellekAdresi += TSayi4(AGorselNesne^.FCizimBellekAdresi);
+    BellekAdresi := BellekAdresi + TSayi4(ArkaBellek)
+  else BellekAdresi := BellekAdresi + TSayi4(AGorselNesne^.FCizimBellekAdresi);
 
   // eğer dönüşüm isteniyorsa 24 / 32 bitlik renk değerini
   // 16 bitlik renk değerine çevir
@@ -176,7 +176,7 @@ begin
 
   // belirtilen koordinata konumlan
   BellekAdresi := (ADikey * KartBilgisi.SatirdakiByteSayisi) + (AYatay * 3);
-  BellekAdresi += TSayi4(ArkaBellek);
+  BellekAdresi := BellekAdresi + TSayi4(ArkaBellek);
 
   // noktanın renk değerini al
   Result := PRenk(BellekAdresi)^ and $FFFFFF;
@@ -200,8 +200,8 @@ begin
   // belirtilen koordinata konumlan
   BellekAdresi := (ADikey * SatirBasinaBitSayisi) + (AYatay * 3);
   if(AGorselNesne = nil) then
-    BellekAdresi += TSayi4(ArkaBellek)
-  else BellekAdresi += TSayi4(AGorselNesne^.FCizimBellekAdresi);
+    BellekAdresi := BellekAdresi + TSayi4(ArkaBellek)
+  else BellekAdresi := BellekAdresi + TSayi4(AGorselNesne^.FCizimBellekAdresi);
 
   // noktayı belirtilen renk ile işaretle
   PAdres8 := PByte(BellekAdresi);
@@ -221,7 +221,7 @@ begin
 
   // belirtilen koordinata konumlan
   BellekAdresi := (ADikey * KartBilgisi.SatirdakiByteSayisi) + (AYatay * 4);
-  BellekAdresi += TSayi4(ArkaBellek);
+  BellekAdresi := BellekAdresi + TSayi4(ArkaBellek);
 
   // noktanın renk değerini al
   Result := PRenk(BellekAdresi)^;
@@ -242,7 +242,7 @@ begin
 
   // belirtilen koordinata konumlan
   BellekAdresi := (ADikey * SatirBasinaBitSayisi) + (AYatay * 4);
-  BellekAdresi += TSayi4(AGorselNesne^.FCizimBellekAdresi);
+  BellekAdresi := BellekAdresi + TSayi4(AGorselNesne^.FCizimBellekAdresi);
 
   // noktayı belirtilen renk ile işaretle
   BellekAdresi := ARenk;

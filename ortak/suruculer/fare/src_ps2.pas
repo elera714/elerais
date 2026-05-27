@@ -6,7 +6,7 @@
   Dosya Adı: src_ps2.pas
   Dosya İşlevi: ps / 2 fare sürücüsü
 
-  Güncelleme Tarihi: 23/07/2024
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -193,7 +193,7 @@ begin
       B2 := (((B1 shr 4) and 1) shl 8) or FareVeriBellegi[1];
 
       // özelleştirilebilir yazılımsal hızlandırma
-      FYatayDeger += (B2 * FHiz);
+      FYatayDeger := FYatayDeger + (B2 * FHiz);
 
       // x limit denetimi
       if(FYatayDeger < 0) then
@@ -216,7 +216,7 @@ begin
       else B2 := -B2;
 
       // özelleştirilebilir yazılımsal hızlandırma
-      FDikeyDeger += B2 * (FHiz);
+      FDikeyDeger := FDikeyDeger + (B2 * (FHiz));
 
       // x limit denetimi
       if(FDikeyDeger < 0) then
@@ -230,8 +230,8 @@ begin
       if(FAygitPaketUzunlugu > 3) then
       begin
 
-        FFareDugmeleri += (FareVeriBellegi[3] and 16);
-        FFareDugmeleri += (FareVeriBellegi[3] and 32);
+        FFareDugmeleri := FFareDugmeleri + (FareVeriBellegi[3] and 16);
+        FFareDugmeleri := FFareDugmeleri + (FareVeriBellegi[3] and 32);
 
         if((FareVeriBellegi[3] and 8) = 8) then
           FKaydirmaDegeri := $F0 or (FareVeriBellegi[3] and $F)

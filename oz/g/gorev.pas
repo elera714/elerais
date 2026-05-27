@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 14/01/2026
+  Güncelleme Tarihi: 27/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,8 +28,8 @@ const
   // bir görev için tanýmlanan üst sýnýr olay sayýsý
   // olay belleði 4K olarak tanýmlanmýþtýr. 4096 / SizeOf(TOlay)
   USTSINIR_OLAY         = 64;
-  PROGRAM_YIGIN_BELLEK  = TSayi4(4096 * 5);       // program yýðýný (stack) için ayrýlacak bellek (*4K)
-  DEFTER_BELLEK_U       = TSayi4(4096 * 10);      // defter programý için program belleðinde ayrýlacak alan (*4K)
+  PROGRAM_YIGIN_BELLEK  = TSayi4(5 * 4096);       // program yýðýný (stack) için ayrýlacak bellek (*4K)
+  DEFTER_BELLEK_U       = TSayi4(10 * 4096);      // defter programý için program belleðinde ayrýlacak alan (*4K)
 
 var
   { TODO - object yapýsýnýn içerisine dahil edilecek }
@@ -284,9 +284,12 @@ begin
   ProgramBellekU := ProgramBellekU - 1;
   ProgramBellekU := ((ProgramBellekU shr 12) + 1) shl 12;
 
+  { TODO - fazladan 2K bellek ekleniyor. eklenmediðinde SADECE defter.c yazýlýmý hata veriyor }
+  ProgramBellekU := ProgramBellekU + (2 * 4096);
+
   // dosyanýn çalýþtýrýlmasý için bellekte yer rezerv et
   // defter.c programýna verileri iþlemesi için fazladan 40K yer tahsis et
-  if(DosyaAdi = 'defter.c') then ProgramBellekU += DEFTER_BELLEK_U;
+  if(DosyaAdi = 'defter.c') then ProgramBellekU := ProgramBellekU + DEFTER_BELLEK_U;
 
   GetMem(DosyaBellek, ProgramBellekU + PROGRAM_YIGIN_BELLEK);
   if(DosyaBellek = nil) then
@@ -310,7 +313,7 @@ begin
   if(G = nil) then
   begin
 
-    FreeMem(DosyaBellek);
+    FreeMem(DosyaBellek, ProgramBellekU + PROGRAM_YIGIN_BELLEK);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için görev oluþturulamýyor!', []);
     KritikBolgedenCik(GorevKilit);
     Exit(nil);
@@ -340,7 +343,7 @@ begin
   if(Olay = nil) then
   begin
 
-    FreeMem(DosyaBellek);
+    FreeMem(DosyaBellek, ProgramBellekU + PROGRAM_YIGIN_BELLEK);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: olay bilgisi için bellek ayrýlamýyor!', []);
     KritikBolgedenCik(GorevKilit);
     Exit(nil);
@@ -398,7 +401,7 @@ begin
   PSayi4(DosyaBellek + 32)^ := 0;
   p1 := PChar(DosyaBellek + 32 + 4);
   Tasi2(@TamDosyaYolu[1], p1, Length(TamDosyaYolu));
-  p1 += Length(TamDosyaYolu);
+  p1 := p1 + Length(TamDosyaYolu);
   p1^ := #0;
 
   // eðer varsa ikinci deðiþken - çalýþan programýn kullanacaðý deðer
@@ -408,7 +411,7 @@ begin
     PSayi4(DosyaBellek + 32)^ := 1;
     Inc(p1);
     Tasi2(@Degiskenler[1], p1, Length(Degiskenler));
-    p1 += Length(Degiskenler);
+    p1 := p1 + Length(Degiskenler);
     p1^ := #0;
   end;
 
@@ -423,7 +426,7 @@ begin
 
   // programýn iz kayýt dosyasýný oluþtur
   {IzKayitDosyaAdi := DosyaAdiniAl(DosyaAdi);
-  IzKayitDosyaAdi += '.log'; //izkayit';
+  IzKayitDosyaAdi := IzKayitDosyaAdi + '.log'; //izkayit';
   IzKaydiOlustur(IzKayitDosyaAdi, IzKayitDosyaAdi + ' uygulamasý çalýþtýrýldý');}
 
   // görev bellek adresini geri döndür
@@ -714,10 +717,6 @@ var
   G: PGorev = nil;
 begin
 
-{  Exit(1);
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Görev Kimlik: %d', [AGorevKimlik]);
-  Exit(1);}
-
 //  while KritikBolgeyeGir(GorevKilit) = False do;
 
   G := Gorev[AGorevKimlik];
@@ -748,16 +747,14 @@ begin
     SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> EFLAGS: $%.8x', [G^.HataBayrak]);
   end;
 
-  { TODO : aþaðýdaki iþlevlerin çalýþmasýnýn doðruluðu test edilecek }
-
-  // göreve ait zamanlayýcýlarý yok et
-  ZamanlayicilariYokEt(AGorevKimlik);
-
-  { TODO : Görsel olmayan nesnelerin bellekten atýlmasýnda (TGorev.Sonlandir)
-    görsel iþlevlerin çalýþmamasý saðlanacak }
+  // göreve ait zamanlayýcýlarý durdur
+  ZamanlayicilariDurdur(AGorevKimlik);
 
   // göreve ait pencere ve alt görsel nesneleri yok et
   GorselNesneler0.PencereyiYokEt(AGorevKimlik);
+
+  // göreve ait zamanlayýcýlarý yok et
+  ZamanlayicilariYokEt(AGorevKimlik);
 
   // göreve ait olay bellek bölgesini iptal et
   { TODO : 1. bu iþlev olay yönetim sistem nesnesinin içerisine dahil edilecek
@@ -789,8 +786,6 @@ begin
 
   G := Gorev[AGorevKimlik];
   if(G = nil) then Exit;
-
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Görev KimlikX: %d', [AGorevKimlik]);
 
   G^.Durum := gdSonlandiriliyor;
   G^.HataKodu := -1;

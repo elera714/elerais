@@ -6,7 +6,7 @@
   Dosya Adý: gn_masaustu.pas
   Dosya Ýþlevi: masaüstü yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 15/05/2026
+  Güncelleme Tarihi: 27/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -249,9 +249,9 @@ end;
 procedure TMasaustu.YokEt(AKimlik: TKimlik);
 begin
 
-  { TODO : öncelikle ayrýlan bellek serbest býrakýlacak }
+  { TODO : yok edilme aþamasýnda bellek durumu kontrol edilecek }
 
-  GorselNesneler0.YokEt(AKimlik);
+  inherited YokEt(AKimlik);
 end;
 
 {==============================================================================

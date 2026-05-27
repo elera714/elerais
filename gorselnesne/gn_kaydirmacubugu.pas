@@ -6,7 +6,7 @@
   Dosya Adý: gn_kaydirmacubugu.pp
   Dosya Ýþlevi: kaydýrma çubuðu (TScrollBar) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 26/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -44,7 +44,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_islevler, temelgorselnesne;
+uses genel, gn_islevler, temelgorselnesne, sistemmesaj;
 
 {==============================================================================
   kaydýrma çubuðu kesme çaðrýlarýný yönetir

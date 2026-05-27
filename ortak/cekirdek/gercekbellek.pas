@@ -6,7 +6,7 @@
   Dosya Adý: gercekbellek.pas
   Dosya Ýþlevi: gerçek (fiziksel) bellek yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 04/01/2026
+  Güncelleme Tarihi: 23/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -215,6 +215,8 @@ var
   i, BU, BlokNo: TSayi4;
   Bellek: PSayi4;
 begin
+
+  if(ABellekAdresi = nil) then Exit;
 
   if(ABellekUzunlugu = 0) then
   begin

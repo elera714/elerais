@@ -6,7 +6,7 @@
   Dosya Adı: pci.pas
   Dosya İşlevi: pci yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/07/2025
+  Güncelleme Tarihi: 25/05/2026
 
   Kaynaklar:
     http://wiki.osdev.org/PCI
@@ -263,7 +263,7 @@ begin
     Deger := Oku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
     if((Deger and 1) = 1) then Exit(Deger and (not %11));
 
-    Adres += 4;
+    Adres := Adres + 4;
   end;
 
   Result := 0;
@@ -285,7 +285,7 @@ begin
     Deger := Oku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
     if((Deger and 1) = 0) then Exit(Deger and (not %1111));
 
-    Adres += 4;
+    Adres := Adres + 4;
   end;
 
   Result := 0;

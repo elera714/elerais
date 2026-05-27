@@ -6,7 +6,7 @@
   Dosya Adý: dhcp.pas
   Dosya Ýþlevi: DHCP protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 22/07/2025
+  Güncelleme Tarihi: 25/05/2026
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -322,7 +322,7 @@ begin
   p1^ := 1;
   Inc(p1);
   p1^ := DHCP_MTIP_KESIF;
-  DHCPYapiUzunlugu += 2 + 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1;
 
   Inc(p1);
 
@@ -334,7 +334,7 @@ begin
   Inc(p1);                                // donaným tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
   MACAdres^ := GAgBilgisi.MACAdres;
-  DHCPYapiUzunlugu += 2 + 1 + 6;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
 
   Inc(p1, 6);
 
@@ -348,7 +348,7 @@ begin
   Tasi2(@GTamBilgisayarAdi[1], pc, i);
   Inc(pc, i);
   p1 := Isaretci(pc);
-  DHCPYapiUzunlugu += 2 + i;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + i;
 
   // parametre istek listesi - 2 + 12 byte
   p1^ := DHCP_SECIM_DEGISKEN_ISTEK_LISTESI;
@@ -378,12 +378,12 @@ begin
   p1^ := DHCP_SECIM_SINIFDISI_YONLENDIRME;
   Inc(p1);
   p1^ := DHCP_SECIM_OZEL_SINIFSIZ_YONLENDIRME;
-  DHCPYapiUzunlugu += 2 + 12;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 12;
 
   Inc(p1);
 
   p1^ := DHCP_SECIM_SON;
-  DHCPYapiUzunlugu += 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
@@ -456,7 +456,7 @@ begin
   p1^ := 1;
   Inc(p1);
   p1^ := DHCP_MTIP_TEKLIF;
-  DHCPYapiUzunlugu += 2 + 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1;
 
   Inc(p1);
 
@@ -469,7 +469,7 @@ begin
   IPAdres^ := GAgBilgisi.IP4Adres;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_IP_KIRALAMA_SURESI;
   Inc(p1);
@@ -479,7 +479,7 @@ begin
   p4^ := htons(TSayi4(8 * 60 * 60));      // saniye cinsinden
   Inc(p4);
   p1 := Isaretci(p4);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_YENILEME_SURESI;
   Inc(p1);
@@ -489,7 +489,7 @@ begin
   p4^ := htons(TSayi4(4 * 60 * 60));      // saniye cinsinden
   Inc(p4);
   p1 := Isaretci(p4);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_YENIDEN_BAGLAMA_SURESI;
   Inc(p1);
@@ -499,7 +499,7 @@ begin
   p4^ := htons(TSayi4(4 * 60 * 60));      // saniye cinsinden
   Inc(p4);
   p1 := Isaretci(p4);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // alt að maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_ALTAG_MASKESI;
@@ -510,7 +510,7 @@ begin
   IPAdres^ := OnDegerAltAgMaskesi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // alt að maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_YONLENDIRICI;
@@ -521,7 +521,7 @@ begin
   IPAdres^ := GAgGecidi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // dns sunucusu - 2 + 4 byte
   p1^ := DHCP_SECIM_DNS;
@@ -532,10 +532,10 @@ begin
   IPAdres^ := GDNSIPAdresi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_SON;
-  DHCPYapiUzunlugu += 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(ATeklifEdilenIPAdresi.IPAdres);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
@@ -609,7 +609,7 @@ begin
   p1^ := 1;
   Inc(p1);
   p1^ := DHCP_MTIP_ISTEK;
-  DHCPYapiUzunlugu += 2 + 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1;
 
   Inc(p1);
 
@@ -621,7 +621,7 @@ begin
   Inc(p1);                                // donaným tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
   MACAdres^ := GAgBilgisi.MACAdres;
-  DHCPYapiUzunlugu += 2 + 1 + 6;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
 
   Inc(p1, 6);
 
@@ -634,7 +634,7 @@ begin
   IPAdres^ := AIstenenIPAdresi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // istenen ip adresi - 2 + 4 byte
   p1^ := DHCP_SECIM_SUNUCU_TANIMLAYICI;
@@ -645,7 +645,7 @@ begin
   IPAdres^ := ADHCPSunucuIPAdresi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // bilgisayar adý
   i := Length(GTamBilgisayarAdi);
@@ -657,7 +657,7 @@ begin
   Tasi2(@GTamBilgisayarAdi[1], pc, i);
   Inc(pc, i);
   p1 := Isaretci(pc);
-  DHCPYapiUzunlugu += 2 + i;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + i;
 
   // tam bilgisayar adý - (domain adý dahil)
   i := Length(GTamBilgisayarAdi);
@@ -675,7 +675,7 @@ begin
   Tasi2(@GTamBilgisayarAdi[1], pc, i);
   Inc(pc, i);
   p1 := Isaretci(pc);
-  DHCPYapiUzunlugu += 2 + 3 + i;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 3 + i;
 
   // parametre istek listesi - 2 + 12 byte
   p1^ := DHCP_SECIM_DEGISKEN_ISTEK_LISTESI;
@@ -705,12 +705,12 @@ begin
   p1^ := DHCP_SECIM_SINIFDISI_YONLENDIRME;
   Inc(p1);
   p1^ := DHCP_SECIM_OZEL_SINIFSIZ_YONLENDIRME;
-  DHCPYapiUzunlugu += 2 + 12;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 12;
 
   Inc(p1);
 
   p1^ := DHCP_SECIM_SON;
-  DHCPYapiUzunlugu += 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
@@ -785,7 +785,7 @@ begin
   p1^ := 1;
   Inc(p1);
   p1^ := DHCP_MTIP_ONAY;
-  DHCPYapiUzunlugu += 2 + 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1;
 
   Inc(p1);
 
@@ -798,7 +798,7 @@ begin
   IPAdres^ := GAgBilgisi.IP4Adres;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_IP_KIRALAMA_SURESI;
   Inc(p1);
@@ -808,7 +808,7 @@ begin
   p4^ := htons(TSayi4(8 * 60 * 60));      // saniye cinsinden
   Inc(p4);
   p1 := Isaretci(p4);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_YENILEME_SURESI;
   Inc(p1);
@@ -818,7 +818,7 @@ begin
   p4^ := htons(TSayi4(4 * 60 * 60));      // saniye cinsinden
   Inc(p4);
   p1 := Isaretci(p4);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_YENIDEN_BAGLAMA_SURESI;
   Inc(p1);
@@ -828,7 +828,7 @@ begin
   p4^ := htons(TSayi4(4 * 60 * 60));      // saniye cinsinden
   Inc(p4);
   p1 := Isaretci(p4);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // alt að maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_ALTAG_MASKESI;
@@ -839,7 +839,7 @@ begin
   IPAdres^ := OnDegerAltAgMaskesi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // alt að maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_YONLENDIRICI;
@@ -850,7 +850,7 @@ begin
   IPAdres^ := GAgGecidi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // dns sunucusu - 2 + 4 byte
   p1^ := DHCP_SECIM_DNS;
@@ -861,7 +861,7 @@ begin
   IPAdres^ := GDNSIPAdresi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // alan adý - 2 byte + ad uzunluðu + 1 byte
   i := Length(GAlanAdi);
@@ -875,10 +875,10 @@ begin
   p1 := Isaretci(pc);
   p1^ := 0;
   Inc(p1);
-  DHCPYapiUzunlugu += 2 + i + 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + i + 1;
 
   p1^ := DHCP_SECIM_SON;
-  DHCPYapiUzunlugu += 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(AIstenenIPAdresi.IPAdres);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
@@ -951,7 +951,7 @@ begin
   p1^ := 1;
   Inc(p1);
   p1^ := DHCP_BILGILENDIRME;
-  DHCPYapiUzunlugu += 2 + 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1;
 
   Inc(p1);
 
@@ -963,7 +963,7 @@ begin
   Inc(p1);                                // donaným tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
   MACAdres^ := GAgBilgisi.MACAdres;
-  DHCPYapiUzunlugu += 2 + 1 + 6;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
 
   Inc(p1, 6);
 
@@ -977,7 +977,7 @@ begin
   Tasi2(@GTamBilgisayarAdi[1], pc, i);
   Inc(pc, i);
   p1 := Isaretci(pc);
-  DHCPYapiUzunlugu += 2 + i;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + i;
 
   // parametre istek listesi - 2 + 12 byte
   p1^ := DHCP_SECIM_DEGISKEN_ISTEK_LISTESI;
@@ -1007,12 +1007,12 @@ begin
   p1^ := DHCP_SECIM_OZEL_SINIFSIZ_YONLENDIRME;
   Inc(p1);
   p1^ := DHCP_SECIM_OZEL_PROXY_OTOKESIF;
-  DHCPYapiUzunlugu += 2 + 12;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 12;
 
   Inc(p1);
 
   p1^ := DHCP_SECIM_SON;
-  DHCPYapiUzunlugu += 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
@@ -1084,7 +1084,7 @@ begin
   p1^ := 1;
   Inc(p1);
   p1^ := DHCP_MTIP_ONAY;
-  DHCPYapiUzunlugu += 3;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 3;
 
   Inc(p1);
 
@@ -1097,7 +1097,7 @@ begin
   IPAdres^ := GAgBilgisi.IP4Adres;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // alt að maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_ALTAG_MASKESI;
@@ -1108,7 +1108,7 @@ begin
   IPAdres^ := OnDegerAltAgMaskesi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // alt að maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_YONLENDIRICI;
@@ -1119,7 +1119,7 @@ begin
   IPAdres^ := GAgGecidi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // dns sunucusu - 2 + 4 byte
   p1^ := DHCP_SECIM_DNS;
@@ -1130,19 +1130,19 @@ begin
   IPAdres^ := GDNSIPAdresi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_OZEL_PROXY_OTOKESIF;
   Inc(p1);
   p1^ := 1;                               // uzunluk
   Inc(p1);
   p1^ := $A;
-  DHCPYapiUzunlugu += 2 + 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1;
 
   Inc(p1);
 
   p1^ := DHCP_SECIM_SON;
-  DHCPYapiUzunlugu += 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(AIPAdres.IPAdres);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
@@ -1213,7 +1213,7 @@ begin
   p1^ := 1;
   Inc(p1);
   p1^ := DHCP_MTIP_RET;
-  DHCPYapiUzunlugu += 3;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 3;
 
   Inc(p1);
 
@@ -1226,10 +1226,10 @@ begin
   IPAdres^ := GAgBilgisi.IP4Adres;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
-  DHCPYapiUzunlugu += 2 + 4;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_SON;
-  DHCPYapiUzunlugu += 1;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
   B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);

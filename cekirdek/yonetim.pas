@@ -219,7 +219,6 @@ var
 procedure SistemAnaKontrol;
 var
   Gorev: PGorev = nil;
-  TestGK: PGirisKutusu;
   TusDegeri, IRR: TSayi2;
   TusKontrolDegeri: TSayi1;
   TusKarakterDegeri: char;
@@ -332,11 +331,8 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            TestGK := TestGK^.Olustur(ktNesne, SonOlusturulanP, 2, 2, 100, 20, 'M');
-            TestGK^.Goster;
-            SonOlusturulanP^.Guncelle;
-
-
+            //Gorevler0.Calistir('disk1:\progrmlr\defter.c', CALISMA_SEVIYE3)
+            Gorevler0.Calistir('disk1:\progrmlr\kaydirma.c', CALISMA_SEVIYE3)
             //elr1.SistemKlasorleriniOlustur;
 
             {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
@@ -418,7 +414,7 @@ begin
             //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
             //BellekDegeriniGoster := True;
             {Merhaba := '';
-            for i := 1 to 11 do Merhaba += 'ELERA Ýþletim Sistemi' + #13#10;
+            for i := 1 to 11 do Merhaba := Merhaba + 'ELERA Ýþletim Sistemi' + #13#10;
 
             //i := Length(Merhaba);
             SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ansistring deðer: %s', [Merhaba]);
@@ -435,8 +431,6 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
-            TestGK^.YokEt(TestGK^.Kimlik);
-            SonOlusturulanP^.Guncelle;
             //Gorevler0.Calistir('disk1:\dskgor.c', CALISMA_SEVIYE3)
             //elr1.SistemKlasorleriniSil;
 

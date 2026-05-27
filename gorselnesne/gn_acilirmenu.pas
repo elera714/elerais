@@ -6,7 +6,7 @@
   Dosya Adý: gn_acilirmenu.pas
   Dosya Ýþlevi: açýlýr menü (TPopupMenu) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 27/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -103,7 +103,7 @@ begin
 
       AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
-      if(AcilirMenu <> nil) then Result := AcilirMenu^.FSeciliSiraNo
+      if(AcilirMenu <> nil) then Result := AcilirMenu^.SeciliSiraNo
     end
 
     else Result := HATA_ISLEV;
@@ -148,9 +148,9 @@ begin
 
   AcilirMenu^.FYardimciNesne := False;
 
-  AcilirMenu^.FSecimRenk := ASecimRengi;
-  AcilirMenu^.FNormalYaziRenk := ANormalYaziRengi;
-  AcilirMenu^.FSeciliYaziRenk := ASeciliYaziRengi;
+  AcilirMenu^.SecimRenk := ASecimRengi;
+  AcilirMenu^.NormalYaziRenk := ANormalYaziRengi;
+  AcilirMenu^.SeciliYaziRenk := ASeciliYaziRengi;
 
   // nesne adresini geri döndür
   Result := AcilirMenu;
@@ -279,7 +279,7 @@ var
 begin
 
   AcilirMenu := PAcilirMenu(GorselNesneler0.NesneAl(Kimlik));
-  if(AcilirMenu = nil) then Exit;
+  if(AcilirMenu = nil) then Exit(False);
 
   AcilirMenu^.FMenuBaslikListesi^.Ekle(ADeger);
 

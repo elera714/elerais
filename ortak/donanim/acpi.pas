@@ -6,7 +6,7 @@
   Dosya Adý: acpi.pas
   Dosya Ýþlevi: geliþmiþ ayar ve güç arabirim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 25/05/2026
 
   https://wiki.osdev.org/RSDP
 
@@ -91,7 +91,7 @@ begin
       Exit;
     end;
 
-    ACPI_BELLEK += 16;
+    ACPI_BELLEK := ACPI_BELLEK + 16;
   end;
 end;
 

@@ -169,7 +169,7 @@ begin
   begin
 
     GorevTSSListesi[i] := TSSBellekAdresi;
-    TSSBellekAdresi += TSS_UZUNLUK;
+    TSSBellekAdresi := TSSBellekAdresi + TSS_UZUNLUK;
   end;
 end;
 

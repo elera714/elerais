@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 15/05/2026
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -43,8 +43,8 @@ type
     FServisCalisiyor: Boolean;
     FMesajSN, FToplamMesaj: TSayi4;
     FMesajListesi: array[0..USTSINIR_MESAJ - 1] of PMesajKayit;
-    function MesajAl(ASiraNo: TSayi4): PMesajKayit;
-    procedure MesajYaz(ASiraNo: TSayi4; AMesajKayit: PMesajKayit);
+    function MesajAl(ASiraNo: TISayi4): PMesajKayit;
+    procedure MesajYaz(ASiraNo: TISayi4; AMesajKayit: PMesajKayit);
   public
     procedure Yukle;
     procedure Ekle(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string);
@@ -52,7 +52,7 @@ type
     procedure MesajAl(ASiraNo: TISayi4; var AMesajKayit: PMesajKayit);
     property ServisCalisiyor: Boolean read FServisCalisiyor write FServisCalisiyor;
     property ToplamMesaj: TSayi4 read FToplamMesaj;
-    property Mesaj[ASiraNo: TSayi4]: PMesajKayit read MesajAl write MesajYaz;
+    property Mesaj[ASiraNo: TISayi4]: PMesajKayit read MesajAl write MesajYaz;
   end;
 
 var
@@ -100,7 +100,7 @@ begin
   ServisCalisiyor := True;
 end;
 
-function TSistemMesaj.MesajAl(ASiraNo: TSayi4): PMesajKayit;
+function TSistemMesaj.MesajAl(ASiraNo: TISayi4): PMesajKayit;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -109,7 +109,7 @@ begin
   else Result := nil;
 end;
 
-procedure TSistemMesaj.MesajYaz(ASiraNo: TSayi4; AMesajKayit: PMesajKayit);
+procedure TSistemMesaj.MesajYaz(ASiraNo: TISayi4; AMesajKayit: PMesajKayit);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -142,7 +142,7 @@ begin
   begin
 
     // ilk mesajı sil
-    FreeMem(Mesaj[0]);
+    FreeMem(Mesaj[0], SizeOf(TMesajKayit));
 
     // mesajları bir yukarı kaydır
     for j := 1 to USTSINIR_MESAJ - 1 do Mesaj[j - 1] := Mesaj[j];
@@ -202,7 +202,7 @@ begin
     begin
 
       Mesaj[i] := nil;
-      FreeMem(M);
+      FreeMem(M, SizeOf(TMesajKayit));
     end;
   end;
 
@@ -276,7 +276,7 @@ begin
         else if(AMesaj[j] in ['0'..'9']) then
         begin
 
-          if(UzunlukOkunuyor) then sUzunluk += AMesaj[j];
+          if(UzunlukOkunuyor) then sUzunluk := sUzunluk + AMesaj[j];
           Inc(j);
           Continue;
         end
@@ -286,7 +286,7 @@ begin
           // sayısal değeri karaktere çevir
           C := TVarRec(ADegerler[DegerSiraNo]).VChar;
           Inc(DegerSiraNo);
-          s += C;
+          s := s + C;
 
           Inc(j);
           DegerOkunuyor := False;
@@ -298,7 +298,7 @@ begin
           // sayısal değeri karaktere çevir
           s2 := TVarRec(ADegerler[DegerSiraNo]).VString^;
           Inc(DegerSiraNo);
-          s += s2;
+          s := s + s2;
 
           Inc(j);
           DegerOkunuyor := False;
@@ -324,7 +324,7 @@ begin
             end;
           end;
 
-          s += s2;
+          s := s + s2;
           Inc(DegerSiraNo);
 
           Inc(j);
@@ -343,7 +343,7 @@ begin
           // sayısal değeri karaktere çevir
           s2 := hexStr(TVarRec(ADegerler[DegerSiraNo]).VInteger, Uzunluk);
 
-          s += s2;
+          s := s + s2;
           Inc(DegerSiraNo);
 
           Inc(j);
@@ -362,7 +362,7 @@ begin
       else
       begin
 
-        s += AMesaj[j];
+        s := s + AMesaj[j];
         Inc(j);
       end;
     end;

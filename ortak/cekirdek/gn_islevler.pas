@@ -271,8 +271,8 @@ begin
             end;
 
             // pencere nesnesinin kalınlığını da son koordinata ekle
-            SonNesneA.Sol += PencereGN^.FKalinlik.Sol;
-            SonNesneA.Ust += PencereGN^.FKalinlik.Ust;
+            SonNesneA.Sol := SonNesneA.Sol + PencereGN^.FKalinlik.Sol;
+            SonNesneA.Ust := SonNesneA.Ust + PencereGN^.FKalinlik.Ust;
             SonBulunanGN := PencereGN;
 
             // 4 - alt nesnelerin sorgulanması
@@ -319,8 +319,8 @@ begin
                   if(SonBulunanGN^.NesneTipi = gntPencere) then
                   begin
 
-                    SonNesneA.Sol -= SonBulunanGN^.FKalinlik.Sol;
-                    SonNesneA.Ust -= SonBulunanGN^.FKalinlik.Ust;
+                    SonNesneA.Sol := SonNesneA.Sol - SonBulunanGN^.FKalinlik.Sol;
+                    SonNesneA.Ust := SonNesneA.Ust - SonBulunanGN^.FKalinlik.Ust;
 
                     AKonum.Sol := (AKonum.Sol - SonNesneA.Sol);
                     AKonum.Ust := (AKonum.Ust - SonNesneA.Ust);
@@ -341,8 +341,8 @@ begin
                 if(SonBulunanGN^.NesneTipi = gntPencere) then
                 begin
 
-                  SonNesneA.Sol -= SonBulunanGN^.FKalinlik.Sol;
-                  SonNesneA.Ust -= SonBulunanGN^.FKalinlik.Ust;
+                  SonNesneA.Sol := SonNesneA.Sol - SonBulunanGN^.FKalinlik.Sol;
+                  SonNesneA.Ust := SonNesneA.Ust - SonBulunanGN^.FKalinlik.Ust;
 
                   AKonum.Sol := (AKonum.Sol - SonNesneA.Sol);
                   AKonum.Ust := (AKonum.Ust - SonNesneA.Ust);

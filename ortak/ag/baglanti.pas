@@ -6,7 +6,7 @@
   Dosya Adý: baglanti.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 13/07/2025
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -445,7 +445,7 @@ begin
 
     Tasi2(AKaynakBellek, p, AVeriUzunlugu);
     i := ABaglanti^.VeriUzunlugu;
-    i += AVeriUzunlugu;
+    i := i + AVeriUzunlugu;
     ABaglanti^.VeriUzunlugu := i;
   end;
 end;

@@ -485,8 +485,8 @@ begin
       Tasi2(ABellek + OkumaKonum, Bellek + SektorVeriU, j);
       DI^.MD.FD^.SektorYaz(DI^.MD.FD, (YazilacakKumeNo * ZincirBasinaSektor) + SektorNo, 1, Bellek);
 
-      OkumaKonum += j;
-      ToplamYazilacakVeriU -= j;
+      OkumaKonum := OkumaKonum + j;
+      ToplamYazilacakVeriU := ToplamYazilacakVeriU - j;
       DG^.DosyaUzunlugu := DG^.DosyaUzunlugu + j;
 
       if((SektorVeriU + j) = 512) then
@@ -527,8 +527,8 @@ begin
       Tasi2(ABellek + OkumaKonum, Bellek, j);
       DI^.MD.FD^.SektorYaz(DI^.MD.FD, (YazilacakKumeNo * ZincirBasinaSektor) + SektorNo, i, Bellek);
 
-      OkumaKonum += j;
-      ToplamYazilacakVeriU -= j;
+      OkumaKonum := OkumaKonum + j;
+      ToplamYazilacakVeriU := ToplamYazilacakVeriU - j;
       DG^.DosyaUzunlugu := DG^.DosyaUzunlugu + j;
 
       if(ToplamYazilacakVeriU > 0) then
@@ -631,7 +631,7 @@ begin
     begin
 
       KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
-      VeriU -= KopyalanacakVeriUzunlugu;
+      VeriU := VeriU - KopyalanacakVeriUzunlugu;
     end
     else
     begin
@@ -654,7 +654,7 @@ begin
     end;
 
     Tasi2(Bellek, AHedefBellek + HedefBellekSN, KopyalanacakVeriUzunlugu);
-    HedefBellekSN += KopyalanacakVeriUzunlugu;
+    HedefBellekSN := HedefBellekSN + KopyalanacakVeriUzunlugu;
 
     if(VeriU > 0) then KumeNo := SHTBirSonrakiKumeyiAl(@DI^.MD, KumeNo);
 

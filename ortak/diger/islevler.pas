@@ -319,7 +319,7 @@ begin
     for j := 1 to i do
     begin
 
-      Result += UpCase(AGrupAdi[j]);
+      Result := Result + UpCase(AGrupAdi[j]);
     end;
   end;
 
@@ -329,7 +329,7 @@ begin
     for j := i to AUzunluk - 1 do
     begin
 
-      Result += ' ';
+      Result := Result + ' ';
     end;
   end;
 end;

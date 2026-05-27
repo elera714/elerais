@@ -6,7 +6,7 @@
   Dosya Adý: temelgorselnesne.pas
   Dosya Ýþlevi: temel görsel nesne yapýsýný içerir
 
-  Güncelleme Tarihi: 10/09/2025
+  Güncelleme Tarihi: 26/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -42,6 +42,9 @@ type
     FSiraNo: TSayi4;
     // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
     FareImlecTipi: TFareImlecTipi;
+    // nesnenin alt bileþen nesne sayýsý (pencerenin kontrol düðmeleri vb)
+    // bilgi: her nesne kendi bileþenini kendisi kontrol edecek þekilde yapýlandýracak
+    FAltBilesenSayisi: TSayi4;
     // ata nesnenin alt nesne sayýsý
     FAltNesneSayisi: TSayi4;
     // ata nesnenin alt nesnelerinin yerleþtirileceði bellek adresi
@@ -81,6 +84,7 @@ type
     procedure BaslikYaz(ABaslik: string);
   public
     procedure YokEt(AKimlik: TKimlik); virtual; abstract;
+    property AltBilesenSayisi: TSayi4 read FAltBilesenSayisi write FAltBilesenSayisi;
     property AltNesneSayisi: TSayi4 read FAltNesneSayisi write FAltNesneSayisi;
     property AltNesneBellekAdresi: Isaretci read FAltNesneBellekAdresi write FAltNesneBellekAdresi;
   published

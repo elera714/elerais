@@ -6,7 +6,7 @@
   Dosya Adı: cmos.pas
   Dosya İşlevi: CMOS yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/09/2019
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -82,7 +82,7 @@ begin
   // yıl değerini al
   PortYaz1($70, 9);
   i := PortAl1($71);
-  Yil += BCDyiSayi10aCevir(i);
+  Yil := Yil + BCDyiSayi10aCevir(i);
 
   // haftanın günü değerini al
   PortYaz1($70, 6);

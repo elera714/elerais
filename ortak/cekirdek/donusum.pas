@@ -6,7 +6,7 @@
   Dosya Adı: donusum.pas
   Dosya İşlevi: değer dönüşüm (convert) işlevlerini içerir
 
-  Güncelleme Tarihi: 31/05/2025
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -67,20 +67,20 @@ begin
   if(i > 9) then
     Result := IntToStr(i)
   else Result := '0' + IntToStr(i);
-  Result += ':';
+  Result := Result + ':';
 
   // dakika değerini karakter katarına çevir
   i := (ASaat shr 8) and $FF;
   if(i > 9) then
-    Result += IntToStr(i)
-  else Result += '0' + IntToStr(i);
-  Result += ':';
+    Result := Result + IntToStr(i)
+  else Result := Result + '0' + IntToStr(i);
+  Result := Result + ':';
 
   // saniye değerini karakter katarına çevir
   i := (ASaat shr 16) and $FF;
   if(i > 9) then
-    Result += IntToStr(i)
-  else Result += '0' + IntToStr(i);
+    Result := Result + IntToStr(i)
+  else Result := Result + '0' + IntToStr(i);
 end;
 
 {==============================================================================
@@ -318,7 +318,7 @@ begin
     begin
 
       if(Deger in ['0'..'9']) then
-        s += IPAdres[i]
+        s := s + IPAdres[i]
       else Goto Hata;
     end;
   end;
@@ -486,7 +486,7 @@ begin
 
     if not(KodUTF8Mi) then
 
-      Result += WideChar2Char(UTF8Kod)
+      Result := Result + WideChar2Char(UTF8Kod)
     else
     begin
 
@@ -507,7 +507,7 @@ begin
         if(KodSayisi = 0) then
         begin
 
-          Result += WideChar2Char(UTF8Kod);
+          Result := Result + WideChar2Char(UTF8Kod);
 
           IlkUTFKod := False;
           KodUTF8Mi := False;
@@ -544,7 +544,7 @@ begin
   begin
 
     WideCharKod := (B2 shl 8) or B1;
-    Result += WideChar2Char(WideCharKod);
+    Result := Result + WideChar2Char(WideCharKod);
 
     B1 := Byte(p^);
     Inc(p);
@@ -651,8 +651,8 @@ function RGB24CevirRGB16(Color: TRenk): Word;
 begin
 
   Result := (Color shr 3) and 31;
-  Result += ((Color shr 10) and 63) shl 5;
-  Result += ((Color shr 19) and 31) shl 11;
+  Result := Result + ((Color shr 10) and 63) shl 5;
+  Result := Result + ((Color shr 19) and 31) shl 11;
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adý: src_e1000.pas
   Dosya Ýþlevi: intel e1000 að (network) sürücüsü
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -440,7 +440,7 @@ var
 
 begin
 
-  GelisHalkaBellekAdresi := GetMem(sizeof(TE1000_rx_desc) * E1000_NUM_RX_DESC + 16);
+  GelisHalkaBellekAdresi := GetMem(SizeOf(TE1000_rx_desc) * E1000_NUM_RX_DESC + 16);
   p := GelisHalkaBellekAdresi;
 
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p2 Bellek Adresi: $%x', [TSayi4(GelisHalkaBellekAdresi)]);
@@ -451,7 +451,7 @@ begin
     rx_descs[i] := p;
     rx_descs[i]^.address := 10; //TSayi8(GetMem(8192));
     rx_descs[i]^.status := 0;
-    p += sizeof(TE1000_rx_desc);
+    p := p + SizeOf(TE1000_rx_desc);
 
     //if(i < 3) then SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'p1 Bellek Adresi: $%x', [TSayi4(p)]);
   end;
@@ -464,7 +464,7 @@ begin
   KomutGonder(REG_RXDESCLO, TSayi4(GelisHalkaBellekAdresi));
   KomutGonder(REG_RXDESCHI, 0);
 
-  KomutGonder(REG_RXDESCLEN, E1000_NUM_RX_DESC * 16); //sizeof(TE1000_rx_desc));
+  KomutGonder(REG_RXDESCLEN, E1000_NUM_RX_DESC * 16); //SizeOf(TE1000_rx_desc));
 
   KomutGonder(REG_RXDESCHEAD, 0);
   KomutGonder(REG_RXDESCTAIL, E1000_NUM_RX_DESC - 1);
@@ -496,7 +496,7 @@ var
 
 begin
 
-  GidisHalkaBellekAdresi := GetMem(sizeof(TE1000_tx_desc) * E1000_NUM_TX_DESC + 16);
+  GidisHalkaBellekAdresi := GetMem(SizeOf(TE1000_tx_desc) * E1000_NUM_TX_DESC + 16);
   p := GidisHalkaBellekAdresi;
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Bellek Adresi: $%x', [TSayi4(p)]);
@@ -509,14 +509,14 @@ begin
     tx_descs[i]^.address := $91000;
     tx_descs[i]^.cmd := 0;
     tx_descs[i]^.status:= TSTA_DD;
-    p += sizeof(TE1000_tx_desc);
+    p := p + SizeOf(TE1000_tx_desc);
   end;}
   GidisSiraNo := 0;
 
   KomutGonder(REG_TXDESCLO, TSayi4(GidisHalkaBellekAdresi));
   KomutGonder(REG_TXDESCHI, 0);
 
-  KomutGonder(REG_TXDESCLEN, E1000_NUM_TX_DESC * sizeof(TE1000_tx_desc));
+  KomutGonder(REG_TXDESCLEN, E1000_NUM_TX_DESC * SizeOf(TE1000_tx_desc));
 
   KomutGonder(REG_TXDESCHEAD, 0);
   KomutGonder(REG_TXDESCTAIL, E1000_NUM_TX_DESC - 1);

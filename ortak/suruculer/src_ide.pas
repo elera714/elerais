@@ -418,7 +418,7 @@ begin
         end;
 
         Dec(OkunacakSektorSayisi);
-        BellekAdresi += 512;
+        BellekAdresi := BellekAdresi + 512;
       end
       else
       begin
@@ -523,7 +523,7 @@ begin
         end;
 
         Dec(YazilacakSektorSayisi);
-        BellekAdresi += 512;
+        BellekAdresi := BellekAdresi + 512;
       end
       else
       begin

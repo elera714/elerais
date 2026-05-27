@@ -1,7 +1,6 @@
 *******************************************************************************
-  Sürüm: 0.4.0 (sunucu / istemci) - 25.05.2025 (R36) - Beta
+  Sürüm: 0.4.0 (sunucu / istemci) - 27.05.2026 (R36) - Beta
 *******************************************************************************
-
   + fpc derleyicisinin kendi dahili iþlevleri için kullandýðý çekirdek bellek yönetim modülü tamamlandý
   + çekirdek içerisinde tanýmlý (çekirdek haricinde) tüm yýðýn (stack) deðerleri otomatikleþtirildi
   + arp tablosunun güncellenmesi iþlevi çekirdek içerisinden çýkarýlarak ayrý bir görev olarak tanýmlandý
@@ -9,6 +8,7 @@
   + elr-1 dosya sistemi Write dosya iþlevi kodlama çalýþmasý tamamlandý
   + ekran kartý sürücüsünde iyileþtirmeler gerçekleþtirildi
   + Alt + F4 kýsayol tuþuna aktif pencerenin kapatýlmasý iþlevi eklendi
+  + bellek yönetim hatalarýný iyileþtirme çalýþmalarý gerçekleþtirildi
 
 *******************************************************************************
   Sürüm: 0.3.9 (sunucu / istemci) - 10.05.2025 (R35) - Alfa
@@ -259,7 +259,7 @@
   + tüm kodlar fpc 3.0.4 ile yeniden derlendi
   + udptest programý yazýldý
   + grafik3 programý yazýldý
-  + artýrma / eksiltme (TUpDown) düðme nesnesi eklendi
+  + artýrma / eksiltme (TDegerDugmesi / TUpDown) düðme nesnesi eklendi
   + etiket (TLabel) nesnesi eklendi
   + muyntcs programý sað alt köþeye saat verisi eklendi
   + durum göstergesi (TStatusBar) nesnesi eklendi.

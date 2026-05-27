@@ -6,7 +6,7 @@
   Dosya Adý: gn_dugme.pas
   Dosya Ýþlevi: düðme (TButton) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 19/05/2026
+  Güncelleme Tarihi: 27/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,7 +21,6 @@ type
   TDugme = object(TPanel)
   private
     FDurum: TDugmeDurumu;
-    FDolguluCizim: Boolean;         // dolgulu çizim mi, normal çizim mi?
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PDugme;
@@ -33,6 +32,8 @@ type
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure CizimModelDegistir(ADolguluCizim: Boolean; AGovdeRenk1, AGovdeRenk2,
       AYaziRenkNormal, AYaziRenkBasili: TRenk);
+    // dolgulu çizim mi, normal çizim mi?
+    property DolguluCizim: Boolean read FDurum1 write FDurum1;
     property YaziRenkNormal: TRenk read FDeger1 write FDeger1;
     property YaziRenkBasili: TRenk read FDeger2 write FDeger2;
   end;
@@ -43,7 +44,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, giysi_mac, sistemmesaj, gorev;
+uses gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj, gorev;
 
 {==============================================================================
   düðme kesme çaðrýlarýný yönetir
@@ -207,7 +208,7 @@ begin
   Dugme^.FDurum := ddNormal;
 
   // çizim öndeðerleri
-  Dugme^.FDolguluCizim := True;
+  Dugme^.DolguluCizim := True;
   Dugme^.FGovdeRenk1 := DUGME_NORMAL_ILKRENK;
   Dugme^.FGovdeRenk2 := DUGME_NORMAL_SONRENK;
   Dugme^.YaziRenkNormal := DUGME_NORMAL_YAZIRENK;
@@ -443,7 +444,7 @@ begin
   Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
   if(Dugme = nil) then Exit;
 
-  Dugme^.FDolguluCizim := ADolguluCizim;
+  Dugme^.DolguluCizim := ADolguluCizim;
   if(ADolguluCizim) then
     Dugme^.FCizimModel := 4
   else Dugme^.FCizimModel := 3;

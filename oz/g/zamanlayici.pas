@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 16/04/2026
+  Güncelleme Tarihi: 23/04/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -40,14 +40,14 @@ type
   private
     FOlusturulanZamanlayici: TSayi4;
     FZamanlayiciListesi: array[0..USTSINIR_ZAMANLAYICI - 1] of PZamanlayici;
-    function ZamanlayiciAl(ASiraNo: TSayi4): PZamanlayici;
-    procedure ZamanlayiciYaz(ASiraNo: TSayi4; AZamanlayici: PZamanlayici);
+    function ZamanlayiciAl(ASiraNo: TISayi4): PZamanlayici;
+    procedure ZamanlayiciYaz(ASiraNo: TISayi4; AZamanlayici: PZamanlayici);
   public
     procedure Yukle;
     function Olustur(AMiliSaniye: TSayi4): PZamanlayici;
     function BosZamanlayiciBul: PZamanlayici;
     procedure YokEt(AZamanlayici: PZamanlayici);
-    property Zamanlayici[ASiraNo: TSayi4]: PZamanlayici read ZamanlayiciAl write ZamanlayiciYaz;
+    property Zamanlayici[ASiraNo: TISayi4]: PZamanlayici read ZamanlayiciAl write ZamanlayiciYaz;
     property OlusturulanZamanlayici: TSayi4 read FOlusturulanZamanlayici write FOlusturulanZamanlayici;
   end;
 
@@ -56,6 +56,7 @@ var
   ZamanlayicilarKilit: TSayi4 = 0;
 
 procedure ZamanlayicilariKontrolEt;
+procedure ZamanlayicilariDurdur(AGorevKimlik: TKimlik);
 procedure ZamanlayicilariYokEt(AGorevKimlik: TKimlik);
 procedure BekleMS(AMilisaniye: TSayi4);
 procedure TekGorevZamanlayiciIslevi;
@@ -99,7 +100,7 @@ begin
   sti;
 end;
 
-function TZamanlayicilar.ZamanlayiciAl(ASiraNo: TSayi4): PZamanlayici;
+function TZamanlayicilar.ZamanlayiciAl(ASiraNo: TISayi4): PZamanlayici;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -108,7 +109,7 @@ begin
   else Result := nil;
 end;
 
-procedure TZamanlayicilar.ZamanlayiciYaz(ASiraNo: TSayi4; AZamanlayici: PZamanlayici);
+procedure TZamanlayicilar.ZamanlayiciYaz(ASiraNo: TISayi4; AZamanlayici: PZamanlayici);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -154,7 +155,7 @@ var
   i: TSayi4;
 begin
 
-  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
+//  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
 
   // tüm zamanlayýcý nesnelerini ara
   for i := 0 to USTSINIR_ZAMANLAYICI - 1 do
@@ -173,12 +174,12 @@ begin
       Z^.GorevKimlik := FAktifGorev;
       Z^.ZamanlayiciDurum := zdDurduruldu;
 
-      KritikBolgedenCik(ZamanlayicilarKilit);
+//      KritikBolgedenCik(ZamanlayicilarKilit);
       Exit(Z);
     end;
   end;
 
-  KritikBolgedenCik(ZamanlayicilarKilit);
+//  KritikBolgedenCik(ZamanlayicilarKilit);
 
   Result := nil;
 end;
@@ -226,7 +227,7 @@ begin
   // zamanlayýcý nesnesi yok ise çýk
   if(Zamanlayicilar0.OlusturulanZamanlayici = 0) then Exit;
 
-  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
+//  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
 
   // tüm zamanlayýcý nesnelerini denetle
   for i := 0 to USTSINIR_ZAMANLAYICI - 1 do
@@ -268,7 +269,36 @@ begin
     end;
   end;
 
-  KritikBolgedenCik(ZamanlayicilarKilit);
+//  KritikBolgedenCik(ZamanlayicilarKilit);
+end;
+
+{==============================================================================
+  bir süreçe ait tüm zamanlayýcý nesnelerini durdurur
+ ==============================================================================}
+procedure ZamanlayicilariDurdur(AGorevKimlik: TKimlik);
+var
+  Z: PZamanlayici;
+  i: TSayi4;
+begin
+
+//  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
+
+  // tüm zamanlayýcý nesnelerini ara
+  for i := 0 to USTSINIR_ZAMANLAYICI - 1 do
+  begin
+
+    Z := Zamanlayicilar0.Zamanlayici[i];
+
+    // zamanlayýcý nesnesi aranan iþleme mi ait
+    if not(Z = nil) and (Z^.GorevKimlik = AGorevKimlik) then
+    begin
+
+      // nesneyi yok et
+      Z^.ZamanlayiciDurum := zdDurduruldu;
+    end;
+  end;
+
+//  KritikBolgedenCik(ZamanlayicilarKilit);
 end;
 
 {==============================================================================

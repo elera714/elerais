@@ -210,7 +210,7 @@ begin
     begin
 
       KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
-      VeriU -= KopyalanacakVeriUzunlugu;
+      VeriU := VeriU - KopyalanacakVeriUzunlugu;
     end
     else
     begin
@@ -229,7 +229,7 @@ begin
     FreeMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
 
     // okunacak bilginin yerleştirileceği bir sonraki adresi belirle
-    AHedefBellek += (OkunacakSektorSayisi * 512);
+    AHedefBellek := AHedefBellek + (OkunacakSektorSayisi * 512);
 
     OkunacakFAT := (Zincir * 2) div 512;
 

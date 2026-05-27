@@ -6,7 +6,7 @@
   Dosya Adý: paylasim.pas
   Dosya Ýþlevi: tüm birimler için ortak paylaþýlan iþlevleri içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 27/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,10 +27,10 @@ const
   ProjeBaslangicTarihi: string = '30.07.2005';
   {$IFDEF SISTEM_SUNUCU}
   SistemTipi: TSayi4 = SISTEM_TIPI_SUNUCU;
-  SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.3.8 - R34';
+  SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.4.0 - R36';
   {$ELSE}
   SistemTipi: TSayi4 = SISTEM_TIPI_ISTEMCI;
-  SistemAdi: string = 'ELERA ÝS (Ýstemci)- 0.3.8 - R34';
+  SistemAdi: string = 'ELERA ÝS (Ýstemci)- 0.4.0 - R36';
   {$ENDIF}
   DerlemeTarihi: string = {$i %DATE%};
   FPCMimari: string = {$i %FPCTARGET%};

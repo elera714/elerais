@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -226,7 +226,7 @@ begin
   begin
 
     Tasi2(@Bellek[0], AHedefBellekAdresi, i);
-    AlinanByte += i;
+    AlinanByte := AlinanByte + i;
   end;
 
   Result := i;
@@ -270,7 +270,7 @@ begin
 
     VeriGonder(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
 
-    GonderilenByte += AVeriUzunlugu + ETHERNET_BASLIKU;
+    GonderilenByte := GonderilenByte + AVeriUzunlugu + ETHERNET_BASLIKU;
 
     // ayrýlan belleði serbest býrak
     GercekBellek0.YokEt(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);

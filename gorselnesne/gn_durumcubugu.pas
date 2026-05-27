@@ -6,7 +6,7 @@
   Dosya Adı: gn_durumcubugu.pas
   Dosya İşlevi: durum çubuğu (TStatusBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 26/05/2026
 
  ==============================================================================}
 {$mode objfpc}

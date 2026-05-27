@@ -6,7 +6,7 @@
   Dosya Adı: gn_listekutusu.pas
   Dosya İşlevi: liste kutusu (TListBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 26/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -368,7 +368,7 @@ begin
 
       ListeKutusu^.YaziYaz(ListeKutusu, Sol, Ust + 1, s, RENK_SIYAH);
 
-      Ust += 18;
+      Ust := Ust + 18;
     end;
   end;
 end;

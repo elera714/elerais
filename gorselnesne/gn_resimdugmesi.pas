@@ -6,7 +6,7 @@
   Dosya Adı: gn_resimdugmesi.pas
   Dosya İşlevi: resim düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 26/05/2026
 
  ==============================================================================}
 {$mode objfpc}

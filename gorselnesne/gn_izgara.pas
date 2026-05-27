@@ -6,7 +6,7 @@
   Dosya Adý: gn_izgara.pas
   Dosya Ýþlevi: ýzgara nesnesi (TStringGrid) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 27/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -411,11 +411,11 @@ begin
       Izgara^.AlanaYaziYaz(Izgara, CizimAlani, 4, 3, FDegerler^.Yazi[(i * (Izgara^.FSutunSayisi)) + j],
         RENK_LACIVERT);
 
-      CizimAlani.Sol += Izgara^.FSutunGenislik + 1;
+      CizimAlani.Sol := CizimAlani.Sol + Izgara^.FSutunGenislik + 1;
     end;
 
     CizimAlani.Sol := 1;
-    CizimAlani.Ust += Izgara^.FSatirYukseklik + 1;
+    CizimAlani.Ust := CizimAlani.Ust + Izgara^.FSatirYukseklik + 1;
   end;
 
   // kaydýrma çubuklarýný en son çiz
@@ -636,7 +636,7 @@ begin
       if(ABicimlenmisDeger[i] = AAyiracDeger) or (i = Uzunluk) then
       begin
 
-        if(i = Uzunluk) then s += ABicimlenmisDeger[i];
+        if(i = Uzunluk) then s := s + ABicimlenmisDeger[i];
 
         if(Length(s) > 0) then
         begin
@@ -644,7 +644,7 @@ begin
           ADegerDizisi^.Ekle(s);
           s := '';
         end;
-      end else s += ABicimlenmisDeger[i];
+      end else s := s + ABicimlenmisDeger[i];
 
       Inc(i);
     end;

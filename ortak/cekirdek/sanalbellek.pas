@@ -6,7 +6,7 @@
   Dosya Adı: sanalbellek.pas
   Dosya İşlevi: sanal bellek (virtual memory) işlevlerini içerir
 
-  Güncelleme Tarihi: 22/10/2019
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -48,7 +48,7 @@ begin
 
     _BellekAdresi^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
     Inc(_BellekAdresi);
-    j += 4096;
+    j := j + 4096;
   end;
 
   // sayfa girişleri
@@ -62,7 +62,7 @@ begin
 
     _BellekAdresi^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
     Inc(_BellekAdresi);
-    j += 4096;
+    j := j + 4096;
   end;
 
   // 1 sayfa = 4K, 1024 sayfa = 4M,
@@ -87,7 +87,7 @@ begin
 
     _SanalBellek^ := _GercekBellek or ABayrak;
     Inc(_SanalBellek);
-    _GercekBellek += 4096;
+    _GercekBellek := _GercekBellek + 4096;
   end;
 
   // TLB belleğini tazele
@@ -103,7 +103,7 @@ begin
     pop     eax
   end;
 
-    _GercekBellek += 4096;
+    _GercekBellek := _GercekBellek + 4096;
   end;
 end;
 
@@ -143,7 +143,7 @@ begin
 
     _HedefBellek^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
     Inc(_HedefBellek);
-    j += 4096;
+    j := j + 4096;
   end;
 
   // sayfa girişleri
@@ -157,7 +157,7 @@ begin
 
     _HedefBellek^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
     Inc(_HedefBellek);
-    j += 4096;
+    j := j + 4096;
   end;
 end;
 

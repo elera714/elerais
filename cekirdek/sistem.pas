@@ -6,7 +6,7 @@
   Dosya Adý: sistem.pas
   Dosya Ýþlevi: sistem yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/05/2025
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -101,10 +101,10 @@ begin
         if not(GN = nil) then
         begin
 
-          s += ';' + IntToStr(GN^.FAtananAlan.Sol);
-          s += ';' + IntToStr(GN^.FAtananAlan.Ust);
-          s += ';' + IntToStr(GN^.FAtananAlan.Genislik);
-          s += ';' + IntToStr(GN^.FAtananAlan.Yukseklik);
+          s := s + ';' + IntToStr(GN^.FAtananAlan.Sol);
+          s := s + ';' + IntToStr(GN^.FAtananAlan.Ust);
+          s := s + ';' + IntToStr(GN^.FAtananAlan.Genislik);
+          s := s + ';' + IntToStr(GN^.FAtananAlan.Yukseklik);
 
           WriteLn(DosyaKimlik, s);
         end;

@@ -123,9 +123,9 @@ begin
   end;
 
   CizimAlani := SDPencere^.FCizimAlani;
-  CizimAlani.Sol += 5;
-  CizimAlani.Sag += 5;
-  CizimAlani.Ust += P_BASLIK_YUKSEKLIK;
+  CizimAlani.Sol := CizimAlani.Sol + 5;
+  CizimAlani.Sag := CizimAlani.Sag + 5;
+  CizimAlani.Ust := CizimAlani.Ust + P_BASLIK_YUKSEKLIK;
   CizimAlani.Alt := CizimAlani.Ust + 60;
   SDPencere^.DikdortgenDoldur(SDPencere, CizimAlani, RENK_SIYAH, RENK_BEYAZ);
 

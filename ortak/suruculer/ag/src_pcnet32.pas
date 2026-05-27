@@ -6,7 +6,7 @@
   Dosya Adý: src_pcnet32.pas
   Dosya Ýþlevi: PCNET32 að (network) sürücüsü
 
-  Güncelleme Tarihi: 09/05/2026
+  Güncelleme Tarihi: 26/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -405,7 +405,7 @@ begin
     GidisHalka[i].Bellek := p;
     GidisHalka[i].Uzunluk := 0;
     GidisHalka[i].Durum := 0;
-    p += ETH_CERCEVE_U;
+    p := p + ETH_CERCEVE_U;
   end;
   BirSonrakiGidisSiraNo := 0;
 
@@ -417,7 +417,7 @@ begin
     GelisHalka[i].Bellek := p;
     GelisHalka[i].Uzunluk := -(ETH_CERCEVE_U);
     GelisHalka[i].Durum := RMD_OWN;
-    p += ETH_CERCEVE_U;
+    p := p + ETH_CERCEVE_U;
   end;
   BirSonrakiGelisSiraNo := 0;
 
@@ -495,7 +495,7 @@ begin
 
       i := GelisHalka[BirSonrakiGelisSiraNo].MesajUz;
       i := i and $FFF;
-      i -= 4;
+      i := i - 4;
 
       Tasi2(GelisHalka[BirSonrakiGelisSiraNo].Bellek, ABellek, i);
       AVeriUzunlugu := i;

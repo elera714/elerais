@@ -221,7 +221,7 @@ begin
     begin
 
       KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
-      VeriU -= KopyalanacakVeriUzunlugu;
+      VeriU := VeriU - KopyalanacakVeriUzunlugu;
     end
     else
     begin
@@ -242,7 +242,7 @@ begin
     //src_com.Yaz(1, AHedefBellek, OkunacakSektorSayisi * 512);
 
     // okunacak bilginin yerleþtirileceði bir sonraki adresi belirle
-    AHedefBellek += (ZincirBasinaSektor * 512);
+    AHedefBellek := AHedefBellek + (ZincirBasinaSektor * 512);
 
     // zincir deðerini 1.5 ile çarp ve bir sonraki zincir deðerini al
     YeniDATSiraNo := (Zincir shr 1) + Zincir + TSayi4(DI^.Bellek1);
@@ -254,7 +254,7 @@ begin
 
     Zincir := DATSiraNo;
 
-    VeriU -= (ZincirBasinaSektor * 512);
+    VeriU := VeriU - (ZincirBasinaSektor * 512);
     if(ZincirBasinaSektor <= 0) then OkumaSonuc := 0;
 
   // eðer 0xFF8..0xFFF aralýðýndaysa bu dosyanýn en son zinciridir

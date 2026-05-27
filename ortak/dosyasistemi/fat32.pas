@@ -228,7 +228,7 @@ begin
     begin
 
       KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
-      VeriU -= KopyalanacakVeriUzunlugu;
+      VeriU := VeriU - KopyalanacakVeriUzunlugu;
     end
     else
     begin
@@ -239,7 +239,7 @@ begin
 
     // okunacak cluster numarasý
     i := (Zincir - 2) * ZincirBasinaSektor;
-    i += DI^.MD.Acilis.IlkVeriSektorNo;
+    i := i + DI^.MD.Acilis.IlkVeriSektorNo;
 
     // sektörü belleðe oku
     GetMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
@@ -255,7 +255,7 @@ begin
     end;}
 
     // okunacak bilginin yerleþtirileceði bir sonraki adresi belirle
-    AHedefBellek += KopyalanacakVeriUzunlugu;
+    AHedefBellek := AHedefBellek + KopyalanacakVeriUzunlugu;
 
     OkunacakFAT := (Zincir * 4) div 512;
 

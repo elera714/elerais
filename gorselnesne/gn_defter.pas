@@ -6,7 +6,7 @@
   Dosya Adý: gn_defter.pas
   Dosya Ýþlevi: defter nesnesi (TMemo) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/04/2025
+  Güncelleme Tarihi: 27/05/2026
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     40K ve çekirdek bölümüne eklenen 40K bellek kullanmaktadýr.
@@ -25,8 +25,6 @@ type
   TDefter = object(TPanel)
   private
     FYatayKCubugu, FDikeyKCubugu: PKaydirmaCubugu;
-    // yazýlacak metni görünür ortamda görüntülenecek þekilde sarmala
-    FMetinSarmala: Boolean;
     FYaziBellekAdresi: Isaretci;
     procedure YatayDikeyKarakterSayisiniAl;
     procedure KaydirmaCubuguOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -47,6 +45,8 @@ type
     // yatay & dikey karakter sayýsý
     property YatayKarSay: TSayi4 read FDeger2 write FDeger2;
     property DikeyKarSay: TSayi4 read FDeger3 write FDeger3;
+    // yazýlacak metni görünür ortamda görüntülenecek (sýnýr içine alacak) þekilde sarmala
+    property FMetinSarmala: Boolean read FDurum1 write FDurum1;
   end;
 
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
@@ -381,10 +381,10 @@ begin
         begin
 
           pxSol := AktifSutunNo * 8;
-          pxSol += CizimAlani.Sol + 4;
+          pxSol := pxSol + CizimAlani.Sol + 4;
 
           pxUst := AktifSatirNo * 16;
-          pxUst += CizimAlani.Ust + 4;
+          pxUst := pxUst + CizimAlani.Ust + 4;
 
           HarfYaz(Defter, pxSol, pxUst, YaziBellekAdresi^, Defter^.FYaziRenk);
         end;
@@ -462,7 +462,7 @@ begin
 
   // sýfýr sonlandýrma iþaretini ekle
   j := Self.YaziUzunlugu;
-  j += i;
+  j := j + i;
   Self.YaziUzunlugu := j;
   p := PByte(Self.FYaziBellekAdresi + Self.YaziUzunlugu);
   p^ := 0;
@@ -494,7 +494,7 @@ begin
 
   // sýfýr sonlandýrma iþaretini ekle
   j := Self.YaziUzunlugu;
-  j += i;
+  j := j + i;
   Self.YaziUzunlugu := j;
   p := PByte(TSayi4(Self.FYaziBellekAdresi) + Self.YaziUzunlugu);
   p^ := 0;

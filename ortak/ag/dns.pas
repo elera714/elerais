@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 07/07/2025
+  Güncelleme Tarihi: 25/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -250,7 +250,7 @@ begin
 
         ParcaUzunlukBellek^ := ParcaUzunluk;
         ParcaUzunlukBellek := B1;
-        ToplamUzunluk += ParcaUzunluk + 1;
+        ToplamUzunluk := ToplamUzunluk + ParcaUzunluk + 1;
         Inc(B1);
         ParcaUzunluk := 0;
       end
@@ -263,7 +263,7 @@ begin
       end;
     end;
     ParcaUzunlukBellek^ := ParcaUzunluk;
-    ToplamUzunluk += ParcaUzunluk + 1;
+    ToplamUzunluk := ToplamUzunluk + ParcaUzunluk + 1;
 
     B1^ := 0;        // sıfır sonlandırma
     Inc(ToplamUzunluk);

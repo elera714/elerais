@@ -37,7 +37,6 @@
       <Unit0>
         <Filename Value="grvyntcs.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="52" Y="26"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
@@ -214,8 +213,9 @@
       <Unit28>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="8" Y="92"/>
+        <CursorPos X="39" Y="50"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit28>

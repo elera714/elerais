@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 27/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,8 +21,6 @@ type
   TGucDugmesi = object(TPanel)
   private
     FDurum: TDugmeDurumu;
-    FDolguluCizim: Boolean;         // dolgulu çizim mi, normal çizim mi?
-    FYaziRenkNormal, FYaziRenkBasili: TRenk;
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PGucDugmesi;
@@ -35,6 +33,10 @@ type
     procedure CizimModelDegistir(ADolguluCizim: Boolean; AGovdeRenk1, AGovdeRenk2,
       AYaziRenkNormal, AYaziRenkBasili: TRenk);
     procedure DurumYaz(AKimlik: TKimlik; ADurum: TSayi4);
+    // dolgulu çizim mi, normal çizim mi?                     //479708
+    property DolguluCizim: Boolean read FDurum1 write FDurum1;
+    property YaziRenkNormal: TRenk read FDeger1 write FDeger1;
+    property YaziRenkBasili: TRenk read FDeger2 write FDeger2;
   end;
 
 function GucDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -43,7 +45,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses genel, gn_islevler, temelgorselnesne, giysi_mac, gn_pencere, sistemmesaj, gorev;
+uses genel, gn_islevler, temelgorselnesne, gn_pencere, sistemmesaj, gorev;
 
 {==============================================================================
   güç düğme kesme çağrılarını yönetir
@@ -197,11 +199,11 @@ begin
   GucDugmesi^.FDurum := ddNormal;
 
   // çizim öndeğerleri
-  GucDugmesi^.FDolguluCizim := True;
+  GucDugmesi^.DolguluCizim := True;
   GucDugmesi^.FGovdeRenk1 := DUGME_NORMAL_ILKRENK;
   GucDugmesi^.FGovdeRenk2 := DUGME_NORMAL_SONRENK;
-  GucDugmesi^.FYaziRenkNormal := DUGME_NORMAL_YAZIRENK;
-  GucDugmesi^.FYaziRenkBasili := DUGME_BASILI_YAZIRENK;
+  GucDugmesi^.YaziRenkNormal := DUGME_NORMAL_YAZIRENK;
+  GucDugmesi^.YaziRenkBasili := DUGME_BASILI_YAZIRENK;
 
   // nesne adresini geri döndür
   Result := GucDugmesi;
@@ -262,8 +264,8 @@ begin
 
   // düğme başlığı
   if(GucDugmesi^.FDurum = ddNormal) then
-    GucDugmesi^.FYaziRenk := FYaziRenkNormal
-  else GucDugmesi^.FYaziRenk := FYaziRenkBasili;
+    GucDugmesi^.FYaziRenk := YaziRenkNormal
+  else GucDugmesi^.FYaziRenk := YaziRenkBasili;
 
   inherited Ciz;
 
@@ -353,15 +355,15 @@ begin
   GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(Kimlik));
   if(GucDugmesi = nil) then Exit;
 
-  GucDugmesi^.FDolguluCizim := ADolguluCizim;
+  GucDugmesi^.DolguluCizim := ADolguluCizim;
   if(ADolguluCizim) then
     GucDugmesi^.FCizimModel := 4
   else GucDugmesi^.FCizimModel := 3;
 
   GucDugmesi^.FGovdeRenk1 := AGovdeRenk1;
   GucDugmesi^.FGovdeRenk2 := AGovdeRenk2;
-  GucDugmesi^.FYaziRenkNormal := AYaziRenkNormal;
-  GucDugmesi^.FYaziRenkBasili := AYaziRenkBasili;
+  GucDugmesi^.YaziRenkNormal := AYaziRenkNormal;
+  GucDugmesi^.YaziRenkBasili := AYaziRenkBasili;
 end;
 
 {==============================================================================
