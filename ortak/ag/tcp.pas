@@ -6,7 +6,7 @@
   Dosya Adý: tcp.pas
   Dosya Ýþlevi: tcp katmaný veri iletiþimini gerçekleþtirir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 29/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,151 +16,164 @@ unit tcp;
 
 interface
 
-uses paylasim, baglanti;
+uses paylasim, baglanti, sunucular;
 
 const
   TCP_BASLIK_U      = 20;
   TCP_EKBASLIK_U    = 12;
 
-type
-  PTCPPaket = ^TTCPPaket;
-  TTCPPaket = packed record
-    {SrcIpAddr,
-    DestIpAddr: TIPAdres;
-    Zero: Byte;
-    Protocol: Byte;
-    Length: Word;               // tcp header + data}
-    YerelPort,
-    UzakPort: TSayi2;
-    SiraNo,                     // sequence number
-    OnayNo: TSayi4;
-    BaslikU: TSayi1;            // 11111000 = 111111 = Data Offset, 000 = Reserved
-    Bayrak: TSayi1;
-    Pencere: TSayi2;
-    SaglamaToplami,
-    AcilIsaretci: TSayi2;       // urgent pointer
-    Secenekler: Isaretci;
-  end;
-
-procedure TCPPaketleriniIsle(AIPPaket: PIPPaket);
+procedure TCPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
 procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIPAdres;
   ABayrak: TSayi1; AVeri: Isaretci; AVeriU: TSayi4; AVeriSonEk: Boolean = False);
+function SunucuBul(APortNo: TSayi4): TSunucuIslev;
 
 implementation
 
 uses genel, donusum, ip, islevler, sistemmesaj, gercekbellek;
 
-procedure TCPPaketleriniIsle(AIPPaket: PIPPaket);
+procedure TCPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
 var
   B: PBaglanti;
+  SI: TSunucuIslev;
   TCPPaket: PTCPPaket;
-  YerelPort, UzakPort,
+  KaynakPort, HedefPort,
+  i: TSayi4;
   U: TSayi2;
-  i, j: TSayi4;
+  p: PChar;
+  IPPaket: PIPPaket;
 begin
 
-  TCPPaket := PTCPPaket(@AIPPaket^.Veri);
+  IPPaket := PIPPaket(@AEthernetPaket^.Veri);
+  TCPPaket := PTCPPaket(@IPPaket^.Veri);
 
-  YerelPort := ntohs(TCPPaket^.YerelPort);      // bu makinenin yerel portu
-  UzakPort := ntohs(TCPPaket^.UzakPort);        // uzak makinenin yerel portu
+  KaynakPort := ntohs(TCPPaket^.YerelPort);       // paketi gönderen cihazýn portu
+  HedefPort := ntohs(TCPPaket^.UzakPort);         // paketi alan cihazýn yerel portu (bu bilgisayar)
 
   {$IFDEF TCP_BILGI}
   SISTEM_MESAJ(RENK_MOR, '-------------------------', []);
-  SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Yerel Port: %d', [YerelPort]);
-  SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Uzak Port: %d', [UzakPort]);
+  SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Kaynak Port: %d', [KaynakPort]);
+  SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Hedef Port: %d', [HedefPort]);
   SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Bayrak: %d', [TCPPaket^.Bayrak]);
   {$ENDIF}
 
-  B := Baglantilar0.TCPBaglantiAl(UzakPort, YerelPort);
-  if(B = nil) then
+  // 1.1 diðer bilgisayarlar tarafýndan istenen bir baðlantý isteði olmasý durumunda
+  if(TCPPaket^.Bayrak = TCP_BAYRAK_ARZ) then
   begin
 
-    SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'TCP: eþleþen uzak port bulunamadý: %d', [YerelPort]);
-    Exit;
+    SI := SunucuBul(HedefPort);
+    if(SI = nil) then
+
+      SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Sistemde %d portu üzerinden hizmet veren sunucu mevcut deðil!', [HedefPort])
+
+    else SI(nil, AEthernetPaket);
   end
   else
+  // 1.2 bu bilgisayar tarafýndan gerçekleþtirilmek istenen bir baðlantý isteði olmasý durumunda
   begin
 
-    if(B^.BaglantiDurum = bdBaglaniyor) then
+    B := Baglantilar0.TCPBaglantiAl(KaynakPort, HedefPort);
+    if(B = nil) then
     begin
 
-      if(TCPPaket^.Bayrak = (TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL)) then
+      SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'TCP: eþleþen servis portu bulunamadý: %d', [HedefPort]);
+      Exit;
+    end
+    else
+    begin
+
+      // 1.1 bu bilgisayardan diðerine istemci -> sunucu baðlantýsý
+      if(B^.BaglantiTuru = btAktif) then
       begin
 
-        // gelen OnayNo deðeri benim gönderdiðim SiraNo deðerinin 1 fazlasý olmalýdýr
-        i := ntohs(TCPPaket^.OnayNo);
-        //if(i = Bag^.FSiraNo + 1) then
+        if(B^.BaglantiDurum = bdBaglaniyor) then
         begin
 
-          B^.SiraNo := i;
+          if(TCPPaket^.Bayrak = (TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL)) then
+          begin
 
-          // gelen SiraNo deðerini 1 artýrarak gönder
-          i := ntohs(TCPPaket^.SiraNo);
-          B^.OnayNo := i + 1;
+            // gelen OnayNo deðeri benim gönderdiðim SiraNo deðerinin 1 fazlasý olmalýdýr
+            i := ntohs(TCPPaket^.OnayNo);
+            //if(i = Bag^.FSiraNo + 1) then
+            begin
 
-          //Bag^.FPencereU := $100;
+              B^.SiraNo := i;
 
-          // baðlantýnýn gerçekleþtiðine dair onay deðerini gönder
-          TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+              // gelen SiraNo deðerini 1 artýrarak gönder
+              i := ntohs(TCPPaket^.SiraNo);
+              B^.OnayNo := i + 1;
 
-          B^.BaglantiDurum := bdBaglandi;
+              //Bag^.FPencereU := $100;
+
+              // baðlantýnýn gerçekleþtiðine dair onay deðerini gönder
+              TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+
+              B^.BaglantiDurum := bdBaglantiKuruldu;
+            end;
+          end;
+        end
+        else if(B^.BaglantiDurum = bdBaglantiKuruldu) then
+        begin
+
+          // gönderilen verinin kabul edildiðinin teyidi
+          if(TCPPaket^.Bayrak = TCP_BAYRAK_KABUL) then
+          begin
+
+            i := ntohs(TCPPaket^.OnayNo);
+            B^.SiraNo := i;
+
+            i := ntohs(TCPPaket^.SiraNo);
+            B^.OnayNo := i;
+
+            U := ntohs(IPPaket^.ToplamUzunluk) - 40;
+            if(U > 0) then Baglantilar0.BellegeEkle(B, @TCPPaket^.Secenekler, U);
+          end
+          // alýnan veri
+          else if(TCPPaket^.Bayrak = TCP_BAYRAK_GONDER or TCP_BAYRAK_KABUL) then  { ayný.2}
+          begin
+
+            i := ntohs(TCPPaket^.OnayNo);
+            B^.SiraNo := i;
+
+            i := ntohs(TCPPaket^.SiraNo);
+            U := ntohs(IPPaket^.ToplamUzunluk) - 40;
+            B^.OnayNo := i + U;
+
+            if(U > 0) then Baglantilar0.BellegeEkle(B, @TCPPaket^.Secenekler, U);
+
+            TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+          end;
+        end
+        else if(B^.BaglantiDurum = bdBaglantiKuruldu) or (B^.BaglantiDurum = bdKapanisBekleniyor1) then
+        begin
+
+          if(TCPPaket^.Bayrak = TCP_BAYRAK_SON or TCP_BAYRAK_KABUL) then
+          begin
+
+            i := ntohs(TCPPaket^.OnayNo);
+            B^.SiraNo := i;
+
+            i := ntohs(TCPPaket^.SiraNo);
+            B^.OnayNo := i + 1;
+
+            TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+
+            B^.ProtokolTipi := ptBilinmiyor;
+            B^.HedefIPAdres := IPAdres0;
+            B^.YerelPort := 0;
+            B^.UzakPort := 0;
+
+            if not(B^.Bellek = nil) then GercekBellek0.YokEt(B^.Bellek, 4 * 4096);
+            B^.Bagli := False;
+            B^.BaglantiDurum := bdYok;
+          end;
         end;
-      end;
-    end
-    else if(B^.BaglantiDurum = bdBaglandi) then
-    begin
-
-      // gönderilen verinin kabul edildiðinin teyidi
-      if(TCPPaket^.Bayrak = TCP_BAYRAK_KABUL) then
-      begin
-
-        i := ntohs(TCPPaket^.OnayNo);
-        B^.SiraNo := i;
-
-        i := ntohs(TCPPaket^.SiraNo);
-        B^.OnayNo := i;
-
-        U := ntohs(AIPPaket^.ToplamUzunluk) - 40;
-        if(U > 0) then Baglantilar0.BellegeEkle(B, @TCPPaket^.Secenekler, U);
       end
-      // alýnan veri
-      else if(TCPPaket^.Bayrak = TCP_BAYRAK_GONDER or TCP_BAYRAK_KABUL) then
+      else
+      // 1.2 diðer bilgisayardan bu bilgisayara istemci -> sunucu baðlantýsý
       begin
 
-        i := ntohs(TCPPaket^.OnayNo);
-        B^.SiraNo := i;
-
-        i := ntohs(TCPPaket^.SiraNo);
-        U := ntohs(AIPPaket^.ToplamUzunluk) - 40;
-        B^.OnayNo := i + U;
-
-        if(U > 0) then Baglantilar0.BellegeEkle(B, @TCPPaket^.Secenekler, U);
-
-        TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
-      end;
-    end
-    else if(B^.BaglantiDurum = bdBaglandi) or (B^.BaglantiDurum = bdKapaniyor1) then
-    begin
-
-      if(TCPPaket^.Bayrak = TCP_BAYRAK_SON or TCP_BAYRAK_KABUL) then
-      begin
-
-        i := ntohs(TCPPaket^.OnayNo);
-        B^.SiraNo := i;
-
-        i := ntohs(TCPPaket^.SiraNo);
-        B^.OnayNo := i + 1;
-
-        TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
-
-        B^.ProtokolTipi := ptBilinmiyor;
-        B^.HedefIPAdres := IPAdres0;
-        B^.YerelPort := 0;
-        B^.UzakPort := 0;
-
-        GercekBellek0.YokEt(B^.Bellek, 4096 * 4);
-        B^.Bagli := False;
-        B^.BaglantiDurum := bdYok;
+        SI := SunucuBul(HedefPort);
+        if not(SI = nil) then SI(B, AEthernetPaket);
       end;
     end;
   end;
@@ -189,8 +202,20 @@ begin
   if(AVeriSonEk) then
     BaslikUzunlugu := (((20 + AVeriU) shr 2) shl 4)
   else BaslikUzunlugu := ((20 shr 2) shl 4);
-  TCPPaket^.YerelPort := htons(ABaglanti^.YerelPort);
-  TCPPaket^.UzakPort := htons(ABaglanti^.UzakPort);
+
+  if(ABaglanti^.BaglantiTuru = btAktif) then
+  begin
+
+    TCPPaket^.YerelPort := htons(ABaglanti^.YerelPort);
+    TCPPaket^.UzakPort := htons(ABaglanti^.UzakPort);
+  end
+  else
+  begin
+
+    TCPPaket^.YerelPort := htons(ABaglanti^.UzakPort);
+    TCPPaket^.UzakPort := htons(ABaglanti^.YerelPort);
+  end;
+
   TCPPaket^.SiraNo := htons(ABaglanti^.SiraNo);
   TCPPaket^.OnayNo := htons(ABaglanti^.OnayNo);
   TCPPaket^.BaslikU := BaslikUzunlugu;     // üst 4 bit = BaslikUzunlugu * 4 = baþlýk uzunluðu;
@@ -213,6 +238,29 @@ begin
     ptTCP, $4000, TCPPaket, TCP_BASLIK_U + AVeriU);
 
   GercekBellek0.YokEt(TCPPaket, TCP_BASLIK_U + AVeriU);
+end;
+
+{==============================================================================
+  belirtilen port üzerinden hizmet veren sunucu yazýlýmýný bulur
+ ==============================================================================}
+function SunucuBul(APortNo: TSayi4): TSunucuIslev;
+var
+  SI: TSunucuYapisi;
+  i: TSayi4;
+begin
+
+  Result := nil;
+
+  if(HIZMETVEREN_SUNUCU_SAYISI > 0) then
+  begin
+
+    for i := 0 to HIZMETVEREN_SUNUCU_SAYISI - 1 do
+    begin
+
+      SI := SunucuListesi[i];
+      if(SI.PortNo = APortNo) then Exit(SI.Islev);
+    end;
+  end;
 end;
 
 end.

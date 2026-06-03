@@ -44,8 +44,9 @@ English:
   - ARP
   - ICMP
   - NETBIOS
-  - DNS İstemci
-  - DHCP Sunucu / İstemci
+  - HTTP Sunucusu
+  - DNS İstemcisi
+  - DHCP Sunucusu / İstemcisi
 - **Dosya Sistemi:**
   - ELR-1 dosya sistemi (okuma / yazma - (geliştirilmesi devam etmektedir))
   - FAT12, FAT16, FAT32 dosya desteği (yalnızca okuma)

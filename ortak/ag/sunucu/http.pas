@@ -1,0 +1,290 @@
+{==============================================================================
+
+  Kodlayan: Fatih KILIÇ
+  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
+
+  Dosya Adý: http.pas
+  Dosya Ýþlevi: HTTP sunucu protokol iþlevlerini yönetir
+
+  Güncelleme Tarihi: 03/06/2026
+
+ ==============================================================================}
+{$mode objfpc}
+unit http;
+
+interface
+
+uses paylasim, baglanti;
+
+const
+  USTSINIR_HTTPISTEMCI    = 10;
+
+const
+  WebSiteBaslik: PChar = 'HTTP/1.1 200 OK' + #13 + #10 +
+  'Server: ELERA Web Sunucusu v1.0.6' + #13 + #10 +
+  'Date: Mon, 01 Jun 2026 08:31:03 GMT' + #13 + #10 +
+  'Content-Length: 332' + #13 + #10 +
+  'Content-Type: text/html' + #13 + #10 +
+  'Connection: close' + #13 + #10 + #13 + #10;
+
+  WebSiteIcerik: PChar = '<!doctype html>' + #13 + #10 +
+  '<html>' + #13 + #10 +
+  '<head>' + #13 + #10 +
+  '    <title>ELERA Web Sunucusu</title>' + #13 + #10 +
+  '</head>' + #13 + #10 +
+  '<body>' + #13 + #10 +
+  '    <h1>ELERA Web Sunucusu</h1>' + #13 + #10 +
+  '    <hr>' + #13 + #10 +
+  '    <p>ELERA Web Sunucusu''na hoþ geldiniz.</p>' + #13 + #10 +
+  '    <p>Sistem çalýþmalarýna eriþmek icin <a href="https://github.com/elera714">ELERA Ýþletim Sistemi</a> sayfasýný ziyaret ediniz.</p>' + #13 + #10 +
+  '</body>' + #13 + #10 +
+  '</html>';
+
+type
+  THTTPSunucu = object
+  private
+    FMevcutIstemciSayisi: TSayi4;
+    FIstemciler: array[0..USTSINIR_HTTPISTEMCI - 1] of PBaglanti;
+    function Al(ASiraNo: TISayi4): PBaglanti;
+    procedure Yaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
+  public
+    procedure Yukle;
+    property Istemciler[ASiraNo: TISayi4]: PBaglanti read Al write Yaz;
+    function Ekle(AIPAdres: TIPAdres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
+  end;
+
+var
+  HTTPSunucu0: THTTPSunucu;
+
+procedure SunucuIslevHTTP(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+
+implementation
+
+uses donusum, sistemmesaj, tcp;
+
+{==============================================================================
+  http sunucusu ana yükleme iþlevlerini içerir
+ ==============================================================================}
+procedure THTTPSunucu.Yukle;
+var
+  i: TSayi4;
+begin
+
+  FMevcutIstemciSayisi := 0;
+
+  for i := 0 to USTSINIR_HTTPISTEMCI - 1 do Istemciler[i] := nil;
+end;
+
+function THTTPSunucu.Ekle(AIPAdres: TIPAdres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
+var
+  Istemci, B: PBaglanti;
+  i, j: TSayi4;
+  IPAdres: string;
+begin
+
+  Result := nil;
+
+  // azami baðlantý sayýsý kontrolü
+  if(HTTPSunucu0.FMevcutIstemciSayisi >= USTSINIR_HTTPISTEMCI) then Exit(nil);
+
+  // istekte bulunan bilgisayar daha önce ayný port numarasýndan istekte bulunmuþ mu?
+  for i := 0 to USTSINIR_HTTPISTEMCI - 1 do
+  begin
+
+    Istemci := HTTPSunucu0.Istemciler[i];
+    if not(Istemci = nil) then
+    begin
+
+      if(HTTPSunucu0.Istemciler[i]^.YerelPort = AKaynakPort) then Exit(nil);
+    end;
+  end;
+
+  IPAdres := IP_KarakterKatari(AIPAdres);
+
+  // istemci için baðlantý oluþtur
+  B := Baglantilar0.BaglantiOlustur(btPasif, ptTCP, IPAdres, AKaynakPort, AHedefPort);
+  if(B = nil) then Exit(nil);
+
+  // oluþturulan baðlantýyý kaydet
+  for i := 0 to USTSINIR_HTTPISTEMCI - 1 do
+  begin
+
+    Istemci := HTTPSunucu0.Istemciler[i];
+    if(Istemci = nil) then
+    begin
+
+      HTTPSunucu0.Istemciler[i] := B;
+
+      B^.BaglantiDurum := bdKapali;     { TODO - durumu yeni yapýlandýrmaya göre uygun bir þekilde belirle }
+
+      j := HTTPSunucu0.FMevcutIstemciSayisi;
+      Inc(j);
+      HTTPSunucu0.FMevcutIstemciSayisi := j;
+
+      Exit(B);
+    end;
+  end;
+end;
+
+function THTTPSunucu.Al(ASiraNo: TISayi4): PBaglanti;
+begin
+
+  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_HTTPISTEMCI) then
+    Result := FIstemciler[ASiraNo]
+  else Result := nil;
+end;
+
+procedure THTTPSunucu.Yaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
+begin
+
+  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_HTTPISTEMCI) then
+    FIstemciler[ASiraNo] := ABaglanti;
+end;
+
+var
+  VeriGonderiliyor: Boolean = False;
+
+procedure SunucuIslevHTTP(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+const
+  TCPSYNSonEk: array[0..11] of TSayi1 = (
+    $02, $04, $05, $B4, $01, $03, $03, $08, $01, $01, $04, $02);
+var
+  B: PBaglanti;
+  TCPPaket: PTCPPaket;
+  IPPaket: PIPPaket;
+  KaynakPort, HedefPort,
+  U: TSayi2;
+  i: TSayi4;
+  p: PChar;
+begin
+
+  IPPaket := PIPPaket(@AEthernetPaket^.Veri);
+  TCPPaket := PTCPPaket(@IPPaket^.Veri);
+
+  if(ABaglanti = nil) then
+  begin
+
+    KaynakPort := ntohs(TCPPaket^.YerelPort);      // paketi gönderen cihazýn portu
+    HedefPort := ntohs(TCPPaket^.UzakPort);        // paketi alan cihazýn yerel portu (bu bilgisayar)
+
+    // bu aþamada istemciden SYN mesajý gelmiþ, sunucu olarak istemciye SYN + ACK mesajý göndrilmiþtir
+    B := HTTPSunucu0.Ekle(IPPaket^.KaynakIP, KaynakPort, HedefPort);
+    if not(B = nil) then
+    begin
+
+      SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Web Sunucusu: yeni baðlantý. Kaynak port: %d', [KaynakPort]);
+      //SISTEM_MESAJ_IP(mtUyari, RENK_BORDO, 'Web Sunucusu: IP Adres: ', AIPPaket^.KaynakIP);
+
+      B^.SiraNo := Baglantilar0.TCPIlkSiraNoAl;
+      B^.OnayNo := ntohs(TCPPaket^.SiraNo) + 1;
+      B^.HedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+      B^.HedefIPAdres := IPPaket^.KaynakIP;
+
+      TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCPSYNSonEk, 12, True);
+
+      B^.BaglantiDurum := bdBaglantiBekleniyor;
+    end
+    else
+    begin
+
+      SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Web Sunucusu: zaten mevcut. Kaynak port: %d', [KaynakPort]);
+    end;
+  end
+  // baðlantý kuran bilgisayarýn baðlantýyý kapatma isteði
+  else if(TCPPaket^.Bayrak = TCP_BAYRAK_SON or TCP_BAYRAK_KABUL) then
+  begin
+
+    i := ntohs(TCPPaket^.OnayNo);
+    ABaglanti^.SiraNo := i;
+
+    i := ntohs(TCPPaket^.SiraNo);
+    ABaglanti^.OnayNo := i + 1;
+
+    TCPPaketGonder(ABaglanti, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+
+    ABaglanti^.BaglantiDurum := bdKapanmayiBekliyor;
+
+    TCPPaketGonder(ABaglanti, GAgBilgisi.IP4Adres, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
+
+    ABaglanti^.BaglantiDurum := bdSonOnay;
+  end
+  // baðlantý kuran bilgisayarýn veri gönderme isteði
+  else if(TCPPaket^.Bayrak = TCP_BAYRAK_GONDER or TCP_BAYRAK_KABUL) then
+  begin
+
+    if(ABaglanti^.BaglantiDurum = bdBaglantiKuruldu) then
+    begin
+
+      i := ntohs(TCPPaket^.OnayNo);
+      ABaglanti^.SiraNo := i;
+
+      i := ntohs(TCPPaket^.SiraNo);
+      U := ntohs(IPPaket^.ToplamUzunluk) - 40;
+      ABaglanti^.OnayNo := i + U;
+
+      if(U > 0) then Baglantilar0.BellegeEkle(ABaglanti, @TCPPaket^.Secenekler, U);
+
+      // alýnan verinin deðerlendirilmesi
+      p := @TCPPaket^.Secenekler;
+
+      if(p[0] = 'G') and (p[1] = 'E') and (p[2] = 'T') then
+        TCPPaketGonder(ABaglanti, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+
+      Baglantilar0.Yaz(ABaglanti^.Kimlik, WebSiteBaslik, Length(WebSiteBaslik));
+
+      VeriGonderiliyor := True;
+    end;
+  end
+  else if(TCPPaket^.Bayrak = TCP_BAYRAK_KABUL) then
+  begin
+
+    // istemci tarafýndan gönderilen ACK mesajýyla baðlantý kurulmuþtur
+    if(ABaglanti^.BaglantiDurum = bdBaglantiBekleniyor) then
+
+      ABaglanti^.BaglantiDurum := bdBaglantiKuruldu
+
+    else if(ABaglanti^.BaglantiDurum = bdBaglantiKuruldu) then
+    begin
+
+      if(VeriGonderiliyor) then
+      begin
+
+        i := ntohs(TCPPaket^.OnayNo);
+        ABaglanti^.SiraNo := i;
+
+        i := ntohs(TCPPaket^.SiraNo);
+        ABaglanti^.OnayNo := i;
+
+        // 1. sayfa
+        Baglantilar0.Yaz(ABaglanti^.Kimlik, WebSiteIcerik, Length(WebSiteIcerik));
+
+        i := Length(WebSiteIcerik);
+
+        //SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'TCP: U: %d', [i]);
+
+        VeriGonderiliyor := False;
+      end;
+    end
+    else if(ABaglanti^.BaglantiDurum = bdSonOnay) then
+    begin
+
+      ABaglanti^.ProtokolTipi := ptBilinmiyor;
+      ABaglanti^.HedefIPAdres := IPAdres0;
+      ABaglanti^.YerelPort := 0;
+      ABaglanti^.UzakPort := 0;
+
+      if not(ABaglanti^.Bellek = nil) then FreeMem(ABaglanti^.Bellek, 4 * 4096);
+      ABaglanti^.Bagli := False;
+      ABaglanti^.BaglantiDurum := bdYok;
+    end;
+  end
+  else
+  begin
+
+    SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'TCP: pasif baðlantý?', []);
+  end;
+end;
+
+end.

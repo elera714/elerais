@@ -23,9 +23,9 @@ const
   TCP_PENCERE_UZUNLUK = 8192;
   ILK_YERELPORTNO     = $A00E;
 
-  TCP_BAYRAK_SON      = $01;
+  TCP_BAYRAK_SON      = $01;    // FIN
   TCP_BAYRAK_ARZ      = $02;    // SYN
-  TCP_BAYRAK_GONDER   = $08;
+  TCP_BAYRAK_GONDER   = $08;    // PSH
   TCP_BAYRAK_KABUL    = $10;    // ACK
 
 var
@@ -36,15 +36,41 @@ type
 {
     bdYok = tcp/udp veri alanlarýnýn ilk yükleme ve tcp/bdKapaniyor2 (? teyit et) sonrasý aþamasý
     bdKapali = tcp/udp yeni baðlantý oluþturma ve udp/baðlantý kapatma sonrasý aþamasý
-    bdKapaniyor1 = istemcinin sunucuya gönderdiði FIN + ACK durumu
-    bdKapaniyor2 = sunucunun istemciye gönderdiði FIN + ACK durumu
 }
-  TBaglantiDurum = (bdYok, bdKapali, bdBaglaniyor, bdBaglandi, bdKapaniyor1);
+
+  { TODO - açýklama yapýlmayan durumlar yeniden gözden geçirilecek }
+  TBaglantiDurum = (
+    bdYok,
+    bdKapali,
+    bdBaglaniyor,
+
+
+    // bdBaglantiBekleniyor (sunucu durumu - SYN-RECEIVED):
+    // istemciden SYN mesajý alýnmýþ, istemciye SYN + ACK mesajý gönderilmiþtir
+    bdBaglantiBekleniyor,
+    // bdBaglantiKuruldu (sunucu / istemci durumu - ESTABLISHED)
+    // sunucu istemci arasýndaki 3 yollu (SYN -> SYN + ACK -> ACK) anlaþma saðlanmýþtýr
+    bdBaglantiKuruldu,
+    // bdKapanmayiBekliyor (sunucu / istemci durumu - CLOSE-WAIT)
+    // baðlantýnýn 1. ucundaki istemci / sunucudan kapatma isteðinin gelmesi durumu (FIN + ACK)
+    bdKapanmayiBekliyor,
+    // bdSonOnay (sunucu / istemci durumu - LAST-ACK)
+    // baðlantýnýn 2. ucundaki istemci / sunucunun kapatma isteðine (FIN + ACK) onay bekleme durumu
+    bdSonOnay,
+    // bdKapanisBekleniyor1 (sunucu / istemci durumu - FIN-WAIT-1)
+    // baðlantýnýn 1. ucundaki istemci / sunucunun kapatma isteði (FIN + ACK) gönderme durumu
+    bdKapanisBekleniyor1);
+
+  // aktif baðlantý: istemcinin sunucuya baðlantýsý
+  // pasif baðlantý: sunucunun kendisine gelen istekleri kabul etmek için oluþturduðu baðlantý
+  // btBelirsiz: tcp baðlantýlarýn haricindeki baðlantýlar (udp gibi)
+  TBaglantiTuru = (btBelirsiz, btAktif, btPasif);
 
 type
   PBaglanti = ^TBaglanti;
   TBaglanti = record
     Kimlik: TKimlik;
+    BaglantiTuru: TBaglantiTuru;
     BaglantiDurum: TBaglantiDurum;
     ProtokolTipi: TProtokolTipi;
     PencereU: TSayi2;
@@ -67,14 +93,15 @@ type
     procedure BaglantiYaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
   public
     procedure Yukle;
-    function BaglantiOlustur(AProtokolTipi: TProtokolTipi; ABaglantiAdresi: string;
-      AYerelPort, AUzakPort: TSayi2): PBaglanti;
-    function BaglantiYapisiOlustur: PBaglanti;
+    function BaglantiOlustur(ABaglantiTuru: TBaglantiTuru; AProtokolTipi: TProtokolTipi;
+      ABaglantiAdresi: string; AYerelPort, AUzakPort: TSayi2): PBaglanti;
+    function BaglantiYapisiOlustur(ABaglantiTuru: TBaglantiTuru): PBaglanti;
     function Baglan(AKimlik: TKimlik; ABaglantiTipi: TBaglantiTipi): TISayi4;
     function BagliMi(AKimlik: TKimlik): Boolean;
     function BaglantiyiKes(AKimlik : TKimlik): TISayi4;
     function TCPIlkSiraNoAl: TSayi4;
-    function TCPBaglantiAl(AYerelPort, AUzakPort: TSayi2): PBaglanti;
+    function TCPBaglantiAl(AKaynakPort, AHedefPort: TSayi2): PBaglanti;
+    procedure Listele;
     function UDPBaglantiAl(AYerelPort: TSayi2): PBaglanti;
     procedure BellegeEkle(ABaglanti: PBaglanti; AKaynakBellek: Isaretci;
       AVeriUzunlugu: TSayi4);
@@ -128,8 +155,8 @@ end;
 {==============================================================================
   að baðlantýsý için baðlantý oluþturur
  ==============================================================================}
-function TBaglantilar.BaglantiOlustur(AProtokolTipi: TProtokolTipi; ABaglantiAdresi: string;
-  AYerelPort, AUzakPort: TSayi2): PBaglanti;
+function TBaglantilar.BaglantiOlustur(ABaglantiTuru: TBaglantiTuru; AProtokolTipi: TProtokolTipi;
+  ABaglantiAdresi: string; AYerelPort, AUzakPort: TSayi2): PBaglanti;
 var
   B: PBaglanti;
   s, SunucuAdi,
@@ -140,7 +167,7 @@ begin
 
 //  while KritikBolgeyeGir(BaglantilarKilit) = False do;
 
-  B := BaglantiYapisiOlustur;
+  B := BaglantiYapisiOlustur(ABaglantiTuru);
   if(B = nil) then Exit(nil);
 
   // ABaglantiAdresi içeriði aþaðýdaki biçimde gelmekte olup bu yapýnýn "/" sonrasý
@@ -177,14 +204,14 @@ begin
     B^.OnayNo := 0;
 
     B^.VeriUzunlugu := 0;
-    B^.Bellek := GetMem(4096 * 4); //Bag^.FPencereU);
+    B^.Bellek := GetMem(4 * 4096); //Bag^.FPencereU);
     if(B^.Bellek = nil) then SISTEM_MESAJ(mtHata, RENK_SIYAH, 'BAGLANTI.PAS: Bellek yok', []);
   end
   else if(AProtokolTipi = ptUDP) then
   begin
 
     B^.VeriUzunlugu := 0;
-    B^.Bellek := GetMem(4096 * 4);
+    B^.Bellek := GetMem(4 * 4096);
 
     SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Protokol -> UDP', []);
     SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Kimlik %d', [B^.Kimlik]);
@@ -210,7 +237,7 @@ end;
 {==============================================================================
   yeni baðlantý için gerekli yapýlarý oluþturur
  ==============================================================================}
-function TBaglantilar.BaglantiYapisiOlustur: PBaglanti;
+function TBaglantilar.BaglantiYapisiOlustur(ABaglantiTuru: TBaglantiTuru): PBaglanti;
 var
   B: PBaglanti;
   i: TSayi4;
@@ -228,9 +255,12 @@ begin
       B := PBaglanti(GetMem(SizeOf(TBaglanti)));
       Baglanti[i] := B;
 
+      B^.BaglantiTuru := ABaglantiTuru;
       B^.BaglantiDurum := bdYok;
       B^.Kimlik := i;
       B^.BaglantiDurum := bdKapali;
+
+      B^.Bellek := nil;
 
       Exit(B);
     end;
@@ -317,7 +347,7 @@ begin
     else if(B^.ProtokolTipi = ptTCP) then
     begin
 
-      if(B^.BaglantiDurum = bdBaglandi) then
+      if(B^.BaglantiDurum = bdBaglantiKuruldu) then
         Result := True
       else Result := False;
 
@@ -349,7 +379,7 @@ begin
       B^.YerelPort := 0;
       B^.UzakPort := 0;
 
-      FreeMem(B^.Bellek, 4096 * 4);
+      if not(B^.Bellek = nil) then FreeMem(B^.Bellek, 4 * 4096);
       B^.Bagli := False;
 
       Result := 0;
@@ -357,17 +387,13 @@ begin
     else if(B^.ProtokolTipi = ptTCP) then
     begin
 
-      if(B^.BaglantiDurum = bdBaglandi) then
+      if(B^.BaglantiDurum = bdBaglantiKuruldu) then
       begin
 
         TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_SON + TCP_BAYRAK_KABUL,
           nil, 0);
 
-        B^.BaglantiDurum := bdKapaniyor1;
-
-        // baðlantýyý kapatmanýn diðer aþamalarý sunucu + istemci olarak tcp.pas dosyasýndadýr
-
-        //SISTEM_MESAJ(RENK_KIRMIZI, 'TCP Durum: bdKapaniyor1', []);
+        B^.BaglantiDurum := bdKapanisBekleniyor1;
 
         Result := 0;
       end;
@@ -382,12 +408,13 @@ function TBaglantilar.TCPIlkSiraNoAl: TSayi4;
 begin
 
   Result := TCPIlkSiraNo;
+  Inc(TCPIlkSiraNo, 10);
 end;
 
 {==============================================================================
-  tcp yerel / uzak portun sahibi olan baðlantýyý alýr
+  tcp kaynak / hedef portun sahibi olan baðlantýyý alýr
  ==============================================================================}
-function TBaglantilar.TCPBaglantiAl(AYerelPort, AUzakPort: TSayi2): PBaglanti;
+function TBaglantilar.TCPBaglantiAl(AKaynakPort, AHedefPort: TSayi2): PBaglanti;
 var
   B: PBaglanti;
   i: TSayi4;
@@ -398,11 +425,27 @@ begin
   begin
 
     B := Baglanti[i];
-    if not(B^.BaglantiDurum = bdYok) and (B^.YerelPort = AYerelPort) and
-      (B^.UzakPort = AUzakPort) then Exit(B);
+    if not(B^.BaglantiDurum = bdYok) and (B^.YerelPort = AKaynakPort) and
+      (B^.UzakPort = AHedefPort) then Exit(B);
   end;
 
   Result := nil;
+end;
+
+procedure TBaglantilar.Listele;
+var
+  B: PBaglanti;
+  i: TSayi4;
+begin
+
+  // tüm iþlem giriþlerini incele
+  for i := 0 to USTSINIR_BAGLANTI - 1 do
+  begin
+
+    B := Baglanti[i];
+    if not(B = nil) then
+      SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Kaynak: %d, Hedef: %d', [b^.YerelPort, B^.UzakPort]);
+  end;
 end;
 
 {==============================================================================
@@ -438,7 +481,7 @@ begin
 
   if(AVeriUzunlugu = 0) then Exit;
 
-  if(ABaglanti^.VeriUzunlugu + AVeriUzunlugu < (4096 * 4)) then
+  if(ABaglanti^.VeriUzunlugu + AVeriUzunlugu < (4 * 4096)) then
   begin
 
     p := ABaglanti^.Bellek + ABaglanti^.VeriUzunlugu;
@@ -509,7 +552,7 @@ begin
     if(B^.ProtokolTipi = ptTCP) then
     begin
 
-      if(B^.BaglantiDurum = bdBaglandi) then
+      if(B^.BaglantiDurum = bdBaglantiKuruldu) then
       begin
 
         // FPencereU := $100;

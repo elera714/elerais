@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 29/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -40,7 +40,7 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi
 implementation
 
 uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, islevler, genel,
-  dhcp, dhcp_s, gorev, gercekbellek;
+  dhcp, dhcp_s, gorev, gercekbellek, http;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
@@ -81,6 +81,9 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DHCP protokolü yükleniyor...', []);
     DHCPSunucu0.Yukle;
+
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ HTTP sunucusu yükleniyor...', []);
+    HTTPSunucu0.Yukle;
 
     // sistem için ip adresini yapýlandýr
     if(GAgBilgisi.IPAdresiAlindi = False) then
@@ -197,7 +200,7 @@ begin
       // IP protokolü
       else if(Protokol = PROTOKOL_IP) then
 
-        IPPaketleriniIsle(@EthernetPaket^.Veri, i - ETHERNET_BASLIKU)
+        IPPaketleriniIsle(EthernetPaket, i - ETHERNET_BASLIKU)
       else
       begin
 

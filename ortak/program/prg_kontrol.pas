@@ -55,7 +55,6 @@ begin
 
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-Y: %d', [GFareSurucusu.DikeyKonum]);
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '1', []);
 
     DosyaBulundu := False;
 
@@ -92,8 +91,6 @@ begin
 }
     if(DosyaBulundu) then
     begin
-
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '1.1', []);
 
       //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [j]);
       //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [j2]);
@@ -159,25 +156,9 @@ end;
 procedure NesneKontrol;
 var
   G: PGorselNesne;
-  i, j, k: TKimlik;
+  k: TKimlik;
   Masaustu: PMasaustu;
 begin
-
-  j := 0;
-  k := 0;
-  for i := 0 to USTSINIR_GORSELNESNE - 1 do
-  begin
-
-    G := GorselNesneler0.GorselNesne[i];
-    if(G = nil) then
-    begin
-
-      k := i;
-      Inc(j);
-    end;
-  end;
-
-  SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Son GN SN: %d, Toplam GN: %d', [k, j]);
 
   Masaustu := GAktifMasaustu;
   //Masaustu^.MasaustuResminiDegistir('disk1:\resimler\' + IntToStr(ResimNo) + '.bmp');

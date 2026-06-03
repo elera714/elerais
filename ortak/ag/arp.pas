@@ -325,7 +325,7 @@ begin
 
     BekleMS(100);
 
-    if(AgYuklendi) and (GAgBilgisi.IPAdresiAlindi) then
+    {if(AgYuklendi) and (GAgBilgisi.IPAdresiAlindi) then
     begin
 
       if(i = 0) then
@@ -340,7 +340,7 @@ begin
       Inc(i);
 
       if(i > 255) then i := 0;
-    end;
+    end;}
   end;
 end;
 

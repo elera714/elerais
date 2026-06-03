@@ -1,4 +1,9 @@
 *******************************************************************************
+  Sürüm: 0.4.1 (sunucu / istemci) - 00.00.0000 (R37) - Beta
+*******************************************************************************
+  + http sunucusu çekirdeðe eklendi. (ana iskelet istemcilere hizmet verecek þekilde yapýlandýrýldý)
+
+*******************************************************************************
   Sürüm: 0.4.0 (sunucu / istemci) - 27.05.2026 (R36) - Beta
 *******************************************************************************
   + fpc derleyicisinin kendi dahili iþlevleri için kullandýðý çekirdek bellek yönetim modülü tamamlandý

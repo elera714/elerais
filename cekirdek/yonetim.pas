@@ -77,7 +77,7 @@ implementation
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
   src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci,
-  sistem, src_pcnet32, gn_giriskutusu;
+  sistem, src_pcnet32, gn_giriskutusu, baglanti;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -331,8 +331,8 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            //Gorevler0.Calistir('disk1:\progrmlr\defter.c', CALISMA_SEVIYE3)
-            Gorevler0.Calistir('disk1:\progrmlr\kaydirma.c', CALISMA_SEVIYE3)
+            Baglantilar0.Listele;
+
             //elr1.SistemKlasorleriniOlustur;
 
             {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');

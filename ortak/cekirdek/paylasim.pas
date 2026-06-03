@@ -517,6 +517,26 @@ type
   TIslev = procedure;
 
 type
+  PTCPPaket = ^TTCPPaket;
+  TTCPPaket = packed record
+    {SrcIpAddr,
+    DestIpAddr: TIPAdres;
+    Zero: Byte;
+    Protocol: Byte;
+    Length: Word;               // tcp header + data}
+    YerelPort,
+    UzakPort: TSayi2;
+    SiraNo,                     // sequence number
+    OnayNo: TSayi4;
+    BaslikU: TSayi1;            // 11111000 = 111111 = Data Offset, 000 = Reserved
+    Bayrak: TSayi1;
+    Pencere: TSayi2;
+    SaglamaToplami,
+    AcilIsaretci: TSayi2;       // urgent pointer
+    Secenekler: Isaretci;
+  end;
+
+type
   PKonum = ^TKonum;
   TKonum = record
     Sol, Ust: TISayi4;
@@ -782,7 +802,7 @@ var
   GAgBilgisi: TAgBilgisi;
 
   // otomatik atama olmadýðý durumda sistemin kullanacaðý ip adres deðerleri
-  OnDegerIPAdresi: TIPAdres = (10, 0, 0, 1);
+  OnDegerIPAdresi: TIPAdres = (10, 0, 1, 1);
   OnDegerAltAgMaskesi: TIPAdres = (255, 255, 255, 0);
 
   { TODO - dns sunucusu tarafýndan yapýlandýrýlacak, þu aþamada dhcp sunucu tarafýndan

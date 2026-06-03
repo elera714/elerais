@@ -6,7 +6,7 @@
   Dosya Adý: dhcp.pas
   Dosya Ýþlevi: DHCP protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 30/05/2026
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -386,7 +386,7 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
-  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
@@ -538,7 +538,7 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(ATeklifEdilenIPAdresi.IPAdres);
-  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
@@ -713,7 +713,7 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
-  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
@@ -881,7 +881,7 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(AIstenenIPAdresi.IPAdres);
-  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
@@ -1015,7 +1015,7 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
-  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
@@ -1145,7 +1145,7 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(AIPAdres.IPAdres);
-  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
@@ -1232,7 +1232,7 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari(IPAdres255);
-  B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 

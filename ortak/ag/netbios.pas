@@ -6,7 +6,7 @@
   Dosya Adý: netbios.pas
   Dosya Ýþlevi: netbios api iþlevlerini yönetir
 
-  Güncelleme Tarihi: 07/02/2025
+  Güncelleme Tarihi: 30/05/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -219,7 +219,7 @@ begin
     Tasi2(@Veri[0], p, VeriSN);
 
     IPAdresi := IP_KarakterKatari(AIPPaket^.KaynakIP);
-    B := Baglantilar0.BaglantiOlustur(ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
+    B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
       ntohs(AUDPBaslik^.HedefPort));
     if not(B = nil) then
     begin
