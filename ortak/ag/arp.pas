@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 13/07/2025
+  Güncelleme Tarihi: 03/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -325,6 +325,7 @@ begin
 
     BekleMS(100);
 
+    { geçici olarak kapatýldý, aktifleþtirilebilir }
     {if(AgYuklendi) and (GAgBilgisi.IPAdresiAlindi) then
     begin
 

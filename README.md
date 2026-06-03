@@ -45,6 +45,7 @@ English:
   - ICMP
   - NETBIOS
   - HTTP Sunucusu
+  - FTP Sunucusu
   - DNS İstemcisi
   - DHCP Sunucusu / İstemcisi
 - **Dosya Sistemi:**

@@ -6,7 +6,7 @@
   Dosya Adý: tcp.pas
   Dosya Ýþlevi: tcp katmaný veri iletiþimini gerçekleþtirir
 
-  Güncelleme Tarihi: 29/05/2026
+  Güncelleme Tarihi: 03/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -50,10 +50,10 @@ begin
   HedefPort := ntohs(TCPPaket^.UzakPort);         // paketi alan cihazýn yerel portu (bu bilgisayar)
 
   {$IFDEF TCP_BILGI}
-  SISTEM_MESAJ(RENK_MOR, '-------------------------', []);
-  SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Kaynak Port: %d', [KaynakPort]);
-  SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Hedef Port: %d', [HedefPort]);
-  SISTEM_MESAJ(RENK_LACIVERT, 'TCP: Bayrak: %d', [TCPPaket^.Bayrak]);
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, '-------------------------', []);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'TCP: Kaynak Port: %d', [KaynakPort]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'TCP: Hedef Port: %d', [HedefPort]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'TCP: Bayrak: %d', [TCPPaket^.Bayrak]);
   {$ENDIF}
 
   // 1.1 diðer bilgisayarlar tarafýndan istenen bir baðlantý isteði olmasý durumunda
@@ -63,7 +63,7 @@ begin
     SI := SunucuBul(HedefPort);
     if(SI = nil) then
 
-      SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Sistemde %d portu üzerinden hizmet veren sunucu mevcut deðil!', [HedefPort])
+      SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Sistemde %d port numarasý üzerinden hizmet veren sunucu mevcut deðil!', [HedefPort])
 
     else SI(nil, AEthernetPaket);
   end

@@ -6,7 +6,7 @@
   Dosya Adý: baglanti.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 03/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -254,6 +254,8 @@ begin
 
       B := PBaglanti(GetMem(SizeOf(TBaglanti)));
       Baglanti[i] := B;
+
+      //SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'B: %d', [i]);
 
       B^.BaglantiTuru := ABaglantiTuru;
       B^.BaglantiDurum := bdYok;

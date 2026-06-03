@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 29/05/2026
+  Güncelleme Tarihi: 03/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -40,7 +40,7 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi
 implementation
 
 uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, islevler, genel,
-  dhcp, dhcp_s, gorev, gercekbellek, http;
+  dhcp, dhcp_s, gorev, gercekbellek, http, ftp;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
@@ -84,6 +84,9 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ HTTP sunucusu yükleniyor...', []);
     HTTPSunucu0.Yukle;
+
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ FTP sunucusu yükleniyor...', []);
+    FTPSunucu0.Yukle;
 
     // sistem için ip adresini yapýlandýr
     if(GAgBilgisi.IPAdresiAlindi = False) then
@@ -163,7 +166,7 @@ end;
  ==============================================================================}
 procedure AgKartiVeriAlmaIslevi;
 var
-  EthernetPaket: PEthernetPaket;
+  EthPaket: PEthernetPaket;
   ARPPaket: PARPPaket;
   Bellek: array[0..$FFF] of TSayi1;
   i, Protokol: TSayi2;
@@ -178,9 +181,9 @@ begin
     if(i > 0) then
     begin
 
-      EthernetPaket := @Bellek[0];
+      EthPaket := @Bellek[0];
 
-      Protokol := htons(EthernetPaket^.PaketTipi);
+      Protokol := htons(EthPaket^.PaketTipi);
 
       {SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthernetPaket^.KaynakMACAdres);
       SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.HedefMACAdres: ', EthernetPaket^.HedefMACAdres);
@@ -192,22 +195,22 @@ begin
       if(Protokol = PROTOKOL_ARP) then
       begin
 
-        ARPPaket := @EthernetPaket^.Veri;
+        ARPPaket := @EthPaket^.Veri;
         if(IPKarsilastir(ARPPaket^.HedefIPAdres, GAgBilgisi.IP4Adres)) then
-          ARPKayitlar0.ARPPaketleriniIsle(EthernetPaket)
+          ARPKayitlar0.ARPPaketleriniIsle(EthPaket)
       end
 
       // IP protokolü
       else if(Protokol = PROTOKOL_IP) then
 
-        IPPaketleriniIsle(EthernetPaket, i - ETHERNET_BASLIKU)
+        IPPaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU)
       else
       begin
 
         // bilinmeyen protokol
         SISTEM_MESAJ(mtUyari, RENK_MAVI, 'AG.PAS: bilinmeyen protokol: $%.4x', [Protokol]);
-        SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Kaynak MAC Adresi: ', EthernetPaket^.KaynakMACAdres);
-        SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Hedef MAC Adresi: ', EthernetPaket^.HedefMACAdres);
+        SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Kaynak MAC Adresi: ', EthPaket^.KaynakMACAdres);
+        SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Hedef MAC Adresi: ', EthPaket^.HedefMACAdres);
       end;
     end;
   end;

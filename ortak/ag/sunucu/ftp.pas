@@ -4,47 +4,39 @@
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
   Dosya Adý: http.pas
-  Dosya Ýþlevi: HTTP sunucu protokol iþlevlerini yönetir
+  Dosya Ýþlevi: FTP (dosya) sunucu protokol iþlevlerini yönetir
 
   Güncelleme Tarihi: 03/06/2026
 
  ==============================================================================}
 {$mode objfpc}
-unit http;
+unit ftp;
 
 interface
 
 uses paylasim, baglanti;
 
 const
-  USTSINIR_HTTPISTEMCI    = 10;
+  USTSINIR_FTPISTEMCI     = 10;
+
+  { TODO - yapýlandýrýlacak }
+  KULLANICI_ADI           = 'elera';
+  SIFRE                   = 'elera';
 
 const
-  WebSiteBaslik: PChar = 'HTTP/1.1 200 OK' + #13 + #10 +
-    'Server: ELERA Web Sunucusu v1.0.6' + #13 + #10 +
-    'Date: Mon, 01 Jun 2026 08:31:03 GMT' + #13 + #10 +
-    'Content-Length: 332' + #13 + #10 +
-    'Content-Type: text/html' + #13 + #10 +
-    'Connection: close' + #13 + #10 + #13 + #10;
+  Tanitim             : PChar = '220 ELERA Dosya Sunucusu' + #13 + #10;
+  BaglantiKapatiliyor : PChar = '221 baðlantý kapatýlýyor' + #13 + #10;
+  GirisBasarili       : PChar = '230 Giriþ baþarýlý' + #13 + #10;
 
-  WebSiteIcerik: PChar = '<!doctype html>' + #13 + #10 +
-    '<html>' + #13 + #10 +
-    '<head>' + #13 + #10 +
-    '    <title>ELERA Web Sunucusu</title>' + #13 + #10 +
-    '</head>' + #13 + #10 +
-    '<body>' + #13 + #10 +
-    '    <h1>ELERA Web Sunucusu</h1>' + #13 + #10 +
-    '    <hr>' + #13 + #10 +
-    '    <p>ELERA Web Sunucusu''na hoþ geldiniz.</p>' + #13 + #10 +
-    '    <p>Sistem çalýþmalarýna eriþmek icin <a href="https://github.com/elera714">ELERA Ýþletim Sistemi</a> sayfasýný ziyaret ediniz.</p>' + #13 + #10 +
-    '</body>' + #13 + #10 +
-    '</html>';
+  SifreGirisi         : PChar = '331 Þifre giriniz' + #13 + #10;
+
+  GirisHatali         : PChar = '530 Kullanýcý adý veya þifre hatalý' + #13 + #10;
 
 type
-  THTTPSunucu = object
+  TFTPSunucu = object
   private
     FMevcutIstemciSayisi: TSayi4;
-    FIstemciler: array[0..USTSINIR_HTTPISTEMCI - 1] of PBaglanti;
+    FIstemciler: array[0..USTSINIR_FTPISTEMCI - 1] of PBaglanti;
     function Al(ASiraNo: TISayi4): PBaglanti;
     procedure Yaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
   public
@@ -54,28 +46,28 @@ type
   end;
 
 var
-  HTTPSunucu0: THTTPSunucu;
+  FTPSunucu0: TFTPSunucu;
 
-procedure SunucuIslevHTTP(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+procedure SunucuIslevFTP(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
 
 implementation
 
 uses donusum, sistemmesaj, tcp;
 
 {==============================================================================
-  http sunucusu ana yükleme iþlevlerini içerir
+  ftp sunucusu ana yükleme iþlevlerini içerir
  ==============================================================================}
-procedure THTTPSunucu.Yukle;
+procedure TFTPSunucu.Yukle;
 var
   i: TSayi4;
 begin
 
   FMevcutIstemciSayisi := 0;
 
-  for i := 0 to USTSINIR_HTTPISTEMCI - 1 do Istemciler[i] := nil;
+  for i := 0 to USTSINIR_FTPISTEMCI - 1 do Istemciler[i] := nil;
 end;
 
-function THTTPSunucu.Ekle(AIPAdres: TIPAdres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
+function TFTPSunucu.Ekle(AIPAdres: TIPAdres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
 var
   Istemci, B: PBaglanti;
   i, j: TSayi4;
@@ -85,17 +77,17 @@ begin
   Result := nil;
 
   // azami baðlantý sayýsý kontrolü
-  if(HTTPSunucu0.FMevcutIstemciSayisi >= USTSINIR_HTTPISTEMCI) then Exit(nil);
+  if(FTPSunucu0.FMevcutIstemciSayisi >= USTSINIR_FTPISTEMCI) then Exit(nil);
 
   // istekte bulunan bilgisayar daha önce ayný port numarasýndan istekte bulunmuþ mu?
-  for i := 0 to USTSINIR_HTTPISTEMCI - 1 do
+  for i := 0 to USTSINIR_FTPISTEMCI - 1 do
   begin
 
-    Istemci := HTTPSunucu0.Istemciler[i];
+    Istemci := FTPSunucu0.Istemciler[i];
     if not(Istemci = nil) then
     begin
 
-      if(HTTPSunucu0.Istemciler[i]^.YerelPort = AKaynakPort) then Exit(nil);
+      if(FTPSunucu0.Istemciler[i]^.YerelPort = AKaynakPort) then Exit(nil);
     end;
   end;
 
@@ -106,47 +98,44 @@ begin
   if(B = nil) then Exit(nil);
 
   // oluþturulan baðlantýyý kaydet
-  for i := 0 to USTSINIR_HTTPISTEMCI - 1 do
+  for i := 0 to USTSINIR_FTPISTEMCI - 1 do
   begin
 
-    Istemci := HTTPSunucu0.Istemciler[i];
+    Istemci := FTPSunucu0.Istemciler[i];
     if(Istemci = nil) then
     begin
 
-      HTTPSunucu0.Istemciler[i] := B;
+      FTPSunucu0.Istemciler[i] := B;
 
       B^.BaglantiDurum := bdKapali;     { TODO - durumu yeni yapýlandýrmaya göre uygun bir þekilde belirle }
 
-      j := HTTPSunucu0.FMevcutIstemciSayisi;
+      j := FTPSunucu0.FMevcutIstemciSayisi;
       Inc(j);
-      HTTPSunucu0.FMevcutIstemciSayisi := j;
+      FTPSunucu0.FMevcutIstemciSayisi := j;
 
       Exit(B);
     end;
   end;
 end;
 
-function THTTPSunucu.Al(ASiraNo: TISayi4): PBaglanti;
+function TFTPSunucu.Al(ASiraNo: TISayi4): PBaglanti;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_HTTPISTEMCI) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FTPISTEMCI) then
     Result := FIstemciler[ASiraNo]
   else Result := nil;
 end;
 
-procedure THTTPSunucu.Yaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
+procedure TFTPSunucu.Yaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_HTTPISTEMCI) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FTPISTEMCI) then
     FIstemciler[ASiraNo] := ABaglanti;
 end;
 
-var
-  VeriGonderiliyor: Boolean = False;
-
-procedure SunucuIslevHTTP(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+procedure SunucuIslevFTP(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
 const
   TCPSYNSonEk: array[0..11] of TSayi1 = (
     $02, $04, $05, $B4, $01, $03, $03, $08, $01, $01, $04, $02);
@@ -158,6 +147,7 @@ var
   U: TSayi2;
   i: TSayi4;
   p: PChar;
+  s, s2: string;
 begin
 
   IPPaket := PIPPaket(@AEthernetPaket^.Veri);
@@ -170,11 +160,11 @@ begin
     HedefPort := ntohs(TCPPaket^.UzakPort);        // paketi alan cihazýn yerel portu (bu bilgisayar)
 
     // bu aþamada istemciden SYN mesajý gelmiþ, sunucu olarak istemciye SYN + ACK mesajý göndrilmiþtir
-    YeniB := HTTPSunucu0.Ekle(IPPaket^.KaynakIP, KaynakPort, HedefPort);
+    YeniB := FTPSunucu0.Ekle(IPPaket^.KaynakIP, KaynakPort, HedefPort);
     if not(YeniB = nil) then
     begin
 
-      SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Web Sunucusu: yeni baðlantý. Kaynak port: %d', [KaynakPort]);
+      SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Dosya Sunucusu: yeni baðlantý. Kaynak port: %d', [KaynakPort]);
 
       YeniB^.SiraNo := Baglantilar0.TCPIlkSiraNoAl;
       YeniB^.OnayNo := ntohs(TCPPaket^.SiraNo) + 1;
@@ -188,7 +178,7 @@ begin
     else
     begin
 
-      SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Web Sunucusu: zaten mevcut. Kaynak port: %d', [KaynakPort]);
+      SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Dosya Sunucusu: zaten mevcut. Kaynak port: %d', [KaynakPort]);
     end;
   end
   // baðlantý kuran bilgisayarýn baðlantýyý kapatma isteði
@@ -223,17 +213,58 @@ begin
       U := ntohs(IPPaket^.ToplamUzunluk) - 40;
       ABaglanti^.OnayNo := i + U;
 
-      if(U > 0) then Baglantilar0.BellegeEkle(ABaglanti, @TCPPaket^.Secenekler, U);
+      //if(U > 0) then Baglantilar0.BellegeEkle(ABaglanti, @TCPPaket^.Secenekler, U);
 
       // alýnan verinin deðerlendirilmesi
       p := @TCPPaket^.Secenekler;
 
-      if(p[0] = 'G') and (p[1] = 'E') and (p[2] = 'T') then
+      s := p;
+
+      s2 := Copy(s, 1, 4);
+
+      if(s2 = 'USER') then
+      begin
+
+        i := ntohs(TCPPaket^.OnayNo);
+        ABaglanti^.SiraNo := i;
+
+        i := ntohs(TCPPaket^.SiraNo);
+        U := ntohs(IPPaket^.ToplamUzunluk) - 40;
+        ABaglanti^.OnayNo := i + U;
+
         TCPPaketGonder(ABaglanti, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
 
-      Baglantilar0.Yaz(ABaglanti^.Kimlik, WebSiteBaslik, Length(WebSiteBaslik));
+        Baglantilar0.Yaz(ABaglanti^.Kimlik, SifreGirisi, Length(SifreGirisi));
+      end
+      else if(s2 = 'PASS') then
+      begin
 
-      VeriGonderiliyor := True;
+        i := ntohs(TCPPaket^.OnayNo);
+        ABaglanti^.SiraNo := i;
+
+        i := ntohs(TCPPaket^.SiraNo);
+        U := ntohs(IPPaket^.ToplamUzunluk) - 40;
+        ABaglanti^.OnayNo := i + U;
+
+        TCPPaketGonder(ABaglanti, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+
+        //Baglantilar0.Yaz(ABaglanti^.Kimlik, GirisHatali, Length(GirisHatali));
+        Baglantilar0.Yaz(ABaglanti^.Kimlik, GirisBasarili, Length(GirisBasarili));
+      end
+      else if(s2 = 'QUIT') then
+      begin
+
+        i := ntohs(TCPPaket^.OnayNo);
+        ABaglanti^.SiraNo := i;
+
+        i := ntohs(TCPPaket^.SiraNo);
+        U := ntohs(IPPaket^.ToplamUzunluk) - 40;
+        ABaglanti^.OnayNo := i + U;
+
+        TCPPaketGonder(ABaglanti, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+
+        Baglantilar0.Yaz(ABaglanti^.Kimlik, BaglantiKapatiliyor, Length(BaglantiKapatiliyor));
+      end;
     end;
   end
   else if(TCPPaket^.Bayrak = TCP_BAYRAK_KABUL) then
@@ -241,30 +272,17 @@ begin
 
     // istemci tarafýndan gönderilen ACK mesajýyla baðlantý kurulmuþtur
     if(ABaglanti^.BaglantiDurum = bdBaglantiBekleniyor) then
-
-      ABaglanti^.BaglantiDurum := bdBaglantiKuruldu
-
-    else if(ABaglanti^.BaglantiDurum = bdBaglantiKuruldu) then
     begin
 
-      if(VeriGonderiliyor) then
-      begin
+      ABaglanti^.BaglantiDurum := bdBaglantiKuruldu;
 
-        i := ntohs(TCPPaket^.OnayNo);
-        ABaglanti^.SiraNo := i;
+      i := ntohs(TCPPaket^.OnayNo);
+      ABaglanti^.SiraNo := i;
 
-        i := ntohs(TCPPaket^.SiraNo);
-        ABaglanti^.OnayNo := i;
+      i := ntohs(TCPPaket^.SiraNo);
+      ABaglanti^.OnayNo := i;
 
-        // 1. sayfa
-        Baglantilar0.Yaz(ABaglanti^.Kimlik, WebSiteIcerik, Length(WebSiteIcerik));
-
-        i := Length(WebSiteIcerik);
-
-        //SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'TCP: U: %d', [i]);
-
-        VeriGonderiliyor := False;
-      end;
+      Baglantilar0.Yaz(ABaglanti^.Kimlik, Tanitim, Length(Tanitim));
     end
     else if(ABaglanti^.BaglantiDurum = bdSonOnay) then
     begin
@@ -280,7 +298,7 @@ begin
   else
   begin
 
-    SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'HTTP: ?', []);
+    SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'FTP: ?', []);
   end;
 end;
 

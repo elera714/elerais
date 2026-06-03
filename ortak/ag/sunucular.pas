@@ -14,10 +14,10 @@ unit sunucular;
 
 interface
 
-uses paylasim, http, baglanti;
+uses paylasim, baglanti, http, ftp;
 
 const
-  HIZMETVEREN_SUNUCU_SAYISI = 1;
+  HIZMETVEREN_SUNUCU_SAYISI = 2;
 
 type
   TSunucuIslev = procedure(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
@@ -30,7 +30,8 @@ type
 
 var
   SunucuListesi: array[0..HIZMETVEREN_SUNUCU_SAYISI - 1] of TSunucuYapisi = (
-    (PortNo: 80; Islev: @SunucuIslevHTTP));
+    (PortNo: 80; Islev: @SunucuIslevHTTP),
+    (PortNo: 21; Islev: @SunucuIslevFTP));
 
 implementation
 
