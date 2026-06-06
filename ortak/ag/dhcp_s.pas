@@ -6,7 +6,7 @@
   Dosya Adı: dhcp_s.pas
   Dosya İşlevi: DHCP sunucu protokol işlevlerini yönetir
 
-  Güncelleme Tarihi: 22/07/2025
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -216,11 +216,11 @@ begin
 
     else if(MT = DHCP_SECIM_ISTEK_IP_ADRES) then
 
-      IstenenIPAdres.IPAdres := PIPAdres(@DHCPMesaj^.Mesaj)^
+      IstenenIPAdres.IPAdres := PIPAdres4(@DHCPMesaj^.Mesaj)^
 
     else if(MT = DHCP_SECIM_SUNUCU_TANIMLAYICI) then
 
-      DHCPSunucuIPAdresi.IPAdres := PIPAdres(@DHCPMesaj^.Mesaj)^
+      DHCPSunucuIPAdresi.IPAdres := PIPAdres4(@DHCPMesaj^.Mesaj)^
 
     else if(MT = DHCP_SECIM_SATICI_SINIF_TANITICISI) then
 

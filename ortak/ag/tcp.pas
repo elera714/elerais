@@ -23,13 +23,13 @@ const
   TCP_EKBASLIK_U    = 12;
 
 procedure TCPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
-procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIPAdres;
+procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIPAdres4;
   ABayrak: TSayi1; AVeri: Isaretci; AVeriU: TSayi4; AVeriSonEk: Boolean = False);
 function SunucuBul(APortNo: TSayi4): TSunucuIslev;
 
 implementation
 
-uses genel, donusum, ip, islevler, sistemmesaj, gercekbellek;
+uses genel, donusum, ip4, islevler, sistemmesaj, gercekbellek;
 
 procedure TCPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
 var
@@ -40,10 +40,10 @@ var
   i: TSayi4;
   U: TSayi2;
   p: PChar;
-  IPPaket: PIPPaket;
+  IPPaket: PIPPaket4;
 begin
 
-  IPPaket := PIPPaket(@AEthernetPaket^.Veri);
+  IPPaket := PIPPaket4(@AEthernetPaket^.Veri);
   TCPPaket := PTCPPaket(@IPPaket^.Veri);
 
   KaynakPort := ntohs(TCPPaket^.YerelPort);       // paketi gönderen cihazýn portu
@@ -179,7 +179,7 @@ begin
   end;
 end;
 
-procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIPAdres;
+procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIPAdres4;
   ABayrak: TSayi1; AVeri: Isaretci; AVeriU: TSayi4; AVeriSonEk: Boolean = False);
 var
   TCPPaket: PTCPPaket;

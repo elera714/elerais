@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: FTP (dosya) sunucu protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 03/06/2026
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -42,7 +42,7 @@ type
   public
     procedure Yukle;
     property Istemciler[ASiraNo: TISayi4]: PBaglanti read Al write Yaz;
-    function Ekle(AIPAdres: TIPAdres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
+    function Ekle(AIPAdres: TIPAdres4; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
   end;
 
 var
@@ -67,7 +67,7 @@ begin
   for i := 0 to USTSINIR_FTPISTEMCI - 1 do Istemciler[i] := nil;
 end;
 
-function TFTPSunucu.Ekle(AIPAdres: TIPAdres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
+function TFTPSunucu.Ekle(AIPAdres: TIPAdres4; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
 var
   Istemci, B: PBaglanti;
   i, j: TSayi4;
@@ -91,7 +91,7 @@ begin
     end;
   end;
 
-  IPAdres := IP_KarakterKatari(AIPAdres);
+  IPAdres := IP_KarakterKatari4(AIPAdres);
 
   // istemci için baðlantý oluþtur
   B := Baglantilar0.BaglantiOlustur(btPasif, ptTCP, IPAdres, AKaynakPort, AHedefPort);
@@ -142,7 +142,7 @@ const
 var
   YeniB: PBaglanti;
   TCPPaket: PTCPPaket;
-  IPPaket: PIPPaket;
+  IPPaket: PIPPaket4;
   KaynakPort, HedefPort,
   U: TSayi2;
   i: TSayi4;
@@ -150,7 +150,7 @@ var
   s, s2: string;
 begin
 
-  IPPaket := PIPPaket(@AEthernetPaket^.Veri);
+  IPPaket := PIPPaket4(@AEthernetPaket^.Veri);
   TCPPaket := PTCPPaket(@IPPaket^.Veri);
 
   if(ABaglanti = nil) then

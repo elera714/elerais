@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/06/2026
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,7 +19,7 @@ uses paylasim;
 const
   USTSINIR_KAYITSAYISI    = 64;
   ARPDONANIMTIP_ETHERNET  = TSayi2($0001);        // network byte sýralý
-  ARPPROTOKOLTIP_IPV4     = TSayi2($0800);        // network byte sýralý
+  ARPPROTOKOLTIP_IP4      = TSayi2($0800);        // network byte sýralý
   YASAM_SURESI            = TISayi2(60 * 60);     // her bir kaydýn yaþam süresi: 60 dakika
 
 const
@@ -39,15 +39,15 @@ type
     ProtokolAdresU: TSayi1;       // protokol adres uzunluðu
     Islem: TSayi2;                // iþlem
     GonderenMACAdres: TMACAdres;  // paketi gönderen donaným adresi
-    GonderenIPAdres: TIPAdres;    // paketi gönderen ip adresi
+    GonderenIPAdres: TIPAdres4;   // paketi gönderen ip adresi
     HedefMACAdres: TMACAdres;     // paketin gönderildiði donaným adresi
-    HedefIPAdres: TIPAdres;       // paketin gönderildiði ip adresi
+    HedefIPAdres: TIPAdres4;      // paketin gönderildiði ip adresi
   end;
 
 type
   PARPKayit = ^TARPKayit;
   TARPKayit = packed record
-    IPAdres: TIPAdres;
+    IPAdres: TIPAdres4;
     MACAdres: TMACAdres;
     YasamSuresi: TISayi2;
   end;
@@ -65,8 +65,8 @@ type
     procedure ARPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
     procedure ARPKaydiEkle(AARPKayit: TARPKayit);
     procedure ARPIstegiGonder(AARPIslem: TARPIslem; AHedefMACAdres: PMACAdres;
-      AHedefIPAdres: PIPAdres);
-    function MACAdresiAl(AIPAdres: TIPAdres): TMACAdres;
+      AHedefIPAdres: PIPAdres4);
+    function MACAdresiAl(AIPAdres: TIPAdres4): TMACAdres;
     property ARPKayit[ASiraNo: TSayi4]: PARPKayit read ARPKayitAl write ARPKayitYaz;
     function ARPKaydiAl(ASiraNo: TISayi4; AHedefBellek: PARPKayit): TISayi4;
     property ToplamKayit: TSayi4 read FToplamKayit;
@@ -190,13 +190,13 @@ end;
   ARP isteði gönderir
  ==============================================================================}
 procedure TARPKayitlar.ARPIstegiGonder(AARPIslem: TARPIslem; AHedefMACAdres: PMACAdres;
-  AHedefIPAdres: PIPAdres);
+  AHedefIPAdres: PIPAdres4);
 var
   ARPPaket: TARPPaket;
 begin
 
   ARPPaket.DonanimTip := ntohs(ARPDONANIMTIP_ETHERNET);
-  ARPPaket.ProtokolTip := ntohs(ARPPROTOKOLTIP_IPV4);
+  ARPPaket.ProtokolTip := ntohs(ARPPROTOKOLTIP_IP4);
   ARPPaket.DonanimAdresU := 6;
   ARPPaket.ProtokolAdresU := 4;
   if(AARPIslem = arpIstek) then
@@ -308,7 +308,7 @@ end;
  ==============================================================================}
 procedure CihazlaraARPMesajiGonder;
 var
-  IPAdres: TIPAdres;
+  IPAdres: TIPAdres4;
   i: TSayi4;
 begin
 
@@ -407,7 +407,7 @@ end;
 {==============================================================================
   arp tablosundan ip adresinin karþýlýðý olam mac adresini alýr
  ==============================================================================}
-function TARPKayitlar.MACAdresiAl(AIPAdres: TIPAdres): TMACAdres;
+function TARPKayitlar.MACAdresiAl(AIPAdres: TIPAdres4): TMACAdres;
 var
   ARP0: PARPKayit;
   i, j: TSayi4;

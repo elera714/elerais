@@ -3,14 +3,14 @@
   Kodlayan: Fatih KILIÇ
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya Adı: ip.pas
-  Dosya İşlevi: ip paket yönetim işlevlerini içerir
+  Dosya Adı: ip4.pas
+  Dosya İşlevi: ip v4 paket yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 03/06/2026
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
-unit ip;
+unit ip4;
 
 interface
 
@@ -19,21 +19,21 @@ uses paylasim, ag, sistemmesaj;
 const
   IP_BASLIK_U = 20;
 
-procedure IPPaketleriniIsle(AEthernetPaket: PEthernetPaket; AIPPaketUzunluk: TISayi4);
-procedure IPPaketGonder(AHedefMACAdres: TMACAdres; AKaynakIP, AHedefIP: TIPAdres;
+procedure IP4PaketleriniIsle(AEthernetPaket: PEthernetPaket; AIPPaketUzunluk: TISayi4);
+procedure IPPaketGonder(AHedefMACAdres: TMACAdres; AKaynakIP, AHedefIP: TIPAdres4;
   AProtokolTipi: TProtokolTipi; AParcaSiraNo: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 
 implementation
 
-uses donusum, icmp, udp, tcp, islevler, genel;
+uses donusum, icmp4, udp, tcp, islevler, genel;
 
 var
   GIPTanimlayici: TSayi2 = $BABA;
 
 // sisteme gelen tüm ip paketlerini işler
-procedure IPPaketleriniIsle(AEthernetPaket: PEthernetPaket; AIPPaketUzunluk: TISayi4);
+procedure IP4PaketleriniIsle(AEthernetPaket: PEthernetPaket; AIPPaketUzunluk: TISayi4);
 var
-  IPPaket: PIPPaket;
+  IPPaket: PIPPaket4;
 begin
 
   IPPaket := @AEthernetPaket^.Veri;
@@ -91,17 +91,17 @@ begin
 
       Inc(GAEPaketSayisi);
       SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'IP.PAS: bilinmeyen IP paketi:', []);
-      SISTEM_MESAJ_IP(mtUyari, RENK_SIYAH, '  -> Hedef IP adresi: ', IPPaket^.HedefIP);
+      SISTEM_MESAJ_IP4(mtUyari, RENK_SIYAH, '  -> Hedef IP adresi: ', IPPaket^.HedefIP);
       SISTEM_MESAJ(mtUyari, RENK_SIYAH, '  -> Hedef protokol: %d', [IPPaket^.Protokol]);
     end;
   end;
 end;
 
 // ip protokolü üzerinden paket gönderim işlevlerini gerçekleştirir
-procedure IPPaketGonder(AHedefMACAdres: TMACAdres; AKaynakIP, AHedefIP: TIPAdres;
+procedure IPPaketGonder(AHedefMACAdres: TMACAdres; AKaynakIP, AHedefIP: TIPAdres4;
   AProtokolTipi: TProtokolTipi; AParcaSiraNo: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 var
-  IPPaket: PIPPaket;
+  IPPaket: PIPPaket4;
   SaglamaToplami: TSayi2;
   v: PByte;
 begin
@@ -137,7 +137,7 @@ begin
   Tasi2(AVeri, v, AVeriUzunlugu);
 
   // paketi donanıma (ethernet) gönder
-  AgKartinaVeriGonder(AHedefMACAdres, ptIP, IPPaket, AVeriUzunlugu + IP_BASLIK_U);
+  AgKartinaVeriGonder(AHedefMACAdres, ptIP4, IPPaket, AVeriUzunlugu + IP_BASLIK_U);
 
   FreeMem(IPPaket, AVeriUzunlugu + IP_BASLIK_U);
 end;

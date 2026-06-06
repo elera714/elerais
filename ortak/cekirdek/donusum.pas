@@ -6,7 +6,7 @@
   Dosya Adı: donusum.pas
   Dosya İşlevi: değer dönüşüm (convert) işlevlerini içerir
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -25,8 +25,9 @@ function DateToStr(ATarih: TTarih): string;
 function StrToHex(ADeger: string): TSayi4;
 function IntToStr(ADeger: TISayi4): string;
 function MAC_KarakterKatari(AMACAdres: TMACAdres): string;
-function IP_KarakterKatari(AIPAdres: TIPAdres): string;
-function StrToIP(AIPAdres: string): TIPAdres;
+function IP_KarakterKatari4(AIPAdres: TIPAdres4): string;
+function IP_KarakterKatari6(AIPAdres: TIPAdres6): string;
+function StrToIP(AIPAdres: string): TIPAdres4;
 function LowerCase(AKarakter: Char): Char;
 function UpperCase(AKarakter: Char): Char;
 function UpperCase(ADeger: string): string;
@@ -244,11 +245,11 @@ begin
 end;
 
 {==============================================================================
-  IP adresini karakter katarına dönüştürür
+  IP v4 adresini karakter katarına dönüştürür
  ==============================================================================}
-function IP_KarakterKatari(AIPAdres: TIPAdres): string;
+function IP_KarakterKatari4(AIPAdres: TIPAdres4): string;
 var
-  Toplam, i: TSayi1;
+  Toplam, i: TSayi4;
   Deger: string[3];
 begin
 
@@ -274,9 +275,33 @@ begin
 end;
 
 {==============================================================================
+  IP v6 adresini karakter katarına dönüştürür
+ ==============================================================================}
+function IP_KarakterKatari6(AIPAdres: TIPAdres6): string;
+var
+  i: TSayi4;
+  Deger: string[4];
+begin
+
+  Result := '';
+
+  // ip adresini çevir
+  for i := 0 to 7 do
+  begin
+
+    Deger := HexStr(ntohs(AIPAdres[i]), 4);
+    Result := Result + Deger;
+
+    if(i < 7) then Result := Result + ':'
+  end;
+
+  SetLength(Result, 39);
+end;
+
+{==============================================================================
   karakter katar değerini IP adres değerine dönüştürür
  ==============================================================================}
-function StrToIP(AIPAdres: string): TIPAdres;
+function StrToIP(AIPAdres: string): TIPAdres4;
 var
   IPAdres, s: string;
   NoktaSayisi, SiraNo,

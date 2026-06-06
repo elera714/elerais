@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 27/05/2026
+  Güncelleme Tarihi: 06/06/2026
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -84,7 +84,7 @@ type
       ASayi: TISayi4; ARenk: TRenk);
     procedure MACAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
       AMACAdres: TMACAdres; ARenk: TRenk);
-    procedure IPAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4; AIPAdres: TIPAdres;
+    procedure IPAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4; AIPAdres: TIPAdres4;
       ARenk: TRenk);
     procedure Dikdortgen(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
       AAlan: TAlan; ACizgiRengi: TRenk);
@@ -1352,13 +1352,13 @@ end;
   grafiksel ekrana ip adres deðerini yazar
  ==============================================================================}
 procedure TGorselNesne.IPAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
-  AIPAdres: TIPAdres; ARenk: TRenk);
+  AIPAdres: TIPAdres4; ARenk: TRenk);
 var
   IPAdres: string[15];
 begin
 
   // IP adres deðerini karakter katarýna çevir
-  IPAdres := IP_KarakterKatari(AIPAdres);
+  IPAdres := IP_KarakterKatari4(AIPAdres);
 
   // ip adres deðerini belirtilen koordinatlara yaz
   YaziYaz(AGorselNesne, ASol, AUst, IPAdres, ARenk);

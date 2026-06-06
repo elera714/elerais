@@ -6,7 +6,7 @@
   Dosya Adý: netbios.pas
   Dosya Ýþlevi: netbios api iþlevlerini yönetir
 
-  Güncelleme Tarihi: 30/05/2026
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,7 +28,7 @@ type
     Veriler: Isaretci;
   end;
 
-procedure DNSSorgulariniYanitla(AIPPaket: PIPPaket; AUDPBaslik: PUDPPaket);
+procedure DNSSorgulariniYanitla(AIPPaket: PIPPaket4; AUDPBaslik: PUDPPaket);
 
 implementation
 
@@ -37,7 +37,7 @@ uses sistemmesaj, donusum, genel, islevler;
 {==============================================================================
   dns sorgularýný yanýtlar
  ==============================================================================}
-procedure DNSSorgulariniYanitla(AIPPaket: PIPPaket; AUDPBaslik: PUDPPaket);
+procedure DNSSorgulariniYanitla(AIPPaket: PIPPaket4; AUDPBaslik: PUDPPaket);
 var
   NB, NB2: PNetBiosServis;
   Veri: array[0..511] of TSayi1;
@@ -218,7 +218,7 @@ begin
     p := @NB2^.Veriler;
     Tasi2(@Veri[0], p, VeriSN);
 
-    IPAdresi := IP_KarakterKatari(AIPPaket^.KaynakIP);
+    IPAdresi := IP_KarakterKatari4(AIPPaket^.KaynakIP);
     B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
       ntohs(AUDPBaslik^.HedefPort));
     if not(B = nil) then

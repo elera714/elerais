@@ -6,7 +6,7 @@
   Dosya Adý: baglanti.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/06/2026
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -77,7 +77,7 @@ type
     SiraNo,                       // TCP sýra no (sequence number)
     OnayNo: TSayi4;               // TCP onay no (acknowledgment number)
     HedefMACAdres: TMACAdres;
-    HedefIPAdres: TIPAdres;
+    HedefIPAdres: TIPAdres4;
     YerelPort, UzakPort: TSayi2;
     Bagli: Boolean;
     Bellek: Isaretci;
@@ -162,7 +162,7 @@ var
   s, SunucuAdi,
   Sayfa: string;
   i: TSayi4;
-  IPAdresi: TIPAdres;
+  IPAdresi: TIPAdres4;
 begin
 
 //  while KritikBolgeyeGir(BaglantilarKilit) = False do;
@@ -215,7 +215,7 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Protokol -> UDP', []);
     SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Kimlik %d', [B^.Kimlik]);
-    SISTEM_MESAJ_IP(mtBilgi, RENK_LACIVERT, 'Hedef IP: ', IPAdresi);
+    SISTEM_MESAJ_IP4(mtBilgi, RENK_LACIVERT, 'Hedef IP: ', IPAdresi);
     SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Kaynak Port: %d', [AYerelPort]);
     SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Hedef Port: %d', [AUzakPort]);
   end
@@ -225,7 +225,7 @@ begin
     s := ProtokolTipAdi(AProtokolTipi);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, 'BAGLANTI.PAS: TBaglantilar.Olustur2', []);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> Bilinmeyen Protokol: %s ', [s]);
-    SISTEM_MESAJ_IP(mtHata, RENK_SIYAH, '  -> Hedef IP: ', IPAdresi);
+    SISTEM_MESAJ_IP4(mtHata, RENK_SIYAH, '  -> Hedef IP: ', IPAdresi);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> Hedef Port: %d', [AUzakPort]);
   end;
 

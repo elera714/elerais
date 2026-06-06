@@ -274,7 +274,7 @@ begin
     Inc(B2);
     B2^ := ntohs(TSayi2(Class_IN));
 
-    IPAdresi := IP_KarakterKatari(GAgBilgisi.DNSSunucusu);
+    IPAdresi := IP_KarakterKatari4(GAgBilgisi.DNSSunucusu);
     DNS^.FBaglanti := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DNS^.FYerelPort, DNS_PORTNO);
     if not(DNS^.FBaglanti = nil) then
     begin

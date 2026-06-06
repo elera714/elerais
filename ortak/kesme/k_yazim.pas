@@ -6,7 +6,7 @@
   Dosya Adı: k_yazim.pas
   Dosya İşlevi: grafiksel ekrana yazım kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 25/02/2025
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -133,9 +133,9 @@ begin
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
     A1 := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     B1 := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
-    Bellek := PIPAdres(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
+    Bellek := PIPAdres4(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
 
-    P^.IPAdresiYaz(P, A1, B1, PIPAdres(Bellek)^, PRenk(ADegiskenler + 12)^);
+    P^.IPAdresiYaz(P, A1, B1, PIPAdres4(Bellek)^, PRenk(ADegiskenler + 12)^);
 
     Result := 1;
   end

@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -71,8 +71,10 @@ procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk;
   ABellekAdres: Isaretci; ABellekUz: TSayi4);
 procedure SISTEM_MESAJ_MAC(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
   AMACAdres: TMACAdres);
-procedure SISTEM_MESAJ_IP(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIPAdres);
+procedure SISTEM_MESAJ_IP4(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  AIPAdres: TIPAdres4);
+procedure SISTEM_MESAJ_IP6(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  AIPAdres: TIPAdres6);
 function UzunlukAl16(ADeger: TSayi4): TSayi4;
 
 implementation
@@ -465,17 +467,35 @@ begin
 end;
 
 {==============================================================================
-  sistem kayıtlarına mesaj ekle - mesaj + ip adres birleşimi
+  sistem kayıtlarına mesaj ekle - mesaj + ip v4 adres birleşimi
  ==============================================================================}
-procedure SISTEM_MESAJ_IP(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIPAdres);
+procedure SISTEM_MESAJ_IP4(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  AIPAdres: TIPAdres4);
 var
   IPAdres: string[15];
   s: string;
 begin
 
-  // ip adres değerini karaktere çevir
-  IPAdres := IP_KarakterKatari(AIPAdres);
+  // ip v4 adres değerini karaktere çevir
+  IPAdres := IP_KarakterKatari4(AIPAdres);
+
+  s := AMesaj + IPAdres;
+
+  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
+end;
+
+{==============================================================================
+  sistem kayıtlarına mesaj ekle - mesaj + ip v6 adres birleşimi
+ ==============================================================================}
+procedure SISTEM_MESAJ_IP6(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
+  AIPAdres: TIPAdres6);
+var
+  IPAdres: string[39];
+  s: string;
+begin
+
+  // ip v6 adres değerini karaktere çevir
+  IPAdres := IP_KarakterKatari6(AIPAdres);
 
   s := AMesaj + IPAdres;
 

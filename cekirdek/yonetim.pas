@@ -77,7 +77,7 @@ implementation
 uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
   src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci,
-  sistem, src_pcnet32, gn_giriskutusu, baglanti;
+  sistem, src_pcnet32, gn_giriskutusu, baglanti, icmp6, dhcp6;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -331,7 +331,11 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            Baglantilar0.Listele;
+            IstekMesajiGonderICMP6;
+
+
+            { TODO - baðlantý oluþturma / yok et testlerinden sonra bu iþlev silinebilir }
+            //Baglantilar0.Listele;
 
             //elr1.SistemKlasorleriniOlustur;
 
@@ -430,6 +434,8 @@ begin
           // test iþlev tuþu-1
           else if(TusKarakterDegeri = '4') then
           begin
+
+            IstekMesajiGonder6;
 
             //Gorevler0.Calistir('disk1:\dskgor.c', CALISMA_SEVIYE3)
             //elr1.SistemKlasorleriniSil;

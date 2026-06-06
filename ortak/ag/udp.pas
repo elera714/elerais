@@ -6,7 +6,7 @@
   Dosya Adý: udp.pas
   Dosya Ýþlevi: udp protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,7 +15,7 @@ unit udp;
 
 interface
 
-uses ip, paylasim;
+uses ip4, paylasim;
 
 const
   UDP_BASLIK_U    = 8;
@@ -31,8 +31,8 @@ type
     Veri: Isaretci;
   end;
 
-procedure UDPPaketleriniIsle(AIPPaket: PIPPaket);
-procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIPAdres;
+procedure UDPPaketleriniIsle(AIPPaket: PIPPaket4);
+procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIPAdres4;
   AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 
@@ -44,7 +44,7 @@ uses dhcp_s, dhcp_i, donusum, sistemmesaj, dhcp, baglanti, dns, netbios,
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir
  ==============================================================================}
-procedure UDPPaketleriniIsle(AIPPaket: PIPPaket);
+procedure UDPPaketleriniIsle(AIPPaket: PIPPaket4);
 var
   B: PBaglanti;
   UDPPaket: PUDPPaket;
@@ -90,8 +90,8 @@ begin
     begin
 
       SISTEM_MESAJ(mtUyari, RENK_MAVI, 'UDP.PAS: eþleþen UDP portu bulunamadý: %d', [HedefPort]);
-      SISTEM_MESAJ_IP(mtUyari, RENK_SIYAH, '  -> Kaynak IP: ', AIPPaket^.KaynakIP);
-      SISTEM_MESAJ_IP(mtUyari, RENK_SIYAH, '  -> Hedef IP: ', AIPPaket^.HedefIP);
+      SISTEM_MESAJ_IP4(mtUyari, RENK_SIYAH, '  -> Kaynak IP: ', AIPPaket^.KaynakIP);
+      SISTEM_MESAJ_IP4(mtUyari, RENK_SIYAH, '  -> Hedef IP: ', AIPPaket^.HedefIP);
     end
     else
     begin
@@ -109,7 +109,7 @@ end;
 {==============================================================================
   udp protokolü üzerinden veri gönderir
  ==============================================================================}
-procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIPAdres;
+procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIPAdres4;
   AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 var
   UDPPaket: PUDPPaket;

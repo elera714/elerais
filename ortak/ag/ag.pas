@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/06/2026
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -39,15 +39,13 @@ procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi
 
 implementation
 
-uses src_pcnet32, arp, udp, dns, icmp, ip, sistemmesaj, donusum, islevler, genel,
-  dhcp, dhcp_s, gorev, gercekbellek, http, ftp;
+uses src_pcnet32, arp, udp, dns, icmp4, ip4, ip6, sistemmesaj, donusum, islevler,
+  genel, dhcp, dhcp_s, gorev, http, ftp;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
  ==============================================================================}
 procedure Yukle;
-var
-  Baglanti: PBaglantilar;
 begin
 
   // sistemin çalýþtýðý bilgisayarýn alan adý - (domain name)
@@ -98,11 +96,11 @@ begin
       else
       begin
 
-        GAgBilgisi.IP4Adres := OnDegerIPAdresi;
+        GAgBilgisi.IP4Adres := OnDegerIP4Adresi;
         GAgBilgisi.AltAgMaskesi := OnDegerAltAgMaskesi;
         GAgBilgisi.AgGecitAdresi := IPAdres0;
         GAgBilgisi.DHCPSunucusu := IPAdres0;
-        GAgBilgisi.DNSSunucusu := OnDegerIPAdresi;
+        GAgBilgisi.DNSSunucusu := OnDegerIP4Adresi;
         GAgBilgisi.IPKiraSuresi := 0;
         GAgBilgisi.IPAdresiAlindi := True;
       end;
@@ -200,10 +198,15 @@ begin
           ARPKayitlar0.ARPPaketleriniIsle(EthPaket)
       end
 
-      // IP protokolü
-      else if(Protokol = PROTOKOL_IP) then
+      // IP V4 protokolü
+      else if(Protokol = PROTOKOL_IP4) then
 
-        IPPaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU)
+        IP4PaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU)
+
+      // IP V6 protokolü
+      else if(Protokol = PROTOKOL_IP6) then
+
+        IP6PaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU)
       else
       begin
 
@@ -224,6 +227,8 @@ var
   Bellek: array[0..$FFF] of TSayi1;
   i: TSayi2;
 begin
+
+  i := 0;
 
   // að kartýna (ethernet) gelen ham bilgiyi al
   { TODO : VeriAl iþlevi katý (hard code) olarak kodlanmýþtýr. yapýsallaþtýrýlacak }
@@ -252,14 +257,15 @@ begin
   begin
 
     // veri paketi için bellekte yer ayýr
-    EthernetPaket := GercekBellek0.Ayir(AVeriUzunlugu + ETHERNET_BASLIKU);
+    EthernetPaket := GetMem(AVeriUzunlugu + ETHERNET_BASLIKU);
 
     EthernetPaket^.HedefMACAdres := AHedefMAC;
     EthernetPaket^.KaynakMACAdres := GAgBilgisi.MACAdres;
 
     // paketin protokol tipi
     case AProtokolTipi of
-      ptIP  : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_IP);
+      ptIP4 : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_IP4);
+      ptIP6 : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_IP6);
       ptTCP : EthernetPaket^.PaketTipi := PROTOKOL_TCP;
       ptUDP : EthernetPaket^.PaketTipi := PROTOKOL_UDP;
       ptARP : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
@@ -279,7 +285,7 @@ begin
     GonderilenByte := GonderilenByte + AVeriUzunlugu + ETHERNET_BASLIKU;
 
     // ayrýlan belleði serbest býrak
-    GercekBellek0.YokEt(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
+    FreeMem(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
   end;
 end;
 

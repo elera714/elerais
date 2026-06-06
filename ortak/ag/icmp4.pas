@@ -3,15 +3,15 @@
   Kodlayan: Fatih KILIÇ
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
-  Dosya Adý: icmp.pas
-  Dosya Ýþlevi: ICMP protokol yönetim iþlevlerini içerir
+  Dosya Adý: icmp4.pas
+  Dosya Ýþlevi: ICMP v4 protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
 //{$DEFINE ICMP_HATAAYIKLA}
-unit icmp;
+unit icmp4;
 
 interface
 
@@ -33,17 +33,17 @@ type
   end;
 
 procedure ICMPPaketleriniIsle(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
-  AHedefIPAdres: TIPAdres);
+  AHedefIPAdres: TIPAdres4);
 procedure ICMPPaketGonder(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
-  AHedefIPAdres: TIPAdres);
+  AHedefIPAdres: TIPAdres4);
 
 implementation
 
-uses genel, donusum, ip, islevler, sistemmesaj;
+uses genel, donusum, ip4, islevler, sistemmesaj;
 
 // icmp protokolü üzerinden gelen paketleri iþler
 procedure ICMPPaketleriniIsle(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
-  AHedefIPAdres: TIPAdres);
+  AHedefIPAdres: TIPAdres4);
 var
   s: array[0..128] of TSayi1;
   i: TSayi4;
@@ -71,7 +71,7 @@ end;
 
 // icmp protokol paketi hazýrlayýp gönderme iþlevini gerçekleþtirir
 procedure ICMPPaketGonder(AICMPBaslik: PICMPBaslik; APaketUzunlugu: TSayi4;
-  AHedefIPAdres: TIPAdres);
+  AHedefIPAdres: TIPAdres4);
 var
   ICMPBaslik: PICMPBaslik;
   s: array[0..128] of TSayi1;

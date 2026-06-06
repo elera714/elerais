@@ -6,7 +6,7 @@
   Dosya Adý: dhcp.pas
   Dosya Ýþlevi: DHCP protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 30/05/2026
+  Güncelleme Tarihi: 06/06/2026
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -26,7 +26,7 @@ type
   	GonderenKimlik: TSayi4;
   	Sure, Bayraklar: TSayi2;
   	IstemciIPAdres, IstemciyeAtanacakIPAdresi, SunucuIPAdres,
-    AgGecidiIPAdres: TIPAdres;
+    AgGecidiIPAdres: TIPAdres4;
   	IstemciMACAdres: TMACAdres;
   	AYRLDI1: TSayi4;
   	AYRLDI2: TSayi4;
@@ -243,12 +243,12 @@ procedure DHCPKesifMesajiGonder;
 procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi: TIPAdresIslev;
   AMACAdres: TMACAdres);
 { Request }
-procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIPAdres);
+procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIPAdres4);
 { Request -> Ack }
 procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: TIPAdresIslev;
   AMACAdres: TMACAdresIslev);
 { Inform }
-procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIPAdres);
+procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIPAdres4);
 { Inform -> Ack }
 procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres: TIPAdresIslev;
   AMACAdres: TMACAdresIslev);
@@ -385,7 +385,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari(IPAdres255);
+  IPAdresi := IP_KarakterKatari4(IPAdres255);
   B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
@@ -410,7 +410,7 @@ procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi:
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres;
+  IPAdres: PIPAdres4;
   p1: PSayi1;
   p4: PSayi4;
   DHCPYapiUzunlugu: TSayi4;
@@ -537,7 +537,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari(ATeklifEdilenIPAdresi.IPAdres);
+  IPAdresi := IP_KarakterKatari4(ATeklifEdilenIPAdresi.IPAdres);
   B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
@@ -557,11 +557,11 @@ end;
 {==============================================================================
   DHCP sunucusuna istek mesajý gönderir
  ==============================================================================}
-procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIPAdres);
+procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIPAdres4);
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres;
+  IPAdres: PIPAdres4;
   MACAdres: PMACAdres;
   i: TSayi1;
   p1: PSayi1;
@@ -712,7 +712,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari(IPAdres255);
+  IPAdresi := IP_KarakterKatari4(IPAdres255);
   B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
@@ -737,7 +737,7 @@ procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: 
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres;
+  IPAdres: PIPAdres4;
   i: TSayi1;
   p1: PSayi1;
   p4: PSayi4;
@@ -880,7 +880,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari(AIstenenIPAdresi.IPAdres);
+  IPAdresi := IP_KarakterKatari4(AIstenenIPAdresi.IPAdres);
   B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
@@ -900,7 +900,7 @@ end;
 {==============================================================================
   DHCP sunucusuna bilgilendirme mesajý gönderir
  ==============================================================================}
-procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIPAdres);
+procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIPAdres4);
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
@@ -1014,7 +1014,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari(IPAdres255);
+  IPAdresi := IP_KarakterKatari4(IPAdres255);
   B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
@@ -1039,7 +1039,7 @@ procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres:
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres;
+  IPAdres: PIPAdres4;
   p1: PSayi1;
   DHCPYapiUzunlugu: TSayi4;
   IPAdresi: string;
@@ -1144,7 +1144,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari(AIPAdres.IPAdres);
+  IPAdresi := IP_KarakterKatari4(AIPAdres.IPAdres);
   B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
@@ -1168,7 +1168,7 @@ procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres;
+  IPAdres: PIPAdres4;
   p1: PSayi1;
   DHCPYapiUzunlugu: TSayi4;
   IPAdresi: string;
@@ -1231,7 +1231,7 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari(IPAdres255);
+  IPAdresi := IP_KarakterKatari4(IPAdres255);
   B := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin

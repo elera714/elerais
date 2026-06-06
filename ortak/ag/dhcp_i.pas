@@ -6,7 +6,7 @@
   Dosya Adı: dhcp_i.pas
   Dosya İşlevi: DHCP istemci protokol işlevlerini yönetir
 
-  Güncelleme Tarihi: 20/04/2025
+  Güncelleme Tarihi: 06/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -30,7 +30,7 @@ var
 procedure DHCPIstemciPaketleriniIsle(ADHCPYapi: PDHCPYapi);
 var
   YanitAgBilgisi: TAgBilgisi;
-  TeklifEdilenIPAdresi: TIPAdres;
+  TeklifEdilenIPAdresi: TIPAdres4;
   DHCPMesaj: PDHCPMesaj;
   AnaMT, MT, i: TSayi1;
   p1: PByte;
@@ -62,19 +62,19 @@ begin
 
           if(MT = DHCP_SECIM_ALTAG_MASKESI) and (i = 4) then
 
-            YanitAgBilgisi.AltAgMaskesi := PIPAdres(@DHCPMesaj^.Mesaj)^
+            YanitAgBilgisi.AltAgMaskesi := PIPAdres4(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_YONLENDIRICI) and (i = 4) then
 
-            YanitAgBilgisi.AgGecitAdresi := PIPAdres(@DHCPMesaj^.Mesaj)^
+            YanitAgBilgisi.AgGecitAdresi := PIPAdres4(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_DNS) and (i = 4) then
 
-            YanitAgBilgisi.DNSSunucusu := PIPAdres(@DHCPMesaj^.Mesaj)^
+            YanitAgBilgisi.DNSSunucusu := PIPAdres4(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_SUNUCU_TANIMLAYICI) then
 
-            YanitAgBilgisi.DHCPSunucusu := PIPAdres(@DHCPMesaj^.Mesaj)^
+            YanitAgBilgisi.DHCPSunucusu := PIPAdres4(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_IP_KIRALAMA_SURESI) then
 
