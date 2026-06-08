@@ -133,9 +133,9 @@ begin
     Alan := P^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
     A1 := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     B1 := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
-    Bellek := PIPAdres4(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
+    Bellek := PIP4Adres(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
 
-    P^.IPAdresiYaz(P, A1, B1, PIPAdres4(Bellek)^, PRenk(ADegiskenler + 12)^);
+    P^.IPAdresiYaz(P, A1, B1, PIP4Adres(Bellek)^, PRenk(ADegiskenler + 12)^);
 
     Result := 1;
   end

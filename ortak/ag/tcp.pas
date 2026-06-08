@@ -23,7 +23,7 @@ const
   TCP_EKBASLIK_U    = 12;
 
 procedure TCPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
-procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIPAdres4;
+procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIP4Adres;
   ABayrak: TSayi1; AVeri: Isaretci; AVeriU: TSayi4; AVeriSonEk: Boolean = False);
 function SunucuBul(APortNo: TSayi4): TSunucuIslev;
 
@@ -40,10 +40,10 @@ var
   i: TSayi4;
   U: TSayi2;
   p: PChar;
-  IPPaket: PIPPaket4;
+  IPPaket: PIP4Paket;
 begin
 
-  IPPaket := PIPPaket4(@AEthernetPaket^.Veri);
+  IPPaket := PIP4Paket(@AEthernetPaket^.Veri);
   TCPPaket := PTCPPaket(@IPPaket^.Veri);
 
   KaynakPort := ntohs(TCPPaket^.YerelPort);       // paketi gönderen cihazýn portu
@@ -179,7 +179,7 @@ begin
   end;
 end;
 
-procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIPAdres4;
+procedure TCPPaketGonder(ABaglanti: PBaglanti; AKaynakIPAdres: TIP4Adres;
   ABayrak: TSayi1; AVeri: Isaretci; AVeriU: TSayi4; AVeriSonEk: Boolean = False);
 var
   TCPPaket: PTCPPaket;
@@ -234,7 +234,7 @@ begin
     @EkBaslik, TCP_EKBASLIK_U);
   TCPPaket^.SaglamaToplami := SaglamaToplami;
 
-  IPPaketGonder(ABaglanti^.HedefMACAdres, AKaynakIPAdres, ABaglanti^.HedefIPAdres,
+  IP4PaketGonder(ABaglanti^.HedefMACAdres, AKaynakIPAdres, ABaglanti^.HedefIPAdres,
     ptTCP, $4000, TCPPaket, TCP_BASLIK_U + AVeriU);
 
   GercekBellek0.YokEt(TCPPaket, TCP_BASLIK_U + AVeriU);

@@ -42,7 +42,7 @@ type
   public
     procedure Yukle;
     property Istemciler[ASiraNo: TISayi4]: PBaglanti read Al write Yaz;
-    function Ekle(AIPAdres: TIPAdres4; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
+    function Ekle(AIPAdres: TIP4Adres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
   end;
 
 var
@@ -67,7 +67,7 @@ begin
   for i := 0 to USTSINIR_FTPISTEMCI - 1 do Istemciler[i] := nil;
 end;
 
-function TFTPSunucu.Ekle(AIPAdres: TIPAdres4; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
+function TFTPSunucu.Ekle(AIPAdres: TIP4Adres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
 var
   Istemci, B: PBaglanti;
   i, j: TSayi4;
@@ -142,7 +142,7 @@ const
 var
   YeniB: PBaglanti;
   TCPPaket: PTCPPaket;
-  IPPaket: PIPPaket4;
+  IPPaket: PIP4Paket;
   KaynakPort, HedefPort,
   U: TSayi2;
   i: TSayi4;
@@ -150,7 +150,7 @@ var
   s, s2: string;
 begin
 
-  IPPaket := PIPPaket4(@AEthernetPaket^.Veri);
+  IPPaket := PIP4Paket(@AEthernetPaket^.Veri);
   TCPPaket := PTCPPaket(@IPPaket^.Veri);
 
   if(ABaglanti = nil) then

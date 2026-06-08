@@ -217,6 +217,9 @@ var
   AracTipleri: TAracTipleriSinif;
 
 procedure SistemAnaKontrol;
+const
+  SorguIP6Adres: TIP6Adres = (
+    $fe, $80, $00, $00, $00, $00, $00, $00, $f9, $c7, $b6, $2c, $fc, $ad, $5e, $3e);
 var
   Gorev: PGorev = nil;
   TusDegeri, IRR: TSayi2;
@@ -331,7 +334,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            IstekMesajiGonderICMP6;
+            ICMPIstekGonder(SorguIP6Adres);
 
 
             { TODO - baðlantý oluþturma / yok et testlerinden sonra bu iþlev silinebilir }

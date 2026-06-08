@@ -28,7 +28,7 @@ type
     Veriler: Isaretci;
   end;
 
-procedure DNSSorgulariniYanitla(AIPPaket: PIPPaket4; AUDPBaslik: PUDPPaket);
+procedure DNSSorgulariniYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
 
 implementation
 
@@ -37,7 +37,7 @@ uses sistemmesaj, donusum, genel, islevler;
 {==============================================================================
   dns sorgularýný yanýtlar
  ==============================================================================}
-procedure DNSSorgulariniYanitla(AIPPaket: PIPPaket4; AUDPBaslik: PUDPPaket);
+procedure DNSSorgulariniYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
 var
   NB, NB2: PNetBiosServis;
   Veri: array[0..511] of TSayi1;

@@ -264,12 +264,12 @@ begin
 
     // paketin protokol tipi
     case AProtokolTipi of
-      ptIP4 : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_IP4);
-      ptIP6 : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_IP6);
-      ptTCP : EthernetPaket^.PaketTipi := PROTOKOL_TCP;
-      ptUDP : EthernetPaket^.PaketTipi := PROTOKOL_UDP;
-      ptARP : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
-      ptICMP: EthernetPaket^.PaketTipi := PROTOKOL_ICMP;
+      ptIP4   : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_IP4);
+      ptIP6   : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_IP6);
+      ptTCP   : EthernetPaket^.PaketTipi := PROTOKOL_TCP;
+      ptUDP   : EthernetPaket^.PaketTipi := PROTOKOL_UDP;
+      ptARP   : EthernetPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
+      ptICMP4 : EthernetPaket^.PaketTipi := PROTOKOL_ICMP4;
     end;
 {
     SISTEM_MESAJ(RENK_MOR, 'ETH', []);

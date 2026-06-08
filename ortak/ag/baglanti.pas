@@ -77,7 +77,7 @@ type
     SiraNo,                       // TCP sýra no (sequence number)
     OnayNo: TSayi4;               // TCP onay no (acknowledgment number)
     HedefMACAdres: TMACAdres;
-    HedefIPAdres: TIPAdres4;
+    HedefIPAdres: TIP4Adres;
     YerelPort, UzakPort: TSayi2;
     Bagli: Boolean;
     Bellek: Isaretci;
@@ -162,7 +162,7 @@ var
   s, SunucuAdi,
   Sayfa: string;
   i: TSayi4;
-  IPAdresi: TIPAdres4;
+  IPAdresi: TIP4Adres;
 begin
 
 //  while KritikBolgeyeGir(BaglantilarKilit) = False do;

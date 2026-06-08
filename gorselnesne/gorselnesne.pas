@@ -84,7 +84,7 @@ type
       ASayi: TISayi4; ARenk: TRenk);
     procedure MACAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
       AMACAdres: TMACAdres; ARenk: TRenk);
-    procedure IPAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4; AIPAdres: TIPAdres4;
+    procedure IPAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4; AIPAdres: TIP4Adres;
       ARenk: TRenk);
     procedure Dikdortgen(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
       AAlan: TAlan; ACizgiRengi: TRenk);
@@ -1352,7 +1352,7 @@ end;
   grafiksel ekrana ip adres deðerini yazar
  ==============================================================================}
 procedure TGorselNesne.IPAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
-  AIPAdres: TIPAdres4; ARenk: TRenk);
+  AIPAdres: TIP4Adres; ARenk: TRenk);
 var
   IPAdres: string[15];
 begin

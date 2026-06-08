@@ -49,7 +49,7 @@ type
 
 type
   PProtokolTipi = ^TProtokolTipi;
-  TProtokolTipi = (ptBilinmiyor, ptIP4, ptIP6, ptARP, ptTCP, ptUDP, ptICMP);
+  TProtokolTipi = (ptBilinmiyor, ptIP4, ptIP6, ptARP, ptTCP, ptUDP, ptICMP4, ptICMP6);
 
   // baðlantýyý IP'ýn tanýmlayýcýsý olan MAC veya yayin (broadcast) olarak gerçekleþtir
   PBaglantiTipi = ^TBaglantiTipi;
@@ -115,14 +115,16 @@ const
 
 const
   // að protokolleri - deðerler network sýralý
-  PROTOKOL_ARP  = TSayi2($0806);
+  PROTOKOL_ARP    = TSayi2($0806);
 
-  PROTOKOL_IP4  = TSayi2($0800);
-  PROTOKOL_IP6  = TSayi2($86DD);
+  PROTOKOL_IP4    = TSayi2($0800);
+  PROTOKOL_IP6    = TSayi2($86DD);
 
-  PROTOKOL_TCP  = TSayi1($06);
-  PROTOKOL_UDP  = TSayi1($11);
-  PROTOKOL_ICMP = TSayi1($01);
+  PROTOKOL_TCP    = TSayi1($06);
+  PROTOKOL_UDP    = TSayi1($11);
+
+  PROTOKOL_ICMP4  = TSayi1($01);
+  PROTOKOL_ICMP6  = TSayi1($3A);
 
 const
   // genel hata kodlarý
@@ -173,19 +175,24 @@ type
   end;
 
 type
-  PIPAdres4 = ^TIPAdres4;
-  TIPAdres4 = array[0..3] of TSayi1;
+  PIP4Adres = ^TIP4Adres;
+  TIP4Adres = array[0..3] of TSayi1;
 
-  PIPAdres6 = ^TIPAdres6;
-  TIPAdres6 = array[0..7] of TSayi2;
+  // sistemin her yerinde kodlama amacýyla kullanýlacak
+  PIP6Adres = ^TIP6Adres;
+  TIP6Adres = array[0..15] of TSayi1;
+
+  // SADECE ekrana deðer basma amacýyla kullanýlacak
+  PIP6Adres2 = ^TIP6Adres2;
+  TIP6Adres2 = array[0..7] of TSayi2;
 
 type
   TIPAdresIslev = record
-    IPAdres: TIPAdres4;
+    IPAdres: TIP4Adres;
     procedure Sifirla;
     function IPAdres0Mi: Boolean;
     function IPAdres255Mi: Boolean;
-    function IPAgAraligiIcinde(AAgIPAdresi: TIPAdres4): Boolean;
+    function IPAgAraligiIcinde(AAgIPAdresi: TIP4Adres): Boolean;
     class operator = (const IP1, IP2: TIPAdresIslev): Boolean;
   end;
 
@@ -281,8 +288,8 @@ type
 
  Not2: Toplam Uzunluk: Ip uzunluðu + kendisine eklenen diðer data uzunluðu }
 type
-  PIPPaket4 = ^TIPPaket4;
-  TIPPaket4 = packed record
+  PIP4Paket = ^TIP4Paket;
+  TIP4Paket = packed record
     SurumVeBaslikUzunlugu,            // Not1
     ServisTipi: TSayi1;
     ToplamUzunluk,                    // Not2
@@ -292,13 +299,13 @@ type
     Protokol: TSayi1;
     SaglamaToplami: TSayi2;
     KaynakIP,
-    HedefIP: TIPAdres4;
+    HedefIP: TIP4Adres;
     Veri: Isaretci;
   end;
 
 type
-  PIPPaket6 = ^TIPPaket6;
-  TIPPaket6 = packed record
+  PIP6Paket = ^TIP6Paket;
+  TIP6Paket = packed record
     { Baslik -> 0..3: sürüm, 4..11: Trafik Sýnýfý, 12..31: Akýþ Etiketi }
     Baslik: TSayi4;
     // paketin kendisi haricinde taþýdýðý verinin uzunluðu
@@ -307,7 +314,7 @@ type
     TasinanVeriP: TSayi1;
     HopLimit: TSayi1;
     KaynakIP,
-    HedefIP: TIPAdres6;
+    HedefIP: TIP6Adres;
     Veri: Isaretci;
   end;
 
@@ -315,8 +322,8 @@ type
   // tcp ve udp kontrol toplamý için ek baþlýk yapýsý
   PEkBaslik = ^TEkBaslik;
   TEkBaslik = packed record         // pseudoheader
-    KaynakIP: TIPAdres4;
-    HedefIP: TIPAdres4;
+    KaynakIP: TIP4Adres;
+    HedefIP: TIP4Adres;
     Sifir,
     Protokol: TSayi1;
     Uzunluk: TSayi2;                // udp veya tcp 'nin data ile beraber uzunluðu
@@ -717,7 +724,8 @@ var
   GecerliFareGostegeTipi: TFareImlecTipi;
 
   // að - gelen paket sayýlarý
-  ICMPPaketSayisi: TSayi4 = 0;
+  ICMP4PaketSayisi: TSayi4 = 0;
+  ICMP6PaketSayisi: TSayi4 = 0;
   TCPPaketSayisi: TSayi4 = 0;
   UDPPaketSayisi: TSayi4 = 0;
   GAEPaketSayisi: TSayi4 = 0;     // GözArdýEdilen paket sayýsý
@@ -799,7 +807,7 @@ type
   TAgBilgisi = record
     MACAdres: TMACAdres;
     IP4Adres, AltAgMaskesi, AgGecitAdresi,
-    DHCPSunucusu, DNSSunucusu: TIPAdres4;
+    DHCPSunucusu, DNSSunucusu: TIP4Adres;
     IPKiraSuresi: TSayi4;     // saniye cinsinden
 
     { TODO - OtomatikIP deðeri üstteki yapýya eklenerek API'nýn bir parçasý olacaktýr }
@@ -822,21 +830,22 @@ var
   GAgBilgisi: TAgBilgisi;
 
   // otomatik atama olmadýðý durumda sistemin kullanacaðý ip adres deðerleri
-  OnDegerIP4Adresi: TIPAdres4 = (10, 0, 1, 1);
-  OnDegerAltAgMaskesi: TIPAdres4 = (255, 255, 255, 0);
+  OnDegerIP4Adresi: TIP4Adres = (10, 0, 1, 1);
+  OnDegerAltAgMaskesi: TIP4Adres = (255, 255, 255, 0);
 
   // 0800ABCDEF01 MAC adresi Modified EUI-64'e göre kodlanarak ipv6 adresi elde edilmiþtir
   // bilgi: MAC adresinin ilk byte'ýnýn (08) saðdan 2. biti standarta göre xor'lanmýþtýr
-  OnDegerIPV6Adresi: TIPAdres6 = ($FE80, $0000, $0000, $0000, $0A00, $ABFF, $FECD, $EF01);
+  OnDegerIPV6Adresi: TIP6Adres = ($FE, $80, $00, $00, $00, $00, $00, $00,
+    $0A, $00, $AB, $FF, $FE, $CD, $EF, $01);
 
   { TODO - dns sunucusu tarafýndan yapýlandýrýlacak, þu aþamada dhcp sunucu tarafýndan
     gönderilecek deðer olarak belirlenmiþtir }
   // aþaðýdaki 2 deðer þu aþamada dhcp sunucusu tarafýndan kullanýlmaktadýr
-  GDNSIPAdresi: TIPAdres4 = (127, 0, 0, 1);
-  GAgGecidi: TIPAdres4 = (127, 0, 0, 1);
+  GDNSIPAdresi: TIP4Adres = (127, 0, 0, 1);
+  GAgGecidi: TIP4Adres = (127, 0, 0, 1);
 
-  IPAdres0: TIPAdres4 = (0, 0, 0, 0);
-  IPAdres255: TIPAdres4 = (255, 255, 255, 255);
+  IPAdres0: TIP4Adres = (0, 0, 0, 0);
+  IPAdres255: TIP4Adres = (255, 255, 255, 255);
   MACAdres0: TMACAdres = (0, 0, 0, 0, 0, 0);
   MACAdres255: TMACAdres = (255, 255, 255, 255, 255, 255);
 
@@ -980,7 +989,7 @@ begin
     ptARP   : Result := 'ARP';
     ptTCP   : Result := 'TCP';
     ptUDP   : Result := 'UDP';
-    ptICMP  : Result := 'ICMP';
+    ptICMP4 : Result := 'ICMP4';
     else {ptBilinmiyor:} Result := 'Bilinmiyor';
   end;
 end;
@@ -1103,7 +1112,7 @@ end;
 // istenen ip adresi: 192.168.1.110
 // dhcp ip adresi   : 192.168.1.1
 // ilk 3 byte deðerinin ayný olmasý ip adresinin ayný aðda olduðunu gösterir
-function TIPAdresIslev.IPAgAraligiIcinde(AAgIPAdresi: TIPAdres4): Boolean;
+function TIPAdresIslev.IPAgAraligiIcinde(AAgIPAdresi: TIP4Adres): Boolean;
 var
   i: TSayi4;
 begin

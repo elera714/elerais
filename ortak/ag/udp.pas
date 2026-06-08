@@ -31,8 +31,8 @@ type
     Veri: Isaretci;
   end;
 
-procedure UDPPaketleriniIsle(AIPPaket: PIPPaket4);
-procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIPAdres4;
+procedure UDPPaketleriniIsle(AIPPaket: PIP4Paket);
+procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIP4Adres;
   AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 
@@ -44,7 +44,7 @@ uses dhcp_s, dhcp_i, donusum, sistemmesaj, dhcp, baglanti, dns, netbios,
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir
  ==============================================================================}
-procedure UDPPaketleriniIsle(AIPPaket: PIPPaket4);
+procedure UDPPaketleriniIsle(AIPPaket: PIP4Paket);
 var
   B: PBaglanti;
   UDPPaket: PUDPPaket;
@@ -109,7 +109,7 @@ end;
 {==============================================================================
   udp protokolü üzerinden veri gönderir
  ==============================================================================}
-procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIPAdres4;
+procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIP4Adres;
   AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 var
   UDPPaket: PUDPPaket;
@@ -139,7 +139,7 @@ begin
     @EkBaslik, UDP_EKBASLIK_U);
   UDPPaket^.SaglamaToplami := SaglamaToplami;
 
-  IPPaketGonder(AMACAdres, AKaynakIPAdres, AHedefIPAdres, ptUDP, 0, UDPPaket,
+  IP4PaketGonder(AMACAdres, AKaynakIPAdres, AHedefIPAdres, ptUDP, 0, UDPPaket,
     AVeriUzunlugu + UDP_BASLIK_U);
 
   GercekBellek0.YokEt(UDPPaket, AVeriUzunlugu + UDP_BASLIK_U);

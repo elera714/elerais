@@ -39,15 +39,15 @@ type
     ProtokolAdresU: TSayi1;       // protokol adres uzunluðu
     Islem: TSayi2;                // iþlem
     GonderenMACAdres: TMACAdres;  // paketi gönderen donaným adresi
-    GonderenIPAdres: TIPAdres4;   // paketi gönderen ip adresi
+    GonderenIPAdres: TIP4Adres;   // paketi gönderen ip adresi
     HedefMACAdres: TMACAdres;     // paketin gönderildiði donaným adresi
-    HedefIPAdres: TIPAdres4;      // paketin gönderildiði ip adresi
+    HedefIPAdres: TIP4Adres;      // paketin gönderildiði ip adresi
   end;
 
 type
   PARPKayit = ^TARPKayit;
   TARPKayit = packed record
-    IPAdres: TIPAdres4;
+    IPAdres: TIP4Adres;
     MACAdres: TMACAdres;
     YasamSuresi: TISayi2;
   end;
@@ -65,8 +65,8 @@ type
     procedure ARPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
     procedure ARPKaydiEkle(AARPKayit: TARPKayit);
     procedure ARPIstegiGonder(AARPIslem: TARPIslem; AHedefMACAdres: PMACAdres;
-      AHedefIPAdres: PIPAdres4);
-    function MACAdresiAl(AIPAdres: TIPAdres4): TMACAdres;
+      AHedefIPAdres: PIP4Adres);
+    function MACAdresiAl(AIPAdres: TIP4Adres): TMACAdres;
     property ARPKayit[ASiraNo: TSayi4]: PARPKayit read ARPKayitAl write ARPKayitYaz;
     function ARPKaydiAl(ASiraNo: TISayi4; AHedefBellek: PARPKayit): TISayi4;
     property ToplamKayit: TSayi4 read FToplamKayit;
@@ -190,7 +190,7 @@ end;
   ARP isteði gönderir
  ==============================================================================}
 procedure TARPKayitlar.ARPIstegiGonder(AARPIslem: TARPIslem; AHedefMACAdres: PMACAdres;
-  AHedefIPAdres: PIPAdres4);
+  AHedefIPAdres: PIP4Adres);
 var
   ARPPaket: TARPPaket;
 begin
@@ -308,7 +308,7 @@ end;
  ==============================================================================}
 procedure CihazlaraARPMesajiGonder;
 var
-  IPAdres: TIPAdres4;
+  IPAdres: TIP4Adres;
   i: TSayi4;
 begin
 
@@ -407,7 +407,7 @@ end;
 {==============================================================================
   arp tablosundan ip adresinin karþýlýðý olam mac adresini alýr
  ==============================================================================}
-function TARPKayitlar.MACAdresiAl(AIPAdres: TIPAdres4): TMACAdres;
+function TARPKayitlar.MACAdresiAl(AIPAdres: TIP4Adres): TMACAdres;
 var
   ARP0: PARPKayit;
   i, j: TSayi4;

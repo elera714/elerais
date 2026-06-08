@@ -108,7 +108,7 @@ begin
   if(DiskSayac = 2000) then
   begin
 
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Disk kullaným alaný hesaplanýyor...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'Disk kullaným alaný hesaplanýyor...', []);
 
     MD := MantiksalDepolama0.SurucuAl('disk2:\');
     if not(MD = nil) then

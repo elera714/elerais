@@ -20,7 +20,7 @@ uses paylasim;
 procedure DosyaYolunuParcala2(const ATamDosyaYolu: string; var ASurucu,
   AKlasor, ADosyaAdi: string);
 function DosyaAdiniAl(const ADosyaAdiVeUzanti: string): string;
-function IPAdresleriniKarsilastir(AIPAdres1, AIPAdres2: TIPAdres4): Boolean;
+function IPAdresleriniKarsilastir(AIPAdres1, AIPAdres2: TIP4Adres): Boolean;
 procedure DosyaParcalariniBirlestir(ADizinGirisi: Isaretci);
 procedure DosyaParcasiniBasaEkle(AEklenecekVeri, AHedefBellek: Isaretci);
 function BuyutVeTamamla(AGrupAdi: string; AUzunluk: TSayi4): string;
@@ -28,9 +28,9 @@ function Trim(const S: string): string;
 procedure BellekDoldur(ABellekAdresi: Isaretci; AUzunluk: TSayi4; ADeger: TSayi1);
 procedure Tasi2(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4);
 function Karsilastir(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4): TSayi4;
-function IPKarsilastir(IP1, IP2: TIPAdres4): Boolean;
-function IPKarsilastir2(AGonderenIP, ABenimIP: TIPAdres4): Boolean;
-function IPAdresiAyniAgdaMi(AGonderenIP: TIPAdres4): Boolean;
+function IPKarsilastir(IP1, IP2: TIP4Adres): Boolean;
+function IPKarsilastir2(AGonderenIP, ABenimIP: TIP4Adres): Boolean;
+function IPAdresiAyniAgdaMi(AGonderenIP: TIP4Adres): Boolean;
 function ELRTarih(AGun, AAy, AYil: TSayi2): TSayi4;
 function FatXTarih2ELRTarih(ATarih: TSayi2): TSayi4;
 function ELRSaat(ASaat, ADakika, ASaniye: TSayi1): TSayi4;
@@ -99,7 +99,7 @@ end;
 {==============================================================================
   2 ip adresini karşılaştırır
  ==============================================================================}
-function IPAdresleriniKarsilastir(AIPAdres1, AIPAdres2: TIPAdres4): Boolean;
+function IPAdresleriniKarsilastir(AIPAdres1, AIPAdres2: TIP4Adres): Boolean;
 var
   i: TISayi4;
 begin
@@ -399,7 +399,7 @@ end;
   Result := Sonuc;
 end;
 
-function IPKarsilastir(IP1, IP2: TIPAdres4): Boolean;
+function IPKarsilastir(IP1, IP2: TIP4Adres): Boolean;
 var
   i: TISayi4;
 begin
@@ -413,7 +413,7 @@ end;
 
 // ip adresinin ağa bağlı bilgisayarlara yayın olarak gönderilip
 // gönderilmediğini test eder. örn: 192.168.1.1 -> 192.168.1.255
-function IPKarsilastir2(AGonderenIP, ABenimIP: TIPAdres4): Boolean;
+function IPKarsilastir2(AGonderenIP, ABenimIP: TIP4Adres): Boolean;
 var
   i: TISayi4;
 begin
@@ -429,7 +429,7 @@ end;
 
 // xxx.xxx.xxx.yyy - xxx değerlerinin aynı olup olmadığını test eder
 // bilgi: 0 ve 255 değerleri aynı ağda kabul edilmektedir
-function IPAdresiAyniAgdaMi(AGonderenIP: TIPAdres4): Boolean;
+function IPAdresiAyniAgdaMi(AGonderenIP: TIP4Adres): Boolean;
 var
   i: TISayi4;
 begin

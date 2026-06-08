@@ -216,11 +216,11 @@ begin
 
     else if(MT = DHCP_SECIM_ISTEK_IP_ADRES) then
 
-      IstenenIPAdres.IPAdres := PIPAdres4(@DHCPMesaj^.Mesaj)^
+      IstenenIPAdres.IPAdres := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
     else if(MT = DHCP_SECIM_SUNUCU_TANIMLAYICI) then
 
-      DHCPSunucuIPAdresi.IPAdres := PIPAdres4(@DHCPMesaj^.Mesaj)^
+      DHCPSunucuIPAdresi.IPAdres := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
     else if(MT = DHCP_SECIM_SATICI_SINIF_TANITICISI) then
 

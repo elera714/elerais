@@ -39,10 +39,10 @@ English:
   - IDE Disk
   - PCNet32 Ağ Aygıtı
 - **Ağ Protokolleri:**
-  - TCP / IP
+  - TCP/IP
   - UDP
   - ARP
-  - ICMP
+  - ICMP4/ICMP6
   - NETBIOS
   - HTTP Sunucusu
   - FTP Sunucusu

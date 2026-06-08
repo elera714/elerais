@@ -26,7 +26,7 @@ type
   	GonderenKimlik: TSayi4;
   	Sure, Bayraklar: TSayi2;
   	IstemciIPAdres, IstemciyeAtanacakIPAdresi, SunucuIPAdres,
-    AgGecidiIPAdres: TIPAdres4;
+    AgGecidiIPAdres: TIP4Adres;
   	IstemciMACAdres: TMACAdres;
   	AYRLDI1: TSayi4;
   	AYRLDI2: TSayi4;
@@ -243,12 +243,12 @@ procedure DHCPKesifMesajiGonder;
 procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi: TIPAdresIslev;
   AMACAdres: TMACAdres);
 { Request }
-procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIPAdres4);
+procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIP4Adres);
 { Request -> Ack }
 procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: TIPAdresIslev;
   AMACAdres: TMACAdresIslev);
 { Inform }
-procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIPAdres4);
+procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIP4Adres);
 { Inform -> Ack }
 procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres: TIPAdresIslev;
   AMACAdres: TMACAdresIslev);
@@ -410,7 +410,7 @@ procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi:
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres4;
+  IPAdres: PIP4Adres;
   p1: PSayi1;
   p4: PSayi4;
   DHCPYapiUzunlugu: TSayi4;
@@ -557,11 +557,11 @@ end;
 {==============================================================================
   DHCP sunucusuna istek mesajý gönderir
  ==============================================================================}
-procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIPAdres4);
+procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIP4Adres);
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres4;
+  IPAdres: PIP4Adres;
   MACAdres: PMACAdres;
   i: TSayi1;
   p1: PSayi1;
@@ -737,7 +737,7 @@ procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: 
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres4;
+  IPAdres: PIP4Adres;
   i: TSayi1;
   p1: PSayi1;
   p4: PSayi4;
@@ -900,7 +900,7 @@ end;
 {==============================================================================
   DHCP sunucusuna bilgilendirme mesajý gönderir
  ==============================================================================}
-procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIPAdres4);
+procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIP4Adres);
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
@@ -1039,7 +1039,7 @@ procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres:
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres4;
+  IPAdres: PIP4Adres;
   p1: PSayi1;
   DHCPYapiUzunlugu: TSayi4;
   IPAdresi: string;
@@ -1168,7 +1168,7 @@ procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev
 var
   B: PBaglanti;
   DHCPYapi: PDHCPYapi;
-  IPAdres: PIPAdres4;
+  IPAdres: PIP4Adres;
   p1: PSayi1;
   DHCPYapiUzunlugu: TSayi4;
   IPAdresi: string;

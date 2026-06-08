@@ -72,9 +72,9 @@ procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk;
 procedure SISTEM_MESAJ_MAC(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
   AMACAdres: TMACAdres);
 procedure SISTEM_MESAJ_IP4(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIPAdres4);
+  AIPAdres: TIP4Adres);
 procedure SISTEM_MESAJ_IP6(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIPAdres6);
+  AIPAdres: TIP6Adres);
 function UzunlukAl16(ADeger: TSayi4): TSayi4;
 
 implementation
@@ -470,7 +470,7 @@ end;
   sistem kayıtlarına mesaj ekle - mesaj + ip v4 adres birleşimi
  ==============================================================================}
 procedure SISTEM_MESAJ_IP4(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIPAdres4);
+  AIPAdres: TIP4Adres);
 var
   IPAdres: string[15];
   s: string;
@@ -488,14 +488,14 @@ end;
   sistem kayıtlarına mesaj ekle - mesaj + ip v6 adres birleşimi
  ==============================================================================}
 procedure SISTEM_MESAJ_IP6(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIPAdres6);
+  AIPAdres: TIP6Adres);
 var
   IPAdres: string[39];
   s: string;
 begin
 
   // ip v6 adres değerini karaktere çevir
-  IPAdres := IP_KarakterKatari6(AIPAdres);
+  IPAdres := IP_KarakterKatari6(TIP6Adres2(PIP6Adres2(@AIPAdres)^));
 
   s := AMesaj + IPAdres;
 
