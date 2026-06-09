@@ -50,8 +50,8 @@
         <Filename Value="yonetim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="317"/>
-        <CursorPos X="28" Y="337"/>
+        <TopLine Value="321"/>
+        <CursorPos X="30" Y="340"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -67,8 +67,9 @@
       <Unit3>
         <Filename Value="..\surumbil.txt"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="12"/>
-        <CursorPos X="68" Y="14"/>
+        <CursorPos X="62" Y="19"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -175,8 +176,8 @@
         <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="281"/>
-        <CursorPos X="20" Y="291"/>
+        <TopLine Value="813"/>
+        <CursorPos X="13" Y="852"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit18>
@@ -383,8 +384,8 @@
         <Filename Value="..\ortak\ag\ag.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="253"/>
-        <CursorPos X="71" Y="267"/>
+        <TopLine Value="249"/>
+        <CursorPos X="34" Y="274"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit47>
@@ -949,7 +950,7 @@
       <Unit128>
         <Filename Value="..\ortak\ag\sunucular.pas"/>
         <EditorIndex Value="10"/>
-        <CursorPos X="35" Y="17"/>
+        <CursorPos X="61" Y="13"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit128>
@@ -959,44 +960,72 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="133"/>
         <CursorPos X="23" Y="153"/>
-        <UsageCount Value="147"/>
+        <UsageCount Value="169"/>
       </Unit129>
       <Unit130>
         <Filename Value="..\ortak\ag\sunucu\dhcp6.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="9"/>
-        <CursorPos X="57" Y="22"/>
-        <UsageCount Value="95"/>
+        <CursorPos X="11" Y="19"/>
+        <UsageCount Value="117"/>
         <Loaded Value="True"/>
       </Unit130>
       <Unit131>
         <Filename Value="..\ortak\ag\icmp6.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="92"/>
+        <UsageCount Value="114"/>
       </Unit131>
       <Unit132>
         <Filename Value="..\ortak\ag\ip6.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="6"/>
-        <CursorPos X="44" Y="14"/>
-        <UsageCount Value="68"/>
+        <TopLine Value="53"/>
+        <CursorPos X="31" Y="72"/>
+        <UsageCount Value="90"/>
         <Loaded Value="True"/>
       </Unit132>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="SISTEM_SUNUCU}"/>
     </OtherDefines>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="9" HistoryIndex="8">
       <Position1>
-        <Filename Value="..\ortak\ag\ip6.pas"/>
-        <Caret Line="23" Column="11" TopLine="3"/>
+        <Filename Value="yonetim.pas"/>
+        <Caret Line="448" Column="27" TopLine="427"/>
       </Position1>
       <Position2>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="337" Column="28" TopLine="317"/>
+        <Filename Value="..\ortak\ag\ip6.pas"/>
+        <Caret Line="23" Column="11" TopLine="3"/>
       </Position2>
+      <Position3>
+        <Filename Value="..\ortak\ag\ip6.pas"/>
+        <Caret Line="102" Column="33" TopLine="97"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\ortak\ag\ip6.pas"/>
+        <Caret Line="24" Column="41" TopLine="23"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\ortak\ag\ip6.pas"/>
+        <Caret Line="101" Column="25" TopLine="97"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\ortak\ag\ip6.pas"/>
+        <Caret Line="23" Column="11" TopLine="3"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\ortak\ag\ip6.pas"/>
+        <Caret Line="101" Column="25" TopLine="87"/>
+      </Position7>
+      <Position8>
+        <Filename Value="yonetim.pas"/>
+        <Caret Line="340" Column="30" TopLine="321"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\ortak\ag\ip6.pas"/>
+        <Caret Line="72" Column="31" TopLine="53"/>
+      </Position9>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

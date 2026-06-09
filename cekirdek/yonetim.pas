@@ -218,8 +218,10 @@ var
 
 procedure SistemAnaKontrol;
 const
-  SorguIP6Adres: TIP6Adres = (
+  PingHedefIP6Adres: TIP6Adres = (
     $fe, $80, $00, $00, $00, $00, $00, $00, $f9, $c7, $b6, $2c, $fc, $ad, $5e, $3e);
+  PingHedefMACAdres: TMACAdres = ($02, $00, $4c, $4f, $4f, $50);
+  PingVeri: string = 'abcdefghijklmnopqrstuvwabcdefghi';
 var
   Gorev: PGorev = nil;
   TusDegeri, IRR: TSayi2;
@@ -242,6 +244,7 @@ var
   FD: PFDNesne;
   //T: TMyThread;
   //T2: TMyThread2;
+  PingSiraNo: TSayi4 = 111;
 begin
 
   AracTipleri := TAracTipleriSinif.Create;
@@ -334,7 +337,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            ICMPIstekGonder(SorguIP6Adres);
+            KomsuIstegiGonder(PingHedefIP6Adres);
 
 
             { TODO - baðlantý oluþturma / yok et testlerinden sonra bu iþlev silinebilir }
@@ -438,7 +441,12 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
-            IstekMesajiGonder6;
+            //IstekMesajiGonder6;
+
+
+            PingMesajiGonder(ICMP6_PING_ISTEK, PingHedefIP6Adres, PingHedefMACAdres,
+              PingSiraNo, @PingVeri[1], 32);
+            Inc(PingSiraNo);
 
             //Gorevler0.Calistir('disk1:\dskgor.c', CALISMA_SEVIYE3)
             //elr1.SistemKlasorleriniSil;

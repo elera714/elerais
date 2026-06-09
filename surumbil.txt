@@ -3,6 +3,11 @@
 *******************************************************************************
   + http sunucusu çekirdeðe eklendi. (ana iskelet istemcilere hizmet verecek þekilde yapýlandýrýldý)
   + ftp sunucusu çekirdeðe eklendi. (USER, PASS, QUIT iþlevleri sunucuya eklendi)
+  + tcp/ip v6 çalýþmalarýna baþlandý
+  + icmp v6 ana iskeleti tamamlanarak çalýþýr hale getirildi.
+    ICMP6_KOMSU_ISTEK ($87) ve ICMP6_KOMSU_ILAN ($88) mesajlaþmasý tamamlandý
+  + icmp v6 karþýlýklý (iki yönlü) ping iþlemleri iþlevselleþtirildi (gelen ping sorgusu otomatik,
+    giden ping için yapýlar hazýr)
 
 *******************************************************************************
   Sürüm: 0.4.0 (sunucu / istemci) - 27.05.2026 (R36) - Beta
