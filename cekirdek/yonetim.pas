@@ -443,10 +443,11 @@ begin
 
             //IstekMesajiGonder6;
 
+            IstekMesajiGonder6;
 
-            PingMesajiGonder(ICMP6_PING_ISTEK, PingHedefIP6Adres, PingHedefMACAdres,
+            {PingMesajiGonder(ICMP6_PING_ISTEK, PingHedefIP6Adres, PingHedefMACAdres,
               PingSiraNo, @PingVeri[1], 32);
-            Inc(PingSiraNo);
+            Inc(PingSiraNo);}
 
             //Gorevler0.Calistir('disk1:\dskgor.c', CALISMA_SEVIYE3)
             //elr1.SistemKlasorleriniSil;

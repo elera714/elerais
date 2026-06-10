@@ -3,10 +3,10 @@
   Kodlayan: Fatih KILIÇ
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya Adı: bagdastirici.pas
-  Dosya İşlevi: ağ bağdaştırıcı yönetim işlevlerini içerir
+  Dosya Adı: sunucular.pas
+  Dosya İşlevi: çekirdek içerisinde çalışan sunuucuları yönetir
 
-  Güncelleme Tarihi: 14/02/2025
+  Güncelleme Tarihi: 10/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ const
   HIZMETVEREN_SUNUCU_SAYISI = 2;
 
 type
-  TSunucuIslev = procedure(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+  TSunucuIslev = procedure(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
 
   PSunucuYapisi = ^TSunucuYapisi;
   TSunucuYapisi = record

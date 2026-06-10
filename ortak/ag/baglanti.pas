@@ -6,7 +6,7 @@
   Dosya Adý: baglanti.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 10/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -107,7 +107,7 @@ type
       AVeriUzunlugu: TSayi4);
     function VeriUzunlugu(AKimlik: TKimlik): TSayi4;
     function Oku(AKimlik: TKimlik; ABellek: Isaretci): TSayi4;
-    procedure Yaz(AKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TISayi4);
+    procedure Yaz(APaketTipi: TSayi4; AKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TISayi4);
     property Baglanti[ASiraNo: TISayi4]: PBaglanti read BaglantiAl write BaglantiYaz;
     function YerelPortAl: TSayi2;
   end;
@@ -320,7 +320,8 @@ begin
         else B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAgBilgisi.DNSSunucusu);
 
         // ilk paket olan SYN (ARZ) paketi gönderiliyor
-        TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);
+        { TODO - düzenle }
+        TCPPaketGonder(PROTOKOL_IP4, B, @GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ, @TCPSYNSonEk, 12, True);
         B^.BaglantiDurum := bdBaglaniyor;
         Exit(B^.Kimlik);
       end;
@@ -392,7 +393,8 @@ begin
       if(B^.BaglantiDurum = bdBaglantiKuruldu) then
       begin
 
-        TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_SON + TCP_BAYRAK_KABUL,
+        { TODO - düzenle }
+        TCPPaketGonder(PROTOKOL_IP4, B, @GAgBilgisi.IP4Adres, TCP_BAYRAK_SON + TCP_BAYRAK_KABUL,
           nil, 0);
 
         B^.BaglantiDurum := bdKapanisBekleniyor1;
@@ -541,7 +543,7 @@ end;
 {==============================================================================
   baðlantý kurulan bilgisayara veri gönderir
  ==============================================================================}
-procedure TBaglantilar.Yaz(AKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TISayi4);
+procedure TBaglantilar.Yaz(APaketTipi: TSayi4; AKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TISayi4);
 var
   B: PBaglanti;
 begin
@@ -558,8 +560,12 @@ begin
       begin
 
         // FPencereU := $100;
-        TCPPaketGonder(B, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL or TCP_BAYRAK_GONDER,
-          ABellek, AUzunluk);
+        if(APaketTipi = PROTOKOL_IP6) then
+          TCPPaketGonder(APaketTipi, B, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL or TCP_BAYRAK_GONDER,
+            ABellek, AUzunluk)
+        else
+          TCPPaketGonder(APaketTipi, B, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL or TCP_BAYRAK_GONDER,
+            ABellek, AUzunluk);
       end;
     end
     else if(B^.ProtokolTipi = ptUDP) then

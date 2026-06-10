@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 30/05/2026
+  Güncelleme Tarihi: 10/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -282,7 +282,7 @@ begin
       if(Baglantilar0.Baglan(DNS^.FKimlik, btYayin) <> -1) then
       begin
 
-        Baglantilar0.Yaz(DNS^.FKimlik, @DNSPaket[0], 12 + ToplamUzunluk + 4);
+        Baglantilar0.Yaz(PROTOKOL_IP4, DNS^.FKimlik, @DNSPaket[0], 12 + ToplamUzunluk + 4);
 
         DNS^.FBaglantiDurum := ddSorgulaniyor;
       end;

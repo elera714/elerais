@@ -6,7 +6,7 @@
   Dosya Adý: dhcp.pas
   Dosya Ýþlevi: DHCP protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 10/06/2026
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -393,7 +393,7 @@ begin
     if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
       Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
@@ -545,7 +545,7 @@ begin
     if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
       Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
@@ -720,7 +720,7 @@ begin
     if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
       Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
@@ -888,7 +888,7 @@ begin
     if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
       Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
@@ -1022,7 +1022,7 @@ begin
     if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
       Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
@@ -1152,7 +1152,7 @@ begin
     if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
       Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;
@@ -1239,7 +1239,7 @@ begin
     if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
 
       Baglantilar0.BaglantiyiKes(B^.Kimlik);
     end;

@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: HTTP sunucu protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 10/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -50,13 +50,14 @@ type
   public
     procedure Yukle;
     property Istemciler[ASiraNo: TISayi4]: PBaglanti read Al write Yaz;
-    function Ekle(AIPAdres: TIP4Adres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
+    function Ekle(APaketTipi: TSayi4; AIPAdres: Isaretci; AKaynakPort,
+      AHedefPort: TSayi4): PBaglanti;
   end;
 
 var
   HTTPSunucu0: THTTPSunucu;
 
-procedure SunucuIslevHTTP(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+procedure SunucuIslevHTTP(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
 
 implementation
 
@@ -75,7 +76,8 @@ begin
   for i := 0 to USTSINIR_HTTPISTEMCI - 1 do Istemciler[i] := nil;
 end;
 
-function THTTPSunucu.Ekle(AIPAdres: TIP4Adres; AKaynakPort, AHedefPort: TSayi4): PBaglanti;
+function THTTPSunucu.Ekle(APaketTipi: TSayi4; AIPAdres: Isaretci; AKaynakPort,
+  AHedefPort: TSayi4): PBaglanti;
 var
   Istemci, B: PBaglanti;
   i, j: TSayi4;
@@ -99,7 +101,9 @@ begin
     end;
   end;
 
-  IPAdres := IP_KarakterKatari4(AIPAdres);
+  if(APaketTipi = PROTOKOL_IP6) then
+    IPAdres := IP_KarakterKatari6(PIP6Adres2(AIPAdres)^)
+  else IPAdres := IP_KarakterKatari4(PIP4Adres(AIPAdres)^);
 
   // istemci için baðlantý oluþtur
   B := Baglantilar0.BaglantiOlustur(btPasif, ptTCP, IPAdres, AKaynakPort, AHedefPort);
@@ -146,22 +150,41 @@ end;
 var
   VeriGonderiliyor: Boolean = False;
 
-procedure SunucuIslevHTTP(ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+procedure SunucuIslevHTTP(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
 const
-  TCPSYNSonEk: array[0..11] of TSayi1 = (
+  TCP4SYNSonEk: array[0..11] of TSayi1 = (
     $02, $04, $05, $B4, $01, $03, $03, $08, $01, $01, $04, $02);
+  TCP6SYNSonEk: array[0..11] of TSayi1 = (
+    $02, $04, $05, $A0, $01, $03, $03, $08, $01, $01, $04, $02);
 var
   YeniB: PBaglanti;
   TCPPaket: PTCPPaket;
-  IPPaket: PIP4Paket;
+  IP6Paket: PIP6Paket;
+  IP4Paket: PIP4Paket;
+  KaynakIP: Isaretci;
   KaynakPort, HedefPort,
-  U: TSayi2;
+  IPUzunluk, U: TSayi2;
   i: TSayi4;
   p: PChar;
 begin
 
-  IPPaket := PIP4Paket(@AEthernetPaket^.Veri);
-  TCPPaket := PTCPPaket(@IPPaket^.Veri);
+  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
+  IP6Paket := PIP6Paket(@AEthernetPaket^.Veri);
+
+  if(APaketTipi = PROTOKOL_IP6) then
+  begin
+
+    KaynakIP := @IP6Paket^.KaynakIP;
+    TCPPaket := PTCPPaket(@IP6Paket^.Veri);
+    IPUzunluk := IP6Paket^.TasinanVeriU;
+  end
+  else if(APaketTipi = PROTOKOL_IP4) then
+  begin
+
+    KaynakIP := @IP4Paket^.KaynakIP;
+    TCPPaket := PTCPPaket(@IP4Paket^.Veri);
+    IPUzunluk := IP4Paket^.ToplamUzunluk;
+  end else Exit;
 
   if(ABaglanti = nil) then
   begin
@@ -170,7 +193,7 @@ begin
     HedefPort := ntohs(TCPPaket^.UzakPort);        // paketi alan cihazýn yerel portu (bu bilgisayar)
 
     // bu aþamada istemciden SYN mesajý gelmiþ, sunucu olarak istemciye SYN + ACK mesajý göndrilmiþtir
-    YeniB := HTTPSunucu0.Ekle(IPPaket^.KaynakIP, KaynakPort, HedefPort);
+    YeniB := HTTPSunucu0.Ekle(APaketTipi, KaynakIP, KaynakPort, HedefPort);
     if not(YeniB = nil) then
     begin
 
@@ -179,9 +202,12 @@ begin
       YeniB^.SiraNo := Baglantilar0.TCPIlkSiraNoAl;
       YeniB^.OnayNo := ntohs(TCPPaket^.SiraNo) + 1;
       YeniB^.HedefMACAdres := AEthernetPaket^.KaynakMACAdres;
-      YeniB^.HedefIPAdres := IPPaket^.KaynakIP;
+      { TODO - düzenle }
+      YeniB^.HedefIPAdres := PIP4Adres(KaynakIP)^;
 
-      TCPPaketGonder(YeniB, GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCPSYNSonEk, 12, True);
+      if(APaketTipi = PROTOKOL_IP6) then
+        TCPPaketGonder(APaketTipi, YeniB, @OnDegerIPV6Adresi, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)
+      else TCPPaketGonder(APaketTipi, YeniB, @GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
 
       YeniB^.BaglantiDurum := bdBaglantiBekleniyor;
     end
@@ -201,11 +227,15 @@ begin
     i := ntohs(TCPPaket^.SiraNo);
     ABaglanti^.OnayNo := i + 1;
 
-    TCPPaketGonder(ABaglanti, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+    if(APaketTipi = PROTOKOL_IP6) then
+      TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
+    else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
 
     ABaglanti^.BaglantiDurum := bdKapanmayiBekliyor;
 
-    TCPPaketGonder(ABaglanti, GAgBilgisi.IP4Adres, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
+    if(APaketTipi = PROTOKOL_IP6) then
+      TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0)
+    else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
 
     ABaglanti^.BaglantiDurum := bdSonOnay;
   end
@@ -220,7 +250,9 @@ begin
       ABaglanti^.SiraNo := i;
 
       i := ntohs(TCPPaket^.SiraNo);
-      U := ntohs(IPPaket^.ToplamUzunluk) - 40;
+      if(APaketTipi = PROTOKOL_IP6) then
+        U := ntohs(IPUzunluk) - 20
+      else U := ntohs(IPUzunluk) - 40;
       ABaglanti^.OnayNo := i + U;
 
       if(U > 0) then Baglantilar0.BellegeEkle(ABaglanti, @TCPPaket^.Secenekler, U);
@@ -229,9 +261,14 @@ begin
       p := @TCPPaket^.Secenekler;
 
       if(p[0] = 'G') and (p[1] = 'E') and (p[2] = 'T') then
-        TCPPaketGonder(ABaglanti, GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+      begin
 
-      Baglantilar0.Yaz(ABaglanti^.Kimlik, WebSiteBaslik, Length(WebSiteBaslik));
+        if(APaketTipi = PROTOKOL_IP6) then
+          TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
+        else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+      end;
+
+      Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, WebSiteBaslik, Length(WebSiteBaslik));
 
       VeriGonderiliyor := True;
     end;
@@ -257,7 +294,7 @@ begin
         ABaglanti^.OnayNo := i;
 
         // 1. sayfa
-        Baglantilar0.Yaz(ABaglanti^.Kimlik, WebSiteIcerik, Length(WebSiteIcerik));
+        Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, WebSiteIcerik, Length(WebSiteIcerik));
 
         i := Length(WebSiteIcerik);
 

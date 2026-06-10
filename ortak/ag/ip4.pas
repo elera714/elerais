@@ -6,7 +6,7 @@
   Dosya Adı: ip4.pas
   Dosya İşlevi: ip v4 paket yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 10/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -50,8 +50,8 @@ begin
     if(IPPaket^.Protokol = PROTOKOL_UDP) then
     begin
 
-      Inc(UDPPaketSayisi);
       UDPPaketleriniIsle(IPPaket);
+      Inc(UDPPaketSayisi);
     end;
   end
   // 2. sistemin ip adresi var ise...
@@ -68,29 +68,29 @@ begin
       if(IPPaket^.Protokol = PROTOKOL_ICMP4) then
       begin
 
+        ICMPPaketleriniIsle(@IPPaket^.Veri, AIPPaketUzunluk - IP4_BASLIK_U, IPPaket^.KaynakIP);
         Inc(ICMP4PaketSayisi);
-        ICMPPaketleriniIsle(@IPPaket^.Veri, AIPPaketUzunluk - IP4_BASLIK_U, IPPaket^.KaynakIP)
       end
       // tcp protokolü
       else if(IPPaket^.Protokol = PROTOKOL_TCP) then
       begin
 
-        Inc(TCPPaketSayisi);
         TCPPaketleriniIsle(AEthernetPaket);
+        Inc(TCP4PaketSayisi);
       end
       // udp protokolü
       else if(IPPaket^.Protokol = PROTOKOL_UDP) then
       begin
 
-        Inc(UDPPaketSayisi);
         UDPPaketleriniIsle(IPPaket);
+        Inc(UDPPaketSayisi);
       end;
     end
     else
     begin
 
       Inc(GAEPaketSayisi);
-      SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'IP.PAS: bilinmeyen IP paketi:', []);
+      SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'IP4.PAS: bilinmeyen IP paketi:', []);
       SISTEM_MESAJ_IP4(mtUyari, RENK_SIYAH, '  -> Hedef IP adresi: ', IPPaket^.HedefIP);
       SISTEM_MESAJ(mtUyari, RENK_SIYAH, '  -> Hedef protokol: %d', [IPPaket^.Protokol]);
     end;

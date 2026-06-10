@@ -121,7 +121,7 @@ begin
 
       B := Baglantilar0.Baglanti[BaglantiKimlik];
       if not(B = nil) then
-        Baglantilar0.Yaz(B^.Kimlik, Isaretci(i + FAktifGorevBellekAdresi), j);
+        Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, Isaretci(i + FAktifGorevBellekAdresi), j);
     end
     // bağlantıyı kapat
     else if(AltIslev = 7) then

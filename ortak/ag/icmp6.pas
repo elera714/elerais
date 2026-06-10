@@ -33,8 +33,8 @@ const
 const
   ICMP6_PING_ISTEK  = $80;      // ping istek mesajý
   ICMP6_PING_YANIT  = $81;      // ping yanýt mesajý
-  ICMP6_KOMSU_ISTEK = $87;      // komþudan istekte bulunma
-  ICMP6_KOMSU_ILAN  = $88;      // komþunun ICMP6_KOMSU_ISTEK'ine cevabý
+  ICMP6_KOMSU_ISTEK = $87;      // 135 (NS) - komþudan istekte bulunma
+  ICMP6_KOMSU_ILAN  = $88;      // 136 (NA) - komþunun ICMP6_KOMSU_ISTEK'ine cevabý
 
 type
   PICMP6Secenekler = ^TICMP6Secenekler;

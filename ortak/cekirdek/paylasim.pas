@@ -319,9 +319,19 @@ type
   end;
 
 type
-  // tcp ve udp kontrol toplamý için ek baþlýk yapýsý
-  PEkBaslik = ^TEkBaslik;
-  TEkBaslik = packed record         // pseudoheader
+  // tcp ve udp vv kontrol toplamý için ek baþlýk yapýsý
+  PEk6Baslik = ^TEk6Baslik;
+  TEk6Baslik = packed record         // pseudo header
+    KaynakIP: TIP6Adres;
+    HedefIP: TIP6Adres;
+    Uzunluk: TSayi4;                  // udp veya tcp 'nin data ile beraber uzunluðu
+    Sifir: array[0..2] of TSayi1;
+    Protokol: TSayi1;
+  end;
+
+  // tcp ve udp v4 kontrol toplamý için ek baþlýk yapýsý
+  PEk4Baslik = ^TEk4Baslik;
+  TEk4Baslik = packed record         // pseudo header
     KaynakIP: TIP4Adres;
     HedefIP: TIP4Adres;
     Sifir,
@@ -726,7 +736,8 @@ var
   // að - gelen paket sayýlarý
   ICMP4PaketSayisi: TSayi4 = 0;
   ICMP6PaketSayisi: TSayi4 = 0;
-  TCPPaketSayisi: TSayi4 = 0;
+  TCP4PaketSayisi: TSayi4 = 0;
+  TCP6PaketSayisi: TSayi4 = 0;
   UDPPaketSayisi: TSayi4 = 0;
   GAEPaketSayisi: TSayi4 = 0;     // GözArdýEdilen paket sayýsý
 

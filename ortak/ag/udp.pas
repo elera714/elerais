@@ -113,7 +113,7 @@ procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TI
   AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 var
   UDPPaket: PUDPPaket;
-  EkBaslik: TEkBaslik;
+  EkBaslik: TEk4Baslik;
   SaglamaToplami: TSayi2;
   B1: PSayi1;
   i: TSayi4;
