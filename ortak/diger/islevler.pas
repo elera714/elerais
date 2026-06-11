@@ -30,6 +30,7 @@ procedure Tasi2(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4);
 function Karsilastir(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4): TSayi4;
 function IPKarsilastir(IP1, IP2: TIP4Adres): Boolean;
 function IPKarsilastir2(AGonderenIP, ABenimIP: TIP4Adres): Boolean;
+function MACKarsilastir(AMACAdres1, AMACAdres2: TMACAdres): Boolean;
 function IPAdresiAyniAgdaMi(AGonderenIP: TIP4Adres): Boolean;
 function ELRTarih(AGun, AAy, AYil: TSayi2): TSayi4;
 function FatXTarih2ELRTarih(ATarih: TSayi2): TSayi4;
@@ -423,6 +424,18 @@ begin
   for i := 0 to 2 do if(AGonderenIP[i] <> ABenimIP[i]) then Exit;
 
   if(AGonderenIP[3] <> 255) then Exit;
+
+  Result := True;
+end;
+
+function MACKarsilastir(AMACAdres1, AMACAdres2: TMACAdres): Boolean;
+var
+  i: TSayi4;
+begin
+
+  Result := False;
+
+  for i := 0 to 5 do if(AMACAdres1[i] <> AMACAdres2[i]) then Exit;
 
   Result := True;
 end;

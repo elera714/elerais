@@ -6,7 +6,7 @@
   Dosya Adý: src_pcnet32.pas
   Dosya Ýþlevi: PCNET32 að (network) sürücüsü
 
-  Güncelleme Tarihi: 26/05/2026
+  Güncelleme Tarihi: 11/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -76,7 +76,6 @@ const
   PCNET32_PORT_100        = $40;
   PCNET32_PORT_FD         = $80;
   PCNET32_DMA_MASK        = $FFFFFFFF;
-
 
   PCNET32_WIO_RDP         = $10;
   PCNET32_WIO_RAP         = $12;
@@ -152,6 +151,17 @@ const
   TMD_ENP                 = $0100;
   TMD_BPE                 = $0080;
   TMD_RES                 = $007F;
+
+  // CSR15 mod deðerleri
+  MOD_ALIMPASIF           = $0001;        // veri alým devre dýþý
+  MOD_GONDERIMPASIF       = $0002;        // veri gönderme devre dýþý
+  MOD_GERIDONUSAKTIF      = $0004;        // dahili geri dönüþ (loopback) etkin
+  MOD_GERIDONUS           = $0040;        // dahili geri dönüþ (loopback)
+  MOD_BAGPASIF            = $1000;        // baðlantý (link) durumu pasif
+  MOD_FZKADRESPASIF       = $2000;        // fiziksel adrese göre alým pasif
+  MOD_YAYINPASIF          = $4000;        // broadcast pasif
+  MOD_KARMAAKIF           = $8000;        // promiscuous modu aktif
+
 
 type
   TBlokYukle = packed record
@@ -386,7 +396,7 @@ begin
   AygitPCNet32.FullDuplex := 1;
 
   // init_block içeriðini doldur
-  BlokYukle._Mod := $80;
+  BlokYukle._Mod := MOD_KARMAAKIF;
   BlokYukle.GDUzunluk := (GIDIS_HALKA_UZ_BIT or GELIS_HALKA_UZ_BIT);
 
   BlokYukle.MACAdres := AygitPCNet32.MACAdres;
