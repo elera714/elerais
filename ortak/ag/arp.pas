@@ -234,7 +234,7 @@ begin
 
     BekleMS(100);
 
-    while KritikBolgeyeGir(ARPTabloKilit) = False do;
+//    while KritikBolgeyeGir(ARPTabloKilit) = False do;
 
     KayitSilindi := False;
 
@@ -298,7 +298,7 @@ begin
       end;
     end;
 
-    KritikBolgedenCik(ARPTabloKilit);
+//    KritikBolgedenCik(ARPTabloKilit);
   end;
 end;
 
@@ -354,7 +354,7 @@ var
   ARP0: PARPKayit;
 begin
 
-  while KritikBolgeyeGir(ARPTabloKilit) = False do;
+//  while KritikBolgeyeGir(ARPTabloKilit) = False do;
 
   // yanýtý gönderen bilgisayarýn ip adresi listede var mý ?
   for i := 0 to USTSINIR_KAYITSAYISI - 1 do
@@ -370,7 +370,7 @@ begin
 
         ARP0^.MACAdres := AARPKayit.MACAdres;
         ARP0^.YasamSuresi := YASAM_SURESI;
-        KritikBolgedenCik(ARPTabloKilit);
+//        KritikBolgedenCik(ARPTabloKilit);
         Exit;
       end;
     end;
@@ -380,7 +380,7 @@ begin
   if(ToplamKayit >= USTSINIR_KAYITSAYISI) then
   begin
 
-    KritikBolgedenCik(ARPTabloKilit);
+//    KritikBolgedenCik(ARPTabloKilit);
     Exit;
   end;
 
@@ -399,7 +399,7 @@ begin
     Inc(j);
     FToplamKayit := j;
 
-    KritikBolgedenCik(ARPTabloKilit);
+//    KritikBolgedenCik(ARPTabloKilit);
     Exit;
   end;
 end;
@@ -436,7 +436,8 @@ begin
     ARPIstegiGonder(arpIstek, nil, @AIPAdres);
 
     // 0.5 saniye bekle
-    BekleMS(50);
+    //BekleMS(50);
+    ElleGorevDegistir;
 
     // yeniden tabloyu kontrol et
     if(ToplamKayit > 0) then
@@ -465,7 +466,7 @@ var
   ARP0: PARPKayit;
 begin
 
-  while KritikBolgeyeGir(ARPTabloKilit) = False do;
+//  while KritikBolgeyeGir(ARPTabloKilit) = False do;
 
   // ARP tablosunda silinen kayýtlar da olacaðýndan dolayý SiraNo deðiþkeni
   // gerçek sýra no'ya sahip kaydý almak için tanýmlanmý ve kullanýlmýþtýr
@@ -483,13 +484,13 @@ begin
 
       Result := HATA_YOK;
 
-      KritikBolgedenCik(ARPTabloKilit);
+//      KritikBolgedenCik(ARPTabloKilit);
       Exit;
     end else Result := HATA_DEGERARALIKDISI;
 
   end else Result := HATA_DEGERARALIKDISI;
 
-  KritikBolgedenCik(ARPTabloKilit);
+//  KritikBolgedenCik(ARPTabloKilit);
 end;
 
 end.

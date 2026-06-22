@@ -6,7 +6,7 @@
   Dosya Adý: baglanti.pas
   Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/06/2026
+  Güncelleme Tarihi: 22/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -25,6 +25,7 @@ const
 
   TCP_BAYRAK_SON      = $01;    // FIN
   TCP_BAYRAK_ARZ      = $02;    // SYN
+  TCP_BAYRAK_SIFIRLA  = $04;    // RST
   TCP_BAYRAK_GONDER   = $08;    // PSH
   TCP_BAYRAK_KABUL    = $10;    // ACK
 
@@ -70,14 +71,18 @@ type
   PBaglanti = ^TBaglanti;
   TBaglanti = record
     Kimlik: TKimlik;
+    IletisimTipi: TIletisimTipi;  // ana protokol iletiþim tipleri (þu aþamada ipv4, ipv6)
+    ProtokolTipi: TProtokolTipi;
     BaglantiTuru: TBaglantiTuru;
     BaglantiDurum: TBaglantiDurum;
-    ProtokolTipi: TProtokolTipi;
     PencereU: TSayi2;
     SiraNo,                       // TCP sýra no (sequence number)
     OnayNo: TSayi4;               // TCP onay no (acknowledgment number)
     HedefMACAdres: TMACAdres;
-    HedefIPAdres: TIP4Adres;
+
+    HedefIP6Adres: TIP6Adres;     // verinin gönderileceði ip6 adresi
+    HedefIP4Adres: TIP4Adres;     // verinin gönderileceði ip4 adresi
+
     YerelPort, UzakPort: TSayi2;
     Bagli: Boolean;
     Bellek: Isaretci;
@@ -93,8 +98,8 @@ type
     procedure BaglantiYaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
   public
     procedure Yukle;
-    function BaglantiOlustur(ABaglantiTuru: TBaglantiTuru; AProtokolTipi: TProtokolTipi;
-      ABaglantiAdresi: string; AYerelPort, AUzakPort: TSayi2): PBaglanti;
+    function BaglantiOlustur(AIletisimTipi: TIletisimTipi; ABaglantiTuru: TBaglantiTuru;
+      AProtokolTipi: TProtokolTipi; ABaglantiAdresi: string; AYerelPort, AUzakPort: TSayi2): PBaglanti;
     function BaglantiYapisiOlustur(ABaglantiTuru: TBaglantiTuru): PBaglanti;
     function Baglan(AKimlik: TKimlik; ABaglantiTipi: TBaglantiTipi): TISayi4;
     function BagliMi(AKimlik: TKimlik): Boolean;
@@ -155,14 +160,15 @@ end;
 {==============================================================================
   að baðlantýsý için baðlantý oluþturur
  ==============================================================================}
-function TBaglantilar.BaglantiOlustur(ABaglantiTuru: TBaglantiTuru; AProtokolTipi: TProtokolTipi;
-  ABaglantiAdresi: string; AYerelPort, AUzakPort: TSayi2): PBaglanti;
+function TBaglantilar.BaglantiOlustur(AIletisimTipi: TIletisimTipi; ABaglantiTuru: TBaglantiTuru;
+  AProtokolTipi: TProtokolTipi; ABaglantiAdresi: string; AYerelPort, AUzakPort: TSayi2): PBaglanti;
 var
   B: PBaglanti;
   s, SunucuAdi,
   Sayfa: string;
   i: TSayi4;
-  IPAdresi: TIP4Adres;
+  IP6Adresi: TIP6Adres;
+  IP4Adresi: TIP4Adres;
 begin
 
 //  while KritikBolgeyeGir(BaglantilarKilit) = False do;
@@ -188,11 +194,23 @@ begin
     Sayfa := '/';
   end;
 
-  IPAdresi := StrToIP(SunucuAdi);
-
   B^.Bagli := False;
+  B^.IletisimTipi := AIletisimTipi;
+
+  if(AIletisimTipi = itIP6) then
+  begin
+
+    IP6Adresi := StrToIP6(SunucuAdi);
+    B^.HedefIP6Adres := IP6Adresi;
+  end
+  else
+  begin
+
+    IP4Adresi := StrToIP4(SunucuAdi);
+    B^.HedefIP4Adres := IP4Adresi;
+  end;
+
   B^.ProtokolTipi := AProtokolTipi;
-  B^.HedefIPAdres := IPAdresi;
   B^.YerelPort := AYerelPort;
   B^.UzakPort := AUzakPort;
 
@@ -213,11 +231,11 @@ begin
     B^.VeriUzunlugu := 0;
     B^.Bellek := GetMem(4 * 4096);
 
-    SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Protokol -> UDP', []);
+    {SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Protokol -> UDP', []);
     SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Kimlik %d', [B^.Kimlik]);
     SISTEM_MESAJ_IP4(mtBilgi, RENK_LACIVERT, 'Hedef IP: ', IPAdresi);
     SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Kaynak Port: %d', [AYerelPort]);
-    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Hedef Port: %d', [AUzakPort]);
+    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Hedef Port: %d', [AUzakPort]);}
   end
   else
   begin
@@ -225,7 +243,9 @@ begin
     s := ProtokolTipAdi(AProtokolTipi);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, 'BAGLANTI.PAS: TBaglantilar.Olustur2', []);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> Bilinmeyen Protokol: %s ', [s]);
-    SISTEM_MESAJ_IP4(mtHata, RENK_SIYAH, '  -> Hedef IP: ', IPAdresi);
+    if(AIletisimTipi = itIP6) then
+      SISTEM_MESAJ_IP6(mtHata, RENK_SIYAH, '  -> Hedef IP: ', IP6Adresi)
+    else SISTEM_MESAJ_IP4(mtHata, RENK_SIYAH, '  -> Hedef IP: ', IP4Adresi);
     SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> Hedef Port: %d', [AUzakPort]);
   end;
 
@@ -255,8 +275,6 @@ begin
       B := PBaglanti(GetMem(SizeOf(TBaglanti)));
       Baglanti[i] := B;
 
-      //SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'B: %d', [i]);
-
       B^.BaglantiTuru := ABaglantiTuru;
       B^.BaglantiDurum := bdYok;
       B^.Kimlik := i;
@@ -284,7 +302,7 @@ var
 begin
 
   // baðlantýyý al
-  B := Baglanti[AKimlik];
+  B := Baglantilar0.Baglanti[AKimlik];
   if not(B = nil) then
   begin
 
@@ -301,8 +319,9 @@ begin
       else
       begin
 
-        if(IPAdresiAyniAgdaMi(B^.HedefIPAdres)) then
-          B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(B^.HedefIPAdres)
+        { TODO - ip v6'ya göre düzenlenecek }
+        if(IPAdresiAyniAgdaMi(B^.HedefIP4Adres)) then
+          B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(B^.HedefIP4Adres)
         else B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAgBilgisi.DNSSunucusu);
 
         B^.Bagli := True;
@@ -315,8 +334,9 @@ begin
       if(B^.BaglantiDurum = bdKapali) then
       begin
 
-        if(IPAdresiAyniAgdaMi(B^.HedefIPAdres)) then
-          B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(B^.HedefIPAdres)
+        { TODO - ip v6'ya göre düzenlenecek }
+        if(IPAdresiAyniAgdaMi(B^.HedefIP4Adres)) then
+          B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(B^.HedefIP4Adres)
         else B^.HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAgBilgisi.DNSSunucusu);
 
         // ilk paket olan SYN (ARZ) paketi gönderiliyor
@@ -378,7 +398,8 @@ begin
 
       B^.BaglantiDurum := bdKapali;
       B^.ProtokolTipi := ptBilinmiyor;
-      B^.HedefIPAdres := IPAdres0;
+      B^.HedefIP6Adres := IP6Adres0;
+      B^.HedefIP4Adres := IP4Adres0;
       B^.YerelPort := 0;
       B^.UzakPort := 0;
 
@@ -570,8 +591,8 @@ begin
     end
     else if(B^.ProtokolTipi = ptUDP) then
     begin
-
-      UDPPaketGonder(B^.HedefMACAdres, GAgBilgisi.IP4Adres, B^.HedefIPAdres,
+      { TODO - ip v6'ya göre düzenlenecek }
+      UDPPaketGonder(APaketTipi, B^.HedefMACAdres, @GAgBilgisi.IP4Adres, @B^.HedefIP4Adres,
         B^.YerelPort, B^.UzakPort, ABellek, AUzunluk);
     end
   end;

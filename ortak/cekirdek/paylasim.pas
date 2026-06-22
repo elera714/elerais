@@ -48,6 +48,10 @@ type
   PObject = ^TObject;
 
 type
+  { TODO - TIletisimTipi deðerleri ana tiplerdir. TProtokolTipi buna göre düzenlenecek }
+  PIletisimTipi = ^TIletisimTipi;
+  TIletisimTipi = (itIP4, itIP6);
+
   PProtokolTipi = ^TProtokolTipi;
   TProtokolTipi = (ptBilinmiyor, ptIP4, ptIP6, ptARP, ptTCP, ptUDP, ptICMP4, ptICMP6);
 
@@ -319,7 +323,7 @@ type
   end;
 
 type
-  // tcp ve udp vv kontrol toplamý için ek baþlýk yapýsý
+  // tcp ve udp v6 kontrol toplamý için ek baþlýk yapýsý
   PEk6Baslik = ^TEk6Baslik;
   TEk6Baslik = packed record         // pseudo header
     KaynakIP: TIP6Adres;
@@ -748,6 +752,22 @@ var
 
   BellekDegeriniGoster: Boolean = False;
 
+  MAC333300000001: TMACAdres = ($33, $33, $00, $00, $00, $01);
+  MAC333300000002: TMACAdres = ($33, $33, $00, $00, $00, $02);
+  MAC333300000102: TMACAdres = ($33, $33, $00, $01, $00, $02);
+
+  YayinMAC6: TMACAdres = ($33, $33, $ff, $cd, $ef, $01);
+
+const
+  IP6AdresFF02_0002: TIP6Adres = (
+    $ff, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $02);
+
+  IP6AdresFF02_0102: TIP6Adres = (
+    $ff, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $02);
+
+  YayinIP6Adresi: TIP6Adres = (
+    $ff, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $ff, $cd, $ef, $01);
+
 var
   UzunDosyaAdi: array[0..511] of Char;
 
@@ -825,7 +845,7 @@ type
     OtomatikIP: Boolean;      // ip adresi dhcp sunucusundan otomatik alýnacak
 
     // yukarýdaki yapý için API iþlevi oluþturulmuþtur, sýralamanýn bozulmasý iþlevin bozulmasý demektir
-    IPAdresiAlindi: Boolean;
+    YenidenIPAdresiAliniyor: Boolean;
   end;
 
 var
@@ -840,22 +860,13 @@ var
   // GAgBilgisi yapý içeriði ag.IlkAdresDegerleriniYukle iþlevi tarafýndan doldurulmaktadýr
   GAgBilgisi: TAgBilgisi;
 
-  // otomatik atama olmadýðý durumda sistemin kullanacaðý ip adres deðerleri
-  OnDegerIP4Adresi: TIP4Adres = (10, 0, 1, 1);
-  OnDegerAltAgMaskesi: TIP4Adres = (255, 255, 255, 0);
-
   // 0800ABCDEF01 MAC adresi Modified EUI-64'e göre kodlanarak ipv6 adresi elde edilmiþtir
   // bilgi: MAC adresinin ilk byte'ýnýn (08) saðdan 2. biti standarta göre xor'lanmýþtýr
   OnDegerIPV6Adresi: TIP6Adres = ($FE, $80, $00, $00, $00, $00, $00, $00,
     $0A, $00, $AB, $FF, $FE, $CD, $EF, $01);
 
-  { TODO - dns sunucusu tarafýndan yapýlandýrýlacak, þu aþamada dhcp sunucu tarafýndan
-    gönderilecek deðer olarak belirlenmiþtir }
-  // aþaðýdaki 2 deðer þu aþamada dhcp sunucusu tarafýndan kullanýlmaktadýr
-  GDNSIPAdresi: TIP4Adres = (127, 0, 0, 1);
-  GAgGecidi: TIP4Adres = (127, 0, 0, 1);
-
-  IPAdres0: TIP4Adres = (0, 0, 0, 0);
+  IP6Adres0: TIP6Adres = ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00);
+  IP4Adres0: TIP4Adres = (0, 0, 0, 0);
   IPAdres255: TIP4Adres = (255, 255, 255, 255);
   MACAdres0: TMACAdres = (0, 0, 0, 0, 0, 0);
   MACAdres255: TMACAdres = (255, 255, 255, 255, 255, 255);

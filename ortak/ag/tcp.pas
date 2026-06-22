@@ -6,7 +6,7 @@
   Dosya Adý: tcp.pas
   Dosya Ýþlevi: tcp v4/v6 katmaný veri iletiþimini gerçekleþtirir
 
-  Güncelleme Tarihi: 10/06/2026
+  Güncelleme Tarihi: 22/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -37,16 +37,16 @@ var
   B: PBaglanti;
   SI: TSunucuIslev;
   TCPPaket: PTCPPaket;
+  IP6Paket: PIP6Paket;
+  IP4Paket: PIP4Paket;
   KaynakPort, HedefPort,
   PaketTipi, i: TSayi4;
   U: TSayi2;
   p: PChar;
-  IP6Paket: PIP6Paket;
-  IP4Paket: PIP4Paket;
 begin
 
-  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
   IP6Paket := PIP6Paket(@AEthernetPaket^.Veri);
+  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
 
   PaketTipi := htons(AEthernetPaket^.PaketTipi);
   if(PaketTipi = PROTOKOL_IP6) then
@@ -78,11 +78,45 @@ begin
   begin
 
     SI := SunucuBul(HedefPort);
+
+    // istenen port numarasýnda hizmet veren sunucu yoksa istemciye sýfýrlama paketi gönder
     if(SI = nil) then
+    begin
 
-      SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Sistemde %d port numarasý üzerinden hizmet veren sunucu mevcut deðil!', [HedefPort])
+      B := Baglantilar0.BaglantiYapisiOlustur(btBelirsiz);
 
-    else SI(PaketTipi, nil, AEthernetPaket);
+      B^.BaglantiTuru := btPasif;
+
+      B^.HedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+
+      if(PaketTipi = PROTOKOL_IP6) then
+        B^.HedefIP6Adres := IP6Paket^.KaynakIP
+      else B^.HedefIP4Adres := IP4Paket^.KaynakIP;
+
+      B^.YerelPort := KaynakPort;
+      B^.UzakPort := HedefPort;
+
+      // gelen SiraNo deðerini 1 artýrarak gönder
+      i := ntohs(TCPPaket^.SiraNo);
+      B^.OnayNo := i + 1;
+      B^.SiraNo := 0;
+      B^.PencereU := 0;
+
+      // baðlantýnýn gerçekleþtiðine dair onay deðerini gönder
+      TCPPaketGonder(PROTOKOL_IP4, B, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL or TCP_BAYRAK_SIFIRLA,
+        nil, 0);
+
+      B^.ProtokolTipi := ptBilinmiyor;
+      B^.HedefIP6Adres := IP6Adres0;
+      B^.HedefIP4Adres := IP4Adres0;
+      B^.YerelPort := 0;
+      B^.UzakPort := 0;
+
+      if not(B^.Bellek = nil) then GercekBellek0.YokEt(B^.Bellek, 4 * 4096);
+      B^.Bagli := False;
+      B^.BaglantiDurum := bdYok;
+
+    end else SI(PaketTipi, nil, AEthernetPaket);
   end
   else
   // 1.2 bu bilgisayar tarafýndan gerçekleþtirilmek istenen bir baðlantý isteði olmasý durumunda
@@ -175,7 +209,8 @@ begin
             TCPPaketGonder(PaketTipi, B, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
 
             B^.ProtokolTipi := ptBilinmiyor;
-            B^.HedefIPAdres := IPAdres0;
+            B^.HedefIP6Adres := IP6Adres0;
+            B^.HedefIP4Adres := IP4Adres0;
             B^.YerelPort := 0;
             B^.UzakPort := 0;
 
@@ -198,10 +233,6 @@ end;
 
 procedure TCPPaketGonder(APaketTipi: TSayi4; ABaglanti: PBaglanti; AKaynakIPAdres: Isaretci;
   ABayrak: TSayi1; AVeri: Isaretci; AVeriU: TSayi4; AVeriSonEk: Boolean = False);
-const
-  { TODO - düzenle }
-  GeciciHedefIP6Adres: TIP6Adres = (
-    $fe, $80, $00, $00, $00, $00, $00, $00, $f9, $c7, $b6, $2c, $fc, $ad, $5e, $3e);
 var
   TCPPaket: PTCPPaket;
   Ek6Baslik: TEk6Baslik;
@@ -218,19 +249,19 @@ begin
 
     // tcp v6 için ek baþlýk hesaplanýyor
     Ek6Baslik.KaynakIP := PIP6Adres(AKaynakIPAdres)^;
-    Ek6Baslik.HedefIP := GeciciHedefIP6Adres; // ABaglanti^.HedefIPAdres;
-    Ek6Baslik.Uzunluk := htons(TSayi4(AVeriU + TCP_BASLIK_U));
+    Ek6Baslik.HedefIP := ABaglanti^.HedefIP6Adres;
     Ek6Baslik.Sifir[0] := 0;
     Ek6Baslik.Sifir[1] := 0;
     Ek6Baslik.Sifir[2] := 0;
     Ek6Baslik.Protokol := PROTOKOL_TCP;
+    Ek6Baslik.Uzunluk := htons(TSayi4(AVeriU + TCP_BASLIK_U));
   end
   else
   begin
 
     // tcp v4 için ek baþlýk hesaplanýyor
     Ek4Baslik.KaynakIP := PIP4Adres(AKaynakIPAdres)^;
-    Ek4Baslik.HedefIP := ABaglanti^.HedefIPAdres;
+    Ek4Baslik.HedefIP := ABaglanti^.HedefIP4Adres;
     Ek4Baslik.Sifir := 0;
     Ek4Baslik.Protokol := PROTOKOL_TCP;
     Ek4Baslik.Uzunluk := htons(TSayi2(AVeriU + TCP_BASLIK_U));
@@ -274,18 +305,15 @@ begin
   else
     SaglamaToplami := SaglamaToplamiOlustur(TCPPaket, TCP_BASLIK_U + AVeriU,
       @Ek4Baslik, TCP4_EKBASLIK_U);
+
   TCPPaket^.SaglamaToplami := SaglamaToplami;
 
-  if(APaketTipi = PROTOKOL_IP4) then
-    IP4PaketGonder(ABaglanti^.HedefMACAdres, PIP4Adres(AKaynakIPAdres)^, ABaglanti^.HedefIPAdres,
-      ptTCP, $4000, TCPPaket, TCP_BASLIK_U + AVeriU)
-  else if(APaketTipi = PROTOKOL_IP6) then
-  begin
-
-    { TODO - düzenle }
-    IP6PaketGonder(ABaglanti^.HedefMACAdres, PIP6Adres(AKaynakIPAdres)^, GeciciHedefIP6Adres{ABaglanti^.HedefIPAdres},
+  if(APaketTipi = PROTOKOL_IP6) then
+    IP6PaketGonder(ABaglanti^.HedefMACAdres, PIP6Adres(AKaynakIPAdres)^, ABaglanti^.HedefIP6Adres,
       ptTCP, $80, TCPPaket, TCP_BASLIK_U + AVeriU)
-  end;
+  else
+    IP4PaketGonder(ABaglanti^.HedefMACAdres, PIP4Adres(AKaynakIPAdres)^, ABaglanti^.HedefIP4Adres,
+      ptTCP, $4000, TCPPaket, TCP_BASLIK_U + AVeriU);
 
   GercekBellek0.YokEt(TCPPaket, TCP_BASLIK_U + AVeriU);
 end;

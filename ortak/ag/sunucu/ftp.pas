@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: FTP (dosya) sunucu protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 10/06/2026
+  Güncelleme Tarihi: 22/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -72,6 +72,7 @@ function TFTPSunucu.Ekle(APaketTipi: TSayi4; AIPAdres: Isaretci; AKaynakPort,
   AHedefPort: TSayi4): PBaglanti;
 var
   Istemci, B: PBaglanti;
+  IT: TIletisimTipi;
   i, j: TSayi4;
   IPAdres: string;
 begin
@@ -98,7 +99,10 @@ begin
   else IPAdres := IP_KarakterKatari4(PIP4Adres(AIPAdres)^);
 
   // istemci için baðlantý oluþtur
-  B := Baglantilar0.BaglantiOlustur(btPasif, ptTCP, IPAdres, AKaynakPort, AHedefPort);
+  if(APaketTipi = PROTOKOL_IP6) then
+    IT := itIP6
+  else IT := itIP4;
+  B := Baglantilar0.BaglantiOlustur(IT,  btPasif, ptTCP, IPAdres, AKaynakPort, AHedefPort);
   if(B = nil) then Exit(nil);
 
   // oluþturulan baðlantýyý kaydet
@@ -192,8 +196,10 @@ begin
       YeniB^.SiraNo := Baglantilar0.TCPIlkSiraNoAl;
       YeniB^.OnayNo := ntohs(TCPPaket^.SiraNo) + 1;
       YeniB^.HedefMACAdres := AEthernetPaket^.KaynakMACAdres;
-      { TODO - düzenle }
-      YeniB^.HedefIPAdres := PIP4Adres(KaynakIP)^;
+
+      if(APaketTipi = PROTOKOL_IP6) then
+        YeniB^.HedefIP6Adres := PIP6Adres(KaynakIP)^
+      else YeniB^.HedefIP4Adres := PIP4Adres(KaynakIP)^;
 
       if(APaketTipi = PROTOKOL_IP6) then
         TCPPaketGonder(APaketTipi, YeniB, @OnDegerIPV6Adresi, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)

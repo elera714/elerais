@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2026-06-11T08:05:12Z">
+  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2026-06-22T08:00:35Z">
     <MediaRegistry>
       <HardDisks>
         <HardDisk uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}" location="320mb.vhd" format="VHD" type="Normal"/>
@@ -19,7 +19,7 @@
     </MediaRegistry>
     <ExtraData>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="856,91,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="862,111,1024,808"/>
     </ExtraData>
     <Hardware>
       <CPU>
@@ -42,25 +42,27 @@
         <Adapter slot="0" enabled="true" MACAddress="0800ABCDEF01">
           <DisabledModes>
             <NAT localhost-reachable="true"/>
-            <InternalNetwork name="intnet"/>
+            <InternalNetwork name="elera"/>
+            <HostOnlyInterface name="VirtualBox Host-Only Ethernet Adapter"/>
+            <GenericInterface driver="merhaba"/>
             <NATNetwork name="NatNetwork"/>
           </DisabledModes>
-          <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
+          <BridgedInterface name="Realtek PCIe GBE Ailesi Denetleyici"/>
         </Adapter>
-        <Adapter slot="1" MACAddress="0800ABCDEF02" type="82540EM">
+        <Adapter slot="1" MACAddress="0800ABCDEF02">
           <DisabledModes>
             <NAT localhost-reachable="true"/>
             <InternalNetwork name="intnet"/>
             <NATNetwork name="NatNetwork"/>
           </DisabledModes>
-          <BridgedInterface name="Realtek PCIe GBE Ailesi Denetleyici"/>
+          <BridgedInterface name="Microsoft KM-TEST Geri D&#xF6;ng&#xFC; Ba&#x11F;da&#x15F;t&#x131;r&#x131;c&#x131;s&#x131;"/>
         </Adapter>
       </Network>
       <AudioAdapter useDefault="true" driver="WAS" enabledOut="true"/>
       <Clipboard/>
       <DragAndDrop mode="Bidirectional"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1781164979321732400" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1782115229811809000" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="IDE" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">

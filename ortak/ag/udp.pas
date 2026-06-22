@@ -6,7 +6,7 @@
   Dosya Adý: udp.pas
   Dosya Ýþlevi: udp protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 18/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,11 +15,12 @@ unit udp;
 
 interface
 
-uses ip4, paylasim;
+uses paylasim;
 
 const
   UDP_BASLIK_U    = 8;
-  UDP_EKBASLIK_U  = 12;
+  UDP4_EKBASLIK_U = 12;
+  UDP6_EKBASLIK_U = 40;
 
 type
   PUDPPaket = ^TUDPPaket;
@@ -31,28 +32,36 @@ type
     Veri: Isaretci;
   end;
 
-procedure UDPPaketleriniIsle(AIPPaket: PIP4Paket);
-procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIP4Adres;
-  AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
+procedure UDPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
+procedure UDPPaketGonder(APaketTipi: TSayi4; AHedefMACAdres: TMACAdres; AKaynakIPAdres,
+  AHedefIPAdres: Isaretci; AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 
 implementation
 
-uses dhcp_s, dhcp_i, donusum, sistemmesaj, dhcp, baglanti, dns, netbios,
-  genel, islevler, gercekbellek;
+uses ip4, ip6, dhcp4_s, dhcp_i, donusum, sistemmesaj, baglanti, dns, netbios, genel,
+  islevler, gercekbellek, dhcp6;
 
 {==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir
  ==============================================================================}
-procedure UDPPaketleriniIsle(AIPPaket: PIP4Paket);
+procedure UDPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
 var
   B: PBaglanti;
   UDPPaket: PUDPPaket;
   KaynakPort, HedefPort: TSayi2;
-  U2: TSayi2;
+  U2, PaketTipi: TSayi2;
+  IP6Paket: PIP6Paket;
+  IP4Paket: PIP4Paket;
 begin
 
-  UDPPaket := PUDPPaket(@AIPPaket^.Veri);
+  IP6Paket := PIP6Paket(@AEthernetPaket^.Veri);
+  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
+
+  PaketTipi := htons(AEthernetPaket^.PaketTipi);
+  if(PaketTipi = PROTOKOL_IP6) then
+    UDPPaket := PUDPPaket(@IP6Paket^.Veri)
+  else UDPPaket := PUDPPaket(@IP4Paket^.Veri);
 
   {$IFDEF UDP_BILGI}
   //UDPBaslikBilgileriniGoruntule(AUDPBaslik);
@@ -80,7 +89,12 @@ begin
   // netbios api
   else if(HedefPort = 137) then
 
-    DNSSorgulariniYanitla(AIPPaket, UDPPaket)
+    DNSSorgulariniYanitla(IP4Paket, UDPPaket)
+
+  // dhcp v6
+  else if(HedefPort = 547) then
+
+    DHCPv6SorgulariniYanitla(AEthernetPaket)
 
   else
   begin
@@ -89,9 +103,23 @@ begin
     if(B = nil) then
     begin
 
-      SISTEM_MESAJ(mtUyari, RENK_MAVI, 'UDP.PAS: eþleþen UDP portu bulunamadý: %d', [HedefPort]);
-      SISTEM_MESAJ_IP4(mtUyari, RENK_SIYAH, '  -> Kaynak IP: ', AIPPaket^.KaynakIP);
-      SISTEM_MESAJ_IP4(mtUyari, RENK_SIYAH, '  -> Hedef IP: ', AIPPaket^.HedefIP);
+      SISTEM_MESAJ(mtUyari, RENK_MOR, 'UDP.PAS: eþleþen UDP portu bulunamadý!', []);
+
+      if(PaketTipi = PROTOKOL_IP6) then
+      begin
+
+        SISTEM_MESAJ_IP6(mtUyari, RENK_MAVI, '  -> Kaynak IP: ', IP6Paket^.KaynakIP);
+        SISTEM_MESAJ_IP6(mtUyari, RENK_MAVI, '  -> Hedef IP: ', IP6Paket^.HedefIP);
+      end
+      else
+      begin
+
+        SISTEM_MESAJ_IP4(mtUyari, RENK_MAVI, '  -> Kaynak IP: ', IP4Paket^.KaynakIP);
+        SISTEM_MESAJ_IP4(mtUyari, RENK_MAVI, '  -> Hedef IP: ', IP4Paket^.HedefIP);
+      end;
+
+      SISTEM_MESAJ(mtUyari, RENK_MAVI, '  -> Kaynak Port: %d', [KaynakPort]);
+      SISTEM_MESAJ(mtUyari, RENK_MAVI, '  -> Hedef Port: %d', [HedefPort]);
     end
     else
     begin
@@ -109,24 +137,40 @@ end;
 {==============================================================================
   udp protokolü üzerinden veri gönderir
  ==============================================================================}
-procedure UDPPaketGonder(AMACAdres: TMACAdres; AKaynakIPAdres, AHedefIPAdres: TIP4Adres;
-  AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
+procedure UDPPaketGonder(APaketTipi: TSayi4; AHedefMACAdres: TMACAdres; AKaynakIPAdres,
+  AHedefIPAdres: Isaretci; AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 var
   UDPPaket: PUDPPaket;
-  EkBaslik: TEk4Baslik;
+  Ek6Baslik: TEk6Baslik;
+  Ek4Baslik: TEk4Baslik;
   SaglamaToplami: TSayi2;
   B1: PSayi1;
-  i: TSayi4;
 begin
 
   UDPPaket := GercekBellek0.Ayir(AVeriUzunlugu + UDP_BASLIK_U);
 
-  // udp için ek baþlýk hesaplanýyor
-  EkBaslik.KaynakIP := AKaynakIPAdres;
-  EkBaslik.HedefIP := AHedefIPAdres;
-  EkBaslik.Sifir := 0;
-  EkBaslik.Protokol := PROTOKOL_UDP;
-  EkBaslik.Uzunluk := ntohs(TSayi2(AVeriUzunlugu + UDP_BASLIK_U));
+  if(APaketTipi = PROTOKOL_IP6) then
+  begin
+
+    // udp v6 için ek baþlýk hesaplanýyor
+    Ek6Baslik.KaynakIP := PIP6Adres(AKaynakIPAdres)^;
+    Ek6Baslik.HedefIP := PIP6Adres(AHedefIPAdres)^;
+    Ek6Baslik.Sifir[0] := 0;
+    Ek6Baslik.Sifir[1] := 0;
+    Ek6Baslik.Sifir[2] := 0;
+    Ek6Baslik.Protokol := PROTOKOL_UDP;
+    Ek6Baslik.Uzunluk := htons(TSayi4(AVeriUzunlugu + UDP_BASLIK_U));
+  end
+  else
+  begin
+
+    // udp v4 için ek baþlýk hesaplanýyor
+    Ek4Baslik.KaynakIP := PIP4Adres(AKaynakIPAdres)^;
+    Ek4Baslik.HedefIP := PIP4Adres(AHedefIPAdres)^;
+    Ek4Baslik.Sifir := 0;
+    Ek4Baslik.Protokol := PROTOKOL_UDP;
+    Ek4Baslik.Uzunluk := ntohs(TSayi2(AVeriUzunlugu + UDP_BASLIK_U));
+  end;
 
   // udp paketi hazýrlanýyor
   UDPPaket^.KaynakPort := htons(AKaynakPort);
@@ -135,12 +179,22 @@ begin
   UDPPaket^.SaglamaToplami := 0;
   B1 := @UDPPaket^.Veri;
   Tasi2(PSayi1(AVeri), B1, AVeriUzunlugu);
-  SaglamaToplami := SaglamaToplamiOlustur(UDPPaket, AVeriUzunlugu + UDP_BASLIK_U,
-    @EkBaslik, UDP_EKBASLIK_U);
+
+  if(APaketTipi = PROTOKOL_IP6) then
+    SaglamaToplami := SaglamaToplamiOlustur(UDPPaket, AVeriUzunlugu + UDP_BASLIK_U,
+      @Ek6Baslik, UDP6_EKBASLIK_U)
+  else
+    SaglamaToplami := SaglamaToplamiOlustur(UDPPaket, AVeriUzunlugu + UDP_BASLIK_U,
+      @Ek4Baslik, UDP4_EKBASLIK_U);
+
   UDPPaket^.SaglamaToplami := SaglamaToplami;
 
-  IP4PaketGonder(AMACAdres, AKaynakIPAdres, AHedefIPAdres, ptUDP, 0, UDPPaket,
-    AVeriUzunlugu + UDP_BASLIK_U);
+  if(APaketTipi = PROTOKOL_IP6) then
+    IP6PaketGonder(AHedefMACAdres, PIP6Adres(AKaynakIPAdres)^, PIP6Adres(AHedefIPAdres)^,
+      ptUDP, $80, UDPPaket, AVeriUzunlugu + UDP_BASLIK_U)
+  else
+    IP4PaketGonder(AHedefMACAdres, PIP4Adres(AKaynakIPAdres)^, PIP4Adres(AHedefIPAdres)^,
+      ptUDP, 0, UDPPaket, AVeriUzunlugu + UDP_BASLIK_U);
 
   GercekBellek0.YokEt(UDPPaket, AVeriUzunlugu + UDP_BASLIK_U);
 end;

@@ -3,18 +3,18 @@
   Kodlayan: Fatih KILIÇ
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya Adı: dhcp_s.pas
-  Dosya İşlevi: DHCP sunucu protokol işlevlerini yönetir
+  Dosya Adı: dhcp4_s.pas
+  Dosya İşlevi: DHCP v4 sunucu protokol işlevlerini yönetir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 18/06/2026
 
  ==============================================================================}
 {$mode objfpc}
-unit dhcp_s;
+unit dhcp4_s;
 
 interface
 
-uses paylasim, dhcp;
+uses paylasim, dhcp4_i;
 
 const
   USTSINIR_DHCPKAYIT      = 256;
@@ -37,14 +37,14 @@ type
   TDHCPSunucu = object
   private
     FDHCPKayitListesi: array[0..USTSINIR_DHCPKAYIT - 1] of PDHCPKayit;
-    function DHCPKayitAl(ASiraNo: TSayi4): PDHCPKayit;
-    procedure DHCPKayitYaz(ASiraNo: TSayi4; ADHCPKayit: PDHCPKayit);
+    function DHCPKayitAl(ASiraNo: TISayi4): PDHCPKayit;
+    procedure DHCPKayitYaz(ASiraNo: TISayi4; ADHCPKayit: PDHCPKayit);
   public
     procedure Yukle;
     function HavuzdanIPAdresiAl(AMACAdres: TMACAdresIslev): TIPAdresIslev;
     function IPAdresiVerilsinMi(AIstenenIPAdres: TIPAdresIslev; AMACAdres: TMACAdresIslev): Boolean;
-    property DHCPKayit[ASiraNo: TSayi4]: PDHCPKayit read DHCPKayitAl write DHCPKayitYaz;
-    procedure DHCPSunucuPaketleriniIsle(ADHCPYapi: PDHCPYapi);
+    property DHCPKayit[ASiraNo: TISayi4]: PDHCPKayit read DHCPKayitAl write DHCPKayitYaz;
+    procedure DHCPSunucuPaketleriniIsle(ADHCPYapi: PDHCP4Yapi);
   end;
 
 var
@@ -76,7 +76,7 @@ begin
   end;
 end;
 
-function TDHCPSunucu.DHCPKayitAl(ASiraNo: TSayi4): PDHCPKayit;
+function TDHCPSunucu.DHCPKayitAl(ASiraNo: TISayi4): PDHCPKayit;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -85,7 +85,7 @@ begin
   else Result := nil;
 end;
 
-procedure TDHCPSunucu.DHCPKayitYaz(ASiraNo: TSayi4; ADHCPKayit: PDHCPKayit);
+procedure TDHCPSunucu.DHCPKayitYaz(ASiraNo: TISayi4; ADHCPKayit: PDHCPKayit);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -169,7 +169,7 @@ end;
 {==============================================================================
   DHCP sunucu paketlerini işler
  ==============================================================================}
-procedure TDHCPSunucu.DHCPSunucuPaketleriniIsle(ADHCPYapi: PDHCPYapi);
+procedure TDHCPSunucu.DHCPSunucuPaketleriniIsle(ADHCPYapi: PDHCP4Yapi);
 var
   DHCPMesaj: PDHCPMesaj;
   AnaMT, MT, DonanimTipi, i: TSayi1;

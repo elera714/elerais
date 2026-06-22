@@ -6,7 +6,7 @@
   Dosya Adı: dns.pas
   Dosya İşlevi: dns protokol istemci işlevlerini yönetir
 
-  Güncelleme Tarihi: 10/06/2026
+  Güncelleme Tarihi: 22/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,6 +46,7 @@ type
   TDNS = object
   public
     FBaglanti: PBaglanti;
+    { TODO - çok önemli: bir üstteki yapı değerleri aşağıdaki değişkenlere aktarılmalı }
     FKimlik: TKimlik;
     FYerelPort: TSayi4;
     FYanitUzunluk: TSayi4;
@@ -161,8 +162,6 @@ var
   B4: PSayi4;
 begin
 
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DNS paket işleme', []);
-
   HedefPort := ntohs(AUDPPaket^.HedefPort);
   Uzunluk := ntohs(AUDPPaket^.Uzunluk) - 8;
 
@@ -275,11 +274,16 @@ begin
     B2^ := ntohs(TSayi2(Class_IN));
 
     IPAdresi := IP_KarakterKatari4(GAgBilgisi.DNSSunucusu);
-    DNS^.FBaglanti := Baglantilar0.BaglantiOlustur(btBelirsiz, ptUDP, IPAdresi, DNS^.FYerelPort, DNS_PORTNO);
+
+    DNS^.FBaglanti := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi,
+      DNS^.FYerelPort, DNS_PORTNO);
     if not(DNS^.FBaglanti = nil) then
     begin
 
-      if(Baglantilar0.Baglan(DNS^.FKimlik, btYayin) <> -1) then
+      DNS^.FKimlik := DNS^.FBaglanti^.Kimlik;
+
+      { TODO - btYayin'dan btIP değerine çekilecek }
+      if(Baglantilar0.Baglan(DNS^.FKimlik, btIP) <> -1) then
       begin
 
         Baglantilar0.Yaz(PROTOKOL_IP4, DNS^.FKimlik, @DNSPaket[0], 12 + ToplamUzunluk + 4);

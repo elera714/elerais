@@ -27,7 +27,8 @@ function IntToStr(ADeger: TISayi4): string;
 function MAC_KarakterKatari(AMACAdres: TMACAdres): string;
 function IP_KarakterKatari4(AIPAdres: TIP4Adres): string;
 function IP_KarakterKatari6(AIPAdres: TIP6Adres2): string;
-function StrToIP(AIPAdres: string): TIP4Adres;
+function StrToIP6(AIPAdres: string): TIP6Adres;
+function StrToIP4(AIPAdres: string): TIP4Adres;
 function LowerCase(AKarakter: Char): Char;
 function UpperCase(AKarakter: Char): Char;
 function UpperCase(ADeger: string): string;
@@ -299,9 +300,19 @@ begin
 end;
 
 {==============================================================================
-  karakter katar değerini IP adres değerine dönüştürür
+  karakter katar değerini IP v6 adres değerine dönüştürür
  ==============================================================================}
-function StrToIP(AIPAdres: string): TIP4Adres;
+function StrToIP6(AIPAdres: string): TIP6Adres;
+begin
+
+  { TODO - düzenle }
+  Result := IP6Adres0;
+end;
+
+{==============================================================================
+  karakter katar değerini IP v4 adres değerine dönüştürür
+ ==============================================================================}
+function StrToIP4(AIPAdres: string): TIP4Adres;
 var
   IPAdres, s: string;
   NoktaSayisi, SiraNo,
@@ -357,7 +368,7 @@ begin
   Exit;
 
 Hata:
-  Result := IPAdres0;
+  Result := IP4Adres0;
 end;
 
 {==============================================================================

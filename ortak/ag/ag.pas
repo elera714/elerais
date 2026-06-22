@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 11/06/2026
+  Güncelleme Tarihi: 22/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -23,11 +23,60 @@ interface
 uses paylasim, aygityonetimi, baglanti;
 
 const
-  ETHERNET_BASLIKU = TSayi1(14);
+  ETHERNET_BASLIKU      = TSayi1(14);
+
+  // yerel olarak kabul edilebilir mac adres sayýsý
+  // bilgi: ethernet mac adresi bu listeye direkt dahil olmayýp, dolaylý olarak dahildir
+  YEREL_MAC_ADRESSAYISI = 2;
 
 var
   // paket baþlýklarý da dahil olmak üzere tüm veri toplamlarýný içerir.
   AlinanByte, GonderilenByte: TSayi4;
+
+const
+
+  // (S)unucu sabit ip4 adres deðerleri
+  SIP4Adresi: TIP4Adres = (10, 0, 1, 1);
+  SAltAgMaskesi: TIP4Adres = (255, 255, 255, 0);
+  SAgGecidi: TIP4Adres = (10, 0, 1, 1);
+  SDHCPSunucusu: TIP4Adres = (10, 0, 1, 1);
+  SDNSSunucusu: TIP4Adres = (10, 0, 1, 1);
+
+  // (I)stemci sabit ip4 adres deðerleri
+  IIP4Adresi: TIP4Adres = (192, 168, 1, 111);
+  IAltAgMaskesi: TIP4Adres = (255, 255, 255, 0);
+  IAgGecidi: TIP4Adres = (192, 168, 1, 1);
+  IDHCPSunucusu: TIP4Adres = (192, 168, 1, 1);
+  IDNSSunucusu: TIP4Adres = (192, 168, 1, 1);
+
+const
+  YerelMACAdresListesi: array[0..YEREL_MAC_ADRESSAYISI - 1] of TMACAdres = (
+    ($FF, $FF, $FF, $FF, $FF, $FF),
+    ($33, $33, $00, $01, $00, $02));
+
+type
+  PAg = ^TAg;
+  TAg = object
+  private
+    FToplamAygit: TSayi4;
+//    FPCIAygitListesi: array[0..USTSINIR_PCIAYGIT - 1] of PPCI;
+//    function PCIBilgiAl(ASiraNo: TSayi4): PPCI;
+//    procedure PCIBilgiYaz(ASiraNo: TSayi4; APCI: PPCI);
+  public
+    function MACAdresiKabulEdilsinMi(AHedefMACAdres: TMACAdres): Boolean;
+//    procedure Yukle;
+{    function Oku1(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi1;
+    function Oku2(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi2;
+    function Oku4(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi4;
+    procedure Yaz1(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi1);
+    procedure Yaz2(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi2);
+    procedure Yaz4(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi4);
+    function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
+    function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
+    function IRQNoAl(APCI: PPCI): TSayi1;
+    property ToplamAygit: TSayi4 read FToplamAygit write FToplamAygit;
+    property PCI[ASiraNo: TSayi4]: PPCI read PCIBilgiAl write PCIBilgiYaz;}
+  end;
 
 procedure Yukle;
 procedure IlkAdresDegerleriniYukle;
@@ -37,10 +86,13 @@ function AgKartindanVeriAl(AHedefBellekAdresi: Isaretci): Integer;
 procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi;
   AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 
+var
+  Ag0: TAg;
+
 implementation
 
 uses src_pcnet32, arp, udp, dns, icmp4, ip4, ip6, sistemmesaj, donusum, islevler,
-  genel, dhcp, dhcp_s, gorev, http, ftp;
+  genel, dhcp4_i, dhcp4_s, dhcp6, gorev, http, ftp;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
@@ -54,7 +106,7 @@ begin
   IPAdresiniOtomatikAl := False;
   {$ELSE}
   GTamBilgisayarAdi := GBilgisayarAdi;
-  { TOOD - True olduðunda að baðlantýsý yoksa hata veriyor }
+  { TODO - True olduðunda að baðlantýsý yoksa hata veriyor }
   IPAdresiniOtomatikAl := True;
   {$ENDIF}
 
@@ -87,23 +139,22 @@ begin
     FTPSunucu0.Yukle;
 
     // sistem için ip adresini yapýlandýr
-    if(GAgBilgisi.IPAdresiAlindi = False) then
+    if(GAgBilgisi.OtomatikIP) then
     begin
 
-      if(GAgBilgisi.OtomatikIP) then
+      GAgBilgisi.YenidenIPAdresiAliniyor := True;
+      DHCPIpAdresiAl;
+    end
+    else
+    begin
 
-        DHCPIpAdresiAl
-      else
-      begin
-
-        GAgBilgisi.IP4Adres := OnDegerIP4Adresi;
-        GAgBilgisi.AltAgMaskesi := OnDegerAltAgMaskesi;
-        GAgBilgisi.AgGecitAdresi := IPAdres0;
-        GAgBilgisi.DHCPSunucusu := IPAdres0;
-        GAgBilgisi.DNSSunucusu := OnDegerIP4Adresi;
-        GAgBilgisi.IPKiraSuresi := 0;
-        GAgBilgisi.IPAdresiAlindi := True;
-      end;
+      GAgBilgisi.IP4Adres := GAgBilgisi.IP4Adres;
+      GAgBilgisi.AltAgMaskesi := GAgBilgisi.AltAgMaskesi;
+      GAgBilgisi.AgGecitAdresi := GAgBilgisi.AgGecitAdresi; //IPAdres0;
+      GAgBilgisi.DHCPSunucusu := GAgBilgisi.DHCPSunucusu; //IPAdres0;
+      GAgBilgisi.DNSSunucusu := GAgBilgisi.DNSSunucusu; //OnDegerIP4Adresi;
+      GAgBilgisi.IPKiraSuresi := 0;
+      GAgBilgisi.YenidenIPAdresiAliniyor := False;
     end;
   end;
 
@@ -117,15 +168,26 @@ end;
 procedure IlkAdresDegerleriniYukle;
 begin
 
+  GAgBilgisi.YenidenIPAdresiAliniyor := False;
+
   GAgBilgisi.OtomatikIP := IPAdresiniOtomatikAl;
   GAgBilgisi.MACAdres := MACAdres0;
-  GAgBilgisi.IP4Adres := IPAdres0;
-  GAgBilgisi.AltAgMaskesi := IPAdres0;
-  GAgBilgisi.AgGecitAdresi := IPAdres0;
-  GAgBilgisi.DHCPSunucusu := IPAdres0;
-  GAgBilgisi.DNSSunucusu := IPAdres0;
+
+  {$IFDEF SISTEM_SUNUCU}
+  GAgBilgisi.IP4Adres := SIP4Adresi;
+  GAgBilgisi.AltAgMaskesi := SAltAgMaskesi;
+  GAgBilgisi.AgGecitAdresi := SAgGecidi;
+  GAgBilgisi.DHCPSunucusu := SDHCPSunucusu;
+  GAgBilgisi.DNSSunucusu := SDNSSunucusu;
+  {$ELSE}
+  GAgBilgisi.IP4Adres := IIP4Adresi;
+  GAgBilgisi.AltAgMaskesi := IAltAgMaskesi;
+  GAgBilgisi.AgGecitAdresi := IAgGecidi;
+  GAgBilgisi.DHCPSunucusu := IDHCPSunucusu;
+  GAgBilgisi.DNSSunucusu := IDNSSunucusu;
+  {$ENDIF}
+
   GAgBilgisi.IPKiraSuresi := 0;
-  GAgBilgisi.IPAdresiAlindi := False;
 end;
 
 {==============================================================================
@@ -181,14 +243,33 @@ begin
 
       EthPaket := @Bellek[0];
 
-      if(MACKarsilastir(EthPaket^.HedefMACAdres, GAgBilgisi.MACAdres)) then
+      Protokol := htons(EthPaket^.PaketTipi);
+
+      // yönlendirici talebi - router solicitation
+      if(MACKarsilastir(EthPaket^.HedefMACAdres, MAC333300000002)) then
       begin
 
-        Protokol := htons(EthPaket^.PaketTipi);
+        if(Protokol = PROTOKOL_IP6) then IP6PaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU)
+      end
+      //
+      else if(MACKarsilastir(EthPaket^.HedefMACAdres, MAC333300000102)) then
+      begin
 
-        {SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthernetPaket^.KaynakMACAdres);
-        SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.HedefMACAdres: ', EthernetPaket^.HedefMACAdres);
-        SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'EthernetPaket^.PaketTipi: %.4x', [EthernetPaket^.PaketTipi]);}
+        if(Protokol = PROTOKOL_IP6) then IP6PaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU)
+      end
+      else if(MACKarsilastir(EthPaket^.HedefMACAdres, YayinMAC6)) then
+      begin
+
+        { TODO - çalýþmýyor }
+        IP6PaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU);
+        SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Son asama1', []);
+      end
+      else if(Ag0.MACAdresiKabulEdilsinMi(EthPaket^.HedefMACAdres)) then
+      begin
+
+        {SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthPaket^.KaynakMACAdres);
+        SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.HedefMACAdres: ', EthPaket^.HedefMACAdres);
+        SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'EthernetPaket^.PaketTipi: $%.4x', [EthPaket^.PaketTipi]);}
 
         // ******* protokollerin iþlenmesi *******
 
@@ -197,7 +278,7 @@ begin
         begin
 
           ARPPaket := @EthPaket^.Veri;
-          if(IPKarsilastir(ARPPaket^.HedefIPAdres, GAgBilgisi.IP4Adres)) then
+          if(IP4Karsilastir(ARPPaket^.HedefIPAdres, GAgBilgisi.IP4Adres)) then
             ARPKayitlar0.ARPPaketleriniIsle(EthPaket)
         end
 
@@ -295,6 +376,28 @@ begin
 
     // ayrýlan belleði serbest býrak
     FreeMem(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
+  end;
+end;
+
+function TAg.MACAdresiKabulEdilsinMi(AHedefMACAdres: TMACAdres): Boolean;
+var
+  i: TSayi4;
+begin
+
+  Result := False;
+
+  // 1. ethernet aygýtý mac adresi kontrolü
+  if(MACKarsilastir(AHedefMACAdres, GAgBilgisi.MACAdres)) then Exit(True);
+
+  // 2. yerel mac adres kayýt kontrolü
+  if(YEREL_MAC_ADRESSAYISI > 0) then
+  begin
+
+    for i := 0 to YEREL_MAC_ADRESSAYISI - 1 do
+    begin
+
+      if(MACKarsilastir(AHedefMACAdres, YerelMACAdresListesi[i])) then Exit(True);
+    end;
   end;
 end;
 

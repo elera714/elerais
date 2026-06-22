@@ -28,8 +28,9 @@ function Trim(const S: string): string;
 procedure BellekDoldur(ABellekAdresi: Isaretci; AUzunluk: TSayi4; ADeger: TSayi1);
 procedure Tasi2(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4);
 function Karsilastir(AKaynak, AHedef: Isaretci; AUzunluk: TSayi4): TSayi4;
-function IPKarsilastir(IP1, IP2: TIP4Adres): Boolean;
-function IPKarsilastir2(AGonderenIP, ABenimIP: TIP4Adres): Boolean;
+function IP4Karsilastir(IP1, IP2: TIP4Adres): Boolean;
+function IP4Karsilastir2(AGonderenIP, ABenimIP: TIP4Adres): Boolean;
+function IP6Karsilastir(AIP1, AIP2: TIP6Adres): Boolean;
 function MACKarsilastir(AMACAdres1, AMACAdres2: TMACAdres): Boolean;
 function IPAdresiAyniAgdaMi(AGonderenIP: TIP4Adres): Boolean;
 function ELRTarih(AGun, AAy, AYil: TSayi2): TSayi4;
@@ -400,9 +401,9 @@ end;
   Result := Sonuc;
 end;
 
-function IPKarsilastir(IP1, IP2: TIP4Adres): Boolean;
+function IP4Karsilastir(IP1, IP2: TIP4Adres): Boolean;
 var
-  i: TISayi4;
+  i: TSayi4;
 begin
 
   Result := False;
@@ -412,11 +413,11 @@ begin
   Result := True;
 end;
 
-// ip adresinin ağa bağlı bilgisayarlara yayın olarak gönderilip
+// ip v4 adresinin ağa bağlı bilgisayarlara yayın olarak gönderilip
 // gönderilmediğini test eder. örn: 192.168.1.1 -> 192.168.1.255
-function IPKarsilastir2(AGonderenIP, ABenimIP: TIP4Adres): Boolean;
+function IP4Karsilastir2(AGonderenIP, ABenimIP: TIP4Adres): Boolean;
 var
-  i: TISayi4;
+  i: TSayi4;
 begin
 
   Result := False;
@@ -424,6 +425,18 @@ begin
   for i := 0 to 2 do if(AGonderenIP[i] <> ABenimIP[i]) then Exit;
 
   if(AGonderenIP[3] <> 255) then Exit;
+
+  Result := True;
+end;
+
+function IP6Karsilastir(AIP1, AIP2: TIP6Adres): Boolean;
+var
+  i: TSayi4;
+begin
+
+  Result := False;
+
+  for i := 0 to 15 do if(AIP1[i] <> AIP2[i]) then Exit;
 
   Result := True;
 end;

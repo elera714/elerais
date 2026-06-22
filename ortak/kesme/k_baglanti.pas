@@ -6,7 +6,7 @@
   Dosya Adı: k_baglanti.pas
   Dosya İşlevi: ağ bağlantı (socket) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 30/05/2026
+  Güncelleme Tarihi: 22/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -60,9 +60,10 @@ begin
         YerelPort := Baglantilar0.YerelPortAl
       else YerelPort := HedefPort;
 
+      { TODO - ip v6'ya göre düzenlenecek }
       if(ProtokolTipi = ptTCP) then
-        B := Baglantilar0.BaglantiOlustur(btAktif, ProtokolTipi, s, YerelPort, HedefPort)
-      else B := Baglantilar0.BaglantiOlustur(btPasif, ProtokolTipi, s, YerelPort, HedefPort);
+        B := Baglantilar0.BaglantiOlustur(itIP4, btAktif, ProtokolTipi, s, YerelPort, HedefPort)
+      else B := Baglantilar0.BaglantiOlustur(itIP4, btPasif, ProtokolTipi, s, YerelPort, HedefPort);
 
       if not(B = nil) then
 

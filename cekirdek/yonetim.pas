@@ -74,7 +74,7 @@ procedure ListeleriIlkDegerlerleYukle;
 
 implementation
 
-uses gdt, gorev, src_klavye, genel, ag, dhcp, sistemmesaj, src_vesa20, cmos,
+uses gdt, gorev, src_klavye, genel, ag, dhcp4_i, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
   src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci,
   sistem, src_pcnet32, gn_giriskutusu, baglanti, icmp6, dhcp6;
@@ -219,7 +219,7 @@ var
 procedure SistemAnaKontrol;
 const
   PingHedefIP6Adres: TIP6Adres = (
-    $fe, $80, $00, $00, $00, $00, $00, $00, $f9, $c7, $b6, $2c, $fc, $ad, $5e, $3e);
+    $fe, $80, $00, $00, $00, $00, $00, $00, $41, $02, $05, $a3, $ba, $0a, $ed, $02);
   PingHedefMACAdres: TMACAdres = ($02, $00, $4c, $4f, $4f, $50);
   PingVeri: string = 'abcdefghijklmnopqrstuvwabcdefghi';
 var
@@ -442,8 +442,6 @@ begin
           begin
 
             //IstekMesajiGonder6;
-
-            IstekMesajiGonder6;
 
             {PingMesajiGonder(ICMP6_PING_ISTEK, PingHedefIP6Adres, PingHedefMACAdres,
               PingSiraNo, @PingVeri[1], 32);

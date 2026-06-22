@@ -10,6 +10,10 @@
     giden ping için yapýlar hazýr)
   + http sunucu ve ftp sunucu protokolleri ip v6 protokolüne göre yeniden yapýlandýrýldý
   + pcnet32 að kartý çoklu yayýna (promiscuous mode) açýldý (ipv6 33:33:xx:xx:xx:xx vb. yanýt için)
+  + istemci tarafýndan sistemde hizmet vermeyen porta gönderilmeye çalýþýlan pakete sýfýrlama yanýtý gönderme iþlevi eklendi
+  + udp protokolü ip v6'ya göre yeniden yapýlandýrýldý
+  + dhcp v6 sunucusu DHCP_MTIP_YALVARMA (solicit), DHCP_MTIP_DUYURU (advertise), DHCP_MTIP_ISTEK (request),
+	  DHCP_MTIP_YANIT (reply) ana iskeleti çalýþacak þekilde yapýlandýrýldý
 
 *******************************************************************************
   Sürüm: 0.4.0 (sunucu / istemci) - 27.05.2026 (R36) - Beta

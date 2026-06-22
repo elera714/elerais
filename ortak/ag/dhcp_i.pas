@@ -4,9 +4,9 @@
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
   Dosya Adı: dhcp_i.pas
-  Dosya İşlevi: DHCP istemci protokol işlevlerini yönetir
+  Dosya İşlevi: DHCP protokol işlevlerini yönetir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 18/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,9 +14,9 @@ unit dhcp_i;
 
 interface
 
-uses paylasim, dhcp;
+uses paylasim, dhcp4_i;
 
-procedure DHCPIstemciPaketleriniIsle(ADHCPYapi: PDHCPYapi);
+procedure DHCPIstemciPaketleriniIsle(ADHCPYapi: PDHCP4Yapi);
 
 implementation
 
@@ -27,7 +27,7 @@ var
   BilgiMesajiGonderildi: Boolean = False;
 
 // DHCP istemci paketlerini işler
-procedure DHCPIstemciPaketleriniIsle(ADHCPYapi: PDHCPYapi);
+procedure DHCPIstemciPaketleriniIsle(ADHCPYapi: PDHCP4Yapi);
 var
   YanitAgBilgisi: TAgBilgisi;
   TeklifEdilenIPAdresi: TIP4Adres;
@@ -122,7 +122,7 @@ begin
             GAgBilgisi.DNSSunucusu := YanitAgBilgisi.DNSSunucusu;
             GAgBilgisi.DHCPSunucusu := YanitAgBilgisi.DHCPSunucusu;
             GAgBilgisi.IPKiraSuresi := YanitAgBilgisi.IPKiraSuresi;
-            GAgBilgisi.IPAdresiAlindi := True;
+            GAgBilgisi.YenidenIPAdresiAliniyor := False;
 
             DHCPBilgilendirmeMesajiGonder(YanitAgBilgisi.IP4Adres);
             BilgiMesajiGonderildi := True;

@@ -6,7 +6,7 @@
   Dosya Adı: ip4.pas
   Dosya İşlevi: ip v4 paket yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 10/06/2026
+  Güncelleme Tarihi: 22/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -43,25 +43,25 @@ begin
 
   // 1. sistemin ip adresi yok ise...
   // ve udp protokolünden ip adresi talebi mevcut ise
-  if(GAgBilgisi.IPAdresiAlindi = False) then
+  if(GAgBilgisi.YenidenIPAdresiAliniyor) then
   begin
 
     // udp protokolü
     if(IPPaket^.Protokol = PROTOKOL_UDP) then
     begin
 
-      UDPPaketleriniIsle(IPPaket);
+      UDPPaketleriniIsle(AEthernetPaket);
       Inc(UDPPaketSayisi);
     end;
   end
   // 2. sistemin ip adresi var ise...
   // sadece aygıta gelen ve yayın olarak gelen ip adreslerini işle
-  else if(GAgBilgisi.IPAdresiAlindi) then
+  else if(GAgBilgisi.YenidenIPAdresiAliniyor = False) then
   begin
 
-    if((IPKarsilastir(IPPaket^.HedefIP, GAgBilgisi.IP4Adres)) or
-      (IPKarsilastir2(IPPaket^.HedefIP, GAgBilgisi.IP4Adres)) or
-      (IPKarsilastir(IPPaket^.HedefIP, IPAdres255))) then
+    if((IP4Karsilastir(IPPaket^.HedefIP, GAgBilgisi.IP4Adres)) or
+      (IP4Karsilastir2(IPPaket^.HedefIP, GAgBilgisi.IP4Adres)) or
+      (IP4Karsilastir(IPPaket^.HedefIP, IPAdres255))) then
     begin
 
       // icmp protokolü
@@ -82,7 +82,7 @@ begin
       else if(IPPaket^.Protokol = PROTOKOL_UDP) then
       begin
 
-        UDPPaketleriniIsle(IPPaket);
+        UDPPaketleriniIsle(AEthernetPaket);
         Inc(UDPPaketSayisi);
       end;
     end
