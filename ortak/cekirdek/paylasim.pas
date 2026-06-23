@@ -124,6 +124,8 @@ const
   PROTOKOL_IP4    = TSayi2($0800);
   PROTOKOL_IP6    = TSayi2($86DD);
 
+  PROTOKOL_LLDP   = TSayi2($88CC);    // link layer discovery protocol
+
   PROTOKOL_TCP    = TSayi1($06);
   PROTOKOL_UDP    = TSayi1($11);
 

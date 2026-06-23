@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/05/2026
+  Güncelleme Tarihi: 22/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -272,7 +272,7 @@ begin
   if(DosyaUyari.Durum = False) or (GeciciDosyaBellek = nil) then
   begin
 
-    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
     KritikBolgedenCik(GorevKilit);
     Exit(nil);
 
@@ -297,7 +297,7 @@ begin
 
     if not(GeciciDosyaBellek = nil) then FreeMem(GeciciDosyaBellek, DosyaUyari.Uzunluk);
 
-    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
     KritikBolgedenCik(GorevKilit);
     Exit(nil);
   end;
@@ -314,7 +314,7 @@ begin
   begin
 
     FreeMem(DosyaBellek, ProgramBellekU + PROGRAM_YIGIN_BELLEK);
-    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: ' + ATamDosyaYolu + ' için görev oluþturulamýyor!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için görev oluþturulamýyor!', []);
     KritikBolgedenCik(GorevKilit);
     Exit(nil);
   end;
@@ -344,7 +344,7 @@ begin
   begin
 
     FreeMem(DosyaBellek, ProgramBellekU + PROGRAM_YIGIN_BELLEK);
-    SISTEM_MESAJ(mtHata, RENK_SIYAH, 'GOREV.PAS: olay bilgisi için bellek ayrýlamýyor!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: olay bilgisi için bellek ayrýlamýyor!', []);
     KritikBolgedenCik(GorevKilit);
     Exit(nil);
   end;
@@ -732,19 +732,19 @@ begin
   if(ASonlanmaSebebi = -1) then
   begin
 
-    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'GOREV.PAS: ' + G^.DosyaAdi + ' normal bir þekilde sonlandýrýldý.', []);
+    SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'GOREV.PAS: ' + G^.DosyaAdi + ' normal bir þekilde sonlandýrýldý...', []);
   end
   else
   begin
 
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + G^.DosyaAdi +
+    SISTEM_MESAJ(mtHata, RENK_PEMBE, 'GOREV.PAS: ' + G^.DosyaAdi +
       ' programý istenmeyen bir iþlem yaptýðýndan dolayý sonlandýrýldý', []);
-    SISTEM_MESAJ(mtHata, RENK_MAVI, '  -> Hata Kodu: ' + IntToStr(ASonlanmaSebebi) + ' - ' +
+    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - Hata Kodu: ' + IntToStr(ASonlanmaSebebi) + ' - ' +
       IstisnaAciklamaListesi[ASonlanmaSebebi], []);
-    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> CS: $%.8x', [G^.HataCS]);
-    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> EIP: $%.8x', [G^.HataEIP]);
-    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> ESP: $%.8x', [G^.HataESP]);
-    SISTEM_MESAJ(mtHata, RENK_SIYAH, '  -> EFLAGS: $%.8x', [G^.HataBayrak]);
+    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - CS: $%.8x', [G^.HataCS]);
+    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - EIP: $%.8x', [G^.HataEIP]);
+    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - ESP: $%.8x', [G^.HataESP]);
+    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - EFLAGS: $%.8x', [G^.HataBayrak]);
   end;
 
   // göreve ait zamanlayýcýlarý durdur

@@ -241,10 +241,10 @@ begin
   begin
 
     SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'NetBios yanýtý gönderilmedi!', []);
-    SISTEM_MESAJ(mtUyari, RENK_MAVI, 'NetBios Bilgileri: ', []);
-    SISTEM_MESAJ(mtUyari, RENK_SIYAH, '-> Sorgulanan Ad: %s', [NetBIOSAdi]);
-    SISTEM_MESAJ(mtUyari, RENK_SIYAH, '-> Ýstek Tipi: %d', [IstekTipi]);
-    SISTEM_MESAJ(mtUyari, RENK_SIYAH, '-> Ýstek Sýnýfý: %d', [IstekSinifi]);
+    SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'NetBios Bilgileri................: ', []);
+    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Sorgulanan Ad: %s', [NetBIOSAdi]);
+    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Ýstek Tipi: %d', [IstekTipi]);
+    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Ýstek Sýnýfý: %d', [IstekSinifi]);
   end;
 end;
 

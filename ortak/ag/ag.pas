@@ -92,7 +92,7 @@ var
 implementation
 
 uses src_pcnet32, arp, udp, dns, icmp4, ip4, ip6, sistemmesaj, donusum, islevler,
-  genel, dhcp4_i, dhcp4_s, dhcp6, gorev, http, ftp;
+  genel, dhcp4_i, dhcp4_s, dhcp6, gorev, http, ftp, lldp_i;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
@@ -291,6 +291,11 @@ begin
         else if(Protokol = PROTOKOL_IP6) then
 
           IP6PaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU)
+
+        else if(Protokol = PROTOKOL_LLDP) then
+
+          LLDPPaketleriniIsle(EthPaket)
+
         else
         begin
 

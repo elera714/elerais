@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: HTTP sunucu protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 22/06/2026
+  Güncelleme Tarihi: 23/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,8 +22,8 @@ const
 const
   WebSiteBaslik: PChar = 'HTTP/1.1 200 OK' + #13 + #10 +
     'Server: ELERA Web Sunucusu v1.0.6' + #13 + #10 +
-    'Date: Mon, 01 Jun 2026 08:31:03 GMT' + #13 + #10 +
-    'Content-Length: 332' + #13 + #10 +
+    'Date: Mon, 01 Jun 2026 12:34:56 GMT' + #13 + #10 +
+    'Content-Length: 332' + #13 + #10 +     // 332 deðeri WebSiteIcerik karakter saytýsý olacak
     'Content-Type: text/html' + #13 + #10 +
     'Connection: close' + #13 + #10 + #13 + #10;
 
@@ -37,6 +37,26 @@ const
     '    <hr>' + #13 + #10 +
     '    <p>ELERA Web Sunucusu''na hoþ geldiniz.</p>' + #13 + #10 +
     '    <p>Sistem çalýþmalarýna eriþmek icin <a href="https://github.com/elera714">ELERA Ýþletim Sistemi</a> sayfasýný ziyaret ediniz.</p>' + #13 + #10 +
+    '</body>' + #13 + #10 +
+    '</html>';
+
+  AnaSayfaHataBaslik: PChar = 'HTTP/1.1 404 Not Found' + #13 + #10 +
+    'Server: ELERA Web Sunucusu v1.0' + #13 + #10 +
+    'Date: Mon, 01 Jun 2026 12:34:56 GMT' + #13 + #10 +
+    'Content-Length: 254' + #13 + #10 +
+    'Connection: close' + #13 + #10 + #13 + #10;
+
+  AnaSayfaHataIcerik: PChar = '<!doctype html>' + #13 + #10 +
+    '<html>' + #13 + #10 +
+    '<head>' + #13 + #10 +
+    '  <title>ELERA Web Sunucusu - Hata [404]</title>' + #13 + #10 +
+    '</head>' + #13 + #10 +
+    '<body>' + #13 + #10 +
+    '  <div align=''center''>' + #13 + #10 +
+    '    <h1>Sayfa Mevcut Deðil [404]</h1>' + #13 + #10 +
+    '    <hr>' + #13 + #10 +
+    '    <p>Ýstenen ''x'' sayfasý sunucuda mevcut deðil!</p>' + #13 + #10 +
+    '  </div>' + #13 + #10 +
     '</body>' + #13 + #10 +
     '</html>';
 
@@ -58,6 +78,7 @@ var
   HTTPSunucu0: THTTPSunucu;
 
 procedure SunucuIslevHTTP(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+function SayfaDegeriniAl(var ABellek: Isaretci): string;
 
 implementation
 
@@ -153,6 +174,7 @@ end;
 
 var
   VeriGonderiliyor: Boolean = False;
+  IstenenSayfa: string;
 
 procedure SunucuIslevHTTP(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
 const
@@ -266,17 +288,18 @@ begin
       // alýnan verinin deðerlendirilmesi
       p := @TCPPaket^.Secenekler;
 
-      if(p[0] = 'G') and (p[1] = 'E') and (p[2] = 'T') then
-      begin
+      if(APaketTipi = PROTOKOL_IP6) then
+        TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
+      else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
 
-        if(APaketTipi = PROTOKOL_IP6) then
-          TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
-        else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
-      end;
-
-      Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, WebSiteBaslik, Length(WebSiteBaslik));
+      IstenenSayfa := SayfaDegeriniAl(p);
+      //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Sayfa: [%s]', [IstenenSayfa]);
 
       VeriGonderiliyor := True;
+
+      if(IstenenSayfa = '/') then
+        Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, WebSiteBaslik, Length(WebSiteBaslik))
+      else Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, AnaSayfaHataBaslik, Length(AnaSayfaHataBaslik));
     end;
   end
   else if(TCPPaket^.Bayrak = TCP_BAYRAK_KABUL) then
@@ -300,10 +323,11 @@ begin
         ABaglanti^.OnayNo := i;
 
         // 1. sayfa
-        Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, WebSiteIcerik, Length(WebSiteIcerik));
+        if(IstenenSayfa = '/') then
+          Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, WebSiteIcerik, Length(WebSiteIcerik))
+        else Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, AnaSayfaHataIcerik, Length(AnaSayfaHataIcerik));
 
-        i := Length(WebSiteIcerik);
-
+        //i := Length(WebSiteIcerik);
         //SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'TCP: U: %d', [i]);
 
         VeriGonderiliyor := False;
@@ -325,6 +349,43 @@ begin
 
     SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'HTTP: ?', []);
   end;
+end;
+
+// http istek baþlýk deðerinden istenen sayfanýn adýný alýr
+// bilgi: þu aþamada SADECE ana sayfa (/) kontrolü yapýlmaktadýr
+function SayfaDegeriniAl(var ABellek: Isaretci): string;
+var
+  s, s2: string;
+  i: TSayi4;
+begin
+
+  Result := '';
+
+  s := '';
+
+  repeat
+
+    while PChar(ABellek)^ <> #13 do
+    begin
+
+      s := s + PChar(ABellek)^;
+      Inc(ABellek);
+    end;
+
+    Inc(ABellek, 2);
+
+    i := Length(s);
+
+    if(i > 0) then
+    begin
+
+      s2 := Copy(s, 1, 10);
+      if(s2 = 'GET / HTTP') then Exit('/');
+    end;
+
+    s := '';
+
+  until i = 0;
 end;
 
 end.

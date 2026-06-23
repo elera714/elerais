@@ -14,6 +14,8 @@
   + udp protokolü ip v6'ya göre yeniden yapýlandýrýldý
   + dhcp v6 sunucusu DHCP_MTIP_YALVARMA (solicit), DHCP_MTIP_DUYURU (advertise), DHCP_MTIP_ISTEK (request),
 	  DHCP_MTIP_YANIT (reply) ana iskeleti çalýþacak þekilde yapýlandýrýldý
+  + *yeni: baðlantý katmaný keþif protokolü (link layer discovery protocol) sisteme (bilgi bazlý) eklendi
+  + http: 404 sayfa hatasý sunucuya eklendi
 
 *******************************************************************************
   Sürüm: 0.4.0 (sunucu / istemci) - 27.05.2026 (R36) - Beta

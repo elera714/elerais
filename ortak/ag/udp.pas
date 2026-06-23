@@ -6,7 +6,7 @@
   Dosya Adý: udp.pas
   Dosya Ýþlevi: udp protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 18/06/2026
+  Güncelleme Tarihi: 22/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -103,23 +103,23 @@ begin
     if(B = nil) then
     begin
 
-      SISTEM_MESAJ(mtUyari, RENK_MOR, 'UDP.PAS: eþleþen UDP portu bulunamadý!', []);
+      SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'UDP.PAS: eþleþen UDP portu bulunamadý!', []);
 
       if(PaketTipi = PROTOKOL_IP6) then
       begin
 
-        SISTEM_MESAJ_IP6(mtUyari, RENK_MAVI, '  -> Kaynak IP: ', IP6Paket^.KaynakIP);
-        SISTEM_MESAJ_IP6(mtUyari, RENK_MAVI, '  -> Hedef IP: ', IP6Paket^.HedefIP);
+        SISTEM_MESAJ_IP6(mtUyari, RENK_TURKUAZ, '  - Kaynak IP: ', IP6Paket^.KaynakIP);
+        SISTEM_MESAJ_IP6(mtUyari, RENK_TURKUAZ, '  - Hedef IP: ', IP6Paket^.HedefIP);
       end
       else
       begin
 
-        SISTEM_MESAJ_IP4(mtUyari, RENK_MAVI, '  -> Kaynak IP: ', IP4Paket^.KaynakIP);
-        SISTEM_MESAJ_IP4(mtUyari, RENK_MAVI, '  -> Hedef IP: ', IP4Paket^.HedefIP);
+        SISTEM_MESAJ_IP4(mtUyari, RENK_TURKUAZ, '  - Kaynak IP: ', IP4Paket^.KaynakIP);
+        SISTEM_MESAJ_IP4(mtUyari, RENK_TURKUAZ, '  - Hedef IP: ', IP4Paket^.HedefIP);
       end;
 
-      SISTEM_MESAJ(mtUyari, RENK_MAVI, '  -> Kaynak Port: %d', [KaynakPort]);
-      SISTEM_MESAJ(mtUyari, RENK_MAVI, '  -> Hedef Port: %d', [HedefPort]);
+      SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Kaynak Port: %d', [KaynakPort]);
+      SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Hedef Port: %d', [HedefPort]);
     end
     else
     begin
@@ -205,11 +205,11 @@ end;
 procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 begin
 
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '-------------------------', []);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Kaynak Port: %d', [ntohs(AUDPBaslik^.KaynakPort)]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Hedef Port: %d', [ntohs(AUDPBaslik^.HedefPort)]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Veri Uzunluðu: %d', [ntohs(AUDPBaslik^.Uzunluk)]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Saðlama Toplamý: %x', [ntohs(AUDPBaslik^.SaglamaToplami)]);
+  SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'UDP Baþlýk Bilgileri.............:', []);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Kaynak Port: %d', [ntohs(AUDPBaslik^.KaynakPort)]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Hedef Port: %d', [ntohs(AUDPBaslik^.HedefPort)]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Veri Uzunluðu: %d', [ntohs(AUDPBaslik^.Uzunluk)]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Saðlama Toplamý: %x', [ntohs(AUDPBaslik^.SaglamaToplami)]);
   //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'UDP Veri: ' + s, []);
 end;
 
