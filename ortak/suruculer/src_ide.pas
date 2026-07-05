@@ -6,7 +6,7 @@
   Dosya Adý: src_ide.pas
   Dosya Ýþlevi: ide aygýt sürücüsü
 
-  Güncelleme Tarihi: 20/01/2026
+  Güncelleme Tarihi: 25/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -118,6 +118,7 @@ function SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
 function IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
 function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
 function IDEAygitiHazirMi(AIDEDisk: PIDEDisk): Boolean;
+function VeriHazirMi(AIDEDisk: PIDEDisk): Boolean;
 procedure Bekle(AIDEDisk: PIDEDisk);
 function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
@@ -321,6 +322,25 @@ begin
 end;
 
 {==============================================================================
+  aygýtta veri hazýr mý ?
+ ==============================================================================}
+function VeriHazirMi(AIDEDisk: PIDEDisk): Boolean;
+var
+  i: TSayi4;
+  j: TSayi1;
+begin
+
+  Result := False;
+
+  for i := 0 to 9 do
+  begin
+
+    j := PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_DURUM);
+    if((j and ATAYAZMAC_DURUM_VERIHAZIR) = ATAYAZMAC_DURUM_VERIHAZIR) then Exit(True);
+  end;
+end;
+
+{==============================================================================
   bekleme iþlevi
  ==============================================================================}
 procedure Bekle(AIDEDisk: PIDEDisk);
@@ -346,6 +366,8 @@ var
   OkunacakSektorSayisi,
   TekrarSayisi: TSayi4;
 begin
+
+  asm pushad; pushfd; end;
 
   BellekAdresi := ABellek;
   OkunacakSektorSayisi := ASektorSayisi;
@@ -377,18 +399,18 @@ begin
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
   // LBA 23..16
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
-  // lba 27..24
+  // 0..3 bit - lba 27..24
   i := ((AIlkSektor shr 24) and $0F);
-  if(FD^.Aygit.Kanal = ATA_KANAL1) then
-    i := i or $F0
-  else i := i or $E0;
+  // 4. bit - aygýt seçimi
   i := i or (FD^.Aygit.Kanal shl 4);
+  // 7. bit - 1, 6. bit - LBA ise 1, 5. bit = 1
+  i := i or %11100000;
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   // sektör oku komutu gönder
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTOROKU);
 
-  Bekle(@FD^.Aygit);
+  //Bekle(@FD^.Aygit);
 
   SektorIS := HATA_YOK;
 
@@ -401,31 +423,21 @@ begin
     if(IDEAygitiMesgulMu(@FD^.Aygit) = False) then
     begin
 
-      if(IDEAygitiHazirMi(@FD^.Aygit)) then
-      begin
-
-        asm
-          pushad
-          pushfd
-          cli
-          cld
-          mov edi,BellekAdresi
-          mov ecx,512 / 2
-          mov dx,PortNo
-          rep insw
-          popfd
-          popad
-        end;
-
-        Dec(OkunacakSektorSayisi);
-        BellekAdresi := BellekAdresi + 512;
-      end
-      else
-      begin
-
-        Inc(TekrarSayisi);
-        SektorIS := HATA_AYGITHAZIRDEGIL;
+      asm
+        //pushad
+        //pushfd
+        cli
+        cld
+        mov edi,BellekAdresi
+        mov ecx,128
+        mov dx,PortNo
+        rep insd
+        //popfd
+        //popad
       end;
+
+      Dec(OkunacakSektorSayisi);
+      BellekAdresi := BellekAdresi + 512;
     end
     else
     begin
@@ -439,6 +451,8 @@ begin
 //  KritikBolgedenCik(SektorOkuYazKilit);
 
   Result := SektorIS;
+
+  asm popfd; popad; end;
 end;
 
 {==============================================================================
@@ -459,7 +473,7 @@ begin
   BellekAdresi := ABellek;
   YazilacakSektorSayisi := ASektorSayisi;
 
-  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
+//  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
 
   // sürücü bilgisine konumlan
   FD := PFDNesne(AFizikselDepolama);
@@ -468,7 +482,7 @@ begin
   if(IDEAygitiMesgulMu(@FD^.Aygit)) then
   begin
 
-    KritikBolgedenCik(SektorOkuYazKilit);
+    //KritikBolgedenCik(SektorOkuYazKilit);
     Exit(HATA_AYGITMESGUL);
   end;
 
@@ -482,18 +496,18 @@ begin
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
   // LBA 23..16
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
-  // lba 27..24
+  // 0..3 bit - lba 27..24
   i := ((AIlkSektor shr 24) and $0F);
-  if(FD^.Aygit.Kanal = ATA_KANAL1) then
-    i := i or $F0
-  else i := i or $E0;
+  // 4. bit - aygýt seçimi
   i := i or (FD^.Aygit.Kanal shl 4);
+  // 7. bit - 1, 6. bit - LBA ise 1, 5. bit = 1
+  i := i or %11100000;
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   // sektör oku komutu gönder
   PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTORYAZ);
 
-  Bekle(@FD^.Aygit);
+  //Bekle(@FD^.Aygit);
 
   SektorIS := HATA_YOK;
 
@@ -506,31 +520,21 @@ begin
     if(IDEAygitiMesgulMu(@FD^.Aygit) = False) then
     begin
 
-      if(IDEAygitiHazirMi(@FD^.Aygit)) then
-      begin
-
-        asm
-          pushad
-          pushfd
-          cli
-          cld
-          mov esi,BellekAdresi
-          mov ecx,512 / 2
-          mov dx,PortNo
-          rep outsw
-          popfd
-          popad
-        end;
-
-        Dec(YazilacakSektorSayisi);
-        BellekAdresi := BellekAdresi + 512;
-      end
-      else
-      begin
-
-        Inc(TekrarSayisi);
-        SektorIS := HATA_AYGITHAZIRDEGIL;
+      asm
+        pushad
+        pushfd
+        cli
+        cld
+        mov esi,BellekAdresi
+        mov ecx,128
+        mov dx,PortNo
+        rep outsd
+        popfd
+        popad
       end;
+
+      Dec(YazilacakSektorSayisi);
+      BellekAdresi := BellekAdresi + 512;
     end
     else
     begin
@@ -541,7 +545,7 @@ begin
 
   until (YazilacakSektorSayisi = 0) or (TekrarSayisi = 3);
 
-  KritikBolgedenCik(SektorOkuYazKilit);
+  //KritikBolgedenCik(SektorOkuYazKilit);
 
   Result := SektorIS;
 end;

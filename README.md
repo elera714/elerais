@@ -39,14 +39,15 @@ English:
   - IDE Disk
   - PCNet32 Ağ Aygıtı
 - **Ağ Protokolleri:**
-  - TCP/IP
+  - TCP-IP4/6
   - UDP
   - ARP
-  - ICMP4/ICMP6
+  - ICMP4/6
   - NETBIOS
   - HTTP Sunucusu
   - FTP Sunucusu
   - DNS İstemcisi
+  - LLDP İstemcisi
   - DHCP Sunucusu / İstemcisi
 - **Dosya Sistemi:**
   - ELR-1 dosya sistemi (okuma / yazma - (geliştirilmesi devam etmektedir))
@@ -60,6 +61,7 @@ English:
 
 * Windows 7 Professional - 64 / 32 bit
 * Lazarus 2.0.8 - FPC 3.0.4
+* binutils 2.36.1 (05.07.2026)
 * ImDisk
 * Virtualbox 7.0.10
 

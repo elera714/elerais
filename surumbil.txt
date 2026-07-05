@@ -16,6 +16,8 @@
 	  DHCP_MTIP_YANIT (reply) ana iskeleti çalýþacak þekilde yapýlandýrýldý
   + *yeni: baðlantý katmaný keþif protokolü (link layer discovery protocol) sisteme (bilgi bazlý) eklendi
   + http: 404 sayfa hatasý sunucuya eklendi
+  + 32 bitlik bmp dosya içerik çizim desteði eklendi
+  + çekirdek binutils 2.36.1 sürümüyle yeniden derlendi. (uygulamalar da derlenecek)
 
 *******************************************************************************
   Sürüm: 0.4.0 (sunucu / istemci) - 27.05.2026 (R36) - Beta

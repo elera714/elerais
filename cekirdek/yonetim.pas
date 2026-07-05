@@ -76,8 +76,7 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp4_i, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
-  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci,
-  sistem, src_pcnet32, gn_giriskutusu, baglanti, icmp6, dhcp6;
+  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -221,10 +220,8 @@ const
   PingHedefIP6Adres: TIP6Adres = (
     $fe, $80, $00, $00, $00, $00, $00, $00, $41, $02, $05, $a3, $ba, $0a, $ed, $02);
   PingHedefMACAdres: TMACAdres = ($02, $00, $4c, $4f, $4f, $50);
-  PingVeri: string = 'abcdefghijklmnopqrstuvwabcdefghi';
 var
-  Gorev: PGorev = nil;
-  TusDegeri, IRR: TSayi2;
+  TusDegeri: TSayi2;
   TusKontrolDegeri: TSayi1;
   TusKarakterDegeri: char;
   TusDurum: TTusDurum;
@@ -232,9 +229,6 @@ var
   Masaustu: PMasaustu;
   GN: PGorselNesne;
   Olay: TOlay;
-  Bellek1, Bellek2,
-  Bellek3, Bellek4,
-  Bellek5: Isaretci;
   MD: PMDNesne;
   T: TMyThread;
   A, B: TAracTipiSinif;
@@ -245,6 +239,7 @@ var
   //T: TMyThread;
   //T2: TMyThread2;
   PingSiraNo: TSayi4 = 111;
+  s: string;
 begin
 
   AracTipleri := TAracTipleriSinif.Create;
@@ -337,8 +332,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            KomsuIstegiGonder(PingHedefIP6Adres);
-
+            //KomsuIstegiGonder(PingHedefIP6Adres);
 
             { TODO - baðlantý oluþturma / yok et testlerinden sonra bu iþlev silinebilir }
             //Baglantilar0.Listele;
@@ -435,7 +429,7 @@ begin
 
             //Assert(True, 'Merhaba');
 
-            //vbox.Listele;
+            vbox.Listele;
           end
           // test iþlev tuþu-1
           else if(TusKarakterDegeri = '4') then
@@ -687,8 +681,7 @@ begin
   begin
 
     U := FileSize(DosyaKimlik);
-    Bellek0 := GercekBellek0.Ayir(U);
-    //GetMem(Bellek0, U);
+    Bellek0 := GetMem(U);
 
     Read(DosyaKimlik, Bellek0);
 
@@ -762,8 +755,7 @@ begin
       end;
     until i = 0;
 
-    //FreeMem(Bellek0, U);
-    GercekBellek0.YokEt(Bellek0, U);
+    FreeMem(Bellek0, U);
   end;
 
   CloseFile(DosyaKimlik);

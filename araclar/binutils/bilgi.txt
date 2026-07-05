@@ -1,3 +1,1 @@
-crossfpc v0.45 sürümüdür.
-
-http://www.crossfpc.com/
+binutils'in yeni sürümleri CodeTyphon derleyicisi yoluyla alýnabilir

@@ -283,7 +283,7 @@ begin
       DNS^.FKimlik := DNS^.FBaglanti^.Kimlik;
 
       { TODO - btYayin'dan btIP değerine çekilecek }
-      if(Baglantilar0.Baglan(DNS^.FKimlik, btIP) <> -1) then
+      if(Baglantilar0.Baglan(itIP4, DNS^.FKimlik, btIP) <> -1) then
       begin
 
         Baglantilar0.Yaz(PROTOKOL_IP4, DNS^.FKimlik, @DNSPaket[0], 12 + ToplamUzunluk + 4);

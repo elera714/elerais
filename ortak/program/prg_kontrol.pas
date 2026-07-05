@@ -18,7 +18,6 @@ uses paylasim, genel, gn_pencere, gn_islemgostergesi, gorselnesne, gn_masaustu,
   sistemmesaj, dosya;
 
 procedure KontrolYonetimi;
-procedure NesneKontrol;
 
 implementation
 
@@ -43,14 +42,12 @@ begin
   while True do
   begin
 
-    NesneKontrol;
-
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareX: %d', [GFareSurucusu.YatayKonum]);
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareY: %d', [GFareSurucusu.DikeyKonum]);
 
     // 10 saniye bekle
     //BekleMS(1000);
-    Sayac := ZamanlayiciSayaci + 500;
+    Sayac := ZamanlayiciSayaci + 3 * 100;
     while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
 
     //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
@@ -84,13 +81,10 @@ begin
     end;
     FindClose(AramaKaydi);
 
-{    SISTEM_MESAJ(mtHata, RENK_MAVI, 'Masaüstü Sol: %d', [GAktifMasaustu^.FKonum.Sol]);
-    SISTEM_MESAJ(mtHata, RENK_MAVI, 'Masaüstü Üst: %d', [GAktifMasaustu^.FKonum.Ust]);
-    SISTEM_MESAJ(mtHata, RENK_MAVI, 'Masaüstü Sol: %d', [GAktifMasaustu^.FCizimBaslangic.Sol]);
-    SISTEM_MESAJ(mtHata, RENK_MAVI, 'Masaüstü Üst: %d', [GAktifMasaustu^.FCizimBaslangic.Ust]);
-}
     if(DosyaBulundu) then
     begin
+
+      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '3', []);
 
       //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [j]);
       //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [j2]);
@@ -147,42 +141,8 @@ begin
         while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
 
       end;
-    end;
+    end //else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '3!', []);
   end;
-end;
-
-// görsel nesne bellek bölgesine baþka iþlemlerin hatayla veri yazmasýna karþýn
-// denetim iþlemlerini gerçekleþtirir
-procedure NesneKontrol;
-var
-  G: PGorselNesne;
-  k: TKimlik;
-  Masaustu: PMasaustu;
-begin
-
-  Masaustu := GAktifMasaustu;
-  //Masaustu^.MasaustuResminiDegistir('disk1:\resimler\' + IntToStr(ResimNo) + '.bmp');
-
-  Inc(ResimNo);
-  if(ResimNo > 7) then ResimNo := 1;
-
-
-{  for i := 0 to USTSINIR_GORSELNESNE - 1 do
-  begin
-
-    G := GorselNesneler0.GorselNesne[i];
-    if not(G = nil) then
-    begin
-
-      j := G^.Kimlik shr 10;
-      if(i <> j) then
-      begin
-
-        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%d. nesne giriþi hatalý: %d', [i, G^.Kimlik]);
-        Break;
-      end;
-    end;
-  end;}
 end;
 
 end.

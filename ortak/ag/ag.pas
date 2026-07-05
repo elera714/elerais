@@ -35,6 +35,11 @@ var
 
 const
 
+  // 0800ABCDEF01 MAC adresi Modified EUI-64'e göre kodlanarak ipv6 adresi elde edilmiþtir
+  // bilgi: MAC adresinin ilk byte'ýnýn (08) saðdan 2. biti standarta göre xor'lanmýþtýr
+  IP6Adresi: TIP6Adres = ($FE, $80, $00, $00, $00, $00, $00, $00,
+    $0A, $00, $AB, $FF, $FE, $CD, $EF, $01);
+
   // (S)unucu sabit ip4 adres deðerleri
   SIP4Adresi: TIP4Adres = (10, 0, 1, 1);
   SAltAgMaskesi: TIP4Adres = (255, 255, 255, 0);
@@ -144,17 +149,6 @@ begin
 
       GAgBilgisi.YenidenIPAdresiAliniyor := True;
       DHCPIpAdresiAl;
-    end
-    else
-    begin
-
-      GAgBilgisi.IP4Adres := GAgBilgisi.IP4Adres;
-      GAgBilgisi.AltAgMaskesi := GAgBilgisi.AltAgMaskesi;
-      GAgBilgisi.AgGecitAdresi := GAgBilgisi.AgGecitAdresi; //IPAdres0;
-      GAgBilgisi.DHCPSunucusu := GAgBilgisi.DHCPSunucusu; //IPAdres0;
-      GAgBilgisi.DNSSunucusu := GAgBilgisi.DNSSunucusu; //OnDegerIP4Adresi;
-      GAgBilgisi.IPKiraSuresi := 0;
-      GAgBilgisi.YenidenIPAdresiAliniyor := False;
     end;
   end;
 
@@ -172,6 +166,8 @@ begin
 
   GAgBilgisi.OtomatikIP := IPAdresiniOtomatikAl;
   GAgBilgisi.MACAdres := MACAdres0;
+
+  GAgBilgisi.IP6Adres := IP6Adresi;
 
   {$IFDEF SISTEM_SUNUCU}
   GAgBilgisi.IP4Adres := SIP4Adresi;

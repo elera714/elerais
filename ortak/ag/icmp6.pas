@@ -155,7 +155,7 @@ begin
   Tasi2(AVeri, @PingPaket^.Veri, AVeriU);
 
   // saðlama toplamý için ek baþlýðý hazýrla
-  EKBaslik.KaynakIP := OnDegerIPV6Adresi;
+  EKBaslik.KaynakIP := GAgBilgisi.IP6Adres;
   EKBaslik.HedefIP := AHedefIPAdres;
   EKBaslik.Uzunluk := htons(TSayi4(40));
   EKBaslik.Sifir[0] := 0;
@@ -169,7 +169,7 @@ begin
   ICMPPaket^.SaglamaToplami := SaglamaToplami;
 
   // paketi ip katmanýna gönder
-  IP6PaketGonder(AHedefMACAdres, OnDegerIPV6Adresi, AHedefIPAdres, ptICMP6, $80,
+  IP6PaketGonder(AHedefMACAdres, GAgBilgisi.IP6Adres, AHedefIPAdres, ptICMP6, $80,
     ICMPPaket, 8 + 32);
 
   // ayrýlan belleði serbest býrak
@@ -239,7 +239,7 @@ begin
   end;
 
   // saðlama toplamý için ek baþlýðý hazýrla
-  EKBaslik.KaynakIP := OnDegerIPV6Adresi;
+  EKBaslik.KaynakIP := GAgBilgisi.IP6Adres;
   EKBaslik.HedefIP := AHedefIPAdres;
   EKBaslik.Uzunluk := htons(TSayi4(PaketU));
   EKBaslik.Sifir[0] := 0;
@@ -254,7 +254,7 @@ begin
   ICMPPaket^.SaglamaToplami := SaglamaToplami;
 
   // paketi ip katmanýna gönder
-  IP6PaketGonder(AHedefMACAdres, OnDegerIPV6Adresi, AHedefIPAdres, ptICMP6, $FF,
+  IP6PaketGonder(AHedefMACAdres, GAgBilgisi.IP6Adres, AHedefIPAdres, ptICMP6, $FF,
     ICMPPaket, PaketU);
 
   // ayrýlan belleði serbest býrak
@@ -281,7 +281,7 @@ begin
   begin
 
     ICMPMesajiGonder(ICMP6_KOMSU_ILAN, IPPaket^.KaynakIP, PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres,
-      OnDegerIPV6Adresi);
+      GAgBilgisi.IP6Adres);
 
     { TODO - çalýþmýyor }
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Son asama3', []);
@@ -294,7 +294,7 @@ begin
     if(ICMPPaket^.MesajTipi = ICMP6_YONLENDIRICI_ISTEK) then
     begin
 
-      ICMPMesajiGonder(ICMP6_YONLENDIRICI_ILAN, PingHedefIP6Adres, MAC333300000001, OnDegerIPV6Adresi);
+      ICMPMesajiGonder(ICMP6_YONLENDIRICI_ILAN, PingHedefIP6Adres, MAC333300000001, GAgBilgisi.IP6Adres);
     end
   end
   else
@@ -319,7 +319,7 @@ begin
     begin
 
       ICMPMesajiGonder(ICMP6_KOMSU_ILAN, IPPaket^.KaynakIP,
-        PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres, OnDegerIPV6Adresi);
+        PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres, GAgBilgisi.IP6Adres);
     end
     // komþu bilgisayar benim isteðime icmp yanýtý veriyor
     else if(ICMPPaket^.MesajTipi = ICMP6_KOMSU_ILAN) then

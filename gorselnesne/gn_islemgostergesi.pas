@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/05/2026
+  Güncelleme Tarihi: 28/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,7 +46,7 @@ uses temelgorselnesne, donusum, giysi_mac;
 function IslemGostergesiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
   GN: PGorselNesne;
-  IslemGostergesi: PIslemGostergesi;
+  IG: PIslemGostergesi;
 begin
 
   // $DDCCBBAA
@@ -66,27 +66,26 @@ begin
     ISLEV_GOSTER:
     begin
 
-      IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
-      IslemGostergesi^.Goster;
+      IG := PIslemGostergesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      IG^.Goster;
     end;
 
     // alt, üst değerlerini belirle
     $010F:
     begin
 
-      IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(
-        PKimlik(ADegiskenler + 00)^, gntIslemGostergesi));
-      if(IslemGostergesi <> nil) then IslemGostergesi^.DegerleriBelirle(
-        PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
+      IG := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+        gntIslemGostergesi));
+      if(IG <> nil) then IG^.DegerleriBelirle(PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
     end;
 
     // nesne gösterge pozisyonunu belirle
     $020F:
     begin
 
-      IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(
-        PKimlik(ADegiskenler + 00)^, gntIslemGostergesi));
-      if(IslemGostergesi <> nil) then IslemGostergesi^.MevcutDegerYaz(PISayi4(ADegiskenler + 04)^);
+      IG := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+        gntIslemGostergesi));
+      if(IG <> nil) then IG^.MevcutDegerYaz(PISayi4(ADegiskenler + 04)^);
     end
 
     else Result := HATA_ISLEV;
@@ -98,17 +97,16 @@ end;
  ==============================================================================}
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik;
 var
-  IslemGostergesi: PIslemGostergesi;
+  IG: PIslemGostergesi;
 begin
 
-  IslemGostergesi := IslemGostergesi^.Olustur(ktNesne, AAtaNesne, ASol, AUst,
-    AGenislik, AYukseklik);
+  IG := IG^.Olustur(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik);
 
-  if(IslemGostergesi = nil) then
+  if(IG = nil) then
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := IslemGostergesi^.Kimlik;
+  else Result := IG^.Kimlik;
 end;
 
 {==============================================================================
@@ -117,28 +115,28 @@ end;
 function TIslemGostergesi.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
   ASol, AUst, AGenislik, AYukseklik: TISayi4): PIslemGostergesi;
 var
-  IslemGostergesi: PIslemGostergesi;
+  IG: PIslemGostergesi;
 begin
 
-  IslemGostergesi := PIslemGostergesi(inherited Olustur(AKullanimTipi, AAtaNesne,
-    ASol, AUst, AGenislik, AYukseklik, 0, 0, 0, 0, ''));
+  IG := PIslemGostergesi(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
+    AGenislik, AYukseklik, 0, 0, 0, 0, ''));
 
   // görsel nesne tipi
-  IslemGostergesi^.NesneTipi := gntIslemGostergesi;
+  IG^.NesneTipi := gntIslemGostergesi;
 
-  IslemGostergesi^.Baslik := '';
+  IG^.Baslik := '';
 
-  IslemGostergesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+  IG^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  IslemGostergesi^.OlayCagriAdresi := @OlaylariIsle;
+  IG^.OlayCagriAdresi := @OlaylariIsle;
 
   // diğer değer atamaları
-  IslemGostergesi^.FAltDeger := 1;
-  IslemGostergesi^.FUstDeger := 100;
-  IslemGostergesi^.FMevcutDeger := 0;
+  IG^.FAltDeger := 1;
+  IG^.FUstDeger := 100;
+  IG^.FMevcutDeger := 0;
 
   // nesne adresini geri döndür
-  Result := IslemGostergesi;
+  Result := IG;
 end;
 
 {==============================================================================
@@ -173,11 +171,11 @@ end;
  ==============================================================================}
 procedure TIslemGostergesi.Hizala;
 var
-  IslemGostergesi: PIslemGostergesi;
+  IG: PIslemGostergesi;
 begin
 
-  IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
-  if(IslemGostergesi = nil) then Exit;
+  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
+  if(IG = nil) then Exit;
 
   inherited Hizala;
 end;
@@ -187,7 +185,7 @@ end;
  ==============================================================================}
 procedure TIslemGostergesi.Ciz;
 var
-  IslemGostergesi: PIslemGostergesi;
+  IG: PIslemGostergesi;
   CizimAlani, CizimAlani2: TAlan;
   i1: TISayi8;
   s: string;
@@ -195,34 +193,32 @@ var
   d1, d2: Double;
 begin
 
-  IslemGostergesi := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
-  if(IslemGostergesi = nil) then Exit;
+  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
+  if(IG = nil) then Exit;
 
   // giriş kutusunun çizim alan koordinatlarını al
-  CizimAlani := IslemGostergesi^.FCizimAlani;
+  CizimAlani := IG^.FCizimAlani;
 
-  i1 := (IslemGostergesi^.FUstDeger - IslemGostergesi^.FAltDeger) + 1;
-  d1 := (IslemGostergesi^.FMevcutDeger * 100) div i1;
+  i1 := (IG^.FUstDeger - IG^.FAltDeger) + 1;
+  d1 := (IG^.FMevcutDeger * 100) div i1;
   d2 := (CizimAlani.Sag / 100);
   d2 := d1 * d2;
 
   // ön renk doldurma işlemi. dolgu öncesi çizim
-  IslemGostergesi^.DikdortgenDoldur(IslemGostergesi, CizimAlani.Sol, CizimAlani.Ust,
-    CizimAlani.Sag, CizimAlani.Alt, $F1F1F1, RENK_BEYAZ);
+  IG^.DikdortgenDoldur(IG, CizimAlani.Sol, CizimAlani.Ust, CizimAlani.Sag, CizimAlani.Alt,
+    $F1F1F1, RENK_BEYAZ);
 
   // artan renk ile (eğimli) doldur
   CizimAlani2 := CizimAlani;
   CizimAlani2.Sag := CizimAlani2.Sol + Round(d2);
-  IslemGostergesi^.EgimliDoldur(IslemGostergesi, CizimAlani2, DUGME_NORMAL_ILKRENK,
-    DUGME_NORMAL_SONRENK);
+  IG^.EgimliDoldur(IG, CizimAlani2, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK);
 
   // gösterge değerini yaz
   CizimAlani2 := CizimAlani;
-  s := IntToStr(IslemGostergesi^.FMevcutDeger);
+  s := IntToStr(IG^.FMevcutDeger);
   i := (CizimAlani2.Sag - (Length(s) * 8)) div 2;
   j := ((CizimAlani2.Alt - 16) div 2) + 1;
-  IslemGostergesi^.YaziYaz(IslemGostergesi, CizimAlani2.Sol + i, CizimAlani2.Ust + j,
-    s, RENK_SIYAH);
+  IG^.YaziYaz(IG, CizimAlani2.Sol + i, CizimAlani2.Ust + j, s, RENK_SIYAH);
 end;
 
 {==============================================================================
@@ -238,10 +234,15 @@ end;
   işlem göstergesi en alt, en üst değerlerini belirler
  ==============================================================================}
 procedure TIslemGostergesi.DegerleriBelirle(AAltDeger, AUstDeger: TISayi8);
+var
+  IG: PIslemGostergesi;
 begin
 
-  FAltDeger := AAltDeger;
-  FUstDeger := AUstDeger;
+  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
+
+  IG^.FAltDeger := AAltDeger;
+  IG^.FUstDeger := AUstDeger;
+  IG^.FMevcutDeger := 0;
 
   Ciz;
 end;
@@ -250,9 +251,13 @@ end;
   işlem göstergesi mevcut konum değerini belirler
  ==============================================================================}
 procedure TIslemGostergesi.MevcutDegerYaz(AMevcutDeger: TISayi8);
+var
+  IG: PIslemGostergesi;
 begin
 
-  FMevcutDeger := AMevcutDeger;
+  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
+
+  IG^.FMevcutDeger := AMevcutDeger;
 
   Ciz;
 end;

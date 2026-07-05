@@ -6,7 +6,7 @@
   Dosya Adı: n_yazilistesi.pas
   Dosya İşlevi: yazı liste nesne işlevlerini gerçekleştirir.
 
-  Güncelleme Tarihi: 31/07/2025
+  Güncelleme Tarihi: 01/07/2026
 
   Bilgi: sistem tasarlama yönünden FPC'nin sağladığı imkanlarından yararlanamama
   konusunda kısıtlamaları aşmak amacıyla (dinamik bellek yönetiminin kullanılamamasına
@@ -22,7 +22,8 @@ interface
 uses paylasim;
 
 const
-  USTSINIR_YAZILISTESI = 128;    // 4096 byte / 32 byte = 128 adet liste
+  USTSINIR_YAZILISTESI  = 128;                // 4096 byte / 32 byte = 128 adet liste
+  YAZILISTESI_KAPASITE  = TSayi4(4096 * 2);   // her bir yazı listesinin kapasitesi
 
 type
   TRenkYazi = record
@@ -57,14 +58,14 @@ type
   TYaziListeleri = object
   private
     FYaziListeleri: array[0..USTSINIR_YAZILISTESI - 1] of PYaziListesi;
-    function YaziListesiAl(ASiraNo: TSayi4): PYaziListesi;
-    procedure YaziListesiYaz(ASiraNo: TSayi4; AYaziListesi: PYaziListesi);
+    function YaziListesiAl(ASiraNo: TISayi4): PYaziListesi;
+    procedure YaziListesiYaz(ASiraNo: TISayi4; AYaziListesi: PYaziListesi);
   public
     procedure Yukle;
     function Olustur: PYaziListesi;
     procedure YokEt(AKimlik: TKimlik);
     function BosNesneBul: PYaziListesi;
-    property YaziListesi[ASiraNo: TSayi4]: PYaziListesi read YaziListesiAl write YaziListesiYaz;
+    property YaziListesi[ASiraNo: TISayi4]: PYaziListesi read YaziListesiAl write YaziListesiYaz;
   end;
 
 var
@@ -86,7 +87,7 @@ begin
   for i := 0 to USTSINIR_YAZILISTESI - 1 do YaziListesi[i] := nil;
 end;
 
-function TYaziListeleri.YaziListesiAl(ASiraNo: TSayi4): PYaziListesi;
+function TYaziListeleri.YaziListesiAl(ASiraNo: TISayi4): PYaziListesi;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -95,7 +96,7 @@ begin
   else Result := nil;
 end;
 
-procedure TYaziListeleri.YaziListesiYaz(ASiraNo: TSayi4; AYaziListesi: PYaziListesi);
+procedure TYaziListeleri.YaziListesiYaz(ASiraNo: TISayi4; AYaziListesi: PYaziListesi);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -118,14 +119,14 @@ begin
   begin
 
     // nesne ve nesnenin işleyeceği veriler için 4K bellek bölgesi ayır
-    p := GetMem(4096);
+    p := GetMem(YAZILISTESI_KAPASITE);
     if not(p = nil) then
     begin
 
       // nesne değişkenlerini ilk değerlerle yükle.
       YL^.BellekBaslangicAdresi := p;
       YL^.MevcutBellekAdresi := p;
-      YL^.BellekUzunlugu := 4096;
+      YL^.BellekUzunlugu := YAZILISTESI_KAPASITE;
 
       Exit(YL);
     end
@@ -155,7 +156,7 @@ begin
 
     // bellek tahsis edilmişse belleği bırak
     if not(YL^.BellekBaslangicAdresi = nil) then
-      FreeMem(YL^.FBellekBaslangicAdresi, 4096);
+      FreeMem(YL^.FBellekBaslangicAdresi, YAZILISTESI_KAPASITE);
 
     FreeMem(YL, SizeOf(TYaziListesi));
 
@@ -202,9 +203,9 @@ end;
 procedure TYaziListesi.Temizle;
 begin
 
-  FillByte(BellekBaslangicAdresi^, 4096, 0);
+  FillByte(BellekBaslangicAdresi^, YAZILISTESI_KAPASITE, 0);
   MevcutBellekAdresi := BellekBaslangicAdresi;
-  BellekUzunlugu := 4096;
+  BellekUzunlugu := YAZILISTESI_KAPASITE;
   FElemanSayisi := 0;
 end;
 

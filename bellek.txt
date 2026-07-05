@@ -10,7 +10,7 @@ $0090000..$00FFFFF - kullanılmayı bekliyor
 $0100000..$0300000 - cekirdek.bin - (çekirdek için 2MB çalışma alanı)
 $0300000..$0400000 - çekirdek için yığın bellek (ESP)
 $0400000..$0510000 - programların ESP belleği için ayrıldı
-$0510000..$0520000 - BELLEK_HARITA_ADRESI (65536 ($10000) girdi * 4096 = $10000000 = 256MB belleği adresleyebilir)
+$0510000..$0520000 - BELLEK_HARITA_ADRESI ($10000 / 4 byte'lık girdi = $4000 girdi). 16384 girdi ($4000) * 4096 = 67.108.864 = 64MB belleği adresleyebilir)
 $0520000..$0560D00 - TSS port giriş / çıkış izin haritası. 32 * 8296 = 265472 byte ($40D00)
 $0560D00..$0600000 - kullanılmayı bekliyor
 $0600000..$0610000 - sayfa dizini (page directory), 4GB adreslemek için

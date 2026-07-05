@@ -6,10 +6,7 @@
   Dosya Adı: bmp.pas
   Dosya İşlevi: bmp dosya işlevlerini içerir
 
-  Güncelleme Tarihi: 01/05/2025
-
-  Not-1: şu an itibariyle sadece 24 bitlik resim görüntüleme desteği vardır
-  Not-2: tüm renkler 32 bitlik değerlerle işlenmektedir
+  Güncelleme Tarihi: 25/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,12 +15,6 @@ unit bmp;
 interface
 
 uses dosya, paylasim, gn_pencere, gorselnesne;
-
-type
-  PRGBRenk = ^TRGBRenk;
-  TRGBRenk = packed record
-    R, G, B: TSayi1;
-  end;
 
 type
   PBMPBicim = ^TBMPBicim;
@@ -64,7 +55,8 @@ var
   GoruntuYapi: TGoruntuYapi;
   SatirdakiByteSayisi, Satir,
   Sol, Ust, i: TISayi4;
-  Renk2: PRGBRenk;
+  Renk32Bit: PRGB32Bit;
+  Renk24Bit: PRGB24Bit;
   Renk1: TRenk;
   HedefBellek: PRenk;
 begin
@@ -121,26 +113,60 @@ begin
       GoruntuYapi.BellekAdresi := GetMem(GoruntuYapi.Genislik * GoruntuYapi.Yukseklik * 4);
       if(GoruntuYapi.BellekAdresi = nil) then Exit;
 
-      // resim dosyasındaki her bir satırdaki byte sayısı
-      SatirdakiByteSayisi := (GoruntuYapi.Genislik * 3) and $FFFFFFFC;
+      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'BMP: %d', [BMPBicim^.PixelBasinaBitSayisi]);
 
-      Satir := -1;
-
-      for Ust := GoruntuYapi.Yukseklik - 1 downto 0 do
+      if(BMPBicim^.PixelBasinaBitSayisi = 24) then
       begin
 
-        HedefBellek := GoruntuYapi.BellekAdresi + (Ust * (GoruntuYapi.Genislik * 4));
+        // resim dosyasındaki her bir satırdaki byte sayısı (her satır 4 byte'ın katı)
+        if((BMPBicim^.Genislik mod 4) = 0) then
+          SatirdakiByteSayisi := GoruntuYapi.Genislik * 3
+        else SatirdakiByteSayisi := (((GoruntuYapi.Genislik * 3) + 3) div 4) * 4;
 
-        Inc(Satir);
-        Renk2 := DosyaBellek + BMPBicim^.VeriAdres + (SatirdakiByteSayisi * Satir);
+        Satir := -1;
 
-        for Sol := 0 to GoruntuYapi.Genislik - 1 do
+        for Ust := GoruntuYapi.Yukseklik - 1 downto 0 do
         begin
 
-          Renk1 := (Renk2^.B shl 16) + (Renk2^.G shl 8) + (Renk2^.R);
-          HedefBellek^ := Renk1;
-          Inc(Renk2);
-          Inc(HedefBellek);
+          HedefBellek := GoruntuYapi.BellekAdresi + (Ust * (GoruntuYapi.Genislik * 4));
+
+          Inc(Satir);
+          Renk24Bit := DosyaBellek + BMPBicim^.VeriAdres + (SatirdakiByteSayisi * Satir);
+
+          for Sol := 0 to GoruntuYapi.Genislik - 1 do
+          begin
+
+            Renk1 := (Renk24Bit^.R shl 16) + (Renk24Bit^.G shl 8) + (Renk24Bit^.B);
+            HedefBellek^ := Renk1;
+            Inc(Renk24Bit);
+            Inc(HedefBellek);
+          end;
+        end;
+      end
+      else if(BMPBicim^.PixelBasinaBitSayisi = 32) then
+      begin
+
+        // resim dosyasındaki her bir satırdaki byte sayısı (her satır 4 byte'ın katı)
+        SatirdakiByteSayisi := GoruntuYapi.Genislik * 4;
+
+        Satir := -1;
+
+        for Ust := GoruntuYapi.Yukseklik - 1 downto 0 do
+        begin
+
+          HedefBellek := GoruntuYapi.BellekAdresi + (Ust * (GoruntuYapi.Genislik * 4));
+
+          Inc(Satir);
+          Renk32Bit := DosyaBellek + BMPBicim^.VeriAdres + (SatirdakiByteSayisi * Satir);
+
+          for Sol := 0 to GoruntuYapi.Genislik - 1 do
+          begin
+
+            Renk1 := (Renk32Bit^.R shl 16) + (Renk32Bit^.G shl 8) + (Renk32Bit^.B);
+            HedefBellek^ := Renk1;
+            Inc(Renk32Bit);
+            Inc(HedefBellek);
+          end;
         end;
       end;
 

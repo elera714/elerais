@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 22/06/2026
+  Güncelleme Tarihi: 25/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -219,7 +219,7 @@ var
   DosyaKimlik: TKimlik;
   ELFBaslik: PELFBaslik;
   TamDosyaYolu, Degiskenler,
-  DosyaUzanti: string;
+  DosyaUzanti, TS: string;
   p1: PChar;
   IliskiliProgram: TDosyaIliskisi;
   AygitSurucusu: PAygitSurucusu;
@@ -272,7 +272,7 @@ begin
   if(DosyaUyari.Durum = False) or (GeciciDosyaBellek = nil) then
   begin
 
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok1!', []);
     KritikBolgedenCik(GorevKilit);
     Exit(nil);
 
@@ -297,7 +297,7 @@ begin
 
     if not(GeciciDosyaBellek = nil) then FreeMem(GeciciDosyaBellek, DosyaUyari.Uzunluk);
 
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok2!', []);
     KritikBolgedenCik(GorevKilit);
     Exit(nil);
   end;
@@ -425,9 +425,12 @@ begin
   Inc(GorevBayrakDegeri);
 
   // programýn iz kayýt dosyasýný oluþtur
-  {IzKayitDosyaAdi := DosyaAdiniAl(DosyaAdi);
+  TS := TarihSaatBilgisiAl;
+
+  IzKayitDosyaAdi := DosyaAdiniAl(DosyaAdi);
   IzKayitDosyaAdi := IzKayitDosyaAdi + '.log'; //izkayit';
-  IzKaydiOlustur(IzKayitDosyaAdi, IzKayitDosyaAdi + ' uygulamasý çalýþtýrýldý');}
+  IzKaydiOlustur(IzKayitDosyaAdi, IzKayitDosyaAdi + ' uygulamasý ' + TS +
+    ' itibariyle çalýþtýrýldý...');
 
   // görev bellek adresini geri döndür
   Result := G;

@@ -34,10 +34,11 @@ procedure CloseFile(ADosyaKimlik: TKimlik);
 function CreateDir(ADosyaKimlik: TKimlik): Boolean;
 function RemoveDir(ADosyaKimlik: TKimlik): Boolean;
 function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
+function DizinGirdisiOku12(AAranacakDeger: string; var ADosyaArama: TDosyaArama): TSayi4;
 
 implementation
 
-uses genel, gercekbellek, sistemmesaj, fat32, src_com, dosya, islevler;
+uses genel, gercekbellek, sistemmesaj, fat32, src_com, dosya, islevler, donusum;
 
 {==============================================================================
   dosya arama iþlevini baþlatýr
@@ -51,7 +52,7 @@ begin
 
   DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
   DI^.Aranan := AAramaSuzgec;
-  Result := DizinGirdisiOku(AAramaSuzgec, ADosyaArama);
+  Result := DizinGirdisiOku12(AAramaSuzgec, ADosyaArama);
 end;
 
 {==============================================================================
@@ -66,7 +67,7 @@ begin
 
   DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
   Aranan := DI^.Aranan;
-  Result := DizinGirdisiOku(Aranan, ADosyaArama);
+  Result := DizinGirdisiOku12(Aranan, ADosyaArama);
 end;
 
 {==============================================================================
@@ -190,8 +191,7 @@ begin
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DG := PDizinGirdisi(DI^.TSI);
-  Inc(DG, DI^.KayitSN);
+  DG := PDizinGirdisi(DI^.TSI + DI^.SektorIciKonum);
 
   VeriU := DG^.DosyaUzunlugu;
   if(VeriU = 0) then Exit;
@@ -205,13 +205,11 @@ begin
   OkumaSonuc := DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor,
     DI^.MD.Acilis.DosyaAyirmaTablosu.ToplamSektor, DI^.Bellek1);
 
-  if(OkumaSonuc <> 0) then SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
+  if(OkumaSonuc <> HATA_YOK) then SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Depolama aygýtý okuma hatasý!', []);
 
   ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
   OkumaSonuc := 1;
-
-  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IlkVeriSektoru: %d', [DI^.MD.Acilis.IlkVeriSektorNo]);
 
   repeat
 
@@ -235,27 +233,34 @@ begin
 
     // sektörü belleðe oku
     GetMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
-    DI^.MD.FD^.SektorOku(DI^.MD.FD, i + DI^.MD.Acilis.IlkVeriSektorNo, ZincirBasinaSektor, DI^.Bellek2);
-    Tasi2(DI^.Bellek2, AHedefBellek, KopyalanacakVeriUzunlugu);
+
+    if(DI^.MD.FD^.SektorOku(DI^.MD.FD, i + DI^.MD.Acilis.IlkVeriSektorNo,
+      ZincirBasinaSektor, DI^.Bellek2) = HATA_YOK) then
+    begin
+
+      Tasi2(DI^.Bellek2, AHedefBellek, KopyalanacakVeriUzunlugu);
+      //FreeMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
+
+      //src_com.Yaz(1, AHedefBellek, OkunacakSektorSayisi * 512);
+
+      // okunacak bilginin yerleþtirileceði bir sonraki adresi belirle
+      AHedefBellek := AHedefBellek + (ZincirBasinaSektor * 512);
+
+      // zincir deðerini 1.5 ile çarp ve bir sonraki zincir deðerini al
+      YeniDATSiraNo := (Zincir shr 1) + Zincir + TSayi4(DI^.Bellek1);
+      DATSiraNo := PSayi2(YeniDATSiraNo)^;
+
+      if((Zincir and 1) = 1) then
+        DATSiraNo := DATSiraNo shr 4
+      else DATSiraNo := DATSiraNo and $FFF;
+
+      Zincir := DATSiraNo;
+
+      VeriU := VeriU - (ZincirBasinaSektor * 512);
+      if(ZincirBasinaSektor <= 0) then OkumaSonuc := 0;
+    end;
+
     FreeMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
-
-    //src_com.Yaz(1, AHedefBellek, OkunacakSektorSayisi * 512);
-
-    // okunacak bilginin yerleþtirileceði bir sonraki adresi belirle
-    AHedefBellek := AHedefBellek + (ZincirBasinaSektor * 512);
-
-    // zincir deðerini 1.5 ile çarp ve bir sonraki zincir deðerini al
-    YeniDATSiraNo := (Zincir shr 1) + Zincir + TSayi4(DI^.Bellek1);
-    DATSiraNo := PSayi2(YeniDATSiraNo)^;
-
-    if((Zincir and 1) = 1) then
-      DATSiraNo := DATSiraNo shr 4
-    else DATSiraNo := DATSiraNo and $FFF;
-
-    Zincir := DATSiraNo;
-
-    VeriU := VeriU - (ZincirBasinaSektor * 512);
-    if(ZincirBasinaSektor <= 0) then OkumaSonuc := 0;
 
   // eðer 0xFF8..0xFFF aralýðýndaysa bu dosyanýn en son zinciridir
   until (Zincir >= $FF8) or (OkumaSonuc = 0);
@@ -294,8 +299,7 @@ begin
   // en son iþlem hatalý ise çýk
   if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit(-1);
 
-  DG := PDizinGirdisi(DI^.TSI);
-  Inc(DG, DI^.KayitSN);
+  DG := PDizinGirdisi(DI^.TSI + DI^.SektorIciKonum);
 
   Result := DG^.DosyaUzunlugu;
 end;
@@ -344,6 +348,172 @@ begin
 
   Result := False;
   SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat12.DeleteFile iþlevi yazýlacak', []);
+end;
+
+{==============================================================================
+  dizin giriþinden ilgili bilgileri alýr
+ ==============================================================================}
+function DizinGirdisiOku12(AAranacakDeger: string; var ADosyaArama: TDosyaArama): TSayi4;
+var
+  DizinGirdisi: PDizinGirdisi;
+  TumGirislerOkundu,
+  UzunDosyaAdiBulundu: Boolean;
+  DI: PDosyaIslem;
+  i: TISayi4;
+  ZincirBasinaSektor: TSayi1;
+begin
+
+  // Result := 1 -> tüm giriþler okundu, baþka giriþ yok
+  Result := 1;
+
+  ADosyaArama.DosyaAdi := '';
+
+  // ilk deðer atamalarý
+  TumGirislerOkundu := False;
+
+  UzunDosyaAdiBulundu := False;
+
+  // dosya iþlem yapýsý bellek bölgesine konumlan
+  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+
+  ZincirBasinaSektor := 14; //DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
+
+  //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DI^.DizinGirisi.IlkSektor: %d', [DI^.DizinGirisi.IlkSektor]);
+  //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'ZincirBasinaSektor: %d', [DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor]);
+
+  if(DI^.KumeNo = -1) then
+  begin
+
+    DI^.KumeNo := 19; //DI^.DizinGirisi.IlkSektor div ZincirBasinaSektor;
+    DI^.ZincirNo := 0;
+    DI^.SektorIciKonum := -32; //-1;
+  end;
+
+  // aramaya baþla
+  repeat
+
+    // bir sonraki girdiye konumlan
+    Inc(DI^.SektorIciKonum, 32);
+
+    if(DI^.SektorIciKonum >= 512) then //16) then
+    begin
+
+      DI^.SektorIciKonum := 0;
+      Inc(DI^.ZincirNo);
+
+      //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Tamamlanmadý', []);
+
+      if(DI^.ZincirNo >= ZincirBasinaSektor) then
+      begin
+
+        // yeni küme numarasý al
+        DI^.ZincirNo := 0;
+
+        {GetMem(DI^.Bellek1, 512);
+
+        i := (DI^.KumeNo * 4) div 512;
+
+        // depolama aygýtýnýn ilk FAT kopyasýnýn tümünü belleðe yükle
+        if(DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor +
+          i, 1, DI^.Bellek1) = HATA_YOK) then
+        begin
+
+          // zincir deðerini 4 ile çarp ve bir sonraki zincir deðerini al
+          i := (DI^.KumeNo * 4) mod 512;
+          DI^.KumeNo := PSayi4(DI^.Bellek1 + i)^;
+
+          DI^.KumeNo := DI^.KumeNo + 609; //$672;
+
+        end else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Okuma hatasý: fat12', []);
+
+        FreeMem(DI^.Bellek1, 512);}
+      end;
+    end;
+
+    if(DI^.SektorIciKonum = 0) then
+    begin
+
+      // bir sonraki dizin giriþini oku
+      if(DI^.MD.FD^.SektorOku(DI^.MD.FD, (DI^.KumeNo{ * ZincirBasinaSektor}) + DI^.ZincirNo,
+        1, DI^.TSI) <> 0) then Exit(1);
+    end;
+
+    // dosya giriþ tablosuna konumlan
+    DizinGirdisi := PDizinGirdisi(DI^.TSI + DI^.SektorIciKonum);
+
+    // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
+    if(DizinGirdisi^.DosyaAdi[0] = #00) then
+    begin
+
+      // Result := 1 -> tüm giriþler okundu, baþka giriþ yok
+      Result := 1;
+      TumGirislerOkundu := True;
+    end
+    // silinmiþ dosya / dizin
+    else if(DizinGirdisi^.DosyaAdi[0] = Chr($E5)) then
+    begin
+
+      // bir sonraki giriþle devam et
+    end
+    // mantýksal depolama aygýtý etiket (volume label)
+    else if(DizinGirdisi^.Ozellikler = $08) then
+    begin
+
+      // bir sonraki giriþle devam et
+    end
+    // dizin girdisi uzun ada sahip bir ad ise, uzun dosya adýný al
+    else if(DizinGirdisi^.Ozellikler = $0F) then
+    begin
+
+      UzunDosyaAdiBulundu := True;
+      DosyaParcalariniBirlestir(Isaretci(DizinGirdisi));
+    end
+    // dizin girdisinin uzun ad haricinde olmasý durumunda
+    else //if(DizinGirdisi^.Ozellikler <> $0F) then
+    begin
+
+      // girdinin uzun ad dosya adý OLMAMASI durumunda
+
+      // 1. bir önceki girdi uzun dosya adý ise, ad ve diðer özellikleri geri döndür
+      if(UzunDosyaAdiBulundu) then
+      begin
+
+        ADosyaArama.DosyaAdi := WideChar2String(@UzunDosyaAdi);
+        ADosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
+        ADosyaArama.OlusturmaSaati := FatXSaat2ELRSaat(DizinGirdisi^.OlusturmaSaati);
+        ADosyaArama.OlusturmaTarihi := FatXTarih2ELRTarih(DizinGirdisi^.OlusturmaTarihi);
+        ADosyaArama.SonErisimTarihi := FatXTarih2ELRTarih(DizinGirdisi^.SonErisimTarihi);
+        ADosyaArama.SonDegisimSaati := FatXSaat2ELRSaat(DizinGirdisi^.SonDegisimSaati);
+        ADosyaArama.SonDegisimTarihi := FatXTarih2ELRTarih(DizinGirdisi^.SonDegisimTarihi);
+
+        // deðiþken içeriklerini sýfýrla
+        UzunDosyaAdi[0] := #0;
+        UzunDosyaAdi[1] := #0;
+        UzunDosyaAdiBulundu := False;
+      end
+      else
+      // 2. bir önceki girdi uzun dosya adý deðilse, 8 + 3 dosya ad + uzantý ve
+      // diðer özellikleri geri döndür
+      begin
+
+        ADosyaArama.DosyaAdi := HamDosyaAdiniDosyaAdinaCevir(DizinGirdisi);
+        ADosyaArama.Ozellikler := DizinGirdisi^.Ozellikler;
+        ADosyaArama.OlusturmaSaati := FatXSaat2ELRSaat(DizinGirdisi^.OlusturmaSaati);
+        ADosyaArama.OlusturmaTarihi := FatXTarih2ELRTarih(DizinGirdisi^.OlusturmaTarihi);
+        ADosyaArama.SonErisimTarihi := FatXTarih2ELRTarih(DizinGirdisi^.SonErisimTarihi);
+        ADosyaArama.SonDegisimSaati := FatXSaat2ELRSaat(DizinGirdisi^.SonDegisimSaati);
+        ADosyaArama.SonDegisimTarihi := FatXTarih2ELRTarih(DizinGirdisi^.SonDegisimTarihi);
+      end;
+
+      // dosya uzunluðu ve cluster baþlangýcýný geri dönüþ deðerine ekle
+      ADosyaArama.DosyaUzunlugu := DizinGirdisi^.DosyaUzunlugu;
+      ADosyaArama.BaslangicKumeNo := DizinGirdisi^.BaslangicKumeNo;
+
+      Result := 0;
+      TumGirislerOkundu := True;
+    end;
+
+  until TumGirislerOkundu;
 end;
 
 end.

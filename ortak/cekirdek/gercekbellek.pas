@@ -6,7 +6,7 @@
   Dosya Adý: gercekbellek.pas
   Dosya Ýþlevi: gerçek (fiziksel) bellek yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 23/05/2026
+  Güncelleme Tarihi: 29/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -89,11 +89,11 @@ begin
   for i := 0 to FToplamBlok - 1 do
   begin
 
-    Bellek^ := 0;
+    Bellek^ := $00000000;
     Inc(Bellek);
   end;
 
-  // sisteme ayrýlan belleði kullanýlýyor olarak iþaretle
+  // sisteme ayrýlan belleði "kullanýlýyor" olarak iþaretle
   Bellek := BELLEK_HARITA_ADRESI;
   for i := 0 to AyrilmisBlok - 1 do
   begin
@@ -275,7 +275,7 @@ begin
   begin
 
     // eðer boþ blok var ise ...
-    if(Bellek^ = 0) then
+    if(Bellek^ = $00000000) then
     begin
 
       // bulunan blok numarasýný kaydet
@@ -287,7 +287,7 @@ begin
       begin
 
         // eðer aranan blok daha önce ayrýldýysa arama iþlemini durdur
-        if(Bellek^ <> 0) then
+        if(Bellek^ <> $00000000) then
         begin
 
           BellekBulundu := False;
@@ -328,18 +328,18 @@ begin
 
   Result := GercekBellek0.Ayir(AUzunluk);
 
-  if(BellekDegeriniGoster) then begin
+  {if(BellekDegeriniGoster) then begin
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem.Result: $%x', [Result]);
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem.AUzunluk: %d', [AUzunluk]); end;
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem.AUzunluk: %d', [AUzunluk]); end;}
 end;
 
 // sistemden alýnan belleði serbest býrak - fpc + çekirdek iþlevleri için
 function ELRFreeMemSize(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
 begin
 
-  if(BellekDegeriniGoster) then begin
+  {if(BellekDegeriniGoster) then begin
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize.ABellek: $%x', [ABellek]);
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize.AUzunluk: %d', [AUzunluk]); end;
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize.AUzunluk: %d', [AUzunluk]); end;}
 
   GercekBellek0.YokEt(ABellek, AUzunluk);
   Result := 0;

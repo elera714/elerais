@@ -6,7 +6,7 @@
   Dosya Adý: udp.pas
   Dosya Ýþlevi: udp protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 22/06/2026
+  Güncelleme Tarihi: 25/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -147,7 +147,7 @@ var
   B1: PSayi1;
 begin
 
-  UDPPaket := GercekBellek0.Ayir(AVeriUzunlugu + UDP_BASLIK_U);
+  UDPPaket := GetMem(AVeriUzunlugu + UDP_BASLIK_U);
 
   if(APaketTipi = PROTOKOL_IP6) then
   begin
@@ -196,7 +196,7 @@ begin
     IP4PaketGonder(AHedefMACAdres, PIP4Adres(AKaynakIPAdres)^, PIP4Adres(AHedefIPAdres)^,
       ptUDP, 0, UDPPaket, AVeriUzunlugu + UDP_BASLIK_U);
 
-  GercekBellek0.YokEt(UDPPaket, AVeriUzunlugu + UDP_BASLIK_U);
+  FreeMem(UDPPaket, AVeriUzunlugu + UDP_BASLIK_U);
 end;
 
 {==============================================================================

@@ -6,7 +6,7 @@
   Dosya Adý: k_dosya.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/05/2025
+  Güncelleme Tarihi: 03/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ function DosyaCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses dosya, sistemmesaj, gorev;
+uses dosya, gorev;
 
 {==============================================================================
   dosya (file) kesme çaðrýlarýný yönetir
@@ -30,6 +30,8 @@ var
   IslevNo: TSayi4;
   s: string;
 begin
+
+  Result := HATA_ISLEV;
 
   IslevNo := (AIslevNo and $FF);
 
@@ -140,8 +142,6 @@ begin
       Write(PKimlik(ADegiskenler + 00)^,
         PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi))^);
     end;
-
-    else Result := HATA_ISLEV;
   end;
 end;
 

@@ -20,7 +20,7 @@ function AgBaglantiCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISay
 
 implementation
 
-uses baglanti, genel, dns, gorev;
+uses baglanti, genel, dns, gorev, sistemmesaj;
 
 {==============================================================================
   ağ bağlantı (soket) yönetim işlevlerini içerir
@@ -50,8 +50,7 @@ begin
       s := PKarakterKatari(PSayi4(Degiskenler + 04)^ + FAktifGorevBellekAdresi)^;
       HedefPort := PSayi4(Degiskenler + 08)^;
 
-      //SISTEM_MESAJ(RENK_KIRMIZI, 'IP Adresi: %s', [s]);
-      //SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP Adresi: ', IPAdres);
+      //SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'IP Adresi: %s', [s]);
 
       { TODO - udp yerel port ve uzak port eşitlenerek porta gelen verilerin alınması sağlanmakta.
         geçicidir, sunucu / istemci yapısı kurulduğunda bu yapının olması gerektiği gibi
@@ -77,7 +76,7 @@ begin
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       B := Baglantilar0.Baglanti[BaglantiKimlik];
       if not(B = nil) then
-        Result := Baglantilar0.Baglan(B^.Kimlik, btIP)
+        Result := Baglantilar0.Baglan(itIP4, B^.Kimlik, btIP)
       else Result := -1;
     end
     // bağlantının varlığını kontrol et

@@ -144,15 +144,15 @@ begin
   IRQIsleviAta(VBKesmeNo, @VBoxKesmeCagrisi);
   //IRQEtkinlestir(VBKesmeNo);
 
-	{VBoxGuestBilgi.Baslik.Uzunluk := SizeOf(TVBoxGuestBilgi);
+	VBoxGuestBilgi.Baslik.Uzunluk := SizeOf(TVBoxGuestBilgi);
 	VBoxGuestBilgi.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
 	VBoxGuestBilgi.Baslik.IstekTipi := VMM_GUEST_BILGIAL;
 	VBoxGuestBilgi.Baslik.RC := 0;
 	VBoxGuestBilgi.Baslik.Ayrildi1 := 0;
 	VBoxGuestBilgi.Baslik.Ayrildi2 := 0;
 	VBoxGuestBilgi.Surum := VMMDEV_SURUM;
-	VBoxGuestBilgi.ISType := 0;
-	PortYaz4(VBPort, TSayi4(@VBoxGuestBilgi));}
+	VBoxGuestBilgi.ISType := $00100;
+	PortYaz4(VBPort, TSayi4(@VBoxGuestBilgi));
 
 	VBoxGuestYetenek.Baslik.Uzunluk := SizeOf(TVBoxGuestYetenek);
 	VBoxGuestYetenek.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;

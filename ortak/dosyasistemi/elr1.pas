@@ -10,6 +10,11 @@
 
   Kaynaklar: https://wiki.freepascal.org/File_Handling_In_Pascal
 
+  ELR-1 dosya sistem sektör daðýlýmý
+    000..256: boþ sektör
+    256..1536: sektör harita tablosu (fat)
+    1536: her türlü veri (dosya adlarý ve içeriði)
+
  ==============================================================================}
 {$mode objfpc}
 {$asmmode intel}
@@ -20,7 +25,14 @@ interface
 uses paylasim, islevler, gorev, fdepolama, mdepolama;
 
 const
-  DIZIN_GIRDI_SAYISI = 8;
+  DIZIN_GIRDI_SAYISI        = TSayi4(8);
+  ZINCIRDEKI_SEKTOR_SAYISI  = TSayi4(4);
+
+  { bilgi: aþaðýdaki aralýklarýn sýnýrlarý, bir önceki deðerin bir sonrakine
+    kadar olanýný içerir }
+  SEKTORNO_BOOT             = TSayi4(0);
+  SEKTORNO_SHT              = TSayi4(256);      // sektör harita tablosu (fat)
+  SEKTORNO_VERI             = TSayi4(1536);     // dosya adlarý ve verilerini içerir
 
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
@@ -188,8 +200,7 @@ begin
   if(DosyaBulundu) then
   begin
 
-    DG := PDizinGirdisiELR(DI^.TSI);
-    Inc(DG, DI^.KayitSN);
+    DG := PDizinGirdisiELR(DI^.TSI + DI^.SektorIciKonum);
 
     { TODO - bu aþamada dosya için ayrýlan tüm kümeler serbest býrakýlacak }
     if(DG^.BaslangicKumeNo <> ELR_ZD_SON) then
@@ -210,7 +221,8 @@ begin
     DG^.DosyaUzunlugu := 0;
 
     // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-    DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI);
+    if(DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI) <> HATA_YOK) then
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý1', []);
 
     // dosya durumunu, "dosya yazým için açýldý" olarak güncelle
     DI^.DosyaDurumu := ddYazmaIcinAcik;
@@ -219,11 +231,10 @@ begin
   // 2. dosyanýn mevcut OLMAMASI durumunda
   begin
 
-    if(DI^.KayitSN >= 0) and (DI^.KayitSN < DIZIN_GIRDI_SAYISI) then
+    if(DI^.SektorIciKonum >= 0) and (DI^.SektorIciKonum <= 512) then // DIZIN_GIRDI_SAYISI) then
     begin
 
-      DG := PDizinGirdisiELR(DI^.TSI);
-      Inc(DG, DI^.KayitSN);
+      DG := PDizinGirdisiELR(DI^.TSI + DI^.SektorIciKonum);
 
       // dosya adýný hedef bölgeye kopyala
       DosyaAdiniKopyala(DI^.DosyaAdi, PChar(DG));
@@ -243,7 +254,8 @@ begin
       DG^.DosyaUzunlugu := 0;
 
       // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-      DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI);
+      if(DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI) <> HATA_YOK) then
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý2', []);
 
       // dosya durumunu, "dosya yazým için açýldý" olarak güncelle
       DI^.DosyaDurumu := ddYazmaIcinAcik;
@@ -427,8 +439,7 @@ begin
 
   ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
-  DG := PDizinGirdisiELR(DI^.TSI);
-  Inc(DG, DI^.KayitSN);
+  DG := PDizinGirdisiELR(DI^.TSI + DI^.SektorIciKonum);
 
   SHTyeYazilacakKumeNo := 0;
 
@@ -464,6 +475,13 @@ begin
     begin
 
       YazilacakKumeNo := SHTBirSonrakiKumeyiAl(@DI^.MD, YazilacakKumeNo);
+      if(YazilacakKumeNo = 0) then
+      begin
+
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Write0: Bir sonraki kümeyi ayýrma hatasý', []);
+        DI^.Gorev^.DosyaSonIslemDurum := HATA_AYGITAYAZMA;
+        Exit;
+      end;
     end;
   end;
 
@@ -478,37 +496,40 @@ begin
     begin
 
       FillChar(Bellek^, 512 * ZincirBasinaSektor, $00);
-      DI^.MD.FD^.SektorOku(DI^.MD.FD, (YazilacakKumeNo * ZincirBasinaSektor) + SektorNo, 1, Bellek);
-
-      j := 512 - SektorVeriU;
-      if(j > ToplamYazilacakVeriU) then j := ToplamYazilacakVeriU;
-      Tasi2(ABellek + OkumaKonum, Bellek + SektorVeriU, j);
-      DI^.MD.FD^.SektorYaz(DI^.MD.FD, (YazilacakKumeNo * ZincirBasinaSektor) + SektorNo, 1, Bellek);
-
-      OkumaKonum := OkumaKonum + j;
-      ToplamYazilacakVeriU := ToplamYazilacakVeriU - j;
-      DG^.DosyaUzunlugu := DG^.DosyaUzunlugu + j;
-
-      if((SektorVeriU + j) = 512) then
+      if(DI^.MD.FD^.SektorOku(DI^.MD.FD, (YazilacakKumeNo * ZincirBasinaSektor) + SektorNo, 1, Bellek) = HATA_YOK) then
       begin
 
-        Inc(SektorNo);
-        SektorNo := SektorNo mod 4;
-        if(SektorNo = 0) then
+        j := 512 - SektorVeriU;
+        if(j > ToplamYazilacakVeriU) then j := ToplamYazilacakVeriU;
+        Tasi2(ABellek + OkumaKonum, Bellek + SektorVeriU, j);
+        if(DI^.MD.FD^.SektorYaz(DI^.MD.FD, (YazilacakKumeNo * ZincirBasinaSektor) + SektorNo, 1, Bellek) <> HATA_YOK) then
+          SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý3', []);
+
+        OkumaKonum := OkumaKonum + j;
+        ToplamYazilacakVeriU := ToplamYazilacakVeriU - j;
+        DG^.DosyaUzunlugu := DG^.DosyaUzunlugu + j;
+
+        if((SektorVeriU + j) = 512) then
         begin
 
-          YeniKumeNo := SHTBosKumeTahsisEt(@DI^.MD);
-          if(YeniKumeNo < HATA_YOK) then
+          Inc(SektorNo);
+          SektorNo := SektorNo mod 4;
+          if(SektorNo = 0) then
           begin
 
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTBosKumeTahsisEt.HataKodu1: %d', [YeniKumeNo]);
-            FreeMem(Bellek, 512 * ZincirBasinaSektor);
-            DI^.Gorev^.DosyaSonIslemDurum := YeniKumeNo;
-            Exit;
-          end;
+            YeniKumeNo := SHTBosKumeTahsisEt(@DI^.MD);
+            if(YeniKumeNo < HATA_YOK) then
+            begin
 
-          SHTKumeyiBirOncekiKumeyeBagla(@DI^.MD, YazilacakKumeNo, YeniKumeNo);
-          YazilacakKumeNo := YeniKumeNo;
+              SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTBosKumeTahsisEt.HataKodu1: %d', [YeniKumeNo]);
+              FreeMem(Bellek, 512 * ZincirBasinaSektor);
+              DI^.Gorev^.DosyaSonIslemDurum := YeniKumeNo;
+              Exit;
+            end;
+
+            SHTKumeyiBirOncekiKumeyeBagla(@DI^.MD, YazilacakKumeNo, YeniKumeNo);
+            YazilacakKumeNo := YeniKumeNo;
+          end;
         end;
       end;
     end;
@@ -525,7 +546,8 @@ begin
       j := (4 - SektorNo) * 512;
       if(j > ToplamYazilacakVeriU) then j := ToplamYazilacakVeriU;
       Tasi2(ABellek + OkumaKonum, Bellek, j);
-      DI^.MD.FD^.SektorYaz(DI^.MD.FD, (YazilacakKumeNo * ZincirBasinaSektor) + SektorNo, i, Bellek);
+      if(DI^.MD.FD^.SektorYaz(DI^.MD.FD, (YazilacakKumeNo * ZincirBasinaSektor) + SektorNo, i, Bellek) <> HATA_YOK) then
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý4', []);
 
       OkumaKonum := OkumaKonum + j;
       ToplamYazilacakVeriU := ToplamYazilacakVeriU - j;
@@ -566,7 +588,8 @@ begin
   // alt satýr SektorNo deðiþken içeriði ve vir alt satýr teyit edildin
   SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
-  DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI);
+  if(DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI) <> HATA_YOK) then
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý5', []);
 end;
 
 {==============================================================================
@@ -606,8 +629,7 @@ begin
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
 
-  DG := PDizinGirdisiELR(DI^.TSI);
-  Inc(DG, DI^.KayitSN);
+  DG := PDizinGirdisiELR(DI^.TSI + DI^.SektorIciKonum);
 
   VeriU := DG^.DosyaUzunlugu;
   if(VeriU = 0) then Exit;
@@ -658,6 +680,14 @@ begin
 
     if(VeriU > 0) then KumeNo := SHTBirSonrakiKumeyiAl(@DI^.MD, KumeNo);
 
+    if(KumeNo = 0) then
+    begin
+
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Read: Bir sonraki kümeyi ayýrma hatasý', []);
+      DI^.Gorev^.DosyaSonIslemDurum := HATA_AYGITAYAZMA;
+      Exit;
+    end;
+
   // eðer 0xfff8..0xffff aralýðýndaysa bu dosyanýn en son cluster'idir
   until (KumeNo = ELR_ZD_SON) or (VeriU = 0);
 
@@ -686,8 +716,7 @@ begin
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
 
-  DG := PDizinGirdisiELR(DI^.TSI);
-  Inc(DG, DI^.KayitSN);
+  DG := PDizinGirdisiELR(DI^.TSI + DI^.SektorIciKonum);
 
   Result := DG^.DosyaUzunlugu;
 end;
@@ -758,7 +787,7 @@ begin
 
     DI^.KumeNo := DI^.SilinenKumeNo;
     DI^.ZincirNo := DI^.SilinenZincirNo;
-    DI^.KayitSN := DI^.SilinenKayitSN;
+    DI^.SektorIciKonum := DI^.SilinenKayitSN;
 
     SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
@@ -774,10 +803,9 @@ begin
   end;
 
   // dizin giriþ tablosuna konumlan
-  DG := PDizinGirdisiELR(DI^.TSI);
-  Inc(DG, DI^.KayitSN);
+  DG := PDizinGirdisiELR(DI^.TSI + DI^.SektorIciKonum);
 
-  if(DI^.KayitSN >= 0) and (DI^.KayitSN < DIZIN_GIRDI_SAYISI) then
+  if(DI^.SektorIciKonum >= 0) and (DI^.SektorIciKonum < 512) then //DIZIN_GIRDI_SAYISI) then
   begin
 
     // aktif tarih / saat bilgilerini al
@@ -846,8 +874,7 @@ begin
       //DosyaIslem := Dosyalar0.DosyaIslem[AramaKaydi.Kimlik];
 
       // dizin giriþ tablosuna konumlan
-      DG := PDizinGirdisiELR(DI^.TSI);
-      Inc(DG, DI^.KayitSN);
+      DG := PDizinGirdisiELR(DI^.TSI + DI^.SektorIciKonum);
 
       // klasörü silindi olarak iþaretle
       DG^.Ozellikler := ELR_O_SILINMIS;
@@ -857,7 +884,8 @@ begin
       SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
       // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-      DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI);
+      if(DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI) <> HATA_YOK) then
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý21', []);
 
       dosya.FindClose(AramaKaydi);
 
@@ -901,25 +929,24 @@ begin
   KumeNo := DI^.MD.Acilis.DizinGirisi.IlkSektor div ZincirBasinaSektor;
 
   SektorNo := -1;
-  DI^.KayitSN := -1;
+  DI^.SektorIciKonum := -1;
   ZincirNo := 0;
 
   repeat
 
-    if(DI^.KayitSN = -1) then
+    if(DI^.SektorIciKonum = -1) then
     begin
 
       SektorNo := (KumeNo * ZincirBasinaSektor) + ZincirNo;
 
       // dizin giriþ sektörünü oku
-      DI^.MD.FD^.SektorOku(DI^.MD.FD, SektorNo, 1, DI^.TSI);
-
-      DI^.KayitSN := 0;
+      if(DI^.MD.FD^.SektorOku(DI^.MD.FD, SektorNo, 1, DI^.TSI) = HATA_YOK) then
+        DI^.SektorIciKonum := 0
+      else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1: dosya okuma hatasý', []);
     end;
 
     // dizin giriþ tablosuna konumlan
-    DG := PDizinGirdisiELR(DI^.TSI);
-    Inc(DG, DI^.KayitSN);
+    DG := PDizinGirdisiELR(DI^.TSI + DI^.SektorIciKonum);
 
     // dosya giriþinin ilk karakteri #0 ise tüm giriþler okunmuþ demektir
     if(DG^.DosyaAdi[0] = #00) then
@@ -945,18 +972,27 @@ begin
     begin
 
       // bir sonraki girdiye konumlan
-      Inc(DI^.KayitSN);
-      if(DI^.KayitSN = DIZIN_GIRDI_SAYISI) then
+      Inc(DI^.SektorIciKonum, 64);
+      if(DI^.SektorIciKonum >= 512) then //DIZIN_GIRDI_SAYISI) then
       begin
 
-        // yeni sektörün okunmasý için KayitSN deðiþkenini -1 olarak ayarla
-        DI^.KayitSN := -1;
+        // yeni sektörün okunmasý için SektorIciKonum deðiþkenini -1 olarak ayarla
+        DI^.SektorIciKonum := -1;
 
         Inc(ZincirNo);
         if(ZincirNo = ZincirBasinaSektor) then
         begin
 
           i := SHTBirSonrakiKumeyiAl(@DI^.MD, KumeNo);
+
+          if(i = 0) then
+          begin
+
+            SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DeleteFile: Bir sonraki kümeyi ayýrma hatasý', []);
+            DI^.Gorev^.DosyaSonIslemDurum := HATA_AYGITAYAZMA;
+            Exit(False);
+          end;
+
           if(i = ELR_ZD_SON) then Exit(False);
 
           KumeNo := i;
@@ -975,7 +1011,8 @@ begin
     DG^.Ozellikler := ELR_O_SILINMIS;
 
     // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-    DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI);
+    if(DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI) <> HATA_YOK) then
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý7', []);
 
     Result := True;
 
@@ -1014,20 +1051,19 @@ begin
 
     DI^.KumeNo := DI^.MD.Acilis.DizinGirisi.IlkSektor div ZincirBasinaSektor;
     DI^.ZincirNo := 0;
-    DI^.KayitSN := -1;
-
+    DI^.SektorIciKonum := -64; //-1;
     //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Ýlk Küme->Sektör No: %x', [DosyaIslem^.KumeNo*4]);
   end;
 
   repeat
 
     // bir sonraki girdiye konumlan
-    Inc(DI^.KayitSN);
-    if(DI^.KayitSN = DIZIN_GIRDI_SAYISI) then
+    Inc(DI^.SektorIciKonum, 64);
+    if(DI^.SektorIciKonum >= 512) then //DIZIN_GIRDI_SAYISI) then
     begin
 
       // yeni sektörün okunmasý için KayitSN deðiþkenini 0 olarak ayarla
-      DI^.KayitSN := 0;
+      DI^.SektorIciKonum := 0;
 
       Inc(DI^.ZincirNo);
       if(DI^.ZincirNo = ZincirBasinaSektor) then
@@ -1036,6 +1072,14 @@ begin
         DI^.ZincirNo := 0;
 
         i := SHTBirSonrakiKumeyiAl(@DI^.MD, DI^.KumeNo);
+
+        if(i = 0) then
+        begin
+
+          SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DizinGirdisiOku: Bir sonraki kümeyi ayýrma hatasý', []);
+          DI^.Gorev^.DosyaSonIslemDurum := HATA_AYGITAYAZMA;
+          Exit(1);
+        end;
 
         //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'SHTBirSonrakiKume: %x', [i]);
 
@@ -1063,18 +1107,18 @@ begin
       end;
     end; // else Inc(DG);
 
-    if(DI^.KayitSN = 0) then
+    if(DI^.SektorIciKonum = 0) then
     begin
 
       SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
       // dizin giriþ sektörünü oku
-      DI^.MD.FD^.SektorOku(DI^.MD.FD, SektorNo, 1, DI^.TSI);
+      if(DI^.MD.FD^.SektorOku(DI^.MD.FD, SektorNo, 1, DI^.TSI) <> HATA_YOK) then
+        SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1: dosya okuma hatasý2', []);
     end;
 
     // dosya giriþ tablosuna konumlan
-    DG := PDizinGirdisiELR(DI^.TSI);
-    Inc(DG, DI^.KayitSN);
+    DG := PDizinGirdisiELR(DI^.TSI + DI^.SektorIciKonum);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
     if(DG^.DosyaAdi[0] = #00) then
@@ -1094,7 +1138,7 @@ begin
 
         DI^.SilinenKumeNo := DI^.KumeNo;
         DI^.SilinenZincirNo := DI^.ZincirNo;
-        DI^.SilinenKayitSN := DI^.KayitSN;
+        DI^.SilinenKayitSN := DI^.SektorIciKonum;
       end;
 
       // bir sonraki giriþle devam et
@@ -1164,18 +1208,26 @@ begin
 
   GetMem(Bellek, 4 * 512);
 
-  // dosya tablosunu oluþtur
+  // bellek içeriðini sýfýrla
   FillChar(Bellek^, 4 * 512, 0);
 
   FD := AMDNesne^.FD;
 
-  KumeNo := 384;      // küme no: 384, sektör no: 1536 veya $600
+  // sektör numarasý küme numarasýna çevriliyor
+  // bilgi: þu aþamada her bir küme 4 sektörden oluþmakta
+  KumeNo := SEKTORNO_VERI div 4;
 
   // 10 küme * 4 sektör içeriðini sil
   for i := 0 to 9 do
   begin
 
-    FD^.SektorYaz(FD, (KumeNo + i) * 4, 4, Bellek);
+    if(FD^.SektorYaz(FD, (KumeNo + i) * 4, 4, Bellek) <> HATA_YOK) then
+    begin
+
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: mantýksal veri içeriði silinemiyor!', []);
+      FreeMem(Bellek, 4 * 512);
+      Exit;
+    end;
   end;
 
   FreeMem(Bellek, 4 * 512);
@@ -1203,7 +1255,12 @@ begin
   for i := AIlkSektor to (AIlkSektor + AToplamSektor) - 1 do
   begin
 
-    FD^.SektorYaz(FD, i, 1, Bellek);
+    if(FD^.SektorYaz(FD, i, 1, Bellek) <> HATA_YOK) then
+    begin
+
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý11', []);
+      Exit;
+    end;
   end;
 
   // ayrýlan sektörleri ayrýlmýþ olarak iþaretle
@@ -1225,14 +1282,24 @@ begin
   for i := AIlkSektor to (AIlkSektor + j) - 1 do
   begin
 
-    FD^.SektorYaz(FD, i, 1, Bellek);
+    if(FD^.SektorYaz(FD, i, 1, Bellek) <> HATA_YOK) then
+    begin
+
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý12', []);
+      Exit;
+    end;
   end;
 
   // ilk dizin giriþini ayýr
   FillChar(Bellek^, 512, 0);
   PSayi4(Bellek)^ := $FFFFFFFF;
 
-  FD^.SektorYaz(FD, i + 1, 1, Bellek);
+  if(FD^.SektorYaz(FD, i + 1, 1, Bellek) <> HATA_YOK) then
+  begin
+
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý13', []);
+    Exit;
+  end;
 
   FreeMem(Bellek, 512);
 end;
@@ -1242,21 +1309,22 @@ end;
  ==============================================================================}
 function SHTBosKumeTahsisEt(AMDNesne: PMDNesne): TISayi4;
 var
-  Bellek: Isaretci;
   FD: PFDNesne;
+  Bellek: Isaretci;
   KumeNo, i, j: TSayi4;
   Deger: PSayi4;
   HataDurumu: TISayi4;
 begin
 
+  Result := HATA_TUMSEKTORLERDOLU;
+
   GetMem(Bellek, 512);
 
-  // tüm sektörler dolu
   KumeNo := 0;
 
   FD := AMDNesne^.FD;
 
-  for i := 256 to (256 + 1280) - 1 do
+  for i := SEKTORNO_SHT to SEKTORNO_VERI - 1 do
   begin
 
     HataDurumu := FD^.SektorOku(FD, i, 1, Bellek);
@@ -1296,7 +1364,6 @@ begin
   end;
 
   FreeMem(Bellek, 512);
-  Result := HATA_TUMSEKTORLERDOLU;
 end;
 
 {==============================================================================
@@ -1320,7 +1387,8 @@ begin
 
   FD := AMDNesne^.FD;
 
-  FD^.SektorOku(FD, 256 + SektorNo, 1, Bellek);
+  if(FD^.SektorOku(FD, 256 + SektorNo, 1, Bellek) <> HATA_YOK) then
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1: okuma hatasý3', []);
 
   Deger := Bellek;
   Inc(Deger, SiraNo);
@@ -1328,7 +1396,13 @@ begin
   begin
 
     Deger^ := $0;
-    FD^.SektorYaz(FD, 256 + SektorNo, 1, Bellek);
+    if(FD^.SektorYaz(FD, 256 + SektorNo, 1, Bellek) <> HATA_YOK) then
+    begin
+
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý14', []);
+      Exit;
+    end;
+
     FreeMem(Bellek, 512);
     Exit(True);
   end;
@@ -1361,7 +1435,8 @@ begin
 
   FD := AMDNesne^.FD;
 
-  FD^.SektorOku(FD, 256 + SektorNo, 1, Bellek);
+  if(FD^.SektorOku(FD, 256 + SektorNo, 1, Bellek) <> HATA_YOK) then
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1: okuma hatasý15', []);
 
   Deger := Bellek;
   Inc(Deger, SiraNo);
@@ -1397,11 +1472,13 @@ begin
 
   FD := AMDNesne^.FD;
 
-  FD^.SektorOku(FD, 256 + SektorNo, 1, Bellek);
+  if(FD^.SektorOku(FD, 256 + SektorNo, 1, Bellek) = HATA_YOK) then
+  begin
 
-  Deger := Bellek;
-  Inc(Deger, SiraNo);
-  Result := Deger^;
+    Deger := Bellek;
+    Inc(Deger, SiraNo);
+    Result := Deger^;
+  end else Result := 0;
 
   FreeMem(Bellek, 512);
 end;
@@ -1411,9 +1488,9 @@ end;
  ==============================================================================}
 function SHTToplamKullanim(AMDNesne: PMDNesne): TSayi4;
 var
-  Bellek: Isaretci;
   FD: PFDNesne;
-  i, j, KullanilanSektor: TSayi4;
+  Bellek: Isaretci;
+  i, j, KullanilanZincir: TSayi4;
   Deger: PSayi4;
   Sonuc: TISayi4;
 begin
@@ -1426,24 +1503,24 @@ begin
     Exit(0);
   end;
 
-  // tüm sektörler dolu
-  KullanilanSektor := 0;
+  Sonuc := HATA_YOK;
 
   FD := AMDNesne^.FD;
 
-  Sonuc := HATA_YOK;
+  KullanilanZincir := 0;
 
-  for i := 256 to (256 + 1280) - 1 do
+  for i := SEKTORNO_SHT to SEKTORNO_VERI - 1 do
   begin
 
     Sonuc := FD^.SektorOku(FD, i, 1, Bellek);
     if(Sonuc <> HATA_YOK) then Break;
 
     Deger := Bellek;
+    // bilgi: her bir girdi 4 byte
     for j := 0 to 128 - 1 do
     begin
 
-      if(Deger^ <> 0) then Inc(KullanilanSektor);
+      if(Deger^ <> 0) then Inc(KullanilanZincir);
       Inc(Deger);
     end;
   end;
@@ -1451,9 +1528,9 @@ begin
   FreeMem(Bellek, 512);
 
   if not(Sonuc = HATA_YOK) then
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'SHTToplamKullanim disk hatasý!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'SHTToplamKullanim disk hatasý: %d', [Sonuc]);
 
-  Result := KullanilanSektor * 4; // 4 = zincirdeki sektör sayýsý
+  Result := KullanilanZincir * ZINCIRDEKI_SEKTOR_SAYISI;
 end;
 
 procedure DosyaAdiniKopyala(ADosyaAdi: string; AHedef: PChar);

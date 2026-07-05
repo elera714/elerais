@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: HTTP sunucu protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 23/06/2026
+  Güncelleme Tarihi: 24/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -23,7 +23,8 @@ const
   WebSiteBaslik: PChar = 'HTTP/1.1 200 OK' + #13 + #10 +
     'Server: ELERA Web Sunucusu v1.0.6' + #13 + #10 +
     'Date: Mon, 01 Jun 2026 12:34:56 GMT' + #13 + #10 +
-    'Content-Length: 332' + #13 + #10 +     // 332 deðeri WebSiteIcerik karakter saytýsý olacak
+    { TODO - 332 deðeri WebSiteIcerik deðiþkenindeki karakter sayýsý olacak }
+    'Content-Length: 332' + #13 + #10 +
     'Content-Type: text/html' + #13 + #10 +
     'Connection: close' + #13 + #10 + #13 + #10;
 
@@ -177,11 +178,6 @@ var
   IstenenSayfa: string;
 
 procedure SunucuIslevHTTP(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
-const
-  TCP4SYNSonEk: array[0..11] of TSayi1 = (
-    $02, $04, $05, $B4, $01, $03, $03, $08, $01, $01, $04, $02);
-  TCP6SYNSonEk: array[0..11] of TSayi1 = (
-    $02, $04, $05, $A0, $01, $03, $03, $08, $01, $01, $04, $02);
 var
   YeniB: PBaglanti;
   TCPPaket: PTCPPaket;
@@ -234,8 +230,8 @@ begin
       else YeniB^.HedefIP4Adres := PIP4Adres(KaynakIP)^;
 
       if(APaketTipi = PROTOKOL_IP6) then
-        TCPPaketGonder(APaketTipi, YeniB, @OnDegerIPV6Adresi, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)
-      else TCPPaketGonder(APaketTipi, YeniB, @GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
+        TCPPaketGonder(APaketTipi, YeniB, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)
+      else TCPPaketGonder(APaketTipi, YeniB, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
 
       YeniB^.BaglantiDurum := bdBaglantiBekleniyor;
     end
@@ -256,14 +252,14 @@ begin
     ABaglanti^.OnayNo := i + 1;
 
     if(APaketTipi = PROTOKOL_IP6) then
-      TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
-    else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+      TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
+    else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
     ABaglanti^.BaglantiDurum := bdKapanmayiBekliyor;
 
     if(APaketTipi = PROTOKOL_IP6) then
-      TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0)
-    else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
+      TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0)
+    else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
 
     ABaglanti^.BaglantiDurum := bdSonOnay;
   end
@@ -289,8 +285,8 @@ begin
       p := @TCPPaket^.Secenekler;
 
       if(APaketTipi = PROTOKOL_IP6) then
-        TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
-      else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+        TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
+      else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
       IstenenSayfa := SayfaDegeriniAl(p);
       //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Sayfa: [%s]', [IstenenSayfa]);

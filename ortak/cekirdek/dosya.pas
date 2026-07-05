@@ -45,9 +45,11 @@ type
     Kimlik: TKimlik;
     Gorev: PGorev;            // dosya iþlemini gerçekleþtiren görev
 
-    // dosya / klasörün okunan dizin sektöründeki (SektorNo) kayýt sýra numarasý
-    // -1 sektör okunacak (kayýt sýra numarasý yok)
-    KayitSN,
+    { SektorIcýKonum deðeri 512 byte'lýk sektörün içerisinde 0,32,64 olarak artýþ gösteren imleç deðeridir.
+      512 olduðunda bir sonraki sektör yüklenir.
+      KayitSN deðeri yok edilerek SektorIcýKonum deðeri ikame edilecek }
+    SektorIciKonum,
+
     KumeNo: TISayi4;
     ZincirNo: TSayi4;
     DosyaDurumu: TDosyaDurumu;
@@ -137,7 +139,7 @@ var
   MD: PMDNesne;
   DST: TSayi4;
   AramaSuzgeci, AranacakKlasor, Surucu, s: string;
-  i, SektorNo,
+  i, SektorNo, SektorNo2,
   AyrilmisSektor: TSayi4;
   DI: PDosyaIslem;
 begin
@@ -150,7 +152,7 @@ begin
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AAramaSuzgec: %s', [AAramaSuzgec]);
 
   // AYDAKOlustur deðiþkeninin True olmasý durumunda, arama için yeni dosya iþlem kaydý oluþturulur.
-  // False olmasý durumunda daha önce oluþturukmuþ kayýt kullanýlýr
+  // False olmasý durumunda daha önce oluþturulmuþ kayýt kullanýlýr
   // (Bu deðiþken uyum amaçlý olup, geçicidir ve iptal edilecektir)
   if(AYDAKOlustur) then
   begin
@@ -206,6 +208,8 @@ begin
 
   // bu aþamada s = klasör1\*.*
 
+  SektorNo2 := MD^.Acilis.DizinGirisi.IlkMumeNo;
+
   // istenen (alt) klasörün dizin tablosunda aranmasý
   repeat
 
@@ -238,10 +242,12 @@ begin
       begin
 
         DI^.DizinGirisi.IlkSektor := SektorNo;
+        DI^.DizinGirisi.IlkMumeNo := MD^.Acilis.DizinGirisi.IlkMumeNo;
         DI^.ZincirNo := 0;
-        DI^.KayitSN := -1;
+        DI^.SektorIciKonum := 0;
 
         SektorNo := DizinGirisindeAra(DI, AranacakKlasor);
+        SektorNo2 := SektorNo;
         if(SektorNo = 0) then
         begin
 
@@ -251,6 +257,7 @@ begin
         else
         begin
 
+          SektorNo2 := SektorNo;
           SektorNo := ((SektorNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
         end;
       end;
@@ -269,7 +276,7 @@ begin
 
     DI^.KumeNo := -1;
     DI^.ZincirNo := 0;
-    DI^.KayitSN := -1;
+    DI^.SektorIciKonum := -1;
 
     // geçici
     if(DST = DST_ELR1) then
@@ -284,6 +291,7 @@ begin
       // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
       DI^.DizinGirisi.IlkSektor := SektorNo;
       DI^.DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
+      DI^.DizinGirisi.IlkMumeNo := {MD^.Acilis.DizinGirisi.IlkMumeNo;}   SektorNo2;
     end;
 
     case DST of
@@ -801,7 +809,7 @@ begin
       // ilk deðer atamalarýný gerçekleþtir
       DI^.DosyaDurumu := ddKapali;
       DI^.Kimlik := i;
-      DI^.TSI := GercekBellek0.Ayir(512); //GetMem(512);   (GetMem ile hata veriyor)
+      DI^.TSI := GetMem(512);
 
       Exit(DI);
     end;

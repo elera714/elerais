@@ -6,7 +6,7 @@
   Dosya Adı: src_vesa20.pas
   Dosya İşlevi: genel vesa 2.0 grafik kartı sürücüsü
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 25/06/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -83,10 +83,11 @@ end;
 function TEkranKartSurucusu.NoktaOku(AYatay, ADikey: TISayi4): TRenk;
 begin
 
-  if(AYatay < 0) or (AYatay > KartBilgisi.YatayCozunurluk - 1) then Exit(RENK_SIYAH);
-  if(ADikey < 0) or (ADikey > KartBilgisi.DikeyCozunurluk - 1) then Exit(RENK_SIYAH);
+  Result := RENK_SIYAH;
 
-  NoktaOkuIslev(AYatay, ADikey);
+  if(AYatay >= 0) or (AYatay <= KartBilgisi.YatayCozunurluk - 1) and
+    (ADikey >= 0) or (ADikey <= KartBilgisi.DikeyCozunurluk - 1) then
+      Result := NoktaOkuIslev(AYatay, ADikey);
 end;
 
 {==============================================================================
@@ -190,7 +191,7 @@ procedure TEkranKartSurucusu.NoktaYaz24(AGorselNesne: PGorselNesne; AYatay, ADik
 var
   BellekAdresi, SatirBasinaBitSayisi: TISayi4;
   PAdres8: PSayi1;
-  RGB: PRGB;
+  RGB24: PRGB24Bit;
 begin
 
   if(AGorselNesne = nil) or (AGorselNesne^.NesneTipi = gntMasaustu) then
@@ -205,10 +206,10 @@ begin
 
   // noktayı belirtilen renk ile işaretle
   PAdres8 := PByte(BellekAdresi);
-  RGB := @ARenk;
-  PAdres8[0] := RGB^.B;
-  PAdres8[1] := RGB^.G;
-  PAdres8[2] := RGB^.R;
+  RGB24 := @ARenk;
+  PAdres8[0] := RGB24^.B;
+  PAdres8[1] := RGB24^.G;
+  PAdres8[2] := RGB24^.R;
 end;
 
 {==============================================================================

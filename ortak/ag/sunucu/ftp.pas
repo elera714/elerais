@@ -144,11 +144,6 @@ begin
 end;
 
 procedure SunucuIslevFTP(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
-const
-  TCP4SYNSonEk: array[0..11] of TSayi1 = (
-    $02, $04, $05, $B4, $01, $03, $03, $08, $01, $01, $04, $02);
-  TCP6SYNSonEk: array[0..11] of TSayi1 = (
-    $02, $04, $05, $A0, $01, $03, $03, $08, $01, $01, $04, $02);
 var
   YeniB: PBaglanti;
   TCPPaket: PTCPPaket;
@@ -202,8 +197,8 @@ begin
       else YeniB^.HedefIP4Adres := PIP4Adres(KaynakIP)^;
 
       if(APaketTipi = PROTOKOL_IP6) then
-        TCPPaketGonder(APaketTipi, YeniB, @OnDegerIPV6Adresi, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)
-      else TCPPaketGonder(APaketTipi, YeniB, @GAgBilgisi.IP4Adres, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
+        TCPPaketGonder(APaketTipi, YeniB, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)
+      else TCPPaketGonder(APaketTipi, YeniB, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
 
       YeniB^.BaglantiDurum := bdBaglantiBekleniyor;
     end
@@ -224,14 +219,14 @@ begin
     ABaglanti^.OnayNo := i + 1;
 
     if(APaketTipi = PROTOKOL_IP6) then
-      TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
-    else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+      TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
+    else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
     ABaglanti^.BaglantiDurum := bdKapanmayiBekliyor;
 
     if(APaketTipi = PROTOKOL_IP6) then
-      TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0)
-    else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
+      TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0)
+    else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
 
     ABaglanti^.BaglantiDurum := bdSonOnay;
   end
@@ -273,8 +268,8 @@ begin
         ABaglanti^.OnayNo := i + U;
 
         if(APaketTipi = PROTOKOL_IP6) then
-          TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
-        else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+          TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
+        else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
         Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, SifreGirisi, Length(SifreGirisi));
       end
@@ -291,8 +286,8 @@ begin
         ABaglanti^.OnayNo := i + U;
 
         if(APaketTipi = PROTOKOL_IP6) then
-          TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
-        else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+          TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
+        else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
         //Baglantilar0.Yaz(ABaglanti^.Kimlik, GirisHatali, Length(GirisHatali));
         Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, GirisBasarili, Length(GirisBasarili));
@@ -310,8 +305,8 @@ begin
         ABaglanti^.OnayNo := i + U;
 
         if(APaketTipi = PROTOKOL_IP6) then
-          TCPPaketGonder(APaketTipi, ABaglanti, @OnDegerIPV6Adresi, TCP_BAYRAK_KABUL, nil, 0)
-        else TCPPaketGonder(APaketTipi, ABaglanti, @GAgBilgisi.IP4Adres, TCP_BAYRAK_KABUL, nil, 0);
+          TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
+        else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
         Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, BaglantiKapatiliyor, Length(BaglantiKapatiliyor));
       end;

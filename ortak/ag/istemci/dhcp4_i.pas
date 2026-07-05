@@ -397,7 +397,7 @@ begin
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
     begin
 
       Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -549,7 +549,7 @@ begin
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
     begin
 
       Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -724,7 +724,7 @@ begin
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
     begin
 
       Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -892,7 +892,7 @@ begin
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
     begin
 
       Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -1026,7 +1026,7 @@ begin
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
     begin
 
       Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -1156,7 +1156,7 @@ begin
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
     begin
 
       Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -1243,7 +1243,7 @@ begin
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(B^.Kimlik, btYayin) <> -1) then
+    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
     begin
 
       Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
