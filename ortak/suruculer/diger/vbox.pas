@@ -118,10 +118,10 @@ var
   KesmeAktif: TSayi2;
 begin
 
-  VBPort := PCIAygiti0.Oku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $10);
-  VBBellek := PCIAygiti0.Oku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $14) and $FFFFFFF0;
-  KesmeAktif := PCIAygiti0.Oku2(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $4);
-  VBKesmeNo := PCIAygiti0.Oku1(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, $3C);
+  VBPort := PCIAygiti0.Oku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, PCI_BAR0);
+  VBBellek := PCIAygiti0.Oku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, PCI_BAR1) and $FFFFFFF0;
+  KesmeAktif := PCIAygiti0.Oku2(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, PCI_KOMUT);
+  VBKesmeNo := PCIAygiti0.Oku1(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, PCI_KESME_NO);
 
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Yol: %d', [PCIAygit.Yol]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt: %d', [PCIAygit.Aygit]);
@@ -144,7 +144,7 @@ begin
   IRQIsleviAta(VBKesmeNo, @VBoxKesmeCagrisi);
   //IRQEtkinlestir(VBKesmeNo);
 
-	VBoxGuestBilgi.Baslik.Uzunluk := SizeOf(TVBoxGuestBilgi);
+{	VBoxGuestBilgi.Baslik.Uzunluk := SizeOf(TVBoxGuestBilgi);
 	VBoxGuestBilgi.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
 	VBoxGuestBilgi.Baslik.IstekTipi := VMM_GUEST_BILGIAL;
 	VBoxGuestBilgi.Baslik.RC := 0;
@@ -153,14 +153,14 @@ begin
 	VBoxGuestBilgi.Surum := VMMDEV_SURUM;
 	VBoxGuestBilgi.ISType := $00100;
 	PortYaz4(VBPort, TSayi4(@VBoxGuestBilgi));
-
-	VBoxGuestYetenek.Baslik.Uzunluk := SizeOf(TVBoxGuestYetenek);
+}
+{	VBoxGuestYetenek.Baslik.Uzunluk := SizeOf(TVBoxGuestYetenek);
 	VBoxGuestYetenek.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
 	VBoxGuestYetenek.Baslik.IstekTipi := VMM_GUEST_YETENEKAL;
 	VBoxGuestYetenek.Baslik.RC := 0;
 	VBoxGuestYetenek.Baslik.Ayrildi1 := 0;
 	VBoxGuestYetenek.Baslik.Ayrildi2 := 0;
-	VBoxGuestYetenek.Yetenek := 1 shl 2; //4;
+	VBoxGuestYetenek.Yetenek := 1 shl 0;
 	PortYaz4(VBPort, TSayi4(@VBoxGuestYetenek));
 
 	VBoxOnayOlay.Baslik.Uzunluk := SizeOf(TVBoxOnayOlay);
@@ -189,17 +189,33 @@ begin
   PSayi4(Isaretci(VBBellek + 12))^ := $FFFFFFFF;
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'VBoxGuestBilgi: %x', [TSayi4(@VBoxGuestBilgi)]);
-
+                               }
 {  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 8)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
 }
 //  asm int $25 end;
+
+
+  VBoxFare.Baslik.Uzunluk := SizeOf(TVBoxFare);
+  VBoxFare.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
+  VBoxFare.Baslik.IstekTipi := VMM_FARE_DURUMYAZ;
+  VBoxFare.Baslik.RC := 0;
+  VBoxFare.Baslik.Ayrildi1 := 0;
+  VBoxFare.Baslik.Ayrildi2 := 0;
+  VBoxFare.Ozellikler := (1 shl 0) or (1 shl 4);  // on, off = 0
+  VBoxFare.X := 0;
+  VBoxFare.Y := 0;
+  PortYaz4(VBPort, TSayi4(@VBoxFare));
+
+
+  PSayi4(VBBellek + 12)^ := $FFFFFFFF;
 end;
 
 procedure IcerigiGoruntule;
 begin
+
 
 	VBoxFare.Baslik.Uzunluk := SizeOf(TVBoxFare);
 	VBoxFare.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
@@ -207,7 +223,7 @@ begin
 	VBoxFare.Baslik.RC := 0;
 	VBoxFare.Baslik.Ayrildi1 := 0;
 	VBoxFare.Baslik.Ayrildi2 := 0;
-	VBoxFare.Ozellikler := $16 + $1;
+	VBoxFare.Ozellikler := (1 shl 0) or (1 shl 4);  // on, off = 0
 	VBoxFare.X := 0;
 	VBoxFare.Y := 0;
 	PortYaz4(VBPort, TSayi4(@VBoxFare));
@@ -221,10 +237,11 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
 end;
 
-procedure VBoxKesmeCagrisi;
-begin
+procedure VBoxKesmeCagrisi; nostackframe; assembler;
+asm
 
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Kesme Çaðrýsý: ', []);
+  int 3;
+  //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Kesme Çaðrýsý: ', []);
 end;
 
 end.

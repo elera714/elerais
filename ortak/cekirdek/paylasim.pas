@@ -165,6 +165,8 @@ const
   HATA_DOSYAZATENMEVCUT       = TISayi4(-25);
   HATA_AYGITOKUMA             = TISayi4(-26);
   HATA_AYGITAYAZMA            = TISayi4(-27);
+  HATA_BILINMIYOR             = TISayi4(-28);
+  HATA_BELLEKYOK              = TISayi4(-29);
 
   // dosya hata kodları
   HATA_DOSYA_ISLEM_BASARILI   = 0;
@@ -174,7 +176,7 @@ const
   HATA_DOSYA_YAZILAMIYOR      = 40;     // dosya yazım işlevi için açık değil
 
 type
-  TTarihSaat = record
+  TTarihSaat = packed record
     Gun, Ay: TSayi1;
     Yil: TSayi2;
     Saat, Dakika,

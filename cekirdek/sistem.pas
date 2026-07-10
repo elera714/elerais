@@ -6,7 +6,7 @@
   Dosya Adý: sistem.pas
   Dosya Ýþlevi: sistem yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/07/2026
+  Güncelleme Tarihi: 10/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,14 +17,23 @@ interface
 
 uses paylasim;
 
-procedure YenidenBaslat;
 procedure BilgisayariKapat;
-procedure SistemAyarlariniKaydet;
+procedure YenidenBaslat;
+procedure SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
 procedure CalisanUygulamalariKaydet;
 
 implementation
 
 uses port, dosya, gorselnesne, gorev, genel, donusum, sistemmesaj;
+
+procedure BilgisayariKapat;
+begin
+
+  // öncelikle sistem ayarlarýný kaydet
+  SistemAyarlariniKaydet(1);
+
+  asm cli; hlt; end;
+end;
 
 procedure YenidenBaslat;
 var
@@ -32,7 +41,7 @@ var
 begin
 
   // öncelikle sistem ayarlarýný kaydet
-  SistemAyarlariniKaydet;
+  SistemAyarlariniKaydet(2);
 
   repeat
 
@@ -46,24 +55,28 @@ begin
   asm @@1: hlt; jmp @@1; end;
 end;
 
-procedure BilgisayariKapat;
-begin
-
-  // öncelikle sistem ayarlarýný kaydet
-  SistemAyarlariniKaydet;
-
-  asm cli; hlt; end;
-end;
-
-procedure SistemAyarlariniKaydet;
+procedure SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
 var
-  DosyaAdi: string;
+  DosyaAdi,
+  TS, s: string;
 begin
 
   CalisanUygulamalariKaydet;
 
   DosyaAdi := 'elera.ini';
   IzKaydiOlustur(DosyaAdi, 'sistem-adý=' + SistemAdi);
+
+  if(AKaydetmeSebebi = 1) then
+    s := 'kapatýldý.'
+  else if(AKaydetmeSebebi = 2) then
+    s := 'yeniden baþlatýldý.'
+  else s := '?';
+
+  // programýn iz kayýt dosyasýný oluþtur
+  TS := TarihSaatBilgisiAl;
+
+  DosyaAdi := 'elera.log';
+  IzKaydiOlustur(DosyaAdi, 'Sistem ' + TS + ' itibariyle ' + s + #13#10, False);
 end;
 
 // çalýþan uygulama listesinin dosyaya kaydetme iþlemi
@@ -81,7 +94,6 @@ begin
   AssignFile(DosyaKimlik, 'disk2:\yuklenecek_programlar.ini');
   ReWrite(DosyaKimlik);
   Sonuc := IOResult;
-  //if(Sonuc > HATA_YOK) then Append(DosyaKimlik);
   if(Sonuc = HATA_YOK) then
   begin
 
@@ -108,7 +120,6 @@ begin
 
           WriteLn(DosyaKimlik, s);
         end;
-
       end;
     end;
 

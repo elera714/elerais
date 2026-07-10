@@ -16,12 +16,9 @@ unit yonetim;
 interface
 
 uses paylasim, gn_pencere, zamanlayici, dns, gorselnesne, irq, arge, thread,
-  n_sayilistesi, n_yazilistesi;
+  n_sayilistesi, n_yazilistesi, elr1;
 
 type
-
-  { TMyThread }
-
   TMyThread = class(TThread)
   private
     //procedure ShowStatus;
@@ -225,7 +222,8 @@ var
   TusKontrolDegeri: TSayi1;
   TusKarakterDegeri: char;
   TusDurum: TTusDurum;
-  i, ii, p4: TSayi4;
+  i: TSayi4;
+  i4, i41: TISayi4;
   Masaustu: PMasaustu;
   GN: PGorselNesne;
   Olay: TOlay;
@@ -244,7 +242,6 @@ begin
 
   AracTipleri := TAracTipleriSinif.Create;
   i := 100;
-  ii := 1;
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
   BekleMS(100);
@@ -332,36 +329,17 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
+            vbox.Listele;
             //KomsuIstegiGonder(PingHedefIP6Adres);
 
             { TODO - baðlantý oluþturma / yok et testlerinden sonra bu iþlev silinebilir }
             //Baglantilar0.Listele;
 
-            //elr1.SistemKlasorleriniOlustur;
-
-            {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
-            if not(MD = nil) then
-            begin
-
-              ii := SHTBosKumeTahsisEt(MD);
-              SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Küme No: %x', [ii]);
-            end;}
-
             //Gorevler0.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
-
-            {dosya.AssignFile(DosyaKimlik, 'disk2:\yazma_deneme.ini');
-            dosya.Append(DosyaKimlik);
-            if(dosya.IOResult <> HATA_DOSYA_ISLEM_BASARILI) then dosya.ReWrite(DosyaKimlik);
-
-            dosya.WriteLn(DosyaKimlik, 'Merhaba' + IntToStr(ii));
-            Inc(ii);
-            //Write(DosyaKimlik, Isaretci(60*1024*1024), 2359350);
-
-            dosya.CloseFile(DosyaKimlik);}
 
             //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
 
-            //p4 := PCIAygiti0.Oku4(0, 8, 0, $10);
+            //p4 := PCIAygiti0.Oku4(0, 8, 0, PCI_BAR0);
             {p4 := SizeOf(TIPAdres);
             SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [p4]);
             p4 := SizeOf(TIPAdresIslev);
@@ -429,7 +407,7 @@ begin
 
             //Assert(True, 'Merhaba');
 
-            vbox.Listele;
+            //vbox.Listele;
           end
           // test iþlev tuþu-1
           else if(TusKarakterDegeri = '4') then
@@ -477,7 +455,7 @@ begin
 
             //          pic.MaskeKaldir(0);
 
-            //vbox.IcerigiGoruntule;
+            vbox.IcerigiGoruntule;
           end
           // test iþlev tuþu-2
           else if(TusKarakterDegeri = '5') then
@@ -576,10 +554,9 @@ begin
             Olay.Olay := CO_SONLANDIR;
             Olay.Deger1 := 0;
             Olay.Deger2 := 0;
-            {if not(GAktifPencere^.OlayYonlendirmeAdresi = nil) then
+            if not(GAktifPencere^.OlayYonlendirmeAdresi = nil) then
               GAktifPencere^.OlayYonlendirmeAdresi(GAktifPencere, Olay)
-            else Gorevler0.OlayEkle(GAktifPencere^.GorevKimlik, Olay);}
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '112', []);
+            else Gorevler0.OlayEkle(GAktifPencere^.GorevKimlik, Olay);
           end;
         end
         else

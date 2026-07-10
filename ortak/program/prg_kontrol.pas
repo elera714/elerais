@@ -6,7 +6,7 @@
   Dosya Adý: prg_kontrol.pas
   Dosya Ýþlevi: dahili çekirdek programý: çekirdek içi kontrol iþlemleri için
 
-  Güncelleme Tarihi: 07/06/2025
+  Güncelleme Tarihi: 10/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,47 +14,38 @@ unit prg_kontrol;
 
 interface
 
-uses paylasim, genel, gn_pencere, gn_islemgostergesi, gorselnesne, gn_masaustu,
-  sistemmesaj, dosya;
+uses paylasim, genel, gn_pencere, gn_islemgostergesi, dosya;
 
 procedure KontrolYonetimi;
 
 implementation
 
-uses sistem, donusum;
+uses sistem;
 
-var
-  ResimNo: TSayi4 = 1;
-
-// rutin kontrol denetimlerin yapýldýðý nokta
+{==============================================================================
+  sistem çekirdeðinin deðiþip deðiþmediðinin kontrolünün gerçekleþtiði kýsým
+ ==============================================================================}
 procedure KontrolYonetimi;
 var
   Pencere: PPencere = nil;
   IslemGostergesi: PIslemGostergesi = nil;
   AramaKaydi: TDosyaArama;
   i, G: TISayi4;
-  j, j2: TSayi2;
+  j, j2, Sayac: TSayi4;
   TarihSaat: TTarihSaat;
   DosyaBulundu: Boolean;
-  Sayac: TSayi4;
 begin
 
   while True do
   begin
 
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareX: %d', [GFareSurucusu.YatayKonum]);
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FareY: %d', [GFareSurucusu.DikeyKonum]);
-
-    // 10 saniye bekle
-    //BekleMS(1000);
-    Sayac := ZamanlayiciSayaci + 3 * 100;
-    while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
-
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-X: %d', [GFareSurucusu.YatayKonum]);
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Fare-Y: %d', [GFareSurucusu.DikeyKonum]);
+    // 10 saniyede bir denetim
+    Sayac := ZamanlayiciSayaci + 10 * 100;
+    while (Sayac > ZamanlayiciSayaci) do;
 
     DosyaBulundu := False;
 
+    // 1. sistem çekirdeðini ara
     i := FindFirst('disket1:\*.*', 0, AramaKaydi);
     while i = 0 do
     begin
@@ -81,67 +72,46 @@ begin
     end;
     FindClose(AramaKaydi);
 
+    // 1.1 sistem çekirdeðinin bulunmasý durumunda ...
     if(DosyaBulundu) then
     begin
 
-      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '3', []);
-
-      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [j]);
-      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [j2]);
-
-      {SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Gun]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Gun]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Ay]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Ay]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Yil]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Yil]);
-
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Saat]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Saat]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Dakika]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Dakika]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G1: %d', [CekirdekYuklemeTS.Saniye]);
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'G2: %d', [TarihSaat.Saniye]);}
-
+      // 2. sistem ilk açýldýðý andaki tarih / saat ile þu andaki tarih / saat alanýný karþýlaþtýr
+      // farklý olmasý durumunda (çekirdeðin deðiþmesi halinde) sistemi yeniden baþlat
       if not(CekirdekYuklemeTS = TarihSaat) then
       begin
-
-        SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '4', []);
 
         G := GAktifMasaustu^.FAtananAlan.Genislik;
 
         if(Pencere = nil) then
-          Pencere := Pencere^.Olustur(GAktifMasaustu, G - 162, 122 + 24, 152, 18,
+          Pencere := Pencere^.Olustur(GAktifMasaustu, G - 160, 0, 155, 20,
           ptBasliksiz, '', RENK_KIRMIZI);
 
         if(IslemGostergesi = nil) then
-          IslemGostergesi := IslemGostergesi^.Olustur(ktNesne, Pencere, 1, 1, 150, 16);
+          IslemGostergesi := IslemGostergesi^.Olustur(ktNesne, Pencere, 2, 1, 170, 18);
 
-        IslemGostergesi^.DegerleriBelirle(0, 20);
+        IslemGostergesi^.DegerleriBelirle(0, 10);
         IslemGostergesi^.Goster;
 
         Pencere^.Goster;
 
-        for i := 19 downto 1 do
+        for i := 9 downto 0 do
         begin
 
           IslemGostergesi^.MevcutDegerYaz(i);
-          //BekleMS(100);
 
-          Sayac := ZamanlayiciSayaci + 20;
-          while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
+          Sayac := ZamanlayiciSayaci + 50;
+          while (Sayac > ZamanlayiciSayaci) do;
         end;
 
         YenidenBaslat;
 
         Pencere^.Gizle;
 
-        //BekleMS(500);
         Sayac := ZamanlayiciSayaci + 500;
-        while (Sayac > ZamanlayiciSayaci) do; //begin asm int $20; end; end;
-
+        while (Sayac > ZamanlayiciSayaci) do;
       end;
-    end //else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, '3!', []);
+    end;
   end;
 end;
 

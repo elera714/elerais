@@ -446,7 +446,7 @@ begin
       SektorIS := HATA_AYGITMESGUL;
     end;
 
-  until (OkunacakSektorSayisi = 0) or (TekrarSayisi = 3);
+  until (OkunacakSektorSayisi = 0) or (TekrarSayisi = 10);
 
 //  KritikBolgedenCik(SektorOkuYazKilit);
 
@@ -543,7 +543,7 @@ begin
       SektorIS := HATA_AYGITMESGUL;
     end;
 
-  until (YazilacakSektorSayisi = 0) or (TekrarSayisi = 3);
+  until (YazilacakSektorSayisi = 0) or (TekrarSayisi = 10);
 
   //KritikBolgedenCik(SektorOkuYazKilit);
 

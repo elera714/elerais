@@ -6,7 +6,7 @@
   Dosya Adı: pci.pas
   Dosya İşlevi: pci yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 10/07/2026
 
   Kaynaklar:
     http://wiki.osdev.org/PCI
@@ -24,8 +24,29 @@ const
   PCI_ADRES           = $CF8;
   PCI_VERI            = $CFC;
 
+  PCI_SATICI          = $00;    // 2 byte
+  PCI_AYGIT           = $02;    // 2 byte
+  PCI_KOMUT           = $04;    // 2 byte
+  PCI_DURUM           = $06;    // 2 byte
+  PCI_DEGISIM         = $08;    // 1 byte
+  PCI_PROG_IF         = $09;    // 1 byte
+  PCI_ALTSINIF        = $0A;    // 1 byte
+  PCI_SINIF           = $0B;    // 1 byte
+  PCI_CACHE_LINE_SIZE = $0C;    // 1 byte
+  PCI_LATENCY_TIMER   = $0D;    // 1 byte
+  PCI_BASLIK_TIPI     = $0E;    // 1 byte
+  PCI_BIST            = $0F;    // 1 byte
+  PCI_BAR0            = $10;    // 4 byte
+  PCI_BAR1            = $14;    // 4 byte
+  PCI_BAR2            = $18;    // 4 byte
+  PCI_BAR3            = $1C;    // 4 byte
+  PCI_BAR4            = $20;    // 4 byte
+  PCI_BAR5            = $24;    // 4 byte
+  PCI_KESME_NO        = $3C;    // 1 byte
+  PCI_KESME_PIN       = $3D;    // 1 byte
+
   PCI_YAPIUZUNLUGU    = 12;
-  USTSINIR_PCIAYGIT   = 256;     // 4096 / PCI_YAPIUZUNLUGU = 12) = 341
+  USTSINIR_PCIAYGIT   = 256;    // 4096 / PCI_YAPIUZUNLUGU = 12) = 341
 
 type
   PPCI = ^TPCI;
@@ -39,10 +60,10 @@ type
   PPCIAygiti = ^TPCIAygiti;
   TPCIAygiti = object
   private
-    FToplamAygit: TSayi4;
+    FToplamAygit: TISayi4;
     FPCIAygitListesi: array[0..USTSINIR_PCIAYGIT - 1] of PPCI;
-    function PCIBilgiAl(ASiraNo: TSayi4): PPCI;
-    procedure PCIBilgiYaz(ASiraNo: TSayi4; APCI: PPCI);
+    function PCIBilgiAl(ASiraNo: TISayi4): PPCI;
+    procedure PCIBilgiYaz(ASiraNo: TISayi4; APCI: PPCI);
   public
     procedure Yukle;
     function Oku1(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi1;
@@ -54,8 +75,8 @@ type
     function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
     function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
     function IRQNoAl(APCI: PPCI): TSayi1;
-    property ToplamAygit: TSayi4 read FToplamAygit write FToplamAygit;
-    property PCI[ASiraNo: TSayi4]: PPCI read PCIBilgiAl write PCIBilgiYaz;
+    property ToplamAygit: TISayi4 read FToplamAygit write FToplamAygit;
+    property PCI[ASiraNo: TISayi4]: PPCI read PCIBilgiAl write PCIBilgiYaz;
   end;
 
 var
@@ -144,7 +165,7 @@ begin
   end;
 end;
 
-function TPCIAygiti.PCIBilgiAl(ASiraNo: TSayi4): PPCI;
+function TPCIAygiti.PCIBilgiAl(ASiraNo: TISayi4): PPCI;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -153,7 +174,7 @@ begin
   else Result := nil;
 end;
 
-procedure TPCIAygiti.PCIBilgiYaz(ASiraNo: TSayi4; APCI: PPCI);
+procedure TPCIAygiti.PCIBilgiYaz(ASiraNo: TISayi4; APCI: PPCI);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -256,7 +277,7 @@ var
   Deger, i: TSayi4;
 begin
 
-  Adres := $10;
+  Adres := PCI_BAR0;
   for i := 1 to 6 do
   begin
 
@@ -278,7 +299,7 @@ var
   Deger, i: TSayi4;
 begin
 
-  Adres := $10;
+  Adres := PCI_BAR0;
   for i := 1 to 6 do
   begin
 
@@ -292,12 +313,12 @@ begin
 end;
 
  {==============================================================================
-  pci aygıtının IRQ istek numarasını alır
+  pci aygıtının IRQ istek (kesme) numarasını alır
  ==============================================================================}
 function TPCIAygiti.IRQNoAl(APCI: PPCI): TSayi1;
 begin
 
-  Result := Oku1(APCI^.Yol, APCI^.Aygit, APCI^.Islev, $3C) and $FF;
+  Result := Oku1(APCI^.Yol, APCI^.Aygit, APCI^.Islev, PCI_KESME_NO) and $FF;
 end;
 
 end.

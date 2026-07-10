@@ -6,7 +6,7 @@
   Dosya Adý: gn_listegorunum.pas
   Dosya Ýþlevi: liste görünüm (TListView) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/06/2026
+  Güncelleme Tarihi: 10/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -59,6 +59,8 @@ var
   Hiza: THiza;
   p: PKarakterKatari;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
@@ -170,9 +172,7 @@ begin
         ListeGorunum^.FKolonUzunluklari^.Ekle(PISayi4(ADegiskenler + 08)^);
         Result := 1;
       end;
-    end
-
-    else Result := HATA_ISLEV;
+    end;
   end;
 end;
 

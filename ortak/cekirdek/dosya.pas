@@ -92,7 +92,7 @@ procedure DosyaIsleminiSonlandir(ADosyaKimlik: TKimlik);
 
 function DosyaOrtaminiHazirla(const ADosyaAdi: string): TKimlik;
 function HamDosyaAdiniDosyaAdinaCevir2(ADizinGirdisi: PDizinGirdisi): string;
-procedure IzKaydiOlustur(ADosyaAdi, AKayit: string);
+procedure IzKaydiOlustur(ADosyaAdi, AKayit: string; AYeniDosyaOlustur: Boolean = True);
 procedure ELR1DiskBicimle(AMDNesne: PMDNesne);
 procedure DosyalariKopyala;
 function DosyaKopyala(AKaynakDosya, AHedefDosya: string): TISayi4;
@@ -919,17 +919,30 @@ begin
   end;
 end;
 
-procedure IzKaydiOlustur(ADosyaAdi, AKayit: string);
+procedure IzKaydiOlustur(ADosyaAdi, AKayit: string; AYeniDosyaOlustur: Boolean = True);
 var
-  DosyaAdi: string;
   DosyaKimlik: TKimlik;
+  DosyaAdi: string;
+  HataKodu: TISayi4;
 begin
 
   DosyaAdi := 'disk2:\klasor\' + ADosyaAdi;
 
   AssignFile(DosyaKimlik, DosyaAdi);
-  ReWrite(DosyaKimlik);
-  if(IOResult = 0) then
+
+  if(AYeniDosyaOlustur) then
+
+    ReWrite(DosyaKimlik)
+  else
+  begin
+
+    // dosya daha önce oluþturulmamýþsa ilk kez oluþtur
+    Append(DosyaKimlik);
+    if(IOResult <> HATA_YOK) then ReWrite(DosyaKimlik)
+  end;
+
+  HataKodu := IOResult;
+  if(HataKodu = HATA_YOK) then
   begin
 
     Write(DosyaKimlik, AKayit);
@@ -938,7 +951,7 @@ begin
   else
   begin
 
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Hata: %s dosyasý zaten mevcut!', [DosyaAdi]);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%s dosyasý oluþturma / yazma hatasý. Hata Kodu: %d', [DosyaAdi, HataKodu]);
     CloseFile(DosyaKimlik);
   end;
 end;

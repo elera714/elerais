@@ -6,7 +6,7 @@
   Dosya Adý: aygityonetimi.pas
   Dosya Ýþlevi: aygýt (device) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 08/05/2025
+  Güncelleme Tarihi: 10/07/2026
 
  ==============================================================================}
 {$mode objfpc}
