@@ -40,7 +40,11 @@ type
     TSI: Isaretci;
 
     // iþlevler için kullanýlacak genel bellek iþaretçileri
-    Bellek1, Bellek2: Isaretci;
+    BellekSHT,                        // sektör harita tablosunu (fat) yüklemek için kullanýlacak
+    Bellek2: Isaretci;
+    BellekSHTDurum,
+    Durum2: Boolean;                  // bellek durumlarýný tutan deðiþkenler (genel kullaným için)
+    KokDizinListeleme: Boolean;       // dosya / dizin listeleme iþlemi kök dizinde mi, alt klasörde mi?
 
     Kimlik: TKimlik;
     Gorev: PGorev;            // dosya iþlemini gerçekleþtiren görev
@@ -210,6 +214,9 @@ begin
 
   SektorNo2 := MD^.Acilis.DizinGirisi.IlkMumeNo;
 
+  { TODO - fat12 / fat16 için ilgili yere yerleþtir }
+  DI^.KokDizinListeleme := True;
+
   // istenen (alt) klasörün dizin tablosunda aranmasý
   repeat
 
@@ -292,6 +299,7 @@ begin
       DI^.DizinGirisi.IlkSektor := SektorNo;
       DI^.DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
       DI^.DizinGirisi.IlkMumeNo := {MD^.Acilis.DizinGirisi.IlkMumeNo;}   SektorNo2;
+      DI^.DizinGirisi.ToplamKokSektor := MD^.Acilis.DizinGirisi.ToplamKokSektor;
     end;
 
     case DST of
@@ -889,6 +897,9 @@ begin
   // klasör ve dosya adý
   DI^.Klasor := Klasor;
   DI^.DosyaAdi := DosyaAdi;
+
+  DI^.BellekSHTDurum := False;
+  DI^.Durum2 := False;
 
   // diðer deðerleri sýfýrla
   DI^.DosyaDurumu := ddKapali;

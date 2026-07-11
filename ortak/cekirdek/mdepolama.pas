@@ -174,6 +174,7 @@ begin
                   DizinGirisi^.IlkSektor := (AcilisKayit1x^.DATBasinaSektor *
                     AcilisKayit1x^.DATSayisi) + AcilisKayit1x^.AyrilmisSektor1;
                   DizinGirisi^.ToplamSektor := AcilisKayit1x^.AzamiDizinGirisi div 16;
+                  DizinGirisi^.ToplamKokSektor := (AcilisKayit1x^.AzamiDizinGirisi * 32) div AcilisKayit1x^.SektorBasinaByte;
 
                   MD^.Acilis.IlkVeriSektorNo := (DizinGirisi^.IlkSektor + DizinGirisi^.ToplamSektor);
 

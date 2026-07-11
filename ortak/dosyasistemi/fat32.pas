@@ -215,7 +215,7 @@ begin
   ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
   // FAT tablosu için bellekte yer ayýr
-  GetMem(DI^.Bellek1, 512);
+  GetMem(DI^.BellekSHT, 512);
 
   OkumaSonuc := False;
 
@@ -263,7 +263,7 @@ begin
 
       // depolama aygýtýnýn ilk FAT kopyasýnýn tümünü belleðe yükle
       if(DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor +
-        OkunacakFAT, 1, DI^.Bellek1) = HATA_YOK) then
+        OkunacakFAT, 1, DI^.BellekSHT) = HATA_YOK) then
       begin
   {    if(SektorIS < HATA_YOK) then
       begin
@@ -275,7 +275,7 @@ begin
   }
         // zincir deðerini 4 ile çarp ve bir sonraki zincir deðerini al
         YeniDATSiraNo := (Zincir * 4) mod 512;
-        DATSiraNo := PSayi4(DI^.Bellek1 + YeniDATSiraNo)^;
+        DATSiraNo := PSayi4(DI^.BellekSHT + YeniDATSiraNo)^;
 
         Zincir := DATSiraNo;
       end;
@@ -286,7 +286,7 @@ begin
   // eðer 0xfff8..0xffff aralýðýndaysa bu dosyanýn en son cluster'idir
   until (Zincir = $FFFFFFF) or (VeriU = 0) or (OkumaSonuc);
 
-  FreeMem(DI^.Bellek1, 512);
+  FreeMem(DI^.BellekSHT, 512);
 end;
 
 {==============================================================================
@@ -426,22 +426,22 @@ begin
         // yeni küme numarasý al
         DI^.ZincirNo := 0;
 
-        GetMem(DI^.Bellek1, 512);
+        GetMem(DI^.BellekSHT, 512);
 
         i := (DI^.KumeNo * 4) div 512;
 
         // depolama aygýtýnýn ilk FAT kopyasýnýn tümünü belleðe yükle
         if(DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor +
-          i, 1, DI^.Bellek1) = HATA_YOK) then
+          i, 1, DI^.BellekSHT) = HATA_YOK) then
         begin
 
           // zincir deðerini 4 ile çarp ve bir sonraki zincir deðerini al
           i := (DI^.KumeNo * 4) mod 512;
-          DI^.KumeNo := PSayi4(DI^.Bellek1 + i)^;
+          DI^.KumeNo := PSayi4(DI^.BellekSHT + i)^;
 
         end else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Okuma hatasý', []);
 
-        FreeMem(DI^.Bellek1, 512);
+        FreeMem(DI^.BellekSHT, 512);
       end;
     end;
 

@@ -39,8 +39,8 @@ begin
   while True do
   begin
 
-    // 10 saniyede bir denetim
-    Sayac := ZamanlayiciSayaci + 10 * 100;
+    // 5 saniyede bir denetim
+    Sayac := ZamanlayiciSayaci + 5 * 100;
     while (Sayac > ZamanlayiciSayaci) do;
 
     DosyaBulundu := False;
@@ -90,17 +90,17 @@ begin
         if(IslemGostergesi = nil) then
           IslemGostergesi := IslemGostergesi^.Olustur(ktNesne, Pencere, 2, 1, 170, 18);
 
-        IslemGostergesi^.DegerleriBelirle(0, 10);
+        IslemGostergesi^.DegerleriBelirle(0, 25);
         IslemGostergesi^.Goster;
 
         Pencere^.Goster;
 
-        for i := 9 downto 0 do
+        for i := 24 downto 0 do
         begin
 
           IslemGostergesi^.MevcutDegerYaz(i);
 
-          Sayac := ZamanlayiciSayaci + 50;
+          Sayac := ZamanlayiciSayaci + 10;
           while (Sayac > ZamanlayiciSayaci) do;
         end;
 

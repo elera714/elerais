@@ -329,7 +329,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            vbox.Listele;
+            //vbox.Listele;
             //KomsuIstegiGonder(PingHedefIP6Adres);
 
             { TODO - baðlantý oluþturma / yok et testlerinden sonra bu iþlev silinebilir }

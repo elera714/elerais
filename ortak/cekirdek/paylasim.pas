@@ -445,8 +445,9 @@ type
   PDizinGirisi = ^TDizinGirisi;
   TDizinGirisi = record
     IlkSektor: TSayi4;
-    ToplamSektor: TSayi4;
-    IlkMumeNo: TSayi4;       // şu aşamada SADECE fat32'ye eklendi. gerekliliği araştırılacak
+    ToplamSektor,
+    ToplamKokSektor,          // fat12 / fat16 için kök dizine tahsis edilen sektör sayısı
+    IlkMumeNo: TSayi4;        // şu aşamada SADECE fat32'ye eklendi. gerekliliği araştırılacak
   end;
 
 const

@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 28/06/2026
+  Güncelleme Tarihi: 10/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -213,12 +213,16 @@ begin
   CizimAlani2.Sag := CizimAlani2.Sol + Round(d2);
   IG^.EgimliDoldur(IG, CizimAlani2, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK);
 
-  // gösterge değerini yaz
-  CizimAlani2 := CizimAlani;
-  s := IntToStr(IG^.FMevcutDeger);
-  i := (CizimAlani2.Sag - (Length(s) * 8)) div 2;
-  j := ((CizimAlani2.Alt - 16) div 2) + 1;
-  IG^.YaziYaz(IG, CizimAlani2.Sol + i, CizimAlani2.Ust + j, s, RENK_SIYAH);
+  // gösterge nesnesinin yüksekliğinin 14px ve üzerinde olması durumunda gösterge değerini yaz
+  if(CizimAlani.Alt >= 14) then
+  begin
+
+    CizimAlani2 := CizimAlani;
+    s := IntToStr(IG^.FMevcutDeger);
+    i := (CizimAlani2.Sag - (Length(s) * 8)) div 2;
+    j := ((CizimAlani2.Alt - 16) div 2) + 1;
+    IG^.YaziYaz(IG, CizimAlani2.Sol + i, CizimAlani2.Ust + j, s, RENK_LACIVERT);
+  end;
 end;
 
 {==============================================================================

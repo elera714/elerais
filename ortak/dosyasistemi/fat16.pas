@@ -196,7 +196,7 @@ begin
   Zincir := DG^.BaslangicKumeNo;
 
   // FAT tablosu için bellekte yer ayır
-  GetMem(DI^.Bellek1, 512);
+  GetMem(DI^.BellekSHT, 512);
 
   ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
@@ -239,12 +239,12 @@ begin
 
       // depolama aygıtının ilk FAT kopyasının tümünü belleğe yükle
       if(DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor + OkunacakFAT,
-        1, DI^.Bellek1) = HATA_YOK) then
+        1, DI^.BellekSHT) = HATA_YOK) then
       begin
 
         // zincir değerini 2 ile çarp ve bir sonraki zincir değerini al
         YeniDATSiraNo := (Zincir * 2) mod 512;
-        DATSiraNo := PSayi2(DI^.Bellek1 + YeniDATSiraNo)^;
+        DATSiraNo := PSayi2(DI^.BellekSHT + YeniDATSiraNo)^;
 
         Zincir := DATSiraNo;
       end;
@@ -255,7 +255,7 @@ begin
   // eğer 0xFFF8..0xFFFF aralığındaysa bu dosyanın en son zinciridir
   until (Zincir >= $FFF8) or (OkumaSonuc);
 
-  FreeMem(DI^.Bellek1, 512);
+  FreeMem(DI^.BellekSHT, 512);
 end;
 
 {==============================================================================
@@ -403,13 +403,13 @@ begin
         //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'IlkVeriSektorNo: %d', [DI^.MD.Acilis.IlkVeriSektorNo]);
         //Exit(1);
 
-        GetMem(DI^.Bellek1, 512);
+        GetMem(DI^.BellekSHT, 512);
 
         i := (DI^.KumeNo * 4) div 512;
 
         // depolama aygıtının ilk FAT kopyasının tümünü belleğe yükle
         if(DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor +
-          i, 1, DI^.Bellek1) = HATA_YOK) then
+          i, 1, DI^.BellekSHT) = HATA_YOK) then
         begin
     {    if(SektorIS < HATA_YOK) then
         begin
@@ -421,7 +421,7 @@ begin
     }
           // zincir değerini 4 ile çarp ve bir sonraki zincir değerini al
           i := (DI^.KumeNo * 4) mod 512;
-          DI^.KumeNo := PSayi4(DI^.Bellek1 + i)^;
+          DI^.KumeNo := PSayi4(DI^.BellekSHT + i)^;
 
           DI^.KumeNo := DI^.KumeNo + 609; //$672;
 
@@ -431,7 +431,7 @@ begin
           { TODO - tamamlanacak }
         end else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Okuma hatası: fat16', []);
 
-        FreeMem(DI^.Bellek1, 512);
+        FreeMem(DI^.BellekSHT, 512);
       end;
     end;
 

@@ -139,7 +139,7 @@ begin
       if(Pencere <> nil) then
       begin
 
-        Pencere^.FPencereDurum := TPencereDurum(PKimlik(ADegiskenler + 04)^);
+        Pencere^.FPencereDurum := PPencereDurum(ADegiskenler + 04)^;
         Pencere^.Guncelle;
 
         //PencereleriYenidenCiz;
