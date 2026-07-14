@@ -90,7 +90,7 @@ var
   DosyaKimlik: TKimlik;
   s: string;
 begin
-
+                   exit;
   AssignFile(DosyaKimlik, 'disk2:\yuklenecek_programlar.ini');
   ReWrite(DosyaKimlik);
   Sonuc := IOResult;

@@ -173,7 +173,9 @@ begin
   if(FGenel._IOResult = 0) then
   begin
 
-    FGenel._Write(DosyaKimlik, ADuvarKagidiDosyaAdi);
+    //FGenel._Write(DosyaKimlik, 'arkaplantipi=2');     // 1 = renk, 2 = dosya adý
+    FGenel._Write(DosyaKimlik, {'dosyaadi=' +} ADuvarKagidiDosyaAdi);
+    //FGenel._Write(DosyaKimlik, 'renk=16711680');      // $FF0000 = kýrmýzý
   end;
 
   FGenel._CloseFile(DosyaKimlik);

@@ -18,6 +18,7 @@
   + http: 404 sayfa hatasý sunucuya eklendi
   + 32 bitlik bmp dosya içerik çizim desteði eklendi
   + çekirdek binutils 2.36.1 sürümüyle yeniden derlendi. (uygulamalar da derlenecek)
+  + pencere büyütme (pdBuyutuldu) iþlevi eklendi
 
 *******************************************************************************
   Sürüm: 0.4.0 (sunucu / istemci) - 27.05.2026 (R36) - Beta

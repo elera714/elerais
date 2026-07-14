@@ -39,12 +39,13 @@ type
     // dizin / dosya giriþinin Tek Sektörlük Içeriði. (iþlevler arasý veri alýþveriþi için)
     TSI: Isaretci;
 
+    KlasorDerinlik: TISayi4;          // 0 = kök dizin, 1 = alt dizin, 2 = alt dizinin alt dizini ...
+
     // iþlevler için kullanýlacak genel bellek iþaretçileri
     BellekSHT,                        // sektör harita tablosunu (fat) yüklemek için kullanýlacak
     Bellek2: Isaretci;
     BellekSHTDurum,
     Durum2: Boolean;                  // bellek durumlarýný tutan deðiþkenler (genel kullaným için)
-    KokDizinListeleme: Boolean;       // dosya / dizin listeleme iþlemi kök dizinde mi, alt klasörde mi?
 
     Kimlik: TKimlik;
     Gorev: PGorev;            // dosya iþlemini gerçekleþtiren görev
@@ -54,7 +55,7 @@ type
       KayitSN deðeri yok edilerek SektorIcýKonum deðeri ikame edilecek }
     SektorIciKonum,
 
-    KumeNo: TISayi4;
+    SektorKumeNo: TISayi4;            // fat12 / fat16 kök dizin için sektör no, diðer durumlarda küme no
     ZincirNo: TSayi4;
     DosyaDurumu: TDosyaDurumu;
 
@@ -143,7 +144,7 @@ var
   MD: PMDNesne;
   DST: TSayi4;
   AramaSuzgeci, AranacakKlasor, Surucu, s: string;
-  i, SektorNo, SektorNo2,
+  i, SektorNo, KumeNo,
   AyrilmisSektor: TSayi4;
   DI: PDosyaIslem;
 begin
@@ -202,20 +203,20 @@ begin
   // sürücüyü arama bellek bölgesine ekle
   DI^.MD := MD^;
 
+  // önce kök dizin aranacak
+  DI^.KlasorDerinlik := 0;
+
   SektorNo := MD^.Acilis.DizinGirisi.IlkSektor;
 
   // AyrilmisSektor = zincir deðerine eklenecek deðer
   AyrilmisSektor := SektorNo + MD^.Acilis.DizinGirisi.ToplamSektor;
 
-  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SektorNo: ''%d''', [SektorNo]);
-  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AyrilmisSektor: ''%d''', [AyrilmisSektor]);
-
   // bu aþamada s = klasör1\*.*
 
-  SektorNo2 := MD^.Acilis.DizinGirisi.IlkMumeNo;
+  KumeNo := MD^.Acilis.DizinGirisi.IlkMumeNo;
 
-  { TODO - fat12 / fat16 için ilgili yere yerleþtir }
-  DI^.KokDizinListeleme := True;
+  // dosya sistem tipine göre iþlevi yönlendir
+  DST := DI^.MD.MD3.DST;
 
   // istenen (alt) klasörün dizin tablosunda aranmasý
   repeat
@@ -236,14 +237,12 @@ begin
       AramaSuzgeci := s;
     end;
 
-    DST := DI^.MD.MD3.DST;
-
     // klasörün dizin giriþinde aranmasý
     if(Length(AranacakKlasor) > 0) then
     begin
 
-      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AranacakDizin: ''%s''', [AranacakKlasor]);
-      //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
+      //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'AranacakKlasor: ''%s''', [AranacakKlasor]);
+      //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
 
       if(DST <> DST_ELR1) then
       begin
@@ -253,9 +252,21 @@ begin
         DI^.ZincirNo := 0;
         DI^.SektorIciKonum := 0;
 
-        SektorNo := DizinGirisindeAra(DI, AranacakKlasor);
-        SektorNo2 := SektorNo;
-        if(SektorNo = 0) then
+        if(DST = DST_FAT12) then
+        begin
+
+          DI^.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor;
+          DI^.SektorIciKonum := -32;
+        end;
+
+        case DST of
+          DST_FAT12: KumeNo := KokGirdisindeAra12(DI^.Kimlik, AranacakKlasor);
+          else KumeNo := KokGirdisindeAra32(DI, AranacakKlasor);
+        end;
+
+        DI^.KlasorDerinlik := 1;
+
+        if(KumeNo = 0) then
         begin
 
           SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: %s dizini dosya tablosunda mevcut deðil!', [AranacakKlasor]);
@@ -264,8 +275,7 @@ begin
         else
         begin
 
-          SektorNo2 := SektorNo;
-          SektorNo := ((SektorNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
+          SektorNo := ((KumeNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
         end;
       end;
     end;
@@ -278,10 +288,7 @@ begin
   if(AramaSuzgeci = '*.*') then
   begin
 
-    // dosya sistem tipine göre iþlevi yönlendir
-    DST := DI^.MD.MD3.DST;
-
-    DI^.KumeNo := -1;
+    DI^.SektorKumeNo := -1;
     DI^.ZincirNo := 0;
     DI^.SektorIciKonum := -1;
 
@@ -289,17 +296,35 @@ begin
     if(DST = DST_ELR1) then
     begin
 
+      DI^.SektorKumeNo := DI^.MD.Acilis.DizinGirisi.IlkSektor div DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
       DI^.DizinGirisi.IlkSektor := $600; //SektorNo;    // $600 = 1536
       DI^.DizinGirisi.ToplamSektor := 4; //MD^.Acilis.DizinGirisi.ToplamSektor;
+
+      DI^.ZincirNo := 0;
+      DI^.SektorIciKonum := -64; //-1;
+
     end
     else
     begin
 
       // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-      DI^.DizinGirisi.IlkSektor := SektorNo;
+      DI^.DizinGirisi.IlkSektor := MD^.Acilis.DizinGirisi.IlkMumeNo; //SektorNo;
       DI^.DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
-      DI^.DizinGirisi.IlkMumeNo := {MD^.Acilis.DizinGirisi.IlkMumeNo;}   SektorNo2;
+      DI^.SektorKumeNo := KumeNo;
       DI^.DizinGirisi.ToplamKokSektor := MD^.Acilis.DizinGirisi.ToplamKokSektor;
+
+      DI^.SektorIciKonum := -32;
+    end;
+
+    if(DST = DST_FAT12) then
+    begin
+
+      if(DI^.KlasorDerinlik = 0) then
+        DI^.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor
+      else
+        DI^.SektorKumeNo := KumeNo;
+
+      DI^.SektorIciKonum := -32;
     end;
 
     case DST of
@@ -936,7 +961,7 @@ var
   DosyaAdi: string;
   HataKodu: TISayi4;
 begin
-
+  exit;
   DosyaAdi := 'disk2:\klasor\' + ADosyaAdi;
 
   AssignFile(DosyaKimlik, DosyaAdi);

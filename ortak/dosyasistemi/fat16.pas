@@ -368,10 +368,10 @@ begin
 
   //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'SSS: %d', [DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor]);
 
-  if(DI^.KumeNo = -1) then
+  if(DI^.SektorKumeNo = -1) then
   begin
 
-    DI^.KumeNo := DI^.DizinGirisi.IlkSektor div ZincirBasinaSektor;
+    DI^.SektorKumeNo := DI^.DizinGirisi.IlkSektor div ZincirBasinaSektor;
     DI^.ZincirNo := 0;
     DI^.SektorIciKonum := -32; //-1;
 
@@ -405,7 +405,7 @@ begin
 
         GetMem(DI^.BellekSHT, 512);
 
-        i := (DI^.KumeNo * 4) div 512;
+        i := (DI^.SektorKumeNo * 4) div 512;
 
         // depolama aygıtının ilk FAT kopyasının tümünü belleğe yükle
         if(DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor +
@@ -420,10 +420,10 @@ begin
         end;
     }
           // zincir değerini 4 ile çarp ve bir sonraki zincir değerini al
-          i := (DI^.KumeNo * 4) mod 512;
-          DI^.KumeNo := PSayi4(DI^.BellekSHT + i)^;
+          i := (DI^.SektorKumeNo * 4) mod 512;
+          DI^.SektorKumeNo := PSayi4(DI^.BellekSHT + i)^;
 
-          DI^.KumeNo := DI^.KumeNo + 609; //$672;
+          DI^.SektorKumeNo := DI^.SektorKumeNo + 609; //$672;
 
           //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DAT: %x', [DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor]);
           //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Küme No2: %x', [DI^.KumeNo]);
@@ -439,7 +439,7 @@ begin
     begin
 
       // bir sonraki dizin girişini oku
-      if(DI^.MD.FD^.SektorOku(DI^.MD.FD, (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo,
+      if(DI^.MD.FD^.SektorOku(DI^.MD.FD, (DI^.SektorKumeNo * ZincirBasinaSektor) + DI^.ZincirNo,
         1, DI^.TSI) <> 0) then Exit(1);
     end;
 

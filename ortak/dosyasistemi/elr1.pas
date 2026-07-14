@@ -186,7 +186,7 @@ begin
 
   ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
-  SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
+  SektorNo := (DI^.SektorKumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
   // dosya oluþturma iþlemi
 
@@ -600,7 +600,7 @@ begin
 
   // dosyanýn güncel deðerlerini ilgili sektöre yaz
   // alt satýr SektorNo deðiþken içeriði ve vir alt satýr teyit edildin
-  SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
+  SektorNo := (DI^.SektorKumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
   if(DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI) <> HATA_YOK) then
     SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý5', []);
@@ -793,11 +793,11 @@ begin
   if(DI^.SilinenKayitSN > -1) then
   begin
 
-    DI^.KumeNo := DI^.SilinenKumeNo;
+    DI^.SektorKumeNo := DI^.SilinenKumeNo;
     DI^.ZincirNo := DI^.SilinenZincirNo;
     DI^.SektorIciKonum := DI^.SilinenKayitSN;
 
-    SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
+    SektorNo := (DI^.SektorKumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
     // dizin giriþ sektörünü oku
     SektorIS := DI^.MD.FD^.SektorOku(DI^.MD.FD, SektorNo, 1, DI^.TSI);
@@ -832,7 +832,7 @@ begin
     DG^.BaslangicKumeNo := ELR_ZD_SON;
     DG^.DosyaUzunlugu := 0;
 
-    SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
+    SektorNo := (DI^.SektorKumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
     // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
     SektorIS := DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI);
@@ -889,7 +889,7 @@ begin
 
       ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
-      SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
+      SektorNo := (DI^.SektorKumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
       // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
       if(DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI) <> HATA_YOK) then
@@ -1053,15 +1053,6 @@ begin
 
   ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
 
-  if(DI^.KumeNo = -1) then
-  begin
-
-    DI^.KumeNo := DI^.MD.Acilis.DizinGirisi.IlkSektor div ZincirBasinaSektor;
-    DI^.ZincirNo := 0;
-    DI^.SektorIciKonum := -64; //-1;
-    //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Ýlk Küme->Sektör No: %x', [DosyaIslem^.KumeNo*4]);
-  end;
-
   repeat
 
     // bir sonraki girdiye konumlan
@@ -1078,7 +1069,7 @@ begin
 
         DI^.ZincirNo := 0;
 
-        i := DI^.KumeNo;
+        i := DI^.SektorKumeNo;
         if not(SHTBirSonrakiKumeyiAl(@DI^.MD, i {DI^.KumeNo})) then
         begin
 
@@ -1103,7 +1094,7 @@ begin
             Exit;
           end;
 
-          Sonuc := SHTKumeyiBirOncekiKumeyeBagla(@DI^.MD, DI^.KumeNo, YeniKumeNo);
+          Sonuc := SHTKumeyiBirOncekiKumeyeBagla(@DI^.MD, DI^.SektorKumeNo, YeniKumeNo);
           if(Sonuc < HATA_YOK) then
           begin
 
@@ -1111,9 +1102,9 @@ begin
             Exit;
           end;
 
-          DI^.KumeNo := YeniKumeNo;
+          DI^.SektorKumeNo := YeniKumeNo;
 
-        end else DI^.KumeNo := i;
+        end else DI^.SektorKumeNo := i;
 
         //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Küme->Sektör No: %x', [DI^.KumeNo]);
 
@@ -1123,7 +1114,7 @@ begin
     if(DI^.SektorIciKonum = 0) then
     begin
 
-      SektorNo := (DI^.KumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
+      SektorNo := (DI^.SektorKumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
       // dizin giriþ sektörünü oku
       if(DI^.MD.FD^.SektorOku(DI^.MD.FD, SektorNo, 1, DI^.TSI) <> HATA_YOK) then
@@ -1149,7 +1140,7 @@ begin
       if(DI^.SilinenKumeNo = -1) then
       begin
 
-        DI^.SilinenKumeNo := DI^.KumeNo;
+        DI^.SilinenKumeNo := DI^.SektorKumeNo;
         DI^.SilinenZincirNo := DI^.ZincirNo;
         DI^.SilinenKayitSN := DI^.SektorIciKonum;
       end;

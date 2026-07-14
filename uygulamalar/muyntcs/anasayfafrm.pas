@@ -385,6 +385,13 @@ begin
     begin
 
       FCalisanProgramlar[i].Silinecek := False;
+
+      FCalisanProgramlar[i].ProgramKayit.PencereKimlik := AProgramKayit.PencereKimlik;
+      FCalisanProgramlar[i].ProgramKayit.GorevKimlik := AProgramKayit.GorevKimlik;
+      FCalisanProgramlar[i].ProgramKayit.PencereTipi := AProgramKayit.PencereTipi;
+      FCalisanProgramlar[i].ProgramKayit.PencereDurum := AProgramKayit.PencereDurum;
+      FCalisanProgramlar[i].ProgramKayit.ProgramAdi := AProgramKayit.ProgramAdi;
+
       Inc(GCdeMevcutDugmeSayisi);
       Exit;
     end else if(IlkBosSN = -1) then

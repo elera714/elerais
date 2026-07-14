@@ -6,7 +6,7 @@
   Dosya Adı: k_gorev.pas
   Dosya İşlevi: görev (program) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/01/2026
+  Güncelleme Tarihi: 11/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -39,6 +39,8 @@ var
   ProgramKayit: TProgramKayit;
   ProgramKayit2: PProgramKayit;
 begin
+
+  Result := HATA_ISLEV;
 
   IslevNo := (AIslevNo and $FF);
 
@@ -189,10 +191,7 @@ begin
   begin
 
     Result := GorevBayrakDegeriniAl;
-  end
-
-  // işlev belirtilen aralıkta değilse hata kodunu geri döndür
-  else Result := HATA_ISLEV;
+  end;
 end;
 
 end.
