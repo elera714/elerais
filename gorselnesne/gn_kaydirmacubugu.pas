@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adý: gn_kaydirmacubugu.pp
-  Dosya Ýþlevi: kaydýrma çubuðu (TScrollBar) yönetim iþlevlerini içerir
+  Dosya AdÄ±: gn_kaydirmacubugu.pp
+  Dosya Ä°ÅŸlevi: kaydÄ±rma Ã§ubuÄŸu (TScrollBar) yÃ¶netim iÅŸlevlerini iÃ§erir
 
-  Güncelleme Tarihi: 26/05/2026
+  GÃ¼ncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -47,7 +47,7 @@ implementation
 uses genel, gn_islevler, temelgorselnesne, sistemmesaj;
 
 {==============================================================================
-  kaydýrma çubuðu kesme çaðrýlarýný yönetir
+  kaydÄ±rma Ã§ubuÄŸu kesme Ã§aÄŸrÄ±larÄ±nÄ± yÃ¶netir
  ==============================================================================}
 function KaydirmaCubuguCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -56,6 +56,8 @@ var
   KaydirmaCubugu: PKaydirmaCubugu = nil;
   Hiza: THiza;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
@@ -85,7 +87,7 @@ begin
       Pencere^.Guncelle;
     end;
 
-    // alt, üst deðerlerini belirle
+    // alt, Ã¼st deÄŸerlerini belirle
     $010F:
     begin
 
@@ -93,14 +95,12 @@ begin
         PKimlik(ADegiskenler + 00)^, gntKaydirmaCubugu));
       if(KaydirmaCubugu <> nil) then KaydirmaCubugu^.DegerleriBelirle(
         PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
-    end
-
-    else Result := HATA_ISLEV;
+    end;
   end;
 end;
 
 {==============================================================================
-  kaydýrma çubuðu nesnesini oluþturur
+  kaydÄ±rma Ã§ubuÄŸu nesnesini oluÅŸturur
  ==============================================================================}
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   AYon: TYon): TKimlik;
@@ -119,7 +119,7 @@ begin
 end;
 
 {==============================================================================
-  kaydýrma çubuðu nesnesini oluþturur
+  kaydÄ±rma Ã§ubuÄŸu nesnesini oluÅŸturur
  ==============================================================================}
 function TKaydirmaCubugu.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
   ASol, AUst, AGenislik, AYukseklik: TISayi4; AYon: TYon): PKaydirmaCubugu;
@@ -131,27 +131,27 @@ begin
   Yukseklik := AYukseklik;
   Genislik := AGenislik;
 
-  // dikey kaydýrma çubuðunun geniþliði 15px (0..15 = 16px) olarak sabitleniyor
+  // dikey kaydÄ±rma Ã§ubuÄŸunun geniÅŸliÄŸi 20px (0..19) olarak sabitleniyor
   if(AYon = yDikey) then
-    Genislik := 16
+    Genislik := 20
   else Genislik := AGenislik;
 
-  // yatay kaydýrma çubuðunun yüksekliði 15px (0..15 = 16px) olarak sabitleniyor
+  // yatay kaydÄ±rma Ã§ubuÄŸunun yÃ¼ksekliÄŸi 20px (0..19) olarak sabitleniyor
   if(AYon = yYatay) then
-    Yukseklik := 16
+    Yukseklik := 20
   else Yukseklik := AYukseklik;
 
   KaydirmaCubugu := PKaydirmaCubugu(inherited Olustur(AKullanimTipi, AAtaNesne,
     ASol, AUst, Genislik, Yukseklik, 3, RENK_GUMUS, RENK_BEYAZ, 0, ''));
 
-  // görsel nesne tipi
+  // gÃ¶rsel nesne tipi
   KaydirmaCubugu^.NesneTipi := gntKaydirmaCubugu;
 
   KaydirmaCubugu^.Baslik := '';
 
   KaydirmaCubugu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  // þu aþamada bu nesne odaklanýlabilir bir nesne deðil
+  // ÅŸu aÅŸamada bu nesne odaklanÄ±labilir bir nesne deÄŸil
   KaydirmaCubugu^.Odaklanilabilir := False;
   KaydirmaCubugu^.Odaklanildi := False;
 
@@ -164,25 +164,25 @@ begin
 
     // $10000000 + 4 = sol ok resmi
     KaydirmaCubugu^.FEksiltmeDugmesi := FEksiltmeDugmesi^.Olustur(ktBilesen, KaydirmaCubugu,
-      0, 0, 15, Yukseklik, $10000000 + 4, True);
+      0, 0, 19, Yukseklik, $10000000 + 4, True);
     KaydirmaCubugu^.FEksiltmeDugmesi^.OlayYonlendirmeAdresi := @ResimDugmesiOlaylariniIsle;
 
-    // $10000000 + 3 = sað ok resmi
+    // $10000000 + 3 = saÄŸ ok resmi
     KaydirmaCubugu^.FArtirmaDugmesi := FArtirmaDugmesi^.Olustur(ktBilesen, KaydirmaCubugu,
-      Genislik - 15, 0, 15, Yukseklik, $10000000 + 3, True);
+      Genislik - 19, 0, 19, Yukseklik, $10000000 + 3, True);
     KaydirmaCubugu^.FArtirmaDugmesi^.OlayYonlendirmeAdresi := @ResimDugmesiOlaylariniIsle;
   end
   else
   begin
 
-    // $10000000 + 4 = yukarý ok resmi
+    // $10000000 + 4 = yukarÄ± ok resmi
     KaydirmaCubugu^.FEksiltmeDugmesi := FEksiltmeDugmesi^.Olustur(ktBilesen, KaydirmaCubugu,
-      0, 0, 15, 15, $10000000 + 1, True);
+      0, 0, 19, 19, $10000000 + 1, True);
     KaydirmaCubugu^.FEksiltmeDugmesi^.OlayYonlendirmeAdresi := @ResimDugmesiOlaylariniIsle;
 
-    // $10000000 + 3 = aþaðý ok resmi
+    // $10000000 + 3 = aÅŸaÄŸÄ± ok resmi
     KaydirmaCubugu^.FArtirmaDugmesi := FArtirmaDugmesi^.Olustur(ktBilesen, KaydirmaCubugu,
-      0, Yukseklik - 15, 15, 15, $10000000 + 2, True);
+      0, Yukseklik - 19, 19, 19, $10000000 + 2, True);
     KaydirmaCubugu^.FArtirmaDugmesi^.OlayYonlendirmeAdresi := @ResimDugmesiOlaylariniIsle;
   end;
 
@@ -190,12 +190,12 @@ begin
   KaydirmaCubugu^.AltDeger := 0;
   KaydirmaCubugu^.UstDeger := 100;
 
-  // nesne adresini geri döndür
+  // nesne adresini geri dÃ¶ndÃ¼r
   Result := KaydirmaCubugu;
 end;
 
 {==============================================================================
-  kaydýrma çubuðu nesnesini yok eder
+  kaydÄ±rma Ã§ubuÄŸu nesnesini yok eder
  ==============================================================================}
 procedure TKaydirmaCubugu.YokEt(AKimlik: TKimlik);
 var
@@ -212,7 +212,7 @@ begin
 end;
 
 {==============================================================================
-  kaydýrma çubuðu nesnesini görüntüler
+  kaydÄ±rma Ã§ubuÄŸu nesnesini gÃ¶rÃ¼ntÃ¼ler
  ==============================================================================}
 procedure TKaydirmaCubugu.Goster;
 var
@@ -229,7 +229,7 @@ begin
 end;
 
 {==============================================================================
-  kaydýrma çubuðu nesnesini gizler
+  kaydÄ±rma Ã§ubuÄŸu nesnesini gizler
  ==============================================================================}
 procedure TKaydirmaCubugu.Gizle;
 begin
@@ -238,7 +238,7 @@ begin
 end;
 
 {==============================================================================
-  kaydýrma çubuðu nesnesini hizalandýrýr
+  kaydÄ±rma Ã§ubuÄŸu nesnesini hizalandÄ±rÄ±r
  ==============================================================================}
 procedure TKaydirmaCubugu.Hizala;
 var
@@ -253,14 +253,14 @@ begin
 
     KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Sol := 0;
     KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Ust := 0;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Genislik := 16;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Yukseklik := 16;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Genislik := 20;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Yukseklik := 20;
     KaydirmaCubugu^.FEksiltmeDugmesi^.BoyutlariYenidenHesapla;
 
-    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Sol := KaydirmaCubugu^.FAtananAlan.Genislik - 16;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Sol := KaydirmaCubugu^.FAtananAlan.Genislik - 20;
     KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Ust := 0;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Genislik := 16;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Yukseklik := 16;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Genislik := 20;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Yukseklik := 20;
     KaydirmaCubugu^.FArtirmaDugmesi^.BoyutlariYenidenHesapla;
   end
   else if(KaydirmaCubugu^.FYon = yDikey) then
@@ -268,20 +268,20 @@ begin
 
     KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Sol := 0;
     KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Ust := 0;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Genislik := 16;
-    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Yukseklik := 16;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Genislik := 20;
+    KaydirmaCubugu^.FEksiltmeDugmesi^.FAtananAlan.Yukseklik := 20;
     KaydirmaCubugu^.FEksiltmeDugmesi^.BoyutlariYenidenHesapla;
 
     KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Sol := 0;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Ust := KaydirmaCubugu^.FAtananAlan.Yukseklik - 16;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Genislik := 16;
-    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Yukseklik := 16;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Ust := KaydirmaCubugu^.FAtananAlan.Yukseklik - 20;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Genislik := 20;
+    KaydirmaCubugu^.FArtirmaDugmesi^.FAtananAlan.Yukseklik := 20;
     KaydirmaCubugu^.FArtirmaDugmesi^.BoyutlariYenidenHesapla;
   end;
 end;
 
 {==============================================================================
-  kaydýrma çubuðu nesnesini çizer
+  kaydÄ±rma Ã§ubuÄŸu nesnesini Ã§izer
  ==============================================================================}
 procedure TKaydirmaCubugu.Ciz;
 var
@@ -296,35 +296,35 @@ begin
   KaydirmaCubugu := PKaydirmaCubugu(GorselNesneler0.NesneAl(Kimlik));
   if(KaydirmaCubugu = nil) then Exit;
 
-  // kaydýrma çubuðunun çizim alan koordinatlarýný al
+  // kaydÄ±rma Ã§ubuÄŸunun Ã§izim alan koordinatlarÄ±nÄ± al
   CizimAlani := KaydirmaCubugu^.FCizimAlani;
 
   if(KaydirmaCubugu^.FYon = yDikey) then
   begin
 
-    AraBoslukU := KaydirmaCubugu^.FAtananAlan.Yukseklik - (16 * 3);
+    AraBoslukU := KaydirmaCubugu^.FAtananAlan.Yukseklik - (20 * 3);
     Frekans := AraBoslukU / KaydirmaCubugu^.UstDeger;
 
     i := Round(KaydirmaCubugu^.MevcutDeger * Frekans);
 
-    DikdortgenDoldur(KaydirmaCubugu, CizimAlani.Sol + 2, CizimAlani.Ust + 16 + i,
-      CizimAlani.Sag - 2, CizimAlani.Ust + 16 + i + 16, $7F7F7F, $7F7F7F);
+    DikdortgenDoldur(KaydirmaCubugu, CizimAlani.Sol + 2, CizimAlani.Ust + 20 + i,
+      CizimAlani.Sag - 2, CizimAlani.Ust + 20 + i + 20, $7F7F7F, $7F7F7F);
   end
   else
   begin
 
-    AraBoslukU := KaydirmaCubugu^.FAtananAlan.Genislik - (16 * 3);
+    AraBoslukU := KaydirmaCubugu^.FAtananAlan.Genislik - (20 * 3);
     Frekans := AraBoslukU / KaydirmaCubugu^.UstDeger;
 
     i := Round(KaydirmaCubugu^.MevcutDeger * Frekans);
 
-    DikdortgenDoldur(KaydirmaCubugu, CizimAlani.Sol + 16 + i, CizimAlani.Ust + 2,
-      CizimAlani.Sol + 16 + i + 16, CizimAlani.Alt - 2, $7F7F7F, $7F7F7F);
+    DikdortgenDoldur(KaydirmaCubugu, CizimAlani.Sol + 20 + i, CizimAlani.Ust + 2,
+      CizimAlani.Sol + 20 + i + 20, CizimAlani.Alt - 2, $7F7F7F, $7F7F7F);
   end;
 end;
 
 {==============================================================================
-  kaydýrma çubuðu nesne olaylarýný iþler
+  kaydÄ±rma Ã§ubuÄŸu nesne olaylarÄ±nÄ± iÅŸler
  ==============================================================================}
 procedure TKaydirmaCubugu.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -335,28 +335,28 @@ begin
   KaydirmaCubugu := PKaydirmaCubugu(AGonderici);
   if(KaydirmaCubugu = nil) then Exit;
 
-  // farenin sol tuþuna basým iþlemi
+  // farenin sol tuÅŸuna basÄ±m iÅŸlemi
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
-    // kaydýrma çubuðunun sahibi olan pencere en üstte mi ? kontrol et
+    // kaydÄ±rma Ã§ubuÄŸunun sahibi olan pencere en Ã¼stte mi ? kontrol et
     Pencere := EnUstPencereNesnesiniAl(KaydirmaCubugu);
 
-    // en üstte olmamasý durumunda en üste getir
+    // en Ã¼stte olmamasÄ± durumunda en Ã¼ste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
-    // ve nesneyi aktif nesne olarak iþaretle
-    // bilgi: þu aþamada bu nesne odaklanýlabilir bir nesne deðil
+    // ve nesneyi aktif nesne olarak iÅŸaretle
+    // bilgi: ÅŸu aÅŸamada bu nesne odaklanÄ±labilir bir nesne deÄŸil
     //Pencere^.FAktifNesne := KaydirmaCubugu;
     //KaydirmaCubugu^.Odaklanildi := False;
   end;
 
-  // geçerli fare göstergesini güncelle
+  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
   GecerliFareGostegeTipi := KaydirmaCubugu^.FareImlecTipi;
 end;
 
 {==============================================================================
-  kaydýrma çubuðunun sahip olduðu artýrma / eksiltme nesne olaylarýný iþler
+  kaydÄ±rma Ã§ubuÄŸunun sahip olduÄŸu artÄ±rma / eksiltme nesne olaylarÄ±nÄ± iÅŸler
  ==============================================================================}
 procedure TKaydirmaCubugu.ResimDugmesiOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -395,18 +395,18 @@ begin
     AOlay.Kimlik := KaydirmaCubugu^.Kimlik;
     AOlay.Deger1 := KaydirmaCubugu^.MevcutDeger;
 
-    // uygulamaya veya efendi nesneye mesaj gönder
+    // uygulamaya veya efendi nesneye mesaj gÃ¶nder
     if not(KaydirmaCubugu^.OlayYonlendirmeAdresi = nil) then
       KaydirmaCubugu^.OlayYonlendirmeAdresi(KaydirmaCubugu, AOlay)
     else Gorevler0.OlayEkle(KaydirmaCubugu^.GorevKimlik, AOlay);
   end;
 
-  // geçerli fare göstergesini güncelle
+  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
   GecerliFareGostegeTipi := KaydirmaCubugu^.FareImlecTipi;
 end;
 
 {==============================================================================
-  iþlem göstergesi en alt, en üst deðerlerini belirler
+  iÅŸlem gÃ¶stergesi en alt, en Ã¼st deÄŸerlerini belirler
  ==============================================================================}
 procedure TKaydirmaCubugu.DegerleriBelirle(AAltDeger, AUstDeger: TISayi4);
 var

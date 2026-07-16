@@ -6,7 +6,7 @@
   Dosya Adı: gn_secimdugmesi.pas
   Dosya İşlevi: seçim düğmesi (TRadioButton) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/05/2026
+  Güncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}

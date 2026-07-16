@@ -6,7 +6,7 @@
   Dosya Adı: gn_menu.pas
   Dosya İşlevi: menü yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/05/2026
+  Güncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}

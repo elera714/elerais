@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adý: gn_sayfakontrol.pas
-  Dosya Ýþlevi: sayfa kontrol (TPageControl) nesne yönetim iþlevlerini içerir
+  Dosya AdÄ±: gn_sayfakontrol.pas
+  Dosya Ä°ÅŸlevi: sayfa kontrol (TPageControl) nesne yÃ¶netim iÅŸlevlerini iÃ§erir
 
-  Güncelleme Tarihi: 26/05/2026
+  GÃ¼ncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,18 +17,18 @@ interface
 uses gorselnesne, paylasim, gn_panel, gn_dugme, gn_etiket;
 
 const
-  AZAMI_SEKMESAYISI   = 4;    // sayfa kontrol nesnesinde kullanýlacak azami sekme sayýsý (panel)
-  AZAMI_ETIKETSAYISI  = 4;    // (sekme) panel nesne içeriðindeki azami etiket sayýsý
+  AZAMI_SEKMESAYISI   = 4;    // sayfa kontrol nesnesinde kullanÄ±lacak azami sekme sayÄ±sÄ± (panel)
+  AZAMI_ETIKETSAYISI  = 4;    // (sekme) panel nesne iÃ§eriÄŸindeki azami etiket sayÄ±sÄ±
 
 type
   PSayfaKontrol = ^TSayfaKontrol;
   TSayfaKontrol = object(TPanel)
   private
     FSayfaSayisi, FAktifSayfa: TISayi4;
-    FDugmeler: array[0..AZAMI_SEKMESAYISI - 1] of PDugme;     // nesnedeki her bir paneli temsil eden düðmeler
+    FDugmeler: array[0..AZAMI_SEKMESAYISI - 1] of PDugme;     // nesnedeki her bir paneli temsil eden dÃ¼ÄŸmeler
     FPaneller: array[0..AZAMI_SEKMESAYISI - 1] of PPanel;     // nesnedeki paneller
     FEtiketler: array[0..(AZAMI_SEKMESAYISI * AZAMI_ETIKETSAYISI) - 1] of PEtiket;
-    FBaslikG: array[0..AZAMI_SEKMESAYISI - 1] of TSayi4;      // her bir düðmenin baþlýk geniþliði
+    FBaslikG: array[0..AZAMI_SEKMESAYISI - 1] of TSayi4;      // her bir dÃ¼ÄŸmenin baÅŸlÄ±k geniÅŸliÄŸi
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4): PSayfaKontrol;
@@ -51,7 +51,7 @@ implementation
 uses temelgorselnesne, gorev;
 
 {==============================================================================
-  sayfa kontrol nesne kesme çaðrýlarýný yönetir
+  sayfa kontrol nesne kesme Ã§aÄŸrÄ±larÄ±nÄ± yÃ¶netir
  ==============================================================================}
 function SayfaKontrolCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -93,7 +93,7 @@ begin
       SayfaKontrol^.SayfaEkle(p^);
     end;
 
-    // panel sekme içeriðine etiket ekle
+    // panel sekme iÃ§eriÄŸine etiket ekle
     $020F:
     begin
 
@@ -108,7 +108,7 @@ begin
 end;
 
 {==============================================================================
-  sayfa kontrol nesnesini oluþturur
+  sayfa kontrol nesnesini oluÅŸturur
  ==============================================================================}
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik;
 var
@@ -126,7 +126,7 @@ begin
 end;
 
 {==============================================================================
-  sayfa kontrol nesnesini oluþturur
+  sayfa kontrol nesnesini oluÅŸturur
  ==============================================================================}
 function TSayfaKontrol.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
   ASol, AUst, AGenislik, AYukseklik: TISayi4): PSayfaKontrol;
@@ -138,7 +138,7 @@ begin
   SayfaKontrol := PSayfaKontrol(inherited Olustur(AKullanimTipi, AAtaNesne,
     ASol, AUst, AGenislik, AYukseklik, 2, RENK_BEYAZ, RENK_BEYAZ, 0, ''));
 
-  // nesnenin ad deðeri
+  // nesnenin ad deÄŸeri
   SayfaKontrol^.NesneTipi := gntSayfaKontrol;
 
   SayfaKontrol^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
@@ -148,7 +148,7 @@ begin
   SayfaKontrol^.FSayfaSayisi := 0;
   SayfaKontrol^.FAktifSayfa := -1;
 
-  // FDeger1 = her bir panelde oluþturulan etiket sayýsý
+  // FDeger1 = her bir panelde oluÅŸturulan etiket sayÄ±sÄ±
   SayfaKontrol^.FDeger1 := 0;
 
   for i := 0 to AZAMI_SEKMESAYISI - 1 do
@@ -161,7 +161,7 @@ begin
   for i := 0 to (AZAMI_SEKMESAYISI * AZAMI_ETIKETSAYISI) - 1 do
     SayfaKontrol^.FEtiketler[i] := nil;
 
-  // nesne adresini geri döndür
+  // nesne adresini geri dÃ¶ndÃ¼r
   Result := SayfaKontrol;
 end;
 
@@ -177,7 +177,7 @@ begin
   SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(AKimlik));
   if(SayfaKontrol = nil) then Exit;
 
-  // (sekme) panel içerisindeki etiket nesneleri yok ediliyor
+  // (sekme) panel iÃ§erisindeki etiket nesneleri yok ediliyor
   for i := 0 to (AZAMI_SEKMESAYISI * AZAMI_ETIKETSAYISI) - 1 do
   begin
 
@@ -200,14 +200,14 @@ begin
 end;
 
 {==============================================================================
-  sayfa kontrol nesnesini görüntüler
+  sayfa kontrol nesnesini gÃ¶rÃ¼ntÃ¼ler
  ==============================================================================}
 procedure TSayfaKontrol.Goster;
 var
   SayfaKontrol: PSayfaKontrol = nil;
 begin
 
-  // nesnenin kimlik, tip deðerlerini denetle.
+  // nesnenin kimlik, tip deÄŸerlerini denetle.
   SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
@@ -255,7 +255,7 @@ var
   SayfaKontrol: PSayfaKontrol = nil;
 begin
 
-  // nesnenin kimlik, tip deðerlerini denetle.
+  // nesnenin kimlik, tip deÄŸerlerini denetle.
   SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
@@ -263,7 +263,7 @@ begin
 end;
 
 {==============================================================================
-  sayfa kontrol nesnesini hizalandýrýr
+  sayfa kontrol nesnesini hizalandÄ±rÄ±r
  ==============================================================================}
 procedure TSayfaKontrol.Hizala;
 begin
@@ -272,7 +272,7 @@ begin
 end;
 
 {==============================================================================
-  sayfa kontrol nesnesini çizer
+  sayfa kontrol nesnesini Ã§izer
  ==============================================================================}
 procedure TSayfaKontrol.Ciz;
 var
@@ -315,12 +315,12 @@ begin
     SayfaKontrol^.FPaneller[3]^.Goster;
   end;
 
-  // öncelikle kendini çiz
+  // Ã¶ncelikle kendini Ã§iz
   inherited Ciz;
 end;
 
 {==============================================================================
-  sayfa kontrol nesne olaylarýný iþler
+  sayfa kontrol nesne olaylarÄ±nÄ± iÅŸler
  ==============================================================================}
 procedure TSayfaKontrol.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -329,12 +329,12 @@ begin
 
   SayfaKontrol := PSayfaKontrol(AGonderici);
 
-  // geçerli fare göstergesini güncelle
+  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
   GecerliFareGostegeTipi := SayfaKontrol^.FareImlecTipi;
 end;
 
 {==============================================================================
-  sekme olaylarýný iþler
+  sekme olaylarÄ±nÄ± iÅŸler
  ==============================================================================}
 procedure TSayfaKontrol.SekmeOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -342,13 +342,13 @@ var
   SayfaKontrol: PSayfaKontrol = nil;
 begin
 
-  // nesnenin kimlik, tip deðerlerini denetle.
+  // nesnenin kimlik, tip deÄŸerlerini denetle.
   Dugme := PDugme(AGonderici);
   if(Dugme = nil) then Exit;
 
   SayfaKontrol := PSayfaKontrol(Dugme^.AtaNesne);
 
-  // hangi sekmeye týklandýysa o sekmenin panel görünürlüðünü aktifleþtir
+  // hangi sekmeye tÄ±klandÄ±ysa o sekmenin panel gÃ¶rÃ¼nÃ¼rlÃ¼ÄŸÃ¼nÃ¼ aktifleÅŸtir
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
@@ -371,7 +371,7 @@ var
   i: TSayi4;
 begin
 
-  // nesnenin kimlik, tip deðerlerini denetle.
+  // nesnenin kimlik, tip deÄŸerlerini denetle.
   SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(Kimlik));
   if(SayfaKontrol = nil) then Exit(HATA_KIMLIK);
 
@@ -381,10 +381,10 @@ begin
   if(i = 0) then
   begin
 
-    // sekme düðme baþlýk geniþliði
+    // sekme dÃ¼ÄŸme baÅŸlÄ±k geniÅŸliÄŸi
     FBaslikG[0] := Length(ABaslik) * 8 + 10;
 
-    // sekme düðmesi
+    // sekme dÃ¼ÄŸmesi
     SayfaKontrol^.FDugmeler[0] := SayfaKontrol^.FDugmeler[0]^.Olustur(ktBilesen,
       SayfaKontrol, 0, 0, FBaslikG[0], 20, ABaslik);
     SayfaKontrol^.FDugmeler[0]^.CizimModelDegistir(False, RENK_GRI, RENK_GUMUS, RENK_SIYAH, RENK_KIRMIZI);
@@ -406,10 +406,10 @@ begin
   else if(i = 1) then
   begin
 
-    // sekme düðme baþlýk geniþliði
+    // sekme dÃ¼ÄŸme baÅŸlÄ±k geniÅŸliÄŸi
     FBaslikG[1] := Length(ABaslik) * 8 + 10;
 
-    // sekme düðmesi
+    // sekme dÃ¼ÄŸmesi
     SayfaKontrol^.FDugmeler[1] := SayfaKontrol^.FDugmeler[1]^.Olustur(ktBilesen,
       SayfaKontrol, FBaslikG[0], 0, FBaslikG[1], 20, ABaslik);
     SayfaKontrol^.FDugmeler[1]^.CizimModelDegistir(False, RENK_GRI, RENK_GUMUS, RENK_SIYAH, RENK_KIRMIZI);
@@ -431,10 +431,10 @@ begin
   else if(i = 2) then
   begin
 
-    // sekme düðme baþlýk geniþliði
+    // sekme dÃ¼ÄŸme baÅŸlÄ±k geniÅŸliÄŸi
     FBaslikG[2] := Length(ABaslik) * 8 + 10;
 
-    // sekme düðmesi
+    // sekme dÃ¼ÄŸmesi
     SayfaKontrol^.FDugmeler[2] := SayfaKontrol^.FDugmeler[2]^.Olustur(ktBilesen,
       SayfaKontrol, FBaslikG[0] + FBaslikG[1], 0, FBaslikG[2], 20, ABaslik);
     SayfaKontrol^.FDugmeler[2]^.CizimModelDegistir(False, RENK_GRI, RENK_GUMUS, RENK_SIYAH, RENK_KIRMIZI);
@@ -456,10 +456,10 @@ begin
   else //if(i = 3) then
   begin
 
-    // sekme düðme baþlýk geniþliði
+    // sekme dÃ¼ÄŸme baÅŸlÄ±k geniÅŸliÄŸi
     FBaslikG[3] := Length(ABaslik) * 8 + 10;
 
-    // sekme düðmesi
+    // sekme dÃ¼ÄŸmesi
     SayfaKontrol^.FDugmeler[3] := SayfaKontrol^.FDugmeler[3]^.Olustur(ktBilesen,
       SayfaKontrol, FBaslikG[0] + FBaslikG[1] + FBaslikG[2], 0, FBaslikG[3], 20, ABaslik);
     SayfaKontrol^.FDugmeler[3]^.CizimModelDegistir(False, RENK_GRI, RENK_GUMUS, RENK_SIYAH, RENK_KIRMIZI);
@@ -481,8 +481,8 @@ begin
 end;
 
 {==============================================================================
-  her bir sekmeyi temsil eden panelinin içerisine etiket (yazý) ekler
-  { TODO : ileride tüm görsel nesnelerin bu panele eklenmesi saðlanacak }
+  her bir sekmeyi temsil eden panelinin iÃ§erisine etiket (yazÄ±) ekler
+  { TODO : ileride tÃ¼m gÃ¶rsel nesnelerin bu panele eklenmesi saÄŸlanacak }
  ==============================================================================}
 procedure TSayfaKontrol.EtiketEkle(ASayfaNo, ASol, AUst: TISayi4; ABaslik: string);
 var
@@ -492,7 +492,7 @@ var
   SiraNo: TSayi4;
 begin
 
-  // nesnenin kimlik, tip deðerlerini denetle.
+  // nesnenin kimlik, tip deÄŸerlerini denetle.
   SayfaKontrol := PSayfaKontrol(GorselNesneler0.NesneAl(Kimlik));
   if(SayfaKontrol = nil) then Exit;
 
@@ -507,7 +507,7 @@ begin
 
   Genislik := Length(ABaslik) * 8;
 
-  // belirtilen etiket sayýsý kadar panel nesnesine ekleme yapýlabilir
+  // belirtilen etiket sayÄ±sÄ± kadar panel nesnesine ekleme yapÄ±labilir
   if(Panel^.FDeger1 >= AZAMI_ETIKETSAYISI) then Exit;
 
   SiraNo := (ASayfaNo * 4) + Panel^.FDeger1;

@@ -87,7 +87,7 @@ begin
       _RSDT := PRSDTTanimlayici(RSDPTanimlayici.RSDTAdres);
       RSDTSayisi := (_RSDT^.Uzunluk - SizeOf(TRSDTTanimlayici)) div 4;
 
-      Goruntule;
+      //Goruntule;
       Exit;
     end;
 

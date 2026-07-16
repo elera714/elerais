@@ -6,7 +6,7 @@
   Dosya Adı: donusum.pas
   Dosya İşlevi: değer dönüşüm (convert) işlevlerini içerir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -36,6 +36,7 @@ function ntohs(ADeger: TSayi2): TSayi2;
 function ntohs(ADeger: TSayi4): TSayi4;
 function htons(ADeger: TSayi2): TSayi2;
 function htons(ADeger: TSayi4): TSayi4;
+function UTF8Byte(var ABellek: Isaretci): TSayi4;
 function UTF16Ascii(ABellek: PWideChar): string;
 function WideChar2String(ABellek: PWideChar): string;
 function WideChar2Char(AWideCharKod: TISayi4): Char;
@@ -449,6 +450,102 @@ begin
   Result := SwapEndian(ADeger);
 end;
 
+// UTF-8 kodlama
+{
+
+  UTF-8 kodlaması 1-6 byte arasında olup aşağıdaki şekildedir.
+
+  1 byte = 0xxx xxxx                                        ; ascii kod
+  2 byte = 110x xxxx + 10xx xxxx
+  3 byte = 1110 xxxx + 10xx xxxx + 10xx xxxx
+  4 byte = 1111 0xxx + 10xx xxxx + 10xx xxxx + 10xx xxxx
+  5 byte = 1111 10xx + 10xx xxxx + 10xx xxxx + 10xx xxxx + 10xx xxxx
+  6 byte = 1111 110x + 10xx xxxx + 10xx xxxx + 10xx xxxx + 10xx xxxx + 10xx xxxx
+
+  Örnek: 2 bytelık utf kod = $C5, $9E
+          $C5         $9E
+          1100 0101    1001 1110
+             0 0101      01 1110
+             0 0101  or  01 1110 = %00101011110 = $15E = Ş
+
+}
+function UTF8Byte(var ABellek: Isaretci): TSayi4;
+var
+  p: PByte;
+  B1: TSayi1;
+  U: TSayi4;
+begin
+
+  Result := 0;
+
+  p := PByte(ABellek);
+
+  B1 := p^;
+  if(B1 = 0) then Exit;
+
+  U := 0;
+
+  repeat
+
+    p := PByte(ABellek);
+
+    if(U = 0) then
+    begin
+
+      if((B1 and $F8) = $F0) then
+      begin
+
+        Result := B1 and %111;
+        U := 3;
+      end
+      else if((B1 and $F0) = $E0) then
+      begin
+
+        Result := B1 and %1111;
+        U := 2;
+      end
+      else if((B1 and $E0) = $C0) then
+      begin
+
+        Result := B1 and %11111;
+        U := 1;
+      end
+      else if((B1 and $80) = $00) then
+      begin
+
+        Result := B1 and %1111111;
+        U := 0;
+      end;
+    end
+    else
+    begin
+
+      B1 := TSayi1(p^);
+      Result := Result shl 6;
+      Result := Result or (B1 and $3F);
+      Dec(U);
+    end;
+
+    ABellek := ABellek + 1;
+
+  until U = 0;
+
+  case Result of
+{    $0E7: Result := 231;    // ç  }
+    $0C7: Result := 128;    // Ç
+    $11F: Result := 240;    // ğ
+    $11E: Result := 208;    // Ğ
+    $131: Result := 253;    // ı
+    $130: Result := 221;    // İ
+{    $0F6: Result := 246;    // ö
+    $0D6: Result := 214;    // Ö}
+    $15F: Result := 254;    // ş
+    $15E: Result := 222;    // Ş
+{    $0FC: Result := 252;    // ü
+    $0DC: Result := 220;    // Ü}
+  end;
+end;
+
 // UTF-16 (UnicodeString - 16bit) kod çevrimi
 // UTF-16'da 2. byte değeri şu aşamada gözardı edilmiştir
 {
@@ -464,7 +561,7 @@ end;
           $C5         $9E
           1100 0101    1001 1110
              0 0101      01 1110
-                101  or  01 1110 = $15E = Ş
+             0 0101  or  01 1110 = %00101011110 = $15E = Ş
 
 }
 function UTF16Ascii(ABellek: PWideChar): string;

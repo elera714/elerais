@@ -1,4 +1,4 @@
-﻿Sistem Bellek Adresleri - 64 MB'lik ($4000000) adresleme
+Sistem Bellek Adresleri - 64 MB'lik ($4000000) adresleme
 --------------------------------------------------------------------------------
 $0007C00..$0007E00 - boot yazılımı
 $0007E00..$0010000 - kullanılmayı bekliyor

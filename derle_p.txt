@@ -1,6 +1,6 @@
-Güncelleme Tarihi: belge güncel değil, güncellenecek
+GÃ¼ncelleme Tarihi: belge gÃ¼ncel deÄŸil, gÃ¼ncellenecek
 
-Derleme Ortamı:
+Derleme OrtamÄ±:
 ---------------
   Sistem: Windows 7 - (32 bit)
   Derleyici: Lazarus 1.8.0RC3, FPC 3.0.2
@@ -8,17 +8,17 @@ Derleme Ortamı:
 
 RTL Derleme
 -----------
-  + eleraos\araclar\binutils dizininin altındaki sıkıştırılmış binutils.7z dosya içeriğindeki .exe dosyalarını c:\lazarus\fpc\3.0.2\bin\i386-win32 dizinine kopyalayınız.
-  + eleraos\rtl_prog dizininin altındaki derle.bat dosyasını çalıştırarak RTL'yi derleyiniz.
+  + eleraos\araclar\binutils dizininin altÄ±ndaki sÄ±kÄ±ÅŸtÄ±rÄ±lmÄ±ÅŸ binutils.7z dosya iÃ§eriÄŸindeki .exe dosyalarÄ±nÄ± c:\lazarus\fpc\3.0.2\bin\i386-win32 dizinine kopyalayÄ±nÄ±z.
+  + eleraos\rtl_prog dizininin altÄ±ndaki derle.bat dosyasÄ±nÄ± Ã§alÄ±ÅŸtÄ±rarak RTL'yi derleyiniz.
 
 Program (Kernel) Derleme
 -------------------------
-  + eleraos\progs dizini altındaki gmode (grafik mod programlar) veya tmode (yazı mod programlar) uygulamalarını, ilgili proje klasörlerinin içeriğine girerek; ister .lpr proje dosyasını lazarus'ta Ctrl+F9 ile, isterseniz ilgili klasörün altındaki derle.bat dosyasını çalıştırarak derleyiniz.
+  + eleraos\progs dizini altÄ±ndaki gmode (grafik mod programlar) veya tmode (yazÄ± mod programlar) uygulamalarÄ±nÄ±, ilgili proje klasÃ¶rlerinin iÃ§eriÄŸine girerek; ister .lpr proje dosyasÄ±nÄ± lazarus'ta Ctrl+F9 ile, isterseniz ilgili klasÃ¶rÃ¼n altÄ±ndaki derle.bat dosyasÄ±nÄ± Ã§alÄ±ÅŸtÄ±rarak derleyiniz.
 
-Diğer Bilgiler
+DiÄŸer Bilgiler
 --------------
-  + eleraos\progs\gmode ve eleraos\progs\tmode dizini altındaki derle.bat dosyasını çalıştırarak ilgili dizinin altındaki tüm projeleri derleyebilir,
-  + eleraos\progs\gmode ve eleraos\progs\tmode dizini altındaki temizle.bat dosyasını çalıştırarak ilgili dizinin altındaki tüm projelerin ürettiği gereksiz dosyaları silebilirsiniz.
-  + eleraos\progs\_g dizini, pascal'da derlenerek oluşturulan grafiksel çalıştırılabilir dosyaları,
-  + eleraos\progs\_t dizini, pascal'da derlenerek oluşturulan yazı (text) çalıştırılabilir dosyaları,
-  + eleraos\progs\_a dizini assemblerde derlenerek oluşturulan çalıştırılabilir dosyaları içerir.
+  + eleraos\progs\gmode ve eleraos\progs\tmode dizini altÄ±ndaki derle.bat dosyasÄ±nÄ± Ã§alÄ±ÅŸtÄ±rarak ilgili dizinin altÄ±ndaki tÃ¼m projeleri derleyebilir,
+  + eleraos\progs\gmode ve eleraos\progs\tmode dizini altÄ±ndaki temizle.bat dosyasÄ±nÄ± Ã§alÄ±ÅŸtÄ±rarak ilgili dizinin altÄ±ndaki tÃ¼m projelerin Ã¼rettiÄŸi gereksiz dosyalarÄ± silebilirsiniz.
+  + eleraos\progs\_g dizini, pascal'da derlenerek oluÅŸturulan grafiksel Ã§alÄ±ÅŸtÄ±rÄ±labilir dosyalarÄ±,
+  + eleraos\progs\_t dizini, pascal'da derlenerek oluÅŸturulan yazÄ± (text) Ã§alÄ±ÅŸtÄ±rÄ±labilir dosyalarÄ±,
+  + eleraos\progs\_a dizini assemblerde derlenerek oluÅŸturulan Ã§alÄ±ÅŸtÄ±rÄ±labilir dosyalarÄ± iÃ§erir.

@@ -4,9 +4,9 @@
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
   Dosya Adı: src_ps2.pas
-  Dosya İşlevi: ps / 2 fare sürücüsü
+  Dosya İşlevi: ps/2 fare sürücüsü
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,23 +17,25 @@ interface
 
 uses paylasim, sistemmesaj;
 
+const
+  TEKERLEK_CARPAN_DEGERI = TSayi4(10);
+
 type
   PFareOlay = ^TFareOlay;
   TFareOlay = record
     Yatay, Dikey: TISayi4;
     Dugme: TSayi1;
-    Tekerlek: TISayi1;
+    Tekerlek: TISayi4;
   end;
 
 type
   TFareSurucusu = object
   private
     // -> yazılımsal hızlandırma amaçlı değişkenler
-    FYatayDeger, FDikeyDeger, FHiz: Double;
-    // yazılımsal hızlandırma amaçlı değişkenler <-
     FYatayKonum, FDikeyKonum: TISayi4;
+    FHiz: Double;
     FFareDugmeleri: TSayi1;
-    FKaydirmaDegeri: TISayi1;
+    FKaydirmaDegeri: TISayi4;
     FAygitPaketUzunlugu: TSayi4;
     procedure KlavyeKontrolcuyeYaz(AKomut: Byte);
     function AygitCikisiDoluMu: Boolean;
@@ -48,14 +50,14 @@ type
     property YatayKonum: Integer read FYatayKonum;
     property DikeyKonum: Integer read FDikeyKonum;
     property FareDugmeleri: Byte read FFareDugmeleri;
-    property KaydirmaDegeri: TISayi1 read FKaydirmaDegeri;
+    property KaydirmaDegeri: TISayi4 read FKaydirmaDegeri;
   end;
 
 procedure FareKesmeCagrisi;
 
 implementation
 
-uses genel, irq, port, src_vesa20;
+uses genel, irq, port, src_vesa20, src_klavye;
 
 const
   KLAVYE_VERI_PORT    = $60;        // okunabilir / yazılabilir
@@ -83,11 +85,9 @@ begin
   FAygitPaketUzunlugu := 3;
 
   // fare kursor pozisyonu
-  FYatayDeger := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk div 2;
-  FYatayKonum := Round(FYatayDeger);
-  FDikeyDeger := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk div 2;
-  FDikeyKonum := Round(FDikeyDeger);
-  FHiz := 1.8;
+  FYatayKonum := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk div 2;
+  FDikeyKonum := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk div 2;
+  FHiz := 2.3;
   FFareDugmeleri := 0;
   FKaydirmaDegeri := 0;
 
@@ -146,9 +146,9 @@ end;
  ==============================================================================}
 function TFareSurucusu.OlaylariAl(AFareOlay: PFareOlay): Boolean;
 var
-  B1: TISayi1;
-  B2: TISayi2;
-  i: TISayi4;
+  i1: TSayi1;
+  CarpanDegeri,
+  i4, i: TISayi4;
 begin
 
   // kesmeleri durdur
@@ -175,70 +175,75 @@ begin
     FKaydirmaDegeri := 0;
     FFareDugmeleri := 0;
 
-    B1 := FareVeriBellegi[0];
+    i1 := FareVeriBellegi[0];
 
-    // eğer değer taşması yoksa paketi işle
-    if((B1 and $C0) = 0) then
+    FFareDugmeleri := i1 and (4 + 2 + 1);
+
+    // bilgi: fare x hareketi. X SGN + 8 bit = toplam 9 bit
+    // eğer hareket sağ tarafa ise gelen değer pozitif
+    // eğer hareket sol tarafa ise gelen değer negatif
+
+    // fare x değeri
+    i1 := FareVeriBellegi[0];
+    if((i1 and 16) = 16) then
+      i4 := $FFFFFF00 or FareVeriBellegi[1]
+    else i4 := FareVeriBellegi[1];
+
+    // özelleştirilebilir yazılımsal hızlandırma
+    FYatayKonum := FYatayKonum + Round(i4 * FHiz);
+
+    // x limit denetimi
+    if(FYatayKonum < 0) then
+      FYatayKonum := 0
+    else if(FYatayKonum > EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1) then
+      FYatayKonum := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1;
+
+    // bilgi: fare y hareketi. Y SGN + 8 bit = toplam 9 bit
+    // eğer hareket aşağıya doğru ise gelen değer negatif
+    // eğer hareket yukarıya doğru ise gelen değer pozitif
+
+    // fare y değeri
+    // fare değerinin işareti ters yönde değiştiriliyor (üst satırdaki bilgiye bak)
+    i1 := FareVeriBellegi[0];
+    if((i1 and 32) = 32) then
     begin
 
-      B1 := B1 and (4 + 2 + 1);
-      FFareDugmeleri := B1;
+      i4 := $FFFFFF00 or FareVeriBellegi[2];
+      i4 := Abs(i4);
+    end
+    else
+    begin
 
-      // NOT: fare x hareketi. X SGN + 8 bit = toplam 9 bit
-      // eğer hareket sağ tarafa ise gelen değer pozitif
-      // eğer hareket sol tarafa ise gelen değer negatif
+      i4 := FareVeriBellegi[2];
+      i4 := -i4;
+    end;
 
-      // fare x değeri
-      B1 := FareVeriBellegi[0];
-      B2 := (((B1 shr 4) and 1) shl 8) or FareVeriBellegi[1];
+    // özelleştirilebilir yazılımsal hızlandırma
+    FDikeyKonum := FDikeyKonum + Round(i4 * (FHiz));
 
-      // özelleştirilebilir yazılımsal hızlandırma
-      FYatayDeger := FYatayDeger + (B2 * FHiz);
+    // x limit denetimi
+    if(FDikeyKonum < 0) then
+      FDikeyKonum := 0
+    else if(FDikeyKonum > EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1) then
+      FDikeyKonum := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1;
 
-      // x limit denetimi
-      if(FYatayDeger < 0) then
-        FYatayDeger := 0
-      else if(FYatayDeger > EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1) then
-        FYatayDeger := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1;
+    // paket sayısı 3'ten fazla ise diğer değerleri de işle
+    if(FAygitPaketUzunlugu > 3) then
+    begin
 
-      FYatayKonum := Round(FYatayDeger);
+      FFareDugmeleri := FFareDugmeleri + (FareVeriBellegi[3] and 16);
+      FFareDugmeleri := FFareDugmeleri + (FareVeriBellegi[3] and 32);
 
-      // NOT: fare y hareketi. Y SGN + 8 bit = toplam 9 bit
-      // eğer hareket aşağıya doğru ise gelen değer negatif
-      // eğer hareket yukarıya doğru ise gelen değer pozitif
+      // tekerlek çevirme çarpan değeri
+      CarpanDegeri := 1;
+      if(TusDurumSolDegisim = tdBasildi) then CarpanDegeri := TEKERLEK_CARPAN_DEGERI;
 
-      // fare y değeri
-      B1 := FareVeriBellegi[0];
+      if((FareVeriBellegi[3] and 8) = 8) then
+        // 4 bitlik işaretli değeri 32 bitlik değere genişletilmesi
+        FKaydirmaDegeri := ($FFFFFFF0 or (FareVeriBellegi[3] and $0F))
+      else FKaydirmaDegeri := FareVeriBellegi[3];
 
-      B2 := (((B1 shr 5) and 1) shl 8) or FareVeriBellegi[2];
-      if(B2 < 0) then
-        B2 := Abs(B2)
-      else B2 := -B2;
-
-      // özelleştirilebilir yazılımsal hızlandırma
-      FDikeyDeger := FDikeyDeger + (B2 * (FHiz));
-
-      // x limit denetimi
-      if(FDikeyDeger < 0) then
-        FDikeyDeger := 0
-      else if(FDikeyDeger > EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1) then
-        FDikeyDeger := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1;
-
-      FDikeyKonum := Round(FDikeyDeger);
-
-      // paket sayısı 3'ten fazla ise diğer değerleri de işle
-      if(FAygitPaketUzunlugu > 3) then
-      begin
-
-        FFareDugmeleri := FFareDugmeleri + (FareVeriBellegi[3] and 16);
-        FFareDugmeleri := FFareDugmeleri + (FareVeriBellegi[3] and 32);
-
-        if((FareVeriBellegi[3] and 8) = 8) then
-          FKaydirmaDegeri := $F0 or (FareVeriBellegi[3] and $F)
-        else FKaydirmaDegeri := (FareVeriBellegi[3] and $F);
-
-        // SISTEM_MESAJ_S16(RENK_LACIVERT, '-> Değer: ', B1, 2);
-      end;
+      FKaydirmaDegeri := FKaydirmaDegeri * CarpanDegeri;
     end;
 
     // işlenen verileri fare belleğinden sil

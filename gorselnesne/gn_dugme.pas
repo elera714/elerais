@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasına bakınız
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adı: gn_dugme.pas
-  Dosya İşlevi: düğme (TButton) yönetim işlevlerini içerir
+  Dosya AdÄ±: gn_dugme.pas
+  Dosya Ä°ÅŸlevi: dÃ¼ÄŸme (TButton) yÃ¶netim iÅŸlevlerini iÃ§erir
 
-  Güncelleme Tarihi: 27/05/2026
+  GÃ¼ncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,7 +32,7 @@ type
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     procedure CizimModelDegistir(ADolguluCizim: Boolean; AGovdeRenk1, AGovdeRenk2,
       AYaziRenkNormal, AYaziRenkBasili: TRenk);
-    // dolgulu çizim mi, normal çizim mi?
+    // dolgulu Ã§izim mi, normal Ã§izim mi?
     property DolguluCizim: Boolean read FDurum1 write FDurum1;
     property YaziRenkNormal: TRenk read FDeger1 write FDeger1;
     property YaziRenkBasili: TRenk read FDeger2 write FDeger2;
@@ -47,7 +47,7 @@ implementation
 uses gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj, gorev;
 
 {==============================================================================
-  düğme kesme çağrılarını yönetir
+  dÃ¼ÄŸme kesme Ã§aÄŸrÄ±larÄ±nÄ± yÃ¶netir
  ==============================================================================}
 function DugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -87,7 +87,7 @@ begin
       Pencere^.Ciz;
     end;
 
-    // yeniden boyutlandır
+    // yeniden boyutlandÄ±r
     ISLEV_BOYUTLANDIR:
     begin
 
@@ -139,7 +139,7 @@ begin
       Dugme^.Ciz;
     end;
 
-    // düğme nesnesine odaklan. (klavye girişlerini almasını sağla)
+    // dÃ¼ÄŸme nesnesine odaklan. (klavye giriÅŸlerini almasÄ±nÄ± saÄŸla)
     $020F:
     begin
 
@@ -148,11 +148,11 @@ begin
       if(Dugme <> nil) and (Dugme^.NesneTipi = gntDugme) then
       begin
 
-        // bir önceki odak alan nesneyi odaktan çıkar
+        // bir Ã¶nceki odak alan nesneyi odaktan Ã§Ä±kar
         GN := PPencere(Dugme^.AtaNesne)^.FAktifNesne;
         if(GN <> nil) and (GN^.Odaklanilabilir) then GN^.Odaklanildi := False;
 
-        // nelirtilen nesneyi odaklanılan nesne olarak belirle
+        // nelirtilen nesneyi odaklanÄ±lan nesne olarak belirle
         PPencere(Dugme^.AtaNesne)^.FAktifNesne := Dugme;
         Dugme^.Odaklanildi := True;
       end;
@@ -163,7 +163,7 @@ begin
 end;
 
 {==============================================================================
-  düğme nesnesini oluşturur
+  dÃ¼ÄŸme nesnesini oluÅŸturur
  ==============================================================================}
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   ABaslik: string): TKimlik;
@@ -181,7 +181,7 @@ begin
 end;
 
 {==============================================================================
-  düğme nesnesini oluşturur
+  dÃ¼ÄŸme nesnesini oluÅŸturur
  ==============================================================================}
 function TDugme.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
   ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PDugme;
@@ -193,7 +193,7 @@ begin
     AYukseklik, 4, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK, DUGME_NORMAL_YAZIRENK,
     ABaslik));
 
-  // görsel nesne tipi
+  // gÃ¶rsel nesne tipi
   Dugme^.NesneTipi := gntDugme;
 
   Dugme^.Baslik := ABaslik;
@@ -207,19 +207,19 @@ begin
 
   Dugme^.FDurum := ddNormal;
 
-  // çizim öndeğerleri
+  // Ã§izim Ã¶ndeÄŸerleri
   Dugme^.DolguluCizim := True;
   Dugme^.FGovdeRenk1 := DUGME_NORMAL_ILKRENK;
   Dugme^.FGovdeRenk2 := DUGME_NORMAL_SONRENK;
   Dugme^.YaziRenkNormal := DUGME_NORMAL_YAZIRENK;
   Dugme^.YaziRenkBasili := DUGME_BASILI_YAZIRENK;
 
-  // nesne adresini geri döndür
+  // nesne adresini geri dÃ¶ndÃ¼r
   Result := Dugme;
 end;
 
 {==============================================================================
-  düğme nesnesini yok eder
+  dÃ¼ÄŸme nesnesini yok eder
  ==============================================================================}
 procedure TDugme.YokEt(AKimlik: TKimlik);
 begin
@@ -228,7 +228,7 @@ begin
 end;
 
 {==============================================================================
-  düğme nesnesini görüntüler
+  dÃ¼ÄŸme nesnesini gÃ¶rÃ¼ntÃ¼ler
  ==============================================================================}
 procedure TDugme.Goster;
 begin
@@ -237,7 +237,7 @@ begin
 end;
 
 {==============================================================================
-  düğme nesnesini gizler
+  dÃ¼ÄŸme nesnesini gizler
  ==============================================================================}
 procedure TDugme.Gizle;
 begin
@@ -246,7 +246,7 @@ begin
 end;
 
 {==============================================================================
-  düğme nesnesini boyutlandırır
+  dÃ¼ÄŸme nesnesini boyutlandÄ±rÄ±r
  ==============================================================================}
 procedure TDugme.Hizala;
 var
@@ -260,7 +260,7 @@ begin
 end;
 
 {==============================================================================
-  düğme nesnesini çizer
+  dÃ¼ÄŸme nesnesini Ã§izer
  ==============================================================================}
 procedure TDugme.Ciz;
 var
@@ -271,14 +271,14 @@ begin
   Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
   if(Dugme = nil) then Exit;
 
-  // düğme başlığı
+  // dÃ¼ÄŸme baÅŸlÄ±ÄŸÄ±
   if(Dugme^.FDurum = ddNormal) then
     Dugme^.FYaziRenk := Dugme^.YaziRenkNormal
   else Dugme^.FYaziRenk := Dugme^.YaziRenkBasili;
 
   inherited Ciz;
 
-  // nesne odaklanılmış ise nesnenin kenarlarını işaretle
+  // nesne odaklanÄ±lmÄ±ÅŸ ise nesnenin kenarlarÄ±nÄ± iÅŸaretle
   if(Dugme^.Odaklanildi) then
   begin
 
@@ -288,7 +288,7 @@ begin
 end;
 
 {==============================================================================
-  düğme nesne olaylarını işler
+  dÃ¼ÄŸme nesne olaylarÄ±nÄ± iÅŸler
  ==============================================================================}
 procedure TDugme.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -299,34 +299,34 @@ begin
   Dugme := PDugme(AGonderici);
   if(Dugme = nil) then Exit;
 
-  // farenin sol tuşuna basım işlemi
+  // farenin sol tuÅŸuna basÄ±m iÅŸlemi
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
-    // düğme'nin sahibi olan pencere en üstte mi ? kontrol et
+    // dÃ¼ÄŸme'nin sahibi olan pencere en Ã¼stte mi ? kontrol et
     Pencere := EnUstPencereNesnesiniAl(Dugme);
 
-    // en üstte olmaması durumunda en üste getir
+    // en Ã¼stte olmamasÄ± durumunda en Ã¼ste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
-    // ve nesneyi aktif nesne olarak işaretle
+    // ve nesneyi aktif nesne olarak iÅŸaretle
     Pencere^.FAktifNesne := Dugme;
     Dugme^.Odaklanildi := True;
 
-    // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
+    // sol tuÅŸa basÄ±m iÅŸlemi nesnenin olay alanÄ±nda mÄ± gerÃ§ekleÅŸti ?
     if(Dugme^.FareNesneOlayAlanindaMi(Dugme)) then
     begin
 
-      // fare olaylarını yakala
+      // fare olaylarÄ±nÄ± yakala
       OlayYakalamayaBasla(Dugme);
 
-      // düğme'nin durumunu BASILI olarak belirle
+      // dÃ¼ÄŸme'nin durumunu BASILI olarak belirle
       Dugme^.FDurum := ddBasili;
 
-      // düğme nesnesini yeniden çiz
+      // dÃ¼ÄŸme nesnesini yeniden Ã§iz
       Dugme^.Ciz;
 
-      // uygulamaya veya efendi nesneye mesaj gönder
+      // uygulamaya veya efendi nesneye mesaj gÃ¶nder
       if not(Dugme^.OlayYonlendirmeAdresi = nil) then
         Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
       else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
@@ -335,28 +335,28 @@ begin
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
 
-    // fare olaylarını almayı bırak
+    // fare olaylarÄ±nÄ± almayÄ± bÄ±rak
     OlayYakalamayiBirak(Dugme);
 
-    //  basılan düğmeyi eski konumuna geri getir
+    //  basÄ±lan dÃ¼ÄŸmeyi eski konumuna geri getir
     Dugme^.FDurum := ddNormal;
 
-    // düğme nesnesini yeniden çiz
+    // dÃ¼ÄŸme nesnesini yeniden Ã§iz
     Dugme^.Ciz;
 
-    // farenin tuş bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
+    // farenin tuÅŸ bÄ±rakma iÅŸlemi nesnenin olay alanÄ±nda mÄ± gerÃ§ekleÅŸti ?
     if(Dugme^.FareNesneOlayAlanindaMi(Dugme)) then
     begin
 
-      // yakalama & bırakma işlemi bu nesnede olduğu için
-      // uygulamaya veya efendi nesneye FO_TIKLAMA mesajı gönder
+      // yakalama & bÄ±rakma iÅŸlemi bu nesnede olduÄŸu iÃ§in
+      // uygulamaya veya efendi nesneye FO_TIKLAMA mesajÄ± gÃ¶nder
       AOlay.Olay := FO_TIKLAMA;
       if not(Dugme^.OlayYonlendirmeAdresi = nil) then
         Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
       else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
     end;
 
-    // uygulamaya veya efendi nesneye mesaj gönder
+    // uygulamaya veya efendi nesneye mesaj gÃ¶nder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Dugme^.OlayYonlendirmeAdresi = nil) then
       Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
@@ -365,10 +365,10 @@ begin
   else if(AOlay.Olay = FO_HAREKET) then
   begin
 
-    // eğer nesne yakalanmış ve
-    // 1 - fare göstergesi düğmenin içerisindeyse
-    // 2 - fare göstergesi düğmenin dışarısındaysa
-    // koşula göre düğmenin durumunu yeniden çiz ...
+    // eÄŸer nesne yakalanmÄ±ÅŸ ve
+    // 1 - fare gÃ¶stergesi dÃ¼ÄŸmenin iÃ§erisindeyse
+    // 2 - fare gÃ¶stergesi dÃ¼ÄŸmenin dÄ±ÅŸarÄ±sÄ±ndaysa
+    // koÅŸula gÃ¶re dÃ¼ÄŸmenin durumunu yeniden Ã§iz ...
     if(YakalananGorselNesne <> nil) then
     begin
 
@@ -378,61 +378,61 @@ begin
       else Dugme^.FDurum := ddNormal;
     end;
 
-    // düğme nesnesini yeniden çiz
+    // dÃ¼ÄŸme nesnesini yeniden Ã§iz
     Dugme^.Ciz;
 
-    // uygulamaya veya efendi nesneye mesaj gönder
+    // uygulamaya veya efendi nesneye mesaj gÃ¶nder
     if not(Dugme^.OlayYonlendirmeAdresi = nil) then
       Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
     else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
   end
-  // nesnenin odağı kaybetmesi durumu
+  // nesnenin odaÄŸÄ± kaybetmesi durumu
   else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
   begin
 
-    // düğme'nin sahibi olan pencere en üstte mi ? kontrol et
+    // dÃ¼ÄŸme'nin sahibi olan pencere en Ã¼stte mi ? kontrol et
     Pencere := EnUstPencereNesnesiniAl(Dugme);
 
-    // en üstte olmaması durumunda en üste getir
+    // en Ã¼stte olmamasÄ± durumunda en Ã¼ste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
-    // ve nesneyi aktif nesne olarak işaretle
+    // ve nesneyi aktif nesne olarak iÅŸaretle
     Pencere^.FAktifNesne := nil;
     Dugme^.Odaklanildi := False;
 
-    // düğme'nin durumunu BASILI olarak belirle
+    // dÃ¼ÄŸme'nin durumunu BASILI olarak belirle
     Dugme^.FDurum := ddNormal;
 
-    // düğme nesnesini yeniden çiz
+    // dÃ¼ÄŸme nesnesini yeniden Ã§iz
     Dugme^.Ciz;
   end
-  // nesnenin odağı yeniden kazanması durumu
+  // nesnenin odaÄŸÄ± yeniden kazanmasÄ± durumu
   else if(AOlay.Olay = CO_ODAKKAZANILDI) then
   begin
 
-    // düğme'nin sahibi olan pencere en üstte mi ? kontrol et
+    // dÃ¼ÄŸme'nin sahibi olan pencere en Ã¼stte mi ? kontrol et
     Pencere := EnUstPencereNesnesiniAl(Dugme);
 
-    // en üstte olmaması durumunda en üste getir
+    // en Ã¼stte olmamasÄ± durumunda en Ã¼ste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
-    // ve nesneyi aktif nesne olarak işaretle
+    // ve nesneyi aktif nesne olarak iÅŸaretle
     Pencere^.FAktifNesne := Dugme;
     Dugme^.Odaklanildi := True;
 
-    // düğme'nin durumunu BASILI olarak belirle
+    // dÃ¼ÄŸme'nin durumunu BASILI olarak belirle
     Dugme^.FDurum := ddBasili;
 
-    // düğme nesnesini yeniden çiz
+    // dÃ¼ÄŸme nesnesini yeniden Ã§iz
     Dugme^.Ciz;
   end;
 
-  // geçerli fare göstergesini güncelle
+  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
   GecerliFareGostegeTipi := Dugme^.FareImlecTipi;
 end;
 
 {==============================================================================
-  düğmenin çizim modelini değiştirir ve renk değerlerini belirler
+  dÃ¼ÄŸmenin Ã§izim modelini deÄŸiÅŸtirir ve renk deÄŸerlerini belirler
  ==============================================================================}
 procedure TDugme.CizimModelDegistir(ADolguluCizim: Boolean; AGovdeRenk1, AGovdeRenk2,
   AYaziRenkNormal, AYaziRenkBasili: TRenk);
@@ -440,7 +440,7 @@ var
   Dugme: PDugme = nil;
 begin
 
-  // kimlik değerinden nesneyi al
+  // kimlik deÄŸerinden nesneyi al
   Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
   if(Dugme = nil) then Exit;
 

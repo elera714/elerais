@@ -458,6 +458,7 @@ begin
   if(DI^.SektorKumeNo = -1) then
   begin
 
+    //SISTEM_MESAJ(mtBilgi, RENK_MOR, 'IlkMumeNo:', []);
     //SISTEM_MESAJ(mtBilgi, RENK_MOR, 'DI^.DizinGirisi.IlkMumeNo: %d', [DI^.DizinGirisi.IlkMumeNo]);
     DI^.SektorKumeNo := DI^.DizinGirisi.IlkMumeNo;
     DI^.ZincirNo := 0;

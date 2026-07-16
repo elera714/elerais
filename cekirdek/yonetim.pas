@@ -60,7 +60,8 @@ type
 var
   _DNS: PDNS = nil;
   Arge0: TArGe;
-  Merhaba: AnsiString = 'Merhaba';
+  Merhaba: String = Chr($C3) + Chr($87) + Chr($65) + Chr($72) + Chr($69) +
+    Chr($6B) + #13 + #10 + #0;
 
 procedure Yukle;
 procedure SistemAnaKontrol;
@@ -238,6 +239,7 @@ var
   //T2: TMyThread2;
   PingSiraNo: TSayi4 = 111;
   s: string;
+  p: PChar;
 begin
 
   AracTipleri := TAracTipleriSinif.Create;
@@ -407,6 +409,7 @@ begin
 
             //Assert(True, 'Merhaba');
 
+
             //vbox.Listele;
           end
           // test iþlev tuþu-1
@@ -455,7 +458,7 @@ begin
 
             //          pic.MaskeKaldir(0);
 
-            vbox.IcerigiGoruntule;
+            //vbox.IcerigiGoruntule;
           end
           // test iþlev tuþu-2
           else if(TusKarakterDegeri = '5') then

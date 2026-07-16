@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasına bakınız
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adı: gn_degerdugmesi.pp
-  Dosya İşlevi: artırma / eksiltme (TUpDown) düğme yönetim işlevlerini içerir
+  Dosya AdÄ±: gn_degerdugmesi.pp
+  Dosya Ä°ÅŸlevi: artÄ±rma / eksiltme (TUpDown) dÃ¼ÄŸme yÃ¶netim iÅŸlevlerini iÃ§erir
 
-  Güncelleme Tarihi: 26/05/2024
+  GÃ¼ncelleme Tarihi: 16/07/2024
 
  ==============================================================================}
 {$mode objfpc}
@@ -42,7 +42,7 @@ implementation
 uses genel, temelgorselnesne;
 
 {==============================================================================
-  artırma / eksiltme düğme kesme çağrılarını yönetir
+  artÄ±rma / eksiltme dÃ¼ÄŸme kesme Ã§aÄŸrÄ±larÄ±nÄ± yÃ¶netir
  ==============================================================================}
 function DegerDugmesiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -72,7 +72,7 @@ begin
 end;
 
 {==============================================================================
-  artırma / eksiltme düğme nesnesini oluşturur
+  artÄ±rma / eksiltme dÃ¼ÄŸme nesnesini oluÅŸturur
  ==============================================================================}
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik;
 var
@@ -89,7 +89,7 @@ begin
 end;
 
 {==============================================================================
-  artırma / eksiltme düğme nesnesini oluşturur
+  artÄ±rma / eksiltme dÃ¼ÄŸme nesnesini oluÅŸturur
  ==============================================================================}
 function TDegerDugmesi.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
   ASol, AUst, AGenislik, AYukseklik: TISayi4): PDegerDugmesi;
@@ -108,29 +108,29 @@ begin
 
   DegerDugmesi^.OlayCagriAdresi := @OlaylariIsle;
 
-  // $10000000 + 1 = yukarı ok resmi
+  // $10000000 + 1 = yukarÄ± ok resmi
   DegerDugmesi^.FArtirmaDugmesi := DegerDugmesi^.FArtirmaDugmesi^.Olustur(ktBilesen,
     DegerDugmesi, 0, 0, 18, 10, $10000000 + 1, True);
   DegerDugmesi^.FArtirmaDugmesi^.OlayYonlendirmeAdresi := @ResimDugmeOlaylariniIsle;
 
-  // $10000000 + 2 = aşağı ok resmi
+  // $10000000 + 2 = aÅŸaÄŸÄ± ok resmi
   DegerDugmesi^.FEksiltmeDugmesi := DegerDugmesi^.FEksiltmeDugmesi^.Olustur(ktBilesen,
     DegerDugmesi, 0, 11, 18, 10, $10000000 + 2, True);
   DegerDugmesi^.FEksiltmeDugmesi^.OlayYonlendirmeAdresi := @ResimDugmeOlaylariniIsle;
 
-  // kimlik adresini geri döndür
+  // kimlik adresini geri dÃ¶ndÃ¼r
   Result := DegerDugmesi;
 end;
 
 {==============================================================================
-  artırma / eksiltme düğme nesnesini yok eder
+  artÄ±rma / eksiltme dÃ¼ÄŸme nesnesini yok eder
  ==============================================================================}
 procedure TDegerDugmesi.YokEt(AKimlik: TKimlik);
 var
   DegerDugmesi: PDegerDugmesi;
 begin
 
-  // nesnenin kimlik, tip değerlerini denetle.
+  // nesnenin kimlik, tip deÄŸerlerini denetle.
   DegerDugmesi := PDegerDugmesi(GorselNesneler0.NesneAl(AKimlik));
   if(DegerDugmesi = nil) then Exit;
 
@@ -141,14 +141,14 @@ begin
 end;
 
 {==============================================================================
-  artırma / eksiltme düğme nesnesini görüntüler
+  artÄ±rma / eksiltme dÃ¼ÄŸme nesnesini gÃ¶rÃ¼ntÃ¼ler
  ==============================================================================}
 procedure TDegerDugmesi.Goster;
 var
   DegerDugmesi: PDegerDugmesi;
 begin
 
-  // nesnenin kimlik, tip değerlerini denetle.
+  // nesnenin kimlik, tip deÄŸerlerini denetle.
   DegerDugmesi := PDegerDugmesi(GorselNesneler0.NesneAl(Kimlik));
   if(DegerDugmesi = nil) then Exit;
 
@@ -159,7 +159,7 @@ begin
 end;
 
 {==============================================================================
-  artırma / eksiltme düğme nesnesini gizler
+  artÄ±rma / eksiltme dÃ¼ÄŸme nesnesini gizler
  ==============================================================================}
 procedure TDegerDugmesi.Gizle;
 begin
@@ -168,7 +168,7 @@ begin
 end;
 
 {==============================================================================
-  artırma / eksiltme düğme nesnesini hizalandırır
+  artÄ±rma / eksiltme dÃ¼ÄŸme nesnesini hizalandÄ±rÄ±r
  ==============================================================================}
 procedure TDegerDugmesi.Hizala;
 var
@@ -182,7 +182,7 @@ begin
 end;
 
 {==============================================================================
-  artırma / eksiltme düğme nesnesini çizer
+  artÄ±rma / eksiltme dÃ¼ÄŸme nesnesini Ã§izer
  ==============================================================================}
 procedure TDegerDugmesi.Ciz;
 var
@@ -199,7 +199,7 @@ begin
 end;
 
 {==============================================================================
-  artırma / eksiltme düğme nesne olaylarını işler
+  artÄ±rma / eksiltme dÃ¼ÄŸme nesne olaylarÄ±nÄ± iÅŸler
  ==============================================================================}
 procedure TDegerDugmesi.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -209,12 +209,12 @@ begin
   DegerDugmesi := PDegerDugmesi(AGonderici);
   if(DegerDugmesi = nil) then Exit;
 
-  // geçerli fare göstergesini güncelle
+  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
   GecerliFareGostegeTipi := DegerDugmesi^.FareImlecTipi;
 end;
 
 {==============================================================================
-  artırma / eksiltme düğmesinin sahip olduğu resim düğmesi olaylarını işler
+  artÄ±rma / eksiltme dÃ¼ÄŸmesinin sahip olduÄŸu resim dÃ¼ÄŸmesi olaylarÄ±nÄ± iÅŸler
  ==============================================================================}
 procedure TDegerDugmesi.ResimDugmeOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -233,7 +233,7 @@ begin
     if(AOlay.Kimlik = DegerDugmesi^.FArtirmaDugmesi^.Kimlik) then
     begin
 
-      // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
+      // nesnenin olay Ã§aÄŸrÄ± adresini Ã§aÄŸÄ±r veya uygulamaya mesaj gÃ¶nder
       AOlay.Kimlik := DegerDugmesi^.Kimlik;
       AOlay.Deger1 := 0;
       if not(DegerDugmesi^.OlayYonlendirmeAdresi = nil) then
@@ -243,7 +243,7 @@ begin
     else if(AOlay.Kimlik = DegerDugmesi^.FEksiltmeDugmesi^.Kimlik) then
     begin
 
-      // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
+      // nesnenin olay Ã§aÄŸrÄ± adresini Ã§aÄŸÄ±r veya uygulamaya mesaj gÃ¶nder
       AOlay.Kimlik := DegerDugmesi^.Kimlik;
       AOlay.Deger1 := 1;
       if not(DegerDugmesi^.OlayYonlendirmeAdresi = nil) then

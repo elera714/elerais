@@ -117,6 +117,10 @@ type
 
 var
   Dosyalar0: TDosyalar;
+
+  // dosya çalýþtýrma iþlevi için gerekli yapý
+  DosyaCalistir: TDosyaYukleme;
+  // dosya çalýþtýrma aþamasýnda oluþan hatalarý göstermek için oluþturulan program yönetimi
   DosyaUyari: TDosyaYukleme;
 
 implementation

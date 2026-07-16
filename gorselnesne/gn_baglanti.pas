@@ -6,7 +6,7 @@
   Dosya Adı: gn_baglanti.pas
   Dosya İşlevi: bağlantı nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/05/2026
+  Güncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}

@@ -6,7 +6,7 @@
   Dosya Adı: gn_onaykutusu.pas
   Dosya İşlevi: onay kutusu (TCheckBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/05/2026
+  Güncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -62,6 +62,8 @@ var
   OnayKutusu: POnayKutusu;
 begin
 
+  Result := HATA_ISLEV;
+
   case AIslevNo of
 
     ISLEV_OLUSTUR:
@@ -77,9 +79,7 @@ begin
 
       OnayKutusu := POnayKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
       OnayKutusu^.Goster;
-    end
-
-    else Result := HATA_ISLEV;
+    end;
   end;
 end;
 

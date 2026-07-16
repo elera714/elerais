@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasına bakınız
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adı: gn_giriskutusu.pas
-  Dosya İşlevi: giriş kutusu (TEdit) yönetim işlevlerini içerir
+  Dosya AdÄ±: gn_giriskutusu.pas
+  Dosya Ä°ÅŸlevi: giriÅŸ kutusu (TEdit) yÃ¶netim iÅŸlevlerini iÃ§erir
 
-  Güncelleme Tarihi: 26/05/2026
+  GÃ¼ncelleme Tarihi: 16/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -44,7 +44,7 @@ implementation
 uses gn_islevler, gn_pencere, genel, temelgorselnesne, gorev, sistemmesaj;
 
 {==============================================================================
-  giriş kutusu kesme çağrılarını yönetir
+  giriÅŸ kutusu kesme Ã§aÄŸrÄ±larÄ±nÄ± yÃ¶netir
  ==============================================================================}
 function GirisKutusuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
@@ -71,7 +71,7 @@ begin
       GirisKutusu^.Goster;
     end;
 
-    // giriş kutusundaki veriyi al
+    // giriÅŸ kutusundaki veriyi al
     $010E:
     begin
 
@@ -80,7 +80,7 @@ begin
       p1^ := GirisKutusu^.Baslik;
     end;
 
-    // giriş kutusundaki veriyi değiştir
+    // giriÅŸ kutusundaki veriyi deÄŸiÅŸtir
     $010F:
     begin
 
@@ -90,7 +90,7 @@ begin
       GirisKutusu^.Ciz;
     end;
 
-    // giriş kutusunun salt okunur özelliğini değiştir
+    // giriÅŸ kutusunun salt okunur Ã¶zelliÄŸini deÄŸiÅŸtir
     $020F:
     begin
 
@@ -100,7 +100,7 @@ begin
       GirisKutusu^.Ciz;
     end;
 
-    // giriş kutusunun sayısal (numeric) değer özelliğini değiştir
+    // giriÅŸ kutusunun sayÄ±sal (numeric) deÄŸer Ã¶zelliÄŸini deÄŸiÅŸtir
     $030F:
     begin
 
@@ -109,7 +109,7 @@ begin
       GirisKutusu^.SadeceRakam := p2^;
     end;
 
-    // giriş kutusuna odaklan. (klavye girişlerini almasını sağla)
+    // giriÅŸ kutusuna odaklan. (klavye giriÅŸlerini almasÄ±nÄ± saÄŸla)
     $040F:
     begin
 
@@ -118,11 +118,11 @@ begin
       if(GirisKutusu <> nil) and (GirisKutusu^.NesneTipi = gntGirisKutusu) then
       begin
 
-        // bir önceki odak alan nesneyi odaktan çıkar
+        // bir Ã¶nceki odak alan nesneyi odaktan Ã§Ä±kar
         GN := PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne;
         if(GN <> nil) and (GN^.Odaklanilabilir) then GN^.Odaklanildi := False;
 
-        // nelirtilen nesneyi odaklanılan nesne olarak belirle
+        // nelirtilen nesneyi odaklanÄ±lan nesne olarak belirle
         PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne := GirisKutusu;
         GirisKutusu^.Odaklanildi := True;
       end;
@@ -133,7 +133,7 @@ begin
 end;
 
 {==============================================================================
-  giriş kutusu nesnesini oluşturur
+  giriÅŸ kutusu nesnesini oluÅŸturur
  ==============================================================================}
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   ABaslik: string): TKimlik;
@@ -151,7 +151,7 @@ begin
 end;
 
 {==============================================================================
-  giriş kutusu nesnesini oluşturur
+  giriÅŸ kutusu nesnesini oluÅŸturur
  ==============================================================================}
 function TGirisKutusu.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
   ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PGirisKutusu;
@@ -164,7 +164,7 @@ begin
   GirisKutusu := PGirisKutusu(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
     AGenislik, AYukseklik, 2, RENK_GUMUS, RENK_BEYAZ, RENK_SIYAH, ABaslik));
 
-  // görsel nesne tipi
+  // gÃ¶rsel nesne tipi
   GirisKutusu^.NesneTipi := gntGirisKutusu;
 
   GirisKutusu^.Baslik := ABaslik;
@@ -186,12 +186,12 @@ begin
   GirisKutusu^.FSilmeDugmesi^.CizimModelDegistir(False, RENK_BEYAZ, RENK_BEYAZ, RENK_SIYAH, RENK_KIRMIZI);
   GirisKutusu^.FSilmeDugmesi^.OlayYonlendirmeAdresi := @SilmeDugmeOlaylariniIsle;
 
-  // nesne bellek adresini geri döndür
+  // nesne bellek adresini geri dÃ¶ndÃ¼r
   Result := GirisKutusu;
 end;
 
 {==============================================================================
-  giriş kutusu nesnesini yok eder
+  giriÅŸ kutusu nesnesini yok eder
  ==============================================================================}
 procedure TGirisKutusu.YokEt(AKimlik: TKimlik);
 var
@@ -207,7 +207,7 @@ begin
 end;
 
 {==============================================================================
-  giriş kutusu nesnesini görüntüler
+  giriÅŸ kutusu nesnesini gÃ¶rÃ¼ntÃ¼ler
  ==============================================================================}
 procedure TGirisKutusu.Goster;
 var
@@ -223,7 +223,7 @@ begin
 end;
 
 {==============================================================================
-  giriş kutusu nesnesini gizler
+  giriÅŸ kutusu nesnesini gizler
  ==============================================================================}
 procedure TGirisKutusu.Gizle;
 begin
@@ -232,7 +232,7 @@ begin
 end;
 
 {==============================================================================
-  giriş kutusu nesnesini hizalandırır
+  giriÅŸ kutusu nesnesini hizalandÄ±rÄ±r
  ==============================================================================}
 procedure TGirisKutusu.Hizala;
 var
@@ -252,7 +252,7 @@ begin
 end;
 
 {==============================================================================
-  giriş kutusu nesnesini çizer
+  giriÅŸ kutusu nesnesini Ã§izer
  ==============================================================================}
 procedure TGirisKutusu.Ciz;
 var
@@ -265,20 +265,20 @@ begin
 
   inherited Ciz;
 
-  // giriş kutusunun çizim alan koordinatlarını al
+  // giriÅŸ kutusunun Ã§izim alan koordinatlarÄ±nÄ± al
   CizimAlani := GirisKutusu^.FCizimAlani;
 
-  // nesne odaklanılmış ise nesnenin kenarlarını işaretle
+  // nesne odaklanÄ±lmÄ±ÅŸ ise nesnenin kenarlarÄ±nÄ± iÅŸaretle
   if(GirisKutusu^.Odaklanildi) then GirisKutusu^.Dikdortgen(GirisKutusu, ctNokta, CizimAlani, RENK_SIYAH);
 
-  // nesnenin içerik değeri.
+  // nesnenin iÃ§erik deÄŸeri.
   if(GirisKutusu^.Yazilamaz) then
 
     GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3, GirisKutusu^.Baslik, RENK_SIYAH)
   else
   begin
 
-    // nesne odak kazanmışsa sonuna #255 = klavye kursörü ekle
+    // nesne odak kazanmÄ±ÅŸsa sonuna #255 = klavye kursÃ¶rÃ¼ ekle
     if(GirisKutusu^.Odaklanildi) then
       GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3,
         GirisKutusu^.Baslik + #255, RENK_SIYAH)
@@ -290,7 +290,7 @@ begin
 end;
 
 {==============================================================================
-  giriş kutusu nesne olaylarını işler
+  giriÅŸ kutusu nesne olaylarÄ±nÄ± iÅŸler
  ==============================================================================}
 procedure TGirisKutusu.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -304,26 +304,26 @@ begin
   GirisKutusu := PGirisKutusu(AGonderici);
   if(GirisKutusu = nil) then Exit;
 
-  // fare sol tuş basımı
+  // fare sol tuÅŸ basÄ±mÄ±
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
-    // giriş kutusunun sahibi olan pencere en üstte mi ? kontrol et
+    // giriÅŸ kutusunun sahibi olan pencere en Ã¼stte mi ? kontrol et
     Pencere := EnUstPencereNesnesiniAl(GirisKutusu);
 
-    // en üstte olmaması durumunda en üste getir
+    // en Ã¼stte olmamasÄ± durumunda en Ã¼ste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
-    // ve nesneyi aktif nesne olarak işaretle
+    // ve nesneyi aktif nesne olarak iÅŸaretle
     Pencere^.FAktifNesne := GirisKutusu;
     GirisKutusu^.Odaklanildi := True;
 
-    // uygulamaya veya efendi nesneye mesaj gönder
+    // uygulamaya veya efendi nesneye mesaj gÃ¶nder
     if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
       GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
     else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
   end
-  // klavye tuş basımı
+  // klavye tuÅŸ basÄ±mÄ±
   else if(AOlay.Olay = CO_TUSBASILDI) then
   begin
 
@@ -334,17 +334,17 @@ begin
 
       C := Char(Tus);
 
-      // enter tuşu
+      // enter tuÅŸu
       if(C = #10) then
       begin
 
-        // uygulamaya veya efendi nesneye mesaj gönder
+        // uygulamaya veya efendi nesneye mesaj gÃ¶nder
         AOlay.Deger1 := Tus;
         if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
           GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
         else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
       end
-      // geri silme tuşu
+      // geri silme tuÅŸu
       else if(C = #8) then
       begin
 
@@ -375,7 +375,7 @@ begin
 
             GirisKutusu^.Baslik := GirisKutusu^.Baslik + C;
 
-            // uygulamaya veya efendi nesneye mesaj gönder
+            // uygulamaya veya efendi nesneye mesaj gÃ¶nder
             AOlay.Deger1 := Tus;
             if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
               GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
@@ -399,47 +399,47 @@ begin
   end
 
 
-  // nesnenin odağı kaybetmesi durumu
+  // nesnenin odaÄŸÄ± kaybetmesi durumu
   else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
   begin
 
-    // giriş kutusu nesnesinin sahibi olan pencere en üstte mi ? kontrol et
+    // giriÅŸ kutusu nesnesinin sahibi olan pencere en Ã¼stte mi ? kontrol et
     Pencere := EnUstPencereNesnesiniAl(GirisKutusu);
 
-    // en üstte olmaması durumunda en üste getir
+    // en Ã¼stte olmamasÄ± durumunda en Ã¼ste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
-    // ve nesneyi aktif nesne olarak işaretle
+    // ve nesneyi aktif nesne olarak iÅŸaretle
     Pencere^.FAktifNesne := nil;
     GirisKutusu^.Odaklanildi := False;
 
-    // giriş kutusu nesnesini yeniden çiz
+    // giriÅŸ kutusu nesnesini yeniden Ã§iz
     GirisKutusu^.Ciz;
   end
-  // nesnenin odağı yeniden kazanması durumu
+  // nesnenin odaÄŸÄ± yeniden kazanmasÄ± durumu
   else if(AOlay.Olay = CO_ODAKKAZANILDI) then
   begin
 
-    // giriş kutusu nesnesinin sahibi olan pencere en üstte mi ? kontrol et
+    // giriÅŸ kutusu nesnesinin sahibi olan pencere en Ã¼stte mi ? kontrol et
     Pencere := EnUstPencereNesnesiniAl(GirisKutusu);
 
-    // en üstte olmaması durumunda en üste getir
+    // en Ã¼stte olmamasÄ± durumunda en Ã¼ste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
 
-    // ve nesneyi aktif nesne olarak işaretle
+    // ve nesneyi aktif nesne olarak iÅŸaretle
     Pencere^.FAktifNesne := GirisKutusu;
     GirisKutusu^.Odaklanildi := True;
 
-    // giriş kutusu nesnesini yeniden çiz
+    // giriÅŸ kutusu nesnesini yeniden Ã§iz
     GirisKutusu^.Ciz;
   end;
 
-  // geçerli fare göstergesini güncelle
+  // geÃ§erli fare gÃ¶stergesini gÃ¼ncelle
   GecerliFareGostegeTipi := GirisKutusu^.FareImlecTipi;
 end;
 
 {==============================================================================
-  giriş kutusuna bağlı silme düğmesi nesne olaylarını işler
+  giriÅŸ kutusuna baÄŸlÄ± silme dÃ¼ÄŸmesi nesne olaylarÄ±nÄ± iÅŸler
  ==============================================================================}
 procedure TGirisKutusu.SilmeDugmeOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
 var
@@ -447,11 +447,11 @@ var
   Dugme: PDugme;
 begin
 
-  // nesnenin kimlik, tip değerlerini denetle.
+  // nesnenin kimlik, tip deÄŸerlerini denetle.
   Dugme := PDugme(AGonderici);
   if(Dugme = nil) then Exit;
 
-  // silme düğmesine tıklama gerçekleştirildiğinde
+  // silme dÃ¼ÄŸmesine tÄ±klama gerÃ§ekleÅŸtirildiÄŸinde
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
@@ -460,7 +460,7 @@ begin
     GirisKutusu^.Baslik := '';
     GirisKutusu^.Ciz;
 
-    // nesneyi aktif nesne olarak işaretle
+    // nesneyi aktif nesne olarak iÅŸaretle
     PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne := GirisKutusu;
     GirisKutusu^.Odaklanildi := True;
   end

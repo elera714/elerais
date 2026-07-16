@@ -6,7 +6,7 @@
   Dosya Adý: prg_grafik.pas
   Dosya Ýþlevi: dahili çekirdek programý: nesnelerin grafik kartýna çizimi için
 
-  Güncelleme Tarihi: 04/03/2026
+  Güncelleme Tarihi: 14/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,7 +27,7 @@ procedure SistemDegerleriOlayIsle;
 implementation
 
 uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, mdepolama, elr1, sistemmesaj,
-  gorselnesne, gercekbellek, src_vesa20;
+  gorselnesne, gercekbellek, src_vesa20, gorev;
 
 var
   SDPencere: PPencere = nil;
@@ -104,7 +104,7 @@ begin
     BellekSayac := 0;
   end;
 
-  // 1000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
+  // 2000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
   Inc(DiskSayac);
   if(DiskSayac = 2000) then
   begin
@@ -135,12 +135,12 @@ begin
   CizimAlani.Alt := CizimAlani.Ust + 60;
   SDPencere^.DikdortgenDoldur(SDPencere, CizimAlani, RENK_SIYAH, RENK_BEYAZ);
 
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'ÇKRDK:', RENK_TURKUAZ);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'Çkrdk:', RENK_TURKUAZ);
   SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, False, 8, SistemSayaci, RENK_MAVI);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'ÇAÐRI:', RENK_TURKUAZ);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'Çaðrý:', RENK_TURKUAZ);
   SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, False, 8, CagriSayaci, RENK_MAVI);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'NESNE:', RENK_TURKUAZ);
-  SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, GorselNesneler0.ToplamGNSayisi, RENK_MAVI);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'Görev:', RENK_KIRMIZI);
+  SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, FCalisanGorevSayisi, RENK_LACIVERT);
 end;
 
 end.
