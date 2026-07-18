@@ -6,7 +6,7 @@
   Dosya Adı: k_yazim.pas
   Dosya İşlevi: grafiksel ekrana yazım kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 17/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -51,7 +51,7 @@ begin
     A1 := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     B1 := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
 
-    P^.HarfYaz(P, A1, B1, PChar(ADegiskenler + 16)^, PRenk(ADegiskenler + 12)^);
+    P^.HarfYaz(P, A1, B1, PChar(ADegiskenler + 16)^, RENK_YOK, PRenk(ADegiskenler + 12)^);
 
     Result := 1;
   end

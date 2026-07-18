@@ -64,8 +64,6 @@ type
     SilinenZincirNo,
     SilinenKayitSN: TISayi4;
 
-    // dosya arama iþlemleri için - yukarýdaki yapýlarla birliktelik saðlanacak
-    DizinGirisi: TDizinGirisi;
     Aranan: string;
   end;
 
@@ -93,7 +91,6 @@ procedure CloseFile(ADosyaKimlik: TKimlik);
 function CreateDir(AKlasorAdi: string): Boolean;
 function RemoveDir(const AKlasorAdi: string): Boolean;
 function DeleteFile(const ADosyaAdi: string): Boolean;
-procedure DosyaIsleminiSonlandir(ADosyaKimlik: TKimlik);
 
 function DosyaOrtaminiHazirla(const ADosyaAdi: string): TKimlik;
 function HamDosyaAdiniDosyaAdinaCevir2(ADizinGirdisi: PDizinGirdisi): string;
@@ -106,13 +103,16 @@ function DosyaOku(ADosyaTamYol: string; var ABellekAdresi: Isaretci): TDosyaYukl
 type
   TDosyalar = object
   private
+    FDosyaIslemSayisi: TSayi4;
     FDosyaIslemleri: array[0..USTSINIR_DOSYAISLEM - 1] of PDosyaIslem;
     function DosyaIslemAl(ASiraNo: TISayi4): PDosyaIslem;
     procedure DosyaIslemYaz(ASiraNo: TISayi4; ADosyaIslem: PDosyaIslem);
   public
     procedure Yukle;
     function Yeni: PDosyaIslem;
+    procedure DosyaIsleminiSonlandir(ADosyaKimlik: TKimlik);
     property DosyaIslem[ASiraNo: TISayi4]: PDosyaIslem read DosyaIslemAl write DosyaIslemYaz;
+    property DosyaIslemSayisi: TSayi4 read FDosyaIslemSayisi;
   end;
 
 var
@@ -134,6 +134,8 @@ procedure TDosyalar.Yukle;
 var
   i: TSayi4;
 begin
+
+  FDosyaIslemSayisi := 0;
 
   // dosya iþlev deðiþkenlerini sýfýrla
   for i := 0 to USTSINIR_DOSYAISLEM - 1 do Dosyalar0.DosyaIslem[i] := nil;
@@ -180,7 +182,7 @@ begin
   begin
 
     // arama için kullanýlan bellek bölgesini serbest býrak
-    DosyaIsleminiSonlandir(DI^.Kimlik);
+    Dosyalar0.DosyaIsleminiSonlandir(DI^.Kimlik);
     Exit(1);
   end;
 
@@ -217,10 +219,12 @@ begin
 
   // bu aþamada s = klasör1\*.*
 
-  KumeNo := MD^.Acilis.DizinGirisi.IlkMumeNo;
-
   // dosya sistem tipine göre iþlevi yönlendir
   DST := DI^.MD.MD3.DST;
+
+  if(DST = DST_ELR1) then
+    KumeNo := MD^.Acilis.DizinGirisi.IlkSektor
+  else KumeNo := MD^.Acilis.DizinGirisi.IlkKumeNo;
 
   // istenen (alt) klasörün dizin tablosunda aranmasý
   repeat
@@ -241,6 +245,9 @@ begin
       AramaSuzgeci := s;
     end;
 
+    DI^.ZincirNo := 0;
+    DI^.SektorIciKonum := -MD^.Acilis.DizinGirisi.GirdiUzunlugu;
+
     // klasörün dizin giriþinde aranmasý
     if(Length(AranacakKlasor) > 0) then
     begin
@@ -248,39 +255,45 @@ begin
       //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'AranacakKlasor: ''%s''', [AranacakKlasor]);
       //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
 
-      if(DST <> DST_ELR1) then
+      case DST of
+        DST_ELR1    : DI^.SektorKumeNo := KumeNo;
+        DST_FAT12   : DI^.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor;
+        DST_FAT32,
+        DST_FAT32LBA: DI^.SektorKumeNo := KumeNo;
+      end;
+
+      if(DI^.KlasorDerinlik = 0) then
       begin
 
-        DI^.DizinGirisi.IlkSektor := SektorNo;
-        DI^.DizinGirisi.IlkMumeNo := MD^.Acilis.DizinGirisi.IlkMumeNo;
-        DI^.ZincirNo := 0;
-        DI^.SektorIciKonum := 0;
-
-        if(DST = DST_FAT12) then
-        begin
-
-          DI^.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor;
-          DI^.SektorIciKonum := -32;
-        end;
-
         case DST of
+          DST_ELR1: KumeNo := DizinGirisindeAraELR1(DI^.Kimlik, AranacakKlasor);
           DST_FAT12: KumeNo := KokGirdisindeAra12(DI^.Kimlik, AranacakKlasor);
           else KumeNo := KokGirdisindeAra32(DI, AranacakKlasor);
         end;
+      end
+      else
+      begin
 
-        DI^.KlasorDerinlik := 1;
-
-        if(KumeNo = 0) then
-        begin
-
-          SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: %s dizini dosya tablosunda mevcut deðil!', [AranacakKlasor]);
-          Exit(1);
-        end
-        else
-        begin
-
-          SektorNo := ((KumeNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
+        case DST of
+          DST_ELR1: KumeNo := DizinGirisindeAraELR1(DI^.Kimlik, AranacakKlasor);
+          DST_FAT12: KumeNo := KokGirdisindeAra12(DI^.Kimlik, AranacakKlasor);
+          else KumeNo := DizinGirisindeAra32(DI, AranacakKlasor);
         end;
+      end;
+
+      if(KumeNo = 0) then
+      begin
+
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: %s dizini dosya tablosunda mevcut deðil!', [AranacakKlasor]);
+        Exit(1);
+      end;
+
+      DI^.KlasorDerinlik := 1;
+
+      if(DST = DST_FAT12) or (DST = DST_FAT16) or (DST = DST_FAT32) or (DST = DST_FAT32LBA) then
+      begin
+
+        SektorNo := ((KumeNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
       end;
     end;
   until Length(AranacakKlasor) = 0;
@@ -289,47 +302,21 @@ begin
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ýlk Dizin Küme No: $%x', [SektorNo]);
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'XXYYTT: %d', [MD^.Acilis.DizinGirisi.IlkSektor + MD^.Acilis.DizinGirisi.ToplamSektor]);
 
-  if(AramaSuzgeci = '*.*') then
+  DI^.SektorKumeNo := KumeNo;
+  DI^.ZincirNo := 0;
+  DI^.SektorIciKonum := -MD^.Acilis.DizinGirisi.GirdiUzunlugu;
+
+  if(DST = DST_FAT12) then
   begin
 
-    DI^.SektorKumeNo := -1;
-    DI^.ZincirNo := 0;
-    DI^.SektorIciKonum := -1;
-
-    // geçici
-    if(DST = DST_ELR1) then
-    begin
-
-      DI^.SektorKumeNo := DI^.MD.Acilis.DizinGirisi.IlkSektor div DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
-      DI^.DizinGirisi.IlkSektor := $600; //SektorNo;    // $600 = 1536
-      DI^.DizinGirisi.ToplamSektor := 4; //MD^.Acilis.DizinGirisi.ToplamSektor;
-
-      DI^.ZincirNo := 0;
-      DI^.SektorIciKonum := -64; //-1;
-
-    end
+    if(DI^.KlasorDerinlik = 0) then
+      DI^.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor
     else
-    begin
-
-      // arama iþlevinin aktif olarak kullanacaðý deðiþkenleri ata
-      DI^.DizinGirisi.IlkSektor := MD^.Acilis.DizinGirisi.IlkMumeNo; //SektorNo;
-      DI^.DizinGirisi.ToplamSektor := MD^.Acilis.DizinGirisi.ToplamSektor;
       DI^.SektorKumeNo := KumeNo;
-      DI^.DizinGirisi.ToplamKokSektor := MD^.Acilis.DizinGirisi.ToplamKokSektor;
+  end;
 
-      DI^.SektorIciKonum := -32;
-    end;
-
-    if(DST = DST_FAT12) then
-    begin
-
-      if(DI^.KlasorDerinlik = 0) then
-        DI^.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor
-      else
-        DI^.SektorKumeNo := KumeNo;
-
-      DI^.SektorIciKonum := -32;
-    end;
+  if(AramaSuzgeci = '*.*') then
+  begin
 
     case DST of
       DST_ELR1      : Result := elr1.FindFirst(AramaSuzgeci, ADosyaOzellik, ADosyaArama);
@@ -377,7 +364,7 @@ end;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
 begin
 
-  DosyaIsleminiSonlandir(ADosyaArama.Kimlik);
+  Dosyalar0.DosyaIsleminiSonlandir(ADosyaArama.Kimlik);
 end;
 
 {==============================================================================
@@ -699,7 +686,7 @@ end;
 procedure CloseFile(ADosyaKimlik: TKimlik);
 begin
 
-  DosyaIsleminiSonlandir(ADosyaKimlik);
+  Dosyalar0.DosyaIsleminiSonlandir(ADosyaKimlik);
 end;
 
 {==============================================================================
@@ -739,7 +726,7 @@ begin
 
     Result := fat32.CreateDir(DosyaKimlik);
 
-  DosyaIsleminiSonlandir(DosyaKimlik);
+  Dosyalar0.DosyaIsleminiSonlandir(DosyaKimlik);
 end;
 
 {==============================================================================
@@ -779,7 +766,7 @@ begin
 
     Result := fat32.RemoveDir(DosyaKimlik);
 
-  DosyaIsleminiSonlandir(DosyaKimlik);
+  Dosyalar0.DosyaIsleminiSonlandir(DosyaKimlik);
 end;
 
 {==============================================================================
@@ -819,7 +806,7 @@ begin
 
     Result := fat32.DeleteFile(DosyaKimlik);
 
-  DosyaIsleminiSonlandir(DosyaKimlik);
+  Dosyalar0.DosyaIsleminiSonlandir(DosyaKimlik);
 end;
 
 {==============================================================================
@@ -848,6 +835,8 @@ begin
       DI^.Kimlik := i;
       DI^.TSI := GetMem(512);
 
+      Inc(FDosyaIslemSayisi);
+
       Exit(DI);
     end;
   end;
@@ -858,7 +847,7 @@ end;
 {==============================================================================
   dosya iþlemi için ayrýlan kaynaðý iptal eder.
  ==============================================================================}
-procedure DosyaIsleminiSonlandir(ADosyaKimlik: TKimlik);
+procedure TDosyalar.DosyaIsleminiSonlandir(ADosyaKimlik: TKimlik);
 var
   DI: PDosyaIslem;
 begin
@@ -867,6 +856,8 @@ begin
 
   if not(DI = nil) then
   begin
+
+    Dec(FDosyaIslemSayisi);
 
     //SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'DI YokEt Kimlik: %d', [DI^.Kimlik]);
 
@@ -896,7 +887,7 @@ begin
   if(MD = nil) then
   begin
 
-    DosyaIsleminiSonlandir(DI^.Kimlik);
+    Dosyalar0.DosyaIsleminiSonlandir(DI^.Kimlik);
     Exit;
   end;
 
@@ -909,7 +900,7 @@ begin
   if(DI = nil) then
   begin
 
-    DosyaIsleminiSonlandir(DI^.Kimlik);
+    Dosyalar0.DosyaIsleminiSonlandir(DI^.Kimlik);
     Exit;
   end;
 

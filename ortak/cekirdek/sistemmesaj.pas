@@ -219,7 +219,7 @@ var
   M: PMesajKayit;
 begin
 
-  while KritikBolgeyeGir(SistemMesajKilit) = False do;
+//  while KritikBolgeyeGir(SistemMesajKilit) = False do;
 
   M := Mesaj[ASiraNo];
   if not(M = nil) then
@@ -232,7 +232,7 @@ begin
     AMesajKayit^.Mesaj := M^.Mesaj;
   end;
 
-  KritikBolgedenCik(SistemMesajKilit);
+//  KritikBolgedenCik(SistemMesajKilit);
 end;
 
 {==============================================================================

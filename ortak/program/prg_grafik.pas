@@ -27,7 +27,7 @@ procedure SistemDegerleriOlayIsle;
 implementation
 
 uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, mdepolama, elr1, sistemmesaj,
-  gorselnesne, gercekbellek, src_vesa20, gorev;
+  gorselnesne, gercekbellek, src_vesa20, gorev, dosya;
 
 var
   SDPencere: PPencere = nil;
@@ -137,8 +137,8 @@ begin
 
   SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'Çkrdk:', RENK_TURKUAZ);
   SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, False, 8, SistemSayaci, RENK_MAVI);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'Çaðrý:', RENK_TURKUAZ);
-  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, False, 8, CagriSayaci, RENK_MAVI);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'A.Say:', RENK_MOR);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, False, 8, Dosyalar0.DosyaIslemSayisi, RENK_MAVI);
   SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'Görev:', RENK_KIRMIZI);
   SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, FCalisanGorevSayisi, RENK_LACIVERT);
 end;

@@ -419,7 +419,9 @@ begin
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
 
-  ZincirBasinaSektor := DI^.DizinGirisi.ToplamKokSektor;
+  ZincirBasinaSektor := DI^.MD.Acilis.DizinGirisi.ToplamKokSektor;
+
+  //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'ZincirBasinaSektor: %d', [ZincirBasinaSektor]);
 
   // aramaya baþla
   repeat
@@ -439,7 +441,8 @@ begin
     begin
 
       // bir sonraki dizin giriþini oku
-      Sonuc := DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.SektorKumeNo + DI^.ZincirNo, 1, DI^.TSI);
+      Sonuc := DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.SektorKumeNo +
+        DI^.ZincirNo, 1, DI^.TSI);
       if(Sonuc <> HATA_YOK) then Exit(1);
     end;
 
@@ -523,46 +526,16 @@ begin
 end;
 
 {==============================================================================
-  dizin giriþinden dosya / klasör bilgilerini bulup, geriye ilgili giriþin küme
+  kök dizin giriþinden dosya / klasör bulur ve geriye ilgili giriþin küme
   numarasýný döndürür
-
-  { TODO - bu iþlev (dosya / dizin arama iþlevi) tüm dosya sistemlerinde olacak }
  ==============================================================================}
 function KokGirdisindeAra12(ADosyaKimlik: TKimlik; AAranacakDeger: string): TSayi4;
 var
-  DI: PDosyaIslem;
-  MD: PMDNesne;
-  DizinGirdisi: PDizinGirdisi;
-  UzunDosyaAdiBulundu: Boolean;
-  DosyaAdi: string;
-  ZincirBasinaSektor: TSayi1;
-  i: TSayi4;
-  Sonuc: TSayi4;
   DA: TDosyaArama;
+  Sonuc: TSayi4;
 begin
 
   DA.Kimlik := ADosyaKimlik;
-  //SISTEM_MESAJ(mtHata, RENK_MAVI, 'DizinGirisindeAra12: %s', [AAranacakDeger]);
-
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-{  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then
-  begin
-
-    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
-    Exit;
-  end;
-
-  //SISTEM_MESAJ(mtHata, RENK_MAVI, 'ZincirNo: %d', [ADosyaIslem^.ZincirNo]);
-
-  UzunDosyaAdiBulundu := False;
-
-  // aramanýn yapýlacaðý sürücü
-  MD := @DI^.MD;
-
-  ZincirBasinaSektor := 14; //MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
-}
-  // burada ilk deðer atamalarý olacak
 
   // aramaya baþla
   repeat
@@ -571,7 +544,7 @@ begin
     if(Sonuc = 0) then
     begin
 
-      // dosya uzunluðu ve cluster baþlangýcýný geri dönüþ deðerine ekle
+      // dosya / klasör bulunduysa küme baþlangýç deðerini geri döndür
       if(DA.DosyaAdi = AAranacakDeger) then Exit(DA.BaslangicKumeNo);
     end else Exit(0);
 
@@ -603,12 +576,10 @@ begin
   // dosya iþlem yapýsý bellek bölgesine konumlan
   DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
 
-  //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'ToplamKokSektor: %d', [DI^.DizinGirisi.ToplamKokSektor]);
   //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'ZincirBasinaSektor: %d', [DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor]);
 
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'A: %d', [DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor]);
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'DI^.DizinGirisi.IlkSektor: %d', [DI^.DizinGirisi.IlkSektor]);
-  //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'DI^.KumeNo: %d', [DI^.KumeNo]);
 
   ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;;
 

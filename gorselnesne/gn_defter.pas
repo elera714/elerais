@@ -390,7 +390,7 @@ begin
           pxUst := AktifSatirNo * 20;
           pxUst := pxUst + CizimAlani.Ust + 4;
 
-          HarfYaz(Defter, pxSol, pxUst, Char(Deger), Defter^.FYaziRenk);
+          HarfYaz(Defter, pxSol, pxUst, Char(Deger), RENK_ACIKYESIL, Defter^.FYaziRenk);
         end;
 
         Inc(AktifSutunNo);

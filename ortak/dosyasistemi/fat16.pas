@@ -371,12 +371,9 @@ begin
   if(DI^.SektorKumeNo = -1) then
   begin
 
-    DI^.SektorKumeNo := DI^.DizinGirisi.IlkSektor div ZincirBasinaSektor;
+    DI^.SektorKumeNo := DI^.MD.Acilis.DizinGirisi.IlkSektor; // DizinGirisi.IlkSektor div ZincirBasinaSektor;
     DI^.ZincirNo := 0;
     DI^.SektorIciKonum := -32; //-1;
-
-    //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Küme No1: %x', [DI^.KumeNo]);
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Yeni Küme: %x', [DI^.DizinGirisi.IlkMumeNo]);
   end;
 
   // aramaya başla
@@ -397,7 +394,6 @@ begin
       begin
 
         // yeni küme numarası al
-        //DI^.KumeNo
         DI^.ZincirNo := 0;
 
         //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'IlkVeriSektorNo: %d', [DI^.MD.Acilis.IlkVeriSektorNo]);
@@ -426,7 +422,6 @@ begin
           DI^.SektorKumeNo := DI^.SektorKumeNo + 609; //$672;
 
           //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DAT: %x', [DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor]);
-          //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Küme No2: %x', [DI^.KumeNo]);
 
           { TODO - tamamlanacak }
         end else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Okuma hatası: fat16', []);

@@ -6,7 +6,7 @@
   Dosya Adı: genel8x16.pas
   Dosya İşlevi: sistem öndeğer yazı tipi karakter setini içerir
 
-  Güncelleme Tarihi: 14/02/2025
+  Güncelleme Tarihi: 17/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -41,6 +41,11 @@ const
   font tanımlamaları
  ==============================================================================}
 const
+  // bu karakter boşluk karakteri olup, boşluğun çizilmesi için değil
+  // tasarımsal olarak zeminin çizilmesi için tanımlanmıştır
+  KAR032: array[1..1, 1..8] of TSayi1 = (
+    (oo,oo,oo,oo,oo,oo,oo,oo));
+
   KAR033: array[1..10, 1..1] of TSayi1 = (
     (WW),
     (WW),
@@ -1119,7 +1124,7 @@ const
     (Genislik: 00; Yukseklik: 00; YT: 00; DT: 00; Adres: nil),      // tanımlanmadı
     (Genislik: 00; Yukseklik: 00; YT: 00; DT: 00; Adres: nil),      // tanımlanmadı
     (Genislik: 00; Yukseklik: 00; YT: 00; DT: 00; Adres: nil),      // tanımlanmadı
-    (Genislik: 00; Yukseklik: 00; YT: 00; DT: 00; Adres: nil),      // boşluk karakteri
+    (Genislik: 01; Yukseklik: 08; YT: 00; DT: 15; Adres: @KAR032),  // boşluk karakteri
     (Genislik: 01; Yukseklik: 10; YT: 04; DT: 02; Adres: @KAR033),  // !
     (Genislik: 05; Yukseklik: 04; YT: 02; DT: 03; Adres: @KAR034),  // "
     (Genislik: 06; Yukseklik: 10; YT: 02; DT: 02; Adres: @KAR035),  // #

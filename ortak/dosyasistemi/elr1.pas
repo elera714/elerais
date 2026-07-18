@@ -59,8 +59,9 @@ function CreateDir(ADosyaKimlik: TKimlik): Boolean;   { onaylanacak }
 function RemoveDir(const ADosyaKimlik: TKimlik): Boolean;   { onaylanacak }
 function DeleteFile(const ADosyaKimlik: TKimlik): Boolean;   { onaylanacak }
 
-function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
+function DizinGirdisiListeleELR1(AAranacakDeger: string;
   var ADosyaArama: TDosyaArama): TSayi4;   { onaylanacak }
+function DizinGirisindeAraELR1(ADosyaKimlik: TKimlik; AAranacakDeger: string): TSayi4;
 
 procedure DosyaAdiniKopyala(ADosyaAdi: string; AHedef: PChar);
 procedure ELR1DiskBicimle(AMDNesne: PMDNesne);
@@ -92,13 +93,11 @@ function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
  var ADosyaArama: TDosyaArama): TISayi4;
 var
   DI: PDosyaIslem;
-  DizinGirisi: PDizinGirisi;
 begin
 
   DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
-  DizinGirisi := @DI^.DizinGirisi;
   DI^.Aranan := AAramaSuzgec;
-  Result := DizinGirdisiOku(DizinGirisi, AAramaSuzgec, ADosyaArama);
+  Result := DizinGirdisiListeleELR1(AAramaSuzgec, ADosyaArama);
 end;
 
 {==============================================================================
@@ -108,14 +107,12 @@ end;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 var
   DI: PDosyaIslem;
-  DizinGirisi: PDizinGirisi;
   Aranan: string;
 begin
 
   DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
-  DizinGirisi := @DI^.DizinGirisi;
   Aranan := DI^.Aranan;
-  Result := DizinGirdisiOku(DizinGirisi, Aranan, ADosyaArama);
+  Result := DizinGirdisiListeleELR1(Aranan, ADosyaArama);
 end;
 
 {==============================================================================
@@ -744,7 +741,7 @@ end;
 procedure CloseFile(ADosyaKimlik: TKimlik);
 begin
 
-  DosyaIsleminiSonlandir(ADosyaKimlik);
+  Dosyalar0.DosyaIsleminiSonlandir(ADosyaKimlik);
 end;
 
 {==============================================================================
@@ -759,7 +756,7 @@ var
   Saat, Dakika, Saniye: TSayi1;
   AramaKaydi: TDosyaArama;
   SektorNo,
-  SektorIS: TISayi4;    // sektör iþlem sonucu
+  Sonuc, BosKume: TISayi4;    // sektör iþlem sonucu
 begin
 
   // ilk deðer atamalarý
@@ -800,11 +797,11 @@ begin
     SektorNo := (DI^.SektorKumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
     // dizin giriþ sektörünü oku
-    SektorIS := DI^.MD.FD^.SektorOku(DI^.MD.FD, SektorNo, 1, DI^.TSI);
-    if(SektorIS < HATA_YOK) then
+    Sonuc := DI^.MD.FD^.SektorOku(DI^.MD.FD, SektorNo, 1, DI^.TSI);
+    if(Sonuc < HATA_YOK) then
     begin
 
-      DI^.Gorev^.DosyaSonIslemDurum := SektorIS;
+      DI^.Gorev^.DosyaSonIslemDurum := Sonuc;
       //dosya.FindClose(AramaKaydi);
       Exit;
     end;
@@ -815,6 +812,15 @@ begin
 
   if(DI^.SektorIciKonum >= 0) and (DI^.SektorIciKonum < 512) then //DIZIN_GIRDI_SAYISI) then
   begin
+
+    BosKume := SHTBosKumeTahsisEt(@DI^.MD);
+    if(BosKume < 0) then
+    begin
+
+      DI^.Gorev^.DosyaSonIslemDurum := HATA_TUMSEKTORLERDOLU;
+      //dosya.FindClose(AramaKaydi);
+      Exit;
+    end;
 
     // aktif tarih / saat bilgilerini al
     TarihAl(Gun, Ay, Yil, HG);
@@ -829,17 +835,17 @@ begin
     DG^.OlusturmaSaati := ELRSaat(Saat, Dakika, Saniye);
     DG^.DegisimTarihi := ELRTarih(Gun, Ay, Yil);
     DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
-    DG^.BaslangicKumeNo := ELR_ZD_SON;
+    DG^.BaslangicKumeNo := BosKume;
     DG^.DosyaUzunlugu := 0;
 
     SektorNo := (DI^.SektorKumeNo * ZincirBasinaSektor) + DI^.ZincirNo;
 
     // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-    SektorIS := DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI);
-    if(SektorIS < HATA_YOK) then
+    Sonuc := DI^.MD.FD^.SektorYaz(DI^.MD.FD, SektorNo, 1, DI^.TSI);
+    if(Sonuc < HATA_YOK) then
     begin
 
-      DI^.Gorev^.DosyaSonIslemDurum := SektorIS;
+      DI^.Gorev^.DosyaSonIslemDurum := Sonuc;
       //dosya.FindClose(AramaKaydi);
       Exit;
     end;
@@ -1028,7 +1034,7 @@ end;
 {==============================================================================
   dizin giriþinden ilgili bilgileri alýr
  ==============================================================================}
-function DizinGirdisiOku(ADizinGirisi: PDizinGirisi; AAranacakDeger: string;
+function DizinGirdisiListeleELR1(AAranacakDeger: string;
   var ADosyaArama: TDosyaArama): TSayi4;
 var
   DG: PDizinGirdisiELR;
@@ -1036,8 +1042,7 @@ var
   DI: PDosyaIslem;
   ZincirBasinaSektor: TSayi1;
   i: TSayi4;
-  YeniKumeNo, SektorNo,
-  Sonuc: TISayi4;
+  SektorNo: TISayi4;
 begin
 
   // 0 = bir sonraki girdi mevcut, 1 = tüm girdiler okundu
@@ -1064,19 +1069,19 @@ begin
       DI^.SektorIciKonum := 0;
 
       Inc(DI^.ZincirNo);
-      if(DI^.ZincirNo = ZincirBasinaSektor) then
+      if(DI^.ZincirNo >= ZincirBasinaSektor) then
       begin
 
         DI^.ZincirNo := 0;
 
         i := DI^.SektorKumeNo;
-        if not(SHTBirSonrakiKumeyiAl(@DI^.MD, i {DI^.KumeNo})) then
+        if not(SHTBirSonrakiKumeyiAl(@DI^.MD, i)) then
         begin
 
           SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DizinGirdisiOku: Bir sonraki kümeyi ayýrma hatasý', []);
           DI^.Gorev^.DosyaSonIslemDurum := HATA_AYGITAYAZMA;
           Exit(1);
-        end;
+        {end;
 
         //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'SHTBirSonrakiKume: %x', [i]);
 
@@ -1103,10 +1108,8 @@ begin
           end;
 
           DI^.SektorKumeNo := YeniKumeNo;
-
+            }
         end else DI^.SektorKumeNo := i;
-
-        //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Küme->Sektör No: %x', [DI^.KumeNo]);
 
       end;
     end; // else Inc(DG);
@@ -1147,7 +1150,7 @@ begin
 
       // bir sonraki giriþle devam et
     end
-    else
+    else if(DG^.GirdiTipi = ELR_GT_KLASOR) or (DG^.GirdiTipi = ELR_GT_DOSYA) then
     begin
 
       ADosyaArama.DosyaAdi := ELRDosyaAdiniAl(DG);
@@ -1166,9 +1169,41 @@ begin
 
       Result := 0;
       TumGirislerOkundu := True;
+    end
+    else
+    begin
+
+      Result := 1;
+      TumGirislerOkundu := True;
     end;
 
   until TumGirislerOkundu;
+end;
+
+{==============================================================================
+  dizin giriþinden ilgili bilgileri alýr
+ ==============================================================================}
+function DizinGirisindeAraELR1(ADosyaKimlik: TKimlik; AAranacakDeger: string): TSayi4;
+var
+  DA: TDosyaArama;
+  Sonuc: TSayi4;
+begin
+
+  DA.Kimlik := ADosyaKimlik;
+  //SISTEM_MESAJ(mtHata, RENK_MAVI, 'DizinGirisindeAra12: %s', [AAranacakDeger]);
+
+  // aramaya baþla
+  repeat
+
+    Sonuc := DizinGirdisiListeleELR1('', DA);
+    if(Sonuc = 0) then
+    begin
+
+      // dosya uzunluðu ve cluster baþlangýcýný geri dönüþ deðerine ekle
+      if(DA.DosyaAdi = AAranacakDeger) then Exit(DA.BaslangicKumeNo);
+    end else Exit(0);
+
+  until True = False;
 end;
 
 function ELRDosyaAdiniAl(ADizinGirdisi: PDizinGirdisiELR): string;
@@ -1688,10 +1723,11 @@ begin
   Durum := dosya.RemoveDir('disk2:\progrmlr');
   Durum := dosya.RemoveDir('disk2:\resimler');
   Durum := dosya.RemoveDir('disk2:\belgeler');
-  Durum := dosya.RemoveDir('disk2:\gecici');
   Durum := dosya.RemoveDir('disk2:\kisiler');
   Durum := dosya.RemoveDir('disk2:\suruculr');
   Durum := dosya.RemoveDir('disk2:\kodlar');
+  Durum := dosya.RemoveDir('disk2:\kayitlar');
+  Durum := dosya.RemoveDir('disk2:\gecici');
 end;
 
 end.

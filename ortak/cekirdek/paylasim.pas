@@ -447,7 +447,8 @@ type
     IlkSektor: TSayi4;
     ToplamSektor,
     ToplamKokSektor,          // fat12 / fat16 için kök dizine tahsis edilen sektör sayýsý
-    IlkMumeNo: TSayi4;        // þu aþamada SADECE fat32'ye eklendi. gerekliliði araþtýrýlacak
+    IlkKumeNo: TSayi4;        // þu aþamada SADECE fat32'ye eklendi. gerekliliði araþtýrýlacak
+    GirdiUzunlugu: TSayi4;    // her bir klasör / dosyanýn sektördeki girdi uzunluðu
   end;
 
 const
@@ -671,6 +672,8 @@ const
   FO_TIKLAMA              = FO_ILKDEGER + 124;
   //FO_CIFTTIKLAMA        = FO_ILKDEGER + 126;
   FO_KAYDIRMA             = FO_ILKDEGER + 128;
+
+  RENK_YOK                    = TRenk($1FFFFFFF);
 
   RENK_BEYAZ		              = TRenk($FFFFFF);
   RENK_GUMUS		              = TRenk($C0C0C0);

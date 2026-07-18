@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 17/07/2026
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -79,7 +79,8 @@ type
     procedure SayiYaz16(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; AOnEkYaz:
       LongBool; AHaneSayisi, ADeger: TISayi4; ARenk: TRenk);
     procedure SaatYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; ASaat: TSaat; ARenk: TRenk);
-    procedure HarfYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; AKarakter: Char; ARenk: TRenk);
+    procedure HarfYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
+      AKarakter: Char; AZeminRengi, AYaziRengi: TRenk);
     procedure SayiYaz10(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
       ASayi: TISayi4; ARenk: TRenk);
     procedure MACAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
@@ -1083,12 +1084,13 @@ end;
   grafiksel ekrana karakter yazar
  ==============================================================================}
 procedure TGorselNesne.HarfYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
-  AKarakter: Char; ARenk: TRenk);
+  AKarakter: Char; AZeminRengi, AYaziRengi: TRenk);
 var
   Karakter: TKarakter;
-  Genislik, Yukseklik: TISayi4;
   KarakterAdres: PByte;
-  i, j: TISayi4;
+  X, Y,
+  XB, YB,
+  XS, YS: TISayi4;
 begin
 
   // karakterler 0..255 aralýðýndadýr.
@@ -1097,28 +1099,48 @@ begin
   // eðer karakter boþluk veya çizim gerektirmeyen karakter ise çýk
   if(Karakter.Yukseklik = 0) or (Karakter.Genislik = 0) then Exit;
 
-  // karakterin ASol deðerine yatay tolerans koordinatýný ekle
-  ASol := ASol + Karakter.YT;
+  // (varsa) zemini belirtilen renk ile boya
+  { TODO - aktifleþtirildiðinde kilitlenmeler oluyor }
+{  if(AZeminRengi <> RENK_YOK) then
+  begin
 
-  // karakterin AUst deðerine dikey tolerans koordinatýný ekle
-  AUst := AUst + Karakter.DT;
+    XB := ASol;
+    XS := XB + 8;
+    YB := AUst;
+    YS := YB + 16;
 
-  // karakterin geniþlik ve yükseklik deðerlerini hesapla
-  Genislik := ASol + Karakter.Genislik;
-  Yukseklik := AUst + Karakter.Yukseklik;
+    for Y := YB to YS - 1 do
+    begin
+
+		  for X := XB to XS - 1 do
+      begin
+
+        // ilgili pixeli belirtilen renkle iþaretle (boya)
+			  EkranKartSurucusu0.NoktaYaz(AGorselNesne, X, Y, AZeminRengi, True);
+      end;
+    end;
+  end; }
+
+  // karakterin yatay baþlangýç / bitiþ koordinatlarýný hesapla
+  XB := ASol + Karakter.YT;
+  XS := XB + Karakter.Genislik;
+
+  // karakterin dikey baþlangýç / bitiþ koordinatlarýný hesapla
+  YB := AUst + Karakter.DT;
+  YS := YB + Karakter.Yukseklik;
 
   // karakterin pixel haritasýnýn bellek adresine konumlan
   KarakterAdres := Karakter.Adres;
 
-  for j := AUst to Yukseklik - 1 do
+  for Y := YB to YS - 1 do
   begin
 
-		for i := ASol to Genislik - 1 do
+		for X := XB to XS - 1 do
     begin
 
       // ilgili pixeli belirtilen renkle iþaretle (boya)
-			if(KarakterAdres^ = 1) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, i, j,
-        ARenk, True);
+			if(KarakterAdres^ = 1) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, X, Y,
+        AYaziRengi, True);
 
       // bir sonraki pixele konumlan
       Inc(KarakterAdres)
@@ -1157,7 +1179,7 @@ begin
   begin
 
     // karakteri yaz
-    HarfYaz(AGorselNesne, Ust, AUst, AYazi[Sol], ARenk);
+    HarfYaz(AGorselNesne, Ust, AUst, AYazi[Sol], RENK_YOK, ARenk);
 
     // karakter geniþliðini geniþlik deðerine ekle
     Ust := Ust + 8;
@@ -1195,7 +1217,7 @@ begin
   begin
 
     // karakteri yaz
-    HarfYaz(AGorselNesne, Sol, Ust, AYazi[i], ARenk);
+    HarfYaz(AGorselNesne, Sol, Ust, AYazi[i], RENK_YOK, ARenk);
 
     // karakter geniþliðini geniþlik deðerine ekle
     Sol := Sol + 8;
@@ -1236,7 +1258,7 @@ begin
     if((Sol + 8) >= AAlan.Sag) then Break;
 
     // karakteri yaz
-    HarfYaz(AGorselNesne, Sol, Ust, AKarakterDizi[i], ARenk);
+    HarfYaz(AGorselNesne, Sol, Ust, AKarakterDizi[i], RENK_YOK, ARenk);
 
     // karakter geniþliðini x deðerine ekle
     Sol := Sol + 8;

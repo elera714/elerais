@@ -331,6 +331,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
+            SistemKlasorleriniOlustur;
             //vbox.Listele;
             //KomsuIstegiGonder(PingHedefIP6Adres);
 
@@ -416,6 +417,7 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
+            SistemKlasorleriniSil;
             //IstekMesajiGonder6;
 
             {PingMesajiGonder(ICMP6_PING_ISTEK, PingHedefIP6Adres, PingHedefMACAdres,
