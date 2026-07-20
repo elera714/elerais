@@ -702,39 +702,11 @@ end;
 
 function DizinGirisindeAra12(ADosyaKimlik: TKimlik; AAranacakDeger: string): TSayi4;
 var
-  DI: PDosyaIslem;
-  MD: PMDNesne;
-  DizinGirdisi: PDizinGirdisi;
-  UzunDosyaAdiBulundu: Boolean;
-  DosyaAdi: string;
-  ZincirBasinaSektor: TSayi1;
-  i: TSayi4;
-  Sonuc: TSayi4;
   DA: TDosyaArama;
+  Sonuc: TSayi4;
 begin
 
   DA.Kimlik := ADosyaKimlik;
-  //SISTEM_MESAJ(mtHata, RENK_MAVI, 'DizinGirisindeAra12: %s', [AAranacakDeger]);
-
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-{  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then
-  begin
-
-    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
-    Exit;
-  end;
-
-  //SISTEM_MESAJ(mtHata, RENK_MAVI, 'ZincirNo: %d', [ADosyaIslem^.ZincirNo]);
-
-  UzunDosyaAdiBulundu := False;
-
-  // aramanýn yapýlacaðý sürücü
-  MD := @DI^.MD;
-
-  ZincirBasinaSektor := 14; //MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
-}
-  // burada ilk deðer atamalarý olacak
 
   // aramaya baþla
   repeat

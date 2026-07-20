@@ -87,7 +87,7 @@ begin
   // fare kursor pozisyonu
   FYatayKonum := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk div 2;
   FDikeyKonum := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk div 2;
-  FHiz := 1.8;
+  FHiz := 1.5;
   FFareDugmeleri := 0;
   FKaydirmaDegeri := 0;
 

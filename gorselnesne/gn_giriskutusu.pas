@@ -6,7 +6,7 @@
   Dosya Adı: gn_giriskutusu.pas
   Dosya İşlevi: giriş kutusu (TEdit) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 20/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -53,6 +53,8 @@ var
   p1: PKarakterKatari;
   p2: PLongBool;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
     ISLEV_OLUSTUR:
@@ -127,8 +129,6 @@ begin
         GirisKutusu^.Odaklanildi := True;
       end;
     end;
-
-    else Result := HATA_ISLEV;
   end;
 end;
 

@@ -6,7 +6,7 @@
   Dosya Adı: gn_defter.pas
   Dosya İşlevi: defter nesnesi (TMemo) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 20/07/2026
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     40K ve çekirdek bölümüne eklenen 40K bellek kullanmaktadır.
@@ -47,6 +47,8 @@ type
     property DikeyKarSay: TSayi4 read FDeger3 write FDeger3;
     // yazılacak metni görünür ortamda görüntülenecek (sınır içine alacak) şekilde sarmala
     property FMetinSarmala: Boolean read FDurum1 write FDurum1;
+    property ImlecX: TISayi4 read FIDeger1 write FIDeger1;
+    property ImlecY: TISayi4 read FIDeger2 write FIDeger2;
   end;
 
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
@@ -56,7 +58,7 @@ function DefterCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 implementation
 
 uses gn_pencere, gn_islevler, genel, temelgorselnesne, islevler, sistemmesaj,
-  gorev, donusum;
+  gorev, donusum, src_klavye;
 
 {==============================================================================
   defter kesme çağrılarını yönetir
@@ -68,6 +70,8 @@ var
   Defter: PDefter;
   Hiza: THiza;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
@@ -152,8 +156,6 @@ begin
         Defter^.Ciz;
       end;
     end;
-
-    else Result := HATA_ISLEV;
   end;
 end;
 
@@ -223,6 +225,9 @@ begin
 
   Defter^.FMetinSarmala := AMetinSarmala;
   Defter^.FYaziRenk := AYaziRenk;
+
+  Defter^.ImlecX := 0;
+  Defter^.ImlecY := 0;
 
   // kimlik adresini geri döndür
   Result := Defter;
@@ -359,6 +364,15 @@ begin
     // defter içerik bellek bölgesine konumlan
     YaziBellekAdresi := PChar(Defter^.FYaziBellekAdresi);
 
+    // imleç konumlandırma
+    if(Defter^.ImlecX >= SinirSutunIlk) and (Defter^.ImlecX <= SinirSutunSon) and
+      (Defter^.ImlecY >= SinirSatirIlk) and (Defter^.ImlecY <= SinirSatirSon) then
+    begin
+
+      HarfYaz(Defter, 3 + (Defter^.ImlecX * 8), 3 + (Defter^.ImlecY * 16),
+        #255, RENK_ACIKYESIL, RENK_ACIKYESIL);
+    end;
+
     // bellek içeriği sıfır oluncaya kadar devam et
     while (YaziBellekAdresi^ <> #0) do
     begin
@@ -390,7 +404,7 @@ begin
           pxUst := AktifSatirNo * 20;
           pxUst := pxUst + CizimAlani.Ust + 4;
 
-          HarfYaz(Defter, pxSol, pxUst, Char(Deger), RENK_ACIKYESIL, Defter^.FYaziRenk);
+          HarfYaz(Defter, pxSol, pxUst, Char(Deger), RENK_YOK, Defter^.FYaziRenk);
         end;
 
         Inc(AktifSutunNo);
@@ -575,6 +589,13 @@ begin
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := Defter;
     Defter^.Odaklanildi := True;
+
+    Defter^.ImlecX := (AOlay.Deger1 div 8) + Defter^.FYatayKCubugu^.MevcutDeger;
+    Defter^.ImlecY := (AOlay.Deger2 div 16) + Defter^.FDikeyKCubugu^.MevcutDeger;
+
+    Defter^.Ciz;
+    //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'X: %d', [Defter^.ImlecX]);
+    //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Y: %d', [Defter^.ImlecY]);
   end
   else if(AOlay.Olay = FO_KAYDIRMA) then
   begin
@@ -599,6 +620,55 @@ begin
     end;
 
     Defter^.Ciz;
+  end
+  // klavye tuş basımı
+  else if(AOlay.Olay = CO_TUSBASILDI) then
+  begin
+
+    //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'AOlay.Deger1: %d', [AOlay.Deger1]);
+    //Tus := (AOlay.Deger1 and $FF);
+
+    { TODO - test edilecek }
+    if(AOlay.Deger1 = TUS_SAG) then
+    begin
+
+      i := Defter^.ImlecX;
+      Inc(i);
+      Defter^.ImlecX := i;
+    end
+    else if(AOlay.Deger1 = TUS_SOL) then
+    begin
+
+      i := Defter^.ImlecX;
+      Dec(i);
+      if(i < 0) then i := 0;
+      Defter^.ImlecX := i;
+    end
+    else if(AOlay.Deger1 = TUS_ASAGI) then
+    begin
+
+      i := Defter^.ImlecY;
+      Inc(i);
+      Defter^.ImlecY := i;
+    end
+    else if(AOlay.Deger1 = TUS_YUKARI) then
+    begin
+
+      i := Defter^.ImlecY;
+      Dec(i);
+      if(i < 0) then i := 0;
+      Defter^.ImlecY := i;
+    end
+    else if(AOlay.Deger1 = TUS_GIT_BASA) then
+    begin
+
+      Defter^.ImlecX := 0;
+    end
+    else if(AOlay.Deger1 = TUS_GIT_SONA) then
+    begin
+
+      Defter^.ImlecX := FCizimAlani.Sag div 8;
+    end;
   end;
 
   // geçerli fare göstergesini güncelle

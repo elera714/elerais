@@ -6,7 +6,7 @@
   Dosya Adý: src_klavye.pas
   Dosya Ýþlevi: standart klavye sürücüsü
 
-  Güncelleme Tarihi: 12/05/2025
+  Güncelleme Tarihi: 20/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -31,6 +31,10 @@ const
   TUS_GIT_SONA      = TSayi2($0A00);
   TUS_SAYFA_YUKARI  = TSayi2($0B00);
   TUS_SAYFA_ASAGI   = TSayi2($0C00);
+  TUS_SAG           = TSayi2($0D00);
+  TUS_SOL           = TSayi2($0E00);
+  TUS_YUKARI        = TSayi2($0F00);
+  TUS_ASAGI         = TSayi2($1000);
 
   TUS_KUBU          = TSayi2($0D00);          // karakter küçültme / büyütme tuþu (caps lock)
   TUS_HESAP         = TSayi2($0E00);          // hesap makinesi açma / kapama tuþu (num lock)
@@ -201,6 +205,8 @@ var
   TusDurumu: TTusDurum;
 begin
 
+  Result := tdYok;
+
   // eðer klavyeden veri gelmemiþse çýk
   if(ToplamVeriUzunlugu = 0) then
   begin
@@ -235,7 +241,8 @@ begin
       TusDurumu := tdBirakildi
     else TusDurumu := tdBasildi;
 
-    //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Alýnan Klavye Deðeri: %x', [HamTus]);
+    //SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'HamTuþ Deðeri: %x', [HamTus]);
+    //SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'OlayTus Deðeri: %x', [OlayTus]);
 
     // geniþletilmiþ tuþ kontrolleri
     if(GenTusBasildi) then
@@ -250,8 +257,12 @@ begin
         $52: begin ATusDegeri := TUS_SIKISTIR; Exit(TusDurumu); end;
         $53: begin ATusDegeri := TUS_SIL; Exit(TusDurumu); end;
         $47: begin ATusDegeri := TUS_GIT_BASA; Exit(TusDurumu); end;
+        $48: begin ATusDegeri := TUS_YUKARI; Exit(TusDurumu); end;
+        $4B: begin ATusDegeri := TUS_SOL; Exit(TusDurumu); end;
+        $4D: begin ATusDegeri := TUS_SAG; Exit(TusDurumu); end;
         $4F: begin ATusDegeri := TUS_GIT_SONA; Exit(TusDurumu); end;
         $49: begin ATusDegeri := TUS_SAYFA_YUKARI; Exit(TusDurumu); end;
+        $50: begin ATusDegeri := TUS_ASAGI; Exit(TusDurumu); end;
         $51: begin ATusDegeri := TUS_SAYFA_ASAGI; Exit(TusDurumu); end;
       end;
     end

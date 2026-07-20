@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 19/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -191,6 +191,7 @@ var
   s: string;
   i, j: TISayi4;
   d1, d2: Double;
+  DegerGosterim: TSayi4;
 begin
 
   IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
@@ -213,12 +214,30 @@ begin
   CizimAlani2.Sag := CizimAlani2.Sol + Round(d2);
   IG^.EgimliDoldur(IG, CizimAlani2, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK);
 
+  // 1 = mevcut değer
+  // 2 = kalan değer
+  // 3 = toplam değer / mevcut değer
+  // 4 = toplam değer / kalan değer
+  // 5 = mevcut yüzdelik değer
+  // 6 = kalan yüzdelik değer
+  DegerGosterim := 3;
+
+  s := '';
+
   // gösterge nesnesinin yüksekliğinin 14px ve üzerinde olması durumunda gösterge değerini yaz
   if(CizimAlani.Alt >= 14) then
   begin
 
     CizimAlani2 := CizimAlani;
-    s := IntToStr(IG^.FMevcutDeger);
+    case DegerGosterim of
+      1: s := IntToStr(IG^.FMevcutDeger);
+      2: s := IntToStr(IG^.FUstDeger - IG^.FMevcutDeger);
+      3: s := IntToStr(IG^.FUstDeger) + '/' + IntToStr(IG^.FMevcutDeger);
+      4: s := IntToStr(IG^.FUstDeger) + '/' + IntToStr(IG^.FUstDeger - IG^.FMevcutDeger);
+      5: s := '%' + IntToStr((IG^.FMevcutDeger * 100) div IG^.FUstDeger);
+      6: s := '%' + IntToStr(((IG^.FUstDeger - IG^.FMevcutDeger) * 100) div IG^.FUstDeger);
+    end;
+
     i := (CizimAlani2.Sag - (Length(s) * 8)) div 2;
     j := ((CizimAlani2.Alt - 16) div 2) + 1;
     IG^.YaziYaz(IG, CizimAlani2.Sol + i, CizimAlani2.Ust + j, s, RENK_LACIVERT);

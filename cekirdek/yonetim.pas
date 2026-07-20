@@ -574,7 +574,7 @@ begin
 
           { TODO - burada kontrol tuþlarý ve karakter tuþlarý ayrý ayrý deðerlendirilerek
             farklý olaylar olarak uygulamalara gönderilecek }
-          if((TusDegeri and $FF00) = 0) then
+          //if((TusDegeri and $FF00) = 0) then
             GOlayYonetim.KlavyeOlaylariniIsle(TusDegeri, TusDurum);
         end;
       end

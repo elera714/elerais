@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 17/07/2026
+  Güncelleme Tarihi: 18/07/2026
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -1101,7 +1101,7 @@ begin
 
   // (varsa) zemini belirtilen renk ile boya
   { TODO - aktifleþtirildiðinde kilitlenmeler oluyor }
-{  if(AZeminRengi <> RENK_YOK) then
+  if(AZeminRengi <> RENK_YOK) then
   begin
 
     XB := ASol;
@@ -1119,7 +1119,7 @@ begin
 			  EkranKartSurucusu0.NoktaYaz(AGorselNesne, X, Y, AZeminRengi, True);
       end;
     end;
-  end; }
+  end;
 
   // karakterin yatay baþlangýç / bitiþ koordinatlarýný hesapla
   XB := ASol + Karakter.YT;
