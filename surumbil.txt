@@ -22,8 +22,10 @@
   + defter uygulamasına utf-8 kod desteği eklendi (gn_*.pas dosyaları, surumbil.txt ve
     aynı klasördeki .txt dosyaları utf-8 olarak yeniden kaydedildi)
   + fare sürücüsü tekerlek değerine TusDurumSolDegisim değişkenine bağlı olarak x10 kat artırma işlevi eklendi
-
   + yazı arka plan renklendirme işlevi eklendi
+  + GirisKutusu nesnesine imleç yönetimi eklendi
+  + bilden uygulaması hata düzeltmeleri ile güncellendi
+  + defter uygulamasına utf-8 karakter kodlama desteği eklendi
 
 *******************************************************************************
   Sürüm: 0.4.0 (sunucu / istemci) - 27.05.2026 (R36) - Beta

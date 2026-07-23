@@ -4,13 +4,13 @@
 ;       Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 ;
 ;       Program Adý: bilden.asm
-;       Güncelleme Tarihi: 03/08/2017
+;       Güncelleme Tarihi: 23/07/2026
 ;
-;       Program Aþaðýdaki Ýþlevleri Gerçekleþtirir
+;       program aþaðýdaki iþlevleri gerçekleþtirir
 ;       -----------------------------------------------------------------
-;       1. Gerçek modda grafiksel ekrana geçer
-;       2. Çekirdek yazýlýmýný KERNEL_LOAD_ADDR adresine yükler
-;       3. Korumalý mod için 3 adet selektör oluþturur, yüklemesini yapar
+;       1. gerçek modda grafiksel ekrana geçer
+;       2. çekirdek yazýlýmýný CEKIRDEK_YUKLEME_ADRES adresine yükler
+;       3. korumalý mod için 3 adet selektör oluþturur, yüklemesini yapar
 ;          ve korumalý moda geçiþ yaparak kontrolü çekirdek yazýlýmýna devreder
 ;
 ;************************************************************************
@@ -19,54 +19,62 @@
 
         ;BELLEK BÝLGÝLERÝ
         ;----------------------------------------------------------------
-        ;0x10000..0x11000 - program bellek çalýþma alaný
-        ;0x11000..0x13000 - geçici sektörlerin okunduðu bellek bölgesi
-        ;KERNEL_LOAD_ADDR...       - çekirdeðin yükleneceði bellek adresi
+        ;0x10000..0x11000 - (bu) programýn bellek çalýþma alaný
+        ;0x13000..0x15000 - geçici sektörlerin okunduðu bellek bölgesi
+        ;0x15000...       - geçici bellek olarak kullanýlan alan
+        ;0x100000...      - çekirdeðin yükleneceði bellek adresi
 
-        ;gdt deðerlerinin yerleþtirileceði adres
-        ;çekirdek yazýlýmý bu deðeri kullandýðý için deðiþtirilmesi
-        ;durumunda çekirdek yazýlýmýndaki deðerin de deðiþtirilmesi gerekir
-        ;----------------------------------------------------------------
-        GDT_MEM_ADDR            equ     0x80000
-        KERNEL_TEMP_ADDR        equ     0x13000
-        KERNEL_LOAD_ADDR        equ     0x100000
+        SEKTOR_YUKLEME_ADRES    equ     0x1300
+        CEKIRDEK_GECICI_ADRES   equ     0x1500
+        GDT_BELLEK_ADRESI       equ     0x8000
+        CEKIRDEK_YUKLEME_ADRES  equ     0x10000
 
-        VModeIndex              equ     0               ; video mod index deðeri
+        GrafikModSN             equ     1               ; grafik mod sýra no deðeri
 
         ;gerçek mod kod baþlangýç alanýna dallan
         ;----------------------------------------------------------------
-        jmp     start
+        jmp     basla
 
 align 8
 
         ;yerel deðiþkenler
         ;----------------------------------------------------------------
         ; veriler bellekte 0x10000+8 adresinde
-        parameters:
-        video_mem_size          dw      0
-        video_mode              dw      0
-        video_res_x             dw      0
-        video_res_y             dw      0
-        video_lfb_addr          dd      0
-        video_bpp               db      0
-        video_bpsl              dw      0
-        kernel_start_addr       dd      KERNEL_LOAD_ADDR
-        kernel_size             dd      0
+        DEGERLER:
+        grafik_bellek_uzunlugu  dw      0
+        grafik_ekran_mod        dw      0
+        grafik_cozunurluk_x     dw      0
+        grafik_cozunurluk_y     dw      0
+        grafik_bellek_adresi    dd      0
+        grafik_px_basina_bit    db      0
+        grafik_satir_byte_uz    dw      0
+        cekirdek_bas_adresi     dd      CEKIRDEK_YUKLEME_ADRES shl 4
+        cekirdek_uzunluk        dd      0
 
-        bilden_ver              db      13,10,"BILDEN Surum: 0.0.1",0
-        file_kernel             db      "CEKIRDEKBIN"
-        comp_review             db      13,10,"Bilgisayariniz inceleniyor...",0
-        str_video_starting      db      13,10,"Grafik ekrana gecis yapiliyor...",0
-        str_video_error         db      13,10,13,10,"Desteklenmeyen Grafik Karti!",0
-        str_video_mode_error    db      13,10,13,10,"Desteklenmeyen Grafik Modu!",0
-        str_reboot_msg          db      13,10,13,10,"Yeniden baslatmak icin bir tusa basiniz.",0
-        file_not_found          db      13,10,"HATA: dosya bulunamadi.",0
-        sec_read_error          db      13,10,"HATA: sektor okuma hatasi.",0
+        bilden_surum            db      13,10,"BILDEN Surum: 0.0.2",0
+        cekirdek_dosya_adi      db      "CEKIRDEKBIN"
+        s_bil_inceleniyor       db      13,10,"Bilgisayariniz inceleniyor...",0
+        s_grafik_mod_geciliyor  db      13,10,"Grafik ekrana gecis yapiliyor...",0
+        s_grafik_kart_hatasi    db      13,10,13,10,"Desteklenmeyen Grafik Karti!",0
+        s_grafik_mod_hatasi     db      13,10,13,10,"Desteklenmeyen Grafik Modu!",0
+        s_yeniden_baslatiliyor  db      13,10,13,10,"Yeniden baslatmak icin bir tusa basiniz...",0
+        s_dosya_yok             db      13,10,"HATA: dosya bulunamadi!",0
+        s_sektor_okuma_hatasi   db      13,10,"HATA: sektor okuma hatasi!",0
 
-video_modes:
+;************************************************************************
+;       katarlar(strings) - deðiþkenler(vars)                           *
+;************************************************************************
+lba_silindir    db      0
+lba_kafa        db      0
+lba_sektor      db      0
+sektor_sayisi   db      0
+tekrar_sayisi   db      0
+kume_no         dw      0
+
+grafik_modlari:
         ;       mod    gen. yük. rezerv
         ;----------------------------------------------------------------
-        ;dd      0x11B, 1280, 1024, 0     ;1280x1024 - 24/32 bit
+        dd      0x11B, 1280, 1024, 0     ;1280x1024 - 24/32 bit
         dd      0x118, 1024, 768, 0      ;1024x768 - 24/32 bit
         dd      0x115, 800, 600, 0       ;800x600 - 24/32 bit
         dd      0x114, 800, 600, 0       ;800x600 - 16 bit
@@ -76,60 +84,55 @@ video_modes:
 ;ek dosyalar
 ;------------------------------------------------------------------------
 include "a20.inc"               ;a20 iþlevlerini içerir.
-include "write.inc"             ;text yazým iþlevlerini içerir.
-include "video.inc"             ;video iþlevlerini içerir.
+include "yazi.inc"              ;yazý (text) mod yazým iþlevlerini içerir.
+include "grafik.inc"            ;grafik iþlevlerini içerir.
 
 ;************************************************************************
 ;       GERÇEK MOD (REAL-MODE) KOD ALANI                                *
 ;************************************************************************
 align 4
-start:
+basla:
 
         ;program boot yazýlýmý tarafýndan 0x10000 adresine yüklenmektedir
         ;----------------------------------------------------------------
 
         ;cs = ds = es = 0x10000
         ;----------------------------------------------------------------
-        mov     ax,cs
+        mov     ax,0x1000
         mov     ds,ax
         mov     es,ax
         mov     ss,ax
-        mov     sp,0x1000       ;ss:sp = 0x11000
+        mov     sp,0x1000       ;ss:sp = 0x1000:0x1000 = 0x11000
 
         ;bilgisayar denetim programýnýn bilgilerini ekrana yaz
         ;----------------------------------------------------------------
-        call    print_crlf
-        mov     si,bilden_ver
-        call    print_text
+        call    satirbasi_yap
+        mov     si,bilden_surum
+        call    yazi_yaz
 
         ;bilgisayar denetleme mesajýný ekrana yaz
         ;----------------------------------------------------------------
-        call    print_crlf
-        mov     si,comp_review
-        call    print_text
+        call    satirbasi_yap
+        mov     si,s_bil_inceleniyor
+        call    yazi_yaz
 
-kernel_g:
-
-
-        ;video kart genel bilgilerini al
+        ;grafik kart genel bilgilerini al
         ;----------------------------------------------------------------
-        call    get_video_info
-        jnc     start_video_mode
+        call    kart_bilgisi_al
+        jnc     grafik_kart_gecis
 
-        ;video hata mesaj adresi
+        mov     si,s_grafik_kart_hatasi
+
+grafik_kart_hatasi:
+
+        ;grafik kart hata mesajýný görüntüle
         ;----------------------------------------------------------------
-        mov     si,str_video_error
-
-video_error:
-
-        ;video hata mesajýný ekrana yaz
-        ;----------------------------------------------------------------
-        call    print_text
+        call    yazi_yaz
 
         ;sistemi yeniden baþlatma mesajýný ekrana yaz
         ;----------------------------------------------------------------
-        mov     si,str_reboot_msg
-        call    print_text
+        mov     si,s_yeniden_baslatiliyor
+        call    yazi_yaz
 
         ;kullanýcýdan bir tuþa basmasýný bekle ve sistemi yeniden baþlat
         ;----------------------------------------------------------------
@@ -138,88 +141,82 @@ video_error:
         int     0x19
         jmp     $
 
-start_video_mode:
+grafik_kart_gecis:
 
-        ;video moda geçiþ mesajýný ver
+        ;grafik moda geçiþ mesajýný ver
         ;----------------------------------------------------------------
-        mov     si,str_video_starting
-        call    print_text
+        mov     si,s_grafik_mod_geciliyor
+        call    yazi_yaz
 
-        ;otomatik olarak video moda geçme rutini
+        ;otomatik olarak grafik moda geçme rutini
         ;----------------------------------------------------------------
-        mov     ax,VModeIndex   ; ilk video modu
+        mov     ax,GrafikModSN          ;ilk video modu
 
-check_mode:
+grafik_mod_kontrol:
 
         push    ax              ; mod bilgisini sakla
         mov     si,ax
         shl     si,4
-        add     si,video_modes
+        add     si,grafik_modlari
 
-        ;video modu
+        ;grafik modu
         ;----------------------------------------------------------------
         mov     eax,[ds:si+0]
-        mov     [ds:video_mode],ax
+        mov     [grafik_ekran_mod],ax
 
-        ;video x & y çözünürlüðü
+        ;grafik x & y çözünürlüðü
         ;----------------------------------------------------------------
         mov     eax,[ds:si+4]
-        mov     [video_res_x],ax
+        mov     [grafik_cozunurluk_x],ax
         mov     eax,[ds:si+8]
-        mov     [video_res_y],ax
+        mov     [grafik_cozunurluk_y],ax
 
-        ;video kart mod bilgilerini al
+        ;grafik kart mod bilgilerini al
         ;----------------------------------------------------------------
-        call    get_video_mode
-        jnc     set_mode
+        call    mod_bilgisi_al
+        jnc     grafik_mod_tamam
 
-        ;eðer moda geçiþ hatasý varsa bir sonraki modu dene
-        ;taki en son mod (3) test edilene kadar
+        ;eðer grafik kart moduna geçiþ hatasý varsa bir sonraki modu dene
+        ;ta ki en son mod (3) test edilene kadar
         ;----------------------------------------------------------------
         pop     ax
         inc     ax
         cmp     ax,4
-        jb      check_mode
+        jb      grafik_mod_kontrol
 
-        ;video hata mesaj adresi
+        ;grafik kart mod hata mesajý
         ;----------------------------------------------------------------
-        mov     si,str_video_mode_error
-        jmp     video_error
+        mov     si,s_grafik_mod_hatasi
+        jmp     grafik_kart_hatasi
 
-set_mode:
+grafik_mod_tamam:
 
-        pop     ax              ; mod bilgisi
+        pop     ax              ; grafik kart mod bilgisi
 
         ;grafiksel ekrana geç
         ;----------------------------------------------------------------
-        call    set_video_mode
-        jc      video_error
-
-kernel_selection_ok:
+        call    mod_bilgisi_yaz
+        jc      grafik_kart_hatasi
 
         ;adres yolunun 20. bitini aktifleþtirir
         ;----------------------------------------------------------------
-        call    enable_a20
+        call    a20_aktiflestir
 
-        ;es:bx (0x7c00+0x400=0x8000) dizin/dosya giriþlerini yükle
         ;dizin/dosya giriþleri 20. sektörden baþlar. toplam 14 sektör
         ;----------------------------------------------------------------
-        push    es              ; --> es sakla1
-        push    0x1100
+        push    word SEKTOR_YUKLEME_ADRES
         pop     es
         xor     bx,bx
-        mov     [lba_c],0
-        mov     [lba_h],1
-        mov     [lba_s],2
-        mov     [num_sec2read],14
-        call    read_sector
-        jc      show_read_error
+        mov     [lba_silindir],0
+        mov     [lba_kafa],1
+        mov     [lba_sektor],2
+        mov     [sektor_sayisi],14
+        call    sektor_oku
+        jc      sektor_okuma_hatasi
 
         ;çekirdek dosyasý mevcut mu ? ara.
         ;----------------------------------------------------------------
-        mov     si,file_kernel
-
-kernel_file_ok:
+        mov     si,cekirdek_dosya_adi
         xor     di,di
         cld
 @@:
@@ -227,68 +224,66 @@ kernel_file_ok:
         mov     cx,11
         rep     cmpsb
         pop     di si
-        je      load_fat
+        je      fat_yukle
         add     di,32
-        cmp     di,(14*512)
+        cmp     di,(14 * 512)
         jb      @b
 
-        ;bilden.bin dosyasý mevcut deðilse,
+        ;cekirdek.bin dosyasý mevcut deðilse,
         ;hata mesajý ver ve sistemi kilitle.
         ;----------------------------------------------------------------
-        mov     si,file_not_found
-        call    print_text
+        mov     si,s_dosya_yok
+        call    yazi_yaz
         jmp     $
 
-show_read_error:
-        mov     si,sec_read_error
-        call    print_text
+sektor_okuma_hatasi:
+        mov     si,s_sektor_okuma_hatasi
+        call    yazi_yaz
         jmp     $
 
-load_fat:
+fat_yukle:
 
         ;dosya uzunluðu
         ;----------------------------------------------------------------
         mov     eax,[es:di+0x1c]
-        mov     [ds:kernel_size],eax
+        mov     [ds:cekirdek_uzunluk],eax
 
-        ;bilden.bin dosyasýnýn bulunduðu ilk cluster'ý sakla
+        ;cekirdek.bin dosyasýnýn bulunduðu ilk küme numarasý
         ;----------------------------------------------------------------
         mov     ax,[es:di+0x1a]
-        mov     [ds:cluster],ax
+        mov     [ds:kume_no],ax
 
         ;ilk FAT tablosunu geçici bellek alanýna yükle
         ;----------------------------------------------------------------
-        mov     bx,0x1100
-        mov     es,bx
+        push    word SEKTOR_YUKLEME_ADRES
+        pop     es
         xor     bx,bx
-        mov     [lba_c],0
-        mov     [lba_h],0
-        mov     [lba_s],2
-        mov     [num_sec2read],9
-        call    read_sector
-        jc      show_read_error
+        mov     [lba_silindir],0
+        mov     [lba_kafa],0
+        mov     [lba_sektor],2
+        mov     [sektor_sayisi],9
+        call    sektor_oku
+        jc      sektor_okuma_hatasi
 
-        pop     es              ; --> es getir1
-
-        ;çekirdek yazýlýmýnýn yükleneceði bellek alaný KERNEL_LOAD_ADDR
+        ;çekirdek yazýlýmýnýn geçici olarak yükleneceði bellek alaný
         ;----------------------------------------------------------------
-        mov     bx,(KERNEL_TEMP_ADDR shr 4)
+        mov     bx,CEKIRDEK_GECICI_ADRES
         mov     es,bx
         xor     bx,bx
 
-load_kernel:
+cekirdek_yukle:
 
-        ;floppy okuma göstergesi ..................
+        ;floppy sürücü sektör okuma göstergesi ..................
         ;----------------------------------------------------------------
         mov     al,'.'
-        call    print_char
+        call    karakter_yaz
 
-        ;cluster deðerini c,h,s formatýna çevir ve sektörü oku
+        ;küme deðerini c,h,s biçimine çevir ve sektörü oku
         ;----------------------------------------------------------------
         call    lba2chs
 
-        call    read_sector
-        jc      show_read_error
+        call    sektor_oku
+        jc      sektor_okuma_hatasi
 
         ;es:bx deðerini 512 byte artýr
         ;----------------------------------------------------------------
@@ -297,35 +292,34 @@ load_kernel:
         mov     es,bx
         xor     bx,bx
 
-        ;cluster deðerini 1.5 ile çarp ve bir sonraki cluster deðerini al
+        ;küme deðerini 1.5 ile çarp ve bir sonraki cluster deðerini al
         ;----------------------------------------------------------------
-        mov     si,[ds:cluster]
+        mov     si,[ds:kume_no]
         shr     si,1
         pushf
-        add     si,[ds:cluster]
-        add     si,0x1000
+        add     si,[ds:kume_no]
+        add     si,(SEKTOR_YUKLEME_ADRES shl 4) - (0x1000 shl 4)
         mov     ax,[ds:si]
         popf
-        jc      .odd_cluster
+        jc      .tek_deger
 
-.even_cluster:
-        and     ax,0xfff        ;alt 12 bit
-        jmp     .clus_calc_done
-.odd_cluster:
+.cift_deger:
+        and     ax,0x0FFF       ;alt 12 bit
+        jmp     .bir_sonraki_kume
+.tek_deger:
         shr     ax,4            ;üst 12 bit
 
-.clus_calc_done:
-        cmp     ax,0xff8
-        jae     exec_kernel
+.bir_sonraki_kume:
+        cmp     ax,0x0FF8
+        jae     cekirdek_calistir
 
-        mov     [ds:cluster],ax
-        jmp     load_kernel
-        jmp     exec_kernel
+        mov     [ds:kume_no],ax
+        jmp     cekirdek_yukle
 
 ;========================================================================
 ;
 ;iþlev  : lba2chs
-;taným  : mantýksal sektör deðerini c,h,s formatýna çevirir
+;taným  : mantýksal sektör deðerini c,h,s biçimine çevirir
 ;giriþ  : ax = maktýksal sektor
 ;çýkýþ  : yok
 ;
@@ -336,25 +330,25 @@ lba2chs:
         push    bx
         pushf
 
-        mov     ax,[ds:cluster]
+        mov     ax,[ds:kume_no]
         add     ax,31
         push    ax
         mov     bl,18*2
         div     bl
-        mov     [ds:lba_c],al
+        mov     [ds:lba_silindir],al
 
         mov     al,ah
         mov     ah,0
         mov     bl,18
         div     bl
-        mov     [ds:lba_h],al
+        mov     [ds:lba_kafa],al
 
         pop     ax
         mov     bl,18
         div     bl
         inc     ah
-        mov     [ds:lba_s],ah
-        mov     [ds:num_sec2read],1
+        mov     [ds:lba_sektor],ah
+        mov     [ds:sektor_sayisi],1
 
         popf
         pop     bx
@@ -362,65 +356,56 @@ lba2chs:
 
 ;========================================================================
 ;
-;iþlev  : read_sector
-;taným  : floppy sürücüsünden sektör içeriðini okur
+;iþlev  : sektor_oku
+;taným  : floppy sürücüsünden sektör okuma iþlemini gerçekleþtirir
 ;giriþ  : yok
 ;çýkýþ  : yok
 ;
 ;========================================================================
 align 4
-read_sector:
-        mov     [ds:read_retry],10
-.retry:
+sektor_oku:
+        mov     [ds:tekrar_sayisi],10
+.tekrar:
         mov     ah,2
-        mov     al,[ds:num_sec2read]
+        mov     al,[ds:sektor_sayisi]
         mov     dl,0 ;[boot_drv]
-        mov     ch,[ds:lba_c]
-        mov     dh,[ds:lba_h]
-        mov     cl,[ds:lba_s]
+        mov     ch,[ds:lba_silindir]
+        mov     dh,[ds:lba_kafa]
+        mov     cl,[ds:lba_sektor]
         int     0x13
-        jnc     .success
+        jnc     .tamam
 
-        dec     [ds:read_retry]
-        jnz     .retry
-.error:
+        dec     [ds:tekrar_sayisi]
+        jnz     .tekrar
+.hata:
         stc
         ret
-.success:
+.tamam:
         clc
         ret
 
-;************************************************************************
-;       katarlar(strings) - deðiþkenler(vars)                           *
-;************************************************************************
-lba_c           db      0
-lba_h           db      0
-lba_s           db      0
-num_sec2read    db      0
-read_retry      db      0
-cluster         dw      0
-
-exec_kernel:
+cekirdek_calistir:
 
         ;tüm irq isteklerini pasifleþtir
         ;----------------------------------------------------------------
         cli
-        mov     al,0xff
-        out     0xa1,al
+        mov     al,0xFF
+        out     0xA1,al
         out     0x21,al
 
         ;sistem selektörlerini oluþtur. null/code/data selectors
         ;----------------------------------------------------------------
         push    es
 
-        push    (GDT_MEM_ADDR shr 4)   ;gdtr_mem_addr -> segment:offset
+        ;gdtr_mem_addr -> segment:offset
+        push    GDT_BELLEK_ADRESI
         pop     es
         xor     edi,edi
 
         ;GDTR yazmacýnýn limit ve baþlangýç (base address) adresini belirle
         ;----------------------------------------------------------------
-        mov     word[es:edi+00],0xFFFF-1                  ;limit = limit-1
-        mov     dword[es:edi+02],GDT_MEM_ADDR+8           ;baþlangýç adresi
+        mov     word[es:edi+00],0xFFFF-1                        ;limit = limit-1
+        mov     dword[es:edi+02],(GDT_BELLEK_ADRESI shl 4)+8    ;baþlangýç adresi
 
 @@:
         ;null, sistem kod / sistem data seçicisi (selector)
@@ -457,7 +442,7 @@ exec_kernel:
         ;sistem selektörlerini yükle. GDT
         ;----------------------------------------------------------------
         push    es
-        push    word (GDT_MEM_ADDR shr 4)
+        push    word GDT_BELLEK_ADRESI
         pop     es
         xor     edi,edi
         lgdt    [es:edi]
@@ -468,11 +453,12 @@ exec_kernel:
         mov     eax,cr0
         or      eax,1
         mov     cr0,eax
-        jmp     pword 0x8:pmode_start
+        jmp     pword 0x08:korumali_mod_basla
 
         use32
-        org $+0x10000
-pmode_start:
+        org     $+0x10000
+
+korumali_mod_basla:
 
         ;korumalý moddayýz
         ;----------------------------------------------------------------
@@ -483,41 +469,29 @@ pmode_start:
         mov     fs,ax
         mov     gs,ax
 
-        ;GDT adresinin baþlangýcý ayný zamanda
-        ;çekirdek yazýlýmýn yýðýn adresinin geriye doðru baþlangýcýdýr
-        ;----------------------------------------------------------------
-        mov     esp,0x500000
+        mov     esp,0x400000-0x100
 
         ;çekirdeðin kod baþlangýç adresini al
         ;----------------------------------------------------------------
-        mov     eax,KERNEL_LOAD_ADDR
-        mov     [_offs],eax
+        mov     eax,[(CEKIRDEK_GECICI_ADRES shl 4)+0x18]
+        mov     [adres],eax
 
-        mov     esi,KERNEL_TEMP_ADDR
-        mov     edi,KERNEL_LOAD_ADDR
-        mov     ecx,500000/4
+        mov     esi,(CEKIRDEK_GECICI_ADRES shl 4)+0x1000
+        mov     edi,CEKIRDEK_YUKLEME_ADRES shl 4
+        mov     ecx,[cekirdek_uzunluk+0x10000]
+        ;deðeri 4ün katýna tamamla
+        add     ecx,3
+        and     ecx,-4
         cld
         rep     movsd
 
-        mov     esi,KERNEL_TEMP_ADDR+0x18
-        mov     eax,[esi]
-        mov     [_offs],eax
-
-        mov     esi,KERNEL_TEMP_ADDR+0x1000
-        mov     edi,KERNEL_LOAD_ADDR
-        mov     ecx,500000/4
-        cld
-        rep     movsd
-
-jump_addr:
-
-        ;parametrenin adresini çekirdeðe eax yazmacýyla aktar
+        ;bilden (bu) programýn topladýðý bilgileri çekirdeðe eax yazmacýyla aktar
         ;----------------------------------------------------------------
-        mov     eax,parameters ;+0x10000
+        mov     eax,DEGERLER+0x10000
 
         ;çekirdeðin kod baþlangýç adresine dallan
         ;----------------------------------------------------------------
-_code   db      0xEA
-_offs   dd      0
-_sel    dw      0x8
+kod     db      0xEA
+adres   dd      0x00000000
+sel     dw      0x08
         jmp     $

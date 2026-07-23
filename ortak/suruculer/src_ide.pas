@@ -120,6 +120,8 @@ function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
 function IDEAygitiHazirMi(AIDEDisk: PIDEDisk): Boolean;
 function VeriHazirMi(AIDEDisk: PIDEDisk): Boolean;
 procedure Bekle(AIDEDisk: PIDEDisk);
+function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+  ABellek: Isaretci): TISayi4;
 function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
@@ -181,7 +183,7 @@ begin
       begin
 
         FD^.Ozellikler := 0;
-        FD^.SektorOku := @SektorOku28;
+        FD^.SektorOku := @SektorOku;
         FD^.SektorYaz := @SektorYaz28;
         FD^.Aygit.AnaPort := IDEDiskListesi[i].AnaPort;
         FD^.Aygit.Kanal := IDEDiskListesi[i].Kanal;
@@ -352,6 +354,15 @@ begin
   PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_ALTDURUM);
 end;
 
+function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+  ABellek: Isaretci): TISayi4;
+begin
+
+  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
+
+  Result := SektorOku28(AFizikselSurucu, AIlkSektor, ASektorSayisi, ABellek);
+end;
+
 {==============================================================================
   LBA modunda 28 bitlik <>tör okuma iþlemi yapar
  ==============================================================================}
@@ -385,7 +396,7 @@ begin
   if(IDEAygitiMesgulMu(@FD^.Aygit)) then
   begin
 
-//    KritikBolgedenCik(SektorOkuYazKilit);
+    KritikBolgedenCik(SektorOkuYazKilit);
     Exit(HATA_AYGITMESGUL);
   end;
 
@@ -448,9 +459,9 @@ begin
 
   until (OkunacakSektorSayisi = 0) or (TekrarSayisi = 10);
 
-//  KritikBolgedenCik(SektorOkuYazKilit);
-
   Result := SektorIS;
+
+  KritikBolgedenCik(SektorOkuYazKilit);
 
   asm popfd; popad; end;
 end;

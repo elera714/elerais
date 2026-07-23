@@ -6,7 +6,7 @@
   Dosya Adý: gorselnesne.pas
   Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
 
-  Güncelleme Tarihi: 18/07/2026
+  Güncelleme Tarihi: 22/07/2026
 
   Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
 
@@ -128,16 +128,15 @@ type
     procedure Kesme_SaatYaz(ASol, AUst: TISayi4; ASaat: TSaat; ARenk: TRenk);
   end;
 
-
 type
   PGorselNesneler = ^TGorselNesneler;
   TGorselNesneler = object
   private
+    FGorselNesneListesi: array[0..USTSINIR_GORSELNESNE - 1] of PGorselNesne;
     FToplamGNSayisi,
     FToplamMasaustu: TSayi4;
-    FGorselNesneListesi: array[0..USTSINIR_GORSELNESNE - 1] of PGorselNesne;
-    function GorselNesneAl(ASiraNo: TSayi4): PGorselNesne;
-    procedure GorselNesneYaz(ASiraNo: TSayi4; AGorselNesne: PGorselNesne);
+    function GorselNesneAl(ASiraNo: TISayi4): PGorselNesne;
+    procedure GorselNesneYaz(ASiraNo: TISayi4; AGorselNesne: PGorselNesne);
   public
     procedure Yukle;
     function Olustur(AGNTip: TGNTip): PGorselNesne;
@@ -147,7 +146,7 @@ type
     function NesneAl(AKimlik: TKimlik): PGorselNesne;
     function NesneTipiniKontrolEt(AKimlik: TKimlik; AGNTip: TGNTip): PGorselNesne;
     procedure PencereyiYokEt(AGorevKimlik: TKimlik);
-    property GorselNesne[ASiraNo: TSayi4]: PGorselNesne read GorselNesneAl write GorselNesneYaz;
+    property GorselNesne[ASiraNo: TISayi4]: PGorselNesne read GorselNesneAl write GorselNesneYaz;
   published
     property ToplamGNSayisi: TSayi4 read FToplamGNSayisi write FToplamGNSayisi;
     property ToplamMasaustu: TSayi4 read FToplamMasaustu write FToplamMasaustu;
@@ -214,11 +213,11 @@ begin
     if(GN = nil) then
     begin
 
-      GN := GetMem(1024);
+      GN := GetMem(GN_UZUNLUK);
       GorselNesne[i] := GN;
 
       // nesne içeriðini sýfýrla
-      FillByte(GN^, 1024, 0);
+      FillByte(GN^, GN_UZUNLUK, 0);
 
       GN^.FSiraNo := i;
       GN^.Kimlik := (i shl 10) or %1010101011;
@@ -267,8 +266,8 @@ begin
     begin
 
       GorselNesne[i] := nil;
-      FreeMem(GN, 1024);
-      GN := nil;
+      FreeMem(GN, GN_UZUNLUK);
+      //GN := nil;
 
       Dec(FToplamGNSayisi);
     end;
@@ -404,20 +403,16 @@ begin
   end;
 end;
 
-function TGorselNesneler.GorselNesneAl(ASiraNo: TSayi4): PGorselNesne;
-var
-  K: TSayi4;
+function TGorselNesneler.GorselNesneAl(ASiraNo: TISayi4): PGorselNesne;
 begin
 
-  K := ASiraNo; // shr 10;
-
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(K >= 0) and (K < USTSINIR_GORSELNESNE) then
-    Result := FGorselNesneListesi[K]
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_GORSELNESNE) then
+    Result := FGorselNesneListesi[ASiraNo]
   else Result := nil;
 end;
 
-procedure TGorselNesneler.GorselNesneYaz(ASiraNo: TSayi4; AGorselNesne: PGorselNesne);
+procedure TGorselNesneler.GorselNesneYaz(ASiraNo: TISayi4; AGorselNesne: PGorselNesne);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -449,11 +444,13 @@ var
   i: TKimlik;
 begin
 
+  Result := nil;
+
   i := AKimlik shr 10;
 
   // nesne istenen sayý aralýðýnda ise
   GN := GorselNesne[i];
-  if(GN = nil) then Exit(nil);
+  if(GN = nil) then Exit;
 
   // nesne kimlik, tipini kontrol et
   if(GN^.Kimlik = AKimlik) and (GN^.NesneTipi = AGNTip) then Exit(GN);
@@ -748,7 +745,6 @@ begin
       if not(Pencere = nil) then Pencere^.Guncelle;
     end;
   end;
-
 end;
 
 {==============================================================================
@@ -923,8 +919,8 @@ begin
   // talepte bulunan nesnenin kimlik deðerini kontrol et
   GN := GorselNesneler0.NesneAl(AKimlik);
 
-  if((Self.NesneTipi = gntMasaustu) or (Self.NesneTipi = gntPencere) or
-    (Self.NesneTipi = gntMenu) or (Self.NesneTipi = gntAcilirMenu)) then
+  if((GN^.NesneTipi = gntMasaustu) or (GN^.NesneTipi = gntPencere) or
+    (GN^.NesneTipi = gntMenu) or (GN^.NesneTipi = gntAcilirMenu)) then
   begin
 
     // geniþlik ve yükseklik deðerleri alýnýyor
@@ -968,11 +964,11 @@ end;
   nesnenin çizilebilir alanýnýn koordinatlarýný alýr
  ==============================================================================}
 function TGorselNesne.CizimAlaniniAl2(AKimlik: TKimlik): TAlan;
-var
-  GN: PGorselNesne;
+//var
+//  GN: PGorselNesne;
 begin
 
-  GN := GorselNesneler0.NesneAl(AKimlik);
+  //GN := GorselNesneler0.NesneAl(AKimlik);
 
   // nesnenin üst nesneye baðlý koordinatlarýný al
   Result := CizimAlaniniAl(AKimlik);

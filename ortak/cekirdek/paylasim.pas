@@ -59,6 +59,22 @@ type
   PBaglantiTipi = ^TBaglantiTipi;
   TBaglantiTipi = (btIP, btYayin);
 
+type
+  // gerçek moddan gelen veri yapýsý
+  PGMBilgi = ^TGMBilgi;
+  TGMBilgi = packed record
+    GrafikBellekUzunlugu: TSayi2;
+    GrafikEkranMod: TSayi2;
+    GrafikCozunurlukX: TSayi2;
+    GrafikCozunurlukY: TSayi2;
+    GrafikBellekAdresi: TSayi4;
+    GrafikPxBasinaBit: TSayi1;
+    GrafikSatirByteUz: TSayi2;
+    CekirdekBaslangicAdresi: TSayi4;
+    CekirdekKodUzunluk: TSayi4;
+    Sil: TSayi4;
+  end;
+
 const
   // sistemde çalýþacak görev (program) sabitleri
   USTSINIR_GOREVSAYISI = 32;
@@ -103,10 +119,6 @@ type
   TTusDurum = (tdYok, tdBasildi, tdBirakildi);
 
 const
-  SISTEME_AYRILMIS_RAM  = $0A00000;             // sistem için ayrýlmýþ RAM = 10MB
-
-  BELLEK_HARITA_ADRESI: PSayi4 = PSayi4($510000);
-
   SISTEM_ESP        = $400000 - $100;
 
   // program için ESP bellek adresi ve ESP uzunluðu

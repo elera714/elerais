@@ -269,10 +269,10 @@ begin
   // program dosyasýný belleðe oku
   GeciciDosyaBellek := nil;
   DosyaUyari := DosyaOku(TamDosyaYolu, GeciciDosyaBellek);
-  if(DosyaUyari.Durum = False) or (GeciciDosyaBellek = nil) then
+  if not(DosyaUyari.Durum = HATA_YOK) then
   begin
 
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' için yeterli bellek yok1!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'GOREV.PAS: ' + ATamDosyaYolu + ' dosyasý belleðe yüklenemiyor: (%d)', [DosyaUyari.Durum]);
     KritikBolgedenCik(GorevKilit);
     Exit(nil);
 

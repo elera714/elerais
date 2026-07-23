@@ -23,7 +23,7 @@ const
 type
   // dosya yükleme iþlem bilgileri
   TDosyaYukleme = record
-    Durum: Boolean;
+    Durum: TISayi4;
     Uzunluk: TSayi4;
   end;
 
@@ -201,7 +201,8 @@ begin
   if not(s[1] = '\') then
   begin
 
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: Arama süzgeç söz dizilimi hatalý!', []);
+    //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: Arama süzgeç söz dizilimi hatalý!', []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '->AAramaSuzgec: %s', [AAramaSuzgec]);
     Exit(1);
   end;
   s := Copy(s, 2, Length(s) - 1);           // s = klasör1\*.*
@@ -224,7 +225,10 @@ begin
 
   if(DST = DST_ELR1) then
     KumeNo := MD^.Acilis.DizinGirisi.IlkSektor
+  else if(DST = DST_FAT12) then
+    KumeNo := MD^.Acilis.DizinGirisi.IlkSektor
   else KumeNo := MD^.Acilis.DizinGirisi.IlkKumeNo;
+
 
   // istenen (alt) klasörün dizin tablosunda aranmasý
   repeat
@@ -257,7 +261,7 @@ begin
 
       case DST of
         DST_ELR1    : DI^.SektorKumeNo := KumeNo;
-        DST_FAT12   : DI^.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor;
+        DST_FAT12   : DI^.SektorKumeNo := KumeNo;
         DST_FAT32,
         DST_FAT32LBA: DI^.SektorKumeNo := KumeNo;
       end;
@@ -294,6 +298,7 @@ begin
       begin
 
         SektorNo := ((KumeNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
+        //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'S: %d', [SektorNo]);
       end;
     end;
   until Length(AranacakKlasor) = 0;
@@ -1126,13 +1131,15 @@ end;
 function DosyaOku(ADosyaTamYol: string; var ABellekAdresi: Isaretci): TDosyaYukleme;
 var
   DosyaKimlik: TKimlik;
+  Sonuc: TISayi4;
 begin
 
-  Result.Durum := False;
+  Result.Durum := HATA_YOK;
 
   AssignFile(DosyaKimlik, ADosyaTamYol);
   Reset(DosyaKimlik);
-  if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then
+  Sonuc := IOResult;
+  if(Sonuc = HATA_DOSYA_ISLEM_BASARILI) then
   begin
 
     // dosya uzunluðunu al
@@ -1146,8 +1153,9 @@ begin
     // dosyayý kapat
     CloseFile(DosyaKimlik);
 
-    if not(ABellekAdresi = nil) then Result.Durum := True;
-  end;
+    if(ABellekAdresi = nil) then Result.Durum := HATA_BELLEKYOK;
+
+  end else Result.Durum := Sonuc;
 end;
 
 end.

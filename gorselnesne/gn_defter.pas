@@ -6,7 +6,7 @@
   Dosya Adı: gn_defter.pas
   Dosya İşlevi: defter nesnesi (TMemo) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/07/2026
+  Güncelleme Tarihi: 23/07/2026
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     40K ve çekirdek bölümüne eklenen 40K bellek kullanmaktadır.
@@ -28,6 +28,7 @@ type
     FYaziBellekAdresi: Isaretci;
     procedure YatayDikeyKarakterSayisiniAl;
     procedure KaydirmaCubuguOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure KodlamaYaz(AKodlama: TISayi4);
   public
     function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4; ADefterRenk, AYaziRenk: TRenk;
@@ -49,6 +50,8 @@ type
     property FMetinSarmala: Boolean read FDurum1 write FDurum1;
     property ImlecX: TISayi4 read FIDeger1 write FIDeger1;
     property ImlecY: TISayi4 read FIDeger2 write FIDeger2;
+    // kodlama şu anda: 0 = UTF-8, 1 = CP1254
+    property Kodlama: TISayi4 read FIDeger3 write FIDeger3;
   end;
 
 function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
@@ -156,6 +159,19 @@ begin
         Defter^.Ciz;
       end;
     end;
+
+    // metin kodlamasını değiştir
+    $050F:
+    begin
+
+      // nesnenin handle, tip değerlerini denetle.
+      Defter := PDefter(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntDefter));
+      if(Defter <> nil) then
+      begin
+
+        Defter^.KodlamaYaz(PISayi4(ADegiskenler + 04)^);
+      end;
+    end;
   end;
 end;
 
@@ -228,6 +244,8 @@ begin
 
   Defter^.ImlecX := 0;
   Defter^.ImlecY := 0;
+
+  //Defter^.Kodlama := 0;
 
   // kimlik adresini geri döndür
   Result := Defter;
@@ -377,7 +395,11 @@ begin
     while (YaziBellekAdresi^ <> #0) do
     begin
 
-      Deger := UTF8Byte(YaziBellekAdresi);
+      Deger := 0;
+      case Defter^.Kodlama of
+        0: Deger := UTF8Byte(YaziBellekAdresi);
+        1: begin Deger := PByte(YaziBellekAdresi)^; Inc(YaziBellekAdresi); end;
+      end;
 
       // giriş (enter) karakteri olması durumunda herhangi birşey yapma
       if(Deger = 13) then begin end
@@ -693,6 +715,18 @@ begin
 
   // geçerli fare göstergesini güncelle
   GecerliFareGostegeTipi := Defter^.FareImlecTipi;
+end;
+
+procedure TDefter.KodlamaYaz(AKodlama: TISayi4);
+var
+  Defter: PDefter;
+begin
+
+  Defter := PDefter(GorselNesneler0.NesneAl(Kimlik));
+  if(Defter = nil) then Exit;
+
+  Defter^.Kodlama := AKodlama;
+  Defter^.Ciz;
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adı: gn_defter.pas
   Dosya İşlevi: defter nesnesi (TMemo) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/09/2024
+  Güncelleme Tarihi: 23/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -29,6 +29,7 @@ type
     procedure YaziEkle(ADeger: string);
     procedure Temizle;
     procedure MetniSarmala(ASarmala: Boolean);
+    procedure Kodlama(AKodlama: TISayi4);
     property Kimlik: TKimlik read FKimlik;
   end;
 
@@ -40,6 +41,7 @@ procedure _DefterYaziEklePChar(AKimlik: TKimlik; ABellekAdresi: PChar); assemble
 procedure _DefterYaziEkleStr(AKimlik: TKimlik; ADeger: string); assembler;
 procedure _DefterTemizle(AKimlik: TKimlik); assembler;
 procedure _DefterMetniSarmala(AKimlik: TKimlik; ASarmala: LongBool); assembler;
+procedure _DefterKodlamaYaz(AKimlik: TKimlik; AKodlama: TISayi4); assembler;
 
 implementation
 
@@ -86,6 +88,12 @@ procedure TDefter.MetniSarmala(ASarmala: Boolean);
 begin
 
   _DefterMetniSarmala(FKimlik, ASarmala);
+end;
+
+procedure TDefter.Kodlama(AKodlama: TISayi4);
+begin
+
+  _DefterKodlamaYaz(FKimlik, AKodlama);
 end;
 
 function _DefterOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik, AYukseklik: TISayi4;
@@ -152,6 +160,15 @@ asm
   push  DWORD ASarmala
   push  DWORD AKimlik
   mov   eax,DEFTER_YAZ_METNISARMALA
+  int   $34
+  add   esp,8
+end;
+
+procedure _DefterKodlamaYaz(AKimlik: TKimlik; AKodlama: TISayi4);
+asm
+  push  DWORD AKodlama
+  push  DWORD AKimlik
+  mov   eax,DEFTER_YAZ_KODLAMA
   int   $34
   add   esp,8
 end;

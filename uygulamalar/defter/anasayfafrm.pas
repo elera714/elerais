@@ -4,7 +4,7 @@ unit anasayfafrm;
 interface
 
 uses n_gorev, gn_pencere, n_genel, _forms, gn_durumcubugu, gn_etiket, gn_giriskutusu,
-  gn_dugme, gn_defter, gn_onaykutusu, gn_panel;
+  gn_dugme, gn_defter, gn_onaykutusu, gn_panel, gn_karmaliste;
 
 type
   TfrmAnaSayfa = object(TForm)
@@ -15,8 +15,9 @@ type
     FPanel: TPanel;
     FDurumCubugu: TDurumCubugu;
     FDefter0: TDefter;
-    FetiDosyaAdi: TEtiket;
+    FetiDosyaAdi, FetkYol: TEtiket;
     FgkDosyaAdi: TGirisKutusu;
+    FklKodlama: TKarmaListe;
     FokMetniSarmala: TOnayKutusu;
     FdugYukle: TDugme;
     procedure BellekTemizle;
@@ -45,8 +46,7 @@ var
 procedure TfrmAnaSayfa.Olustur;
 begin
 
-  FPencere.Olustur(-1, 10, 10, 490 + 10, 300 + 85, ptBoyutlanabilir, PencereAdi,
-    RENK_BEYAZ);
+  FPencere.Olustur(-1, 10, 10, 700, 400, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
   FPanel.Olustur(FPencere.Kimlik, 0, 0, 100, 32, 2, RENK_GRI, $E0EEFA, 0, '');
@@ -65,6 +65,15 @@ begin
 
   FokMetniSarmala.Olustur(FPanel.Kimlik, 45 * 8, 8, 'Metni Sarmala');
   FokMetniSarmala.Goster;
+
+  FetkYol.Olustur(FPanel.Kimlik, 65 * 8, 9, 80, 16, RENK_BORDO, 'Kodlama:');
+  FetkYol.Goster;
+
+  FklKodlama.Olustur(FPanel.Kimlik, 74 * 8, 5, 90, 20);
+  FklKodlama.ElemanEkle('UTF-8');
+  FklKodlama.ElemanEkle('CP1254');
+  FklKodlama.BaslikSiraNo := 0;
+  FklKodlama.Goster;
 
   FDurumCubugu.Olustur(FPencere.Kimlik, 0, 0, 100, 18, 'Dosya: -');
   FDurumCubugu.Goster;
@@ -139,6 +148,15 @@ begin
       if(AOlay.Deger1 = 1) then
         FDefter0.MetniSarmala(True)
       else FDefter0.MetniSarmala(False);
+    end;
+  end
+  else if(AOlay.Olay = CO_SECIMDEGISTI) and (AOlay.Kimlik = FklKodlama.Kimlik) then
+  begin
+
+    if(AOlay.Kimlik = FklKodlama.Kimlik) then
+    begin
+
+      FDefter0.Kodlama(FklKodlama.BaslikSiraNo);
     end;
   end;
 

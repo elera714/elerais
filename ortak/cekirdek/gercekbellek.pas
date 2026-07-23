@@ -6,7 +6,7 @@
   Dosya Adý: gercekbellek.pas
   Dosya Ýþlevi: gerçek (fiziksel) bellek yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 29/06/2026
+  Güncelleme Tarihi: 22/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,6 +15,12 @@ unit gercekbellek;
 interface
 
 uses paylasim;
+
+const
+  BELLEK_HARITA_ADRESI: PSayi4 = PSayi4($510000);
+
+  // sistem için ayrýlmýþ RAM = 10MB
+  SISTEME_AYRILMIS_RAM  = $0A00000;
 
 type
   PHafiza = ^THafiza;

@@ -41,22 +41,6 @@ type
     constructor Create(CreateSuspended: Boolean);
   end;
 
-type
-  // gerçek moddan gelen veri yapýsý
-  PGMBilgi = ^TGMBilgi;
-
-  TGMBilgi = packed record
-    VideoBellekUzunlugu: TSayi2;
-    VideoEkranMod: TSayi2;
-    VideoYatayCozunurluk: TSayi2;
-    VideoDikeyCozunurluk: TSayi2;
-    VideoBellekAdresi: TSayi4;
-    VideoPixelBasinaBitSayisi: TSayi1;
-    VideoSatirdakiByteSayisi: TSayi2;
-    CekirdekBaslangicAdresi: TSayi4;
-    CekirdekKodUzunluk: TSayi4;
-  end;
-
 var
   _DNS: PDNS = nil;
   Arge0: TArGe;
@@ -74,7 +58,7 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp4_i, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
-  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci;
+  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci, src_ide;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -92,15 +76,15 @@ begin
   GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
 
   // video bilgilerini al
-  EkranKartSurucusu0.KartBilgisi.BellekUzunlugu := GMBilgi^.VideoBellekUzunlugu;
-  EkranKartSurucusu0.KartBilgisi.EkranMod := GMBilgi^.VideoEkranMod;
-  EkranKartSurucusu0.KartBilgisi.YatayCozunurluk := GMBilgi^.VideoYatayCozunurluk;
-  EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk := GMBilgi^.VideoDikeyCozunurluk;
-  EkranKartSurucusu0.KartBilgisi.BellekAdresi := GMBilgi^.VideoBellekAdresi;
+  EkranKartSurucusu0.KartBilgisi.BellekUzunlugu := GMBilgi^.GrafikBellekUzunlugu;
+  EkranKartSurucusu0.KartBilgisi.EkranMod := GMBilgi^.GrafikEkranMod;
+  EkranKartSurucusu0.KartBilgisi.YatayCozunurluk := GMBilgi^.GrafikCozunurlukX;
+  EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk := GMBilgi^.GrafikCozunurlukY;
+  EkranKartSurucusu0.KartBilgisi.BellekAdresi := GMBilgi^.GrafikBellekAdresi;
   //VIDEO_MEM_ADDR;
-  EkranKartSurucusu0.KartBilgisi.PixelBasinaBitSayisi := GMBilgi^.VideoPixelBasinaBitSayisi;
-  EkranKartSurucusu0.KartBilgisi.NoktaBasinaByteSayisi := (GMBilgi^.VideoPixelBasinaBitSayisi div 8);
-  EkranKartSurucusu0.KartBilgisi.SatirdakiByteSayisi := GMBilgi^.VideoSatirdakiByteSayisi;
+  EkranKartSurucusu0.KartBilgisi.PixelBasinaBitSayisi := GMBilgi^.GrafikPxBasinaBit;
+  EkranKartSurucusu0.KartBilgisi.NoktaBasinaByteSayisi := (GMBilgi^.GrafikPxBasinaBit div 8);
+  EkranKartSurucusu0.KartBilgisi.SatirdakiByteSayisi := GMBilgi^.GrafikSatirByteUz;
 
   // çekirdek bilgilerini al
   CekirdekBaslangicAdresi := GMBilgi^.CekirdekBaslangicAdresi;
@@ -240,6 +224,7 @@ var
   PingSiraNo: TSayi4 = 111;
   s: string;
   p: PChar;
+  GMBilgi: PGMBilgi;
 begin
 
   AracTipleri := TAracTipleriSinif.Create;
@@ -331,7 +316,11 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            SistemKlasorleriniOlustur;
+            GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
+            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %x', [GMBilgi^.Sil]);
+
+
+            //SistemKlasorleriniOlustur;
             //vbox.Listele;
             //KomsuIstegiGonder(PingHedefIP6Adres);
 
@@ -417,7 +406,7 @@ begin
           else if(TusKarakterDegeri = '4') then
           begin
 
-            SistemKlasorleriniSil;
+            //SistemKlasorleriniSil;
             //IstekMesajiGonder6;
 
             {PingMesajiGonder(ICMP6_PING_ISTEK, PingHedefIP6Adres, PingHedefMACAdres,

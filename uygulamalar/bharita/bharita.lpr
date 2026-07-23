@@ -6,7 +6,7 @@
   Program Adý: bharita.lpr
   Program Ýþlevi: bellek içerik harita programý
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 22/07/2026
 
  ==============================================================================}
 {$mode objfpc}

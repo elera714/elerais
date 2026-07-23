@@ -6,7 +6,7 @@
   Dosya Adı: gn_giriskutusu.pas
   Dosya İşlevi: giriş kutusu (TEdit) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 20/07/2026
+  Güncelleme Tarihi: 21/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -33,6 +33,7 @@ type
     procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
     property Yazilamaz: Boolean read FDurum1 write FDurum1;
     property SadeceRakam: Boolean read FDurum2 write FDurum2;
+    property ImlecX: TISayi4 read FIDeger1 write FIDeger1;
   end;
 
 function GirisKutusuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -41,7 +42,7 @@ function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik
 
 implementation
 
-uses gn_islevler, gn_pencere, genel, temelgorselnesne, gorev, sistemmesaj;
+uses gn_islevler, gn_pencere, genel, temelgorselnesne, gorev, sistemmesaj, src_klavye;
 
 {==============================================================================
   giriş kutusu kesme çağrılarını yönetir
@@ -157,6 +158,7 @@ function TGirisKutusu.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNe
   ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PGirisKutusu;
 var
   GirisKutusu: PGirisKutusu;
+  i: TSayi4;
 begin
 
   AYukseklik := 20;
@@ -180,6 +182,9 @@ begin
 
   GirisKutusu^.Yazilamaz := False;
   GirisKutusu^.SadeceRakam := False;
+
+  i := Length(GirisKutusu^.Baslik);
+  GirisKutusu^.ImlecX := i;
 
   GirisKutusu^.FSilmeDugmesi := GirisKutusu^.FSilmeDugmesi^.Olustur(ktBilesen, GirisKutusu,
     AGenislik - 12, 2, 10, 16, 'X');
@@ -258,6 +263,7 @@ procedure TGirisKutusu.Ciz;
 var
   GirisKutusu: PGirisKutusu;
   CizimAlani: TAlan;
+  i: TSayi4;
 begin
 
   GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
@@ -271,17 +277,20 @@ begin
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
   if(GirisKutusu^.Odaklanildi) then GirisKutusu^.Dikdortgen(GirisKutusu, ctNokta, CizimAlani, RENK_SIYAH);
 
+  GirisKutusu^.HarfYaz(GirisKutusu, 3 + (GirisKutusu^.ImlecX * 8), 2, #255, RENK_ACIKYESIL, RENK_ACIKYESIL);
+
   // nesnenin içerik değeri.
   if(GirisKutusu^.Yazilamaz) then
 
-    GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3, GirisKutusu^.Baslik, RENK_SIYAH)
+    GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3,
+      GirisKutusu^.Baslik, RENK_SIYAH)
   else
   begin
 
     // nesne odak kazanmışsa sonuna #255 = klavye kursörü ekle
     if(GirisKutusu^.Odaklanildi) then
       GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3,
-        GirisKutusu^.Baslik + #255, RENK_SIYAH)
+        GirisKutusu^.Baslik, RENK_SIYAH)
     else GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3,
       GirisKutusu^.Baslik, RENK_SIYAH)
   end;
@@ -299,6 +308,7 @@ var
   C: Char;
   s: string;
   Tus: TISayi4;
+  i, j: TISayi4;
 begin
 
   GirisKutusu := PGirisKutusu(AGonderici);
@@ -318,6 +328,14 @@ begin
     Pencere^.FAktifNesne := GirisKutusu;
     GirisKutusu^.Odaklanildi := True;
 
+    i := (AOlay.Deger1 div 8);
+    j := Length(GirisKutusu^.Baslik);
+    if(i > j) then
+      GirisKutusu^.ImlecX := j
+    else GirisKutusu^.ImlecX := i;
+
+    GirisKutusu^.Ciz;
+
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
       GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
@@ -327,78 +345,145 @@ begin
   else if(AOlay.Olay = CO_TUSBASILDI) then
   begin
 
-    Tus := (AOlay.Deger1 and $FF);
-
-    if not(GirisKutusu^.Yazilamaz) then
+    if(AOlay.Deger1 = TUS_SAG) then
     begin
 
-      C := Char(Tus);
+      i := GirisKutusu^.ImlecX;
+      j := Length(GirisKutusu^.Baslik);
+      Inc(i);
+      if(i <= j) then GirisKutusu^.ImlecX := i;
+    end
+    else if(AOlay.Deger1 = TUS_SOL) then
+    begin
 
-      // enter tuşu
-      if(C = #10) then
+      i := GirisKutusu^.ImlecX;
+      Dec(i);
+      if(i < 0) then i := 0;
+      GirisKutusu^.ImlecX := i;
+    end
+    else if(AOlay.Deger1 = TUS_GIT_BASA) then
+    begin
+
+      GirisKutusu^.ImlecX := 0;
+    end
+    else if(AOlay.Deger1 = TUS_GIT_SONA) then
+    begin
+
+      i := Length(GirisKutusu^.Baslik);
+      GirisKutusu^.ImlecX := i;
+    end
+    else if(AOlay.Deger1 = TUS_SIL) then
+    begin
+
+      // imleç satırın sonunda ise veya nesne içeriği yoksa çık
+      i := Length(GirisKutusu^.Baslik);
+      if(i = GirisKutusu^.ImlecX) or (i = 0) then Exit;
+
+      s := GirisKutusu^.Baslik;
+      Delete(s, GirisKutusu^.ImlecX + 1, 1);
+      GirisKutusu^.Baslik := s;
+    end
+    else
+    begin
+
+      // tuş herhangi bir kontrol tuşu değilse
+      if((AOlay.Deger1 and $FF00) = 0) then
       begin
 
-        // uygulamaya veya efendi nesneye mesaj gönder
-        AOlay.Deger1 := Tus;
-        if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
-          GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-        else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
-      end
-      // geri silme tuşu
-      else if(C = #8) then
-      begin
+        Tus := (AOlay.Deger1 and $FF);
 
-        s := GirisKutusu^.Baslik;
-        if(Length(s) = 1) then
-
-          s := ''
-        else
+        if not(GirisKutusu^.Yazilamaz) then
         begin
 
-          s := Copy(s, 1, Length(s) - 1);
-        end;
-        GirisKutusu^.Baslik := s;
+          C := Char(Tus);
 
-        AOlay.Deger1 := Tus;
-        if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
-          GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-        else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
-      end
-      else
-      begin
-
-        if(GirisKutusu^.SadeceRakam) then
-        begin
-
-          if(C in ['0'..'9', 'A'..'F', 'a'..'f']) then
+          // enter tuşu
+          if(C = #10) then
           begin
-
-            GirisKutusu^.Baslik := GirisKutusu^.Baslik + C;
 
             // uygulamaya veya efendi nesneye mesaj gönder
             AOlay.Deger1 := Tus;
             if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
               GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
             else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+          end
+          // geri silme tuşu
+          else if(C = #8) then
+          begin
+
+            // imlecin satırın başında olma durumu
+            if(GirisKutusu^.ImlecX = 0) then Exit;
+
+            i := Length(GirisKutusu^.Baslik);
+
+            // imlecin satırın sonunda olma durumu
+            if(i = GirisKutusu^.ImlecX) then
+            begin
+
+              if(i = 1) then
+                s := ''
+              else s := Copy(GirisKutusu^.Baslik, 1, i - 1);
+            end
+            // imlecin satırın orta kısmında olma durumu
+            else
+            begin
+
+              s := GirisKutusu^.Baslik;
+              Delete(s, GirisKutusu^.ImlecX, 1);
+              i := GirisKutusu^.ImlecX;
+            end;
+
+            GirisKutusu^.ImlecX := i - 1;
+            GirisKutusu^.Baslik := s;
+
+            AOlay.Deger1 := Tus;
+            if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
+              GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
+            else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+          end
+          else
+          begin
+
+            if(GirisKutusu^.SadeceRakam) then
+            begin
+
+              if(C in ['0'..'9', 'A'..'F', 'a'..'f']) then
+              begin
+
+                s := GirisKutusu^.Baslik;
+                Insert(C, s, GirisKutusu^.ImlecX + 1);
+                GirisKutusu^.Baslik := s;
+
+                // uygulamaya veya efendi nesneye mesaj gönder
+                AOlay.Deger1 := Tus;
+                if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
+                  GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
+                else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+              end;
+            end
+            else
+            begin
+
+              s := GirisKutusu^.Baslik;
+              Insert(C, s, GirisKutusu^.ImlecX + 1);
+              GirisKutusu^.Baslik := s;
+
+              AOlay.Deger1 := Tus;
+              if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
+                GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
+              else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+            end;
+
+            i := GirisKutusu^.ImlecX;
+            Inc(i);
+            GirisKutusu^.ImlecX := i;
           end;
-        end
-        else
-        begin
-
-          GirisKutusu^.Baslik := GirisKutusu^.Baslik + C;
-
-          AOlay.Deger1 := Tus;
-          if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
-            GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-          else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
         end;
       end;
 
       GirisKutusu^.Ciz;
     end;
   end
-
-
   // nesnenin odağı kaybetmesi durumu
   else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
   begin
@@ -458,6 +543,8 @@ begin
     GirisKutusu := PGirisKutusu(Dugme^.AtaNesne);
 
     GirisKutusu^.Baslik := '';
+    GirisKutusu^.ImlecX := 0;
+
     GirisKutusu^.Ciz;
 
     // nesneyi aktif nesne olarak işaretle

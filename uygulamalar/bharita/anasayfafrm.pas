@@ -30,19 +30,20 @@ const
   MEVCUTBELLEKADRESI = $510000;   // bellek haritasýnýn çekirdek yazýlýmdaki adresi
 
 var
-  Veriler: array[0..4095] of TSayi1;
+  Veriler: array[0..1023] of TSayi4;
   ToplamRAMBlok, AyrilmisRAMBlok,
   KullanilanRAMBlok, BosRAMBlok,
   RAMUzunlugu, BellekAdresi,
-  Sol, Ust, i: TSayi4;
+  Sol, Ust, i,
+  OkunacakRAMBlok,
+  OkunacakByte: TSayi4;
   s: string;
-  p: PSayi1;
-  BellekOku: Boolean;
+  p: PSayi4;
 
 procedure TfrmAnaSayfa.Olustur;
 begin
 
-  FPencere.Olustur(-1, 5, 5, 161 * 3, 140 * 3, ptBoyutlanabilir, PencereAdi, RENK_SIYAH);
+  FPencere.Olustur(-1, 5, 5, 130 * 3, 180 * 3, ptBoyutlanabilir, PencereAdi, RENK_GRI);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
   FDurumCubugu.Olustur(FPencere.Kimlik, 0, 0, 100, 20, 'Boþ Blok Sayýsý: 0');
@@ -54,8 +55,8 @@ begin
 
   FPencere.Gorunum := True;
 
-  // 10 saniyelik frekansla güncelle
-  FZamanlayici.Olustur(1000);
+  // 5 saniyelik frekansla güncelle
+  FZamanlayici.Olustur(5 * 100);
   FZamanlayici.Baslat;
 end;
 
@@ -68,12 +69,7 @@ begin
 
     FGorev.Sonlandir(-1);
   end
-  else if(AOlay.Olay = CO_ZAMANLAYICI) then
-  begin
-
-    FPencere.Ciz;
-  end
-  else if(AOlay.Olay = CO_CIZIM) then
+  else if(AOlay.Olay = CO_ZAMANLAYICI) or (AOlay.Olay = CO_CIZIM) then
   begin
 
     FGenel.GenelBellekBilgisiAl(@ToplamRAMBlok, @AyrilmisRAMBlok, @KullanilanRAMBlok,
@@ -87,42 +83,49 @@ begin
     if(ToplamRAMBlok > 0) then
     begin
 
-      BellekOku := False;
       BellekAdresi := MEVCUTBELLEKADRESI;
+      OkunacakRAMBlok := ToplamRAMBlok;
       Sol := 0; Ust := 0;
 
-      for i := 0 to ToplamRAMBlok - 1 do
-      begin
+      repeat
 
-        // her 4096 byte sonrasýnda bir sonraki bellek alanýný oku
-        if((i mod 4096) = 0) then BellekOku := True;
-
-        // 4K bellek bilgisi sistemden okunuyor
-        if(BellekOku) then
+        if(OkunacakRAMBlok > 1024) then
         begin
 
-          BellekOku := False;
-          FGenel.BellekIcerikOku(Isaretci(BellekAdresi), @Veriler[0], 4096);
-          BellekAdresi += 4096;
-          p := PByte(@Veriler[0]);
-        end;
-
-        if(p^ = 0) then
-          NoktaIsaretle(Sol, Ust, $00FF00)
-        else if(p^ = 1) then NoktaIsaretle(Sol, Ust, $FF0000);
-
-        Inc(p);
-
-        Inc(Sol);
-
-        // yatay 200 nokta
-        if(Sol > 160) then
+          OkunacakByte := 1024;
+          OkunacakRAMBlok := OkunacakRAMBlok - 1024;
+        end
+        else
         begin
 
-          Inc(Ust);
-          Sol := 0;
+          OkunacakByte := OkunacakRAMBlok;
+          OkunacakRAMBlok := 0;
         end;
-      end;
+
+        FGenel.BellekIcerikOku(Isaretci(BellekAdresi), @Veriler[0], OkunacakByte * 4);
+        BellekAdresi := BellekAdresi + (OkunacakByte * 4);
+        p := PSayi4(@Veriler[0]);
+
+        for i := 0 to OkunacakByte - 1 do
+        begin
+
+          if(p^ = $00000000) then
+            NoktaIsaretle(Sol, Ust, $00FF00)
+          else NoktaIsaretle(Sol, Ust, $FF0000);
+
+          Inc(p);
+
+          // yatay 128 nokta
+          Inc(Sol);
+          if(Sol > 127) then
+          begin
+
+            Inc(Ust);
+            Sol := 0;
+          end;
+        end;
+
+      until OkunacakRAMBlok = 0;
     end;
   end;
 
@@ -139,7 +142,6 @@ begin
 
   FPencere.Tuval.PixelYaz(Sol, Ust, ARenk);
   FPencere.Tuval.PixelYaz(Sol + 1, Ust, ARenk);
-
   FPencere.Tuval.PixelYaz(Sol, Ust + 1, ARenk);
   FPencere.Tuval.PixelYaz(Sol + 1, Ust + 1, ARenk);
 end;
