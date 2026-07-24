@@ -1,4 +1,4 @@
-# ELERA İşletim Sistemi (elerais - sunucu / istemci) - 0.3.9 [R35]
+# ELERA İşletim Sistemi (elerais - sunucu / istemci) - 0.4.1 [R37]
 
 Türkçe:
 
