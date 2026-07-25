@@ -54,14 +54,14 @@ type
 
 type
   PARPKayitlar = ^TARPKayitlar;
-  TARPKayitlar = object
+  TARPKayitlar = class
   private
     FARPKayitListesi: array[0..USTSINIR_KAYITSAYISI - 1] of PARPKayit;
     FToplamKayit: TSayi4;
     function ARPKayitAl(ASiraNo: TSayi4): PARPKayit;
     procedure ARPKayitYaz(ASiraNo: TSayi4; AARPKayit: PARPKayit);
   public
-    procedure Yukle;
+    constructor Create;
     procedure ARPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
     procedure ARPKaydiEkle(AARPKayit: TARPKayit);
     procedure ARPIstegiGonder(AARPIslem: TARPIslem; AHedefMACAdres: PMACAdres;
@@ -87,7 +87,7 @@ uses ag, islevler, zamanlayici, sistemmesaj, donusum, gorev;
 {==============================================================================
   ARP protokolünü ilk deðerlerle yükler
  ==============================================================================}
-procedure TARPKayitlar.Yukle;
+constructor TARPKayitlar.Create;
 var
   i: TISayi4;
 begin
@@ -213,8 +213,8 @@ begin
   ARPPaket.HedefIPAdres := AHedefIPAdres^;
 
   if(AARPIslem = arpIstek) then
-    AgKartinaVeriGonder(MACAdres255, ptARP, @ARPPaket, 28)
-  else AgKartinaVeriGonder(AHedefMACAdres^, ptARP, @ARPPaket, 28);
+    GAg0.AgKartinaVeriGonder(MACAdres255, ptARP, @ARPPaket, 28)
+  else GAg0.AgKartinaVeriGonder(AHedefMACAdres^, ptARP, @ARPPaket, 28);
 end;
 
 {==============================================================================

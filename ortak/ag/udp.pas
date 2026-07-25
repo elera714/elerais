@@ -47,7 +47,7 @@ uses ip4, ip6, dhcp4_s, dhcp_i, donusum, sistemmesaj, baglanti, dns, netbios, ge
  ==============================================================================}
 procedure UDPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
 var
-  B: PBaglanti;
+  B: TBaglanti;
   UDPPaket: PUDPPaket;
   KaynakPort, HedefPort: TSayi2;
   U2, PaketTipi: TSayi2;
@@ -99,7 +99,7 @@ begin
   else
   begin
 
-    B := Baglantilar0.UDPBaglantiAl(HedefPort);
+    B := GBaglantilar.UDPBaglantiAl(HedefPort);
     if(B = nil) then
     begin
 
@@ -129,7 +129,7 @@ begin
       //SISTEM_MESAJ(RENK_MOR, 'UDP Veri Uzunluðu: %d', [U2]);
 
       // 8 byte = udp paket baþlýk uzunluðu
-      if(U2 > 8) then Baglantilar0.BellegeEkle(B, @UDPPaket^.Veri, U2 - 8);
+      if(U2 > 8) then B.BellegeEkle(@UDPPaket^.Veri, U2 - 8);
     end;
   end;
 end;

@@ -1,5 +1,11 @@
 *******************************************************************************
-  Sürüm: 0.4.1 (sunucu / istemci) - 00.00.0000 (R37) - Beta
+  Sürüm: 0.4.2 (sunucu / istemci) - 00.00.0000 (R38) - Beta
+*******************************************************************************
+
+  + object yapıları class yapılarına dönüştürülüyor
+
+*******************************************************************************
+  Sürüm: 0.4.1 (sunucu / istemci) - 24.07.2026 (R37) - Beta
 *******************************************************************************
   + http sunucusu çekirdeğe eklendi. (ana iskelet istemcilere hizmet verecek şekilde yapılandırıldı)
   + ftp sunucusu çekirdeğe eklendi. (USER, PASS, QUIT işlevleri sunucuya eklendi)

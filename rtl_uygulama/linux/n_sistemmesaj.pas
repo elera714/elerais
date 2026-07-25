@@ -22,7 +22,7 @@ type
     FToplamMesaj: TISayi4;
   public
     function Toplam: TISayi4;
-    procedure Al(ASiraNo: TISayi4; AMesajKayit: PMesajKayit);
+    procedure Al(ASiraNo: TISayi4; AMesajKayit: PMesajKayit3);
     procedure YaziEkle(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string);
     procedure Sayi16Ekle(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
       ASayi16, AHaneSayisi: TSayi4);
@@ -30,7 +30,7 @@ type
   end;
 
 function _SistemMesajToplam: TISayi4; assembler;
-procedure _SistemMesajAl(ASiraNo: TISayi4; AMesajKayit: PMesajKayit); assembler;
+procedure _SistemMesajAl(ASiraNo: TISayi4; AMesajKayit: PMesajKayit3); assembler;
 procedure _SistemMesajYaziEkle(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string); assembler;
 procedure _SistemMesajSayi16Ekle(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
   ASayi16, AHaneSayisi: TSayi4); assembler;
@@ -44,7 +44,7 @@ begin
   Result := _SistemMesajToplam;
 end;
 
-procedure TSistemMesaj.Al(ASiraNo: TISayi4; AMesajKayit: PMesajKayit);
+procedure TSistemMesaj.Al(ASiraNo: TISayi4; AMesajKayit: PMesajKayit3);
 begin
 
   _SistemMesajAl(ASiraNo, AMesajKayit);
@@ -75,7 +75,7 @@ asm
   int   $34
 end;
 
-procedure _SistemMesajAl(ASiraNo: TISayi4; AMesajKayit: PMesajKayit);
+procedure _SistemMesajAl(ASiraNo: TISayi4; AMesajKayit: PMesajKayit3);
 asm
   push  DWORD AMesajKayit
   push  DWORD ASiraNo

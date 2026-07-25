@@ -280,7 +280,7 @@ end;
  ==============================================================================}
 procedure DHCPKesifMesajiGonder;
 var
-  B: PBaglanti;
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   MACAdres: PMACAdres;
   i: TSayi1;
@@ -393,16 +393,16 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
+    if(B.Baglan(itIP4, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglantilar0.BaglantiyiKes(B^.Kimlik);
+      B.BaglantiyiKes;
     end;
   end;
 
@@ -415,7 +415,7 @@ end;
 procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi: TIPAdresIslev;
   AMACAdres: TMACAdres);
 var
-  B: PBaglanti;
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IPAdres: PIP4Adres;
   p1: PSayi1;
@@ -545,16 +545,16 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(ATeklifEdilenIPAdresi.IPAdres);
-  B := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
+    if(B.Baglan(itIP4, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglantilar0.BaglantiyiKes(B^.Kimlik);
+      B.BaglantiyiKes;
     end;
   end;
 
@@ -566,7 +566,7 @@ end;
  ==============================================================================}
 procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIP4Adres);
 var
-  B: PBaglanti;
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IPAdres: PIP4Adres;
   MACAdres: PMACAdres;
@@ -720,16 +720,16 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
+    if(B.Baglan(itIP4, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglantilar0.BaglantiyiKes(B^.Kimlik);
+      B.BaglantiyiKes;
     end;
   end;
 
@@ -742,7 +742,7 @@ end;
 procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: TIPAdresIslev;
   AMACAdres: TMACAdresIslev);
 var
-  B: PBaglanti;
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IPAdres: PIP4Adres;
   i: TSayi1;
@@ -888,16 +888,16 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(AIstenenIPAdresi.IPAdres);
-  B := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
+    if(B.Baglan(itIP4, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglantilar0.BaglantiyiKes(B^.Kimlik);
+      B.BaglantiyiKes;
     end;
   end;
 
@@ -909,7 +909,7 @@ end;
  ==============================================================================}
 procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIP4Adres);
 var
-  B: PBaglanti;
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   MACAdres: PMACAdres;
   i: TSayi1;
@@ -1022,16 +1022,16 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
+    if(B.Baglan(itIP4, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglantilar0.BaglantiyiKes(B^.Kimlik);
+      B.BaglantiyiKes;
     end;
   end;
 
@@ -1044,7 +1044,7 @@ end;
 procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres: TIPAdresIslev;
   AMACAdres: TMACAdresIslev);
 var
-  B: PBaglanti;
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IPAdres: PIP4Adres;
   p1: PSayi1;
@@ -1152,16 +1152,16 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(AIPAdres.IPAdres);
-  B := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
+    if(B.Baglan(itIP4, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglantilar0.BaglantiyiKes(B^.Kimlik);
+      B.BaglantiyiKes;
     end;
   end;
 
@@ -1173,7 +1173,7 @@ end;
  ==============================================================================}
 procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
 var
-  B: PBaglanti;
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IPAdres: PIP4Adres;
   p1: PSayi1;
@@ -1239,16 +1239,16 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
+    if(B.Baglan(itIP4, btYayin) <> -1) then
     begin
 
-      Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
 
-      Baglantilar0.BaglantiyiKes(B^.Kimlik);
+      B.BaglantiyiKes;
     end;
   end;
 

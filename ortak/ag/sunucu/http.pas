@@ -4,9 +4,9 @@
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
   Dosya Adý: http.pas
-  Dosya Ýþlevi: HTTP sunucu protokol iþlevlerini yönetir
+  Dosya Ýþlevi: http sunucu protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 24/06/2026
+  Güncelleme Tarihi: 25/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -62,23 +62,24 @@ const
     '</html>';
 
 type
-  THTTPSunucu = object
+  THTTPSunucu = class
   private
-    FMevcutIstemciSayisi: TSayi4;
-    FIstemciler: array[0..USTSINIR_HTTPISTEMCI - 1] of PBaglanti;
-    function Al(ASiraNo: TISayi4): PBaglanti;
-    procedure Yaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
+    FAktifIstemciSayisi: TSayi4;
+    FIstemciler: array[0..USTSINIR_HTTPISTEMCI - 1] of TBaglanti;
+    function Al(ASiraNo: TISayi4): TBaglanti;
+    procedure Yaz(ASiraNo: TISayi4; ABaglanti: TBaglanti);
   public
-    procedure Yukle;
-    property Istemciler[ASiraNo: TISayi4]: PBaglanti read Al write Yaz;
+    constructor Create;
+    property Istemciler[ASiraNo: TISayi4]: TBaglanti read Al write Yaz;
     function Ekle(APaketTipi: TSayi4; AIPAdres: Isaretci; AKaynakPort,
-      AHedefPort: TSayi4): PBaglanti;
+      AHedefPort: TSayi4): TBaglanti;
+    property AktifIstemciSayisi: TSayi4 read FAktifIstemciSayisi;
   end;
 
 var
   HTTPSunucu0: THTTPSunucu;
 
-procedure SunucuIslevHTTP(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+procedure SunucuIslevHTTP(APaketTipi: TSayi4; ABaglanti: TBaglanti; AEthernetPaket: PEthernetPaket);
 function SayfaDegeriniAl(var ABellek: Isaretci): string;
 
 implementation
@@ -88,39 +89,56 @@ uses donusum, sistemmesaj, tcp;
 {==============================================================================
   http sunucusu ana yükleme iþlevlerini içerir
  ==============================================================================}
-procedure THTTPSunucu.Yukle;
+constructor THTTPSunucu.Create;
 var
   i: TSayi4;
 begin
 
-  FMevcutIstemciSayisi := 0;
+  FAktifIstemciSayisi := 0;
 
   for i := 0 to USTSINIR_HTTPISTEMCI - 1 do Istemciler[i] := nil;
 end;
 
+function THTTPSunucu.Al(ASiraNo: TISayi4): TBaglanti;
+begin
+
+  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_HTTPISTEMCI) then
+    Result := FIstemciler[ASiraNo]
+  else Result := nil;
+end;
+
+procedure THTTPSunucu.Yaz(ASiraNo: TISayi4; ABaglanti: TBaglanti);
+begin
+
+  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_HTTPISTEMCI) then
+    FIstemciler[ASiraNo] := ABaglanti;
+end;
+
 function THTTPSunucu.Ekle(APaketTipi: TSayi4; AIPAdres: Isaretci; AKaynakPort,
-  AHedefPort: TSayi4): PBaglanti;
+  AHedefPort: TSayi4): TBaglanti;
 var
-  Istemci, B: PBaglanti;
+  B, B2: TBaglanti;
   IT: TIletisimTipi;
-  i, j: TSayi4;
+  i: TSayi4;
   IPAdres: string;
 begin
 
   Result := nil;
 
   // azami baðlantý sayýsý kontrolü
-  if(HTTPSunucu0.FMevcutIstemciSayisi >= USTSINIR_HTTPISTEMCI) then Exit(nil);
+  if(HTTPSunucu0.AktifIstemciSayisi >= USTSINIR_HTTPISTEMCI) then Exit(nil);
 
   // istekte bulunan bilgisayar daha önce ayný port numarasýndan istekte bulunmuþ mu?
   for i := 0 to USTSINIR_HTTPISTEMCI - 1 do
   begin
 
-    Istemci := HTTPSunucu0.Istemciler[i];
-    if not(Istemci = nil) then
+    B2 := HTTPSunucu0.Istemciler[i];
+    if not(B2 = nil) then
     begin
 
-      if(HTTPSunucu0.Istemciler[i]^.YerelPort = AKaynakPort) then Exit(nil);
+      if(B2.YerelPort = AKaynakPort) then Exit(nil);
     end;
   end;
 
@@ -132,57 +150,40 @@ begin
   if(APaketTipi = PROTOKOL_IP6) then
     IT := itIP6
   else IT := itIP4;
-  B := Baglantilar0.BaglantiOlustur(IT, btPasif, ptTCP, IPAdres, AKaynakPort, AHedefPort);
+
+  B := GBaglantilar.BaglantiOlustur(IT, btPasif, ptTCP, IPAdres, AKaynakPort, AHedefPort);
   if(B = nil) then Exit(nil);
 
   // oluþturulan baðlantýyý kaydet
   for i := 0 to USTSINIR_HTTPISTEMCI - 1 do
   begin
 
-    Istemci := HTTPSunucu0.Istemciler[i];
-    if(Istemci = nil) then
+    B2 := HTTPSunucu0.Istemciler[i];
+    if(B2 = nil) then
     begin
 
       HTTPSunucu0.Istemciler[i] := B;
 
-      B^.BaglantiDurum := bdKapali;     { TODO - durumu yeni yapýlandýrmaya göre uygun bir þekilde belirle }
+      { TODO - durumu yeni yapýlandýrmaya göre uygun bir þekilde belirle }
+      B.BaglantiDurum := bdKapali;
 
-      j := HTTPSunucu0.FMevcutIstemciSayisi;
-      Inc(j);
-      HTTPSunucu0.FMevcutIstemciSayisi := j;
+      Inc(HTTPSunucu0.FAktifIstemciSayisi);
 
       Exit(B);
     end;
   end;
 end;
 
-function THTTPSunucu.Al(ASiraNo: TISayi4): PBaglanti;
-begin
-
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_HTTPISTEMCI) then
-    Result := FIstemciler[ASiraNo]
-  else Result := nil;
-end;
-
-procedure THTTPSunucu.Yaz(ASiraNo: TISayi4; ABaglanti: PBaglanti);
-begin
-
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_HTTPISTEMCI) then
-    FIstemciler[ASiraNo] := ABaglanti;
-end;
-
 var
   VeriGonderiliyor: Boolean = False;
   IstenenSayfa: string;
 
-procedure SunucuIslevHTTP(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+procedure SunucuIslevHTTP(APaketTipi: TSayi4; ABaglanti: TBaglanti; AEthernetPaket: PEthernetPaket);
 var
-  YeniB: PBaglanti;
-  TCPPaket: PTCPPaket;
+  B: TBaglanti;
   IP6Paket: PIP6Paket;
   IP4Paket: PIP4Paket;
+  TCPPaket: PTCPPaket;
   KaynakIP: Isaretci;
   KaynakPort, HedefPort,
   IPUzunluk, U: TSayi2;
@@ -190,8 +191,8 @@ var
   p: PChar;
 begin
 
-  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
   IP6Paket := PIP6Paket(@AEthernetPaket^.Veri);
+  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
 
   if(APaketTipi = PROTOKOL_IP6) then
   begin
@@ -215,25 +216,25 @@ begin
     HedefPort := ntohs(TCPPaket^.UzakPort);        // paketi alan cihazýn yerel portu (bu bilgisayar)
 
     // bu aþamada istemciden SYN mesajý gelmiþ, sunucu olarak istemciye SYN + ACK mesajý göndrilmiþtir
-    YeniB := HTTPSunucu0.Ekle(APaketTipi, KaynakIP, KaynakPort, HedefPort);
-    if not(YeniB = nil) then
+    B := HTTPSunucu0.Ekle(APaketTipi, KaynakIP, KaynakPort, HedefPort);
+    if not(B = nil) then
     begin
 
-      SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Web Sunucusu: yeni baðlantý. Kaynak port: %d', [KaynakPort]);
+      //SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Web Sunucusu: yeni baðlantý. Kaynak port: %d', [KaynakPort]);
 
-      YeniB^.SiraNo := Baglantilar0.TCPIlkSiraNoAl;
-      YeniB^.OnayNo := ntohs(TCPPaket^.SiraNo) + 1;
-      YeniB^.HedefMACAdres := AEthernetPaket^.KaynakMACAdres;
-
-      if(APaketTipi = PROTOKOL_IP6) then
-        YeniB^.HedefIP6Adres := PIP6Adres(KaynakIP)^
-      else YeniB^.HedefIP4Adres := PIP4Adres(KaynakIP)^;
+      B.SiraNo := GBaglantilar.TCPIlkSiraNoAl;
+      B.OnayNo := ntohs(TCPPaket^.SiraNo) + 1;
+      B.HedefMACAdres := AEthernetPaket^.KaynakMACAdres;
 
       if(APaketTipi = PROTOKOL_IP6) then
-        TCPPaketGonder(APaketTipi, YeniB, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)
-      else TCPPaketGonder(APaketTipi, YeniB, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
+        B.HedefIP6Adres := PIP6Adres(KaynakIP)^
+      else B.HedefIP4Adres := PIP4Adres(KaynakIP)^;
 
-      YeniB^.BaglantiDurum := bdBaglantiBekleniyor;
+      if(APaketTipi = PROTOKOL_IP6) then
+        TCPPaketGonder(APaketTipi, B, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)
+      else TCPPaketGonder(APaketTipi, B, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
+
+      B.BaglantiDurum := bdBaglantiBekleniyor;
     end
     else
     begin
@@ -246,40 +247,40 @@ begin
   begin
 
     i := ntohs(TCPPaket^.OnayNo);
-    ABaglanti^.SiraNo := i;
+    ABaglanti.SiraNo := i;
 
     i := ntohs(TCPPaket^.SiraNo);
-    ABaglanti^.OnayNo := i + 1;
+    ABaglanti.OnayNo := i + 1;
 
     if(APaketTipi = PROTOKOL_IP6) then
       TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
     else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
-    ABaglanti^.BaglantiDurum := bdKapanmayiBekliyor;
+    ABaglanti.BaglantiDurum := bdKapanmayiBekliyor;
 
     if(APaketTipi = PROTOKOL_IP6) then
       TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0)
     else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
 
-    ABaglanti^.BaglantiDurum := bdSonOnay;
+    ABaglanti.BaglantiDurum := bdSonOnay;
   end
   // baðlantý kuran bilgisayarýn veri gönderme isteði
   else if(TCPPaket^.Bayrak = TCP_BAYRAK_GONDER or TCP_BAYRAK_KABUL) then
   begin
 
-    if(ABaglanti^.BaglantiDurum = bdBaglantiKuruldu) then
+    if(ABaglanti.BaglantiDurum = bdBaglantiKuruldu) then
     begin
 
       i := ntohs(TCPPaket^.OnayNo);
-      ABaglanti^.SiraNo := i;
+      ABaglanti.SiraNo := i;
 
       i := ntohs(TCPPaket^.SiraNo);
       if(APaketTipi = PROTOKOL_IP6) then
         U := ntohs(IPUzunluk) - 20
       else U := ntohs(IPUzunluk) - 40;
-      ABaglanti^.OnayNo := i + U;
+      ABaglanti.OnayNo := i + U;
 
-      if(U > 0) then Baglantilar0.BellegeEkle(ABaglanti, @TCPPaket^.Secenekler, U);
+      if(U > 0) then ABaglanti.BellegeEkle(@TCPPaket^.Secenekler, U);
 
       // alýnan verinin deðerlendirilmesi
       p := @TCPPaket^.Secenekler;
@@ -294,34 +295,36 @@ begin
       VeriGonderiliyor := True;
 
       if(IstenenSayfa = '/') then
-        Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, WebSiteBaslik, Length(WebSiteBaslik))
-      else Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, AnaSayfaHataBaslik, Length(AnaSayfaHataBaslik));
+        ABaglanti.Yaz(APaketTipi, WebSiteBaslik, Length(WebSiteBaslik))
+      else ABaglanti.Yaz(APaketTipi, AnaSayfaHataBaslik, Length(AnaSayfaHataBaslik));
     end;
   end
   else if(TCPPaket^.Bayrak = TCP_BAYRAK_KABUL) then
   begin
 
+    //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'ACK', []);
+
     // istemci tarafýndan gönderilen ACK mesajýyla baðlantý kurulmuþtur
-    if(ABaglanti^.BaglantiDurum = bdBaglantiBekleniyor) then
+    if(ABaglanti.BaglantiDurum = bdBaglantiBekleniyor) then
 
-      ABaglanti^.BaglantiDurum := bdBaglantiKuruldu
+      ABaglanti.BaglantiDurum := bdBaglantiKuruldu
 
-    else if(ABaglanti^.BaglantiDurum = bdBaglantiKuruldu) then
+    else if(ABaglanti.BaglantiDurum = bdBaglantiKuruldu) then
     begin
 
       if(VeriGonderiliyor) then
       begin
 
         i := ntohs(TCPPaket^.OnayNo);
-        ABaglanti^.SiraNo := i;
+        ABaglanti.SiraNo := i;
 
         i := ntohs(TCPPaket^.SiraNo);
-        ABaglanti^.OnayNo := i;
+        ABaglanti.OnayNo := i;
 
         // 1. sayfa
         if(IstenenSayfa = '/') then
-          Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, WebSiteIcerik, Length(WebSiteIcerik))
-        else Baglantilar0.Yaz(APaketTipi, ABaglanti^.Kimlik, AnaSayfaHataIcerik, Length(AnaSayfaHataIcerik));
+          ABaglanti.Yaz(APaketTipi, WebSiteIcerik, Length(WebSiteIcerik))
+        else ABaglanti.Yaz(APaketTipi, AnaSayfaHataIcerik, Length(AnaSayfaHataIcerik));
 
         //i := Length(WebSiteIcerik);
         //SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'TCP: U: %d', [i]);
@@ -329,15 +332,27 @@ begin
         VeriGonderiliyor := False;
       end;
     end
-    else if(ABaglanti^.BaglantiDurum = bdSonOnay) then
+    else if(ABaglanti.BaglantiDurum = bdSonOnay) then
     begin
 
-      ABaglanti^.Bagli := False;
-      ABaglanti^.BaglantiDurum := bdYok;
-      if not(ABaglanti^.Bellek = nil) then FreeMem(ABaglanti^.Bellek, 4 * 4096);
+      ABaglanti.Bagli := False;
+      ABaglanti.BaglantiDurum := bdYok;
+      if not(ABaglanti.FBellek = nil) then FreeMem(ABaglanti.FBellek, 4 * 4096);
 
-      Baglantilar0.Baglanti[ABaglanti^.Kimlik] := nil;
-      FreeMem(ABaglanti, SizeOf(TBaglanti));
+      for i := 0 to USTSINIR_HTTPISTEMCI - 1 do
+      begin
+
+        B := HTTPSunucu0.Istemciler[i];
+        if not(B = nil) and (B.YerelPort = ABaglanti.YerelPort) then
+        begin
+
+          ABaglanti.Destroy;
+          HTTPSunucu0.Istemciler[i] := nil;
+
+          Dec(HTTPSunucu0.FAktifIstemciSayisi);
+          Exit;
+        end;
+      end;
     end;
   end
   else

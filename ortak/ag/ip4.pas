@@ -43,7 +43,7 @@ begin
 
   // 1. sistemin ip adresi yok ise...
   // ve udp protokolünden ip adresi talebi mevcut ise
-  if(GAgBilgisi.YenidenIPAdresiAliniyor) then
+  if(GAgBilgisi.IPAdresiAlindi = False) then
   begin
 
     // udp protokolü
@@ -56,7 +56,7 @@ begin
   end
   // 2. sistemin ip adresi var ise...
   // sadece aygıta gelen ve yayın olarak gelen ip adreslerini işle
-  else if(GAgBilgisi.YenidenIPAdresiAliniyor = False) then
+  else if(GAgBilgisi.IPAdresiAlindi) then
   begin
 
     if((IP4Karsilastir(IPPaket^.HedefIP, GAgBilgisi.IP4Adres)) or
@@ -137,7 +137,7 @@ begin
   Tasi2(AVeri, v, AVeriUzunlugu);
 
   // paketi donanıma (ethernet) gönder
-  AgKartinaVeriGonder(AHedefMACAdres, ptIP4, IPPaket, AVeriUzunlugu + IP4_BASLIK_U);
+  GAg0.AgKartinaVeriGonder(AHedefMACAdres, ptIP4, IPPaket, AVeriUzunlugu + IP4_BASLIK_U);
 
   FreeMem(IPPaket, AVeriUzunlugu + IP4_BASLIK_U);
 end;

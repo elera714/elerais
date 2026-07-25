@@ -54,7 +54,7 @@ type
   end;
 
 type
-  TMantiksalDepolama = object
+  TMantiksalDepolama = class
   private
     // mantýksal sürücü listesi. en fazla 6 depolama sürücüsü
     FMDAygitSayisi: TSayi4;
@@ -62,7 +62,7 @@ type
     function MDAygitiAl(ASiraNo: TISayi4): PMDNesne;
     procedure MDAygitiYaz(ASiraNo: TISayi4; AMDNesne: PMDNesne);
   public
-    procedure Yukle;
+    constructor Create;
     function MDAygitiOlustur: PMDNesne;
     function SurucuAl(ATamAdresYolu: string): PMDNesne;
     function AygitNumarasiAl(ASurucuTipi: TSayi4): TISayi4;
@@ -85,7 +85,7 @@ uses donusum, sistemmesaj, aygityonetimi;
 {==============================================================================
   sistem için mantýksal depolama aygýtlarýný oluþturur
  ==============================================================================}
-procedure TMantiksalDepolama.Yukle;
+constructor TMantiksalDepolama.Create;
 var
   FD: PFDNesne;
   MD: PMDNesne;

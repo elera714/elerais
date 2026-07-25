@@ -34,13 +34,13 @@ type
   end;
 
 type
-  TDHCPSunucu = object
+  TDHCPSunucu = class
   private
     FDHCPKayitListesi: array[0..USTSINIR_DHCPKAYIT - 1] of PDHCPKayit;
     function DHCPKayitAl(ASiraNo: TISayi4): PDHCPKayit;
     procedure DHCPKayitYaz(ASiraNo: TISayi4; ADHCPKayit: PDHCPKayit);
   public
-    procedure Yukle;
+    constructor Create;
     function HavuzdanIPAdresiAl(AMACAdres: TMACAdresIslev): TIPAdresIslev;
     function IPAdresiVerilsinMi(AIstenenIPAdres: TIPAdresIslev; AMACAdres: TMACAdresIslev): Boolean;
     property DHCPKayit[ASiraNo: TISayi4]: PDHCPKayit read DHCPKayitAl write DHCPKayitYaz;
@@ -58,7 +58,7 @@ uses donusum, sistemmesaj;
 {==============================================================================
   dhcp sunucusu ana yükleme işlevlerini içerir
  ==============================================================================}
-procedure TDHCPSunucu.Yukle;
+constructor TDHCPSunucu.Create;
 var
   i: TSayi4;
 begin

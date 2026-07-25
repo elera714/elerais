@@ -27,10 +27,10 @@ const
   ProjeBaslangicTarihi: string = '30.07.2005';
   {$IFDEF SISTEM_SUNUCU}
   SistemTipi: TSayi4 = SISTEM_TIPI_SUNUCU;
-  SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.4.0 - R36';
+  SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.4.1 - R37';
   {$ELSE}
   SistemTipi: TSayi4 = SISTEM_TIPI_ISTEMCI;
-  SistemAdi: string = 'ELERA ÝS (Ýstemci)- 0.4.0 - R36';
+  SistemAdi: string = 'ELERA ÝS (Ýstemci)- 0.4.1 - R37';
   {$ENDIF}
   DerlemeTarihi: string = {$i %DATE%};
   FPCMimari: string = {$i %FPCTARGET%};
@@ -871,7 +871,7 @@ type
     OtomatikIP: Boolean;      // ip adresi dhcp sunucusundan otomatik alýnacak
 
     // yukarýdaki yapý için API iþlevi oluþturulmuþtur, sýralamanýn bozulmasý iþlevin bozulmasý demektir
-    YenidenIPAdresiAliniyor: Boolean;
+    IPAdresiAlindi: Boolean;
 
     { TODO - yukarýdaki yapýya dahil edilecektir }
     IP6Adres: TIP6Adres;

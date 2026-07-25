@@ -122,7 +122,7 @@ begin
             GAgBilgisi.DNSSunucusu := YanitAgBilgisi.DNSSunucusu;
             GAgBilgisi.DHCPSunucusu := YanitAgBilgisi.DHCPSunucusu;
             GAgBilgisi.IPKiraSuresi := YanitAgBilgisi.IPKiraSuresi;
-            GAgBilgisi.YenidenIPAdresiAliniyor := False;
+            GAgBilgisi.IPAdresiAlindi := True;
 
             DHCPBilgilendirmeMesajiGonder(YanitAgBilgisi.IP4Adres);
             BilgiMesajiGonderildi := True;

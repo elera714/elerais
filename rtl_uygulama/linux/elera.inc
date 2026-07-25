@@ -313,10 +313,12 @@ type
   PMesajTipi = ^TMesajTipi;
   TMesajTipi = (mtBilgi = 1, mtUyari, mtHata);
 
-  PMesajKayit = ^TMesajKayit;
-  TMesajKayit = record
+  // programlar için yapý
+type
+  PMesajKayit3 = ^TMesajKayit3;
+  TMesajKayit3 = record
     MesajTipi: TMesajTipi;
-    SiraNo: TISayi4;
+    SiraNo: TSayi4;
     Saat: TSayi4;
     Renk: TRenk;
     Mesaj: string;

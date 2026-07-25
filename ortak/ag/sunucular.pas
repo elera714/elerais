@@ -4,9 +4,9 @@
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
   Dosya Adı: sunucular.pas
-  Dosya İşlevi: çekirdek içerisinde çalışan sunuucuları yönetir
+  Dosya İşlevi: çekirdek içerisinde çalışan sunucuları yönetir
 
-  Güncelleme Tarihi: 10/06/2026
+  Güncelleme Tarihi: 25/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ const
   HIZMETVEREN_SUNUCU_SAYISI = 2;
 
 type
-  TSunucuIslev = procedure(APaketTipi: TSayi4; ABaglanti: PBaglanti; AEthernetPaket: PEthernetPaket);
+  TSunucuIslev = procedure(APaketTipi: TSayi4; ABaglanti: TBaglanti; AEthernetPaket: PEthernetPaket);
 
   PSunucuYapisi = ^TSunucuYapisi;
   TSunucuYapisi = record

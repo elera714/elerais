@@ -44,8 +44,6 @@ type
 var
   _DNS: PDNS = nil;
   Arge0: TArGe;
-  Merhaba: String = Chr($C3) + Chr($87) + Chr($65) + Chr($72) + Chr($69) +
-    Chr($6B) + #13 + #10 + #0;
 
 procedure Yukle;
 procedure SistemAnaKontrol;
@@ -58,7 +56,7 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp4_i, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
-  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci, src_ide;
+  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci, baglanti;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -194,9 +192,6 @@ end;
 {==============================================================================
   sistem ana kontrol kýsmý
  ==============================================================================}
-var
-  AracTipleri: TAracTipleriSinif;
-
 procedure SistemAnaKontrol;
 const
   PingHedefIP6Adres: TIP6Adres = (
@@ -208,13 +203,11 @@ var
   TusKarakterDegeri: char;
   TusDurum: TTusDurum;
   i: TSayi4;
-  i4, i41: TISayi4;
   Masaustu: PMasaustu;
   GN: PGorselNesne;
   Olay: TOlay;
   MD: PMDNesne;
   T: TMyThread;
-  A, B: TAracTipiSinif;
   G: PGorev;
   DosyaKimlik: TKimlik;
   Durum: Boolean;
@@ -222,12 +215,10 @@ var
   //T: TMyThread;
   //T2: TMyThread2;
   PingSiraNo: TSayi4 = 111;
-  s: string;
   p: PChar;
-  GMBilgi: PGMBilgi;
+  B, B2: TBaglanti;
 begin
 
-  AracTipleri := TAracTipleriSinif.Create;
   i := 100;
 
   // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
@@ -301,7 +292,7 @@ begin
             begin
 
               // að bilgileri öndeðerlerle yükleniyor
-              IlkAdresDegerleriniYukle;
+              GAg0.IlkAdresDegerleriniYukle;
 
               DHCPIpAdresiAl;
             end
@@ -316,69 +307,22 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %x', [GMBilgi^.Sil]);
+            B := TBaglanti.Create;
+            B2 := B;
 
+            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %x', [@B.UzakPort]);
+            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %x', [@B2.UzakPort]);
 
             //SistemKlasorleriniOlustur;
             //vbox.Listele;
             //KomsuIstegiGonder(PingHedefIP6Adres);
 
-            { TODO - baðlantý oluþturma / yok et testlerinden sonra bu iþlev silinebilir }
-            //Baglantilar0.Listele;
-
             //Gorevler0.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
 
             //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
 
-            //p4 := PCIAygiti0.Oku4(0, 8, 0, PCI_BAR0);
-            {p4 := SizeOf(TIPAdres);
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [p4]);
-            p4 := SizeOf(TIPAdresIslev);
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [p4]);}
-
-            //GSistemMesaj.Ekle0(mtBilgi, RENK_KIRMIZI, 'Merhaba');
-
-            {A := AracTipleri.Ekle;
-            A.Kimlik := 11111111;
-            B := AracTipleri.Ekle;
-            B.Kimlik := 22222222;
-            B := AracTipleri.Ekle;
-            B.Kimlik := 33333333;
-            B := AracTipleri.Ekle;
-            B.Kimlik := 44444444;
-
-            asm
-              mov esi,AracTipleri;
-              mov ebx,2
-              shl ebx,2
-              mov esi,[esi + TAracTipleriSinif.FAracTipListesi + ebx]
-              mov eax,[esi + TAracTipiSinif.FKimlik]
-              mov i,eax
-            end;
-
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Toplam: %d', [AracTipleri.Toplam]);
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer1: %d', [i]);
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer2: %d', [TSayi4(@AracTipleri)]);
-                      }
-            //i := TSayi4(@GorevListesi[4]^.G0);
-            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [G^.G0.FGorevSayaci]);
-            //i := PSayi4(i)^;
-            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [G^.G0.FDeger]);
-            //i := TSayi4(@GorevListesi[4]^.G0.FGorevSayaci);
-            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [G^.G0.FDeger2]);
-            {i := TSayi4(@GorevListesi[4]^.G0.FDeger);
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %x', [i]);
-            i := TSayi4(@GorevListesi[4]^.G0.FDeger2);
-            SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %x', [i]);}
-
-            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Kimlik: %d', [A.Kimlik]);
-
             //T := TMyThread.Create(True);
             {T.Start;}
-
-            //T2 := TMyThread2.Create(True);
-            //T2.Start;
 
             //AssertErrorProc := @AssertIslev;
             //Assert(1 > 2, 'Merhaba');
@@ -386,19 +330,6 @@ begin
             //for i := 1 to 100 do CreateDir('disk2:\merhaba\mer' + IntToStr(i));
             //DosyalariKopyala;
             //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
-            //BellekDegeriniGoster := True;
-            {Merhaba := '';
-            for i := 1 to 11 do Merhaba := Merhaba + 'ELERA Ýþletim Sistemi' + #13#10;
-
-            //i := Length(Merhaba);
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ansistring deðer: %s', [Merhaba]);
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ansistring addres: $%x', [TSayi4(@Merhaba)]);
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ansistring U: %d', [i]);
-
-            BellekDegeriniGoster := False;}
-
-            //Assert(True, 'Merhaba');
-
 
             //vbox.Listele;
           end
@@ -416,38 +347,8 @@ begin
             //Gorevler0.Calistir('disk1:\dskgor.c', CALISMA_SEVIYE3)
             //elr1.SistemKlasorleriniSil;
 
-            {MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
-            if not(MD = nil) then
-            begin
-
-              GetMem(Bellek1, 512);
-
-              // dosya tablosunu oluþtur
-              FillChar(Bellek1^, 512, 0);
-
-              FD := MD^.FD;
-              FD^.SektorYaz(FD, $601, 1, Bellek1);
-
-              FreeMem(Bellek1, 512);
-            end;}
-
-
-            {for i := 0 to AracTipleri.Toplam - 1 do
-            begin
-
-              SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Deðer: %d', [AracTipleri.AracTipi[i].Kimlik]);
-            end;}
             //iiiii := Align(SizeOf(TIzgara) + 64, 16);
             //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %d', [iiiii]);
-
-            //pic.Maskele(0);
-            {IRR := pic.ISRDegeriniOku;
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IRR Deðeri: %x', [IRR]);}
-
-
-            //BekleMS(10000);
-
-            //          pic.MaskeKaldir(0);
 
             //vbox.IcerigiGoruntule;
           end
@@ -585,7 +486,8 @@ begin
       end;
     end;
 
-    AgKartiVeriAlmaIslevi;
+    //if(GAg0.Aktif) then
+    GAg0.AgKartiVeriAlmaIslevi;
 
     // fare olaylarýný iþle
     GOlayYonetim.FareOlaylariniIsle;

@@ -73,7 +73,7 @@ begin
   ListeleriIlkDegerlerleYukle;
 
   //SISTEM_MESAJ(RENK_LACIVERT, '+ Sistem mesaj servisi baþlatýlýyor...', []);
-  SistemMesaj0.Yukle;
+  GSistemMesaj := TSistemMesaj.Create;
 
   // uygulama deðiþkenlerini ilk deðerlerle yükle
   Gorevler0.Yukle;
@@ -115,7 +115,7 @@ begin
   FizikselDepolama0.Yukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Mantýksal sürücü atamalarý gerçekleþtiriliyor...', []);
-  MantiksalDepolama0.Yukle;
+  MantiksalDepolama0 := TMantiksalDepolama.Create;
 
   {$IFDEF SRC_COM}
   SISTEM_MESAJ(RENK_MAVI, '+ Ýletiþim (COM) portu yükleniyor...', []);
@@ -130,7 +130,7 @@ begin
 
   // að bileþenlerini yükle
   {$IFDEF AG_YUKLE}
-  ag.Yukle;
+  GAg0 := TAg.Create;
   {$ENDIF}
 
   // olay nesnesini ilk deðerlerini yükle

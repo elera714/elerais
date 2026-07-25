@@ -99,6 +99,7 @@ begin
     else if(IPPaket^.TasinanVeriP = PROTOKOL_TCP) then
     begin
 
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DAT', []);
       TCPPaketleriniIsle(AEthernetPaket);
       Inc(TCP6PaketSayisi);
     end
@@ -152,7 +153,7 @@ begin
   Tasi2(AVeri, v, AVeriUzunlugu);
 
   // paketi donanýma (ethernet) gönder
-  AgKartinaVeriGonder(AHedefMACAdres, ptIP6, IPPaket, AVeriUzunlugu + IP6_BASLIK_U);
+  GAg0.AgKartinaVeriGonder(AHedefMACAdres, ptIP6, IPPaket, AVeriUzunlugu + IP6_BASLIK_U);
 
   FreeMem(IPPaket, AVeriUzunlugu + IP6_BASLIK_U);
 end;

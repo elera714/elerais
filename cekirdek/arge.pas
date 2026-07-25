@@ -19,41 +19,6 @@ uses paylasim, gn_masaustu, gn_pencere, gn_araccubugu, gn_durumcubugu, gn_gucdug
   gn_onaykutusu, gn_kaydirmacubugu, gn_listekutusu, gn_karmaliste, gorselnesne;
 
 type
-
-  { TAracTipiSinif }
-  PAracTipiSinif = ^TAracTipiSinif;
-  TAracTipiSinif = class
-  //private
-
-  public
-    FKimlik: TSayi4;
-    constructor Create;
-    destructor Destroy; override;
-  published
-    property Kimlik: TSayi4 read FKimlik write FKimlik;
-  end;
-
-type
-  //TAracTipListesi = specialize TFPGObjectList<TAracTipiSinif>;
-
-  { TAracTipleriSinif }
-
-  TAracTipleriSinif = class
-  private
-    FToplam: TSayi4;
-    function Al(ASiraNo: Integer): TAracTipiSinif;
-    procedure Yaz(ASiraNo: Integer; AGaraj: TAracTipiSinif);
-  public
-    FAracTipListesi: array[0..9] of TAracTipiSinif;
-    constructor Create;
-    destructor Destroy; override;
-    function Toplam: Integer;
-    procedure Temizle;
-    function Ekle: TAracTipiSinif;
-    property AracTipi[ASiraNo: Integer]: TAracTipiSinif read Al write Yaz;
-  end;
-
-type
   TArgeIslev = procedure of object;
 
 type
@@ -97,78 +62,6 @@ procedure Prg2;
 implementation
 
 uses donusum, zamanlayici, sistemmesaj;
-
-{ TAracTipleriSinif }
-
-function TAracTipleriSinif.Al(ASiraNo: Integer): TAracTipiSinif;
-begin
-
-{  if(ASiraNo >= 0) and (ASiraNo < Toplam) then
-    Result := FAracTipListesi[ASiraNo]
-  else Result := nil;}
-end;
-
-procedure TAracTipleriSinif.Yaz(ASiraNo: Integer; AGaraj: TAracTipiSinif);
-begin
-
-  {if(ASiraNo >= 0) and (ASiraNo < Toplam) then
-    FAracTipListesi[ASiraNo] := AGaraj;}
-end;
-
-constructor TAracTipleriSinif.Create;
-var
-  i: TSayi4;
-begin
-
-  FToplam := 0;
-
-  for i := 0 to 9 do FAracTipListesi[i] := nil;
-
-  //FAracTipListesi := TAracTipListesi.Create(False);
-end;
-
-destructor TAracTipleriSinif.Destroy;
-begin
-
-  //FreeAndNil(FAracTipListesi);
-  inherited;
-end;
-
-function TAracTipleriSinif.Toplam: Integer;
-begin
-
-  Result := FToplam;
-  //Result := FAracTipListesi.Count;
-end;
-
-procedure TAracTipleriSinif.Temizle;
-begin
-
-end;
-
-function TAracTipleriSinif.Ekle: TAracTipiSinif;
-var
-  A: TAracTipiSinif;
-begin
-
-  A := TAracTipiSinif.Create;
-  FAracTipListesi[FToplam] := A;
-  Inc(FToplam);
-
-  Result := A;
-end;
-
-{ TAracTipiSinif }
-
-constructor TAracTipiSinif.Create;
-begin
-
-end;
-
-destructor TAracTipiSinif.Destroy;
-begin
-  inherited Destroy;
-end;
 
 constructor TArGe.Create(AProgramSN: TSayi4);
 begin

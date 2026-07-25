@@ -47,7 +47,7 @@ var
   PB1: PByte;
   PB2: PSayi2;
   B1, B2, B3: TSayi1;
-  B: PBaglanti;
+  B: TBaglanti;
   p: Isaretci;
   VeriSN, VeriUzunlukSN,
   VeriBaslangic: TSayi4;
@@ -219,17 +219,17 @@ begin
     Tasi2(@Veri[0], p, VeriSN);
 
     IPAdresi := IP_KarakterKatari4(AIPPaket^.KaynakIP);
-    B := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
+    B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
       ntohs(AUDPBaslik^.HedefPort));
     if not(B = nil) then
     begin
 
-      if(Baglantilar0.Baglan(itIP4, B^.Kimlik, btYayin) <> -1) then
+      if(B.Baglan(itIP4, btYayin) <> -1) then
       begin
 
-        Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, NB2, VeriSN + 12);
+        B.Yaz(PROTOKOL_IP4, NB2, VeriSN + 12);
 
-        Baglantilar0.BaglantiyiKes(B^.Kimlik);
+        B.BaglantiyiKes;
       end;
     end;
 

@@ -6,7 +6,7 @@
   Dosya Adı: gn_defter.pas
   Dosya İşlevi: defter nesnesi (TMemo) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 23/07/2026
+  Güncelleme Tarihi: 24/07/2026
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     40K ve çekirdek bölümüne eklenen 40K bellek kullanmaktadır.
@@ -245,7 +245,8 @@ begin
   Defter^.ImlecX := 0;
   Defter^.ImlecY := 0;
 
-  //Defter^.Kodlama := 0;
+  // kodlama = utf-8
+  Defter^.Kodlama := 0;
 
   // kimlik adresini geri döndür
   Result := Defter;

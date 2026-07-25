@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 23/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,8 +27,10 @@ type
   PMesajTipi = ^TMesajTipi;
   TMesajTipi = (mtBilgi = 1, mtUyari, mtHata);
 
-  PMesajKayit = ^TMesajKayit;
-  TMesajKayit = record
+  // programlar için yapı
+type
+  PMesajKayit3 = ^TMesajKayit3;
+  TMesajKayit3 = record
     MesajTipi: TMesajTipi;
     SiraNo: TSayi4;
     Saat: TSayi4;
@@ -37,26 +39,38 @@ type
   end;
 
 type
+  PMesajKayit = ^TMesajKayit;
+  TMesajKayit = class
+  public
+    MesajTipi: TMesajTipi;
+    SiraNo: TSayi4;
+    Saat: TSayi4;
+    Renk: TRenk;
+    Mesaj: string;
+  end;
+
+type
+  //TMesajListesi = specialize TFPGObjectList<TMesajKayit>;
   PSistemMesaj = ^TSistemMesaj;
-  TSistemMesaj = object
+  TSistemMesaj = class
   private
     FServisCalisiyor: Boolean;
     FMesajSN, FToplamMesaj: TSayi4;
-    FMesajListesi: array[0..USTSINIR_MESAJ - 1] of PMesajKayit;
-    function MesajAl(ASiraNo: TISayi4): PMesajKayit;
-    procedure MesajYaz(ASiraNo: TISayi4; AMesajKayit: PMesajKayit);
+    FMesajKayitListesi: array[0..USTSINIR_MESAJ - 1] of TMesajKayit;
+    function Al(ASiraNo: TISayi4): TMesajKayit;
+    procedure Yaz(ASiraNo: TISayi4; AMesajKayit: TMesajKayit);
   public
-    procedure Yukle;
+    constructor Create;
     procedure Ekle(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string);
     procedure Temizle;
-    procedure MesajAl(ASiraNo: TISayi4; var AMesajKayit: PMesajKayit);
+    procedure MesajAl(ASiraNo: TISayi4; var AMesajKayit: PMesajKayit3);
     property ServisCalisiyor: Boolean read FServisCalisiyor write FServisCalisiyor;
     property ToplamMesaj: TSayi4 read FToplamMesaj;
-    property Mesaj[ASiraNo: TISayi4]: PMesajKayit read MesajAl write MesajYaz;
+    property Mesaj[ASiraNo: TISayi4]: TMesajKayit read Al write Yaz;
   end;
 
 var
-  SistemMesaj0: TSistemMesaj;
+  GSistemMesaj: TSistemMesaj;
   SistemMesajKilit: TSayi4 = 0;
 
 { TODO : // aşağıdaki tüm çağrılar iptal edilerek bu çağrının içerisine alınacak }
@@ -79,17 +93,17 @@ function UzunlukAl16(ADeger: TSayi4): TSayi4;
 
 implementation
 
-uses genel, cmos, donusum, zamanlayici;
+uses genel, cmos, donusum;
 
 {==============================================================================
   oluşturulacak mesajların ana yükleme işlevlerini içerir
  ==============================================================================}
-procedure TSistemMesaj.Yukle;
+constructor TSistemMesaj.Create;
 var
   i: TSayi4;
 begin
 
-  // sistem mesaj yapılarını ilk değerlerle yükle
+  // mesaj yapılarını ilk değerlerle yükle
   for i := 0 to USTSINIR_MESAJ - 1 do Mesaj[i] := nil;
 
   // mesaj sıra numarası
@@ -102,21 +116,21 @@ begin
   ServisCalisiyor := True;
 end;
 
-function TSistemMesaj.MesajAl(ASiraNo: TISayi4): PMesajKayit;
+function TSistemMesaj.Al(ASiraNo: TISayi4): TMesajKayit;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MESAJ) then
-    Result := FMesajListesi[ASiraNo]
+    Result := FMesajKayitListesi[ASiraNo]
   else Result := nil;
 end;
 
-procedure TSistemMesaj.MesajYaz(ASiraNo: TISayi4; AMesajKayit: PMesajKayit);
+procedure TSistemMesaj.Yaz(ASiraNo: TISayi4; AMesajKayit: TMesajKayit);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MESAJ) then
-    FMesajListesi[ASiraNo] := AMesajKayit;
+    FMesajKayitListesi[ASiraNo] := AMesajKayit;
 end;
 
 {==============================================================================
@@ -127,7 +141,7 @@ var
   Saat, Dakika,
   Saniye: TSayi1;
   i, j: TISayi4;
-  M: PMesajKayit;
+  M: TMesajKayit;
 begin
 
   if not(ServisCalisiyor) then Exit;
@@ -144,37 +158,35 @@ begin
   begin
 
     // ilk mesajı sil
-    FreeMem(Mesaj[0], SizeOf(TMesajKayit));
+    Mesaj[0].Destroy;
 
     // mesajları bir yukarı kaydır
     for j := 1 to USTSINIR_MESAJ - 1 do Mesaj[j - 1] := Mesaj[j];
 
     Dec(i);
-
-    Mesaj[i] := nil;
   end;
 
   // yeni mesaj için bellekte yer ayır
-  M := PMesajKayit(GetMem(SizeOf(TMesajKayit)));
+  M := TMesajKayit.Create;
 
   // mesajın adresini mesaj listesine kaydet
   Mesaj[i] := M;
 
   // mesaj tipi
-  M^.MesajTipi := AMesajTipi;
+  M.MesajTipi := AMesajTipi;
 
   // mesaj sıra numarası
-  M^.SiraNo := FMesajSN;
+  M.SiraNo := FMesajSN;
 
   // mesaj saati
   SaatAl(Saat, Dakika, Saniye);
-  M^.Saat := (Saniye shl 16) or (Dakika shl 8) or Saat;
+  M.Saat := (Saniye shl 16) or (Dakika shl 8) or Saat;
 
   // mesaj rengi
-  M^.Renk := ARenk;
+  M.Renk := ARenk;
 
   // mesaj
-  M^.Mesaj := AMesaj;
+  M.Mesaj := AMesaj;
 
   Inc(i);
   FToplamMesaj := i;
@@ -187,7 +199,7 @@ end;
  ==============================================================================}
 procedure TSistemMesaj.Temizle;
 var
-  M: PMesajKayit;
+  M: TMesajKayit;
   i: TSayi4;
 begin
 
@@ -200,12 +212,7 @@ begin
   begin
 
     M := Mesaj[i];
-    if not(M = nil) then
-    begin
-
-      Mesaj[i] := nil;
-      FreeMem(M, SizeOf(TMesajKayit));
-    end;
+    if not(M = nil) then Mesaj[i].Destroy;
   end;
 
 //  KritikBolgedenCik(SistemMesajKilit);
@@ -214,9 +221,9 @@ end;
 {==============================================================================
   mesaj kayıtlarından istenen sıradaki mesajı alır
  ==============================================================================}
-procedure TSistemMesaj.MesajAl(ASiraNo: TISayi4; var AMesajKayit: PMesajKayit);
+procedure TSistemMesaj.MesajAl(ASiraNo: TISayi4; var AMesajKayit: PMesajKayit3);
 var
-  M: PMesajKayit;
+  M: TMesajKayit;
 begin
 
 //  while KritikBolgeyeGir(SistemMesajKilit) = False do;
@@ -225,11 +232,11 @@ begin
   if not(M = nil) then
   begin
 
-    AMesajKayit^.MesajTipi := M^.MesajTipi;
-    AMesajKayit^.SiraNo := M^.SiraNo;
-    AMesajKayit^.Saat := M^.Saat;
-    AMesajKayit^.Renk := M^.Renk;
-    AMesajKayit^.Mesaj := M^.Mesaj;
+    AMesajKayit^.MesajTipi := M.MesajTipi;
+    AMesajKayit^.SiraNo := M.SiraNo;
+    AMesajKayit^.Saat := M.Saat;
+    AMesajKayit^.Renk := M.Renk;
+    AMesajKayit^.Mesaj := M.Mesaj;
   end;
 
 //  KritikBolgedenCik(SistemMesajKilit);
@@ -371,7 +378,7 @@ begin
   end;
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -403,7 +410,7 @@ begin
   for i := 0 to AMesajUz - 1 do s := s + p[i];
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -426,7 +433,7 @@ begin
   for i := 0 to AMesajUz2 - 1 do s := s + p[i];
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -445,7 +452,7 @@ begin
   for i := 0 to ABellekUz - 1 do s := s + p[i];
 
   // sistem mesaj servisi çalışıyorsa, mesajı kayıt listesine ekle
-  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -463,7 +470,7 @@ begin
 
   s := AMesaj + MACAdres;
 
-  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -481,7 +488,7 @@ begin
 
   s := AMesaj + IPAdres;
 
-  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================
@@ -499,7 +506,7 @@ begin
 
   s := AMesaj + IPAdres;
 
-  if(SistemMesaj0.ServisCalisiyor) then SistemMesaj0.Ekle(AMesajTipi, ARenk, s);
+  if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
 
 {==============================================================================

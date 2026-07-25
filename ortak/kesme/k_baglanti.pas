@@ -27,13 +27,16 @@ uses baglanti, genel, dns, gorev, sistemmesaj;
  ==============================================================================}
 function AgBaglantiCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
 var
-  B: PBaglanti;
+  B: TBaglanti;
+  B2: TBaglanti;
   ProtokolTipi: TProtokolTipi;
   BaglantiKimlik: TKimlik;
   AnaIslev, i, j, AltIslev: TSayi4;
   YerelPort, HedefPort: TSayi2;
   s: string;
 begin
+
+  Result := HATA_ISLEV;
 
   AnaIslev := (IslevNo and $FF);
   AltIslev := ((IslevNo shr 8) and $FFFF);
@@ -56,17 +59,17 @@ begin
         geçicidir, sunucu / istemci yapısı kurulduğunda bu yapının olması gerektiği gibi
         yapılanması gerekmektedir }
       if(ProtokolTipi = ptTCP) then
-        YerelPort := Baglantilar0.YerelPortAl
+        YerelPort := GBaglantilar.YerelPortAl
       else YerelPort := HedefPort;
 
       { TODO - ip v6'ya göre düzenlenecek }
       if(ProtokolTipi = ptTCP) then
-        B := Baglantilar0.BaglantiOlustur(itIP4, btAktif, ProtokolTipi, s, YerelPort, HedefPort)
-      else B := Baglantilar0.BaglantiOlustur(itIP4, btPasif, ProtokolTipi, s, YerelPort, HedefPort);
+        B := GBaglantilar.BaglantiOlustur(itIP4, btAktif, ProtokolTipi, s, YerelPort, HedefPort)
+      else B := GBaglantilar.BaglantiOlustur(itIP4, btPasif, ProtokolTipi, s, YerelPort, HedefPort);
 
       if not(B = nil) then
 
-        Result := B^.Kimlik
+        Result := B.Kimlik
       else Result := HATA_KIMLIK
     end
     // mevcut bağlantı ile hedef porta bağlan
@@ -74,9 +77,9 @@ begin
     begin
 
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
-      B := Baglantilar0.Baglanti[BaglantiKimlik];
-      if not(B = nil) then
-        Result := Baglantilar0.Baglan(itIP4, B^.Kimlik, btIP)
+      B2 := GBaglantilar.Baglanti[BaglantiKimlik];
+      if not(B2 = nil) then
+        Result := B2.Baglan(itIP4, btIP)
       else Result := -1;
     end
     // bağlantının varlığını kontrol et
@@ -84,9 +87,9 @@ begin
     begin
 
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
-      B := Baglantilar0.Baglanti[BaglantiKimlik];
-      if not(B = nil) then
-        Result := TSayi4(Baglantilar0.BagliMi(B^.Kimlik))
+      B2 := GBaglantilar.Baglanti[BaglantiKimlik];
+      if not(B2 = nil) then
+        Result := TSayi4(B2.BagliMi)
       else Result := TSayi4(False);
     end
     // porta gelen veri uzunluğunu al
@@ -94,9 +97,9 @@ begin
     begin
 
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
-      B := Baglantilar0.Baglanti[BaglantiKimlik];
-      if not(B = nil) then
-        Result := Baglantilar0.VeriUzunlugu(B^.Kimlik)
+      B2 := GBaglantilar.Baglanti[BaglantiKimlik];
+      if not(B2 = nil) then
+        Result := B2.VeriUzunlugu
       else Result := 0;
     end
     // bağlantıya gelen veriyi oku
@@ -106,9 +109,9 @@ begin
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
       i := PSayi4(Degiskenler + 04)^;
 
-      B := Baglantilar0.Baglanti[BaglantiKimlik];
-      if not(B = nil) then
-        Result := Baglantilar0.Oku(B^.Kimlik, Isaretci(i + FAktifGorevBellekAdresi))
+      B2 := GBaglantilar.Baglanti[BaglantiKimlik];
+      if not(B2 = nil) then
+        Result := B2.Oku(Isaretci(i + FAktifGorevBellekAdresi))
       else Result := 0;
     end
     // bağlantıya veri gönder
@@ -119,9 +122,9 @@ begin
       i := PSayi4(Degiskenler + 04)^;
       j := PSayi4(Degiskenler + 08)^;
 
-      B := Baglantilar0.Baglanti[BaglantiKimlik];
-      if not(B = nil) then
-        Baglantilar0.Yaz(PROTOKOL_IP4, B^.Kimlik, Isaretci(i + FAktifGorevBellekAdresi), j);
+      B2 := GBaglantilar.Baglanti[BaglantiKimlik];
+      if not(B2 = nil) then
+        B2.Yaz(PROTOKOL_IP4, Isaretci(i + FAktifGorevBellekAdresi), j);
     end
     // bağlantıyı kapat
     else if(AltIslev = 7) then
@@ -129,9 +132,9 @@ begin
 
       { TODO : kaynakların yok edilmesi test edilecek }
       BaglantiKimlik := PISayi4(Degiskenler + 00)^;
-      B := Baglantilar0.Baglanti[BaglantiKimlik];
-      if not(B = nil) then
-        Result := Baglantilar0.BaglantiyiKes(B^.Kimlik)
+      B2 := GBaglantilar.Baglanti[BaglantiKimlik];
+      if not(B2 = nil) then
+        Result := B2.BaglantiyiKes
       else Result := -1;
     end
 
@@ -142,9 +145,7 @@ begin
   begin
 
     Result := DNSIletisimCagriIslevleri(AltIslev, Degiskenler);
-  end
-
-  else Result := HATA_ISLEV;
+  end;
 end;
 
 end.

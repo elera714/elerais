@@ -29,10 +29,6 @@ const
   // bilgi: ethernet mac adresi bu listeye direkt dahil olmayýp, dolaylý olarak dahildir
   YEREL_MAC_ADRESSAYISI = 2;
 
-var
-  // paket baþlýklarý da dahil olmak üzere tüm veri toplamlarýný içerir.
-  AlinanByte, GonderilenByte: TSayi4;
-
 const
 
   // 0800ABCDEF01 MAC adresi Modified EUI-64'e göre kodlanarak ipv6 adresi elde edilmiþtir
@@ -41,9 +37,11 @@ const
     $0A, $00, $AB, $FF, $FE, $CD, $EF, $01);
 
   // (S)unucu sabit ip4 adres deðerleri
-  SIP4Adresi: TIP4Adres = (10, 0, 1, 1);
+  SIP4Adresi: TIP4Adres = (192, 168, 1, 200);
+  //SIP4Adresi: TIP4Adres = (10, 0, 1, 1);
   SAltAgMaskesi: TIP4Adres = (255, 255, 255, 0);
-  SAgGecidi: TIP4Adres = (10, 0, 1, 1);
+  //SAgGecidi: TIP4Adres = (10, 0, 1, 1);
+  SAgGecidi: TIP4Adres = (192, 168, 1, 1);
   SDHCPSunucusu: TIP4Adres = (10, 0, 1, 1);
   SDNSSunucusu: TIP4Adres = (10, 0, 1, 1);
 
@@ -61,49 +59,42 @@ const
 
 type
   PAg = ^TAg;
-  TAg = object
+  TAg = class
   private
-    FToplamAygit: TSayi4;
-//    FPCIAygitListesi: array[0..USTSINIR_PCIAYGIT - 1] of PPCI;
-//    function PCIBilgiAl(ASiraNo: TSayi4): PPCI;
-//    procedure PCIBilgiYaz(ASiraNo: TSayi4; APCI: PPCI);
+    FAktif: Boolean;
+    // paket baþlýklarý da dahil olmak üzere tüm veri toplamlarýný içerir.
+    FAlinanByte,
+    FGonderilenByte: TSayi4;
   public
+    constructor Create;
+    procedure IlkAdresDegerleriniYukle;
+    function AgKartindanVeriAl(AHedefBellekAdresi: Isaretci): TISayi4;
+    procedure AgKartiVeriAlmaIslevi;
+    procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi;
+      AVeri: Isaretci; AVeriUzunlugu: TSayi2);
     function MACAdresiKabulEdilsinMi(AHedefMACAdres: TMACAdres): Boolean;
-//    procedure Yukle;
-{    function Oku1(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi1;
-    function Oku2(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi2;
-    function Oku4(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi4;
-    procedure Yaz1(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi1);
-    procedure Yaz2(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi2);
-    procedure Yaz4(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi4);
-    function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
-    function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
-    function IRQNoAl(APCI: PPCI): TSayi1;
-    property ToplamAygit: TSayi4 read FToplamAygit write FToplamAygit;
-    property PCI[ASiraNo: TSayi4]: PPCI read PCIBilgiAl write PCIBilgiYaz;}
+    property Aktif: Boolean read FAktif;
+    property AlinanByte: TSayi4 read FAlinanByte;
+    property GonderilenByte: TSayi4 read FGonderilenByte;
   end;
 
-procedure Yukle;
-procedure IlkAdresDegerleriniYukle;
 function GenelAgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-procedure AgKartiVeriAlmaIslevi;
-function AgKartindanVeriAl(AHedefBellekAdresi: Isaretci): Integer;
-procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi;
-  AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 
 var
-  Ag0: TAg;
+  GAg0: TAg;
 
 implementation
 
-uses src_pcnet32, arp, udp, dns, icmp4, ip4, ip6, sistemmesaj, donusum, islevler,
-  genel, dhcp4_i, dhcp4_s, dhcp6, gorev, http, ftp, lldp_i;
+uses src_pcnet32, arp, dns, ip4, ip6, sistemmesaj, donusum, islevler, dhcp4_i, dhcp4_s,
+  gorev, http, ftp, lldp_i;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
  ==============================================================================}
-procedure Yukle;
+constructor TAg.Create;
 begin
+
+  FAktif := False;
 
   // sistemin çalýþtýðý bilgisayarýn alan adý - (domain name)
   {$IFDEF SISTEM_SUNUCU}
@@ -126,43 +117,45 @@ begin
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Baðlantý yapýlarý ilk deðerlerle yükleniyor...', []);
-    Baglantilar0.Yukle;
+    GBaglantilar := TBaglantilar.Create;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ARP protokolü yükleniyor...', []);
-    ARPKayitlar0.Yukle;
+    ARPKayitlar0 := TARPKayitlar.Create;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DNS protokolü yükleniyor...', []);
-    dns.Yukle;
+    GDNS0 := TDNS.Create;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DHCP protokolü yükleniyor...', []);
-    DHCPSunucu0.Yukle;
+    DHCPSunucu0 := TDHCPSunucu.Create;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ HTTP sunucusu yükleniyor...', []);
-    HTTPSunucu0.Yukle;
+    HTTPSunucu0 := THTTPSunucu.Create;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ FTP sunucusu yükleniyor...', []);
-    FTPSunucu0.Yukle;
+    FTPSunucu0 := TFTPSunucu.Create;
+
+    FAktif := True;
 
     // sistem için ip adresini yapýlandýr
     if(GAgBilgisi.OtomatikIP) then
     begin
 
-      GAgBilgisi.YenidenIPAdresiAliniyor := True;
+      GAgBilgisi.IPAdresiAlindi := False;
       DHCPIpAdresiAl;
     end;
   end;
 
-  AlinanByte := 0;
-  GonderilenByte := 0;
+  FAlinanByte := 0;
+  FGonderilenByte := 0;
 end;
 
 {==============================================================================
   að iletiþim alanlarýný ilk deðerlerle yükler
  ==============================================================================}
-procedure IlkAdresDegerleriniYukle;
+procedure TAg.IlkAdresDegerleriniYukle;
 begin
 
-  GAgBilgisi.YenidenIPAdresiAliniyor := False;
+  GAgBilgisi.IPAdresiAlindi := False;
 
   GAgBilgisi.OtomatikIP := IPAdresiniOtomatikAl;
   GAgBilgisi.MACAdres := MACAdres0;
@@ -183,44 +176,40 @@ begin
   GAgBilgisi.DNSSunucusu := IDNSSunucusu;
   {$ENDIF}
 
+  if(GAgBilgisi.OtomatikIP = False) then GAgBilgisi.IPAdresiAlindi := True;
+
   GAgBilgisi.IPKiraSuresi := 0;
 end;
 
 {==============================================================================
-  að kesme çaðrýlarýný yönetir
+  að kartýna (ethernet) gelen verileri alýr
  ==============================================================================}
-function GenelAgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
+function TAg.AgKartindanVeriAl(AHedefBellekAdresi: Isaretci): TISayi4;
 var
-  IslevNo: TSayi4;
-  AgBilgisi: PAgBilgisi;
+  Bellek: array[0..$FFF] of TSayi1;
+  i: TSayi2;
 begin
 
-  // iþlev no
-  IslevNo := (AIslevNo and $FF);
+  i := 0;
 
-  // að ayarlarýný geri döndür
-  if(IslevNo = 1) then
+  // að kartýna (ethernet) gelen ham bilgiyi al
+  { TODO : VeriAl iþlevi katý (hard code) olarak kodlanmýþtýr. yapýsallaþtýrýlacak }
+  VeriAl(@Bellek, i);
+  if(i > 0) then
   begin
 
-    AgBilgisi := Isaretci(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
-    AgBilgisi^.MACAdres := GAgBilgisi.MACAdres;
-    AgBilgisi^.IP4Adres := GAgBilgisi.IP4Adres;
-    AgBilgisi^.AltAgMaskesi := GAgBilgisi.AltAgMaskesi;
-    AgBilgisi^.AgGecitAdresi := GAgBilgisi.AgGecitAdresi;
-    AgBilgisi^.DHCPSunucusu := GAgBilgisi.DHCPSunucusu;
-    AgBilgisi^.DNSSunucusu := GAgBilgisi.DNSSunucusu;
-    AgBilgisi^.IPKiraSuresi := GAgBilgisi.IPKiraSuresi;
+    Tasi2(@Bellek[0], AHedefBellekAdresi, i);
+    Inc(FAlinanByte, i);
+  end;
 
-    Result := 1;
-
-  end else Result := HATA_ISLEV;
+  Result := i;
 end;
 
 {==============================================================================
   að kartýna (ethernet) gelen verilerin protokollere yönlendirilme iþlevi
   bilgi: bu iþlev iþletim sistemi döngüsü içinde sürekli çaðrýlýr
  ==============================================================================}
-procedure AgKartiVeriAlmaIslevi;
+procedure TAg.AgKartiVeriAlmaIslevi;
 var
   EthPaket: PEthernetPaket;
   ARPPaket: PARPPaket;
@@ -260,7 +249,7 @@ begin
         IP6PaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU);
         SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Son asama1', []);
       end
-      else if(Ag0.MACAdresiKabulEdilsinMi(EthPaket^.HedefMACAdres)) then
+      else if(GAg0.MACAdresiKabulEdilsinMi(EthPaket^.HedefMACAdres)) then
       begin
 
         {SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthPaket^.KaynakMACAdres);
@@ -311,33 +300,9 @@ begin
 end;
 
 {==============================================================================
-  að kartýna (ethernet) gelen verileri alýr
- ==============================================================================}
-function AgKartindanVeriAl(AHedefBellekAdresi: Isaretci): TISayi4;
-var
-  Bellek: array[0..$FFF] of TSayi1;
-  i: TSayi2;
-begin
-
-  i := 0;
-
-  // að kartýna (ethernet) gelen ham bilgiyi al
-  { TODO : VeriAl iþlevi katý (hard code) olarak kodlanmýþtýr. yapýsallaþtýrýlacak }
-  VeriAl(@Bellek, i);
-  if(i > 0) then
-  begin
-
-    Tasi2(@Bellek[0], AHedefBellekAdresi, i);
-    AlinanByte := AlinanByte + i;
-  end;
-
-  Result := i;
-end;
-
-{==============================================================================
   að kartýna (ethernet) veri gönderir
  ==============================================================================}
-procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi;
+procedure TAg.AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi;
   AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 var
   EthernetPaket: PEthernetPaket;
@@ -373,7 +338,7 @@ begin
 
     VeriGonder(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
 
-    GonderilenByte := GonderilenByte + AVeriUzunlugu + ETHERNET_BASLIKU;
+    Inc(FGonderilenByte, AVeriUzunlugu + ETHERNET_BASLIKU);
 
     // ayrýlan belleði serbest býrak
     FreeMem(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
@@ -400,6 +365,36 @@ begin
       if(MACKarsilastir(AHedefMACAdres, YerelMACAdresListesi[i])) then Exit(True);
     end;
   end;
+end;
+
+{==============================================================================
+  að kesme çaðrýlarýný yönetir
+ ==============================================================================}
+function GenelAgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
+var
+  IslevNo: TSayi4;
+  AgBilgisi: PAgBilgisi;
+begin
+
+  // iþlev no
+  IslevNo := (AIslevNo and $FF);
+
+  // að ayarlarýný geri döndür
+  if(IslevNo = 1) then
+  begin
+
+    AgBilgisi := Isaretci(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
+    AgBilgisi^.MACAdres := GAgBilgisi.MACAdres;
+    AgBilgisi^.IP4Adres := GAgBilgisi.IP4Adres;
+    AgBilgisi^.AltAgMaskesi := GAgBilgisi.AltAgMaskesi;
+    AgBilgisi^.AgGecitAdresi := GAgBilgisi.AgGecitAdresi;
+    AgBilgisi^.DHCPSunucusu := GAgBilgisi.DHCPSunucusu;
+    AgBilgisi^.DNSSunucusu := GAgBilgisi.DNSSunucusu;
+    AgBilgisi^.IPKiraSuresi := GAgBilgisi.IPKiraSuresi;
+
+    Result := 1;
+
+  end else Result := HATA_ISLEV;
 end;
 
 end.

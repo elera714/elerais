@@ -43,15 +43,16 @@ type
 
 type
   PDNS = ^TDNS;
-  TDNS = object
+  TDNS = class
   public
-    FBaglanti: PBaglanti;
+    FBaglanti: TBaglanti;
     { TODO - çok önemli: bir üstteki yapı değerleri aşağıdaki değişkenlere aktarılmalı }
     FKimlik: TKimlik;
     FYerelPort: TSayi4;
     FYanitUzunluk: TSayi4;
     FBaglantiDurum: TDNSDurum;
     FBellekAdresi: Isaretci;
+    constructor Create;
     function Olustur: PDNS;
     procedure Sorgula(ADNSKimlik: TKimlik; ADNSAdresi: string);
     function DNSBaglantiAl(AYerelPort: TSayi2): PDNS;
@@ -60,9 +61,11 @@ type
     procedure YokEt(ADNSKimlik: TKimlik);
   end;
 
-procedure Yukle;
 function DNSIletisimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 procedure DNSPaketleriniIsle(AUDPPaket: PUDPPaket);
+
+var
+  GDNS0: TDNS;
 
 implementation
 
@@ -71,7 +74,7 @@ uses genel, donusum, islevler, sistemmesaj, gorev;
 {==============================================================================
   dns protokol değişken / yapı ilk yükleme işlevlerini içerir
  ==============================================================================}
-procedure Yukle;
+constructor TDNS.Create;
 var
   P: PDNS;
   i: TSayi4;
@@ -194,7 +197,7 @@ begin
   begin
 
 
-    DNS^.FYerelPort := Baglantilar0.YerelPortAl;
+    DNS^.FYerelPort := GBaglantilar.YerelPortAl;
     DNS^.FBellekAdresi := GetMem(4096);
     DNS^.FYanitUzunluk := 0;
   end;
@@ -275,18 +278,18 @@ begin
 
     IPAdresi := IP_KarakterKatari4(GAgBilgisi.DNSSunucusu);
 
-    DNS^.FBaglanti := Baglantilar0.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi,
+    DNS^.FBaglanti := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi,
       DNS^.FYerelPort, DNS_PORTNO);
     if not(DNS^.FBaglanti = nil) then
     begin
 
-      DNS^.FKimlik := DNS^.FBaglanti^.Kimlik;
+      DNS^.FKimlik := DNS^.FBaglanti.Kimlik;
 
       { TODO - btYayin'dan btIP değerine çekilecek }
-      if(Baglantilar0.Baglan(itIP4, DNS^.FKimlik, btIP) <> -1) then
+      if(DNS^.FBaglanti.Baglan(itIP4, btIP) <> -1) then
       begin
 
-        Baglantilar0.Yaz(PROTOKOL_IP4, DNS^.FKimlik, @DNSPaket[0], 12 + ToplamUzunluk + 4);
+        DNS^.FBaglanti.Yaz(PROTOKOL_IP4, @DNSPaket[0], 12 + ToplamUzunluk + 4);
 
         DNS^.FBaglantiDurum := ddSorgulaniyor;
       end;
@@ -346,7 +349,7 @@ begin
   DNS := GDNSBaglantilari[ADNSKimlik];
 
   DNS^.FBaglantiDurum := ddOlusturuldu;
-  Baglantilar0.BaglantiyiKes(DNS^.FKimlik);
+  DNS^.FBaglanti.BaglantiyiKes;
 
   FreeMem(DNS^.FBellekAdresi, 4096);
 end;
