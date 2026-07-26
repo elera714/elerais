@@ -43,7 +43,7 @@ type
     procedure SayiYaz16(ASol, AUst: TISayi4; AOnekYaz: LongBool; AHaneSayisi: TSayi4;
       ADeger: TISayi4);
     procedure SaatYaz(ASol, AUst: TISayi4; ASaat: TSaat);
-    procedure IPAdresiYaz(ASol, AUst: TISayi4; AIPAdres: PIPAdres);
+    procedure IPAdresiYaz(ASol, AUst: TISayi4; AIPAdres: PIP4Adres);
     procedure MACAdresiYaz(ASol, AUst: TISayi4; AMACAdres: PMACAdres);
     procedure PixelYaz(ASol, AUst: TISayi4; ARenk: TRenk);
     procedure Cizgi(ASol, AUst, ASag, AAlt: TISayi4; ACizgiTipi: TCizgiTipi; ARenk: TRenk);
@@ -61,7 +61,7 @@ procedure _SayiYaz16(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk; AOnekY
   AHaneSayisi: TSayi4; ADeger: TISayi4); assembler;
 procedure _SaatYaz(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk; ASaat: TSaat); assembler;
 procedure _MACAdresiYaz(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk; AMACAdres: PMACAdres); assembler;
-procedure _IPAdresiYaz(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk; AIPAdres: PIPAdres); assembler;
+procedure _IPAdresiYaz(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk; AIPAdres: PIP4Adres); assembler;
 procedure _PixelYaz(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk); assembler;
 procedure _Cizgi(AKimlik: TKimlik; ASol, AUst, ASag, AAlt: TISayi4;
   ACizgiTipi: TCizgiTipi; ARenk: TRenk); assembler;
@@ -133,7 +133,7 @@ begin
   _SaatYaz(FKimlik, ASol, AUst, FKalem.Renk, ASaat);
 end;
 
-procedure TTuval.IPAdresiYaz(ASol, AUst: TISayi4; AIPAdres: PIPAdres);
+procedure TTuval.IPAdresiYaz(ASol, AUst: TISayi4; AIPAdres: PIP4Adres);
 begin
 
   _IPAdresiYaz(FKimlik, ASol, AUst, FKalem.Renk, AIPAdres);
@@ -245,7 +245,7 @@ asm
   add   esp,20
 end;
 
-procedure _IPAdresiYaz(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk; AIPAdres: PIPAdres);
+procedure _IPAdresiYaz(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk; AIPAdres: PIP4Adres);
 asm
   push  DWORD AIPAdres
   push  DWORD ARenk

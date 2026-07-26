@@ -3,8 +3,7 @@ unit anasayfafrm;
 
 interface
 
-uses n_gorev, gn_pencere, n_genel, _forms, gn_dugme, gn_degerlistesi,
-  n_tuval, n_zamanlayici;
+uses n_gorev, gn_pencere, n_genel, _forms, gn_dugme, gn_degerlistesi, n_zamanlayici;
 
 type
   TfrmAnaSayfa = object(TForm)
@@ -13,8 +12,8 @@ type
     FGorev: TGorev;
     FPencere: TPencere;
     FDegerListesi: TDegerListesi;
-    FYenile: TDugme;
-    FAgBilgisi: TAgBilgisi;
+    FKapat: TDugme;
+    FAgBilgisi: TAgBilgisi3;
     FZamanlayici: TZamanlayici;
     procedure IcerigiGuncelle;
   public
@@ -34,15 +33,15 @@ const
 procedure TfrmAnaSayfa.Olustur;
 begin
 
-  FPencere.Olustur(-1, 300, 200, 330, 255, ptIletisim, PencereAdi, $FAE6FF);
+  FPencere.Olustur(-1, 300, 200, 370, 280, ptIletisim, PencereAdi, $FAE6FF);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
-  FDegerListesi.Olustur(FPencere.Kimlik, 2, 2, 326, 182);
-  FDegerListesi.BaslikBelirle('Özellik', 'Deðer', 20 * 8);
+  FDegerListesi.Olustur(FPencere.Kimlik, 2, 2, 366, 10 * 24);
+  FDegerListesi.BaslikBelirle('Özellik', 'Deðer', 15 * 8);
   FDegerListesi.Goster;
 
-  FYenile.Olustur(FPencere.Kimlik, 250, 225, 70, 20, 'Yenile');
-  FYenile.Goster;
+  FKapat.Olustur(FPencere.Kimlik, 290, 250, 70, 20, 'Kapat');
+  FKapat.Goster;
 end;
 
 procedure TfrmAnaSayfa.Goster;
@@ -72,19 +71,11 @@ begin
   else if(AOlay.Olay = FO_TIKLAMA) then
   begin
 
-    if(AOlay.Kimlik = FYenile.Kimlik) then
+    if(AOlay.Kimlik = FKapat.Kimlik) then
     begin
 
-      FGenel.AgBilgisiAl(@FAgBilgisi);
-      IcerigiGuncelle;
+      FGorev.Sonlandir(-1);
     end;
-  end
-  else if(AOlay.Olay = CO_CIZIM) then
-  begin
-
-    FPencere.Tuval.KalemRengi := RENK_KIRMIZI;
-    FPencere.Tuval.YaziYaz(2, 187, 'DHCP sunucusundan yeni IP adresi almak');
-    FPencere.Tuval.YaziYaz(2, 203, 'için Ctrl+2 tuþuna basýnýz.');
   end;
 
   Result := 1;
@@ -95,12 +86,15 @@ begin
 
   FDegerListesi.Temizle;
   FDegerListesi.DegerEkle('MAC Adresi|' + MAC_KarakterKatari(FAgBilgisi.MACAdres), RENK_SIYAH);
-  FDegerListesi.DegerEkle('IP4 Adresi|' + IP_KarakterKatari(FAgBilgisi.IP4Adres), RENK_SIYAH);
-  FDegerListesi.DegerEkle('IP4 Alt Að Maskesi|' + IP_KarakterKatari(FAgBilgisi.AltAgMaskesi), RENK_SIYAH);
-  FDegerListesi.DegerEkle('Að Geçidi|' + IP_KarakterKatari(FAgBilgisi.AgGecitAdresi), RENK_SIYAH);
-  FDegerListesi.DegerEkle('DHCP Sunucusu|' + IP_KarakterKatari(FAgBilgisi.DHCPSunucusu), RENK_SIYAH);
-  FDegerListesi.DegerEkle('DNS Sunucusu|' + IP_KarakterKatari(FAgBilgisi.DNSSunucusu), RENK_SIYAH);
+  FDegerListesi.DegerEkle('IP6 Adresi|' + IP_KarakterKatari6(PIP6Adres2(@FAgBilgisi.IP6Adres)^), RENK_SIYAH);
+  FDegerListesi.DegerEkle('IP4 Adresi|' + IP_KarakterKatari4(FAgBilgisi.IP4Adres), RENK_SIYAH);
+  FDegerListesi.DegerEkle('Alt Að Maskesi|' + IP_KarakterKatari4(FAgBilgisi.AltAgMaskesi), RENK_SIYAH);
+  FDegerListesi.DegerEkle('Að Geçidi|' + IP_KarakterKatari4(FAgBilgisi.AgGecitAdresi), RENK_SIYAH);
+  FDegerListesi.DegerEkle('DHCP Sunucusu|' + IP_KarakterKatari4(FAgBilgisi.DHCPSunucusu), RENK_SIYAH);
+  FDegerListesi.DegerEkle('DNS Sunucusu|' + IP_KarakterKatari4(FAgBilgisi.DNSSunucusu), RENK_SIYAH);
   FDegerListesi.DegerEkle('IP Kira Süresi|' + IntToStr(FAgBilgisi.IPKiraSuresi), RENK_SIYAH);
+  FDegerListesi.DegerEkle('Gelen Byte|' + IntToStr(FAgBilgisi.GelenByte), RENK_SIYAH);
+  FDegerListesi.DegerEkle('Giden Byte|' + IntToStr(FAgBilgisi.GidenByte), RENK_SIYAH);
 end;
 
 end.

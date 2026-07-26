@@ -69,7 +69,7 @@ var
 
 implementation
 
-uses genel, donusum, islevler, sistemmesaj, gorev;
+uses genel, donusum, islevler, sistemmesaj, gorev, ag;
 
 {==============================================================================
   dns protokol değişken / yapı ilk yükleme işlevlerini içerir
@@ -276,7 +276,7 @@ begin
     Inc(B2);
     B2^ := ntohs(TSayi2(Class_IN));
 
-    IPAdresi := IP_KarakterKatari4(GAgBilgisi.DNSSunucusu);
+    IPAdresi := IP_KarakterKatari4(GAg0.DNSSunucusu);
 
     DNS^.FBaglanti := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi,
       DNS^.FYerelPort, DNS_PORTNO);

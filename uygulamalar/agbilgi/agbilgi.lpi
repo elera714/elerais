@@ -31,11 +31,12 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="agbilgi.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="36" Y="19"/>
+        <UnitName Value="saat"/>
+        <CursorPos X="52" Y="19"/>
         <UsageCount Value="32"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -58,18 +59,25 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="42" Y="35"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\rtl_uygulama\linux\elera.inc"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="312"/>
-        <CursorPos X="3" Y="330"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="328"/>
+        <CursorPos X="3" Y="346"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="..\..\rtl_uygulama\linux\system.pp"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="455"/>
+        <CursorPos X="3" Y="463"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

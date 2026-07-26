@@ -52,13 +52,14 @@ function ntohs(ADeger: TSayi2): TSayi2;
 function ntohs(ADeger: TSayi4): TSayi4;
 function htons(ADeger: TSayi2): TSayi2;
 function htons(ADeger: TSayi4): TSayi4;
-function StrToIP(AIPAdres: string): TIPAdres;
+function StrToIP(AIPAdres: string): TIP4Adres;
 function IPAdresiGecerliMi(AIPAdresi: string): Boolean;
-function IP_KarakterKatari(AIPAdres: TIPAdres): string;
+function IP_KarakterKatari4(AIPAdres: TIP4Adres): string;
+function IP_KarakterKatari6(AIPAdres: TIP6Adres2): string;
 function MAC_KarakterKatari(AMACAdres: TMACAdres): string;
 procedure StrPasEx(Src, Dest: Pointer);
 function StrPasEx(ASrc: PChar): string;
-function IPKarsilastir(IP1, IP2: TIPAdres): Boolean;
+function IPKarsilastir(IP1, IP2: TIP4Adres): Boolean;
 function ParamCount: LongInt;
 function ParamStr(Index: LongInt): string;
 function ParamStr1(Index: LongInt): string;
@@ -422,11 +423,11 @@ begin
 end;
 
 {==============================================================================
-  IP adresini karakter katarýna dönüþtürür
+  IP v4 adresini karakter katarýna dönüþtürür
  ==============================================================================}
-function IP_KarakterKatari(AIPAdres: TIPAdres): string;
+function IP_KarakterKatari4(AIPAdres: TIP4Adres): string;
 var
-   Toplam, i: TSayi1;
+  Toplam, i: TSayi4;
   Deger: string[3];
 begin
 
@@ -452,9 +453,33 @@ begin
 end;
 
 {==============================================================================
+  IP v6 adresini karakter katarýna dönüþtürür
+ ==============================================================================}
+function IP_KarakterKatari6(AIPAdres: TIP6Adres2): string;
+var
+  i: TSayi4;
+  Deger: string[4];
+begin
+
+  Result := '';
+
+  // ip adresini çevir
+  for i := 0 to 7 do
+  begin
+
+    Deger := HexStr(ntohs(AIPAdres[i]), 4);
+    Result := Result + Deger;
+
+    if(i < 7) then Result := Result + ':'
+  end;
+
+  SetLength(Result, 39);
+end; 
+
+{==============================================================================
   karakter katar deðerini IP adres deðerine dönüþtürür
  ==============================================================================}
-function StrToIP(AIPAdres: string): TIPAdres;
+function StrToIP(AIPAdres: string): TIP4Adres;
 var
   IPAdres, s: string;
   NoktaSayisi, SiraNo,
@@ -518,7 +543,7 @@ end;
  ==============================================================================}
 function IPAdresiGecerliMi(AIPAdresi: string): Boolean;
 var
-  IPAdres: TIPAdres;
+  IPAdres: TIP4Adres;
 begin
 
   IPAdres := StrToIP(AIPAdresi);
@@ -622,7 +647,7 @@ end;}
 var
  execpathstr : shortstring;
 
-function IPKarsilastir(IP1, IP2: TIPAdres): Boolean;
+function IPKarsilastir(IP1, IP2: TIP4Adres): Boolean;
 var
   i: TISayi4;
 begin

@@ -155,7 +155,7 @@ begin
   Tasi2(AVeri, @PingPaket^.Veri, AVeriU);
 
   // saðlama toplamý için ek baþlýðý hazýrla
-  EKBaslik.KaynakIP := GAgBilgisi.IP6Adres;
+  EKBaslik.KaynakIP := GAg0.IP6Adres;
   EKBaslik.HedefIP := AHedefIPAdres;
   EKBaslik.Uzunluk := htons(TSayi4(40));
   EKBaslik.Sifir[0] := 0;
@@ -169,7 +169,7 @@ begin
   ICMPPaket^.SaglamaToplami := SaglamaToplami;
 
   // paketi ip katmanýna gönder
-  IP6PaketGonder(AHedefMACAdres, GAgBilgisi.IP6Adres, AHedefIPAdres, ptICMP6, $80,
+  IP6PaketGonder(AHedefMACAdres, GAg0.IP6Adres, AHedefIPAdres, ptICMP6, $80,
     ICMPPaket, 8 + 32);
 
   // ayrýlan belleði serbest býrak
@@ -212,7 +212,7 @@ begin
     Secenekler := @RAPaket^.Secenekler;
     Secenekler^.Tip := 1;
     Secenekler^.Uzunluk := 1;
-    Secenekler^.Adres := GAgBilgisi.MACAdres;
+    Secenekler^.Adres := GAg0.MACAdres;
 
     PaketU := 24;
   end
@@ -233,13 +233,13 @@ begin
       KomsuPaket^.Secenekler.Tip := 1
     else KomsuPaket^.Secenekler.Tip := 2;
     KomsuPaket^.Secenekler.Uzunluk := 1;
-    KomsuPaket^.Secenekler.Adres := GAgBilgisi.MACAdres;
+    KomsuPaket^.Secenekler.Adres := GAg0.MACAdres;
 
     PaketU := ICMP6_BASLIK_UZUNLUGU;
   end;
 
   // saðlama toplamý için ek baþlýðý hazýrla
-  EKBaslik.KaynakIP := GAgBilgisi.IP6Adres;
+  EKBaslik.KaynakIP := GAg0.IP6Adres;
   EKBaslik.HedefIP := AHedefIPAdres;
   EKBaslik.Uzunluk := htons(TSayi4(PaketU));
   EKBaslik.Sifir[0] := 0;
@@ -254,7 +254,7 @@ begin
   ICMPPaket^.SaglamaToplami := SaglamaToplami;
 
   // paketi ip katmanýna gönder
-  IP6PaketGonder(AHedefMACAdres, GAgBilgisi.IP6Adres, AHedefIPAdres, ptICMP6, $FF,
+  IP6PaketGonder(AHedefMACAdres, GAg0.IP6Adres, AHedefIPAdres, ptICMP6, $FF,
     ICMPPaket, PaketU);
 
   // ayrýlan belleði serbest býrak
@@ -280,8 +280,8 @@ begin
   if(IP6Karsilastir(IPPaket^.HedefIP, YayinIP6Adresi)) then
   begin
 
-    ICMPMesajiGonder(ICMP6_KOMSU_ILAN, IPPaket^.KaynakIP, PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres,
-      GAgBilgisi.IP6Adres);
+    ICMPMesajiGonder(ICMP6_KOMSU_ILAN, IPPaket^.KaynakIP,
+      PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres, GAg0.IP6Adres);
 
     { TODO - çalýþmýyor }
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Son asama3', []);
@@ -294,7 +294,7 @@ begin
     if(ICMPPaket^.MesajTipi = ICMP6_YONLENDIRICI_ISTEK) then
     begin
 
-      ICMPMesajiGonder(ICMP6_YONLENDIRICI_ILAN, PingHedefIP6Adres, MAC333300000001, GAgBilgisi.IP6Adres);
+      ICMPMesajiGonder(ICMP6_YONLENDIRICI_ILAN, PingHedefIP6Adres, MAC333300000001, GAg0.IP6Adres);
     end
   end
   else
@@ -319,7 +319,7 @@ begin
     begin
 
       ICMPMesajiGonder(ICMP6_KOMSU_ILAN, IPPaket^.KaynakIP,
-        PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres, GAgBilgisi.IP6Adres);
+        PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres, GAg0.IP6Adres);
     end
     // komþu bilgisayar benim isteðime icmp yanýtý veriyor
     else if(ICMPPaket^.MesajTipi = ICMP6_KOMSU_ILAN) then

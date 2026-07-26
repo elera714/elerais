@@ -53,7 +53,7 @@ var
 
 implementation
 
-uses donusum, sistemmesaj;
+uses donusum, sistemmesaj, ag;
 
 {==============================================================================
   dhcp sunucusu ana yükleme işlevlerini içerir
@@ -103,7 +103,7 @@ var
   i: TSayi4;
 begin
 
-  KullanilabilirIP.IPAdres := GAgBilgisi.IP4Adres;
+  KullanilabilirIP.IPAdres := GAg0.IP4Adres;
 
   for i := AYRILMIS_IPSAYISI to USTSINIR_DHCPKAYIT - 1 do
   begin
@@ -143,7 +143,7 @@ begin
 
   IPAdres := AIstenenIPAdres;
 
-  AyniAgda := IPAdres.IPAgAraligiIcinde(GAgBilgisi.IP4Adres);
+  AyniAgda := IPAdres.IPAgAraligiIcinde(GAg0.IP4Adres);
   if not(AyniAgda) then Exit(False);
 
   for i := AYRILMIS_IPSAYISI to USTSINIR_DHCPKAYIT - 1 do

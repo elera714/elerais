@@ -33,6 +33,7 @@ const
 
   // 0800ABCDEF01 MAC adresi Modified EUI-64'e göre kodlanarak ipv6 adresi elde edilmiþtir
   // bilgi: MAC adresinin ilk byte'ýnýn (08) saðdan 2. biti standarta göre xor'lanmýþtýr
+  // http://[fe80::a00:abff:fecd:ef01]/
   IP6Adresi: TIP6Adres = ($FE, $80, $00, $00, $00, $00, $00, $00,
     $0A, $00, $AB, $FF, $FE, $CD, $EF, $01);
 
@@ -62,20 +63,38 @@ type
   TAg = class
   private
     FAktif: Boolean;
+
+    FOtomatikIP: Boolean;
+    FIPAdresiAlindi: Boolean;
+
+    FMACAdres: TMACAdres;
+    FIP6Adres: TIP6Adres;
+    FIP4Adres, FAltAgMaskesi, FAgGecitAdresi,
+    FDHCPSunucusu, FDNSSunucusu: TIP4Adres;
+    FIPKiraSuresi: TSayi4;     // saniye cinsinden
     // paket baþlýklarý da dahil olmak üzere tüm veri toplamlarýný içerir.
-    FAlinanByte,
-    FGonderilenByte: TSayi4;
+    FGelenByte, FGidenByte: TSayi4;
   public
     constructor Create;
-    procedure IlkAdresDegerleriniYukle;
     function AgKartindanVeriAl(AHedefBellekAdresi: Isaretci): TISayi4;
     procedure AgKartiVeriAlmaIslevi;
     procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi;
       AVeri: Isaretci; AVeriUzunlugu: TSayi2);
     function MACAdresiKabulEdilsinMi(AHedefMACAdres: TMACAdres): Boolean;
     property Aktif: Boolean read FAktif;
-    property AlinanByte: TSayi4 read FAlinanByte;
-    property GonderilenByte: TSayi4 read FGonderilenByte;
+    property OtomatikIP: Boolean read FOtomatikIP write FOtomatikIP;
+    property IPAdresiAlindi: Boolean read FIPAdresiAlindi write FIPAdresiAlindi;
+    property MACAdres: TMACAdres read FMACAdres write FMACAdres;
+    property IP6Adres: TIP6Adres read FIP6Adres write FIP6Adres;
+    property IP4Adres: TIP4Adres read FIP4Adres write FIP4Adres;
+    property AltAgMaskesi: TIP4Adres read FAltAgMaskesi write FAltAgMaskesi;
+    property AgGecitAdresi: TIP4Adres read FAgGecitAdresi write FAgGecitAdresi;
+    property DHCPSunucusu: TIP4Adres read FDHCPSunucusu write FDHCPSunucusu;
+    property DNSSunucusu: TIP4Adres read FDNSSunucusu write FDNSSunucusu;
+
+    property IPKiraSuresi: TSayi4 read FIPKiraSuresi write FIPKiraSuresi;
+    property GelenByte: TSayi4 read FGelenByte write FGelenByte;
+    property GidenByte: TSayi4 read FGidenByte write FGidenByte;
   end;
 
 function GenelAgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -96,6 +115,17 @@ begin
 
   FAktif := False;
 
+  IPAdresiAlindi := False;
+
+  OtomatikIP := IPAdresiniOtomatikAl;
+
+  IP6Adres := IP6Adresi;
+
+  IPKiraSuresi := 0;
+
+  GelenByte := 0;
+  GidenByte := 0;
+
   // sistemin çalýþtýðý bilgisayarýn alan adý - (domain name)
   {$IFDEF SISTEM_SUNUCU}
   GTamBilgisayarAdi := GBilgisayarAdi + '.' + GAlanAdi;
@@ -106,15 +136,29 @@ begin
   IPAdresiniOtomatikAl := True;
   {$ENDIF}
 
-  // að bilgileri öndeðerlerle yükleniyor
-  IlkAdresDegerleriniYukle;
-
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Ethernet aygýtlarý yükleniyor...', []);
   AgAygitlariniYukle;
 
   // en az 1 að aygýtý yüklendi ise
   if(AgYuklendi) then
   begin
+
+    MACAdres := GMacAdres;
+    {$IFDEF SISTEM_SUNUCU}
+    IP4Adres := SIP4Adresi;
+    AltAgMaskesi := SAltAgMaskesi;
+    AgGecitAdresi := SAgGecidi;
+    DHCPSunucusu := SDHCPSunucusu;
+    DNSSunucusu := SDNSSunucusu;
+    {$ELSE}
+    IP4Adres := IIP4Adresi;
+    AltAgMaskesi := IAltAgMaskesi;
+    AgGecitAdresi := IAgGecidi;
+    DHCPSunucusu := IDHCPSunucusu;
+    DNSSunucusu := IDNSSunucusu;
+    {$ENDIF}
+
+    if(OtomatikIP = False) then IPAdresiAlindi := True;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Baðlantý yapýlarý ilk deðerlerle yükleniyor...', []);
     GBaglantilar := TBaglantilar.Create;
@@ -137,48 +181,13 @@ begin
     FAktif := True;
 
     // sistem için ip adresini yapýlandýr
-    if(GAgBilgisi.OtomatikIP) then
+    if(OtomatikIP) then
     begin
 
-      GAgBilgisi.IPAdresiAlindi := False;
+      IPAdresiAlindi := False;
       DHCPIpAdresiAl;
     end;
   end;
-
-  FAlinanByte := 0;
-  FGonderilenByte := 0;
-end;
-
-{==============================================================================
-  að iletiþim alanlarýný ilk deðerlerle yükler
- ==============================================================================}
-procedure TAg.IlkAdresDegerleriniYukle;
-begin
-
-  GAgBilgisi.IPAdresiAlindi := False;
-
-  GAgBilgisi.OtomatikIP := IPAdresiniOtomatikAl;
-  GAgBilgisi.MACAdres := MACAdres0;
-
-  GAgBilgisi.IP6Adres := IP6Adresi;
-
-  {$IFDEF SISTEM_SUNUCU}
-  GAgBilgisi.IP4Adres := SIP4Adresi;
-  GAgBilgisi.AltAgMaskesi := SAltAgMaskesi;
-  GAgBilgisi.AgGecitAdresi := SAgGecidi;
-  GAgBilgisi.DHCPSunucusu := SDHCPSunucusu;
-  GAgBilgisi.DNSSunucusu := SDNSSunucusu;
-  {$ELSE}
-  GAgBilgisi.IP4Adres := IIP4Adresi;
-  GAgBilgisi.AltAgMaskesi := IAltAgMaskesi;
-  GAgBilgisi.AgGecitAdresi := IAgGecidi;
-  GAgBilgisi.DHCPSunucusu := IDHCPSunucusu;
-  GAgBilgisi.DNSSunucusu := IDNSSunucusu;
-  {$ENDIF}
-
-  if(GAgBilgisi.OtomatikIP = False) then GAgBilgisi.IPAdresiAlindi := True;
-
-  GAgBilgisi.IPKiraSuresi := 0;
 end;
 
 {==============================================================================
@@ -199,7 +208,7 @@ begin
   begin
 
     Tasi2(@Bellek[0], AHedefBellekAdresi, i);
-    Inc(FAlinanByte, i);
+    Inc(FGelenByte, i);
   end;
 
   Result := i;
@@ -249,7 +258,7 @@ begin
         IP6PaketleriniIsle(EthPaket, i - ETHERNET_BASLIKU);
         SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Son asama1', []);
       end
-      else if(GAg0.MACAdresiKabulEdilsinMi(EthPaket^.HedefMACAdres)) then
+      else if(MACAdresiKabulEdilsinMi(EthPaket^.HedefMACAdres)) then
       begin
 
         {SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthPaket^.KaynakMACAdres);
@@ -263,7 +272,7 @@ begin
         begin
 
           ARPPaket := @EthPaket^.Veri;
-          if(IP4Karsilastir(ARPPaket^.HedefIPAdres, GAgBilgisi.IP4Adres)) then
+          if(IP4Karsilastir(ARPPaket^.HedefIPAdres, IP4Adres)) then
             ARPKayitlar0.ARPPaketleriniIsle(EthPaket)
         end
 
@@ -316,7 +325,7 @@ begin
     EthernetPaket := GetMem(AVeriUzunlugu + ETHERNET_BASLIKU);
 
     EthernetPaket^.HedefMACAdres := AHedefMAC;
-    EthernetPaket^.KaynakMACAdres := GAgBilgisi.MACAdres;
+    EthernetPaket^.KaynakMACAdres := MACAdres;
 
     // paketin protokol tipi
     case AProtokolTipi of
@@ -338,7 +347,7 @@ begin
 
     VeriGonder(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
 
-    Inc(FGonderilenByte, AVeriUzunlugu + ETHERNET_BASLIKU);
+    Inc(FGidenByte, AVeriUzunlugu + ETHERNET_BASLIKU);
 
     // ayrýlan belleði serbest býrak
     FreeMem(EthernetPaket, AVeriUzunlugu + ETHERNET_BASLIKU);
@@ -353,7 +362,7 @@ begin
   Result := False;
 
   // 1. ethernet aygýtý mac adresi kontrolü
-  if(MACKarsilastir(AHedefMACAdres, GAgBilgisi.MACAdres)) then Exit(True);
+  if(MACKarsilastir(AHedefMACAdres, MACAdres)) then Exit(True);
 
   // 2. yerel mac adres kayýt kontrolü
   if(YEREL_MAC_ADRESSAYISI > 0) then
@@ -373,7 +382,7 @@ end;
 function GenelAgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
   IslevNo: TSayi4;
-  AgBilgisi: PAgBilgisi;
+  AgBilgisi: PAgBilgisi3;
 begin
 
   // iþlev no
@@ -384,13 +393,16 @@ begin
   begin
 
     AgBilgisi := Isaretci(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
-    AgBilgisi^.MACAdres := GAgBilgisi.MACAdres;
-    AgBilgisi^.IP4Adres := GAgBilgisi.IP4Adres;
-    AgBilgisi^.AltAgMaskesi := GAgBilgisi.AltAgMaskesi;
-    AgBilgisi^.AgGecitAdresi := GAgBilgisi.AgGecitAdresi;
-    AgBilgisi^.DHCPSunucusu := GAgBilgisi.DHCPSunucusu;
-    AgBilgisi^.DNSSunucusu := GAgBilgisi.DNSSunucusu;
-    AgBilgisi^.IPKiraSuresi := GAgBilgisi.IPKiraSuresi;
+    AgBilgisi^.MACAdres := GAg0.MACAdres;
+    AgBilgisi^.IP6Adres := GAg0.IP6Adres;
+    AgBilgisi^.IP4Adres := GAg0.IP4Adres;
+    AgBilgisi^.AltAgMaskesi := GAg0.AltAgMaskesi;
+    AgBilgisi^.AgGecitAdresi := GAg0.AgGecitAdresi;
+    AgBilgisi^.DHCPSunucusu := GAg0.DHCPSunucusu;
+    AgBilgisi^.DNSSunucusu := GAg0.DNSSunucusu;
+    AgBilgisi^.IPKiraSuresi := GAg0.IPKiraSuresi;
+    AgBilgisi^.GelenByte := GAg0.GelenByte;
+    AgBilgisi^.GidenByte := GAg0.GidenByte;
 
     Result := 1;
 

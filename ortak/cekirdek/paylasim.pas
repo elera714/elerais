@@ -197,9 +197,6 @@ type
   end;
 
 type
-  PIP4Adres = ^TIP4Adres;
-  TIP4Adres = array[0..3] of TSayi1;
-
   // sistemin her yerinde kodlama amacýyla kullanýlacak
   PIP6Adres = ^TIP6Adres;
   TIP6Adres = array[0..15] of TSayi1;
@@ -207,6 +204,9 @@ type
   // SADECE ekrana deðer basma amacýyla kullanýlacak
   PIP6Adres2 = ^TIP6Adres2;
   TIP6Adres2 = array[0..7] of TSayi2;
+
+  PIP4Adres = ^TIP4Adres;
+  TIP4Adres = array[0..3] of TSayi1;
 
 type
   TIPAdresIslev = record
@@ -860,34 +860,28 @@ var
   IPAdresiniOtomatikAl: Boolean;
 
 type
-  PAgBilgisi = ^TAgBilgisi;
-  TAgBilgisi = record
+  PAgBilgisi3 = ^TAgBilgisi3;
+  TAgBilgisi3 = record
     MACAdres: TMACAdres;
+    IP6Adres: TIP6Adres;
     IP4Adres, AltAgMaskesi, AgGecitAdresi,
     DHCPSunucusu, DNSSunucusu: TIP4Adres;
     IPKiraSuresi: TSayi4;     // saniye cinsinden
-
-    { TODO - OtomatikIP deðeri üstteki yapýya eklenerek API'nýn bir parçasý olacaktýr }
-    OtomatikIP: Boolean;      // ip adresi dhcp sunucusundan otomatik alýnacak
-
-    // yukarýdaki yapý için API iþlevi oluþturulmuþtur, sýralamanýn bozulmasý iþlevin bozulmasý demektir
-    IPAdresiAlindi: Boolean;
-
-    { TODO - yukarýdaki yapýya dahil edilecektir }
-    IP6Adres: TIP6Adres;
+    GelenByte, GidenByte: TSayi4;
   end;
 
 var
   // çekirdek genelinde kullanýlan ortak yapýlar / deðiþkenler
 
+  // ethernet kart mac adresi
+  { TODO - buradan ilgili yere taþýnacak }
+  GMacAdres: TMACAdres = ($00, $00, $00, $00, $00, $00);
+
   // sistemin çalýþtýðý bilgisayarýn adý - bu bilgisayarýn adý
   GBilgisayarAdi: string = 'elera';         // netbios için GBilgisayarAdi + GAlanAdi uzunluðu 15 byte'ý geçmemeli
   GAlanAdi: string = 'elr.com';
   GTamBilgisayarAdi: string;                // ag.Yukle tarafýndan atanmaktadýr
-
   GGrupAdi: string = 'programlama';         // sistemin grup olarak çalýþtýðý að adý
-  // GAgBilgisi yapý içeriði ag.IlkAdresDegerleriniYukle iþlevi tarafýndan doldurulmaktadýr
-  GAgBilgisi: TAgBilgisi;
 
   IP6Adres0: TIP6Adres = ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00);
   IP4Adres0: TIP4Adres = (0, 0, 0, 0);

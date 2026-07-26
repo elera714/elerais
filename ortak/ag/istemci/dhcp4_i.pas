@@ -264,7 +264,7 @@ procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev
 
 implementation
 
-uses baglanti, donusum, islevler, sistemmesaj;
+uses baglanti, donusum, islevler, sistemmesaj, ag;
 
 {==============================================================================
   DHCP sunucularýna keþif mesajý gönderir
@@ -305,7 +305,7 @@ begin
 	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPYapi^.IstemciMACAdres := GAgBilgisi.MACAdres;
+  DHCPYapi^.IstemciMACAdres := GAg0.MACAdres;
 	DHCPYapi^.AYRLDI1 := 0;
 	DHCPYapi^.AYRLDI2 := 0;
 	DHCPYapi^.AYRLDI3 := 0;
@@ -340,7 +340,7 @@ begin
   p1^ := 1;
   Inc(p1);                                // donaným tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
-  MACAdres^ := GAgBilgisi.MACAdres;
+  MACAdres^ := GAg0.MACAdres;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
 
   Inc(p1, 6);
@@ -473,7 +473,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IPAdres := Isaretci(p1);
-  IPAdres^ := GAgBilgisi.IP4Adres;
+  IPAdres^ := GAg0.IP4Adres;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -514,7 +514,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IPAdres := Isaretci(p1);
-  IPAdres^ := GAgBilgisi.AltAgMaskesi;
+  IPAdres^ := GAg0.AltAgMaskesi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -592,7 +592,7 @@ begin
 	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPYapi^.IstemciMACAdres := GAgBilgisi.MACAdres;
+  DHCPYapi^.IstemciMACAdres := GAg0.MACAdres;
 	DHCPYapi^.AYRLDI1 := 0;
 	DHCPYapi^.AYRLDI2 := 0;
 	DHCPYapi^.AYRLDI3 := 0;
@@ -627,7 +627,7 @@ begin
   p1^ := 1;
   Inc(p1);                                // donaným tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
-  MACAdres^ := GAgBilgisi.MACAdres;
+  MACAdres^ := GAg0.MACAdres;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
 
   Inc(p1, 6);
@@ -802,7 +802,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IPAdres := Isaretci(p1);
-  IPAdres^ := GAgBilgisi.IP4Adres;
+  IPAdres^ := GAg0.IP4Adres;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -843,7 +843,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IPAdres := Isaretci(p1);
-  IPAdres^ := GAgBilgisi.AltAgMaskesi;
+  IPAdres^ := GAg0.AltAgMaskesi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -934,7 +934,7 @@ begin
 	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPYapi^.IstemciMACAdres := GAgBilgisi.MACAdres;
+  DHCPYapi^.IstemciMACAdres := GAg0.MACAdres;
 	DHCPYapi^.AYRLDI1 := 0;
 	DHCPYapi^.AYRLDI2 := 0;
 	DHCPYapi^.AYRLDI3 := 0;
@@ -969,7 +969,7 @@ begin
   p1^ := 1;
   Inc(p1);                                // donaným tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
-  MACAdres^ := GAgBilgisi.MACAdres;
+  MACAdres^ := GAg0.MACAdres;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
 
   Inc(p1, 6);
@@ -1101,7 +1101,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IPAdres := Isaretci(p1);
-  IPAdres^ := GAgBilgisi.IP4Adres;
+  IPAdres^ := GAg0.IP4Adres;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -1112,7 +1112,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IPAdres := Isaretci(p1);
-  IPAdres^ := GAgBilgisi.AltAgMaskesi;
+  IPAdres^ := GAg0.AltAgMaskesi;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -1230,7 +1230,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IPAdres := Isaretci(p1);
-  IPAdres^ := GAgBilgisi.IP4Adres;
+  IPAdres^ := GAg0.IP4Adres;
   Inc(IPAdres);
   p1 := Isaretci(IPAdres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;

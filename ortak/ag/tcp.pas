@@ -37,7 +37,7 @@ function SunucuBul(APortNo: TSayi4): TSunucuIslev;
 
 implementation
 
-uses genel, donusum, ip6, ip4, islevler, sistemmesaj, gercekbellek;
+uses genel, donusum, ip6, ip4, islevler, sistemmesaj, gercekbellek, ag;
 
 procedure TCPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
 var
@@ -253,7 +253,7 @@ begin
   begin
 
     // tcp v6 için ek baþlýk hesaplanýyor
-    Ek6Baslik.KaynakIP := GAgBilgisi.IP6Adres;
+    Ek6Baslik.KaynakIP := GAg0.IP6Adres;
     Ek6Baslik.HedefIP := ABaglanti.HedefIP6Adres;
     Ek6Baslik.Sifir[0] := 0;
     Ek6Baslik.Sifir[1] := 0;
@@ -265,7 +265,7 @@ begin
   begin
 
     // tcp v4 için ek baþlýk hesaplanýyor
-    Ek4Baslik.KaynakIP := GAgBilgisi.IP4Adres;
+    Ek4Baslik.KaynakIP := GAg0.IP4Adres;
     Ek4Baslik.HedefIP := ABaglanti.HedefIP4Adres;
     Ek4Baslik.Sifir := 0;
     Ek4Baslik.Protokol := PROTOKOL_TCP;
@@ -314,10 +314,10 @@ begin
   TCPPaket^.SaglamaToplami := SaglamaToplami;
 
   if(APaketTipi = PROTOKOL_IP6) then
-    IP6PaketGonder(ABaglanti.HedefMACAdres, GAgBilgisi.IP6Adres, ABaglanti.HedefIP6Adres,
+    IP6PaketGonder(ABaglanti.HedefMACAdres, GAg0.IP6Adres, ABaglanti.HedefIP6Adres,
       ptTCP, $80, TCPPaket, TCP_BASLIK_U + AVeriU)
   else
-    IP4PaketGonder(ABaglanti.HedefMACAdres, GAgBilgisi.IP4Adres, ABaglanti.HedefIP4Adres,
+    IP4PaketGonder(ABaglanti.HedefMACAdres, GAg0.IP4Adres, ABaglanti.HedefIP4Adres,
       ptTCP, $4000, TCPPaket, TCP_BASLIK_U + AVeriU);
 
   FreeMem(TCPPaket, TCP_BASLIK_U + AVeriU);

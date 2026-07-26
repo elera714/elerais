@@ -166,7 +166,7 @@ begin
   ARP0.MACAdres := ARPPaket^.GonderenMACAdres;
 
   // ARP paketi ip adresime gönderilmiþ ise
-  if(IPAdresleriniKarsilastir(ARPPaket^.HedefIPAdres, GAgBilgisi.IP4Adres)) then
+  if(IPAdresleriniKarsilastir(ARPPaket^.HedefIPAdres, GAg0.IP4Adres)) then
   begin
 
     // 1. gönderilen paket benim mesajýma yanýt ise, tabloya ekle
@@ -202,8 +202,8 @@ begin
   if(AARPIslem = arpIstek) then
     ARPPaket.Islem := ntohs(ARPISLEM_ISTEK)
   else ARPPaket.Islem := ntohs(ARPISLEM_YANIT);
-  ARPPaket.GonderenMACAdres := GAgBilgisi.MACAdres;
-  ARPPaket.GonderenIPAdres := GAgBilgisi.IP4Adres;
+  ARPPaket.GonderenMACAdres := GAg0.MACAdres;
+  ARPPaket.GonderenIPAdres := GAg0.IP4Adres;
 
   if(AARPIslem = arpIstek) then
     ARPPaket.HedefMACAdres := MACAdres0
@@ -316,7 +316,7 @@ begin
   BekleMS(500);
 
   // bilgisayarýn ip adresi
-  IPAdres := GAgBilgisi.IP4Adres;
+  IPAdres := GAg0.IP4Adres;
 
   i := 0;
 

@@ -223,12 +223,21 @@ type
 type
   PMACAdres = ^TMACAdres;
   TMACAdres = array[0..5] of TSayi1;
-  PIPAdres = ^TIPAdres;
-  TIPAdres = array[0..3] of TSayi1;
+  
+  // sistemin her yerinde kodlama amacýyla kullanýlacak
+  PIP6Adres = ^TIP6Adres;
+  TIP6Adres = array[0..15] of TSayi1;
+
+  // SADECE ekrana deðer basma amacýyla kullanýlacak
+  PIP6Adres2 = ^TIP6Adres2;
+  TIP6Adres2 = array[0..7] of TSayi2;
+
+  PIP4Adres = ^TIP4Adres;
+  TIP4Adres = array[0..3] of TSayi1;
 
 const
-  IPAdres0: TIPAdres = (0, 0, 0, 0);
-  IPAdres255: TIPAdres = (255, 255, 255, 255);
+  IPAdres0: TIP4Adres = (0, 0, 0, 0);
+  IPAdres255: TIP4Adres = (255, 255, 255, 255);
   MACAdres0: TMACAdres = (0, 0, 0, 0, 0, 0);
   MACAdres255: TMACAdres = (255, 255, 255, 255, 255, 255);
 
@@ -327,18 +336,20 @@ type
 type
   PARPKayit = ^TARPKayit;
   TARPKayit = packed record
-    IPAdres: TIPAdres;
+    IPAdres: TIP4Adres;
     MACAdres: TMACAdres;
     YasamSuresi: TISayi2;
   end;
 
 type
-  PAgBilgisi = ^TAgBilgisi;
-  TAgBilgisi = record
+  PAgBilgisi3 = ^TAgBilgisi3;
+  TAgBilgisi3 = record
     MACAdres: TMACAdres;
+    IP6Adres: TIP6Adres;
     IP4Adres, AltAgMaskesi, AgGecitAdresi,
-    DHCPSunucusu, DNSSunucusu: TIPAdres;
-    IPKiraSuresi: TSayi4;
+    DHCPSunucusu, DNSSunucusu: TIP4Adres;
+    IPKiraSuresi: TSayi4;     // saniye cinsinden
+    GelenByte, GidenByte: TSayi4;    
   end;
 
 type

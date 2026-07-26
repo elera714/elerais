@@ -127,7 +127,7 @@ var
 
 implementation
 
-uses tcp, udp, arp, islevler, donusum;
+uses tcp, udp, arp, islevler, donusum, ag;
 
 {==============================================================================
   baðlantý nesnelerinin ana yükleme iþlevlerini içerir
@@ -394,7 +394,7 @@ begin
       { TODO - ip v6'ya göre düzenlenecek }
       if(IPAdresiAyniAgdaMi(HedefIP4Adres)) then
         HedefMACAdres := ARPKayitlar0.MACAdresiAl(HedefIP4Adres)
-      else HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAgBilgisi.DNSSunucusu);
+      else HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAg0.DNSSunucusu);
 
       Bagli := True;
       Exit(Kimlik);
@@ -409,7 +409,7 @@ begin
       { TODO - ip v6'ya göre düzenlenecek }
       if(IPAdresiAyniAgdaMi(HedefIP4Adres)) then
         HedefMACAdres := ARPKayitlar0.MACAdresiAl(HedefIP4Adres)
-      else HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAgBilgisi.DNSSunucusu);
+      else HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAg0.DNSSunucusu);
 
       // ilk paket olan SYN (ARZ) paketi gönderiliyor
       if(AIletisimTipi = itIP6) then
@@ -516,7 +516,7 @@ begin
   else if(ProtokolTipi = ptUDP) then
   begin
     { TODO - ip v6'ya göre düzenlenecek }
-    UDPPaketGonder(APaketTipi, HedefMACAdres, @GAgBilgisi.IP4Adres, @HedefIP4Adres,
+    UDPPaketGonder(APaketTipi, HedefMACAdres, @GAg0.IP4Adres, @HedefIP4Adres,
       YerelPort, UzakPort, ABellek, AUzunluk);
   end
 end;

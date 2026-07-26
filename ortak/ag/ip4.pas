@@ -43,7 +43,7 @@ begin
 
   // 1. sistemin ip adresi yok ise...
   // ve udp protokolünden ip adresi talebi mevcut ise
-  if(GAgBilgisi.IPAdresiAlindi = False) then
+  if(GAg0.IPAdresiAlindi = False) then
   begin
 
     // udp protokolü
@@ -56,11 +56,11 @@ begin
   end
   // 2. sistemin ip adresi var ise...
   // sadece aygıta gelen ve yayın olarak gelen ip adreslerini işle
-  else if(GAgBilgisi.IPAdresiAlindi) then
+  else if(GAg0.IPAdresiAlindi) then
   begin
 
-    if((IP4Karsilastir(IPPaket^.HedefIP, GAgBilgisi.IP4Adres)) or
-      (IP4Karsilastir2(IPPaket^.HedefIP, GAgBilgisi.IP4Adres)) or
+    if((IP4Karsilastir(IPPaket^.HedefIP, GAg0.IP4Adres)) or
+      (IP4Karsilastir2(IPPaket^.HedefIP, GAg0.IP4Adres)) or
       (IP4Karsilastir(IPPaket^.HedefIP, IPAdres255))) then
     begin
 

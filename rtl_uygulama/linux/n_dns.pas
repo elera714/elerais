@@ -32,7 +32,7 @@ type
     FRecType,                 // kayıt tipi
     FRecClass: TSayi2;        // kayıt sınıfı
     FTTL: TSayi4;             // yaşam ömrü
-    FRData: TIPAdres;         // ip adres
+    FRData: TIP4Adres;        // ip adres
   public
     procedure Olustur;
     function Sorgula(ADNSAdres: string): Boolean;
@@ -49,7 +49,7 @@ type
     property RecType: TSayi2 read FRecType;
     property RecClass: TSayi2 read FRecClass;
     property TTL: TSayi4 read FTTL;
-    property RData: TIPAdres read FRData;
+    property RData: TIP4Adres read FRData;
   end;
 
 implementation

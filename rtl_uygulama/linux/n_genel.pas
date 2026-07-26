@@ -28,7 +28,7 @@ type
     procedure BellekIcerikOku(AKaynakBellek, AHedefBellek: Isaretci; AMiktar: TSayi4); assembler;
 
     // ağ işlevleri
-    procedure AgBilgisiAl(AAgBilgisi: PAgBilgisi); assembler;
+    procedure AgBilgisiAl(AAgBilgisi: PAgBilgisi3); assembler;
 
     // arp işlevleri
     function ARPKayitSayisiAl: TSayi4; assembler;
@@ -131,7 +131,7 @@ asm
   add   esp,12
 end;
 
-procedure TGenel.AgBilgisiAl(AAgBilgisi: PAgBilgisi); assembler;
+procedure TGenel.AgBilgisiAl(AAgBilgisi: PAgBilgisi3); assembler;
 asm
   push  DWORD AAgBilgisi
   mov   eax,AG_BILGISIAL

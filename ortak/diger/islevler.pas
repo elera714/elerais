@@ -40,6 +40,8 @@ function FatXSaat2ELRSaat(ASaat: TSayi2): TSayi4;
 
 implementation
 
+uses ag;
+
 {==============================================================================
   sürücü + dizin + dosya yolunu parçalara ayırır
   giriş: disk1:\klasör1\dosya1.c
@@ -462,7 +464,7 @@ begin
 
   Result := False;
 
-  for i := 0 to 2 do if(AGonderenIP[i] <> GAgBilgisi.IP4Adres[i]) then Exit;
+  for i := 0 to 2 do if(AGonderenIP[i] <> GAg0.IP4Adres[i]) then Exit;
 
   Result := True;
 end;

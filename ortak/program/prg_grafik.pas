@@ -27,7 +27,7 @@ procedure SistemDegerleriOlayIsle;
 implementation
 
 uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, mdepolama, elr1, sistemmesaj,
-  gorselnesne, gercekbellek, src_vesa20, gorev, dosya, ag;
+  gorselnesne, gercekbellek, src_vesa20, gorev, dosya;
 
 var
   SDPencere: PPencere = nil;
@@ -137,10 +137,10 @@ begin
 
   SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'Çkrdk:', RENK_TURKUAZ);
   SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, False, 8, SistemSayaci, RENK_MAVI);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'AByte:', RENK_MOR);
-  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, False, 8, GAg0.AlinanByte, RENK_MAVI);
-  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'GByte:', RENK_KIRMIZI);
-  SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, GAg0.GonderilenByte, RENK_LACIVERT);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, '-----:', RENK_MOR);
+  SDPencere^.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, False, 8, 0, RENK_MAVI);
+  SDPencere^.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, '-----:', RENK_KIRMIZI);
+  SDPencere^.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, 0, RENK_LACIVERT);
 end;
 
 end.

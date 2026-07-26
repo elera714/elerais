@@ -7,7 +7,7 @@
   Dosya Ýþlevi: baðlantý katmaný keþif protokol (link layer discovery protocol)
     yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 22/06/2026
+  Güncelleme Tarihi: 26/07/2026
 
  ==============================================================================}
 {$mode objfpc}

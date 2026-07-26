@@ -32,7 +32,7 @@ procedure DNSSorgulariniYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
 
 implementation
 
-uses sistemmesaj, donusum, genel, islevler;
+uses sistemmesaj, donusum, genel, islevler, ag;
 
 {==============================================================================
   dns sorgularýný yanýtlar
@@ -163,7 +163,7 @@ begin
     Ekle2Byte(@Veri[VeriSN], $8400); Inc(VeriSN, 2);
 
     // mac adresi
-    Tasi2(@GAgBilgisi.MACAdres, @Veri[VeriSN], 6); Inc(VeriSN, 6);
+    Tasi2(@GAg0.MACAdres, @Veri[VeriSN], 6); Inc(VeriSN, 6);
     // atlayýcý (jumpers)
     EkleByte(@Veri[VeriSN], $00); Inc(VeriSN);
     // test sonucu

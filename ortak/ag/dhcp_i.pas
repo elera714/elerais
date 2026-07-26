@@ -20,7 +20,7 @@ procedure DHCPIstemciPaketleriniIsle(ADHCPYapi: PDHCP4Yapi);
 
 implementation
 
-uses donusum, sistemmesaj;
+uses donusum, sistemmesaj, ag;
 
 var
   // bilgi (inform) mesajının gönderilip gönderilmediği
@@ -29,8 +29,10 @@ var
 // DHCP istemci paketlerini işler
 procedure DHCPIstemciPaketleriniIsle(ADHCPYapi: PDHCP4Yapi);
 var
-  YanitAgBilgisi: TAgBilgisi;
-  TeklifEdilenIPAdresi: TIP4Adres;
+  YanitIP4Adres, YanitAltAgMaskesi,
+  YanitAgGecitAdresi, YanitDNSSunucusu,
+  YanitDHCPSunucusu, TeklifEdilenIPAdresi: TIP4Adres;
+  YanitIPKiraSuresi: TSayi4;
   DHCPMesaj: PDHCPMesaj;
   AnaMT, MT, i: TSayi1;
   p1: PByte;
@@ -62,23 +64,23 @@ begin
 
           if(MT = DHCP_SECIM_ALTAG_MASKESI) and (i = 4) then
 
-            YanitAgBilgisi.AltAgMaskesi := PIP4Adres(@DHCPMesaj^.Mesaj)^
+            YanitAltAgMaskesi := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_YONLENDIRICI) and (i = 4) then
 
-            YanitAgBilgisi.AgGecitAdresi := PIP4Adres(@DHCPMesaj^.Mesaj)^
+            YanitAgGecitAdresi := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_DNS) and (i = 4) then
 
-            YanitAgBilgisi.DNSSunucusu := PIP4Adres(@DHCPMesaj^.Mesaj)^
+            YanitDNSSunucusu := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_SUNUCU_TANIMLAYICI) then
 
-            YanitAgBilgisi.DHCPSunucusu := PIP4Adres(@DHCPMesaj^.Mesaj)^
+            YanitDHCPSunucusu := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_IP_KIRALAMA_SURESI) then
 
-            YanitAgBilgisi.IPKiraSuresi := ntohs(PLongWord(@DHCPMesaj^.Mesaj)^)
+            YanitIPKiraSuresi := ntohs(PLongWord(@DHCPMesaj^.Mesaj)^)
 
           else if(MT = DHCP_SECIM_MESAJ_TIP) then
           begin
@@ -87,7 +89,7 @@ begin
             if(AnaMT = DHCP_MTIP_ONAY) then
             begin
 
-              YanitAgBilgisi.IP4Adres := ADHCPYapi^.IstemciyeAtanacakIPAdresi;
+              YanitIP4Adres := ADHCPYapi^.IstemciyeAtanacakIPAdresi;
             end
             else if(AnaMT = DHCP_MTIP_TEKLIF) then
             begin
@@ -107,7 +109,7 @@ begin
         // dhcp sunucusu tarafından teklif edilen ip adresini kabul et
         if(AnaMT = DHCP_MTIP_TEKLIF) then
 
-          DHCPIstekMesajiGonder(YanitAgBilgisi.DHCPSunucusu, TeklifEdilenIPAdresi)
+          DHCPIstekMesajiGonder(YanitDHCPSunucusu, TeklifEdilenIPAdresi)
 
         // onay mesajının gelmesi durumunda toplanan tüm verileri ana değişkenlere ata
         else if(AnaMT = DHCP_MTIP_ONAY) then
@@ -116,15 +118,15 @@ begin
           if(BilgiMesajiGonderildi = False) then
           begin
 
-            GAgBilgisi.IP4Adres := YanitAgBilgisi.IP4Adres;
-            GAgBilgisi.AltAgMaskesi := YanitAgBilgisi.AltAgMaskesi;
-            GAgBilgisi.AgGecitAdresi := YanitAgBilgisi.AgGecitAdresi;
-            GAgBilgisi.DNSSunucusu := YanitAgBilgisi.DNSSunucusu;
-            GAgBilgisi.DHCPSunucusu := YanitAgBilgisi.DHCPSunucusu;
-            GAgBilgisi.IPKiraSuresi := YanitAgBilgisi.IPKiraSuresi;
-            GAgBilgisi.IPAdresiAlindi := True;
+            GAg0.IP4Adres := YanitIP4Adres;
+            GAg0.AltAgMaskesi := YanitAltAgMaskesi;
+            GAg0.AgGecitAdresi := YanitAgGecitAdresi;
+            GAg0.DNSSunucusu := YanitDNSSunucusu;
+            GAg0.DHCPSunucusu := YanitDHCPSunucusu;
+            GAg0.IPKiraSuresi := YanitIPKiraSuresi;
+            GAg0.IPAdresiAlindi := True;
 
-            DHCPBilgilendirmeMesajiGonder(YanitAgBilgisi.IP4Adres);
+            DHCPBilgilendirmeMesajiGonder(YanitIP4Adres);
             BilgiMesajiGonderildi := True;
           end;
         end;

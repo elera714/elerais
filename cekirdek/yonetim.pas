@@ -292,9 +292,9 @@ begin
             begin
 
               // að bilgileri öndeðerlerle yükleniyor
-              GAg0.IlkAdresDegerleriniYukle;
+              //GAg0.IlkAdresDegerleriniYukle;
 
-              DHCPIpAdresiAl;
+              //DHCPIpAdresiAl;
             end
             else
             begin

@@ -38,7 +38,7 @@ begin
   // vmm.Init;
 
   asm
-    cli
+    //cli
 
     mov eax,SISTEM_ESP
     mov esp,eax

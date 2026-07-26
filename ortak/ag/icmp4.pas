@@ -39,7 +39,7 @@ procedure ICMP4PaketGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
 
 implementation
 
-uses genel, donusum, ip4, islevler, sistemmesaj;
+uses genel, donusum, ip4, islevler, sistemmesaj, ag;
 
 // icmp protokolü üzerinden gelen paketleri iþler
 procedure ICMPPaketleriniIsle(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
@@ -99,7 +99,7 @@ begin
   ICMPPaket^.SaglamaToplami := SaglamaToplami;
 
   // sisteme gelen icmp isteðine icmp yanýtý (paket) gönder
-  IP4PaketGonder(MACAdres255, GAgBilgisi.IP4Adres, AHedefIPAdres, ptICMP4, 0,
+  IP4PaketGonder(MACAdres255, GAg0.IP4Adres, AHedefIPAdres, ptICMP4, 0,
     ICMPPaket, ICMP4_BASLIK_UZUNLUGU + i);
 
   {$IFDEF ICMP4_HATAAYIKLA}
