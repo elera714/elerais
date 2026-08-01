@@ -20,9 +20,17 @@ const
   P_BASLIK_YUKSEKLIK = 24;
   P_SOL_SAG_KALINLIK = 5;
 
-procedure GrafikYonetimi;
-procedure SistemDegerleriBasla;
-procedure SistemDegerleriOlayIsle;
+type
+  TPrgGrafik = class
+  public
+    constructor Create;
+    procedure GrafikYonetimi;
+    procedure SistemDegerleriBasla;
+    procedure SistemDegerleriOlayIsle;
+  end;
+
+var
+  GPrgGrafik: TPrgGrafik;
 
 implementation
 
@@ -36,8 +44,13 @@ var
   BellekSayac: TSayi4 = 0;
   DiskSayac: TSayi4 = 0;
 
+constructor TPrgGrafik.Create;
+begin
+
+end;
+
 // tüm masaüstü ve alt nesne çizimlerinin ekran kartýna aktarýldýðý nokta burasýdýr
-procedure GrafikYonetimi;
+procedure TPrgGrafik.GrafikYonetimi;
 begin
 
   SistemDegerleriBasla;
@@ -49,11 +62,11 @@ begin
 
     SistemDegerleriOlayIsle;
 
-    EkranKartSurucusu0.EkranBelleginiGuncelle;
+    GEkranKartSurucusu.EkranBelleginiGuncelle;
   end;
 end;
 
-procedure SistemDegerleriBasla;
+procedure TPrgGrafik.SistemDegerleriBasla;
 var
   Sol: TISayi4;
 begin
@@ -85,7 +98,7 @@ begin
   end;
 end;
 
-procedure SistemDegerleriOlayIsle;
+procedure TPrgGrafik.SistemDegerleriOlayIsle;
 var
   MD: PMDNesne;
   CizimAlani: TAlan;
@@ -104,9 +117,9 @@ begin
     BellekSayac := 0;
   end;
 
-  // 2000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
+  // 5000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
   Inc(DiskSayac);
-  if(DiskSayac = 2000) then
+  if(DiskSayac = 5000) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'Disk kullaným alaný hesaplanýyor...', []);

@@ -6,7 +6,7 @@
   Dosya Adý: icmp4.pas
   Dosya Ýþlevi: ICMP v4 protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 08/06/2026
+  Güncelleme Tarihi: 28/07/2026
 
  ==============================================================================}
 {$mode objfpc}

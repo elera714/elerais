@@ -18,21 +18,29 @@ unit yukleyici;
 
 interface
 
-procedure Yukle;
+type
+  TYukleyici = object
+  public
+    procedure Yukle;
+  end;
+
 procedure YukleIslevindenOnceCalistir;
 procedure YukleIslevindenSonraCalistir;
+
+var
+  GYukleyici0: TYukleyici;
 
 implementation
 
 uses yonetim, gdt, idt, irq, pic, pci, src_klavye, genel, gorev, fdepolama, gercekbellek,
   gorselnesne, dosya, sistemmesaj, mdepolama, islemci, paylasim, usb, zamanlayici,
   ag, src_vesa20, src_com, src_sb, bmp, acpi, k_giysi, giysi_mac, giysi_normal,
-  olayyonetim, giysi;
+  olayyonetim, giysi, src_ps2;
 
 {==============================================================================
   çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
  ==============================================================================}
-procedure Yukle;
+procedure TYukleyici.Yukle;
 begin
 
   CokluGorevBasladi := 0;
@@ -70,7 +78,7 @@ begin
   // NOT: SISTEM_MESAJ_'ler buradan itibaren sistem içerisine yönlendiriliyor
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Sistem içerisinde kullanýlacak görsel olmayan nesneler yükleniyor.', []);
-  ListeleriIlkDegerlerleYukle;
+  GYonetim0.ListeleriIlkDegerlerleYukle;
 
   //SISTEM_MESAJ(RENK_LACIVERT, '+ Sistem mesaj servisi baþlatýlýyor...', []);
   GSistemMesaj := TSistemMesaj.Create;
@@ -79,20 +87,21 @@ begin
   Gorevler0.Yukle;
 
   // çekirdek deðiþken / iþlevlerini ilk deðerlerle yükle
-  yonetim.Yukle;
+  GYonetim0.Yukle;
 
   // vesa 2.0 grafik sürücüsünü yükle
-  EkranKartSurucusu0.Yukle;
+  GEkranKartSurucusu.Yukle;
 
   // Bilgi: SISTEM_MESAJ_'ler buradan itibaren kullanýlabilir
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Ýþlemci bilgileri alýnýyor...', []);
-  GIslemciBilgisi.Satici := IslemciSaticisiniAl;
-  IslemciOzellikleriniAl1(GIslemciBilgisi.Ozellik1_EAX, GIslemciBilgisi.Ozellik1_EDX,
+  GIslemci := TIslemci.Create;
+  GIslemciBilgisi.Satici := GIslemci.SaticiBilgisiAl;
+  GIslemci.OzellikBilgisiAl(GIslemciBilgisi.Ozellik1_EAX, GIslemciBilgisi.Ozellik1_EDX,
     GIslemciBilgisi.Ozellik1_ECX);
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Zamanlayýcý yükleniyor...', []);
-  Zamanlayicilar0.Yukle;
+  GZamanlayicilar.Yukle;
 
   // Bilgi: Delay iþlevleri buradan itibaren kullanýlabilir
 
@@ -106,13 +115,13 @@ begin
   src_klavye.Yukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ PS2 fare sürücüsü yükleniyor...', []);
-  GFareSurucusu.Yukle;
+  GFareSurucusu := TFareSurucusu.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ USB aygýtlarý yükleniyor...', []);
-  usb.Yukle;
+  GUSB := TUSB.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Depolama aygýtlarý yükleniyor...', []);
-  FizikselDepolama0.Yukle;
+  GFizikselDepolama00.Yukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Mantýksal sürücü atamalarý gerçekleþtiriliyor...', []);
   MantiksalDepolama0 := TMantiksalDepolama.Create;
@@ -177,13 +186,17 @@ end;
   çekirdek yükleme sonrasý iþlevleri çalýþtýrýr.
  ==============================================================================}
 procedure YukleIslevindenSonraCalistir;
+var
+  BMP: TBMP;
 begin
 
-  Dosyalar0.Yukle;
+  GDosyalar := TDosyalar.Create;
 
   // 24 x 24 sistem resimlerini yükle
-  GSistemResimler := BMPDosyasiYukle('disk1:\resimler\sistem.bmp');
-  GSistemResimler2 := BMPDosyasiYukle('disk1:\resimler\sistem2.bmp');
+  BMP := TBMP.Create;
+  GSistemResimler := BMP.BMPDosyasiYukle('disk1:\resimler\sistem.bmp');
+  GSistemResimler2 := BMP.BMPDosyasiYukle('disk1:\resimler\sistem2.bmp');
+  BMP.Destroy;
 
   SistemUyariBellekAdresi := Isaretci($3200000);
   DosyaUyari := DosyaOku('disket1:\suyari.c', SistemUyariBellekAdresi);

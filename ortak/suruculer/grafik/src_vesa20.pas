@@ -18,10 +18,23 @@ interface
 uses paylasim, gorselnesne, gn_pencere, gn_masaustu;
 
 type
+  PEkranKartBilgisi = ^TEkranKartBilgisi;
+  TEkranKartBilgisi = record
+    BellekUzunlugu: TSayi2;
+    EkranMod: TSayi2;
+    YatayCozunurluk, DikeyCozunurluk: TISayi4;
+    BellekAdresi: TSayi4;
+    PixelBasinaBitSayisi: TSayi1;
+    NoktaBasinaByteSayisi: TSayi1;
+    SatirdakiByteSayisi: TSayi2;
+  end;
+
+type
   TNoktaOkuIslev = function(AYatay, ADikey: TISayi4): TRenk of object;
   TNoktaYazIslev = procedure(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4;
     ARenk: TRenk; ARenkDonustur: Boolean) of object;
 
+type
   PEkranKartSurucusu = ^TEkranKartSurucusu;
   TEkranKartSurucusu = object
   private
@@ -50,11 +63,11 @@ type
   end;
 
 var
-  EkranKartSurucusu0: TEkranKartSurucusu;
+  GEkranKartSurucusu: TEkranKartSurucusu;
 
 implementation
 
-uses genel, donusum, gn_menu, gn_acilirmenu, fareimlec, gdt;
+uses genel, donusum, gn_menu, gn_acilirmenu, fareimlec, gdt, src_ps2;
 
 {==============================================================================
   vesa 2.0 grafik sürücüsünün ana yükleme işlevlerini içerir
@@ -67,8 +80,8 @@ begin
   //GDTRGirdisiEkle(SECICI_GRAFIK_LFB, KartBilgisi.BellekAdresi, $FFFFFF, $92, $D0);
 
   // arka plan için bellek ayır
-  ArkaBellek := GetMem(EkranKartSurucusu0.KartBilgisi.YatayCozunurluk *
-    EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk * (KartBilgisi.PixelBasinaBitSayisi div 8));
+  ArkaBellek := GetMem(GEkranKartSurucusu.KartBilgisi.YatayCozunurluk *
+    GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk * (KartBilgisi.PixelBasinaBitSayisi div 8));
 
   case KartBilgisi.PixelBasinaBitSayisi of
     16: begin NoktaOkuIslev := @NoktaOku16; NoktaYazIslev := @NoktaYaz16; end;
@@ -275,7 +288,7 @@ begin
 
     mov ax,SECICI_SISTEM_VERI * 8
     mov ds,ax
-    mov esi,EkranKartSurucusu0.ArkaBellek
+    mov esi,GEkranKartSurucusu.ArkaBellek
     mov ax,SECICI_GRAFIK_LFB * 8
     mov es,ax
     mov edi,0
@@ -544,8 +557,8 @@ begin
 
   // imleç yatay bitiş değerlerinin hesaplanması
   Deger := GFareSurucusu.YatayKonum + (FareImlec.Genislik - FareImlec.YatayOdak);
-  if(Deger > EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1) then
-    ImlecYatayBitis := FareImlec.Genislik - (Deger - EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1)
+  if(Deger > GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1) then
+    ImlecYatayBitis := FareImlec.Genislik - (Deger - GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1)
   else ImlecYatayBitis := FareImlec.Genislik - 1;
 
   // fare dikey başlangıç ve imleç dikey başlangıç değerlerinin hesaplanması
@@ -556,8 +569,8 @@ begin
 
   // imleç dikey bitiş değerlerinin hesaplanması
   Deger := GFareSurucusu.DikeyKonum + (FareImlec.Yukseklik - FareImlec.DikeyOdak);
-  if(Deger > EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1) then
-    ImlecDikeyBitis := FareImlec.Yukseklik - (Deger - EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1)
+  if(Deger > GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1) then
+    ImlecDikeyBitis := FareImlec.Yukseklik - (Deger - GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1)
   else ImlecDikeyBitis := FareImlec.Yukseklik - 1;
 
   for Dikey := ImlecDikeyBaslangic to ImlecDikeyBitis do
@@ -570,10 +583,10 @@ begin
       ImlecBellekAdresi := FareImlec.BellekAdresi + (Dikey * FareImlec.Genislik) + Yatay;
 
       if(ImlecBellekAdresi^ = 1) then
-        EkranKartSurucusu0.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
+        GEkranKartSurucusu.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
           RENK_SIYAH, True)
       else if(ImlecBellekAdresi^ = 2) then
-        EkranKartSurucusu0.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
+        GEkranKartSurucusu.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
           RENK_BEYAZ, True);
     end;
   end;

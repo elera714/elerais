@@ -67,7 +67,7 @@ uses genel, gorev, gn_islevler, gn_masaustu, gn_gucdugmesi, gn_listekutusu,
   gn_defter, gn_islemgostergesi, gn_onaykutusu, gn_giriskutusu, gn_degerdugmesi,
   gn_etiket, gn_durumcubugu, gn_secimdugmesi, gn_baglanti, gn_resim, gn_listegorunum,
   gn_kaydirmacubugu, gn_karmaliste, gn_degerlistesi, gn_izgara, gn_araccubugu,
-  gn_renksecici, gn_sayfakontrol, temelgorselnesne, sistemmesaj, giysi;
+  gn_renksecici, gn_sayfakontrol, temelgorselnesne, sistemmesaj, giysi, src_ps2;
 
 const
   PENCERE_ALTLIMIT_GENISLIK = 110;

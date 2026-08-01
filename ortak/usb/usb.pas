@@ -6,7 +6,7 @@
   Dosya Adý: usb.pas
   Dosya Ýþlevi: usb yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/09/2019
+  Güncelleme Tarihi: 31/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -53,34 +53,47 @@ type
     AyarSayisi: TSayi1;       // config num
   end;
 
-procedure Yukle;
-procedure USBTest1;
+type
+  TUSB = class
+  public
+    constructor Create;
+    procedure Yukle;
+    procedure USBTest1;
+  end;
+
+var
+  GUSB: TUSB;
 
 implementation
 
 uses pci, ohci, uhci, ehci, sistemmesaj;
 
-procedure Yukle;
+constructor TUSB.Create;
+begin
+
+end;
+
+procedure TUSB.Yukle;
 var
   p: PPCI;
-  _SinifKod, i: TSayi4;
+  SinifKod, i: TSayi4;
 begin
 
   for i := 0 to PCIAygiti0.ToplamAygit - 1 do
   begin
 
     p := PCIAygiti0.PCI[i];
-    _SinifKod := (p^.SinifKod shr 8);
-    case _SinifKod of
+    SinifKod := (p^.SinifKod shr 8);
+    case SinifKod of
 
       USB_KONTROLCU_UHCI: uhci.Yukle(p);
-      USB_KONTROLCU_OHCI: ohci.Yukle(p);
+      USB_KONTROLCU_OHCI: GPrgOHCI.Yukle(p);
       USB_KONTROLCU_EHCI: ehci.Yukle(p);
     end;
   end;
 end;
 
-procedure USBTest1;
+procedure TUSB.USBTest1;
 var
   USBAygitTanim: PUSBAygitTanim;
   USBAyar: PUSBAyar;

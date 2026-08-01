@@ -111,21 +111,28 @@ type
 var
   SektorOkuYazKilit: TSayi4 = 0;
 
-procedure Yukle;
-procedure IRQ14KesmeIslevi;
-procedure IRQ15KesmeIslevi;
-function SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
-function IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
-function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
-function IDEAygitiHazirMi(AIDEDisk: PIDEDisk): Boolean;
-function VeriHazirMi(AIDEDisk: PIDEDisk): Boolean;
-procedure Bekle(AIDEDisk: PIDEDisk);
-function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
-function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
-function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
+type
+  TIDE = class
+  public
+    constructor Create;
+    function SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
+    function IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
+    function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
+    function IDEAygitiHazirMi(AIDEDisk: PIDEDisk): Boolean;
+    function VeriHazirMi(AIDEDisk: PIDEDisk): Boolean;
+    procedure Bekle(AIDEDisk: PIDEDisk);
+    function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+      ABellek: Isaretci): TISayi4;
+    function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+      ABellek: Isaretci): TISayi4;
+    function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+      ABellek: Isaretci): TISayi4;
+    procedure IRQ14KesmeIslevi;
+    procedure IRQ15KesmeIslevi;
+  end;
+
+var
+  GIDE0: TIDE;
 
 implementation
 
@@ -141,7 +148,7 @@ var
 {==============================================================================
   sistemde mevcut ide disk sürücülerini yükler
  ==============================================================================}
-procedure Yukle;
+constructor TIDE.Create;
 var
   FD: PFDNesne;
   Bellek: TATA4;
@@ -178,7 +185,7 @@ begin
       {$ENDIF}
 
       // mevcut ise fiziksel sürücü yapýsýný oluþtur
-      FD := FizikselDepolama0.FDAygitiOlustur(SURUCUTIP_DISK);
+      FD := GFizikselDepolama00.FDAygitiOlustur(SURUCUTIP_DISK);
       if(FD <> nil) then
       begin
 
@@ -200,7 +207,7 @@ end;
 {==============================================================================
   birinci disk IRQ rutini
  ==============================================================================}
-procedure IRQ14KesmeIslevi;
+procedure TIDE.IRQ14KesmeIslevi;
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'IRQ14 tetiklendi', []);
@@ -209,7 +216,7 @@ end;
 {==============================================================================
   ikinci disk IRQ rutini
  ==============================================================================}
-procedure IRQ15KesmeIslevi;
+procedure TIDE.IRQ15KesmeIslevi;
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'IRQ15 tetiklendi', []);
@@ -218,7 +225,7 @@ end;
 {==============================================================================
   sistemde mevcut ide aygýtýný denetler
  ==============================================================================}
-function SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
+function TIDE.SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
 var
   i: TSayi1;
 begin
@@ -252,7 +259,7 @@ end;
 {==============================================================================
   ide aygýtýyla ilgili tanýmlayýcý bilgileri alýr
  ==============================================================================}
-function IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
+function TIDE.IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
 var
   PortNo: TSayi2;
   i: TSayi1;
@@ -288,7 +295,7 @@ end;
 {==============================================================================
   ide aygýtýnýn meþgul olup olmadýðýný denetler
  ==============================================================================}
-function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
+function TIDE.IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
 var
   i: TSayi4;
   j: TSayi1;
@@ -307,7 +314,7 @@ end;
 {==============================================================================
   ide aygýtý bilgi transferi için hazýr mý ?
  ==============================================================================}
-function IDEAygitiHazirMi(AIDEDisk: PIDEDisk): Boolean;
+function TIDE.IDEAygitiHazirMi(AIDEDisk: PIDEDisk): Boolean;
 var
   i: TSayi4;
   j: TSayi1;
@@ -326,7 +333,7 @@ end;
 {==============================================================================
   aygýtta veri hazýr mý ?
  ==============================================================================}
-function VeriHazirMi(AIDEDisk: PIDEDisk): Boolean;
+function TIDE.VeriHazirMi(AIDEDisk: PIDEDisk): Boolean;
 var
   i: TSayi4;
   j: TSayi1;
@@ -345,7 +352,7 @@ end;
 {==============================================================================
   bekleme iþlevi
  ==============================================================================}
-procedure Bekle(AIDEDisk: PIDEDisk);
+procedure TIDE.Bekle(AIDEDisk: PIDEDisk);
 begin
 
   PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_ALTDURUM);
@@ -354,7 +361,7 @@ begin
   PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_ALTDURUM);
 end;
 
-function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+function TIDE.SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 begin
 
@@ -366,7 +373,7 @@ end;
 {==============================================================================
   LBA modunda 28 bitlik <>tör okuma iþlemi yapar
  ==============================================================================}
-function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+function TIDE.SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 var
   FD: PFDNesne;
@@ -469,7 +476,7 @@ end;
 {==============================================================================
   LBA modunda 28 bitlik sektör yazma iþlemi yapar
  ==============================================================================}
-function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+function TIDE.SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 var
   FD: PFDNesne;

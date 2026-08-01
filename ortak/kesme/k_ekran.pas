@@ -48,8 +48,8 @@ begin
       Konum := PKonum(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
 
 
-      Konum^.Sol := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk;
-      Konum^.Ust := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk;
+      Konum^.Sol := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;
+      Konum^.Ust := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
 
       // işlev başarı kodunu geri döndür
       Result := 1;

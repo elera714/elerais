@@ -38,7 +38,7 @@ begin
   if(IslevNo = ISLEV_OLUSTUR) then
   begin
 
-    Z := Zamanlayicilar0.Olustur(PISayi4(ADegiskenler)^);
+    Z := GZamanlayicilar.Olustur(PISayi4(ADegiskenler)^);
 
     if(Z <> nil) then
       Result := Z^.Kimlik
@@ -49,7 +49,7 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    Z := Zamanlayicilar0.Zamanlayici[PKimlik(ADegiskenler)^];
+    Z := GZamanlayicilar.Zamanlayici[PKimlik(ADegiskenler)^];
     if(Z <> nil) then Z^.ZamanlayiciDurum := zdCalisiyor;
   end
 
@@ -57,7 +57,7 @@ begin
   else if(IslevNo = 3) then
   begin
 
-    Z := Zamanlayicilar0.Zamanlayici[PKimlik(ADegiskenler)^];
+    Z := GZamanlayicilar.Zamanlayici[PKimlik(ADegiskenler)^];
     if(Z <> nil) then Z^.ZamanlayiciDurum := zdDurduruldu;
   end
 

@@ -30,7 +30,7 @@ const
   SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.4.1 - R37';
   {$ELSE}
   SistemTipi: TSayi4 = SISTEM_TIPI_ISTEMCI;
-  SistemAdi: string = 'ELERA ÝS (Ýstemci)- 0.4.1 - R37';
+  SistemAdi: string = 'ELERA ÝS (Ýstemci) - 0.4.1 - R37';
   {$ENDIF}
   DerlemeTarihi: string = {$i %DATE%};
   FPCMimari: string = {$i %FPCTARGET%};
@@ -380,13 +380,13 @@ type
     AYRLDI1: array[0..2] of Byte;             // 00..02
     OEMAdi: array[0..7] of Char;              // 03..10
     SektorBasinaByte: Word;                   // 11..12
-    ZincirBasinaSektor: Byte;                 // 13..13
+    KBS: Byte;                                // 13..13 - Küme Baþýna Sektör
     AyrilmisSektor1: Word;                    // 14..15
     DATSayisi: Byte;                          // 16..16
     AzamiDizinGirisi: Word;                   // 17..18
     ToplamSektorSayisi1x: Word;               // 19..20
     MedyaTip: Byte;                           // 21..21
-    DATBasinaSektor: Word;                    // 22..23   - SADECE FAT12 / FAT16 için
+    DATBasinaSektor: Word;                    // 22..23 - SADECE FAT12 / FAT16 için
     IzBasinaSektor: Word;                     // 24..25
     KafaSayisi: Word;                         // 26..27
     BolumOncesiSektorSayisi: TSayi4;          // 28..31
@@ -408,7 +408,7 @@ type
     AYRLDI1: array[0..2] of Byte;             // 00..02
     OEMAdi: array[0..7] of Char;              // 03..10
     SektorBasinaByte: Word;                   // 11..12
-    ZincirBasinaSektor: Byte;                 // 13..13
+    KBS: Byte;                                // 13..13  - Küme Baþýna Sektör
     AyrilmisSektor1: Word;                    // 14..15
     DATSayisi: Byte;                          // 16..16
     AzamiDizinGirisi: Word;                   // 17..18
@@ -518,7 +518,7 @@ type
   TDosyaAyirmaTablosu = record
     IlkSektor: TSayi2;
     ToplamSektor: TSayi2;
-    ZincirBasinaSektor: TSayi1;
+    KBS: TSayi1;                // Küme Baþýma Sektör
   end;
 
 type
@@ -530,7 +530,7 @@ type
 
 type
   TSektorIslev = function(AFizikselDepolama: Isaretci; AIlkSektor,
-    ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4 of object;
 
 // sistem dosya arama yapýsý
 type
@@ -564,39 +564,8 @@ type
   TCizgiTipi = (ctDuz, ctNokta);
 
 type
-  PEkranKartBilgisi = ^TEkranKartBilgisi;
-  TEkranKartBilgisi = record
-    BellekUzunlugu: TSayi2;
-    EkranMod: TSayi2;
-    YatayCozunurluk, DikeyCozunurluk: TISayi4;
-    BellekAdresi: TSayi4;
-    PixelBasinaBitSayisi: TSayi1;
-    NoktaBasinaByteSayisi: TSayi1;
-    SatirdakiByteSayisi: TSayi2;
-  end;
-
-type
   TIslev = procedure;
-
-type
-  PTCPPaket = ^TTCPPaket;
-  TTCPPaket = packed record
-    {SrcIpAddr,
-    DestIpAddr: TIPAdres;
-    Zero: Byte;
-    Protocol: Byte;
-    Length: Word;               // tcp header + data}
-    YerelPort,
-    UzakPort: TSayi2;
-    SiraNo,                     // sequence number
-    OnayNo: TSayi4;
-    BaslikU: TSayi1;            // 11111000 = 111111 = Data Offset, 000 = Reserved
-    Bayrak: TSayi1;
-    Pencere: TSayi2;
-    SaglamaToplami,
-    AcilIsaretci: TSayi2;       // urgent pointer
-    Secenekler: Isaretci;
-  end;
+  TOIslev = procedure of object;
 
 type
   PKonum = ^TKonum;
@@ -747,7 +716,7 @@ type
   end;
 
 var
-  AgYuklendi: Boolean = False;
+  SistemdekiAgKartiSayisi: TSayi4 = 0;
 
   SistemSayaci, CagriSayaci, GrafikSayaci: TSayi4;
   ZamanlayiciSayaci: TSayi4 = 0;
@@ -855,10 +824,6 @@ type
     B, G, R: TSayi1;
   end;
 
-var
-  // ip adresinin otomatik alýnýp alýnmamasý durumu bu deðiþkenler kontrol edilmektedir
-  IPAdresiniOtomatikAl: Boolean;
-
 type
   PAgBilgisi3 = ^TAgBilgisi3;
   TAgBilgisi3 = record
@@ -894,7 +859,6 @@ var
 
   SistemUyariBellekAdresi: Isaretci;
 
-function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
   ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;
 function ProtokolTipAdi(AProtokolTipi: TProtokolTipi): string;
@@ -908,17 +872,6 @@ function TarihSaatBilgisiAl: string;
 implementation
 
 uses cmos, donusum;
-
-function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
-begin
-
-  Result := False;
-
-  if(ANokta.Sol >= AAlan.Sol) and (ANokta.Sol <= AAlan.Sag) and
-    (ANokta.Ust >= AAlan.Ust) and (ANokta.Ust <= AAlan.Alt) then
-
-  Result := True;
-end;
 
 {==============================================================================
   verilerin toplam saðlama iþlemini gerçekleþtirir

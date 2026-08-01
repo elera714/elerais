@@ -6,7 +6,7 @@
   Dosya Adı: k_fare.pas
   Dosya İşlevi: fare (mouse) kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 15/09/2019
+  Güncelleme Tarihi: 31/07/2016
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,37 +16,37 @@ interface
 
 uses paylasim;
 
-function FareCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
+function FareCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel, gorev;
+uses src_ps2, gorev;
 
 {==============================================================================
   fare kesme çağrılarını yönetir
  ==============================================================================}
-function FareCagriIslevleri(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
+function FareCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  _Nokta: PKonum;
-  _Islev: TSayi4;
+  IslevNo: TSayi4;
+  K: PKonum;
 begin
 
+  Result := HATA_ISLEV;
+
   // işlev no
-  _Islev := (IslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
   // fare gösterge konumunu al
-  if(_Islev = 1) then
+  if(IslevNo = 1) then
   begin
 
     // fare konum değerini belirtilen bellek adreslerine kopyala
-    _Nokta := PKonum(PSayi4(Degiskenler)^ + FAktifGorevBellekAdresi);
+    K := PKonum(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
 
-    _Nokta^.Sol := GFareSurucusu.YatayKonum;
-    _Nokta^.Ust := GFareSurucusu.DikeyKonum;
-  end
-
-  // işlev belirtilen aralıkta değilse hata kodunu geri döndür
-  else Result := HATA_ISLEV;
+    K^.Sol := GFareSurucusu.YatayKonum;
+    K^.Ust := GFareSurucusu.DikeyKonum;
+    Result := HATA_YOK;
+  end;
 end;
 
 end.

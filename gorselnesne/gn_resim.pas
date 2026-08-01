@@ -224,6 +224,7 @@ end;
 procedure TResim.Ciz;
 var
   Resim: PResim;
+  BMP: TBMP;
 begin
 
   Resim := PResim(GorselNesneler0.NesneAl(Kimlik));
@@ -235,7 +236,12 @@ begin
   begin
 
     if not(Resim^.FGoruntuYapi.BellekAdresi = nil) then
-      ResimCiz(gntResim, Resim, Resim^.FGoruntuYapi);
+    begin
+
+      BMP := TBMP.Create;
+      BMP.ResimCiz(gntResim, Resim, Resim^.FGoruntuYapi);
+      BMP.Destroy;
+    end;
   end;
 end;
 
@@ -310,6 +316,7 @@ end;
 procedure TResim.ResimYaz(ADosyaYolu: string);
 var
   Resim: PResim;
+  bMP: TBMP;
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
@@ -326,7 +333,13 @@ begin
     Resim^.FGoruntuYapi.BellekAdresi := nil;
   end;
 
-  if(Length(ADosyaYolu) > 0) then Resim^.FGoruntuYapi := BMPDosyasiYukle(ADosyaYolu);
+  if(Length(ADosyaYolu) > 0) then
+  begin
+
+    BMP := TBMP.Create;
+    Resim^.FGoruntuYapi := BMP.BMPDosyasiYukle(ADosyaYolu);
+    BMP.Destroy;
+  end;
 
   Ciz;
 end;

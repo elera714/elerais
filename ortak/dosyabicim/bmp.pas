@@ -36,15 +36,25 @@ type
     OnemliRenkSayisi: TSayi4;       // önemli renk sayısı
   end;
 
-function BMPDosyasiYukle(ADosyaTamYol: string): TGoruntuYapi;
-procedure ResimCiz(AGNTip: TGNTip; AGorselNesne: PGorselNesne; AGoruntuYapi: TGoruntuYapi);
+type
+  TBMP = class
+  public
+    constructor Create;
+    function BMPDosyasiYukle(ADosyaTamYol: string): TGoruntuYapi;
+    procedure ResimCiz(AGNTip: TGNTip; AGorselNesne: PGorselNesne; AGoruntuYapi: TGoruntuYapi);
+  end;
 
 implementation
 
 uses gn_masaustu, gn_resim, islevler, gn_islevler, sistemmesaj, src_vesa20;
 
+constructor TBMP.Create;
+begin
+
+end;
+
 // bmp biçimindeki dosyayı resim olarak belleğe yükler
-function BMPDosyasiYukle(ADosyaTamYol: string): TGoruntuYapi;
+function TBMP.BMPDosyasiYukle(ADosyaTamYol: string): TGoruntuYapi;
 var
   DosyaBellek: Isaretci;
   DosyaUzunlugu: TISayi4;
@@ -179,7 +189,7 @@ begin
 end;
 
 // bmp biçiminde belleğe yüklenmiş resmi görsel nesneye çizer
-procedure ResimCiz(AGNTip: TGNTip; AGorselNesne: PGorselNesne;
+procedure TBMP.ResimCiz(AGNTip: TGNTip; AGorselNesne: PGorselNesne;
   AGoruntuYapi: TGoruntuYapi);
 var
   Masaustu: PMasaustu;
@@ -216,8 +226,8 @@ begin
       for TuvalA1 := 0 to Genislik - 1 do
       begin
 
-        EkranKartSurucusu0.NoktaYaz(Masaustu, CizimAlani.Sol + TuvalA1, CizimAlani.Ust + TuvalB1,
-          Renk1^, True);
+        GEkranKartSurucusu.NoktaYaz(Masaustu, CizimAlani.Sol + TuvalA1, CizimAlani.Ust +
+          TuvalB1, Renk1^, True);
         Inc(Renk1);
       end;
     end;
@@ -268,8 +278,8 @@ begin
         Renk2 := Renk1;
         Inc(Renk2, Round(Sol));
 
-        EkranKartSurucusu0.NoktaYaz(Resim, CizimAlani.Sol + TuvalA1, CizimAlani.Ust + TuvalB1,
-          Renk2^, True);
+        GEkranKartSurucusu.NoktaYaz(Resim, CizimAlani.Sol + TuvalA1, CizimAlani.Ust +
+          TuvalB1, Renk2^, True);
       end;
     end;
   end;

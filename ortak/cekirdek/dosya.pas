@@ -31,8 +31,9 @@ type
 type
   TDosyaDurumu = (ddKapali, ddOkumaIcinAcik, ddYazmaIcinAcik);
 
-  PDosyaIslem = ^TDosyaIslem;
-  TDosyaIslem = record
+type
+  PDosya = ^TDosya;
+  TDosya = class
     MD: TMDNesne;
     Klasor, DosyaAdi: string;
 
@@ -67,11 +68,6 @@ type
     Aranan: string;
   end;
 
-type
-  TDosya = object
-
-  end;
-
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama; AYDAKOlustur: Boolean = True): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
@@ -101,22 +97,22 @@ function DosyaKopyala(AKaynakDosya, AHedefDosya: string): TISayi4;
 function DosyaOku(ADosyaTamYol: string; var ABellekAdresi: Isaretci): TDosyaYukleme;
 
 type
-  TDosyalar = object
+  TDosyalar = class
   private
     FDosyaIslemSayisi: TSayi4;
-    FDosyaIslemleri: array[0..USTSINIR_DOSYAISLEM - 1] of PDosyaIslem;
-    function DosyaIslemAl(ASiraNo: TISayi4): PDosyaIslem;
-    procedure DosyaIslemYaz(ASiraNo: TISayi4; ADosyaIslem: PDosyaIslem);
+    FDosyaIslemleri: array[0..USTSINIR_DOSYAISLEM - 1] of TDosya;
+    function Al(ASiraNo: TISayi4): TDosya;
+    procedure Yaz(ASiraNo: TISayi4; ADosya: TDosya);
   public
-    procedure Yukle;
-    function Yeni: PDosyaIslem;
+    constructor Create;
+    function Yeni: TDosya;
     procedure DosyaIsleminiSonlandir(ADosyaKimlik: TKimlik);
-    property DosyaIslem[ASiraNo: TISayi4]: PDosyaIslem read DosyaIslemAl write DosyaIslemYaz;
+    property DosyaListesi[ASiraNo: TISayi4]: TDosya read Al write Yaz;
     property DosyaIslemSayisi: TSayi4 read FDosyaIslemSayisi;
   end;
 
 var
-  Dosyalar0: TDosyalar;
+  GDosyalar: TDosyalar;
 
   // dosya çalýþtýrma iþlevi için gerekli yapý
   DosyaCalistir: TDosyaYukleme;
@@ -130,7 +126,7 @@ uses elr1, fat12, fat16, fat32, sistemmesaj, islevler, donusum, genel, gercekbel
 {==============================================================================
   dosya sistem iþlevlerinin kullanacaðý deðiþkenleri ilk deðerlerle yükle
  ==============================================================================}
-procedure TDosyalar.Yukle;
+constructor TDosyalar.Create;
 var
   i: TSayi4;
 begin
@@ -138,7 +134,7 @@ begin
   FDosyaIslemSayisi := 0;
 
   // dosya iþlev deðiþkenlerini sýfýrla
-  for i := 0 to USTSINIR_DOSYAISLEM - 1 do Dosyalar0.DosyaIslem[i] := nil;
+  for i := 0 to USTSINIR_DOSYAISLEM - 1 do DosyaListesi[i] := nil;
 end;
 
 {==============================================================================
@@ -148,11 +144,12 @@ function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama; AYDAKOlustur: Boolean = True): TISayi4;
 var
   MD: PMDNesne;
+  D: TDosya;
   DST: TSayi4;
-  AramaSuzgeci, AranacakKlasor, Surucu, s: string;
+  AramaSuzgeci, AranacakKlasor,
+  Surucu, s: string;
   i, SektorNo, KumeNo,
   AyrilmisSektor: TSayi4;
-  DI: PDosyaIslem;
 begin
 
   Result := HATA_KIMLIK;
@@ -168,13 +165,13 @@ begin
   if(AYDAKOlustur) then
   begin
 
-    DI := Dosyalar0.Yeni;
-    if(DI = nil) then Exit;
+    D := GDosyalar.Yeni;
+    if(D = nil) then Exit;
 
     // arama kaydýný, çaðýran iþlevin deðiþkenine sakla
-    ADosyaArama.Kimlik := DI^.Kimlik;
+    ADosyaArama.Kimlik := D.Kimlik;
 
-  end else DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+  end else D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
 
   // arama iþlevinin yapýlacaðý sürücüyü al
   MD := MantiksalDepolama0.SurucuAl(AAramaSuzgec);
@@ -182,7 +179,7 @@ begin
   begin
 
     // arama için kullanýlan bellek bölgesini serbest býrak
-    Dosyalar0.DosyaIsleminiSonlandir(DI^.Kimlik);
+    GDosyalar.DosyaIsleminiSonlandir(D.Kimlik);
     Exit(1);
   end;
 
@@ -208,10 +205,10 @@ begin
   s := Copy(s, 2, Length(s) - 1);           // s = klasör1\*.*
 
   // sürücüyü arama bellek bölgesine ekle
-  DI^.MD := MD^;
+  D.MD := MD^;
 
   // önce kök dizin aranacak
-  DI^.KlasorDerinlik := 0;
+  D.KlasorDerinlik := 0;
 
   SektorNo := MD^.Acilis.DizinGirisi.IlkSektor;
 
@@ -221,7 +218,7 @@ begin
   // bu aþamada s = klasör1\*.*
 
   // dosya sistem tipine göre iþlevi yönlendir
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
     KumeNo := MD^.Acilis.DizinGirisi.IlkSektor
@@ -249,8 +246,8 @@ begin
       AramaSuzgeci := s;
     end;
 
-    DI^.ZincirNo := 0;
-    DI^.SektorIciKonum := -MD^.Acilis.DizinGirisi.GirdiUzunlugu;
+    D.ZincirNo := 0;
+    D.SektorIciKonum := -MD^.Acilis.DizinGirisi.GirdiUzunlugu;
 
     // klasörün dizin giriþinde aranmasý
     if(Length(AranacakKlasor) > 0) then
@@ -260,28 +257,28 @@ begin
       //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'AramaSuzgeci: ''%s''', [AramaSuzgeci]);
 
       case DST of
-        DST_ELR1    : DI^.SektorKumeNo := KumeNo;
-        DST_FAT12   : DI^.SektorKumeNo := KumeNo;
+        DST_ELR1    : D.SektorKumeNo := KumeNo;
+        DST_FAT12   : D.SektorKumeNo := KumeNo;
         DST_FAT32,
-        DST_FAT32LBA: DI^.SektorKumeNo := KumeNo;
+        DST_FAT32LBA: D.SektorKumeNo := KumeNo;
       end;
 
-      if(DI^.KlasorDerinlik = 0) then
+      if(D.KlasorDerinlik = 0) then
       begin
 
         case DST of
-          DST_ELR1: KumeNo := DizinGirisindeAraELR1(DI^.Kimlik, AranacakKlasor);
-          DST_FAT12: KumeNo := KokGirdisindeAra12(DI^.Kimlik, AranacakKlasor);
-          else KumeNo := KokGirdisindeAra32(DI, AranacakKlasor);
+          DST_ELR1: KumeNo := DizinGirisindeAraELR1(D.Kimlik, AranacakKlasor);
+          DST_FAT12: KumeNo := KokGirdisindeAra12(D.Kimlik, AranacakKlasor);
+          else KumeNo := KokGirdisindeAra32(@D, AranacakKlasor);
         end;
       end
       else
       begin
 
         case DST of
-          DST_ELR1: KumeNo := DizinGirisindeAraELR1(DI^.Kimlik, AranacakKlasor);
-          DST_FAT12: KumeNo := KokGirdisindeAra12(DI^.Kimlik, AranacakKlasor);
-          else KumeNo := DizinGirisindeAra32(DI, AranacakKlasor);
+          DST_ELR1: KumeNo := DizinGirisindeAraELR1(D.Kimlik, AranacakKlasor);
+          DST_FAT12: KumeNo := KokGirdisindeAra12(D.Kimlik, AranacakKlasor);
+          else KumeNo := DizinGirisindeAra32(@D, AranacakKlasor);
         end;
       end;
 
@@ -292,12 +289,12 @@ begin
         Exit(1);
       end;
 
-      DI^.KlasorDerinlik := 1;
+      D.KlasorDerinlik := 1;
 
       if(DST = DST_FAT12) or (DST = DST_FAT16) or (DST = DST_FAT32) or (DST = DST_FAT32LBA) then
       begin
 
-        SektorNo := ((KumeNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor) + AyrilmisSektor;
+        SektorNo := ((KumeNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.KBS) + AyrilmisSektor;
         //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'S: %d', [SektorNo]);
       end;
     end;
@@ -307,17 +304,17 @@ begin
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ýlk Dizin Küme No: $%x', [SektorNo]);
   //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'XXYYTT: %d', [MD^.Acilis.DizinGirisi.IlkSektor + MD^.Acilis.DizinGirisi.ToplamSektor]);
 
-  DI^.SektorKumeNo := KumeNo;
-  DI^.ZincirNo := 0;
-  DI^.SektorIciKonum := -MD^.Acilis.DizinGirisi.GirdiUzunlugu;
+  D.SektorKumeNo := KumeNo;
+  D.ZincirNo := 0;
+  D.SektorIciKonum := -MD^.Acilis.DizinGirisi.GirdiUzunlugu;
 
   if(DST = DST_FAT12) then
   begin
 
-    if(DI^.KlasorDerinlik = 0) then
-      DI^.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor
+    if(D.KlasorDerinlik = 0) then
+      D.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor
     else
-      DI^.SektorKumeNo := KumeNo;
+      D.SektorKumeNo := KumeNo;
   end;
 
   if(AramaSuzgeci = '*.*') then
@@ -339,12 +336,12 @@ end;
  ==============================================================================}
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 var
+  D: TDosya;
   DST: TSayi4;
-  DI: PDosyaIslem;
 begin
 
-  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
-  DST := DI^.MD.MD3.DST;
+  D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -369,7 +366,7 @@ end;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
 begin
 
-  Dosyalar0.DosyaIsleminiSonlandir(ADosyaArama.Kimlik);
+  GDosyalar.DosyaIsleminiSonlandir(ADosyaArama.Kimlik);
 end;
 
 {==============================================================================
@@ -390,23 +387,23 @@ end;
 { TODO - iþlev rtl'ye uyumlu hale getirilecek }
 procedure ReWrite(ADosyaKimlik: TKimlik);
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then
   begin
 
-    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    D.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
     Exit;
   end;
 
   // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -430,23 +427,23 @@ end;
  ==============================================================================}
 procedure Append(ADosyaKimlik: TKimlik);
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then
   begin
 
-    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    D.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
     Exit;
   end;
 
   // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -470,20 +467,20 @@ end;
  ==============================================================================}
 procedure Reset(ADosyaKimlik: TKimlik);
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit;
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then Exit;
 
   // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // en son iþlem hatalý ise çýk
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -497,23 +494,23 @@ end;
  ==============================================================================}
 procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then
   begin
 
-    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    D.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
     Exit;
   end;
 
   // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -546,18 +543,18 @@ end;
  ==============================================================================}
 procedure Write(ADosyaKimlik: TKimlik; ABellekAdresi: Isaretci; AUzunluk: TSayi4);
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit;
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then Exit;
 
   // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -583,23 +580,23 @@ end;
  ==============================================================================}
 procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then
   begin
 
-    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    D.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
     Exit;
   end;
 
   // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -641,23 +638,23 @@ end;
 { TODO - pascal ile uyum çerçevesinde iþlev yeniden kontrol edilebilir }
 function FileSize(ADosyaKimlik: TKimlik): TISayi8;
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then
   begin
 
-    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    D.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
     Exit(-1);
   end;
 
   // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit(-1);
+  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit(-1);
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -691,7 +688,7 @@ end;
 procedure CloseFile(ADosyaKimlik: TKimlik);
 begin
 
-  Dosyalar0.DosyaIsleminiSonlandir(ADosyaKimlik);
+  GDosyalar.DosyaIsleminiSonlandir(ADosyaKimlik);
 end;
 
 {==============================================================================
@@ -699,7 +696,7 @@ end;
  ==============================================================================}
 function CreateDir(AKlasorAdi: string): Boolean;
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
   DosyaKimlik: TKimlik;
 begin
@@ -711,9 +708,9 @@ begin
   if(DosyaKimlik = HATA_KIMLIK) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[DosyaKimlik];
+  D := GDosyalar.DosyaListesi[DosyaKimlik];
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -731,7 +728,7 @@ begin
 
     Result := fat32.CreateDir(DosyaKimlik);
 
-  Dosyalar0.DosyaIsleminiSonlandir(DosyaKimlik);
+  GDosyalar.DosyaIsleminiSonlandir(DosyaKimlik);
 end;
 
 {==============================================================================
@@ -739,7 +736,7 @@ end;
  ==============================================================================}
 function RemoveDir(const AKlasorAdi: string): Boolean;
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
   DosyaKimlik: TKimlik;
 begin
@@ -751,9 +748,9 @@ begin
   if(DosyaKimlik = HATA_KIMLIK) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[DosyaKimlik];
+  D := GDosyalar.DosyaListesi[DosyaKimlik];
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -771,7 +768,7 @@ begin
 
     Result := fat32.RemoveDir(DosyaKimlik);
 
-  Dosyalar0.DosyaIsleminiSonlandir(DosyaKimlik);
+  GDosyalar.DosyaIsleminiSonlandir(DosyaKimlik);
 end;
 
 {==============================================================================
@@ -779,7 +776,7 @@ end;
  ==============================================================================}
 function DeleteFile(const ADosyaAdi: string): Boolean;
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DST: TSayi4;
   DosyaKimlik: TKimlik;
 begin
@@ -791,9 +788,9 @@ begin
   if(DosyaKimlik = HATA_KIMLIK) then Exit;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[DosyaKimlik];
+  D := GDosyalar.DosyaListesi[DosyaKimlik];
 
-  DST := DI^.MD.MD3.DST;
+  DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
 
@@ -811,15 +808,15 @@ begin
 
     Result := fat32.DeleteFile(DosyaKimlik);
 
-  Dosyalar0.DosyaIsleminiSonlandir(DosyaKimlik);
+  GDosyalar.DosyaIsleminiSonlandir(DosyaKimlik);
 end;
 
 {==============================================================================
   yeni dosya iþlemleri için kaynak ayýrýr
  ==============================================================================}
-function TDosyalar.Yeni: PDosyaIslem;
+function TDosyalar.Yeni: TDosya;
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   i: TSayi4;
 begin
 
@@ -827,22 +824,22 @@ begin
   for i := 0 to USTSINIR_DOSYAISLEM - 1 do
   begin
 
-    DI := DosyaIslem[i];
+    D := DosyaListesi[i];
 
-    if(DI = nil) then
+    if(D = nil) then
     begin
 
-      DI := GetMem(SizeOf(TDosyaIslem));
-      DosyaIslem[i] := DI;
+      D := TDosya.Create;
+      DosyaListesi[i] := D;
 
       // ilk deðer atamalarýný gerçekleþtir
-      DI^.DosyaDurumu := ddKapali;
-      DI^.Kimlik := i;
-      DI^.TSI := GetMem(512);
+      D.DosyaDurumu := ddKapali;
+      D.Kimlik := i;
+      D.TSI := GetMem(512);
 
       Inc(FDosyaIslemSayisi);
 
-      Exit(DI);
+      Exit(D);
     end;
   end;
 
@@ -854,28 +851,28 @@ end;
  ==============================================================================}
 procedure TDosyalar.DosyaIsleminiSonlandir(ADosyaKimlik: TKimlik);
 var
-  DI: PDosyaIslem;
+  D: TDosya;
 begin
 
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
+  D := DosyaListesi[ADosyaKimlik];
 
-  if not(DI = nil) then
+  if not(D = nil) then
   begin
 
     Dec(FDosyaIslemSayisi);
 
     //SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'DI YokEt Kimlik: %d', [DI^.Kimlik]);
 
-    FreeMem(DI^.TSI, 512);
-    FreeMem(DI, SizeOf(TDosyaIslem));
-    Dosyalar0.DosyaIslem[ADosyaKimlik] := nil;
+    FreeMem(D.TSI, 512);
+    FreeMem(D, SizeOf(TDosya));
+    DosyaListesi[ADosyaKimlik] := nil;
   end;
 end;
 
 function DosyaOrtaminiHazirla(const ADosyaAdi: string): TKimlik;
 var
+  D: TDosya;
   MD: PMDNesne;
-  DI: PDosyaIslem;
   Surucu, Klasor, DosyaAdi: string;
   i: TSayi4;
 begin
@@ -884,33 +881,33 @@ begin
   Result := HATA_KIMLIK;
 
   // dosya iþlemi için bellek bölgesi ayýr
-  DI := Dosyalar0.Yeni;
-  if(DI = nil) then Exit;
+  D := GDosyalar.Yeni;
+  if(D = nil) then Exit;
 
   // sürücünün iþaret ettiði bellek bölgesine konumlan
   MD := MantiksalDepolama0.SurucuAl(ADosyaAdi);
   if(MD = nil) then
   begin
 
-    Dosyalar0.DosyaIsleminiSonlandir(DI^.Kimlik);
+    GDosyalar.DosyaIsleminiSonlandir(D.Kimlik);
     Exit;
   end;
 
   // dosya tanýmlayýcýyý kaydet
-  Result := DI^.Kimlik;
+  Result := D.Kimlik;
 
   //SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'DI Oluþtur Kimlik: %d', [DI^.Kimlik]);
 
-  DI^.Gorev := GorevAl(-1);
-  if(DI = nil) then
+  D.Gorev := GorevAl(-1);
+  if(D = nil) then
   begin
 
-    Dosyalar0.DosyaIsleminiSonlandir(DI^.Kimlik);
+    GDosyalar.DosyaIsleminiSonlandir(D.Kimlik);
     Exit;
   end;
 
   // iþlem yapýlacak sürücü
-  DI^.MD := MD^;
+  D.MD := MD^;
 
   // dosya yolunu ayrýþtýr
   DosyaYolunuParcala2(ADosyaAdi, Surucu, Klasor, DosyaAdi);
@@ -920,19 +917,19 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Dosya Adý: %s', [DosyaAdi]);}
 
   // klasör ve dosya adý
-  DI^.Klasor := Klasor;
-  DI^.DosyaAdi := DosyaAdi;
+  D.Klasor := Klasor;
+  D.DosyaAdi := DosyaAdi;
 
-  DI^.BellekSHTDurum := False;
-  DI^.Durum2 := False;
+  D.BellekSHTDurum := False;
+  D.Durum2 := False;
 
   // diðer deðerleri sýfýrla
-  DI^.DosyaDurumu := ddKapali;
+  D.DosyaDurumu := ddKapali;
 
   // oluþturulacak ilk klasör için listeleme aþamasýnda kaydedilen bilgiler
-  DI^.SilinenKumeNo := -1;
-  DI^.SilinenZincirNo := -1;
-  DI^.SilinenKayitSN := -1;
+  D.SilinenKumeNo := -1;
+  D.SilinenZincirNo := -1;
+  D.SilinenKayitSN := -1;
 end;
 
 function HamDosyaAdiniDosyaAdinaCevir2(ADizinGirdisi: PDizinGirdisi): string;
@@ -1042,7 +1039,7 @@ var
   Bellek: Isaretci;
   U: TISayi8;
   Sonuc: TSayi2;
-  s: String;
+  s: string;
   i: Integer;
 begin
 
@@ -1110,7 +1107,7 @@ end;
 
 { TDosyalar }
 
-function TDosyalar.DosyaIslemAl(ASiraNo: TISayi4): PDosyaIslem;
+function TDosyalar.Al(ASiraNo: TISayi4): TDosya;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -1119,12 +1116,12 @@ begin
   else Result := nil;
 end;
 
-procedure TDosyalar.DosyaIslemYaz(ASiraNo: TISayi4; ADosyaIslem: PDosyaIslem);
+procedure TDosyalar.Yaz(ASiraNo: TISayi4; ADosya: TDosya);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DOSYAISLEM) then
-    FDosyaIslemleri[ASiraNo] := ADosyaIslem;
+    FDosyaIslemleri[ASiraNo] := ADosya;
 end;
 
 // dosyayý belirtilen bellek bölgesine kopyalar

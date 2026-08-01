@@ -6,7 +6,7 @@
   Dosya Adý: udp.pas
   Dosya Ýþlevi: udp protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 25/06/2026
+  Güncelleme Tarihi: 29/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,10 +32,19 @@ type
     Veri: Isaretci;
   end;
 
-procedure UDPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
-procedure UDPPaketGonder(APaketTipi: TSayi4; AHedefMACAdres: TMACAdres; AKaynakIPAdres,
-  AHedefIPAdres: Isaretci; AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
-procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
+type
+  TUDP = class
+  public
+    constructor Create;
+    procedure PaketleriIsle(AEthernetPaket: PEthernetPaket);
+    procedure PaketGonder(APaketTipi: TSayi4; AHedefMACAdres: TMACAdres;
+      AKaynakIPAdres, AHedefIPAdres: Isaretci; AKaynakPort, AHedefPort: TSayi2;
+      AVeri: Isaretci; AVeriUzunlugu: TISayi4);
+    procedure BaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
+  end;
+
+var
+  GUDP0: TUDP;
 
 implementation
 
@@ -43,9 +52,17 @@ uses ip4, ip6, dhcp4_s, dhcp_i, donusum, sistemmesaj, baglanti, dns, netbios, ge
   islevler, gercekbellek, dhcp6;
 
 {==============================================================================
+  udp ilk yükleme iþlevlerini gerçekleþtirir
+ ==============================================================================}
+constructor TUDP.Create;
+begin
+
+end;
+
+{==============================================================================
   udp protokolüne gelen verileri ilgili kaynaklara yönlendirir
  ==============================================================================}
-procedure UDPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
+procedure TUDP.PaketleriIsle(AEthernetPaket: PEthernetPaket);
 var
   B: TBaglanti;
   UDPPaket: PUDPPaket;
@@ -137,8 +154,9 @@ end;
 {==============================================================================
   udp protokolü üzerinden veri gönderir
  ==============================================================================}
-procedure UDPPaketGonder(APaketTipi: TSayi4; AHedefMACAdres: TMACAdres; AKaynakIPAdres,
-  AHedefIPAdres: Isaretci; AKaynakPort, AHedefPort: TSayi2; AVeri: Isaretci; AVeriUzunlugu: TISayi4);
+procedure TUDP.PaketGonder(APaketTipi: TSayi4; AHedefMACAdres: TMACAdres;
+  AKaynakIPAdres, AHedefIPAdres: Isaretci; AKaynakPort, AHedefPort: TSayi2;
+  AVeri: Isaretci; AVeriUzunlugu: TISayi4);
 var
   UDPPaket: PUDPPaket;
   Ek6Baslik: TEk6Baslik;
@@ -202,7 +220,7 @@ end;
 {==============================================================================
   udp baþlýk verilerini görüntüler
  ==============================================================================}
-procedure UDPBaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
+procedure TUDP.BaslikBilgileriniGoruntule(AUDPBaslik: PUDPPaket);
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'UDP Baþlýk Bilgileri.............:', []);

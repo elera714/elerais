@@ -213,7 +213,7 @@ begin
     Inc(p2, 1);
     Inc(DHCPYapiU, 13);
 
-    UDPPaketGonder(PROTOKOL_IP6, AEthernetPaket^.KaynakMACAdres, @GAg0.IP6Adres,
+    GUDP0.PaketGonder(PROTOKOL_IP6, AEthernetPaket^.KaynakMACAdres, @GAg0.IP6Adres,
       @IPPaket^.KaynakIP, HedefPort, KaynakPort, HedefPaket, DHCPYapiU);
 
     FreeMem(HedefPaket, 512);
@@ -328,7 +328,7 @@ begin
     Inc(p2, 1);
     Inc(DHCPYapiU, 13);
 
-    UDPPaketGonder(PROTOKOL_IP6, AEthernetPaket^.KaynakMACAdres, @GAg0.IP6Adres,
+    GUDP0.PaketGonder(PROTOKOL_IP6, AEthernetPaket^.KaynakMACAdres, @GAg0.IP6Adres,
       @IPPaket^.KaynakIP, HedefPort, KaynakPort, HedefPaket, DHCPYapiU);
 
     FreeMem(HedefPaket, 512);
@@ -413,7 +413,7 @@ begin
     Inc(p2, 1);
     Inc(DHCPYapiU, 17); }
 
-    UDPPaketGonder(PROTOKOL_IP6, AEthernetPaket^.KaynakMACAdres, @GAg0.IP6Adres,
+    GUDP0.PaketGonder(PROTOKOL_IP6, AEthernetPaket^.KaynakMACAdres, @GAg0.IP6Adres,
       @IPPaket^.KaynakIP, HedefPort, KaynakPort, HedefPaket, DHCPYapiU);
 
     FreeMem(HedefPaket, 512);

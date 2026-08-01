@@ -30,6 +30,26 @@ const
   TCP6SYNSonEk: array[0..11] of TSayi1 = (
     $02, $04, $05, $A0, $01, $03, $03, $08, $01, $01, $04, $02);
 
+type
+  PTCPPaket = ^TTCPPaket;
+  TTCPPaket = packed record
+    {SrcIpAddr,
+    DestIpAddr: TIPAdres;
+    Zero: Byte;
+    Protocol: Byte;
+    Length: Word;               // tcp header + data}
+    YerelPort,
+    UzakPort: TSayi2;
+    SiraNo,                     // sequence number
+    OnayNo: TSayi4;
+    BaslikU: TSayi1;            // 11111000 = 111111 = Data Offset, 000 = Reserved
+    Bayrak: TSayi1;
+    Pencere: TSayi2;
+    SaglamaToplami,
+    AcilIsaretci: TSayi2;       // urgent pointer
+    Secenekler: Isaretci;
+  end;
+
 procedure TCPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
 procedure TCPPaketGonder(APaketTipi: TSayi4; ABaglanti: TBaglanti; ABayrak: TSayi1;
   AVeri: Isaretci; AVeriU: TSayi4; AVeriSonEk: Boolean = False);

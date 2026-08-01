@@ -74,7 +74,7 @@ begin
   else if(IP6Karsilastir(IPPaket^.HedefIP, IP6AdresFF02_0102)) then
   begin
 
-    UDPPaketleriniIsle(AEthernetPaket);
+    GUDP0.PaketleriIsle(AEthernetPaket);
     Inc(UDPPaketSayisi);
   end
   else if(IP6Karsilastir(IPPaket^.HedefIP, YayinIP6Adresi)) then
@@ -99,7 +99,6 @@ begin
     else if(IPPaket^.TasinanVeriP = PROTOKOL_TCP) then
     begin
 
-      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DAT', []);
       TCPPaketleriniIsle(AEthernetPaket);
       Inc(TCP6PaketSayisi);
     end
@@ -107,7 +106,7 @@ begin
     else if(IPPaket^.TasinanVeriP = PROTOKOL_UDP) then
     begin
 
-      UDPPaketleriniIsle(AEthernetPaket);
+      GUDP0.PaketleriIsle(AEthernetPaket);
       Inc(UDPPaketSayisi);
     end
     else

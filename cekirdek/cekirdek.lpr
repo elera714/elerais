@@ -32,6 +32,16 @@ program cekirdek;
 
 uses paylasim, yukleyici, gorev, yonetim, genel, sistemmesaj, bmp, sanalbellek;
 
+type
+  TCekirdek = object
+  public
+    procedure Yukle;
+  end;
+
+var
+  GCekirdek0: TCekirdek;
+
+procedure TCekirdek.Yukle;
 begin
 
   // belleði sayfalama iþlevine hazýrla
@@ -67,13 +77,18 @@ begin
   //GSistemMesaj.ServisCalisiyor := False;
 
   // çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
-  yukleyici.Yukle;
+  GYukleyici0.Yukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Masaüstü yönetim programý yükleniyor...', []);
   Gorevler0.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + OnDegerMasaustuProgram, CALISMA_SEVIYE3);
 
   // sistem ana kontrol kýsmýna geçiþ yap
-  SistemAnaKontrol;
+  GYonetim0.SistemAnaKontrol;
 
   while True do begin end;
+end;
+
+begin
+
+  GCekirdek0.Yukle;
 end.

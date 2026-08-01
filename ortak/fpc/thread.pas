@@ -7,9 +7,6 @@ interface
 uses gorev;
 
 type
-
-  { TThread }
-
   TThread = class
   private
     G: PGorev;

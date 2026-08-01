@@ -38,11 +38,9 @@ const
     $0A, $00, $AB, $FF, $FE, $CD, $EF, $01);
 
   // (S)unucu sabit ip4 adres deðerleri
-  SIP4Adresi: TIP4Adres = (192, 168, 1, 200);
-  //SIP4Adresi: TIP4Adres = (10, 0, 1, 1);
+  SIP4Adresi: TIP4Adres = (10, 0, 1, 1);
   SAltAgMaskesi: TIP4Adres = (255, 255, 255, 0);
-  //SAgGecidi: TIP4Adres = (10, 0, 1, 1);
-  SAgGecidi: TIP4Adres = (192, 168, 1, 1);
+  SAgGecidi: TIP4Adres = (10, 0, 1, 1);
   SDHCPSunucusu: TIP4Adres = (10, 0, 1, 1);
   SDNSSunucusu: TIP4Adres = (10, 0, 1, 1);
 
@@ -62,7 +60,11 @@ type
   PAg = ^TAg;
   TAg = class
   private
+    FAgKartiYuklendi: Boolean;
     FAktif: Boolean;
+
+    { TODO - bu deðer kullanýcý ayar seçimine baðlanacak }
+    IPAdresiniOtomatikAl: Boolean;
 
     FOtomatikIP: Boolean;
     FIPAdresiAlindi: Boolean;
@@ -81,6 +83,7 @@ type
     procedure AgKartinaVeriGonder(AHedefMAC: TMACAdres; AProtokolTipi: TProtokolTipi;
       AVeri: Isaretci; AVeriUzunlugu: TSayi2);
     function MACAdresiKabulEdilsinMi(AHedefMACAdres: TMACAdres): Boolean;
+    property AgKartiYuklendi: Boolean read FAgKartiYuklendi write FAgKartiYuklendi;
     property Aktif: Boolean read FAktif;
     property OtomatikIP: Boolean read FOtomatikIP write FOtomatikIP;
     property IPAdresiAlindi: Boolean read FIPAdresiAlindi write FIPAdresiAlindi;
@@ -105,7 +108,7 @@ var
 implementation
 
 uses src_pcnet32, arp, dns, ip4, ip6, sistemmesaj, donusum, islevler, dhcp4_i, dhcp4_s,
-  gorev, http, ftp, lldp_i;
+  gorev, http, ftp, lldp_i, udp;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
@@ -113,11 +116,14 @@ uses src_pcnet32, arp, dns, ip4, ip6, sistemmesaj, donusum, islevler, dhcp4_i, d
 constructor TAg.Create;
 begin
 
+  FAgKartiYuklendi := False;
+
   FAktif := False;
 
   IPAdresiAlindi := False;
 
-  OtomatikIP := IPAdresiniOtomatikAl;
+  { TODO - bu deðer kullanýcý ayar seçimine baðlanacak }
+  IPAdresiniOtomatikAl := False;
 
   IP6Adres := IP6Adresi;
 
@@ -129,18 +135,20 @@ begin
   // sistemin çalýþtýðý bilgisayarýn alan adý - (domain name)
   {$IFDEF SISTEM_SUNUCU}
   GTamBilgisayarAdi := GBilgisayarAdi + '.' + GAlanAdi;
-  IPAdresiniOtomatikAl := False;
+  OtomatikIP := False;
   {$ELSE}
   GTamBilgisayarAdi := GBilgisayarAdi;
   { TODO - True olduðunda að baðlantýsý yoksa hata veriyor }
-  IPAdresiniOtomatikAl := True;
+  OtomatikIP := IPAdresiniOtomatikAl;
   {$ENDIF}
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Ethernet aygýtlarý yükleniyor...', []);
   AgAygitlariniYukle;
 
+  if(SistemdekiAgKartiSayisi > 0) then FAgKartiYuklendi := True;
+
   // en az 1 að aygýtý yüklendi ise
-  if(AgYuklendi) then
+  if(AgKartiYuklendi) then
   begin
 
     MACAdres := GMacAdres;
@@ -151,20 +159,34 @@ begin
     DHCPSunucusu := SDHCPSunucusu;
     DNSSunucusu := SDNSSunucusu;
     {$ELSE}
-    IP4Adres := IIP4Adresi;
-    AltAgMaskesi := IAltAgMaskesi;
-    AgGecitAdresi := IAgGecidi;
-    DHCPSunucusu := IDHCPSunucusu;
-    DNSSunucusu := IDNSSunucusu;
-    {$ENDIF}
+    if(OtomatikIP) then
+    begin
 
-    if(OtomatikIP = False) then IPAdresiAlindi := True;
+      IP4Adres := IP4Adres0;
+      AltAgMaskesi := IP4Adres0;
+      AgGecitAdresi := IP4Adres0;
+      DHCPSunucusu := IP4Adres0;
+      DNSSunucusu := IP4Adres0;
+    end
+    else
+    begin
+
+      IP4Adres := IIP4Adresi;
+      AltAgMaskesi := IAltAgMaskesi;
+      AgGecitAdresi := IAgGecidi;
+      DHCPSunucusu := IDHCPSunucusu;
+      DNSSunucusu := IDNSSunucusu;
+    end;
+    {$ENDIF}
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Baðlantý yapýlarý ilk deðerlerle yükleniyor...', []);
     GBaglantilar := TBaglantilar.Create;
 
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ UDP protokolü yükleniyor...', []);
+    GUDP0 := TUDP.Create;
+
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ARP protokolü yükleniyor...', []);
-    ARPKayitlar0 := TARPKayitlar.Create;
+    GARPKayitlar0 := TARPKayitlar.Create;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DNS protokolü yükleniyor...', []);
     GDNS0 := TDNS.Create;
@@ -186,7 +208,7 @@ begin
 
       IPAdresiAlindi := False;
       DHCPIpAdresiAl;
-    end;
+    end else IPAdresiAlindi := True;
   end;
 end;
 
@@ -227,7 +249,7 @@ var
 begin
 
   // að yüklendi ise ...
-  if(AgYuklendi) then
+  if(AgKartiYuklendi) then
   begin
 
     // að kartýna gelen ham bilgiyi al
@@ -273,7 +295,7 @@ begin
 
           ARPPaket := @EthPaket^.Veri;
           if(IP4Karsilastir(ARPPaket^.HedefIPAdres, IP4Adres)) then
-            ARPKayitlar0.ARPPaketleriniIsle(EthPaket)
+            GARPKayitlar0.ARPPaketleriniIsle(EthPaket)
         end
 
         // IP V4 protokolü
@@ -318,7 +340,7 @@ var
   Bellek: Isaretci;
 begin
 
-  if(AgYuklendi) then
+  if(AgKartiYuklendi) then
   begin
 
     // veri paketi için bellekte yer ayýr

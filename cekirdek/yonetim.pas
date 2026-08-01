@@ -41,16 +41,21 @@ type
     constructor Create(CreateSuspended: Boolean);
   end;
 
+type
+  TYonetim = object
+  public
+    procedure Yukle;
+    procedure SistemAnaKontrol;
+    procedure CekirdekDosyaTSDegeriniKaydet;
+    procedure KaydedilenProgramlariYenidenYukle;
+    procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
+    procedure ListeleriIlkDegerlerleYukle;
+  end;
+
 var
   _DNS: PDNS = nil;
   Arge0: TArGe;
-
-procedure Yukle;
-procedure SistemAnaKontrol;
-procedure CekirdekDosyaTSDegeriniKaydet;
-procedure KaydedilenProgramlariYenidenYukle;
-procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
-procedure ListeleriIlkDegerlerleYukle;
+  GYonetim0: TYonetim;
 
 implementation
 
@@ -61,7 +66,7 @@ uses gdt, gorev, src_klavye, genel, ag, dhcp4_i, sistemmesaj, src_vesa20, cmos,
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
  ==============================================================================}
-procedure Yukle;
+procedure TYonetim.Yukle;
 var
   G: PGorev;
   GMBilgi: PGMBilgi;
@@ -74,15 +79,15 @@ begin
   GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
 
   // video bilgilerini al
-  EkranKartSurucusu0.KartBilgisi.BellekUzunlugu := GMBilgi^.GrafikBellekUzunlugu;
-  EkranKartSurucusu0.KartBilgisi.EkranMod := GMBilgi^.GrafikEkranMod;
-  EkranKartSurucusu0.KartBilgisi.YatayCozunurluk := GMBilgi^.GrafikCozunurlukX;
-  EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk := GMBilgi^.GrafikCozunurlukY;
-  EkranKartSurucusu0.KartBilgisi.BellekAdresi := GMBilgi^.GrafikBellekAdresi;
+  GEkranKartSurucusu.KartBilgisi.BellekUzunlugu := GMBilgi^.GrafikBellekUzunlugu;
+  GEkranKartSurucusu.KartBilgisi.EkranMod := GMBilgi^.GrafikEkranMod;
+  GEkranKartSurucusu.KartBilgisi.YatayCozunurluk := GMBilgi^.GrafikCozunurlukX;
+  GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk := GMBilgi^.GrafikCozunurlukY;
+  GEkranKartSurucusu.KartBilgisi.BellekAdresi := GMBilgi^.GrafikBellekAdresi;
   //VIDEO_MEM_ADDR;
-  EkranKartSurucusu0.KartBilgisi.PixelBasinaBitSayisi := GMBilgi^.GrafikPxBasinaBit;
-  EkranKartSurucusu0.KartBilgisi.NoktaBasinaByteSayisi := (GMBilgi^.GrafikPxBasinaBit div 8);
-  EkranKartSurucusu0.KartBilgisi.SatirdakiByteSayisi := GMBilgi^.GrafikSatirByteUz;
+  GEkranKartSurucusu.KartBilgisi.PixelBasinaBitSayisi := GMBilgi^.GrafikPxBasinaBit;
+  GEkranKartSurucusu.KartBilgisi.NoktaBasinaByteSayisi := (GMBilgi^.GrafikPxBasinaBit div 8);
+  GEkranKartSurucusu.KartBilgisi.SatirdakiByteSayisi := GMBilgi^.GrafikSatirByteUz;
 
   // çekirdek bilgilerini al
   CekirdekBaslangicAdresi := GMBilgi^.CekirdekBaslangicAdresi;
@@ -156,23 +161,27 @@ begin
   FAktifGorev := 0;
 
   // grafik iþlevlerini yönetecek görevi oluþtur
+  GPrgGrafik := TPrgGrafik.Create;
   GrafikESP := GetMem(8192);
-  Memur('grafik yöneticisi', @GrafikYonetimi, TSayi4(GrafikESP), CALISMA_SEVIYE0);
+  Memur('grafik yöneticisi', @GPrgGrafik.GrafikYonetimi, TSayi4(GrafikESP), CALISMA_SEVIYE0);
 
   // sistem kontrol görevi oluþtur
+  GPrgKontrol := TPrgKontrol.Create;
   KontrolESP := GetMem(8192);
-  Memur('sistem denetim', @KontrolYonetimi, TSayi4(KontrolESP), CALISMA_SEVIYE0);
+  Memur('sistem denetim', @GPrgKontrol.KontrolYonetimi, TSayi4(KontrolESP), CALISMA_SEVIYE0);
 
   // ohci kontrol görevi oluþtur
+  GPrgOHCI := TPrgOHCI.Create;
   GetMem(OHCIESP, 4096);
-  Memur('ohci', @ohci.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0);
+  Memur('ohci', @GPrgOHCI.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0);
 
   // arp tablosu güncelleme görevi oluþtur
+  { TODO - aþaðýdaki 2 iþlev Create iþlevinden sonraki bir yere eklenecek }
   ARPESP0 := GetMem(4096);
-  Memur('arp_güncelleme', @ARPTablosunuGuncelle, TSayi4(ARPESP0), CALISMA_SEVIYE0);
+  Memur('arp_güncelleme', @GARPKayitlar0.ARPTablosunuGuncelle, TSayi4(ARPESP0), CALISMA_SEVIYE0);
 
   ARPESP1 := GetMem(4096);
-  Memur('arp_dolaþým', @CihazlaraARPMesajiGonder, TSayi4(ARPESP1), CALISMA_SEVIYE0);
+  Memur('arp_dolaþým', @GARPKayitlar0.CihazlaraARPMesajiGonder, TSayi4(ARPESP1), CALISMA_SEVIYE0);
 
   {GetMem(Prg1ESP, 4096);
   Memur('prg1', @Prg1, TSayi4(Prg1ESP), CALISMA_SEVIYE0);
@@ -192,7 +201,7 @@ end;
 {==============================================================================
   sistem ana kontrol kýsmý
  ==============================================================================}
-procedure SistemAnaKontrol;
+procedure TYonetim.SistemAnaKontrol;
 const
   PingHedefIP6Adres: TIP6Adres = (
     $fe, $80, $00, $00, $00, $00, $00, $00, $41, $02, $05, $a3, $ba, $0a, $ed, $02);
@@ -241,7 +250,7 @@ begin
   while GAktifMasaustu = nil do;
 
   // sistem deðer görüntüleyicisini baþlat
-  SistemDegerleriBasla;
+  GPrgGrafik.SistemDegerleriBasla;
 
   {Arge0 := TArGe.Create(2);
   Arge0.Calistir;}
@@ -288,13 +297,11 @@ begin
           if(TusKarakterDegeri = '2') then
           begin
 
-            if(AgYuklendi) then
+            if(SistemdekiAgKartiSayisi > 0) then
             begin
 
-              // að bilgileri öndeðerlerle yükleniyor
-              //GAg0.IlkAdresDegerleriniYukle;
-
-              //DHCPIpAdresiAl;
+              GAg0.IPAdresiAlindi := False;
+              DHCPIpAdresiAl;
             end
             else
             begin
@@ -307,11 +314,6 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            B := TBaglanti.Create;
-            B2 := B;
-
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %x', [@B.UzakPort]);
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %x', [@B2.UzakPort]);
 
             //SistemKlasorleriniOlustur;
             //vbox.Listele;
@@ -501,7 +503,7 @@ begin
 end;
 
 // sistemin yüklenme esnasýnda çekirdeðin tarih + saat deðerini kaydeder
-procedure CekirdekDosyaTSDegeriniKaydet;
+procedure TYonetim.CekirdekDosyaTSDegeriniKaydet;
 var
   i: TISayi4;
   AramaKaydi: TDosyaArama;
@@ -534,7 +536,7 @@ begin
   FindClose(AramaKaydi);
 end;
 
-procedure KaydedilenProgramlariYenidenYukle;
+procedure TYonetim.KaydedilenProgramlariYenidenYukle;
 var
   GN: PGorselNesne;
   s, DosyaAdi, s2: string;
@@ -634,7 +636,7 @@ begin
   CloseFile(DosyaKimlik);
 end;
 
-procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
+procedure TYonetim.AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Assert: %s', [msg]);
@@ -673,7 +675,7 @@ end;
 {==============================================================================
   çalýþtýrýlacak iþlemlerin ana yükleme iþlevlerini içerir
  ==============================================================================}
-procedure ListeleriIlkDegerlerleYukle;
+procedure TYonetim.ListeleriIlkDegerlerleYukle;
 begin
 
   YaziListesi0.Yukle;

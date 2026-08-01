@@ -6,7 +6,7 @@
   Dosya Adý: src_pcnet32.pas
   Dosya Ýþlevi: PCNET32 að (network) sürücüsü
 
-  Güncelleme Tarihi: 26/07/2026
+  Güncelleme Tarihi: 28/07/2026
 
  ==============================================================================}
 {$mode objfpc}

@@ -124,7 +124,7 @@ function GorevSiraNumarasiniAl(AGorevSiraNo: TISayi4): TKimlik;
 function CalistirilacakBirSonrakiGoreviBul: TKimlik;
 function IliskiliProgramAl(ADosyaUzanti: string): TDosyaIliskisi;
 procedure IsaretlenenGorevleriSonlandir;
-function Memur(AGorevAdi: string; AIslev: TIslev; AYiginDegeri: TSayi4; ASeviyeNo: TSayi4): TSayi4;
+function Memur(AGorevAdi: string; AIslev: TOIslev; AYiginDegeri: TSayi4; ASeviyeNo: TSayi4): TSayi4;
 function GorevAl(AGorevKimlik: TKimlik = -1): PGorev;
 
 implementation
@@ -1068,7 +1068,7 @@ end;
   görev için belli bir görevi yerine getiren iþlev oluþturur - (thread)
   bilgi: saçma sapan kelime olan thread kelimesini kullanmayý uygun bulmuyorum
  ==============================================================================}
-function Memur(AGorevAdi: string; AIslev: TIslev; AYiginDegeri: TSayi4; ASeviyeNo: TSayi4): TSayi4;
+function Memur(AGorevAdi: string; AIslev: TOIslev; AYiginDegeri: TSayi4; ASeviyeNo: TSayi4): TSayi4;
 var
   G: PGorev;
   // yazmaçlarýn girdi içerisindeki sýra numaralarý

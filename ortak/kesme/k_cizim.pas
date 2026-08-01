@@ -34,6 +34,8 @@ var
   YariCap: TISayi4;
 begin
 
+  Result := HATA_ISLEV;
+
   // işlev no
   Islev := (AIslevNo and $FF);
 
@@ -50,7 +52,7 @@ begin
     Ust := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
 
     // belirtilen koordinatı işaretle
-    EkranKartSurucusu0.NoktaYaz(GN, Sol, Ust, PRenk(ADegiskenler + 12)^, True);
+    GEkranKartSurucusu.NoktaYaz(GN, Sol, Ust, PRenk(ADegiskenler + 12)^, True);
 
     // başarı kodunu geri döndür
     Result := 1;
@@ -131,9 +133,7 @@ begin
 
       GN^.Daire(Sol, Ust, YariCap, PISayi4(ADegiskenler + 16)^);
     end;
-  end
-
-  else Result := HATA_ISLEV;
+  end;
 end;
 
 end.

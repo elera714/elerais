@@ -31,6 +31,8 @@ var
   p: Isaretci;
 begin
 
+  Result := HATA_ISLEV;
+
   // işlev no
   IslevNo := (AIslevNo and $FF);
 
@@ -43,8 +45,8 @@ begin
     SB^.DerlemeBilgisi := DerlemeTarihi;
     SB^.FPCMimari := FPCMimari;
     SB^.FPCSurum := FPCSurum;
-    SB^.YatayCozunurluk := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk;
-    SB^.DikeyCozunurluk := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk;
+    SB^.YatayCozunurluk := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;
+    SB^.DikeyCozunurluk := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
   end
   // işlemci bilgisini al
   else if(IslevNo = 2) then
@@ -86,10 +88,7 @@ begin
   begin
 
     BilgisayariKapat;
-  end
-
-  // işlev belirtilen aralıkta değilse hata kodunu geri döndür
-  else Result := HATA_ISLEV;
+  end;
 end;
 
 end.

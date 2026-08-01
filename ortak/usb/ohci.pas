@@ -16,9 +16,17 @@ interface
 
 uses pci, paylasim;
 
-procedure Yukle(APCI: PPCI);
-procedure Kontrol1;
-procedure KesmeIslevi;
+type
+  TPrgOHCI = class
+  public
+    constructor Create;
+    procedure Yukle(APCI: PPCI);
+    procedure Kontrol1;
+    procedure KesmeIslevi;
+  end;
+
+var
+  GPrgOHCI: TPrgOHCI;
 
 implementation
 
@@ -42,7 +50,12 @@ var
   TemelAdres: TSayi4;
   IRQNo: TSayi1;
 
-procedure Yukle(APCI: PPCI);
+constructor TPrgOHCI.Create;
+begin
+
+end;
+
+procedure TPrgOHCI.Yukle(APCI: PPCI);
 begin
 
   OHCIAygit := APCI;
@@ -72,7 +85,7 @@ begin
   end;
 end;
 
-procedure Kontrol1;
+procedure TPrgOHCI.Kontrol1;
 var
   OHCIYazmac: POHCIYazmac;
   Deger: TSayi4;
@@ -94,7 +107,7 @@ begin
   end;
 end;
 
-procedure KesmeIslevi;
+procedure TPrgOHCI.KesmeIslevi;
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'USB-OHCI kesme iþlevi tetiklendi', []);

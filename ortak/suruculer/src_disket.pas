@@ -44,7 +44,16 @@ var
   IRQ6Tetiklendi: Boolean;
   DURUM0, DURUM1, DURUM2: TSayi1;
 
-procedure Yukle;
+type
+  TDisket = class
+  public
+    constructor Create;
+    function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+      AHedefBellek: Isaretci): TISayi4;
+    function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+      ABellek: Isaretci): TISayi4;
+  end;
+
 procedure MotorAc(AFDNesne: PFDNesne);
 procedure MotorKapat(AFDNesne: PFDNesne);
 procedure DMA2Yukle(Op: Byte);
@@ -58,10 +67,9 @@ procedure DisketSurucuMotorunuKontrolEt;
 procedure SektoruAyristir(ASektorNo: TSayi2; var AKafa, AIz, ASektor: TSayi1);
 function TekSektorOku(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
 function TekSektorYaz(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
-function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): TISayi4;
-function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
+
+var
+  GDisket0: TDisket;
 
 implementation
 
@@ -70,7 +78,7 @@ uses irq, zamanlayici, aygityonetimi, islevler, sistemmesaj;
 {==============================================================================
   disket sürücü ilk yükleme iþlevlerini içerir
  ==============================================================================}
-procedure Yukle;
+constructor TDisket.Create;
 var
   FD: PFDNesne;
   i, j: TSayi1;
@@ -104,7 +112,7 @@ begin
     if(j > 0) then
     begin
 
-      FD := FizikselDepolama0.FDAygitiOlustur(SURUCUTIP_DISKET);
+      FD := GFizikselDepolama00.FDAygitiOlustur(SURUCUTIP_DISKET);
       if(FD <> nil) then
       begin
 
@@ -133,7 +141,7 @@ begin
     if(j > 0) then
     begin
 
-      FD := FizikselDepolama0.FDAygitiOlustur(SURUCUTIP_DISKET);
+      FD := GFizikselDepolama00.FDAygitiOlustur(SURUCUTIP_DISKET);
       if(FD <> nil) then
       begin
 
@@ -621,7 +629,7 @@ end;
 {==============================================================================
   disket sürücü sektör okuma iþlevi
  ==============================================================================}
-function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+function TDisket.SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   AHedefBellek: Isaretci): TISayi4;
 var
   FD: PFDNesne;
@@ -691,7 +699,7 @@ end;
 {==============================================================================
   disket sürücü sektör okuma iþlevi
  ==============================================================================}
-function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
+function TDisket.SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
   ABellek: Isaretci): TISayi4;
 var
   FD: PFDNesne;

@@ -207,8 +207,8 @@ begin
   // tüm masaüstü nesneleri oluşturulduysa çık
   if(GorselNesneler0.ToplamMasaustu >= USTSINIR_MASAUSTU) then Exit;
 
-  Genislik := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk;
-  Yukseklik := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk;
+  Genislik := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;
+  Yukseklik := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
 
   Masaustu := PMasaustu(inherited Olustur(ktTuvalNesne, nil, 0, 0,
     Genislik, Yukseklik, 0, 0, 0, 0, ''));
@@ -443,7 +443,7 @@ begin
     for Sol := Masaustu^.FCizimAlani.Sol to Masaustu^.FCizimAlani.Sag do
     begin
 
-      EkranKartSurucusu0.NoktaYaz(Masaustu, Sol, Ust, Renk, False);
+      GEkranKartSurucusu.NoktaYaz(Masaustu, Sol, Ust, Renk, False);
     end;
   end;
 end;
@@ -471,7 +471,8 @@ end;
  ==============================================================================}
 procedure TMasaustu.MasaustuResminiDegistir(ADosyaYolu: string);
 var
-  Masaustu: PMasaustu = nil;
+  Masaustu: PMasaustu;
+  BMP: TBMP;
 begin
 
   Masaustu := PMasaustu(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, gntMasaustu));
@@ -493,7 +494,9 @@ begin
   end;
 
   // resim dosyasını masaüstü yapısına yükle
-  Masaustu^.FGoruntuYapi := BMPDosyasiYukle(ADosyaYolu);
+  BMP := TBMP.Create;
+  Masaustu^.FGoruntuYapi := BMP.BMPDosyasiYukle(ADosyaYolu);
+  BMP.Destroy;
 
   // arka plan resminin yüklenememesi durumunda arka plan rengini siyah yap
   if(Masaustu^.FGoruntuYapi.BellekAdresi = nil) then

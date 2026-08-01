@@ -45,7 +45,6 @@ type
     bdKapali,
     bdBaglaniyor,
 
-
     // bdBaglantiBekleniyor (sunucu durumu - SYN-RECEIVED):
     // istemciden SYN mesajý alýnmýþ, istemciye SYN + ACK mesajý gönderilmiþtir
     bdBaglantiBekleniyor,
@@ -86,7 +85,6 @@ type
     { TODO - önemli: baðlantý her 2 taraf için de oluþturulabilir, yerel / uzak karýþabilir
       özellikle TCPBaglantiAl ve benzeri iþlevler hatalý davranabilir. tedbir alýnacak }
     YerelPort, UzakPort: TSayi2;  // baðlantý kuran cihazým yerel / uzak portu
-
 
     Bagli: Boolean;
     FBellek: Isaretci;
@@ -200,6 +198,9 @@ begin
 
   B.Bagli := False;
   B.IletisimTipi := AIletisimTipi;
+
+  IP6Adresi := IP6Adres0;
+  IP4Adresi := IP4Adres0;
 
   if(AIletisimTipi = itIP6) then
   begin
@@ -393,8 +394,8 @@ begin
 
       { TODO - ip v6'ya göre düzenlenecek }
       if(IPAdresiAyniAgdaMi(HedefIP4Adres)) then
-        HedefMACAdres := ARPKayitlar0.MACAdresiAl(HedefIP4Adres)
-      else HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAg0.DNSSunucusu);
+        HedefMACAdres := GARPKayitlar0.MACAdresiAl(HedefIP4Adres)
+      else HedefMACAdres := GARPKayitlar0.MACAdresiAl(GAg0.DNSSunucusu);
 
       Bagli := True;
       Exit(Kimlik);
@@ -408,8 +409,8 @@ begin
 
       { TODO - ip v6'ya göre düzenlenecek }
       if(IPAdresiAyniAgdaMi(HedefIP4Adres)) then
-        HedefMACAdres := ARPKayitlar0.MACAdresiAl(HedefIP4Adres)
-      else HedefMACAdres := ARPKayitlar0.MACAdresiAl(GAg0.DNSSunucusu);
+        HedefMACAdres := GARPKayitlar0.MACAdresiAl(HedefIP4Adres)
+      else HedefMACAdres := GARPKayitlar0.MACAdresiAl(GAg0.DNSSunucusu);
 
       // ilk paket olan SYN (ARZ) paketi gönderiliyor
       if(AIletisimTipi = itIP6) then
@@ -516,7 +517,7 @@ begin
   else if(ProtokolTipi = ptUDP) then
   begin
     { TODO - ip v6'ya göre düzenlenecek }
-    UDPPaketGonder(APaketTipi, HedefMACAdres, @GAg0.IP4Adres, @HedefIP4Adres,
+    GUDP0.PaketGonder(APaketTipi, HedefMACAdres, @GAg0.IP4Adres, @HedefIP4Adres,
       YerelPort, UzakPort, ABellek, AUzunluk);
   end
 end;

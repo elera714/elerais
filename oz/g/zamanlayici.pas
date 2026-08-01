@@ -52,7 +52,7 @@ type
   end;
 
 var
-  Zamanlayicilar0: TZamanlayicilar;
+  GZamanlayicilar: TZamanlayicilar;
   ZamanlayicilarKilit: TSayi4 = 0;
 
 procedure ZamanlayicilariKontrolEt;
@@ -225,7 +225,7 @@ var
 begin
 
   // zamanlayýcý nesnesi yok ise çýk
-  if(Zamanlayicilar0.OlusturulanZamanlayici = 0) then Exit;
+  if(GZamanlayicilar.OlusturulanZamanlayici = 0) then Exit;
 
 //  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
 
@@ -233,7 +233,7 @@ begin
   for i := 0 to USTSINIR_ZAMANLAYICI - 1 do
   begin
 
-    Z := Zamanlayicilar0.Zamanlayici[i];
+    Z := GZamanlayicilar.Zamanlayici[i];
 
     // eðer çalýþýyorsa
     if not(Z = nil) and (Z^.ZamanlayiciDurum = zdCalisiyor) then
@@ -287,7 +287,7 @@ begin
   for i := 0 to USTSINIR_ZAMANLAYICI - 1 do
   begin
 
-    Z := Zamanlayicilar0.Zamanlayici[i];
+    Z := GZamanlayicilar.Zamanlayici[i];
 
     // zamanlayýcý nesnesi aranan iþleme mi ait
     if not(Z = nil) and (Z^.GorevKimlik = AGorevKimlik) then
@@ -316,14 +316,14 @@ begin
   for i := 0 to USTSINIR_ZAMANLAYICI - 1 do
   begin
 
-    Z := Zamanlayicilar0.Zamanlayici[i];
+    Z := GZamanlayicilar.Zamanlayici[i];
 
     // zamanlayýcý nesnesi aranan iþleme mi ait
     if not(Z = nil) and (Z^.GorevKimlik = AGorevKimlik) then
     begin
 
       // nesneyi yok et
-      Zamanlayicilar0.YokEt(Z);
+      GZamanlayicilar.YokEt(Z);
     end;
   end;
 

@@ -6,7 +6,7 @@
   Dosya Adý: sistem.pas
   Dosya Ýþlevi: sistem yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/07/2026
+  Güncelleme Tarihi: 28/07/2026
 
  ==============================================================================}
 {$mode objfpc}

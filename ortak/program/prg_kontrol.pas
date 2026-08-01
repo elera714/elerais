@@ -16,16 +16,29 @@ interface
 
 uses paylasim, genel, gn_pencere, gn_islemgostergesi, dosya;
 
-procedure KontrolYonetimi;
+type
+  TPrgKontrol = class
+  public
+    constructor Create;
+    procedure KontrolYonetimi;
+  end;
+
+var
+  GPrgKontrol: TPrgKontrol;
 
 implementation
 
 uses sistem;
 
+constructor TPrgKontrol.Create;
+begin
+
+end;
+
 {==============================================================================
   sistem çekirdeðinin deðiþip deðiþmediðinin kontrolünün gerçekleþtiði kýsým
  ==============================================================================}
-procedure KontrolYonetimi;
+procedure TPrgKontrol.KontrolYonetimi;
 var
   Pencere: PPencere = nil;
   IslemGostergesi: PIslemGostergesi = nil;

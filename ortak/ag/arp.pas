@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 06/06/2026
+  Güncelleme Tarihi: 28/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -45,39 +45,49 @@ type
   end;
 
 type
-  PARPKayit = ^TARPKayit;
-  TARPKayit = packed record
+  // programlar için
+  PARPKayit3 = ^TARPKayit3;
+  TARPKayit3 = packed record
     IPAdres: TIP4Adres;
     MACAdres: TMACAdres;
     YasamSuresi: TISayi2;
   end;
 
 type
+  PARPKayit = ^TARPKayit;
+  TARPKayit = class
+    IPAdres: TIP4Adres;
+    MACAdres: TMACAdres;
+    YasamSuresi: TSayi4;
+  end;
+
+type
   PARPKayitlar = ^TARPKayitlar;
   TARPKayitlar = class
   private
-    FARPKayitListesi: array[0..USTSINIR_KAYITSAYISI - 1] of PARPKayit;
+    FARPKayitListesi: array[0..USTSINIR_KAYITSAYISI - 1] of TARPKayit;
     FToplamKayit: TSayi4;
-    function ARPKayitAl(ASiraNo: TSayi4): PARPKayit;
-    procedure ARPKayitYaz(ASiraNo: TSayi4; AARPKayit: PARPKayit);
+    function Al(ASiraNo: TISayi4): TARPKayit;
+    procedure Yaz(ASiraNo: TISayi4; AARPKayit: TARPKayit);
   public
     constructor Create;
     procedure ARPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
-    procedure ARPKaydiEkle(AARPKayit: TARPKayit);
+    procedure ARPKaydiEkle(AIPAdres: TIP4Adres; AMACAdres: TMACAdres);
     procedure ARPIstegiGonder(AARPIslem: TARPIslem; AHedefMACAdres: PMACAdres;
       AHedefIPAdres: PIP4Adres);
     function MACAdresiAl(AIPAdres: TIP4Adres): TMACAdres;
-    property ARPKayit[ASiraNo: TSayi4]: PARPKayit read ARPKayitAl write ARPKayitYaz;
-    function ARPKaydiAl(ASiraNo: TISayi4; AHedefBellek: PARPKayit): TISayi4;
+    property ARPKayit[ASiraNo: TISayi4]: TARPKayit read Al write Yaz;
+    function ARPKaydiAl(ASiraNo: TISayi4; AHedefBellek: PARPKayit3): TISayi4;
     property ToplamKayit: TSayi4 read FToplamKayit;
+
+    procedure ARPTablosunuGuncelle;
+    procedure CihazlaraARPMesajiGonder;
   end;
 
 function ArpCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-procedure ARPTablosunuGuncelle;
-procedure CihazlaraARPMesajiGonder;
 
 var
-  ARPKayitlar0: TARPKayitlar;
+  GARPKayitlar0: TARPKayitlar;
   ARPTabloKilit: TSayi4 = 0;
 
 implementation
@@ -89,7 +99,7 @@ uses ag, islevler, zamanlayici, sistemmesaj, donusum, gorev;
  ==============================================================================}
 constructor TARPKayitlar.Create;
 var
-  i: TISayi4;
+  i: TSayi4;
 begin
 
   // arp kayýt yapýlarýný ilk deðerlerle yükle
@@ -99,7 +109,7 @@ begin
   FToplamKayit := 0;
 end;
 
-function TARPKayitlar.ARPKayitAl(ASiraNo: TSayi4): PARPKayit;
+function TARPKayitlar.Al(ASiraNo: TISayi4): TARPKayit;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -108,7 +118,7 @@ begin
   else Result := nil;
 end;
 
-procedure TARPKayitlar.ARPKayitYaz(ASiraNo: TSayi4; AARPKayit: PARPKayit);
+procedure TARPKayitlar.Yaz(ASiraNo: TISayi4; AARPKayit: TARPKayit);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
@@ -121,10 +131,12 @@ end;
  ==============================================================================}
 function ArpCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  ARP0: PARPKayit;
+  ARP0: PARPKayit3;
   IslevNo,
   SiraNo: TSayi4;
 begin
+
+  Result := HATA_ISLEV;
 
   // iþlev no
   IslevNo := (AIslevNo and $FF);
@@ -133,7 +145,7 @@ begin
   if(IslevNo = 1) then
   begin
 
-    Result := ARPKayitlar0.ToplamKayit;
+    Result := GARPKayitlar0.ToplamKayit;
   end
 
   // ARP girdi içeriðini ver
@@ -142,11 +154,9 @@ begin
 
     SiraNo := PSayi4(ADegiskenler + 00)^;
 
-    ARP0 := PARPKayit(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-    Result := ARPKayitlar0.ARPKaydiAl(SiraNo, ARP0);
-  end
-
-  else Result := HATA_ISLEV;
+    ARP0 := PARPKayit3(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+    Result := GARPKayitlar0.ARPKaydiAl(SiraNo, ARP0);
+  end;
 end;
 
 {==============================================================================
@@ -156,14 +166,10 @@ procedure TARPKayitlar.ARPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
 var
   EthernetPaket: PEthernetPaket;
   ARPPaket: PARPPaket;
-  ARP0: TARPKayit;
 begin
 
   EthernetPaket := AEthernetPaket;
   ARPPaket := @EthernetPaket^.Veri;
-
-  ARP0.IPAdres := ARPPaket^.GonderenIPAdres;
-  ARP0.MACAdres := ARPPaket^.GonderenMACAdres;
 
   // ARP paketi ip adresime gönderilmiþ ise
   if(IPAdresleriniKarsilastir(ARPPaket^.HedefIPAdres, GAg0.IP4Adres)) then
@@ -172,7 +178,7 @@ begin
     // 1. gönderilen paket benim mesajýma yanýt ise, tabloya ekle
     if(htons(ARPPaket^.Islem) = ARPISLEM_YANIT) then
 
-      ARPKaydiEkle(ARP0)
+      ARPKaydiEkle(ARPPaket^.GonderenIPAdres, ARPPaket^.GonderenMACAdres)
 
     // 2. gönderilen mesaj yanýt istiyorsa;
     // 2.1 talep eden makinenin bilgilerini listeye ekle
@@ -180,7 +186,7 @@ begin
     else if(htons(ARPPaket^.Islem) = ARPISLEM_ISTEK) then
     begin
 
-      ARPKaydiEkle(ARP0);
+      ARPKaydiEkle(ARPPaket^.GonderenIPAdres, ARPPaket^.GonderenMACAdres);
       ARPIstegiGonder(arpYanit, @ARPPaket^.GonderenMACAdres, @ARPPaket^.GonderenIPAdres);
     end;
   end;
@@ -221,11 +227,11 @@ end;
   ARP tablosunu her 1 saniyede bir kez günceller
   bilgi: iþlev, çekirdeðe baðlý ayrý bir görev olarak çalýþmaktadýr
  ==============================================================================}
-procedure ARPTablosunuGuncelle;
+procedure TARPKayitlar.ARPTablosunuGuncelle;
 var
-  YasamSuresi: TISayi2;
+  YasamSuresi: TSayi4;
   i, j: TSayi4;
-  ARP0, ARP1: PARPKayit;
+  ARP0, ARP1: TARPKayit;
   KayitSilindi: Boolean;
 begin
 
@@ -239,32 +245,30 @@ begin
     KayitSilindi := False;
 
     // kayýtlarý güncelle
-    if(ARPKayitlar0.ToplamKayit > 0) then
+    if(GARPKayitlar0.ToplamKayit > 0) then
     begin
 
-      for i := 0 to ARPKayitlar0.ToplamKayit - 1 do
+      for i := 0 to GARPKayitlar0.ToplamKayit - 1 do
       begin
 
-        ARP0 := ARPKayitlar0.ARPKayit[i];
+        ARP0 := GARPKayitlar0.ARPKayit[i];
         if not(ARP0 = nil) then
         begin
 
-          YasamSuresi := ARP0^.YasamSuresi;
+          YasamSuresi := ARP0.YasamSuresi;
           Dec(YasamSuresi);
-          ARP0^.YasamSuresi := YasamSuresi;
+          ARP0.YasamSuresi := YasamSuresi;
 
           // yaþam süresi 0 olduðunda kaydý sil ve listeden çýkar
           if(YasamSuresi = 0) then
           begin
 
-            FreeMem(ARP0, SizeOf(TARPKayit));
-            ARPKayitlar0.ARPKayit[i] := nil;
+            ARP0.Destroy;
+            GARPKayitlar0.ARPKayit[i] := nil;
 
             KayitSilindi := True;
 
-            j := ARPKayitlar0.FToplamKayit;
-            Dec(j);
-            ARPKayitlar0.FToplamKayit := j;
+            Dec(GARPKayitlar0.FToplamKayit);
           end;
         end;
       end;
@@ -273,24 +277,25 @@ begin
     // arp tablosunu güncelle
     // bilgi: kayýt güncellemesi, 0. kayýttan son kayda doðru hiç boþluk
     // olmayacak þekilde yeniden sýralanma iþlemidir
-    if(KayitSilindi) and (ARPKayitlar0.ToplamKayit > 0) then
+    { TODO - kontrol edilsin }
+    if(KayitSilindi) and (GARPKayitlar0.ToplamKayit > 0) then
     begin
 
       for i := 1 to USTSINIR_KAYITSAYISI - 1 do
       begin
 
-        ARP0 := ARPKayitlar0.ARPKayit[i];
+        ARP0 := GARPKayitlar0.ARPKayit[i];
         if not(ARP0 = nil) then
         begin
 
           for j := 0 to i - 1 do
           begin
 
-            ARP1 := ARPKayitlar0.ARPKayit[j];
+            ARP1 := GARPKayitlar0.ARPKayit[j];
             if(ARP1 = nil) then
             begin
 
-              ARPKayitlar0.ARPKayit[j] := ARP0;
+              GARPKayitlar0.ARPKayit[j] := ARP0;
               Break;
             end;
           end;
@@ -306,7 +311,7 @@ end;
   ARP tablosunu her 1 saniyede bir günceller
   bilgi: iþlev, çekirdeðe baðlý ayrý bir görev olarak çalýþmaktadýr
  ==============================================================================}
-procedure CihazlaraARPMesajiGonder;
+procedure TARPKayitlar.CihazlaraARPMesajiGonder;
 var
   IPAdres: TIP4Adres;
   i: TSayi4;
@@ -348,10 +353,10 @@ end;
 {==============================================================================
   ARP tablosuna ARP kaydý ekler
  ==============================================================================}
-procedure TARPKayitlar.ARPKaydiEkle(AARPKayit: TARPKayit);
+procedure TARPKayitlar.ARPKaydiEkle(AIPAdres: TIP4Adres; AMACAdres: TMACAdres);
 var
   i, j: TSayi4;
-  ARP0: PARPKayit;
+  ARP0: TARPKayit;
 begin
 
 //  while KritikBolgeyeGir(ARPTabloKilit) = False do;
@@ -365,11 +370,11 @@ begin
     begin
 
       // varsa güncelle ve çýk
-      if(IPAdresleriniKarsilastir(ARP0^.IPAdres, AARPKayit.IPAdres)) then
+      if(IPAdresleriniKarsilastir(ARP0.IPAdres, AIPAdres)) then
       begin
 
-        ARP0^.MACAdres := AARPKayit.MACAdres;
-        ARP0^.YasamSuresi := YASAM_SURESI;
+        ARP0.MACAdres := AMACAdres;
+        ARP0.YasamSuresi := YASAM_SURESI;
 //        KritikBolgedenCik(ARPTabloKilit);
         Exit;
       end;
@@ -385,15 +390,15 @@ begin
   end;
 
   // ARP girdisini tabloya ekle
-  ARP0 := GetMem(SizeOf(TARPKayit));
+  ARP0 := TARPKayit.Create;
   if not(ARP0 = nil) then
   begin
 
     ARPKayit[ToplamKayit] := ARP0;
 
-    ARP0^.IPAdres := AARPKayit.IPAdres;
-    ARP0^.MACAdres := AARPKayit.MACAdres;
-    ARP0^.YasamSuresi := YASAM_SURESI;
+    ARP0.IPAdres := AIPAdres;
+    ARP0.MACAdres := AMACAdres;
+    ARP0.YasamSuresi := YASAM_SURESI;
 
     j := FToplamKayit;
     Inc(j);
@@ -409,7 +414,7 @@ end;
  ==============================================================================}
 function TARPKayitlar.MACAdresiAl(AIPAdres: TIP4Adres): TMACAdres;
 var
-  ARP0: PARPKayit;
+  ARP0: TARPKayit;
   i, j: TSayi4;
 begin
 
@@ -424,7 +429,7 @@ begin
 
       // ARP kaydý mevcut ise çaðýran iþleve geri döndür
       if not(ARP0 = nil) then
-        if(IPAdresleriniKarsilastir(ARP0^.IPAdres, AIPAdres)) then Exit(ARP0^.MACAdres);
+        if(IPAdresleriniKarsilastir(ARP0.IPAdres, AIPAdres)) then Exit(ARP0.MACAdres);
     end;
   end;
 
@@ -450,7 +455,7 @@ begin
 
         // ARP kaydý mevcut ise çaðýran iþleve geri döndür
         if not(ARP0 = nil) then
-          if(IPAdresleriniKarsilastir(ARP0^.IPAdres, AIPAdres)) then Exit(ARP0^.MACAdres);
+          if(IPAdresleriniKarsilastir(ARP0.IPAdres, AIPAdres)) then Exit(ARP0.MACAdres);
       end;
     end;
   end;
@@ -461,9 +466,9 @@ end;
 {==============================================================================
   istenen sýradaki ARP girdisini geri döndürür
  ==============================================================================}
-function TARPKayitlar.ARPKaydiAl(ASiraNo: TISayi4; AHedefBellek: PARPKayit): TISayi4;
+function TARPKayitlar.ARPKaydiAl(ASiraNo: TISayi4; AHedefBellek: PARPKayit3): TISayi4;
 var
-  ARP0: PARPKayit;
+  ARP0: TARPKayit;
 begin
 
 //  while KritikBolgeyeGir(ARPTabloKilit) = False do;
@@ -478,9 +483,9 @@ begin
     if not(ARP0 = nil) then
     begin
 
-      AHedefBellek^.IPAdres := ARP0^.IPAdres;
-      AHedefBellek^.MACAdres := ARP0^.MACAdres;
-      AHedefBellek^.YasamSuresi := ARP0^.YasamSuresi;
+      AHedefBellek^.IPAdres := ARP0.IPAdres;
+      AHedefBellek^.MACAdres := ARP0.MACAdres;
+      AHedefBellek^.YasamSuresi := ARP0.YasamSuresi;
 
       Result := HATA_YOK;
 

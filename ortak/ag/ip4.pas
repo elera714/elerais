@@ -46,11 +46,13 @@ begin
   if(GAg0.IPAdresiAlindi = False) then
   begin
 
+    SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'U2', []);
+
     // udp protokolü
     if(IPPaket^.Protokol = PROTOKOL_UDP) then
     begin
 
-      UDPPaketleriniIsle(AEthernetPaket);
+      GUDP0.PaketleriIsle(AEthernetPaket);
       Inc(UDPPaketSayisi);
     end;
   end
@@ -82,7 +84,7 @@ begin
       else if(IPPaket^.Protokol = PROTOKOL_UDP) then
       begin
 
-        UDPPaketleriniIsle(AEthernetPaket);
+        GUDP0.PaketleriIsle(AEthernetPaket);
         Inc(UDPPaketSayisi);
       end;
     end

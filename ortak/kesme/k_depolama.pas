@@ -33,6 +33,8 @@ var
   p: Isaretci;
 begin
 
+  Result := HATA_ISLEV;
+
   // iþlev no
   IslevNo := (AIslevNo and $FF);
 
@@ -42,7 +44,7 @@ begin
   if(IslevNo = 1) then
   begin
 
-    Result := MantiksalDepolama0.MDAygitSayisi;
+    Result := MantiksalDepolama0.AygitSayisi;
   end
 
   // mantýksal depolama aygýt bilgilerini al
@@ -79,14 +81,14 @@ begin
   if(IslevNo = $71) then
   begin
 
-    Result := FizikselDepolama0.FDAygitSayisi;
+    Result := GFizikselDepolama00.AygitSayisi;
   end
 
   // fiziksel depolama aygýt bilgilerini al
   else if(IslevNo = $72) then
   begin
 
-    FD := FizikselDepolama0.FizikselSurucuAl(PSayi4(ADegiskenler + 00)^);
+    FD := GFizikselDepolama00.FizikselSurucuAl(PSayi4(ADegiskenler + 00)^);
     if not(FD = nil) then
     begin
 
@@ -100,12 +102,12 @@ begin
   else if(IslevNo = $73) then
   begin
 
-    FD := FizikselDepolama0.FizikselSurucuAl2(PKimlik(ADegiskenler + 00)^);
+    FD := GFizikselDepolama00.FizikselSurucuAl2(PKimlik(ADegiskenler + 00)^);
     if not(FD = nil) then
     begin
 
       p := Isaretci(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
-      Result := FizikselDepolama0.FizikselDepolamaVeriOku(FD, PSayi4(ADegiskenler + 04)^,
+      Result := GFizikselDepolama00.FizikselDepolamaVeriOku(FD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
     end else Result := 1;
   end
@@ -113,14 +115,14 @@ begin
   else if(IslevNo = $74) then
   begin
 
-    FD := FizikselDepolama0.FizikselSurucuAl2(PKimlik(ADegiskenler + 00)^);
+    FD := GFizikselDepolama00.FizikselSurucuAl2(PKimlik(ADegiskenler + 00)^);
     if not(FD = nil) then
     begin
 
       p := Isaretci(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
-      Result := FizikselDepolama0.FizikselDepolamaVeriYaz(FD, PSayi4(ADegiskenler + 04)^,
+      Result := GFizikselDepolama00.FizikselDepolamaVeriYaz(FD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
-    end else Result := 1;
+    end;
   end;
 end;
 

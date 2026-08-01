@@ -6,7 +6,7 @@
   Dosya Adı: gn_acilirmenu.pas
   Dosya İşlevi: açılır menü (TPopupMenu) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 31/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -44,7 +44,7 @@ function NesneOlustur(AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi
 
 implementation
 
-uses genel, temelgorselnesne, gorev, sistemmesaj;
+uses genel, temelgorselnesne, gorev, src_ps2, sistemmesaj;
 
 {==============================================================================
   açılır menü kesme çağrılarını yönetir
@@ -55,6 +55,8 @@ var
   AElemanAdi: string;
   AResimSiraNo: TISayi4;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
@@ -104,9 +106,7 @@ begin
       AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
       if(AcilirMenu <> nil) then Result := AcilirMenu^.SeciliSiraNo
-    end
-
-    else Result := HATA_ISLEV;
+    end;
   end;
 end;
 

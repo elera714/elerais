@@ -6,7 +6,7 @@
   Dosya Adý: aygityonetimi.pas
   Dosya Ýþlevi: aygýt (device) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/07/2026
+  Güncelleme Tarihi: 28/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -66,8 +66,6 @@ var
   i: TSayi4;
 begin
 
-  AgYuklendi := False;
-
   // sistemde ethernet aygýtý yoksa çýk
   if(SistemdekiAgAygitSayisi = 0) then Exit;
 
@@ -92,7 +90,7 @@ begin
 
             // eðer aygýt yüklemesi baþarýlý ise að yükleme deðiþkenini aktifleþtir
             i := Aygit.Yukle(PCIKayit);
-            if(i = 0) then AgYuklendi := True;
+            if(i = 0) then Inc(SistemdekiAgKartiSayisi);
           end;
         end;
       end;
