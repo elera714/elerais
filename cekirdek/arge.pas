@@ -105,7 +105,7 @@ begin
 
   P1Pencere^.Goster;
 
-  P1Masaustu^.Gorunum := True;
+  P1Masaustu^.F0.Gorunum := True;
 end;
 
 procedure TArGe.P1NesneTestOlayIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -155,25 +155,25 @@ begin
   if(AOlay.Olay = CO_CIZIM) then
   begin
 
-    G := AGonderici^.FAtananAlan.Genislik;
-    Y := AGonderici^.FAtananAlan.Yukseklik - 28;
+    G := AGonderici^.F0.FAtananAlan.Genislik;
+    Y := AGonderici^.F0.FAtananAlan.Yukseklik - 28;
 
     // yatay çizgiler
     Ust := 5 + 28;
     repeat
 
-      Alan := P2Pencere^.FKalinlik;
+      Alan := P2Pencere^.F0.FKalinlik;
       for i := 0 to G div 10 do
         P2Pencere^.PixelYaz(P2Pencere, Alan.Sol + (i * 10) + 3,
           Alan.Ust + Ust, RENK_GRI);
       Inc(Ust, 10);
     until Ust > Y;
   end
-  else if(AOlay.Olay = FO_HAREKET) and (AOlay.Kimlik = P2Pencere^.Kimlik) then
+  else if(AOlay.Olay = FO_HAREKET) and (AOlay.Kimlik = P2Pencere^.F0.Kimlik) then
   begin
 
-    SonKonumY := AOlay.Deger1 - P2Pencere^.FKalinlik.Sol;
-    SonKonumD := AOlay.Deger2 - P2Pencere^.FKalinlik.Ust;
+    SonKonumY := AOlay.Deger1 - P2Pencere^.F0.FKalinlik.Sol;
+    SonKonumD := AOlay.Deger2 - P2Pencere^.F0.FKalinlik.Ust;
 
     case SonSecim of
       0: s := '-';
@@ -189,11 +189,11 @@ begin
       10: s := 'TKarmaListe';
     end;
 
-    P2DurumCubugu^.Baslik := 'Konum: ' + IntToStr(AOlay.Deger1) +
+    P2DurumCubugu^.F0.Baslik := 'Konum: ' + IntToStr(AOlay.Deger1) +
       ':' + IntToStr(AOlay.Deger2) + ' - Seçili Nesne: ' + s;
     P2DurumCubugu^.Ciz;
   end
-  else if(AOlay.Olay = FO_SAGTUS_BIRAKILDI) and (AOlay.Kimlik = P2Pencere^.Kimlik) then
+  else if(AOlay.Olay = FO_SAGTUS_BIRAKILDI) and (AOlay.Kimlik = P2Pencere^.F0.Kimlik) then
   begin
 
     if(SonSecim = 1) then

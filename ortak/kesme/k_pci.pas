@@ -27,7 +27,7 @@ uses pci, gorev;
  ==============================================================================}
 function PCICagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  PAygit: PPCI;
+  PAygit: PPCIYapi;
   p: Isaretci;
   Islev: TSayi1;
   PCIAygitSiraNo: TSayi4;

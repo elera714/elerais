@@ -17,16 +17,23 @@ interface
 
 uses paylasim;
 
-procedure BilgisayariKapat;
-procedure YenidenBaslat;
-procedure SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
-procedure CalisanUygulamalariKaydet;
+type
+  TSistem = class
+  public
+    procedure BilgisayariKapat;
+    procedure YenidenBaslat;
+    procedure SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
+    procedure CalisanUygulamalariKaydet;
+  end;
+
+var
+  GSistem: TSistem;
 
 implementation
 
 uses port, dosya, gorselnesne, gorev, genel, donusum, sistemmesaj;
 
-procedure BilgisayariKapat;
+procedure TSistem.BilgisayariKapat;
 begin
 
   // öncelikle sistem ayarlarýný kaydet
@@ -35,7 +42,7 @@ begin
   asm cli; hlt; end;
 end;
 
-procedure YenidenBaslat;
+procedure TSistem.YenidenBaslat;
 var
   B1: TSayi1;
 begin
@@ -55,7 +62,7 @@ begin
   asm @@1: hlt; jmp @@1; end;
 end;
 
-procedure SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
+procedure TSistem.SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
 var
   DosyaAdi,
   TS, s: string;
@@ -80,7 +87,7 @@ begin
 end;
 
 // çalýþan uygulama listesinin dosyaya kaydetme iþlemi
-procedure CalisanUygulamalariKaydet;
+procedure TSistem.CalisanUygulamalariKaydet;
 var
   GN: PGorselNesne;
   P: TProgramKayit;
@@ -97,26 +104,26 @@ begin
   if(Sonuc = HATA_YOK) then
   begin
 
-    CalisanPSayisi := CalisanProgramSayisiniAl(GAktifMasaustu^.Kimlik);
+    CalisanPSayisi := CalisanProgramSayisiniAl(GAktifMasaustu^.F0.Kimlik);
 
     for i := 0 to CalisanPSayisi - 1 do
     begin
 
-      P := CalisanProgramBilgisiAl(i, GAktifMasaustu^.Kimlik);
+      P := CalisanProgramBilgisiAl(i, GAktifMasaustu^.F0.Kimlik);
       j := Length(P.DosyaAdi);
       if(P.DosyaAdi[j] = 'c') then
       begin
 
         s := P.DosyaAdi;
 
-        GN := GorselNesneler0.NesneAl(P.PencereKimlik);
+        GN := GGorselNesneler.NesneAl(P.PencereKimlik);
         if not(GN = nil) then
         begin
 
-          s := s + ';' + IntToStr(GN^.FAtananAlan.Sol);
-          s := s + ';' + IntToStr(GN^.FAtananAlan.Ust);
-          s := s + ';' + IntToStr(GN^.FAtananAlan.Genislik);
-          s := s + ';' + IntToStr(GN^.FAtananAlan.Yukseklik);
+          s := s + ';' + IntToStr(GN^.F0.FAtananAlan.Sol);
+          s := s + ';' + IntToStr(GN^.F0.FAtananAlan.Ust);
+          s := s + ';' + IntToStr(GN^.F0.FAtananAlan.Genislik);
+          s := s + ';' + IntToStr(GN^.F0.FAtananAlan.Yukseklik);
 
           WriteLn(DosyaKimlik, s);
         end;

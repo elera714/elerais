@@ -61,7 +61,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
@@ -70,7 +70,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       GirisKutusu^.Goster;
     end;
 
@@ -78,18 +78,18 @@ begin
     $010E:
     begin
 
-      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-      p1^ := GirisKutusu^.Baslik;
+      p1^ := GirisKutusu^.F0.Baslik;
     end;
 
     // giriş kutusundaki veriyi değiştir
     $010F:
     begin
 
-      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-      GirisKutusu^.Baslik := p1^;
+      GirisKutusu^.F0.Baslik := p1^;
       GirisKutusu^.Ciz;
     end;
 
@@ -97,7 +97,7 @@ begin
     $020F:
     begin
 
-      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       p2 := PLongBool(ADegiskenler + 04);
       GirisKutusu^.Yazilamaz := p2^;
       GirisKutusu^.Ciz;
@@ -107,7 +107,7 @@ begin
     $030F:
     begin
 
-      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       p2 := PLongBool(ADegiskenler + 04);
       GirisKutusu^.SadeceRakam := p2^;
     end;
@@ -116,18 +116,18 @@ begin
     $040F:
     begin
 
-      GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
 
-      if(GirisKutusu <> nil) and (GirisKutusu^.NesneTipi = gntGirisKutusu) then
+      if(GirisKutusu <> nil) and (GirisKutusu^.F0.NesneTipi = gntGirisKutusu) then
       begin
 
         // bir önceki odak alan nesneyi odaktan çıkar
         GN := PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne;
-        if(GN <> nil) and (GN^.Odaklanilabilir) then GN^.Odaklanildi := False;
+        if(GN <> nil) and (GN^.F0.Odaklanilabilir) then GN^.F0.Odaklanildi := False;
 
         // nelirtilen nesneyi odaklanılan nesne olarak belirle
         PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne := GirisKutusu;
-        GirisKutusu^.Odaklanildi := True;
+        GirisKutusu^.F0.Odaklanildi := True;
       end;
     end;
   end;
@@ -148,7 +148,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := GirisKutusu^.Kimlik;
+  else Result := GirisKutusu^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -167,23 +167,23 @@ begin
     AGenislik, AYukseklik, 2, RENK_GUMUS, RENK_BEYAZ, RENK_SIYAH, ABaslik));
 
   // görsel nesne tipi
-  GirisKutusu^.NesneTipi := gntGirisKutusu;
+  GirisKutusu^.F0.NesneTipi := gntGirisKutusu;
 
-  GirisKutusu^.Baslik := ABaslik;
+  GirisKutusu^.F0.Baslik := ABaslik;
 
   GirisKutusu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  GirisKutusu^.Odaklanilabilir := True;
-  GirisKutusu^.Odaklanildi := False;
+  GirisKutusu^.F0.Odaklanilabilir := True;
+  GirisKutusu^.F0.Odaklanildi := False;
 
   GirisKutusu^.OlayCagriAdresi := @OlaylariIsle;
 
-  GirisKutusu^.FareImlecTipi := fitGiris;
+  GirisKutusu^.F0.FareImlecTipi := fitGiris;
 
   GirisKutusu^.Yazilamaz := False;
   GirisKutusu^.SadeceRakam := False;
 
-  i := Length(GirisKutusu^.Baslik);
+  i := Length(GirisKutusu^.F0.Baslik);
   GirisKutusu^.ImlecX := i;
 
   GirisKutusu^.FSilmeDugmesi := GirisKutusu^.FSilmeDugmesi^.Olustur(ktBilesen, GirisKutusu,
@@ -203,10 +203,10 @@ var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(AKimlik));
+  GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(AKimlik));
   if(GirisKutusu = nil) then Exit;
 
-  GirisKutusu^.FSilmeDugmesi^.YokEt(GirisKutusu^.FSilmeDugmesi^.Kimlik);
+  GirisKutusu^.FSilmeDugmesi^.YokEt(GirisKutusu^.FSilmeDugmesi^.F0.Kimlik);
 
   inherited YokEt(AKimlik);
 end;
@@ -219,10 +219,10 @@ var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
+  GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(GirisKutusu = nil) then Exit;
 
-  GirisKutusu^.FSilmeDugmesi^.Gorunum := True;
+  GirisKutusu^.FSilmeDugmesi^.F0.Gorunum := True;
 
   inherited Goster;
 end;
@@ -244,13 +244,13 @@ var
   GirisKutusu: PGirisKutusu;
 begin
 
-  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
+  GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(GirisKutusu = nil) then Exit;
 
-  GirisKutusu^.FSilmeDugmesi^.FAtananAlan.Sol := GirisKutusu^.FAtananAlan.Genislik - 13;
-  GirisKutusu^.FSilmeDugmesi^.FAtananAlan.Ust := 3;
-  GirisKutusu^.FSilmeDugmesi^.FAtananAlan.Genislik := 10;
-  GirisKutusu^.FSilmeDugmesi^.FAtananAlan.Yukseklik := 16;
+  GirisKutusu^.FSilmeDugmesi^.F0.FAtananAlan.Sol := GirisKutusu^.F0.FAtananAlan.Genislik - 13;
+  GirisKutusu^.FSilmeDugmesi^.F0.FAtananAlan.Ust := 3;
+  GirisKutusu^.FSilmeDugmesi^.F0.FAtananAlan.Genislik := 10;
+  GirisKutusu^.FSilmeDugmesi^.F0.FAtananAlan.Yukseklik := 16;
   GirisKutusu^.FSilmeDugmesi^.BoyutlariYenidenHesapla;
 
   inherited Hizala;
@@ -266,16 +266,16 @@ var
   i: TSayi4;
 begin
 
-  GirisKutusu := PGirisKutusu(GorselNesneler0.NesneAl(Kimlik));
+  GirisKutusu := PGirisKutusu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(GirisKutusu = nil) then Exit;
 
   inherited Ciz;
 
   // giriş kutusunun çizim alan koordinatlarını al
-  CizimAlani := GirisKutusu^.FCizimAlani;
+  CizimAlani := GirisKutusu^.F0.FCizimAlani;
 
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
-  if(GirisKutusu^.Odaklanildi) then GirisKutusu^.Dikdortgen(GirisKutusu, ctNokta, CizimAlani, RENK_SIYAH);
+  if(GirisKutusu^.F0.Odaklanildi) then GirisKutusu^.Dikdortgen(GirisKutusu, ctNokta, CizimAlani, RENK_SIYAH);
 
   GirisKutusu^.HarfYaz(GirisKutusu, 3 + (GirisKutusu^.ImlecX * 8), 2, #255, RENK_ACIKYESIL, RENK_ACIKYESIL);
 
@@ -283,16 +283,16 @@ begin
   if(GirisKutusu^.Yazilamaz) then
 
     GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3,
-      GirisKutusu^.Baslik, RENK_SIYAH)
+      GirisKutusu^.F0.Baslik, RENK_SIYAH)
   else
   begin
 
     // nesne odak kazanmışsa sonuna #255 = klavye kursörü ekle
-    if(GirisKutusu^.Odaklanildi) then
+    if(GirisKutusu^.F0.Odaklanildi) then
       GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3,
-        GirisKutusu^.Baslik, RENK_SIYAH)
+        GirisKutusu^.F0.Baslik, RENK_SIYAH)
     else GirisKutusu^.YaziYaz(GirisKutusu, CizimAlani.Sol + 2, CizimAlani.Ust + 3,
-      GirisKutusu^.Baslik, RENK_SIYAH)
+      GirisKutusu^.F0.Baslik, RENK_SIYAH)
   end;
 
   GirisKutusu^.FSilmeDugmesi^.Ciz;
@@ -326,10 +326,10 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := GirisKutusu;
-    GirisKutusu^.Odaklanildi := True;
+    GirisKutusu^.F0.Odaklanildi := True;
 
     i := (AOlay.Deger1 div 8);
-    j := Length(GirisKutusu^.Baslik);
+    j := Length(GirisKutusu^.F0.Baslik);
     if(i > j) then
       GirisKutusu^.ImlecX := j
     else GirisKutusu^.ImlecX := i;
@@ -339,7 +339,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
       GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-    else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(GirisKutusu^.F0.GorevKimlik, AOlay);
   end
   // klavye tuş basımı
   else if(AOlay.Olay = CO_TUSBASILDI) then
@@ -349,7 +349,7 @@ begin
     begin
 
       i := GirisKutusu^.ImlecX;
-      j := Length(GirisKutusu^.Baslik);
+      j := Length(GirisKutusu^.F0.Baslik);
       Inc(i);
       if(i <= j) then GirisKutusu^.ImlecX := i;
     end
@@ -369,19 +369,19 @@ begin
     else if(AOlay.Deger1 = TUS_GIT_SONA) then
     begin
 
-      i := Length(GirisKutusu^.Baslik);
+      i := Length(GirisKutusu^.F0.Baslik);
       GirisKutusu^.ImlecX := i;
     end
     else if(AOlay.Deger1 = TUS_SIL) then
     begin
 
       // imleç satırın sonunda ise veya nesne içeriği yoksa çık
-      i := Length(GirisKutusu^.Baslik);
+      i := Length(GirisKutusu^.F0.Baslik);
       if(i = GirisKutusu^.ImlecX) or (i = 0) then Exit;
 
-      s := GirisKutusu^.Baslik;
+      s := GirisKutusu^.F0.Baslik;
       Delete(s, GirisKutusu^.ImlecX + 1, 1);
-      GirisKutusu^.Baslik := s;
+      GirisKutusu^.F0.Baslik := s;
     end
     else
     begin
@@ -405,7 +405,7 @@ begin
             AOlay.Deger1 := Tus;
             if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
               GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-            else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+            else Gorevler0.OlayEkle(GirisKutusu^.F0.GorevKimlik, AOlay);
           end
           // geri silme tuşu
           else if(C = #8) then
@@ -414,7 +414,7 @@ begin
             // imlecin satırın başında olma durumu
             if(GirisKutusu^.ImlecX = 0) then Exit;
 
-            i := Length(GirisKutusu^.Baslik);
+            i := Length(GirisKutusu^.F0.Baslik);
 
             // imlecin satırın sonunda olma durumu
             if(i = GirisKutusu^.ImlecX) then
@@ -422,24 +422,24 @@ begin
 
               if(i = 1) then
                 s := ''
-              else s := Copy(GirisKutusu^.Baslik, 1, i - 1);
+              else s := Copy(GirisKutusu^.F0.Baslik, 1, i - 1);
             end
             // imlecin satırın orta kısmında olma durumu
             else
             begin
 
-              s := GirisKutusu^.Baslik;
+              s := GirisKutusu^.F0.Baslik;
               Delete(s, GirisKutusu^.ImlecX, 1);
               i := GirisKutusu^.ImlecX;
             end;
 
             GirisKutusu^.ImlecX := i - 1;
-            GirisKutusu^.Baslik := s;
+            GirisKutusu^.F0.Baslik := s;
 
             AOlay.Deger1 := Tus;
             if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
               GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-            else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+            else Gorevler0.OlayEkle(GirisKutusu^.F0.GorevKimlik, AOlay);
           end
           else
           begin
@@ -450,28 +450,28 @@ begin
               if(C in ['0'..'9', 'A'..'F', 'a'..'f']) then
               begin
 
-                s := GirisKutusu^.Baslik;
+                s := GirisKutusu^.F0.Baslik;
                 Insert(C, s, GirisKutusu^.ImlecX + 1);
-                GirisKutusu^.Baslik := s;
+                GirisKutusu^.F0.Baslik := s;
 
                 // uygulamaya veya efendi nesneye mesaj gönder
                 AOlay.Deger1 := Tus;
                 if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
                   GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-                else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+                else Gorevler0.OlayEkle(GirisKutusu^.F0.GorevKimlik, AOlay);
               end;
             end
             else
             begin
 
-              s := GirisKutusu^.Baslik;
+              s := GirisKutusu^.F0.Baslik;
               Insert(C, s, GirisKutusu^.ImlecX + 1);
-              GirisKutusu^.Baslik := s;
+              GirisKutusu^.F0.Baslik := s;
 
               AOlay.Deger1 := Tus;
               if not(GirisKutusu^.OlayYonlendirmeAdresi = nil) then
                 GirisKutusu^.OlayYonlendirmeAdresi(GirisKutusu, AOlay)
-              else Gorevler0.OlayEkle(GirisKutusu^.GorevKimlik, AOlay);
+              else Gorevler0.OlayEkle(GirisKutusu^.F0.GorevKimlik, AOlay);
             end;
 
             i := GirisKutusu^.ImlecX;
@@ -496,7 +496,7 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := nil;
-    GirisKutusu^.Odaklanildi := False;
+    GirisKutusu^.F0.Odaklanildi := False;
 
     // giriş kutusu nesnesini yeniden çiz
     GirisKutusu^.Ciz;
@@ -513,14 +513,14 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := GirisKutusu;
-    GirisKutusu^.Odaklanildi := True;
+    GirisKutusu^.F0.Odaklanildi := True;
 
     // giriş kutusu nesnesini yeniden çiz
     GirisKutusu^.Ciz;
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := GirisKutusu^.FareImlecTipi;
+  GecerliFareGostegeTipi := GirisKutusu^.F0.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -542,14 +542,14 @@ begin
 
     GirisKutusu := PGirisKutusu(Dugme^.AtaNesne);
 
-    GirisKutusu^.Baslik := '';
+    GirisKutusu^.F0.Baslik := '';
     GirisKutusu^.ImlecX := 0;
 
     GirisKutusu^.Ciz;
 
     // nesneyi aktif nesne olarak işaretle
     PPencere(GirisKutusu^.AtaNesne)^.FAktifNesne := GirisKutusu;
-    GirisKutusu^.Odaklanildi := True;
+    GirisKutusu^.F0.Odaklanildi := True;
   end
 end;
 

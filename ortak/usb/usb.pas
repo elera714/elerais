@@ -75,7 +75,7 @@ end;
 
 procedure TUSB.Yukle;
 var
-  p: PPCI;
+  p: PPCIYapi;
   SinifKod, i: TSayi4;
 begin
 
@@ -88,7 +88,7 @@ begin
 
       USB_KONTROLCU_UHCI: uhci.Yukle(p);
       USB_KONTROLCU_OHCI: GPrgOHCI.Yukle(p);
-      USB_KONTROLCU_EHCI: ehci.Yukle(p);
+      USB_KONTROLCU_EHCI: GEHCI := TEHCI.Create(p);
     end;
   end;
 end;

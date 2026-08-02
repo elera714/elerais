@@ -1,13 +1,13 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adý: lldp_i.pas
-  Dosya Ýþlevi: baðlantý katmaný keþif protokol (link layer discovery protocol)
-    yönetim iþlevlerini içerir
+  Dosya AdÄ±: lldp_i.pas
+  Dosya Ä°ÅŸlevi: baÄŸlantÄ± katmanÄ± keÅŸif protokol (link layer discovery protocol)
+    yÃ¶netim iÅŸlevlerini iÃ§erir
 
-  Güncelleme Tarihi: 26/07/2026
+  GÃ¼ncelleme Tarihi: 02/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -24,13 +24,27 @@ type
     Veri: Isaretci;
   end;
 
-procedure LLDPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
+type
+  PLLDP = ^TLLDP;
+  TLLDP = class
+  public
+    constructor Create;
+    procedure PaketleriIsle(AEthernetPaket: PEthernetPaket);
+  end;
+
+var
+  GLLDP: TLLDP;
 
 implementation
 
 uses sistemmesaj, donusum, islevler;
 
-procedure LLDPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
+constructor TLLDP.Create;
+begin
+
+end;
+
+procedure TLLDP.PaketleriIsle(AEthernetPaket: PEthernetPaket);
 var
   LLDPPaket: PLLDPPaket;
   VT, U: TSayi4;
@@ -65,14 +79,14 @@ begin
 
       Tasi2(@LLDPPaket^.Veri, @s[1], U);
       SetLength(s, U);
-      SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Sistem Adý: %s', [s]);
+      SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Sistem AdÄ±: %s', [s]);
     end
     else if(VT = 6) then
     begin
 
       Tasi2(@LLDPPaket^.Veri, @s[1], U);
       SetLength(s, U);
-      SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Sistem Açýklama: %s', [s]);
+      SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Sistem AÃ§Ä±klama: %s', [s]);
     end;
 
     p := Isaretci(LLDPPaket);

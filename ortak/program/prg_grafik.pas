@@ -35,7 +35,7 @@ var
 implementation
 
 uses genel, gn_pencere, gn_islemgostergesi, gn_etiket, mdepolama, elr1, sistemmesaj,
-  gorselnesne, gercekbellek, src_vesa20, gorev, dosya;
+  gorselnesne, gercekbellek, src_vesa20;
 
 var
   SDPencere: PPencere = nil;
@@ -71,10 +71,10 @@ var
   Sol: TISayi4;
 begin
 
-  if(GorselNesneler0.ToplamMasaustu > 0) then
+  if(GGorselNesneler.ToplamMasaustu > 0) then
   begin
 
-    Sol := GAktifMasaustu^.FAtananAlan.Genislik - 180;
+    Sol := GAktifMasaustu^.F0.FAtananAlan.Genislik - 180;
 
     SDPencere := SDPencere^.Olustur(nil, Sol, 22, 170, 105, ptIletisim, 'Sistem Durumu', RENK_BEYAZ);
 
@@ -100,7 +100,7 @@ end;
 
 procedure TPrgGrafik.SistemDegerleriOlayIsle;
 var
-  MD: PMDNesne;
+  MD: TMDNesne;
   CizimAlani: TAlan;
   SektorSayisi: TSayi4;
   Sonuc: TISayi4;
@@ -124,13 +124,13 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'Disk kullaným alaný hesaplanýyor...', []);
 
-    MD := MantiksalDepolama0.SurucuAl('disk2:\');
+    MD := GMantiksalDepolama.SurucuBul('disk2:\');
     if not(MD = nil) then
     begin
 
       SektorSayisi := 0;
 
-      Sonuc := SHTToplamKullanim(MD, SektorSayisi);
+      Sonuc := SHTToplamKullanim(@MD, SektorSayisi);
       if(Sonuc = HATA_YOK) then
 
         igDisk^.MevcutDegerYaz(SektorSayisi)
@@ -141,7 +141,7 @@ begin
     DiskSayac := 0;
   end;
 
-  CizimAlani := SDPencere^.FCizimAlani;
+  CizimAlani := SDPencere^.F0.FCizimAlani;
   CizimAlani.Sol := CizimAlani.Sol + 5;
   CizimAlani.Sag := CizimAlani.Sag + 5;
   CizimAlani.Ust := CizimAlani.Ust + P_BASLIK_YUKSEKLIK;

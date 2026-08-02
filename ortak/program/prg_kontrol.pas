@@ -94,7 +94,7 @@ begin
       if not(CekirdekYuklemeTS = TarihSaat) then
       begin
 
-        G := GAktifMasaustu^.FAtananAlan.Genislik;
+        G := GAktifMasaustu^.F0.FAtananAlan.Genislik;
 
         if(Pencere = nil) then
           Pencere := Pencere^.Olustur(GAktifMasaustu, G - 160, 0, 155, 20,
@@ -117,7 +117,7 @@ begin
           while (Sayac > ZamanlayiciSayaci) do;
         end;
 
-        YenidenBaslat;
+        GSistem.YenidenBaslat;
 
         Pencere^.Gizle;
 

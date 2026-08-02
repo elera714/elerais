@@ -754,7 +754,7 @@ begin
   ZamanlayicilariDurdur(AGorevKimlik);
 
   // göreve ait pencere ve alt görsel nesneleri yok et
-  GorselNesneler0.PencereyiYokEt(AGorevKimlik);
+  GGorselNesneler.PencereyiYokEt(AGorevKimlik);
 
   // göreve ait zamanlayýcýlarý yok et
   ZamanlayicilariYokEt(AGorevKimlik);
@@ -848,7 +848,7 @@ begin
 
       if(AMasaustuKimlik = -1) then
         Inc(Result)
-      else if(G^.AktifMasaustu^.Kimlik = AMasaustuKimlik) then
+      else if(G^.AktifMasaustu^.F0.Kimlik = AMasaustuKimlik) then
         Inc(Result);
     end;
   end;
@@ -893,7 +893,7 @@ begin
 
       if(AMasaustuKimlik = -1) then
         Inc(ArananGorev)
-      else if(G^.AktifMasaustu^.Kimlik = AMasaustuKimlik) then
+      else if(G^.AktifMasaustu^.F0.Kimlik = AMasaustuKimlik) then
         Inc(ArananGorev);
     end;
 
@@ -901,7 +901,7 @@ begin
     if(AGorevSiraNo = ArananGorev) then
     begin
 
-      Result.PencereKimlik := PPencere(G^.AktifPencere)^.Kimlik;
+      Result.PencereKimlik := PPencere(G^.AktifPencere)^.F0.Kimlik;
       Result.GorevKimlik := G^.Kimlik;
       Result.PencereTipi := PPencere(G^.AktifPencere)^.FPencereTipi;
       Result.PencereDurum := PPencere(G^.AktifPencere)^.FPencereDurum;

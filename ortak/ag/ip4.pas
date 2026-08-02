@@ -70,7 +70,7 @@ begin
       if(IPPaket^.Protokol = PROTOKOL_ICMP4) then
       begin
 
-        ICMPPaketleriniIsle(@IPPaket^.Veri, AIPPaketUzunluk - IP4_BASLIK_U, IPPaket^.KaynakIP);
+        GICMP4.PaketleriIsle(@IPPaket^.Veri, AIPPaketUzunluk - IP4_BASLIK_U, IPPaket^.KaynakIP);
         Inc(ICMP4PaketSayisi);
       end
       // tcp protokolü

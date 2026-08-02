@@ -16,24 +16,31 @@ interface
 
 uses pci, paylasim;
 
-procedure Yukle(APCI: PPCI);
-procedure EHCIAygitBilgileriniGoster;
+type
+  TEHCI = class
+  public
+    constructor Create(APCIYapi: PPCIYapi);
+    procedure EHCIAygitBilgileriniGoster;
+  end;
+
+var
+  GEHCI: TEHCI;
 
 implementation
 
 uses sistemmesaj;
 
 var
-  EHCIAygit: PPCI = nil;
+  EHCIAygit: PPCIYapi = nil;
 
-procedure Yukle(APCI: PPCI);
+constructor TEHCI.Create(APCIYapi: PPCIYapi);
 begin
 
-  EHCIAygit := APCI;
+  EHCIAygit := APCIYapi;
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '  -> USB:EHCI kontrol aygýtý bulundu...', []);
 end;
 
-procedure EHCIAygitBilgileriniGoster;
+procedure TEHCI.EHCIAygitBilgileriniGoster;
 var
   _TemelAdres, _StructuralParams, _CapabilityParams,
   _OperationalReg, _Deger4: TSayi4;

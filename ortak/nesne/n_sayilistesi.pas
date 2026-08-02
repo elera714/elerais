@@ -26,7 +26,7 @@ const
 
 type
   PSayiListesi = ^TSayiListesi;
-  TSayiListesi = object
+  TSayiListesi = class
   private
     FKimlik: TKimlik;
     FElemanSayisi: TISayi4;
@@ -47,28 +47,28 @@ type
 
 type
   PSayiListeleri = ^TSayiListeleri;
-  TSayiListeleri = object
+  TSayiListeleri = class
   private
-    FSayiListesi: array[0..USTSINIR_SAYILISTESI - 1] of PSayiListesi;
-    function SayiListesiAl(ASiraNo: TISayi4): PSayiListesi;
-    procedure SayiListesiYaz(ASiraNo: TISayi4; ASayiListesi: PSayiListesi);
+    FSayiListesi: array[0..USTSINIR_SAYILISTESI - 1] of TSayiListesi;
+    function Al(ASiraNo: TISayi4): TSayiListesi;
+    procedure Yaz(ASiraNo: TISayi4; ASayiListesi: TSayiListesi);
   public
-    procedure Yukle;
-    function Olustur: PSayiListesi;
+    constructor Create;
+    function Olustur: TSayiListesi;
     procedure YokEt(AKimlik: TKimlik);
-    function BosNesneBul: PSayiListesi;
-    property SayiListesi[ASiraNo: TISayi4]: PSayiListesi read SayiListesiAl write SayiListesiYaz;
+    function BosNesneBul: TSayiListesi;
+    property SayiListesi[ASiraNo: TISayi4]: TSayiListesi read Al write Yaz;
   end;
 
 var
-  SayiListesi0: TSayiListeleri;
+  GSayiListeleri: TSayiListeleri;
 
 implementation
 
 {==============================================================================
   sayı nesne listesini ilk değerlerle yükler
  ==============================================================================}
-procedure TSayiListeleri.Yukle;
+constructor TSayiListeleri.Create;
 var
   i: TSayi4;
 begin
@@ -77,7 +77,7 @@ begin
   for i := 0 to USTSINIR_SAYILISTESI - 1 do SayiListesi[i] := nil;
 end;
 
-function TSayiListeleri.SayiListesiAl(ASiraNo: TISayi4): PSayiListesi;
+function TSayiListeleri.Al(ASiraNo: TISayi4): TSayiListesi;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -86,7 +86,7 @@ begin
   else Result := nil;
 end;
 
-procedure TSayiListeleri.SayiListesiYaz(ASiraNo: TISayi4; ASayiListesi: PSayiListesi);
+procedure TSayiListeleri.Yaz(ASiraNo: TISayi4; ASayiListesi: TSayiListesi);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -97,9 +97,9 @@ end;
 {==============================================================================
   sayı liste nesnesini oluşturur
  ==============================================================================}
-function TSayiListeleri.Olustur: PSayiListesi;
+function TSayiListeleri.Olustur: TSayiListesi;
 var
-  SL: PSayiListesi;
+  SL: TSayiListesi;
   p: Isaretci;
 begin
 
@@ -114,16 +114,16 @@ begin
     begin
 
       // nesne değişkenlerini ilk değerlerle yükle.
-      SL^.BellekBaslangicAdresi := p;
-      SL^.MevcutBellekAdresi := p;
-      SL^.BellekUzunlugu := SAYILISTESI_KAPASITE;
+      SL.BellekBaslangicAdresi := p;
+      SL.MevcutBellekAdresi := p;
+      SL.BellekUzunlugu := SAYILISTESI_KAPASITE;
 
       Exit(SL);
     end
     else
     begin
 
-      YokEt(SL^.Kimlik);
+      YokEt(SL.Kimlik);
       Exit(nil);
     end;
   end;
@@ -136,7 +136,7 @@ end;
  ==============================================================================}
 procedure TSayiListeleri.YokEt(AKimlik: TKimlik);
 var
-  SL: PSayiListesi;
+  SL: TSayiListesi;
 begin
 
   if(AKimlik >= 0) and (AKimlik < USTSINIR_SAYILISTESI) then
@@ -145,8 +145,8 @@ begin
     SL := SayiListesi[AKimlik];
 
     // bellek tahsis edilmişse belleği bırak
-    if not(SL^.BellekBaslangicAdresi = nil) then
-      FreeMem(SL^.FBellekBaslangicAdresi, SAYILISTESI_KAPASITE);
+    if not(SL.BellekBaslangicAdresi = nil) then
+      FreeMem(SL.FBellekBaslangicAdresi, SAYILISTESI_KAPASITE);
 
     FreeMem(SL, SizeOf(TSayiListesi));
 
@@ -158,9 +158,9 @@ end;
 {==============================================================================
   kullanılabilir (boşta) sayı nesnesi bulur
  ==============================================================================}
-function TSayiListeleri.BosNesneBul: PSayiListesi;
+function TSayiListeleri.BosNesneBul: TSayiListesi;
 var
-  SL: PSayiListesi;
+  SL: TSayiListesi;
   i: TSayi4;
 begin
 
@@ -174,11 +174,11 @@ begin
     if(SL = nil) then
     begin
 
-      SL := GetMem(SizeOf(TSayiListesi));
+      SL := TSayiListesi.Create; // GetMem(SizeOf(TSayiListesi));
       SayiListesi[i] := SL;
 
-      SL^.Kimlik := i;
-      SL^.ElemanSayisi := 0;
+      SL.Kimlik := i;
+      SL.ElemanSayisi := 0;
 
       Exit(SL);
     end;

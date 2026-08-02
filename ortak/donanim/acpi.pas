@@ -54,14 +54,21 @@ var
   RSDPTanimlayici: TRSDPTanimlayici;
   RSDTSayisi: TSayi4;
 
-procedure Yukle;
-procedure Goruntule;
+type
+  TACPI = class
+  public
+    constructor Create;
+    procedure Goruntule;
+  end;
+
+var
+  GACPI: TACPI;
 
 implementation
 
 uses islevler, sistemmesaj;
 
-procedure Yukle;
+constructor TACPI.Create;
 var
   ACPI_BELLEK: PChar;
 begin
@@ -95,7 +102,7 @@ begin
   end;
 end;
 
-procedure Goruntule;
+procedure TACPI.Goruntule;
 begin
 
   if(RSDPTanimlayici.RSDTAdres = 0) then

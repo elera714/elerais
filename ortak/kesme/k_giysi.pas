@@ -35,33 +35,33 @@ begin
   if(Islev = 1) then
   begin
 
-    Result := Giysiler0.ToplamGiysi;
+    Result := GGiysiler.ToplamGiysi;
   end
   else if(Islev = 2) then
   begin
 
     GiysiSN := PSayi4(ADegiskenler + 00)^;
-    if(GiysiSN < Giysiler0.ToplamGiysi) then
+    if(GiysiSN < GGiysiler.ToplamGiysi) then
     begin
 
       p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-      p^ := Giysiler0.Giysi[GiysiSN]^.Ad;
+      p^ := GGiysiler.Giysi[GiysiSN]^.Ad;
     end;
   end
   else if(Islev = 3) then
   begin
 
-    Result :=  Giysiler0.AktifGiysiSN;
+    Result :=  GGiysiler.AktifGiysiSN;
   end
   else if(Islev = 4) then
   begin
 
     GiysiSN := PSayi4(ADegiskenler + 00)^;
-    if(GiysiSN < Giysiler0.ToplamGiysi) then
+    if(GiysiSN < GGiysiler.ToplamGiysi) then
     begin
 
-      Giysiler0.AktifGiysiSN := GiysiSN;
-      Giysiler0.AktifGiysi := Giysiler0.Giysi[Giysiler0.AktifGiysiSN];
+      GGiysiler.AktifGiysiSN := GiysiSN;
+      GGiysiler.AktifGiysi := GGiysiler.Giysi[GGiysiler.AktifGiysiSN];
       GAktifMasaustu^.Ciz;
     end;
   end

@@ -20,7 +20,7 @@ type
   TPrgOHCI = class
   public
     constructor Create;
-    procedure Yukle(APCI: PPCI);
+    procedure Yukle(APCIYapi: PPCIYapi);
     procedure Kontrol1;
     procedure KesmeIslevi;
   end;
@@ -46,7 +46,7 @@ type
   end;
 
 var
-  OHCIAygit: PPCI = nil;
+  OHCIAygit: PPCIYapi = nil;
   TemelAdres: TSayi4;
   IRQNo: TSayi1;
 
@@ -55,10 +55,10 @@ begin
 
 end;
 
-procedure TPrgOHCI.Yukle(APCI: PPCI);
+procedure TPrgOHCI.Yukle(APCIYapi: PPCIYapi);
 begin
 
-  OHCIAygit := APCI;
+  OHCIAygit := APCIYapi;
 
   if not(OHCIAygit = nil) then
   begin
@@ -75,7 +75,7 @@ begin
     end;
 
     // IRQ numarasýný al
-    IRQNo := PCIAygiti0.IRQNoAl(APCI);
+    IRQNo := PCIAygiti0.IRQNoAl(APCIYapi);
 
     //IRQIsleviAta(IRQNo, @KesmeIslevi);
 

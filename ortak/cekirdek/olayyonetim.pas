@@ -31,6 +31,9 @@ type
     procedure KlavyeOlaylariniIsle(ATusDegeri: TSayi2; ATusDurum: TTusDurum);
   end;
 
+var
+  GOlayYonetim: TOlayYonetim;
+
 implementation
 
 uses genel, gn_islevler, src_ps2, gorev;
@@ -176,15 +179,15 @@ var
     P := OlayAlanGN;
 
     // görsel nesne aþaðýdaki görsel nesnelerden biri ise çýk
-    if(P^.NesneTipi = gntMasaustu) or (P^.NesneTipi = gntMenu) or
-      (P^.NesneTipi = gntAcilirMenu) then Exit;
+    if(P^.F0.NesneTipi = gntMasaustu) or (P^.F0.NesneTipi = gntMenu) or
+      (P^.F0.NesneTipi = gntAcilirMenu) then Exit;
 
     // nesne en üst nesne tipi ise çýk
-    if(P^.NesneTipi = gntPencere) then Exit(PPencere(P));
+    if(P^.F0.NesneTipi = gntPencere) then Exit(PPencere(P));
 
-    while not (P^.AtaNesne^.NesneTipi = gntPencere) do P := P^.AtaNesne;
+    while not (P^.AtaNesne^.F0.NesneTipi = gntPencere) do P := P^.AtaNesne;
 
-    if(P^.AtaNesne^.NesneTipi = gntPencere) then Result := PPencere(P^.AtaNesne);
+    if(P^.AtaNesne^.F0.NesneTipi = gntPencere) then Result := PPencere(P^.AtaNesne);
   end;
 begin
 
@@ -224,11 +227,11 @@ begin
 
       // 1. pencerenin kendisine sol tuþ ile basýldýysa
       // -> sol tuþa basýlma olayý pencereye gönderiliyor
-      if(P^.Kimlik = OlayAlanGN^.Kimlik) then
+      if(P^.F0.Kimlik = OlayAlanGN^.F0.Kimlik) then
       begin
 
         // ana mesajý görsel nesneye gönder
-        Olay.Kimlik := OlayAlanGN^.Kimlik;
+        Olay.Kimlik := OlayAlanGN^.F0.Kimlik;
         OlaylariYonlendir(OlayAlanGN, Olay);
       end
       // 2. pencerenin iç görsel nesnelerinden birine sol tuþ ile basýldýysa
@@ -239,13 +242,13 @@ begin
         if(PencereAktifGN = nil) then
         begin
 
-          if(OlayAlanGN^.Odaklanilabilir) then
+          if(OlayAlanGN^.F0.Odaklanilabilir) then
           begin
 
             P^.FAktifNesne := OlayAlanGN;
 
-            OlayAlanGN^.Odaklanildi := True;
-            Olay.Kimlik := OlayAlanGN^.Kimlik;
+            OlayAlanGN^.F0.Odaklanildi := True;
+            Olay.Kimlik := OlayAlanGN^.F0.Kimlik;
             Olay.Olay := CO_ODAKKAZANILDI;
             OlaylariYonlendir(OlayAlanGN, Olay);
           end;
@@ -254,8 +257,8 @@ begin
         else if(PencereAktifGN = OlayAlanGN) then
         begin
 
-          OlayAlanGN^.Odaklanildi := True;
-          Olay.Kimlik := OlayAlanGN^.Kimlik;
+          OlayAlanGN^.F0.Odaklanildi := True;
+          Olay.Kimlik := OlayAlanGN^.F0.Kimlik;
           Olay.Olay := CO_ODAKKAZANILDI;
           OlaylariYonlendir(OlayAlanGN, Olay);
         end
@@ -263,14 +266,14 @@ begin
         else if(OlayAlanGN <> PencereAktifGN) then
         begin
 
-          if(OlayAlanGN^.Odaklanilabilir) then
+          if(OlayAlanGN^.F0.Odaklanilabilir) then
           begin
 
-            if(PencereAktifGN <> nil) and (PencereAktifGN^.Gorunum) then
+            if(PencereAktifGN <> nil) and (PencereAktifGN^.F0.Gorunum) then
             begin
 
-              PencereAktifGN^.Odaklanildi := False;
-              Olay.Kimlik := PencereAktifGN^.Kimlik;
+              PencereAktifGN^.F0.Odaklanildi := False;
+              Olay.Kimlik := PencereAktifGN^.F0.Kimlik;
               Olay.Olay := CO_ODAKKAYBEDILDI;
               OlaylariYonlendir(PencereAktifGN, Olay);
             end;
@@ -278,14 +281,14 @@ begin
 
           P^.FAktifNesne := OlayAlanGN;
 
-          OlayAlanGN^.Odaklanildi := True;
-          Olay.Kimlik := OlayAlanGN^.Kimlik;
+          OlayAlanGN^.F0.Odaklanildi := True;
+          Olay.Kimlik := OlayAlanGN^.F0.Kimlik;
           Olay.Olay := CO_ODAKKAZANILDI;
           OlaylariYonlendir(OlayAlanGN, Olay);
         end;
 
         // asýl ana mesajý görsel nesneye gönder
-        Olay.Kimlik := OlayAlanGN^.Kimlik;
+        Olay.Kimlik := OlayAlanGN^.F0.Kimlik;
         Olay.Olay := FO_SOLTUS_BASILDI;
         OlaylariYonlendir(OlayAlanGN, Olay);
       end;
@@ -295,7 +298,7 @@ begin
     begin
 
       // nesneye yönlendirilecek parametreleri hazýrla
-      Olay.Kimlik := OlayAlanGN^.Kimlik;
+      Olay.Kimlik := OlayAlanGN^.F0.Kimlik;
 
       // bilgi: kaydýrma olayýnýn olmasý durumunda Deger1 deðeri tekerlek dönme sayýsýný içerir
       if(Olay.Olay <> FO_KAYDIRMA) then Olay.Deger1 := Konum.Sol;
@@ -353,7 +356,7 @@ var
   Gorev: PGorev;
 begin
 
-  Gorev := GorevAl(AGorselNesne^.GorevKimlik);
+  Gorev := GorevAl(AGorselNesne^.F0.GorevKimlik);
 
   // görev çalýþmýyorsa nesneye olay gönderme
   if(Gorev = nil) or (Gorev^.Durum <> gdCalisiyor) then Exit;
@@ -369,8 +372,8 @@ begin
     if not(GAktifMenu = nil) then
     begin
 
-      if(GAktifMenu^.NesneTipi = gntMenu) then PMenu(GAktifMenu)^.Gizle
-      else if(GAktifMenu^.NesneTipi = gntAcilirMenu) then PAcilirMenu(GAktifMenu)^.Gizle
+      if(GAktifMenu^.F0.NesneTipi = gntMenu) then PMenu(GAktifMenu)^.Gizle
+      else if(GAktifMenu^.F0.NesneTipi = gntAcilirMenu) then PAcilirMenu(GAktifMenu)^.Gizle
     end;
   end;
 end;

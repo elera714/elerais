@@ -144,7 +144,7 @@ var
   rx_buffs : array[0..E1000_NUM_RX_DESC-1] of puint8;
   GidisSiraNo, GelisSiraNo: TSayi4;
 
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(APCIYapi: PPCIYapi): TISayi4;
 procedure KomutGonder(AAdres, AKomut: TSayi4);
 function VeriOku(AAdres: TSayi4): TSayi4;
 procedure BitAktiflestir(AAdres, ADeger: TSayi4);
@@ -157,7 +157,7 @@ procedure KesmeIslevi;
 procedure VeriAl1;
 procedure rxinit;
 procedure txinit;
-procedure DMAErisiminiAktiflestir(APCI: PPCI);
+procedure DMAErisiminiAktiflestir(APCIYapi: PPCIYapi);
 
 implementation
 
@@ -166,7 +166,7 @@ uses port, irq, genel, sistemmesaj;
 {==============================================================================
   intel e1000 að sürücü yükleme iþlevlerini içerir
  ==============================================================================}
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(APCIYapi: PPCIYapi): TISayi4;
 var
   i: Integer;
 begin
@@ -175,14 +175,14 @@ begin
   Result := -1;
 
   // çekirdeðin gönderdiði pci aygýt bilgilerini hedef bölgeye kopyala
-  AygitBilgisi.Yol := APCI^.Yol;
-  AygitBilgisi.Aygit := APCI^.Aygit;
-  AygitBilgisi.Islev := APCI^.Islev;
+  AygitBilgisi.Yol := APCIYapi^.Yol;
+  AygitBilgisi.Aygit := APCIYapi^.Aygit;
+  AygitBilgisi.Islev := APCIYapi^.Islev;
 
   EEPROMVar := False;
 
   // aygýt port deðerini al
-  AygitBilgisi.PortDegeri := PCIAygiti0.IlkPortDegeriniAl(APCI);
+  AygitBilgisi.PortDegeri := PCIAygiti0.IlkPortDegeriniAl(APCIYapi);
   if(AygitBilgisi.PortDegeri = 0) then
   begin
 
@@ -191,7 +191,7 @@ begin
   end;
 
   // aygýt bellek deðerini al
-  AygitBilgisi.BellekDegeri := PCIAygiti0.IlkBellekDegeriniAl(APCI);
+  AygitBilgisi.BellekDegeri := PCIAygiti0.IlkBellekDegeriniAl(APCIYapi);
   if(AygitBilgisi.BellekDegeri = 0) then
   begin
 
@@ -200,15 +200,15 @@ begin
   end;
 
   // IRQ numarasýný al
-  AygitBilgisi.IRQNo := PCIAygiti0.IRQNoAl(APCI);
+  AygitBilgisi.IRQNo := PCIAygiti0.IRQNoAl(APCIYapi);
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'E1000 aygýt bilgileri:', []);
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '----------------------', []);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Yol: %d', [APCI^.Yol]);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Aygýt: %d', [APCI^.Aygit]);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Ýþlev: %d', [APCI^.Islev]);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Satýcý Kimlik: $%x', [APCI^.SaticiKimlik]);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Aygýt Kimlik: $%x', [APCI^.AygitKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Yol: %d', [APCIYapi^.Yol]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Aygýt: %d', [APCIYapi^.Aygit]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Ýþlev: %d', [APCIYapi^.Islev]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Satýcý Kimlik: $%x', [APCIYapi^.SaticiKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Aygýt Kimlik: $%x', [APCIYapi^.AygitKimlik]);
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Port: $%x', [AygitBilgisi.PortDegeri]);
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Bellek: $%x', [AygitBilgisi.BellekDegeri]);
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 IRQ: %d', [AygitBilgisi.IRQNo]);
@@ -529,14 +529,14 @@ begin
 
 end;
 
-procedure DMAErisiminiAktiflestir(APCI: PPCI);
+procedure DMAErisiminiAktiflestir(APCIYapi: PPCIYapi);
 var
   Deger: TSayi2;
 begin
 
-  Deger := PCIAygiti0.Oku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
+  Deger := PCIAygiti0.Oku2(APCIYapi^.Yol, APCIYapi^.Aygit, APCIYapi^.Islev, 4);
   if((Deger and 4) = 4) then Exit;
-  PCIAygiti0.Yaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger and 4));
+  PCIAygiti0.Yaz2(APCIYapi^.Yol, APCIYapi^.Aygit, APCIYapi^.Islev, 4, (Deger and 4));
 end;
 
 end.

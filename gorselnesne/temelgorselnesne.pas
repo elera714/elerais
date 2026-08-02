@@ -17,8 +17,8 @@ interface
 uses paylasim;
 
 type
-  PTemelGorselNesne = ^TTemelGorselNesne;
-  TTemelGorselNesne = object
+  PTemelGorselNesne0 = ^TTemelGorselNesne0;
+  TTemelGorselNesne0 = class
   private
     // nesnenin sahibi olan görev / program
     FGorevKimlik: TKimlik;
@@ -83,7 +83,7 @@ type
     procedure NesneTipiYaz(AGNTip: TGNTip);
     procedure BaslikYaz(ABaslik: string);
   public
-    procedure YokEt(AKimlik: TKimlik); virtual; abstract;
+    //procedure YokEt(AKimlik: TKimlik); virtual; abstract;
     property AltBilesenSayisi: TSayi4 read FAltBilesenSayisi write FAltBilesenSayisi;
     property AltNesneSayisi: TSayi4 read FAltNesneSayisi write FAltNesneSayisi;
     property AltNesneBellekAdresi: Isaretci read FAltNesneBellekAdresi write FAltNesneBellekAdresi;
@@ -95,6 +95,22 @@ type
     property Gorunum: Boolean read FGorunum write FGorunum;
     property Odaklanilabilir: Boolean read FOdaklanilabilir write FOdaklanilabilir;
     property Odaklanildi: Boolean read FOdaklanildi write FOdaklanildi;
+  end;
+
+type
+  PTemelGorselNesne = ^TTemelGorselNesne;
+  TTemelGorselNesne = object
+  public
+
+    // aþaðýdaki deðiþkenler görsel nesnelerin genel kullaným deðiþkenleridir
+    FDeger1, FDeger2, FDeger3: TSayi4;
+    FIDeger1, FIDeger2, FIDeger3: TISayi4;
+    FDurum1, FDurum2: Boolean;
+    { TODO -  yukarýdaki satýrlar TTemelGorselNesne'ye eklenecek }
+
+    F0: TTemelGorselNesne0;
+  public
+    procedure YokEt(AKimlik: TKimlik); virtual; abstract;
   end;
 
 var
@@ -279,7 +295,15 @@ begin
   end;
 end;
 
-procedure TTemelGorselNesne.NesneTipiYaz(AGNTip: TGNTip);
+procedure TTemelGorselNesne0.BaslikYaz(ABaslik: string);
+begin
+
+  if(ABaslik = FBaslik) then Exit;
+
+  FBaslik := ABaslik;
+end;
+
+procedure TTemelGorselNesne0.NesneTipiYaz(AGNTip: TGNTip);
 begin
 
   if(AGNTip = FNesneTipi) then Exit;
@@ -289,14 +313,6 @@ begin
   FNesneAdi := NesneAdiAl(AGNTip);
 
   FBaslik := FNesneAdi;
-end;
-
-procedure TTemelGorselNesne.BaslikYaz(ABaslik: string);
-begin
-
-  if(ABaslik = FBaslik) then Exit;
-
-  FBaslik := ABaslik;
 end;
 
 end.

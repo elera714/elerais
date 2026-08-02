@@ -143,7 +143,7 @@ end;
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama; AYDAKOlustur: Boolean = True): TISayi4;
 var
-  MD: PMDNesne;
+  MD: TMDNesne;
   D: TDosya;
   DST: TSayi4;
   AramaSuzgeci, AranacakKlasor,
@@ -174,7 +174,7 @@ begin
   end else D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
 
   // arama iþlevinin yapýlacaðý sürücüyü al
-  MD := MantiksalDepolama0.SurucuAl(AAramaSuzgec);
+  MD := GMantiksalDepolama.SurucuBul(AAramaSuzgec);
   if(MD = nil) then
   begin
 
@@ -205,15 +205,15 @@ begin
   s := Copy(s, 2, Length(s) - 1);           // s = klasör1\*.*
 
   // sürücüyü arama bellek bölgesine ekle
-  D.MD := MD^;
+  D.MD := MD;
 
   // önce kök dizin aranacak
   D.KlasorDerinlik := 0;
 
-  SektorNo := MD^.Acilis.DizinGirisi.IlkSektor;
+  SektorNo := MD.Acilis.DizinGirisi.IlkSektor;
 
   // AyrilmisSektor = zincir deðerine eklenecek deðer
-  AyrilmisSektor := SektorNo + MD^.Acilis.DizinGirisi.ToplamSektor;
+  AyrilmisSektor := SektorNo + MD.Acilis.DizinGirisi.ToplamSektor;
 
   // bu aþamada s = klasör1\*.*
 
@@ -221,10 +221,10 @@ begin
   DST := D.MD.MD3.DST;
 
   if(DST = DST_ELR1) then
-    KumeNo := MD^.Acilis.DizinGirisi.IlkSektor
+    KumeNo := MD.Acilis.DizinGirisi.IlkSektor
   else if(DST = DST_FAT12) then
-    KumeNo := MD^.Acilis.DizinGirisi.IlkSektor
-  else KumeNo := MD^.Acilis.DizinGirisi.IlkKumeNo;
+    KumeNo := MD.Acilis.DizinGirisi.IlkSektor
+  else KumeNo := MD.Acilis.DizinGirisi.IlkKumeNo;
 
 
   // istenen (alt) klasörün dizin tablosunda aranmasý
@@ -247,7 +247,7 @@ begin
     end;
 
     D.ZincirNo := 0;
-    D.SektorIciKonum := -MD^.Acilis.DizinGirisi.GirdiUzunlugu;
+    D.SektorIciKonum := -MD.Acilis.DizinGirisi.GirdiUzunlugu;
 
     // klasörün dizin giriþinde aranmasý
     if(Length(AranacakKlasor) > 0) then
@@ -294,7 +294,7 @@ begin
       if(DST = DST_FAT12) or (DST = DST_FAT16) or (DST = DST_FAT32) or (DST = DST_FAT32LBA) then
       begin
 
-        SektorNo := ((KumeNo - 2) * MD^.Acilis.DosyaAyirmaTablosu.KBS) + AyrilmisSektor;
+        SektorNo := ((KumeNo - 2) * MD.Acilis.DosyaAyirmaTablosu.KBS) + AyrilmisSektor;
         //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'S: %d', [SektorNo]);
       end;
     end;
@@ -306,13 +306,13 @@ begin
 
   D.SektorKumeNo := KumeNo;
   D.ZincirNo := 0;
-  D.SektorIciKonum := -MD^.Acilis.DizinGirisi.GirdiUzunlugu;
+  D.SektorIciKonum := -MD.Acilis.DizinGirisi.GirdiUzunlugu;
 
   if(DST = DST_FAT12) then
   begin
 
     if(D.KlasorDerinlik = 0) then
-      D.SektorKumeNo := MD^.Acilis.DizinGirisi.IlkSektor
+      D.SektorKumeNo := MD.Acilis.DizinGirisi.IlkSektor
     else
       D.SektorKumeNo := KumeNo;
   end;
@@ -872,7 +872,7 @@ end;
 function DosyaOrtaminiHazirla(const ADosyaAdi: string): TKimlik;
 var
   D: TDosya;
-  MD: PMDNesne;
+  MD: TMDNesne;
   Surucu, Klasor, DosyaAdi: string;
   i: TSayi4;
 begin
@@ -885,7 +885,7 @@ begin
   if(D = nil) then Exit;
 
   // sürücünün iþaret ettiði bellek bölgesine konumlan
-  MD := MantiksalDepolama0.SurucuAl(ADosyaAdi);
+  MD := GMantiksalDepolama.SurucuBul(ADosyaAdi);
   if(MD = nil) then
   begin
 
@@ -907,7 +907,7 @@ begin
   end;
 
   // iþlem yapýlacak sürücü
-  D.MD := MD^;
+  D.MD := MD;
 
   // dosya yolunu ayrýþtýr
   DosyaYolunuParcala2(ADosyaAdi, Surucu, Klasor, DosyaAdi);

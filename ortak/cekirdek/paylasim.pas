@@ -72,7 +72,6 @@ type
     GrafikSatirByteUz: TSayi2;
     CekirdekBaslangicAdresi: TSayi4;
     CekirdekKodUzunluk: TSayi4;
-    Sil: TSayi4;
   end;
 
 const
@@ -260,14 +259,6 @@ type
 type
   PYon = ^TYon;
   TYon = (yYatay, yDikey);
-
-type
-  PIslemciBilgisi = ^TIslemciBilgisi;
-  TIslemciBilgisi = record
-    Satici: string;                   // cpu id = 0
-    Ozellik1_EAX, Ozellik1_EDX,
-    Ozellik1_ECX: TSayi4;             // cpu id = 1
-  end;
 
 type
   PPOlay = ^POlay;
@@ -723,9 +714,6 @@ var
   // görev deðiþiminin yapýlýp yapýlmamasý deðiþkeni.
   // 0 = görev deðiþtirme, 1 = görev deðiþtir
   GorevDegisimBayragi: TSayi4 = 0;
-  // çoklu görev iþleminin baþlayýp baþlamadýðýný gösteren deðiþken
-  // 0 = baþlamadý, 1 = baþladý
-  CokluGorevBasladi: TSayi4 = 0;
 
   GecerliFareGostegeTipi: TFareImlecTipi;
 

@@ -37,11 +37,11 @@ type
 var
   GAygitPCNet32: TAygit;
 
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(APCIYapi: PPCIYapi): TISayi4;
 procedure VeriAl(ABellek: Isaretci; var AVeriUzunlugu: TSayi2);
 procedure VeriGonder(AEthernetPaket: PEthernetPaket; AVeriUzunlugu: TSayi2);
 procedure PCNET32YukleniciIslev;
-procedure IOVeriYoluYonetiminiEtkinlestir(APCI: PPCI);
+procedure IOVeriYoluYonetiminiEtkinlestir(APCIYapi: PPCIYapi);
 procedure MACAdresiAl;
 
 function WIOCSROku(ASiraNo: TSayi4): TSayi4;
@@ -235,7 +235,7 @@ var
 {==============================================================================
   pcnet32 að sürücü yükleme iþlevlerini içerir
  ==============================================================================}
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(APCIYapi: PPCIYapi): TISayi4;
 var
   i, j: TSayi4;
   p: Isaretci;
@@ -260,12 +260,12 @@ begin
   end;
 
   // çekirdeðin gönderdiði pci aygýt bilgilerini hedef bölgeye kopyala
-  GAygitPCNet32.Yol := APCI^.Yol;
-  GAygitPCNet32.Aygit := APCI^.Aygit;
-  GAygitPCNet32.Islev := APCI^.Islev;
+  GAygitPCNet32.Yol := APCIYapi^.Yol;
+  GAygitPCNet32.Aygit := APCIYapi^.Aygit;
+  GAygitPCNet32.Islev := APCIYapi^.Islev;
 
   // aygýt port deðerini al
-  GAygitPCNet32.PortDegeri := PCIAygiti0.IlkPortDegeriniAl(APCI);
+  GAygitPCNet32.PortDegeri := PCIAygiti0.IlkPortDegeriniAl(APCIYapi);
   if(GAygitPCNet32.PortDegeri = 0) then
   begin
 
@@ -276,7 +276,7 @@ begin
   end;
 
   // IRQ numarasýný al
-  GAygitPCNet32.IRQNo := PCIAygiti0.IRQNoAl(APCI);
+  GAygitPCNet32.IRQNo := PCIAygiti0.IRQNoAl(APCIYapi);
 
   {$IFDEF PCNET32_BILGI}
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'PCNET32 Yol: %d', [APCI^.Yol]);
@@ -387,7 +387,7 @@ begin
   end;
 
   // pci i/o space ve bus master bayraklarýný etkinleþtir
-  IOVeriYoluYonetiminiEtkinlestir(APCI);
+  IOVeriYoluYonetiminiEtkinlestir(APCIYapi);
 
   // aygýtýn mac adresini al
   MACAdresiAl;
@@ -588,17 +588,17 @@ end;
 {==============================================================================
   pci i/o space ve bus master bayraklarýný etkinleþtirir
  ==============================================================================}
-procedure IOVeriYoluYonetiminiEtkinlestir(APCI: PPCI);
+procedure IOVeriYoluYonetiminiEtkinlestir(APCIYapi: PPCIYapi);
 var
   Deger,
   i: TSayi2;
 begin
 
-  Deger := PCIAygiti0.Oku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
+  Deger := PCIAygiti0.Oku2(APCIYapi^.Yol, APCIYapi^.Aygit, APCIYapi^.Islev, 4);
 
   i := 4 or 1;        // 4 = bus master, 1 = i/o space
   if((Deger and i) = i) then Exit;
-  PCIAygiti0.Yaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger or i));
+  PCIAygiti0.Yaz2(APCIYapi^.Yol, APCIYapi^.Aygit, APCIYapi^.Islev, 4, (Deger or i));
 end;
 
 {==============================================================================

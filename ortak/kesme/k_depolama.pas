@@ -29,7 +29,7 @@ function DepolamaCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISay
 var
   IslevNo: TSayi4;
   FD: PFDNesne;
-  MD: PMDNesne;
+  MD: TMDNesne;
   p: Isaretci;
 begin
 
@@ -44,19 +44,19 @@ begin
   if(IslevNo = 1) then
   begin
 
-    Result := MantiksalDepolama0.AygitSayisi;
+    Result := GMantiksalDepolama.AygitSayisi;
   end
 
   // mantýksal depolama aygýt bilgilerini al
   else if(IslevNo = 2) then
   begin
 
-    MD := MantiksalDepolama0.MantiksalSurucuAl(PSayi4(ADegiskenler + 00)^);
+    MD := GMantiksalDepolama.SurucuAl(PSayi4(ADegiskenler + 00)^);
     if not(MD = nil) then
     begin
 
       p := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-      PMDNesne3(p)^ := MD^.MD3;
+      PMDNesne3(p)^ := MD.MD3;
       Result := SizeOf(TMDNesne3);
     end else Result := 0;
   end
@@ -65,12 +65,12 @@ begin
   else if(IslevNo = 3) then
   begin
 
-    MD := MantiksalDepolama0.MantiksalSurucuAl2(PKimlik(ADegiskenler + 00)^);
+    MD := GMantiksalDepolama.SurucuAl2(PKimlik(ADegiskenler + 00)^);
     if not(MD = nil) then
     begin
 
       p := Isaretci(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
-      Result := MantiksalDepolama0.MantiksalDepolamaVeriOku(MD, PSayi4(ADegiskenler + 04)^,
+      Result := GMantiksalDepolama.VeriOku(MD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
     end else Result := 1;
   end;
@@ -81,14 +81,14 @@ begin
   if(IslevNo = $71) then
   begin
 
-    Result := GFizikselDepolama00.AygitSayisi;
+    Result := GFizikselDepolama.AygitSayisi;
   end
 
   // fiziksel depolama aygýt bilgilerini al
   else if(IslevNo = $72) then
   begin
 
-    FD := GFizikselDepolama00.FizikselSurucuAl(PSayi4(ADegiskenler + 00)^);
+    FD := GFizikselDepolama.SurucuAl(PSayi4(ADegiskenler + 00)^);
     if not(FD = nil) then
     begin
 
@@ -102,12 +102,12 @@ begin
   else if(IslevNo = $73) then
   begin
 
-    FD := GFizikselDepolama00.FizikselSurucuAl2(PKimlik(ADegiskenler + 00)^);
+    FD := GFizikselDepolama.SurucuAl2(PKimlik(ADegiskenler + 00)^);
     if not(FD = nil) then
     begin
 
       p := Isaretci(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
-      Result := GFizikselDepolama00.FizikselDepolamaVeriOku(FD, PSayi4(ADegiskenler + 04)^,
+      Result := GFizikselDepolama.VeriOku(FD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
     end else Result := 1;
   end
@@ -115,12 +115,12 @@ begin
   else if(IslevNo = $74) then
   begin
 
-    FD := GFizikselDepolama00.FizikselSurucuAl2(PKimlik(ADegiskenler + 00)^);
+    FD := GFizikselDepolama.SurucuAl2(PKimlik(ADegiskenler + 00)^);
     if not(FD = nil) then
     begin
 
       p := Isaretci(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
-      Result := GFizikselDepolama00.FizikselDepolamaVeriYaz(FD, PSayi4(ADegiskenler + 04)^,
+      Result := GFizikselDepolama.VeriYaz(FD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
     end;
   end;

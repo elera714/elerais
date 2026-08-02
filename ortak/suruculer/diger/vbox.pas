@@ -17,7 +17,7 @@ interface
 
 uses paylasim, sistemmesaj, pci;
 
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(APCIYapi: PPCIYapi): TISayi4;
 procedure Listele;
 procedure IcerigiGoruntule;
 procedure VBoxKesmeCagrisi;
@@ -87,7 +87,7 @@ type
   end;
 
 var
-  PCIAygit: TPCI;
+  PCIAygit: TPCIYapi;
   VBPort: TSayi4;
   VBBellek: TSayi4;
   VBKesmeNo: TSayi1;
@@ -106,10 +106,10 @@ var
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
  ==============================================================================}
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(APCIYapi: PPCIYapi): TISayi4;
 begin
 
-  PCIAygit := APCI^;
+  PCIAygit := APCIYapi^;
   Result := -1;
 end;
 

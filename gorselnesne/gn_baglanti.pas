@@ -53,7 +53,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PRenk(ADegiskenler + 12)^, PRenk(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
@@ -62,7 +62,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Baglanti := PBaglanti(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Baglanti := PBaglanti(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Baglanti^.Goster;
     end
 
@@ -85,7 +85,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Baglanti^.Kimlik;
+  else Result := Baglanti^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -105,23 +105,23 @@ begin
     Genislik, Yukseklik, 1, 0, 0, ANormalRenk, ABaslik));
 
   // görsel nesne tipi
-  Baglanti^.NesneTipi := gntBaglanti;
+  Baglanti^.F0.NesneTipi := gntBaglanti;
 
-  Baglanti^.Baslik := ABaslik;
+  Baglanti^.F0.Baslik := ABaslik;
 
   Baglanti^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
   Baglanti^.OdakMevcut := False;
 
-  Baglanti^.Odaklanilabilir := False;
-  Baglanti^.Odaklanildi := False;
+  Baglanti^.F0.Odaklanilabilir := False;
+  Baglanti^.F0.Odaklanildi := False;
 
   Baglanti^.OlayCagriAdresi := @OlaylariIsle;
 
-  Baglanti^.FareImlecTipi := fitEl;
+  Baglanti^.F0.FareImlecTipi := fitEl;
 
-  Baglanti^.FYaziHiza.Yatay := yhSol;
-  Baglanti^.FYaziHiza.Dikey := dhUst;
+  Baglanti^.F0.FYaziHiza.Yatay := yhSol;
+  Baglanti^.F0.FYaziHiza.Dikey := dhUst;
 
   // bilgi: normal yazı rengi ve odak rengi için alt nesnenin FGovdeRenk1,
   // FGovdeRenk2 özellikleri kullanılmıştır
@@ -169,7 +169,7 @@ var
   Baglanti: PBaglanti;
 begin
 
-  Baglanti := PBaglanti(GorselNesneler0.NesneAl(Kimlik));
+  Baglanti := PBaglanti(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Baglanti = nil) then Exit;
 
   inherited Hizala;
@@ -183,7 +183,7 @@ var
   Baglanti: PBaglanti;
 begin
 
-  Baglanti := PBaglanti(GorselNesneler0.NesneAl(Kimlik));
+  Baglanti := PBaglanti(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Baglanti = nil) then Exit;
 
   // düğme başlığı
@@ -226,7 +226,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Baglanti^.OlayYonlendirmeAdresi = nil) then
       Baglanti^.OlayYonlendirmeAdresi(Baglanti, AOlay)
-    else Gorevler0.OlayEkle(Baglanti^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Baglanti^.F0.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
@@ -243,14 +243,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Baglanti^.OlayYonlendirmeAdresi = nil) then
         Baglanti^.OlayYonlendirmeAdresi(Baglanti, AOlay)
-      else Gorevler0.OlayEkle(Baglanti^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Baglanti^.F0.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Baglanti^.OlayYonlendirmeAdresi = nil) then
       Baglanti^.OlayYonlendirmeAdresi(Baglanti, AOlay)
-    else Gorevler0.OlayEkle(Baglanti^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Baglanti^.F0.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = CO_ODAKKAZANILDI) then
   begin
@@ -270,7 +270,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Baglanti^.FareImlecTipi;
+  GecerliFareGostegeTipi := Baglanti^.F0.FareImlecTipi;
 end;
 
 end.

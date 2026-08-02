@@ -83,7 +83,7 @@ type
 
 type
   PGiysiler = ^TGiysiler;
-  TGiysiler = object
+  TGiysiler = class
   private
     FToplamGiysi: TSayi4;
     FAktifGiysiSN: TISayi4;
@@ -92,7 +92,7 @@ type
     function GiysiAl(ASiraNo: TISayi4): PGiysi;
     procedure GiysiYaz(ASiraNo: TISayi4; AGiysi: PGiysi);
   public
-    procedure Yukle;
+    constructor Create;
     property ToplamGiysi: TSayi4 read FToplamGiysi;
     property Giysi[ASiraNo: TISayi4]: PGiysi read GiysiAl write GiysiYaz;
     property AktifGiysiSN: TISayi4 read FAktifGiysiSN write FAktifGiysiSN;
@@ -100,13 +100,13 @@ type
   end;
 
 var
-  Giysiler0: TGiysiler;
+  GGiysiler: TGiysiler;
 
 implementation
 
 uses giysi_elera, giysi_mac, giysi_normal;
 
-procedure TGiysiler.Yukle;
+constructor TGiysiler.Create;
 begin
 
   FToplamGiysi := USTSINIR_GIYSI;

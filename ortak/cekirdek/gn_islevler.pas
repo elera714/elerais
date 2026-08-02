@@ -49,7 +49,7 @@ begin
     Konum.Sol := PISayi4(ADegiskenler + 00)^;
     Konum.Ust := PISayi4(ADegiskenler + 04)^;
     GN := GorselNesneBul(Konum);
-    Result := GN^.Kimlik;
+    Result := GN^.F0.Kimlik;
   end
 
   // görsel nesne bilgilerini hedef bellek bölgesine kopyala
@@ -61,7 +61,7 @@ begin
     if(Kimlik >= 0) and (Kimlik < USTSINIR_GORSELNESNE) then
     begin
 
-      GN := GorselNesneler0.GorselNesne[Kimlik];
+      GN := GGorselNesneler.GorselNesne[Kimlik];
       BellekAdresi := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
       Tasi2(GN, BellekAdresi, GN_UZUNLUK);
 
@@ -78,7 +78,7 @@ begin
 
     GN := GorselNesneBul(Konum);
     BellekAdresi := Isaretci(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-    Tasi2(@GN^.NesneAdi[0], BellekAdresi, Length(GN^.NesneAdi) + 1);
+    Tasi2(@GN^.F0.NesneAdi[0], BellekAdresi, Length(GN^.F0.NesneAdi) + 1);
   end;
 end;
 
@@ -100,18 +100,18 @@ begin
   begin
 
     // masaüstü nesnesinin alt nesnesi var ise
-    if(Masaustu^.AltNesneSayisi > 0) then
+    if(Masaustu^.F0.AltNesneSayisi > 0) then
     begin
 
       // masaüstünün alt nesnelerinin bellek adresini al
-      GNBellekAdresi := Masaustu^.AltNesneBellekAdresi;
+      GNBellekAdresi := Masaustu^.F0.AltNesneBellekAdresi;
 
       // masaüstü alt nesnelerini teker teker ara
-      for i := 0 to Masaustu^.AltNesneSayisi - 1 do
+      for i := 0 to Masaustu^.F0.AltNesneSayisi - 1 do
       begin
 
         Pencere := GNBellekAdresi[i];
-        if not(Pencere = nil) and (Pencere^.NesneTipi = gntPencere) then PPencere(Pencere)^.Ciz;
+        if not(Pencere = nil) and (Pencere^.F0.NesneTipi = gntPencere) then PPencere(Pencere)^.Ciz;
       end;
     end;
   end;
@@ -151,19 +151,19 @@ begin
   if(SonBulunanGN <> nil) then
   begin
 
-    if(SonBulunanGN^.Gorunum) then
+    if(SonBulunanGN^.F0.Gorunum) then
     begin
 
-      SonNesneA.Sol := SonBulunanGN^.FAtananAlan.Sol;
-      SonNesneA.Ust := SonBulunanGN^.FAtananAlan.Ust;
-      SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.FAtananAlan.Genislik;
-      SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.FAtananAlan.Yukseklik;
+      SonNesneA.Sol := SonBulunanGN^.F0.FAtananAlan.Sol;
+      SonNesneA.Ust := SonBulunanGN^.F0.FAtananAlan.Ust;
+      SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.F0.FAtananAlan.Genislik;
+      SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.F0.FAtananAlan.Yukseklik;
 
       if(AlanIcindeMi(SonNesneA)) then
       begin
 
-        AKonum.Sol := AKonum.Sol - SonBulunanGN^.FAtananAlan.Sol;
-        AKonum.Ust := AKonum.Ust - SonBulunanGN^.FAtananAlan.Ust;
+        AKonum.Sol := AKonum.Sol - SonBulunanGN^.F0.FAtananAlan.Sol;
+        AKonum.Ust := AKonum.Ust - SonBulunanGN^.F0.FAtananAlan.Ust;
         Exit(SonBulunanGN);
       end;
     end;
@@ -172,41 +172,41 @@ begin
   // 2. aktif masaüstünün sorgulanması
   SonBulunanGN := GAktifMasaustu;
 
-  SonNesneA.Sol := SonBulunanGN^.FAtananAlan.Sol + SonBulunanGN^.FKalinlik.Sol;
-  SonNesneA.Ust := SonBulunanGN^.FAtananAlan.Ust + SonBulunanGN^.FKalinlik.Ust;
-  SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.FAtananAlan.Genislik;
-  SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.FAtananAlan.Yukseklik;
+  SonNesneA.Sol := SonBulunanGN^.F0.FAtananAlan.Sol + SonBulunanGN^.F0.FKalinlik.Sol;
+  SonNesneA.Ust := SonBulunanGN^.F0.FAtananAlan.Ust + SonBulunanGN^.F0.FKalinlik.Ust;
+  SonNesneA.Sag := SonNesneA.Sol + SonBulunanGN^.F0.FAtananAlan.Genislik;
+  SonNesneA.Alt := SonNesneA.Ust + SonBulunanGN^.F0.FAtananAlan.Yukseklik;
 
-  if(SonBulunanGN^.AltNesneSayisi = 0) then
+  if(SonBulunanGN^.F0.AltNesneSayisi = 0) then
   begin
 
-    AKonum.Sol := AKonum.Sol - SonBulunanGN^.FAtananAlan.Sol;
-    AKonum.Ust := AKonum.Ust - SonBulunanGN^.FAtananAlan.Ust;
+    AKonum.Sol := AKonum.Sol - SonBulunanGN^.F0.FAtananAlan.Sol;
+    AKonum.Ust := AKonum.Ust - SonBulunanGN^.F0.FAtananAlan.Ust;
     Exit(SonBulunanGN);
   end;
 
   // 3. pencerelerin sorgulanması
-  if(SonBulunanGN^.AltNesneSayisi > 0) then
+  if(SonBulunanGN^.F0.AltNesneSayisi > 0) then
   begin
 
     // alt nesnesi olan nesnenin alt nesnelerini ara. sondan başa doğru (3..0 gibi)
-    for i := SonBulunanGN^.AltNesneSayisi - 1 downto 0 do
+    for i := SonBulunanGN^.F0.AltNesneSayisi - 1 downto 0 do
     begin
 
       // görsel nesneyi al
-      PencereGN := PPGorselNesne(SonBulunanGN^.AltNesneBellekAdresi)[i];
+      PencereGN := PPGorselNesne(SonBulunanGN^.F0.AltNesneBellekAdresi)[i];
 
-      if(PencereGN^.NesneTipi = gntPencere) then
+      if(PencereGN^.F0.NesneTipi = gntPencere) then
       begin
 
         // görsel nesne görünür durumda mı ?
-        if(PencereGN^.Gorunum) then
+        if(PencereGN^.F0.Gorunum) then
         begin
 
-          NesneA.Sol := SonNesneA.Sol + PencereGN^.FAtananAlan.Sol;
-          NesneA.Ust := SonNesneA.Ust + PencereGN^.FAtananAlan.Ust;
-          NesneA.Sag := NesneA.Sol + PencereGN^.FAtananAlan.Genislik;
-          NesneA.Alt := NesneA.Ust + PencereGN^.FAtananAlan.Yukseklik;
+          NesneA.Sol := SonNesneA.Sol + PencereGN^.F0.FAtananAlan.Sol;
+          NesneA.Ust := SonNesneA.Ust + PencereGN^.F0.FAtananAlan.Ust;
+          NesneA.Sag := NesneA.Sol + PencereGN^.F0.FAtananAlan.Genislik;
+          NesneA.Alt := NesneA.Ust + PencereGN^.F0.FAtananAlan.Yukseklik;
 
           // fare görsel nesne alan içerisinde mi ?
           if(AlanIcindeMi(NesneA)) then
@@ -222,10 +222,10 @@ begin
 
               // kapatma düğmesinin sorgulanması
               SorgulananGN := PPencere(PencereGN)^.FKapatmaDugmesi;
-              NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FAtananAlan.Sol;
-              NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FAtananAlan.Ust;
-              NesneA.Sag := NesneA.Sol + SorgulananGN^.FAtananAlan.Genislik;
-              NesneA.Alt := NesneA.Ust + SorgulananGN^.FAtananAlan.Yukseklik;
+              NesneA.Sol := SonNesneA.Sol + SorgulananGN^.F0.FAtananAlan.Sol;
+              NesneA.Ust := SonNesneA.Ust + SorgulananGN^.F0.FAtananAlan.Ust;
+              NesneA.Sag := NesneA.Sol + SorgulananGN^.F0.FAtananAlan.Genislik;
+              NesneA.Alt := NesneA.Ust + SorgulananGN^.F0.FAtananAlan.Yukseklik;
 
               if(AlanIcindeMi(NesneA)) then
               begin
@@ -240,10 +240,10 @@ begin
 
                 // küçültme düğmesinin sorgulanması
                 SorgulananGN := PPencere(PencereGN)^.FKucultmeDugmesi;
-                NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FAtananAlan.Sol;
-                NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FAtananAlan.Ust;
-                NesneA.Sag := NesneA.Sol + SorgulananGN^.FAtananAlan.Genislik;
-                NesneA.Alt := NesneA.Ust + SorgulananGN^.FAtananAlan.Yukseklik;
+                NesneA.Sol := SonNesneA.Sol + SorgulananGN^.F0.FAtananAlan.Sol;
+                NesneA.Ust := SonNesneA.Ust + SorgulananGN^.F0.FAtananAlan.Ust;
+                NesneA.Sag := NesneA.Sol + SorgulananGN^.F0.FAtananAlan.Genislik;
+                NesneA.Alt := NesneA.Ust + SorgulananGN^.F0.FAtananAlan.Yukseklik;
 
                 if(AlanIcindeMi(NesneA)) then
                 begin
@@ -255,10 +255,10 @@ begin
 
                 // büyütme düğmesinin sorgulanması
                 SorgulananGN := PPencere(PencereGN)^.FBuyutmeDugmesi;
-                NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FAtananAlan.Sol;
-                NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FAtananAlan.Ust;
-                NesneA.Sag := NesneA.Sol + SorgulananGN^.FAtananAlan.Genislik;
-                NesneA.Alt := NesneA.Ust + SorgulananGN^.FAtananAlan.Yukseklik;
+                NesneA.Sol := SonNesneA.Sol + SorgulananGN^.F0.FAtananAlan.Sol;
+                NesneA.Ust := SonNesneA.Ust + SorgulananGN^.F0.FAtananAlan.Ust;
+                NesneA.Sag := NesneA.Sol + SorgulananGN^.F0.FAtananAlan.Genislik;
+                NesneA.Alt := NesneA.Ust + SorgulananGN^.F0.FAtananAlan.Yukseklik;
 
                 if(AlanIcindeMi(NesneA)) then
                 begin
@@ -271,8 +271,8 @@ begin
             end;
 
             // pencere nesnesinin kalınlığını da son koordinata ekle
-            SonNesneA.Sol := SonNesneA.Sol + PencereGN^.FKalinlik.Sol;
-            SonNesneA.Ust := SonNesneA.Ust + PencereGN^.FKalinlik.Ust;
+            SonNesneA.Sol := SonNesneA.Sol + PencereGN^.F0.FKalinlik.Sol;
+            SonNesneA.Ust := SonNesneA.Ust + PencereGN^.F0.FKalinlik.Ust;
             SonBulunanGN := PencereGN;
 
             // 4 - alt nesnelerin sorgulanması
@@ -281,24 +281,24 @@ begin
 
               GenelGN := nil;
 
-              if(SonBulunanGN^.AltNesneSayisi > 0) then
+              if(SonBulunanGN^.F0.AltNesneSayisi > 0) then
               begin
 
                 // alt nesnesi olan nesnenin alt nesnelerini ara. sondan başa doğru (3..0 gibi)
-                for j := SonBulunanGN^.AltNesneSayisi - 1 downto 0 do
+                for j := SonBulunanGN^.F0.AltNesneSayisi - 1 downto 0 do
                 begin
 
                   // görsel nesneyi al
-                  SorgulananGN := PPGorselNesne(SonBulunanGN^.AltNesneBellekAdresi)[j];
+                  SorgulananGN := PPGorselNesne(SonBulunanGN^.F0.AltNesneBellekAdresi)[j];
 
                   // görsel nesne görünür durumda mı ?
-                  if(SorgulananGN^.Gorunum) then
+                  if(SorgulananGN^.F0.Gorunum) then
                   begin
 
-                    NesneA.Sol := SonNesneA.Sol + SorgulananGN^.FAtananAlan.Sol;
-                    NesneA.Ust := SonNesneA.Ust + SorgulananGN^.FAtananAlan.Ust;
-                    NesneA.Sag := NesneA.Sol + SorgulananGN^.FAtananAlan.Genislik;
-                    NesneA.Alt := NesneA.Ust + SorgulananGN^.FAtananAlan.Yukseklik;
+                    NesneA.Sol := SonNesneA.Sol + SorgulananGN^.F0.FAtananAlan.Sol;
+                    NesneA.Ust := SonNesneA.Ust + SorgulananGN^.F0.FAtananAlan.Ust;
+                    NesneA.Sag := NesneA.Sol + SorgulananGN^.F0.FAtananAlan.Genislik;
+                    NesneA.Alt := NesneA.Ust + SorgulananGN^.F0.FAtananAlan.Yukseklik;
 
                     // fare görsel nesne alan içerisinde mi ?
                     if(AlanIcindeMi(NesneA)) then
@@ -316,11 +316,11 @@ begin
                 if(GenelGN = nil) then
                 begin
 
-                  if(SonBulunanGN^.NesneTipi = gntPencere) then
+                  if(SonBulunanGN^.F0.NesneTipi = gntPencere) then
                   begin
 
-                    SonNesneA.Sol := SonNesneA.Sol - SonBulunanGN^.FKalinlik.Sol;
-                    SonNesneA.Ust := SonNesneA.Ust - SonBulunanGN^.FKalinlik.Ust;
+                    SonNesneA.Sol := SonNesneA.Sol - SonBulunanGN^.F0.FKalinlik.Sol;
+                    SonNesneA.Ust := SonNesneA.Ust - SonBulunanGN^.F0.FKalinlik.Ust;
 
                     AKonum.Sol := (AKonum.Sol - SonNesneA.Sol);
                     AKonum.Ust := (AKonum.Ust - SonNesneA.Ust);
@@ -338,11 +338,11 @@ begin
               else
               begin
 
-                if(SonBulunanGN^.NesneTipi = gntPencere) then
+                if(SonBulunanGN^.F0.NesneTipi = gntPencere) then
                 begin
 
-                  SonNesneA.Sol := SonNesneA.Sol - SonBulunanGN^.FKalinlik.Sol;
-                  SonNesneA.Ust := SonNesneA.Ust - SonBulunanGN^.FKalinlik.Ust;
+                  SonNesneA.Sol := SonNesneA.Sol - SonBulunanGN^.F0.FKalinlik.Sol;
+                  SonNesneA.Ust := SonNesneA.Ust - SonBulunanGN^.F0.FKalinlik.Ust;
 
                   AKonum.Sol := (AKonum.Sol - SonNesneA.Sol);
                   AKonum.Ust := (AKonum.Ust - SonNesneA.Ust);
@@ -362,8 +362,8 @@ begin
       end;
     end;
 
-    AKonum.Sol := AKonum.Sol - SonBulunanGN^.FAtananAlan.Sol;
-    AKonum.Ust := AKonum.Ust - SonBulunanGN^.FAtananAlan.Ust;
+    AKonum.Sol := AKonum.Sol - SonBulunanGN^.F0.FAtananAlan.Sol;
+    AKonum.Ust := AKonum.Ust - SonBulunanGN^.F0.FAtananAlan.Ust;
     Exit(SonBulunanGN);
   end;
 end;
@@ -375,7 +375,7 @@ function EnUstNesneyiAl(AGorselNesne: PGorselNesne): PGorselNesne;
 begin
 
   // nesnenin ata nesnesi masaüstü veya pencere olana kadar ara
-  while (AGorselNesne^.NesneTipi <> gntMasaustu) or (AGorselNesne^.NesneTipi <> gntPencere) do
+  while (AGorselNesne^.F0.NesneTipi <> gntMasaustu) or (AGorselNesne^.F0.NesneTipi <> gntPencere) do
   begin
 
     AGorselNesne := AGorselNesne^.AtaNesne;
@@ -392,7 +392,7 @@ function EnUstPencereNesnesiniAl(AGorselNesne: PGorselNesne): PPencere;
 begin
 
   // nesnenin ata nesnesi pencere olana kadar ara
-  while (AGorselNesne^.NesneTipi <> gntPencere) do
+  while (AGorselNesne^.F0.NesneTipi <> gntPencere) do
   begin
 
     AGorselNesne := AGorselNesne^.AtaNesne;

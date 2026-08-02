@@ -6,7 +6,7 @@
   Dosya Adı: n_yazilistesi.pas
   Dosya İşlevi: yazı liste nesne işlevlerini gerçekleştirir.
 
-  Güncelleme Tarihi: 01/07/2026
+  Güncelleme Tarihi: 01/08/2026
 
   Bilgi: sistem tasarlama yönünden FPC'nin sağladığı imkanlarından yararlanamama
   konusunda kısıtlamaları aşmak amacıyla (dinamik bellek yönetiminin kullanılamamasına
@@ -33,7 +33,7 @@ type
 
 type
   PYaziListesi = ^TYaziListesi;
-  TYaziListesi = object
+  TYaziListesi = class
   private
     FKimlik: TKimlik;
     FElemanSayisi: TISayi4;
@@ -55,21 +55,21 @@ type
 
 type
   PYaziListeleri = ^TYaziListeleri;
-  TYaziListeleri = object
+  TYaziListeleri = class
   private
-    FYaziListeleri: array[0..USTSINIR_YAZILISTESI - 1] of PYaziListesi;
-    function YaziListesiAl(ASiraNo: TISayi4): PYaziListesi;
-    procedure YaziListesiYaz(ASiraNo: TISayi4; AYaziListesi: PYaziListesi);
+    FYaziListeleri: array[0..USTSINIR_YAZILISTESI - 1] of TYaziListesi;
+    function Al(ASiraNo: TISayi4): TYaziListesi;
+    procedure Yaz(ASiraNo: TISayi4; AYaziListesi: TYaziListesi);
   public
-    procedure Yukle;
-    function Olustur: PYaziListesi;
+    constructor Create;
+    function Olustur: TYaziListesi;
     procedure YokEt(AKimlik: TKimlik);
-    function BosNesneBul: PYaziListesi;
-    property YaziListesi[ASiraNo: TISayi4]: PYaziListesi read YaziListesiAl write YaziListesiYaz;
+    function BosNesneBul: TYaziListesi;
+    property YaziListesi[ASiraNo: TISayi4]: TYaziListesi read Al write Yaz;
   end;
 
 var
-  YaziListesi0: TYaziListeleri;
+  GYaziListeleri: TYaziListeleri;
 
 implementation
 
@@ -78,7 +78,7 @@ uses islevler;
 {==============================================================================
   yazı nesne listesini ilk değerlerle yükler
  ==============================================================================}
-procedure TYaziListeleri.Yukle;
+constructor TYaziListeleri.Create;
 var
   i: TSayi4;
 begin
@@ -87,7 +87,7 @@ begin
   for i := 0 to USTSINIR_YAZILISTESI - 1 do YaziListesi[i] := nil;
 end;
 
-function TYaziListeleri.YaziListesiAl(ASiraNo: TISayi4): PYaziListesi;
+function TYaziListeleri.Al(ASiraNo: TISayi4): TYaziListesi;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -96,7 +96,7 @@ begin
   else Result := nil;
 end;
 
-procedure TYaziListeleri.YaziListesiYaz(ASiraNo: TISayi4; AYaziListesi: PYaziListesi);
+procedure TYaziListeleri.Yaz(ASiraNo: TISayi4; AYaziListesi: TYaziListesi);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -107,9 +107,9 @@ end;
 {==============================================================================
   yazı liste nesnesini oluşturur
  ==============================================================================}
-function TYaziListeleri.Olustur: PYaziListesi;
+function TYaziListeleri.Olustur: TYaziListesi;
 var
-  YL: PYaziListesi;
+  YL: TYaziListesi;
   p: Isaretci;
 begin
 
@@ -124,16 +124,16 @@ begin
     begin
 
       // nesne değişkenlerini ilk değerlerle yükle.
-      YL^.BellekBaslangicAdresi := p;
-      YL^.MevcutBellekAdresi := p;
-      YL^.BellekUzunlugu := YAZILISTESI_KAPASITE;
+      YL.BellekBaslangicAdresi := p;
+      YL.MevcutBellekAdresi := p;
+      YL.BellekUzunlugu := YAZILISTESI_KAPASITE;
 
       Exit(YL);
     end
     else
     begin
 
-      YokEt(YL^.Kimlik);
+      YokEt(YL.Kimlik);
       Exit(nil);
     end;
   end;
@@ -146,7 +146,7 @@ end;
  ==============================================================================}
 procedure TYaziListeleri.YokEt(AKimlik: TKimlik);
 var
-  YL: PYaziListesi;
+  YL: TYaziListesi;
 begin
 
   if(AKimlik >= 0) and (AKimlik < USTSINIR_YAZILISTESI) then
@@ -155,8 +155,8 @@ begin
     YL := YaziListesi[AKimlik];
 
     // bellek tahsis edilmişse belleği bırak
-    if not(YL^.BellekBaslangicAdresi = nil) then
-      FreeMem(YL^.FBellekBaslangicAdresi, YAZILISTESI_KAPASITE);
+    if not(YL.BellekBaslangicAdresi = nil) then
+      FreeMem(YL.FBellekBaslangicAdresi, YAZILISTESI_KAPASITE);
 
     FreeMem(YL, SizeOf(TYaziListesi));
 
@@ -168,9 +168,9 @@ end;
 {==============================================================================
   kullanılabilir (boşta) yazı nesnesi bulur
  ==============================================================================}
-function TYaziListeleri.BosNesneBul: PYaziListesi;
+function TYaziListeleri.BosNesneBul: TYaziListesi;
 var
-  YL: PYaziListesi;
+  YL: TYaziListesi;
   i: TSayi4;
 begin
 
@@ -184,11 +184,11 @@ begin
     if(YL = nil) then
     begin
 
-      YL := GetMem(SizeOf(TYaziListesi));
+      YL := TYaziListesi.Create; //GetMem(SizeOf(TYaziListesi));
       YaziListesi[i] := YL;
 
-      YL^.Kimlik := i;
-      YL^.ElemanSayisi := 0;
+      YL.Kimlik := i;
+      YL.ElemanSayisi := 0;
 
       Exit(YL);
     end;

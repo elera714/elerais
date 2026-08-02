@@ -112,7 +112,7 @@ begin
     if(j > 0) then
     begin
 
-      FD := GFizikselDepolama00.FDAygitiOlustur(SURUCUTIP_DISKET);
+      FD := GFizikselDepolama.AygitOlustur(SURUCUTIP_DISKET);
       if(FD <> nil) then
       begin
 
@@ -141,7 +141,7 @@ begin
     if(j > 0) then
     begin
 
-      FD := GFizikselDepolama00.FDAygitiOlustur(SURUCUTIP_DISKET);
+      FD := GFizikselDepolama.AygitOlustur(SURUCUTIP_DISKET);
       if(FD <> nil) then
       begin
 

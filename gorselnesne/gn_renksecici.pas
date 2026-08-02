@@ -66,7 +66,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PRenk(ADegiskenler + 12)^, PRenk(ADegiskenler + 16)^);
     end;
@@ -74,7 +74,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      RenkSecici := PRenkSecici(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      RenkSecici := PRenkSecici(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       RenkSecici^.Goster;
     end;
 
@@ -96,7 +96,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := RenkSecici^.Kimlik;
+  else Result := RenkSecici^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -112,12 +112,12 @@ begin
     AYukseklik, 0, 0, 0, 0, ''));
 
   // nesnenin ad değeri
-  RenkSecici^.NesneTipi := gntRenkSecici;
+  RenkSecici^.F0.NesneTipi := gntRenkSecici;
 
   RenkSecici^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  RenkSecici^.Odaklanilabilir := True;
-  RenkSecici^.Odaklanildi := False;
+  RenkSecici^.F0.Odaklanilabilir := True;
+  RenkSecici^.F0.Odaklanildi := False;
 
   RenkSecici^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -167,7 +167,7 @@ var
   RenkSecici: PRenkSecici = nil;
 begin
 
-  RenkSecici := PRenkSecici(GorselNesneler0.NesneAl(Kimlik));
+  RenkSecici := PRenkSecici(GGorselNesneler.NesneAl(F0.Kimlik));
   if(RenkSecici = nil) then Exit;
 
   inherited Hizala;
@@ -184,7 +184,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  RenkSecici := PRenkSecici(GorselNesneler0.NesneAl(Kimlik));
+  RenkSecici := PRenkSecici(GGorselNesneler.NesneAl(F0.Kimlik));
   if(RenkSecici = nil) then Exit;
 
   // 16 rengi 8 sütün, 2 satır olarak çiz. (8 x 2)
@@ -210,10 +210,10 @@ begin
   end;
 
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
-  if(RenkSecici^.Odaklanildi) then
+  if(RenkSecici^.F0.Odaklanildi) then
   begin
 
-    CizimAlani := RenkSecici^.FCizimAlani;
+    CizimAlani := RenkSecici^.F0.FCizimAlani;
     RenkSecici^.Dikdortgen(RenkSecici, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
@@ -241,7 +241,7 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := RenkSecici;
-    RenkSecici^.Odaklanildi := True;
+    RenkSecici^.F0.Odaklanildi := True;
 
     // fare olaylarını yakala
     OlayYakalamayaBasla(RenkSecici);
@@ -275,13 +275,13 @@ begin
         AOlay.Deger2 := 0;
         if not(RenkSecici^.OlayYonlendirmeAdresi = nil) then
           RenkSecici^.OlayYonlendirmeAdresi(RenkSecici, AOlay)
-        else Gorevler0.OlayEkle(RenkSecici^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(RenkSecici^.F0.GorevKimlik, AOlay);
       end;
     end;
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := RenkSecici^.FareImlecTipi;
+  GecerliFareGostegeTipi := RenkSecici^.F0.FareImlecTipi;
 end;
 
 end.

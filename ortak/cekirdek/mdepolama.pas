@@ -6,7 +6,7 @@
   Dosya Adý: mdepolama.pas
   Dosya Ýþlevi: mantýksal depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 07/01/2026
+  Güncelleme Tarihi: 01/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,7 +18,7 @@ interface
 uses paylasim, fdepolama;
 
 const
-  USTSINIR_MANTIKSALDEPOLAMA       = 6;
+  USTSINIR_MD = 6;    // desteklenen mantýksal depolama aygýt sayýsý
 
 var
   MantiksalDisketHavuzListesi: array[0..1] of TSayi4;    // disket numaralama listesi
@@ -47,7 +47,8 @@ type
 // mantýksal depolama nesnesi - sistem için
 type
   PMDNesne = ^TMDNesne;
-  TMDNesne = packed record
+  TMDNesne = class
+  public
     MD3: TMDNesne3;
     FD: TFDNesne;
     Acilis: TAcilis;
@@ -58,25 +59,25 @@ type
   private
     // mantýksal sürücü listesi. en fazla 6 depolama sürücüsü
     FAygitSayisi: TSayi4;
-    FMDAygitListesi: array[0..USTSINIR_MANTIKSALDEPOLAMA - 1] of PMDNesne;
-    function Al(ASiraNo: TISayi4): PMDNesne;
-    procedure Yaz(ASiraNo: TISayi4; AMDNesne: PMDNesne);
+    FAygitListesi: array[0..USTSINIR_MD - 1] of TMDNesne;
+    function Al(ASiraNo: TISayi4): TMDNesne;
+    procedure Yaz(ASiraNo: TISayi4; AMDNesne: TMDNesne);
   public
     constructor Create;
-    function MDAygitiOlustur: PMDNesne;
-    function SurucuAl(ATamAdresYolu: string): PMDNesne;
+    function AygitOlustur: TMDNesne;
+    function SurucuBul(ATamAdresYolu: string): TMDNesne;
     function AygitNumarasiAl(ASurucuTipi: TSayi4): TISayi4;
-    function MantiksalSurucuAl(ASiraNo: TISayi4): PMDNesne;
-    function MantiksalSurucuAl(AAygitAdi: string): PMDNesne;
-    function MantiksalSurucuAl2(AKimlik: TKimlik): PMDNesne;
-    function MantiksalDepolamaVeriOku(AMDNesne: PMDNesne; ASektorNo,
-      ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    function SurucuAl(ASiraNo: TISayi4): TMDNesne;
+    function SurucuAl(AAygitAdi: string): TMDNesne;
+    function SurucuAl2(AKimlik: TKimlik): TMDNesne;
+    function VeriOku(AMDNesne: TMDNesne; ASektorNo, ASektorSayisi: TSayi4;
+      ABellek: Isaretci): TISayi4;
     property AygitSayisi: TSayi4 read FAygitSayisi;
-    property Aygit[ASiraNo: TISayi4]: PMDNesne read Al write Yaz;
+    property Aygit[ASiraNo: TISayi4]: TMDNesne read Al write Yaz;
   end;
 
 var
-  MantiksalDepolama0: TMantiksalDepolama;
+  GMantiksalDepolama: TMantiksalDepolama;
 
 implementation
 
@@ -88,7 +89,7 @@ uses donusum, sistemmesaj, aygityonetimi;
 constructor TMantiksalDepolama.Create;
 var
   FD: PFDNesne;
-  MD: PMDNesne;
+  MD: TMDNesne;
   DiskBolum: PDiskBolum;
   AcilisKayit1x: PAcilisKayit1x;
   AcilisKayit32: PAcilisKayit32;
@@ -101,7 +102,7 @@ begin
 
   // mantýksal sürücü deðiþkenlerini ilk deðerlerle yükle
   FAygitSayisi := 0;
-  for i := 0 to USTSINIR_MANTIKSALDEPOLAMA - 1 do Aygit[i] := nil;
+  for i := 0 to USTSINIR_MD - 1 do Aygit[i] := nil;
 
   // mantýksal disket sürücü numara üreticisini sýfýrla
   for i := 0 to 1 do MantiksalDisketHavuzListesi[i] := 0;
@@ -110,17 +111,17 @@ begin
   for i := 0 to 3 do MantiksalDiskHavuzListesi[i] := 0;
 
   // sistemde fiziksel depolama aygýtý var ise
-  if(GFizikselDepolama00.AygitSayisi > 0) then
+  if(GFizikselDepolama.AygitSayisi > 0) then
   begin
 
     Bellek1 := GetMem(512);
     Bellek2 := GetMem(512);
 
     // tüm aygýtlarý denetle. (toplam 6 fiziksel aygýt)
-    for i := 0 to USTSINIR_FIZIKSELDEPOLAMA - 1 do
+    for i := 0 to USTSINIR_FD - 1 do
     begin
 
-      FD := GFizikselDepolama00.Aygit[i];
+      FD := GFizikselDepolama.Aygit[i];
 
       // eðer aygýt mevcut ise ...
       if not(FD = nil) then
@@ -147,38 +148,38 @@ begin
               begin
 
                 // mantýksal sürücü oluþtur
-                MD := MDAygitiOlustur;
+                MD := AygitOlustur;
                 if not(MD = nil) then
                 begin
 
                   // mantýksal sürücü bilgileri ata
-                  MD^.FD := FD^;
+                  MD.FD := FD^;
 
-                  MD^.MD3.SurucuTipi := FD^.FD3.SurucuTipi;
-                  MD^.MD3.AygitAdi := 'disket' + IntToStr(SurucuNo);
-                  MD^.MD3.DST := DST_FAT12;
-                  MD^.MD3.BolumIlkSektor := AcilisKayit1x^.BolumOncesiSektorSayisi;
-                  MD^.MD3.BolumToplamSektor := AcilisKayit1x^.ToplamSektorSayisi1x;
+                  MD.MD3.SurucuTipi := FD^.FD3.SurucuTipi;
+                  MD.MD3.AygitAdi := 'disket' + IntToStr(SurucuNo);
+                  MD.MD3.DST := DST_FAT12;
+                  MD.MD3.BolumIlkSektor := AcilisKayit1x^.BolumOncesiSektorSayisi;
+                  MD.MD3.BolumToplamSektor := AcilisKayit1x^.ToplamSektorSayisi1x;
                   {$IFDEF BOLUMLEME_BILGI}
                   SISTEM_MESAJ(mtBilgi, RENK_YESIL, '  + Mantýksal aygýt: ' + MD^.MD3.AygitAdi, []);
                   {$ENDIF}
 
                   // dosya ayýrma tablosu (fat) bilgileri
-                  DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
+                  DosyaAyirmaTablosu := @MD.Acilis.DosyaAyirmaTablosu;
                   DosyaAyirmaTablosu^.IlkSektor := AcilisKayit1x^.AyrilmisSektor1;
                   DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit1x^.DATBasinaSektor;
                   DosyaAyirmaTablosu^.KBS := AcilisKayit1x^.KBS;
                   //DosyaAyirmaTablosu^.KBS := (AcilisKayit1x^.AzamiDizinGirisi * 32) div AcilisKayit1x^.SektorBasinaByte;
 
                   // dosya + dizin giriþ bilgileri
-                  DizinGirisi := @MD^.Acilis.DizinGirisi;
+                  DizinGirisi := @MD.Acilis.DizinGirisi;
                   DizinGirisi^.IlkSektor := (AcilisKayit1x^.DATBasinaSektor *
                     AcilisKayit1x^.DATSayisi) + AcilisKayit1x^.AyrilmisSektor1;
                   DizinGirisi^.ToplamSektor := AcilisKayit1x^.AzamiDizinGirisi div 16;
                   DizinGirisi^.GirdiUzunlugu := 32;
                   DizinGirisi^.ToplamKokSektor := (AcilisKayit1x^.AzamiDizinGirisi * 32) div AcilisKayit1x^.SektorBasinaByte;
 
-                  MD^.Acilis.IlkVeriSektorNo := (DizinGirisi^.IlkSektor + DizinGirisi^.ToplamSektor);
+                  MD.Acilis.IlkVeriSektorNo := (DizinGirisi^.IlkSektor + DizinGirisi^.ToplamSektor);
 
                   Inc(FAygitSayisi);
                 end;
@@ -226,18 +227,18 @@ begin
                   begin
 
                     // mantýksal sürücü oluþtur
-                    MD := MDAygitiOlustur;
+                    MD := AygitOlustur;
                     if not(MD = nil) then
                     begin
 
                       // mantýksal sürücü bilgileri ata
-                      MD^.FD := FD^;
+                      MD.FD := FD^;
 
-                      MD^.MD3.SurucuTipi := FD^.FD3.SurucuTipi;
-                      MD^.MD3.AygitAdi := 'disk' + IntToStr(SurucuNo);
-                      MD^.MD3.DST := DiskBolum^.BolumTipi;
-                      MD^.MD3.BolumIlkSektor := BolumIlkSektor;
-                      MD^.MD3.BolumToplamSektor := BolumToplamSektor;
+                      MD.MD3.SurucuTipi := FD^.FD3.SurucuTipi;
+                      MD.MD3.AygitAdi := 'disk' + IntToStr(SurucuNo);
+                      MD.MD3.DST := DiskBolum^.BolumTipi;
+                      MD.MD3.BolumIlkSektor := BolumIlkSektor;
+                      MD.MD3.BolumToplamSektor := BolumToplamSektor;
                       {$IFDEF BOLUMLEME_BILGI}
                       SISTEM_MESAJ(mtBilgi, RENK_YESIL, '  + Mantýksal aygit: ' + MD^.MD3.AygitAdi, []);
                       {$ENDIF}
@@ -248,14 +249,14 @@ begin
                         AcilisKayit32 := PAcilisKayit32(Bellek2);
 
                         // dosya ayýrma tablosu (fat) bilgileri
-                        DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
+                        DosyaAyirmaTablosu := @MD.Acilis.DosyaAyirmaTablosu;
                         DosyaAyirmaTablosu^.IlkSektor := AcilisKayit32^.AyrilmisSektor1 +
                           AcilisKayit32^.BolumOncesiSektorSayisi;
                         DosyaAyirmaTablosu^.ToplamSektor := 30 * 1024 * 1024; //AcilisKayit32^.DATBasinaSektor;
                         DosyaAyirmaTablosu^.KBS := 4; //AcilisKayit32^.KBS;
 
                         // dosya + dizin giriþ bilgileri
-                        DizinGirisi := @MD^.Acilis.DizinGirisi;
+                        DizinGirisi := @MD.Acilis.DizinGirisi;
                         DizinGirisi^.IlkSektor := 5632 div 4; //SEKTORNO_VERI; // (AcilisKayit32^.DATBasinaSektor *
                           //AcilisKayit32^.DATSayisi) + AcilisKayit32^.AyrilmisSektor1 +
                           //AcilisKayit32^.BolumOncesiSektorSayisi;
@@ -264,7 +265,7 @@ begin
 
                         // fat32 dosya sisteminde dizin baþlangýcý da veri olarak kullanýlýr
                         // fat32 dosya sisteminin dizin tablo bitiþ deðeri yoktur!
-                        MD^.Acilis.IlkVeriSektorNo := DizinGirisi^.IlkSektor;
+                        MD.Acilis.IlkVeriSektorNo := DizinGirisi^.IlkSektor;
                       end
                       else if(DiskBolum^.BolumTipi = DST_FAT32) or
                         (DiskBolum^.BolumTipi = DST_FAT32LBA) then
@@ -273,14 +274,14 @@ begin
                         AcilisKayit32 := PAcilisKayit32(Bellek2);
 
                         // dosya ayýrma tablosu (fat) bilgileri
-                        DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
+                        DosyaAyirmaTablosu := @MD.Acilis.DosyaAyirmaTablosu;
                         DosyaAyirmaTablosu^.IlkSektor := AcilisKayit32^.AyrilmisSektor1 +
                           AcilisKayit32^.BolumOncesiSektorSayisi;
                         DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit32^.DATBasinaSektor;
                         DosyaAyirmaTablosu^.KBS := AcilisKayit32^.KBS;
 
                         // dosya + dizin giriþ bilgileri
-                        DizinGirisi := @MD^.Acilis.DizinGirisi;
+                        DizinGirisi := @MD.Acilis.DizinGirisi;
                         DizinGirisi^.IlkSektor := (AcilisKayit32^.DATBasinaSektor *
                           AcilisKayit32^.DATSayisi) + AcilisKayit32^.AyrilmisSektor1 +
                           AcilisKayit32^.BolumOncesiSektorSayisi;
@@ -292,27 +293,27 @@ begin
 
                         // fat32 dosya sisteminde dizin baþlangýcý da veri olarak kullanýlýr
                         // fat32 dosya sisteminin dizin tablo bitiþ deðeri yoktur!
-                        MD^.Acilis.IlkVeriSektorNo := DizinGirisi^.IlkSektor;
+                        MD.Acilis.IlkVeriSektorNo := DizinGirisi^.IlkSektor;
                       end
                       else
                       begin
 
                         // dosya ayýrma tablosu (fat) bilgileri
-                        DosyaAyirmaTablosu := @MD^.Acilis.DosyaAyirmaTablosu;
+                        DosyaAyirmaTablosu := @MD.Acilis.DosyaAyirmaTablosu;
                         DosyaAyirmaTablosu^.IlkSektor := AcilisKayit1x^.BolumOncesiSektorSayisi +
                           AcilisKayit1x^.AyrilmisSektor1;
                         DosyaAyirmaTablosu^.ToplamSektor := AcilisKayit1x^.DATBasinaSektor;
                         DosyaAyirmaTablosu^.KBS := AcilisKayit1x^.KBS;
 
                         // dosya + dizin giriþ bilgileri
-                        DizinGirisi := @MD^.Acilis.DizinGirisi;
+                        DizinGirisi := @MD.Acilis.DizinGirisi;
                         DizinGirisi^.IlkSektor := (AcilisKayit1x^.DATBasinaSektor *
                           AcilisKayit1x^.DATSayisi) + AcilisKayit1x^.AyrilmisSektor1 +
                           AcilisKayit1x^.BolumOncesiSektorSayisi;
                         DizinGirisi^.ToplamSektor := AcilisKayit1x^.AzamiDizinGirisi div 16;
                         DizinGirisi^.GirdiUzunlugu := 32;
 
-                        MD^.Acilis.IlkVeriSektorNo := (DizinGirisi^.IlkSektor + DizinGirisi^.ToplamSektor);
+                        MD.Acilis.IlkVeriSektorNo := (DizinGirisi^.IlkSektor + DizinGirisi^.ToplamSektor);
                       end;
 
                       { SISTEM_MESAJ_S16SISTEM_MESAJ_S16(RENK_SIYAH, 'RootFirstSector: ', _MantiksalSurucu^.Acilis.DizinGirisi.IlkSektor, 8);
@@ -347,44 +348,44 @@ begin
   end;
 end;
 
-function TMantiksalDepolama.Al(ASiraNo: TISayi4): PMDNesne;
+function TMantiksalDepolama.Al(ASiraNo: TISayi4): TMDNesne;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MANTIKSALDEPOLAMA) then
-    Result := FMDAygitListesi[ASiraNo]
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MD) then
+    Result := FAygitListesi[ASiraNo]
   else Result := nil;
 end;
 
-procedure TMantiksalDepolama.Yaz(ASiraNo: TISayi4; AMDNesne: PMDNesne);
+procedure TMantiksalDepolama.Yaz(ASiraNo: TISayi4; AMDNesne: TMDNesne);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MANTIKSALDEPOLAMA) then
-    FMDAygitListesi[ASiraNo] := AMDNesne;
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MD) then
+    FAygitListesi[ASiraNo] := AMDNesne;
 end;
 
 {==============================================================================
   mantýksal depolama aygýtý oluþturma iþlevi
  ==============================================================================}
-function TMantiksalDepolama.MDAygitiOlustur: PMDNesne;
+function TMantiksalDepolama.AygitOlustur: TMDNesne;
 var
-  MD: PMDNesne;
+  MD: TMDNesne;
   i: TSayi4;
 begin
 
-  // boþ bir mantýksal sürücü yapýsý bul
-  for i := 0 to USTSINIR_MANTIKSALDEPOLAMA - 1 do
+  // boþ bir mantýksal sürücü nesnesi bul
+  for i := 0 to USTSINIR_MD - 1 do
   begin
 
     MD := Aygit[i];
     if(MD = nil) then
     begin
 
-      MD := GetMem(SizeOf(TMDNesne));
+      MD := TMDNesne.Create;
       Aygit[i] := MD;
 
-      MD^.MD3.Kimlik := MD_KIMLIK_ILKDEGER + i;
+      MD.MD3.Kimlik := MD_KIMLIK_ILKDEGER + i;
       Exit(MD);
     end;
   end;
@@ -393,12 +394,11 @@ begin
 end;
 
 {==============================================================================
-  dosya yolundan sürücüyü bulur ve geriye sürücüye ait bellek bölgesini döndürür
-  þu anda dosya yol biçimi: disket1:\dosya.c þeklinde
+  dosya yolundan sürücüyü bulur ve geriye sürücüye ait nesneyi döndürür
  ==============================================================================}
-function TMantiksalDepolama.SurucuAl(ATamAdresYolu: string): PMDNesne;
+function TMantiksalDepolama.SurucuBul(ATamAdresYolu: string): TMDNesne;
 var
-  MD: PMDNesne;
+  MD: TMDNesne;
   i: TSayi4;
   SurucuAdi: string;
 begin
@@ -414,14 +414,14 @@ begin
   end else SurucuAdi := AcilisSurucuAygiti;
 
   // sürücü sistemde mevcut mu ?
-  for i := 0 to USTSINIR_MANTIKSALDEPOLAMA - 1 do
+  for i := 0 to USTSINIR_MD - 1 do
   begin
 
     MD := Aygit[i];
     if not(MD = nil) then
     begin
 
-      if(MD^.MD3.AygitAdi = SurucuAdi) then Exit(MD);
+      if(MD.MD3.AygitAdi = SurucuAdi) then Exit(MD);
     end;
   end;
 
@@ -429,7 +429,7 @@ begin
 end;
 
 {==============================================================================
-  mantýksal depolama aygýtý için sayýsal sýra numarasý alýr
+  mantýksal depolama aygýtý için aygýt numarasý (kimlik) alýr
  ==============================================================================}
 function TMantiksalDepolama.AygitNumarasiAl(ASurucuTipi: TSayi4): TISayi4;
 var
@@ -472,20 +472,20 @@ begin
 end;
 
 {==============================================================================
-  sýra numarasýna göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
+  sýra numarasýna göre mantýksal depolama aygýtýnýn nesnesini geri döndürür
  ==============================================================================}
-function TMantiksalDepolama.MantiksalSurucuAl(ASiraNo: TISayi4): PMDNesne;
+function TMantiksalDepolama.SurucuAl(ASiraNo: TISayi4): TMDNesne;
 var
-  MD: PMDNesne;
+  MD: TMDNesne;
   SiraNo,
   i: TISayi4;
 begin
 
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MANTIKSALDEPOLAMA) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_MD) then
   begin
 
     SiraNo := -1;
-    for i := 0 to USTSINIR_MANTIKSALDEPOLAMA - 1 do
+    for i := 0 to USTSINIR_MD - 1 do
     begin
 
       MD := Aygit[i];
@@ -499,38 +499,38 @@ begin
 end;
 
 {==============================================================================
-  aygýt adýna (örnek: disk2) göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
+  aygýt adýna (örnek: disk2) göre mantýksal depolama aygýtýnýn nesnesini geri döndürür
  ==============================================================================}
-function TMantiksalDepolama.MantiksalSurucuAl(AAygitAdi: string): PMDNesne;
+function TMantiksalDepolama.SurucuAl(AAygitAdi: string): TMDNesne;
 var
-  MD: PMDNesne;
+  MD: TMDNesne;
   i: TISayi4;
 begin
 
-  for i := 0 to USTSINIR_MANTIKSALDEPOLAMA - 1 do
+  for i := 0 to USTSINIR_MD - 1 do
   begin
 
     MD := Aygit[i];
-    if not(MD = nil) and (MD^.MD3.AygitAdi = AAygitAdi) then Exit(MD);
+    if not(MD = nil) and (MD.MD3.AygitAdi = AAygitAdi) then Exit(MD);
   end;
 
   Result := nil;
 end;
 
 {==============================================================================
-  kimlik deðerine göre mantýksal depolama aygýtýnýn veri yapýsýný geri döndürür
+  kimlik deðerine göre mantýksal depolama aygýtýnýn nesnesini geri döndürür
  ==============================================================================}
-function TMantiksalDepolama.MantiksalSurucuAl2(AKimlik: TKimlik): PMDNesne;
+function TMantiksalDepolama.SurucuAl2(AKimlik: TKimlik): TMDNesne;
 var
-  MD: PMDNesne;
+  MD: TMDNesne;
   i: TISayi4;
 begin
 
-  for i := 0 to USTSINIR_MANTIKSALDEPOLAMA - 1 do
+  for i := 0 to USTSINIR_MD - 1 do
   begin
 
     MD := Aygit[i];
-    if not(MD = nil) and (MD^.MD3.Kimlik = AKimlik) then Exit(MD);
+    if not(MD = nil) and (MD.MD3.Kimlik = AKimlik) then Exit(MD);
   end;
 
   Result := nil;
@@ -539,10 +539,9 @@ end;
 {==============================================================================
   mantýksal depolama aygýtýndan veri okur
  ==============================================================================}
-function TMantiksalDepolama.MantiksalDepolamaVeriOku(AMDNesne: PMDNesne; ASektorNo,
-  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+function TMantiksalDepolama.VeriOku(AMDNesne: TMDNesne; ASektorNo, ASektorSayisi: TSayi4;
+  ABellek: Isaretci): TISayi4;
 begin
-
 
 {  SISTEM_MESAJ(RENK_MAVI, 'Depolama Kimlik: %d', [AMantiksalDepolama^.MD3.Kimlik]);
   SISTEM_MESAJ(RENK_MAVI, 'Depolama Sürücü Tipi: %d', [AMantiksalDepolama^.MD3.SurucuTipi]);
@@ -550,7 +549,7 @@ begin
   SISTEM_MESAJ(RENK_MAVI, 'Okunacak Ýlk Sektör: %d', [ASektorNo]);
   SISTEM_MESAJ(RENK_MAVI, 'Okunacak Sektör Sayýsý: %d', [ASektorSayisi]); }
 
-  Result := AMDNesne^.FD.SektorOku(AMDNesne, ASektorNo, ASektorSayisi, ABellek);
+  Result := AMDNesne.FD.SektorOku(AMDNesne, ASektorNo, ASektorSayisi, ABellek);
 end;
 
 end.

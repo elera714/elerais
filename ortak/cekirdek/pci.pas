@@ -49,8 +49,8 @@ const
   USTSINIR_PCIAYGIT   = 256;    // 4096 / PCI_YAPIUZUNLUGU = 12) = 341
 
 type
-  PPCI = ^TPCI;
-  TPCI = packed record
+  PPCIYapi = ^TPCIYapi;
+  TPCIYapi = packed record
     Yol, Aygit, Islev, AYRLD0: TSayi1;
     SaticiKimlik, AygitKimlik: TSayi2;
     SinifKod: TSayi4;
@@ -61,9 +61,9 @@ type
   TPCIAygiti = object
   private
     FToplamAygit: TISayi4;
-    FPCIAygitListesi: array[0..USTSINIR_PCIAYGIT - 1] of PPCI;
-    function PCIBilgiAl(ASiraNo: TISayi4): PPCI;
-    procedure PCIBilgiYaz(ASiraNo: TISayi4; APCI: PPCI);
+    FPCIAygitListesi: array[0..USTSINIR_PCIAYGIT - 1] of PPCIYapi;
+    function PCIBilgiAl(ASiraNo: TISayi4): PPCIYapi;
+    procedure PCIBilgiYaz(ASiraNo: TISayi4; APCIYapi: PPCIYapi);
   public
     procedure Yukle;
     function Oku1(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi1;
@@ -72,11 +72,11 @@ type
     procedure Yaz1(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi1);
     procedure Yaz2(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi2);
     procedure Yaz4(AYol, AAygit, AIslev, ASiraNo: TSayi1; ADeger: TSayi4);
-    function IlkPortDegeriniAl(APCI: PPCI): TSayi2;
-    function IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
-    function IRQNoAl(APCI: PPCI): TSayi1;
+    function IlkPortDegeriniAl(APCIYapi: PPCIYapi): TSayi2;
+    function IlkBellekDegeriniAl(APCIYapi: PPCIYapi): TSayi4;
+    function IRQNoAl(APCIYapi: PPCIYapi): TSayi1;
     property ToplamAygit: TISayi4 read FToplamAygit write FToplamAygit;
-    property PCI[ASiraNo: TISayi4]: PPCI read PCIBilgiAl write PCIBilgiYaz;
+    property PCI[ASiraNo: TISayi4]: PPCIYapi read PCIBilgiAl write PCIBilgiYaz;
   end;
 
 var
@@ -91,7 +91,7 @@ uses aygityonetimi, port;
  ==============================================================================}
 procedure TPCIAygiti.Yukle;
 var
-  P: PPCI;
+  P: PPCIYapi;
   Yol, Aygit, Islev,
   i, j, k: TSayi4;
 begin
@@ -122,7 +122,7 @@ begin
           begin
 
             // yeni pci aygıt bilgisi için bellekte yer ayır
-            P := PPCI(GetMem(SizeOf(TPCI)));
+            P := PPCIYapi(GetMem(SizeOf(TPCIYapi)));
 
             // pci aygıt adresini listesiye kaydet
             PCI[ToplamAygit] := P;
@@ -165,7 +165,7 @@ begin
   end;
 end;
 
-function TPCIAygiti.PCIBilgiAl(ASiraNo: TISayi4): PPCI;
+function TPCIAygiti.PCIBilgiAl(ASiraNo: TISayi4): PPCIYapi;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -174,12 +174,12 @@ begin
   else Result := nil;
 end;
 
-procedure TPCIAygiti.PCIBilgiYaz(ASiraNo: TISayi4; APCI: PPCI);
+procedure TPCIAygiti.PCIBilgiYaz(ASiraNo: TISayi4; APCIYapi: PPCIYapi);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
   if(ASiraNo >= 0) and (ASiraNo <= USTSINIR_PCIAYGIT) then
-    FPCIAygitListesi[ASiraNo] := APCI;
+    FPCIAygitListesi[ASiraNo] := APCIYapi;
 end;
 
 {==============================================================================
@@ -271,7 +271,7 @@ end;
 {==============================================================================
   pci aygıtının ilk iletişim port değerini alır
  ==============================================================================}
-function TPCIAygiti.IlkPortDegeriniAl(APCI: PPCI): TSayi2;
+function TPCIAygiti.IlkPortDegeriniAl(APCIYapi: PPCIYapi): TSayi2;
 var
   Adres: TSayi1;
   Deger, i: TSayi4;
@@ -281,7 +281,7 @@ begin
   for i := 1 to 6 do
   begin
 
-    Deger := Oku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
+    Deger := Oku4(APCIYapi^.Yol, APCIYapi^.Aygit, APCIYapi^.Islev, Adres);
     if((Deger and 1) = 1) then Exit(Deger and (not %11));
 
     Adres := Adres + 4;
@@ -293,7 +293,7 @@ end;
 {==============================================================================
   pci aygıtının ilk iletişim bellek değerini alır
  ==============================================================================}
- function TPCIAygiti.IlkBellekDegeriniAl(APCI: PPCI): TSayi4;
+ function TPCIAygiti.IlkBellekDegeriniAl(APCIYapi: PPCIYapi): TSayi4;
 var
   Adres: TSayi1;
   Deger, i: TSayi4;
@@ -303,7 +303,7 @@ begin
   for i := 1 to 6 do
   begin
 
-    Deger := Oku4(APCI^.Yol, APCI^.Aygit, APCI^.Islev, Adres);
+    Deger := Oku4(APCIYapi^.Yol, APCIYapi^.Aygit, APCIYapi^.Islev, Adres);
     if((Deger and 1) = 0) then Exit(Deger and (not %1111));
 
     Adres := Adres + 4;
@@ -315,10 +315,10 @@ end;
  {==============================================================================
   pci aygıtının IRQ istek (kesme) numarasını alır
  ==============================================================================}
-function TPCIAygiti.IRQNoAl(APCI: PPCI): TSayi1;
+function TPCIAygiti.IRQNoAl(APCIYapi: PPCIYapi): TSayi1;
 begin
 
-  Result := Oku1(APCI^.Yol, APCI^.Aygit, APCI^.Islev, PCI_KESME_NO) and $FF;
+  Result := Oku1(APCIYapi^.Yol, APCIYapi^.Aygit, APCIYapi^.Islev, PCI_KESME_NO) and $FF;
 end;
 
 end.

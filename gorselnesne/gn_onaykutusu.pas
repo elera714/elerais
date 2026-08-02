@@ -69,7 +69,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PKarakterKatari(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi)^);
     end;
@@ -77,7 +77,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      OnayKutusu := POnayKutusu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      OnayKutusu := POnayKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       OnayKutusu^.Goster;
     end;
   end;
@@ -97,7 +97,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := OnayKutusu^.Kimlik;
+  else Result := OnayKutusu^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -115,14 +115,14 @@ begin
   OnayKutusu := POnayKutusu(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
     Genislik, 16, 0, 0, 0, 0, ABaslik));
 
-  OnayKutusu^.NesneTipi := gntOnayKutusu;
+  OnayKutusu^.F0.NesneTipi := gntOnayKutusu;
 
-  OnayKutusu^.Baslik := ABaslik;
+  OnayKutusu^.F0.Baslik := ABaslik;
 
   OnayKutusu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  OnayKutusu^.Odaklanilabilir := True;
-  OnayKutusu^.Odaklanildi := False;
+  OnayKutusu^.F0.Odaklanilabilir := True;
+  OnayKutusu^.F0.Odaklanildi := False;
 
   OnayKutusu^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -167,7 +167,7 @@ var
   OnayKutusu: POnayKutusu = nil;
 begin
 
-  OnayKutusu := POnayKutusu(GorselNesneler0.NesneAl(Kimlik));
+  OnayKutusu := POnayKutusu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(OnayKutusu = nil) then Exit;
 
   inherited Hizala;
@@ -184,11 +184,11 @@ var
   p1: PSayi1;
 begin
 
-  OnayKutusu := POnayKutusu(GorselNesneler0.NesneAl(Kimlik));
+  OnayKutusu := POnayKutusu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(OnayKutusu = nil) then Exit;
 
   // nesne çizim alanı
-  CizimAlani := OnayKutusu^.FCizimAlani;
+  CizimAlani := OnayKutusu^.F0.FCizimAlani;
 
   CizimAlani.Sag := CizimAlani.Sol + 15;
   CizimAlani.Alt := CizimAlani.Ust + 15;
@@ -218,14 +218,14 @@ begin
   end;
 
   // onay kutusu başlığı
-  if(Length(OnayKutusu^.Baslik) > 0) then
-    YaziYaz(OnayKutusu, CizimAlani.Sag + 3, CizimAlani.Ust + 1, OnayKutusu^.Baslik, RENK_SIYAH);
+  if(Length(OnayKutusu^.F0.Baslik) > 0) then
+    YaziYaz(OnayKutusu, CizimAlani.Sag + 3, CizimAlani.Ust + 1, OnayKutusu^.F0.Baslik, RENK_SIYAH);
 
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
-  if(OnayKutusu^.Odaklanildi) then
+  if(OnayKutusu^.F0.Odaklanildi) then
   begin
 
-    CizimAlani := OnayKutusu^.FCizimAlani;
+    CizimAlani := OnayKutusu^.F0.FCizimAlani;
     OnayKutusu^.Dikdortgen(OnayKutusu, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
@@ -254,7 +254,7 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := OnayKutusu;
-    OnayKutusu^.Odaklanildi := True;
+    OnayKutusu^.F0.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(OnayKutusu^.FareNesneOlayAlanindaMi(OnayKutusu)) then
@@ -294,7 +294,7 @@ begin
       // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
       if not(OnayKutusu^.OlayYonlendirmeAdresi = nil) then
         OnayKutusu^.OlayYonlendirmeAdresi(OnayKutusu, AOlay)
-      else Gorevler0.OlayEkle(OnayKutusu^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(OnayKutusu^.F0.GorevKimlik, AOlay);
 
     // aksi durumda onay kutusu durumunu bir önceki duruma getir
     end else OnayKutusu^.FSecimDurumu := OnayKutusu^.FOncekiSecimDurumu;
@@ -304,7 +304,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := OnayKutusu^.FareImlecTipi;
+  GecerliFareGostegeTipi := OnayKutusu^.F0.FareImlecTipi;
 end;
 
 end.

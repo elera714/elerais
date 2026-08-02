@@ -58,7 +58,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
     end;
@@ -66,7 +66,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      IG := PIslemGostergesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      IG := PIslemGostergesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       IG^.Goster;
     end;
 
@@ -74,7 +74,7 @@ begin
     $010F:
     begin
 
-      IG := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      IG := PIslemGostergesi(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntIslemGostergesi));
       if(IG <> nil) then IG^.DegerleriBelirle(PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
     end;
@@ -83,7 +83,7 @@ begin
     $020F:
     begin
 
-      IG := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      IG := PIslemGostergesi(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntIslemGostergesi));
       if(IG <> nil) then IG^.MevcutDegerYaz(PISayi4(ADegiskenler + 04)^);
     end
@@ -106,7 +106,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := IG^.Kimlik;
+  else Result := IG^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -122,9 +122,9 @@ begin
     AGenislik, AYukseklik, 0, 0, 0, 0, ''));
 
   // görsel nesne tipi
-  IG^.NesneTipi := gntIslemGostergesi;
+  IG^.F0.NesneTipi := gntIslemGostergesi;
 
-  IG^.Baslik := '';
+  IG^.F0.Baslik := '';
 
   IG^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
@@ -174,7 +174,7 @@ var
   IG: PIslemGostergesi;
 begin
 
-  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
+  IG := PIslemGostergesi(GGorselNesneler.NesneAl(F0.Kimlik));
   if(IG = nil) then Exit;
 
   inherited Hizala;
@@ -194,11 +194,11 @@ var
   DegerGosterim: TSayi4;
 begin
 
-  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
+  IG := PIslemGostergesi(GGorselNesneler.NesneAl(F0.Kimlik));
   if(IG = nil) then Exit;
 
   // giriş kutusunun çizim alan koordinatlarını al
-  CizimAlani := IG^.FCizimAlani;
+  CizimAlani := IG^.F0.FCizimAlani;
 
   i1 := (IG^.FUstDeger - IG^.FAltDeger) + 1;
   d1 := (IG^.FMevcutDeger * 100) div i1;
@@ -261,7 +261,7 @@ var
   IG: PIslemGostergesi;
 begin
 
-  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
+  IG := PIslemGostergesi(GGorselNesneler.NesneAl(F0.Kimlik));
 
   IG^.FAltDeger := AAltDeger;
   IG^.FUstDeger := AUstDeger;
@@ -278,7 +278,7 @@ var
   IG: PIslemGostergesi;
 begin
 
-  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
+  IG := PIslemGostergesi(GGorselNesneler.NesneAl(F0.Kimlik));
 
   IG^.FMevcutDeger := AMevcutDeger;
 

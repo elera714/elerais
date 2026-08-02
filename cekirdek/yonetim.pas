@@ -61,7 +61,8 @@ implementation
 
 uses gdt, gorev, src_klavye, genel, ag, dhcp4_i, sistemmesaj, src_vesa20, cmos,
   gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
-  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci, baglanti;
+  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci,
+  baglanti, olayyonetim;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
@@ -77,17 +78,6 @@ var
 begin
 
   GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
-
-  // video bilgilerini al
-  GEkranKartSurucusu.KartBilgisi.BellekUzunlugu := GMBilgi^.GrafikBellekUzunlugu;
-  GEkranKartSurucusu.KartBilgisi.EkranMod := GMBilgi^.GrafikEkranMod;
-  GEkranKartSurucusu.KartBilgisi.YatayCozunurluk := GMBilgi^.GrafikCozunurlukX;
-  GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk := GMBilgi^.GrafikCozunurlukY;
-  GEkranKartSurucusu.KartBilgisi.BellekAdresi := GMBilgi^.GrafikBellekAdresi;
-  //VIDEO_MEM_ADDR;
-  GEkranKartSurucusu.KartBilgisi.PixelBasinaBitSayisi := GMBilgi^.GrafikPxBasinaBit;
-  GEkranKartSurucusu.KartBilgisi.NoktaBasinaByteSayisi := (GMBilgi^.GrafikPxBasinaBit div 8);
-  GEkranKartSurucusu.KartBilgisi.SatirdakiByteSayisi := GMBilgi^.GrafikSatirByteUz;
 
   // çekirdek bilgilerini al
   CekirdekBaslangicAdresi := GMBilgi^.CekirdekBaslangicAdresi;
@@ -215,7 +205,7 @@ var
   Masaustu: PMasaustu;
   GN: PGorselNesne;
   Olay: TOlay;
-  MD: PMDNesne;
+  MD: TMDNesne;
   T: TMyThread;
   G: PGorev;
   DosyaKimlik: TKimlik;
@@ -263,7 +253,7 @@ begin
 
     // klavyeden basýlan tuþu al
     // 2 bytelýk TusDegeri deðiþken deðerinin üst byte'ý kontrol deðeri, alt byte'ý ise karakter deðeridir
-    TusDurum := KlavyedenTusAl(TusDegeri);
+    TusDurum := GKlavye.KlavyedenTusAl(TusDegeri);
     TusKontrolDegeri := (TusDegeri shr 8);
     TusKarakterDegeri := Char(TusDegeri and $FF);
 
@@ -358,8 +348,8 @@ begin
           else if(TusKarakterDegeri = '5') then
           begin
 
-            MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
-            if not(MD = nil) then ELR1DiskBicimle(MD);
+            MD := GMantiksalDepolama.SurucuAl('disk2');
+            if not(MD = nil) then ELR1DiskBicimle(@MD);
           end
           // program çalýþtýrma programýný çalýþtýr
           else if(TusKarakterDegeri = 'c') then
@@ -385,10 +375,10 @@ begin
             begin
 
               GN := GAktifPencere^.FAktifNesne;
-              if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
+              if(GN <> nil) and (GN^.F0.NesneTipi = gntGirisKutusu) then
               begin
 
-                PanoDegeri := GN^.Baslik;
+                PanoDegeri := GN^.F0.Baslik;
               end;
             end;
           end
@@ -411,11 +401,11 @@ begin
             begin
 
               GN := GAktifPencere^.FAktifNesne;
-              if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
+              if(GN <> nil) and (GN^.F0.NesneTipi = gntGirisKutusu) then
               begin
 
                 if(Length(PanoDegeri) > 0) then
-                  GN^.Baslik := PanoDegeri;
+                  GN^.F0.Baslik := PanoDegeri;
               end;
             end;
           end
@@ -447,13 +437,13 @@ begin
           if(TusDegeri = TUS_F4) then
           begin
 
-            Olay.Kimlik := GAktifPencere^.Kimlik;
+            Olay.Kimlik := GAktifPencere^.F0.Kimlik;
             Olay.Olay := CO_SONLANDIR;
             Olay.Deger1 := 0;
             Olay.Deger2 := 0;
             if not(GAktifPencere^.OlayYonlendirmeAdresi = nil) then
               GAktifPencere^.OlayYonlendirmeAdresi(GAktifPencere, Olay)
-            else Gorevler0.OlayEkle(GAktifPencere^.GorevKimlik, Olay);
+            else Gorevler0.OlayEkle(GAktifPencere^.F0.GorevKimlik, Olay);
           end;
         end
         else
@@ -617,12 +607,12 @@ begin
 
           BekleMS(50);
 
-          GN := GorselNesneler0.NesneAl(PPencere(MUGorev^.AktifPencere)^.Kimlik);
+          GN := GGorselNesneler.NesneAl(PPencere(MUGorev^.AktifPencere)^.F0.Kimlik);
 
-          PPencere(GN)^.FAtananAlan.Sol := Konum.Sol;
-          PPencere(GN)^.FAtananAlan.Ust := Konum.Ust;
-          PPencere(GN)^.FAtananAlan.Genislik := Boyut.Genislik;
-          PPencere(GN)^.FAtananAlan.Yukseklik := Boyut.Yukseklik;
+          PPencere(GN)^.F0.FAtananAlan.Sol := Konum.Sol;
+          PPencere(GN)^.F0.FAtananAlan.Ust := Konum.Ust;
+          PPencere(GN)^.F0.FAtananAlan.Genislik := Boyut.Genislik;
+          PPencere(GN)^.F0.FAtananAlan.Yukseklik := Boyut.Yukseklik;
           PPencere(GN)^.Guncelle;
 
           PMasaustu(GN^.AtaNesne)^.Ciz;
@@ -678,8 +668,8 @@ end;
 procedure TYonetim.ListeleriIlkDegerlerleYukle;
 begin
 
-  YaziListesi0.Yukle;
-  SayiListesi0.Yukle;
+  GYaziListeleri := TYaziListeleri.Create;
+  GSayiListeleri := TSayiListeleri.Create;
 end;
 
 end.

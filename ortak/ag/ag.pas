@@ -108,7 +108,7 @@ var
 implementation
 
 uses src_pcnet32, arp, dns, ip4, ip6, sistemmesaj, donusum, islevler, dhcp4_i, dhcp4_s,
-  gorev, http, ftp, lldp_i, udp;
+  gorev, http, ftp, lldp_i, udp, icmp4;
 
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
@@ -194,11 +194,17 @@ begin
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DHCP protokolü yükleniyor...', []);
     DHCPSunucu0 := TDHCPSunucu.Create;
 
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ICMP4 protokolü yükleniyor...', []);
+    GICMP4 := TICMP4.Create;
+
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ HTTP sunucusu yükleniyor...', []);
     HTTPSunucu0 := THTTPSunucu.Create;
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ FTP sunucusu yükleniyor...', []);
     FTPSunucu0 := TFTPSunucu.Create;
+
+    SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ LLDP protokolü yükleniyor...', []);
+    GLLDP := TLLDP.Create;
 
     FAktif := True;
 
@@ -310,7 +316,7 @@ begin
 
         else if(Protokol = PROTOKOL_LLDP) then
 
-          LLDPPaketleriniIsle(EthPaket)
+          GLLDP.PaketleriIsle(EthPaket)
 
         else
         begin

@@ -53,7 +53,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
@@ -62,7 +62,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      DurumCubugu := PDurumCubugu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      DurumCubugu := PDurumCubugu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       DurumCubugu^.Goster;
     end;
 
@@ -70,9 +70,9 @@ begin
     $010F:
     begin
 
-      DurumCubugu := PDurumCubugu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      DurumCubugu := PDurumCubugu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-      DurumCubugu^.Baslik := p1^;
+      DurumCubugu^.F0.Baslik := p1^;
       DurumCubugu^.Ciz;
     end
 
@@ -96,7 +96,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := DurumCubugu^.Kimlik;
+  else Result := DurumCubugu^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -114,18 +114,18 @@ begin
   DurumCubugu := PDurumCubugu(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
     AGenislik, AYukseklik, 2, $D4D0C8, $D4D0C8, 0, ''));
 
-  DurumCubugu^.NesneTipi := gntDurumCubugu;
+  DurumCubugu^.F0.NesneTipi := gntDurumCubugu;
 
-  DurumCubugu^.Baslik := ADurumYazi;
+  DurumCubugu^.F0.Baslik := ADurumYazi;
 
   DurumCubugu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  DurumCubugu^.Odaklanilabilir := False;
-  DurumCubugu^.Odaklanildi := False;
+  DurumCubugu^.F0.Odaklanilabilir := False;
+  DurumCubugu^.F0.Odaklanildi := False;
 
   DurumCubugu^.OlayCagriAdresi := @OlaylariIsle;
 
-  DurumCubugu^.FHiza := hzAlt;                        // alta hizala
+  DurumCubugu^.F0.FHiza := hzAlt;                        // alta hizala
 
   // nesne adresini geri döndür
   Result := DurumCubugu;
@@ -166,7 +166,7 @@ var
   DurumCubugu: PDurumCubugu;
 begin
 
-  DurumCubugu := PDurumCubugu(GorselNesneler0.NesneAl(Kimlik));
+  DurumCubugu := PDurumCubugu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(DurumCubugu = nil) then Exit;
 
   inherited Hizala;
@@ -183,13 +183,13 @@ var
   Sol, Ust, Yatay, Dikey: TISayi4;
 begin
 
-  DurumCubugu := PDurumCubugu(GorselNesneler0.NesneAl(Kimlik));
+  DurumCubugu := PDurumCubugu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(DurumCubugu = nil) then Exit;
 
   inherited Ciz;
 
   // durum çubuğunun çizim alan koordinatlarını al
-  CizimAlani := DurumCubugu^.FCizimAlani;
+  CizimAlani := DurumCubugu^.F0.FCizimAlani;
 
   Yatay := CizimAlani.Sag - 12 - 1;
   Dikey := CizimAlani.Alt - 12 - 1;
@@ -207,7 +207,7 @@ begin
   end;
 
   // durum çubuğu başlığı
-  YaziYaz(DurumCubugu, CizimAlani.Sol + 3, CizimAlani.Ust + 2, DurumCubugu^.Baslik, RENK_SIYAH);
+  YaziYaz(DurumCubugu, CizimAlani.Sol + 3, CizimAlani.Ust + 2, DurumCubugu^.F0.Baslik, RENK_SIYAH);
 end;
 
 {==============================================================================
@@ -249,7 +249,7 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(DurumCubugu^.OlayYonlendirmeAdresi = nil) then
         DurumCubugu^.OlayYonlendirmeAdresi(DurumCubugu, AOlay)
-      else Gorevler0.OlayEkle(DurumCubugu^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(DurumCubugu^.F0.GorevKimlik, AOlay);
     end;
 
     // fare olaylarını almayı bırak
@@ -257,7 +257,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := DurumCubugu^.FareImlecTipi;
+  GecerliFareGostegeTipi := DurumCubugu^.F0.FareImlecTipi;
 end;
 
 end.

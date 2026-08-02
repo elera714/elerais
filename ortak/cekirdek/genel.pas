@@ -17,8 +17,6 @@ interface
 uses gercekbellek, src_vesa20, src_ps2, paylasim, olayyonetim, gorselnesne, gn_masaustu, dns;
 
 var
-  GOlayYonetim: TOlayYonetim;
-  GIslemciBilgisi: TIslemciBilgisi;
   GAktifMasaustu: PMasaustu;
   GAktifMenu: PGorselNesne;             // PMenu veya PAcilirMenu
 

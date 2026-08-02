@@ -77,11 +77,11 @@ type
   end;
 
 var
-  UHCIAygit: PPCI = nil;
+  UHCIAygit: PPCIYapi = nil;
   PortNo: TSayi2;
   UHCI_CERCEVE_ADRESI: TSayi4 = (14 * 1024 * 1024);
 
-procedure Yukle(APCI: PPCI);
+procedure Yukle(APCIYapi: PPCIYapi);
 procedure UHCIAygitBilgileriniGoster;
 procedure USBSifirla;
 procedure PaketGonder;
@@ -90,10 +90,10 @@ implementation
 
 uses sistemmesaj, port;
 
-procedure Yukle(APCI: PPCI);
+procedure Yukle(APCIYapi: PPCIYapi);
 begin
 
-  UHCIAygit := APCI;
+  UHCIAygit := APCIYapi;
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '  -> USB:UHCI kontrol aygýtý bulundu...', []);
 end;
 

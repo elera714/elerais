@@ -61,7 +61,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PSayi4(ADegiskenler + 20)^,
         PRenk(ADegiskenler + 24)^, PRenk(ADegiskenler + 28)^, PRenk(ADegiskenler + 32)^,
@@ -71,16 +71,16 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Panel := PPanel(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Panel := PPanel(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Panel^.Goster;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      Panel := PPanel(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Panel := PPanel(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
-      Panel^.FHiza := Hiza;
+      Panel^.F0.FHiza := Hiza;
 
       Pencere := PPencere(Panel^.FAtaNesne);
       Pencere^.Guncelle;
@@ -90,16 +90,16 @@ begin
     $010E:
     begin
 
-      Panel := PPanel(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Panel := PPanel(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(Panel <> nil) then
       begin
 
         Konum := PKonum(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-        Konum^.Sol := Panel^.FAtananAlan.Sol;
-        Konum^.Ust := Panel^.FAtananAlan.Ust;
-        Boyut^.Genislik := Panel^.FAtananAlan.Genislik;
-        Boyut^.Yukseklik := Panel^.FAtananAlan.Yukseklik;
+        Konum^.Sol := Panel^.F0.FAtananAlan.Sol;
+        Konum^.Ust := Panel^.F0.FAtananAlan.Ust;
+        Boyut^.Genislik := Panel^.F0.FAtananAlan.Genislik;
+        Boyut^.Yukseklik := Panel^.F0.FAtananAlan.Yukseklik;
       end;
     end
 
@@ -123,7 +123,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Panel^.Kimlik;
+  else Result := Panel^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -143,8 +143,8 @@ begin
     Panel^.FTuvalNesne := Panel
   else Panel^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  Panel^.Odaklanilabilir := False;
-  Panel^.Odaklanildi := False;
+  Panel^.F0.Odaklanilabilir := False;
+  Panel^.F0.Odaklanildi := False;
 
   Panel^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -158,7 +158,7 @@ end;
 procedure TPanel.YokEt(AKimlik: TKimlik);
 begin
 
-  GorselNesneler0.YokEt(AKimlik);
+  GGorselNesneler.YokEt(AKimlik);
 end;
 
 {==============================================================================
@@ -190,28 +190,28 @@ var
   i: TSayi4;
 begin
 
-  Panel := PPanel(GorselNesneler0.NesneAl(Kimlik));
+  Panel := PPanel(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Panel = nil) then Exit;
 
   inherited Hizala;
 
   // panel alt nesnelerini yeniden boyutlandır
-  if(Panel^.AltNesneSayisi > 0) then
+  if(Panel^.F0.AltNesneSayisi > 0) then
   begin
 
-    GNBellekAdresi := Panel^.AltNesneBellekAdresi;
+    GNBellekAdresi := Panel^.F0.AltNesneBellekAdresi;
 
     // ilk oluşturulan alt nesneden son oluşturulan alt nesneye doğru
     // panelin alt nesnelerini yeniden boyutlandır
-    for i := 0 to Panel^.AltNesneSayisi - 1 do
+    for i := 0 to Panel^.F0.AltNesneSayisi - 1 do
     begin
 
       GorunurNesne := GNBellekAdresi[i];
-      if(GorunurNesne^.Gorunum) then
+      if(GorunurNesne^.F0.Gorunum) then
       begin
 
         // yeni eklenecek görsel nesne - görsel nesneyi buraya ekle...
-        case GorunurNesne^.NesneTipi of
+        case GorunurNesne^.F0.NesneTipi of
           //gntAcilirMenu     :
           gntAracCubugu     : PAracCubugu(GorunurNesne)^.Hizala;
           gntBaglanti       : PBaglanti(GorunurNesne)^.Hizala;
@@ -256,27 +256,27 @@ var
   i: TSayi4;
 begin
 
-  GN := GorselNesneler0.NesneAl(Kimlik);
+  GN := GGorselNesneler.NesneAl(F0.Kimlik);
   if(GN = nil) then Exit;
 
   inherited Ciz;
 
-  if(GN^.AltNesneSayisi = 0) then Exit;
+  if(GN^.F0.AltNesneSayisi = 0) then Exit;
 
-  GNBellekAdresi := GN^.AltNesneBellekAdresi;
+  GNBellekAdresi := GN^.F0.AltNesneBellekAdresi;
 
   // mevcut görsel nesneyi kaydet
-  for i := 0 to GN^.AltNesneSayisi - 1 do
+  for i := 0 to GN^.F0.AltNesneSayisi - 1 do
   begin
 
     AltGorselNesne := GNBellekAdresi[i];
 
-    if(AltGorselNesne^.Gorunum) then
+    if(AltGorselNesne^.F0.Gorunum) then
     begin
 
       // yeni eklenecek görsel nesne - görsel nesneyi buraya ekle...
       // panelin altında olabilecek tüm nesneler
-      case AltGorselNesne^.NesneTipi of
+      case AltGorselNesne^.F0.NesneTipi of
         //gntAcilirMenu     :
         gntAracCubugu     : PAracCubugu(AltGorselNesne)^.Ciz;
         gntBaglanti       : PBaglanti(AltGorselNesne)^.Ciz;
@@ -347,7 +347,7 @@ begin
       // fare mesajlarını panel nesnesine yönlendir
       OlayYakalamayaBasla(Panel);
 
-      Gorevler0.OlayEkle(Panel^.GorevKimlik, AOlay);
+      Gorevler0.OlayEkle(Panel^.F0.GorevKimlik, AOlay);
     end;
   end
 
@@ -364,21 +364,21 @@ begin
 
       // uygulamaya veya efendi nesneye mesaj gönder
       AOlay.Olay := FO_TIKLAMA;
-      Gorevler0.OlayEkle(Panel^.GorevKimlik, AOlay);
+      Gorevler0.OlayEkle(Panel^.F0.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
-    Gorevler0.OlayEkle(Panel^.GorevKimlik, AOlay);
+    Gorevler0.OlayEkle(Panel^.F0.GorevKimlik, AOlay);
   end
   else
   begin
 
-    //GorevListesi[Panel^.GorevKimlik]^.OlayEkle(Panel^.GorevKimlik, AOlay);
+    //GorevListesi[Panel^.F0.GorevKimlik]^.OlayEkle(Panel^.F0.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Panel^.FareImlecTipi;
+  GecerliFareGostegeTipi := Panel^.F0.FareImlecTipi;
 end;
 
 end.

@@ -64,7 +64,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
@@ -73,14 +73,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Dugme^.Goster;
     end;
 
     ISLEV_GIZLE:
     begin
 
-      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Pencere := PPencere(Dugme^.AtaNesne);
 
       Dugme^.Gizle;
@@ -91,16 +91,16 @@ begin
     ISLEV_BOYUTLANDIR:
     begin
 
-      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(Dugme <> nil) then
       begin
 
         Konum := PKonum(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-        Dugme^.FIlkAtananAlan.Sol := Konum^.Sol;
-        Dugme^.FIlkAtananAlan.Ust := Konum^.Ust;
-        Dugme^.FIlkAtananAlan.Genislik := Boyut^.Genislik;
-        Dugme^.FIlkAtananAlan.Yukseklik := Boyut^.Yukseklik;
+        Dugme^.F0.FIlkAtananAlan.Sol := Konum^.Sol;
+        Dugme^.F0.FIlkAtananAlan.Ust := Konum^.Ust;
+        Dugme^.F0.FIlkAtananAlan.Genislik := Boyut^.Genislik;
+        Dugme^.F0.FIlkAtananAlan.Yukseklik := Boyut^.Yukseklik;
 
         Pencere := PPencere(Dugme^.AtaNesne);
         Pencere^.Ciz;
@@ -110,19 +110,19 @@ begin
     ISLEV_YOKET:
     begin
 
-      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Pencere := PPencere(Dugme^.AtaNesne);
 
-      GorselNesneler0.YokEt(Dugme^.Kimlik);
+      GGorselNesneler.YokEt(Dugme^.F0.Kimlik);
       Pencere^.Ciz;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
-      Dugme^.FHiza := Hiza;
+      Dugme^.F0.FHiza := Hiza;
 
       Pencere := PPencere(Dugme^.FAtaNesne);
 
@@ -132,9 +132,9 @@ begin
     $010F:
     begin
 
-      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if not(Dugme = nil) then
-        Dugme^.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
+        Dugme^.F0.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
 
       Dugme^.Ciz;
     end;
@@ -143,18 +143,18 @@ begin
     $020F:
     begin
 
-      Dugme := PDugme(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := PDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
 
-      if(Dugme <> nil) and (Dugme^.NesneTipi = gntDugme) then
+      if(Dugme <> nil) and (Dugme^.F0.NesneTipi = gntDugme) then
       begin
 
         // bir önceki odak alan nesneyi odaktan çıkar
         GN := PPencere(Dugme^.AtaNesne)^.FAktifNesne;
-        if(GN <> nil) and (GN^.Odaklanilabilir) then GN^.Odaklanildi := False;
+        if(GN <> nil) and (GN^.F0.Odaklanilabilir) then GN^.F0.Odaklanildi := False;
 
         // nelirtilen nesneyi odaklanılan nesne olarak belirle
         PPencere(Dugme^.AtaNesne)^.FAktifNesne := Dugme;
-        Dugme^.Odaklanildi := True;
+        Dugme^.F0.Odaklanildi := True;
       end;
     end;
 
@@ -177,7 +177,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Dugme^.Kimlik;
+  else Result := Dugme^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -194,14 +194,14 @@ begin
     ABaslik));
 
   // görsel nesne tipi
-  Dugme^.NesneTipi := gntDugme;
+  Dugme^.F0.NesneTipi := gntDugme;
 
-  Dugme^.Baslik := ABaslik;
+  Dugme^.F0.Baslik := ABaslik;
 
   Dugme^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  Dugme^.Odaklanilabilir := True;
-  Dugme^.Odaklanildi := False;
+  Dugme^.F0.Odaklanilabilir := True;
+  Dugme^.F0.Odaklanildi := False;
 
   Dugme^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -253,7 +253,7 @@ var
   Dugme: PDugme = nil;
 begin
 
-  Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
+  Dugme := PDugme(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Dugme = nil) then Exit;
 
   inherited Hizala;
@@ -268,7 +268,7 @@ var
   CizimAlani: TAlan;
 begin
 
-  Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
+  Dugme := PDugme(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Dugme = nil) then Exit;
 
   // düğme başlığı
@@ -279,10 +279,10 @@ begin
   inherited Ciz;
 
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
-  if(Dugme^.Odaklanildi) then
+  if(Dugme^.F0.Odaklanildi) then
   begin
 
-    CizimAlani := Dugme^.FCizimAlani;
+    CizimAlani := Dugme^.F0.FCizimAlani;
     Dugme^.Dikdortgen(Dugme, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
@@ -311,7 +311,7 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := Dugme;
-    Dugme^.Odaklanildi := True;
+    Dugme^.F0.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(Dugme^.FareNesneOlayAlanindaMi(Dugme)) then
@@ -329,7 +329,7 @@ begin
       // uygulamaya veya efendi nesneye mesaj gönder
       if not(Dugme^.OlayYonlendirmeAdresi = nil) then
         Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-      else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Dugme^.F0.GorevKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -353,14 +353,14 @@ begin
       AOlay.Olay := FO_TIKLAMA;
       if not(Dugme^.OlayYonlendirmeAdresi = nil) then
         Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-      else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Dugme^.F0.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
     if not(Dugme^.OlayYonlendirmeAdresi = nil) then
       Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-    else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Dugme^.F0.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -384,7 +384,7 @@ begin
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Dugme^.OlayYonlendirmeAdresi = nil) then
       Dugme^.OlayYonlendirmeAdresi(Dugme, AOlay)
-    else Gorevler0.OlayEkle(Dugme^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(Dugme^.F0.GorevKimlik, AOlay);
   end
   // nesnenin odağı kaybetmesi durumu
   else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
@@ -398,7 +398,7 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := nil;
-    Dugme^.Odaklanildi := False;
+    Dugme^.F0.Odaklanildi := False;
 
     // düğme'nin durumunu BASILI olarak belirle
     Dugme^.FDurum := ddNormal;
@@ -418,7 +418,7 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := Dugme;
-    Dugme^.Odaklanildi := True;
+    Dugme^.F0.Odaklanildi := True;
 
     // düğme'nin durumunu BASILI olarak belirle
     Dugme^.FDurum := ddBasili;
@@ -428,7 +428,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Dugme^.FareImlecTipi;
+  GecerliFareGostegeTipi := Dugme^.F0.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -441,7 +441,7 @@ var
 begin
 
   // kimlik değerinden nesneyi al
-  Dugme := PDugme(GorselNesneler0.NesneAl(Kimlik));
+  Dugme := PDugme(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Dugme = nil) then Exit;
 
   Dugme^.DolguluCizim := ADolguluCizim;

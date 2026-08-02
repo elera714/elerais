@@ -44,10 +44,10 @@ begin
   begin
 
     // nesneyi kontrol et
-    GN := GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
+    GN := GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
     if(GN = nil) then Exit;
 
-    Alan := GN^.CizimAlaniniAl2(GN^.Kimlik);
+    Alan := GN^.CizimAlaniniAl2(GN^.F0.Kimlik);
     Sol := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     Ust := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
 
@@ -63,7 +63,7 @@ begin
   begin
 
     // nesneyi kontrol et
-    GN := GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
+    GN := GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
     if(GN = nil) then Exit;
 
     Alan := GN^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
@@ -98,7 +98,7 @@ begin
   begin
 
     // nesneyi kontrol et
-    GN := GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
+    GN := GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
     if(GN = nil) then Exit;
 
     Alan := GN^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
@@ -115,7 +115,7 @@ begin
   begin
 
     // nesneyi kontrol et
-    GN := GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
+    GN := GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
     if(GN = nil) then Exit;
 
     Alan := GN^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);

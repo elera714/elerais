@@ -70,7 +70,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := PAcilirMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
       if(AcilirMenu <> nil) then AcilirMenu^.Goster;
     end;
@@ -79,7 +79,7 @@ begin
     ISLEV_GIZLE:
     begin
 
-      AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := PAcilirMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
       if(AcilirMenu <> nil) then AcilirMenu^.Gizle;
     end;
@@ -88,7 +88,7 @@ begin
     $010F:
     begin
 
-      AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := PAcilirMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
 
       AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
@@ -103,7 +103,7 @@ begin
     $020E:
     begin
 
-      AcilirMenu := PAcilirMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := PAcilirMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
       if(AcilirMenu <> nil) then Result := AcilirMenu^.SeciliSiraNo
     end;
@@ -127,7 +127,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := AcilirMenu^.Kimlik;
+  else Result := AcilirMenu^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -176,7 +176,7 @@ begin
 
   inherited Goster;
 
-  AcilirMenu := PAcilirMenu(GorselNesneler0.NesneAl(Kimlik));
+  AcilirMenu := PAcilirMenu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   if(AcilirMenu^.FYardimciNesne) then
@@ -187,18 +187,18 @@ begin
   begin
 
     // menüyü farenin bulunduğu konumda görüntüle
-    AcilirMenu^.FAtananAlan.Sol := GFareSurucusu.YatayKonum;
-    AcilirMenu^.FAtananAlan.Ust := GFareSurucusu.DikeyKonum;
+    AcilirMenu^.F0.FAtananAlan.Sol := GFareSurucusu.YatayKonum;
+    AcilirMenu^.F0.FAtananAlan.Ust := GFareSurucusu.DikeyKonum;
   end;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := AcilirMenu^.Kimlik;
+  Olay.Kimlik := AcilirMenu^.F0.Kimlik;
   Olay.Olay := CO_MENUACILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
   if not(AcilirMenu^.FMenuOlayGeriDonusAdresi = nil) then
     AcilirMenu^.FMenuOlayGeriDonusAdresi(AcilirMenu, Olay)
-  else Gorevler0.OlayEkle(AcilirMenu^.GorevKimlik, Olay);
+  else Gorevler0.OlayEkle(AcilirMenu^.F0.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -212,17 +212,17 @@ begin
 
   inherited Gizle;
 
-  AcilirMenu := PAcilirMenu(GorselNesneler0.NesneAl(Kimlik));
+  AcilirMenu := PAcilirMenu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(AcilirMenu = nil) then Exit;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := AcilirMenu^.Kimlik;
+  Olay.Kimlik := AcilirMenu^.F0.Kimlik;
   Olay.Olay := CO_MENUKAPATILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
   if not(AcilirMenu^.FMenuOlayGeriDonusAdresi = nil) then
     AcilirMenu^.FMenuOlayGeriDonusAdresi(AcilirMenu, Olay)
-  else Gorevler0.OlayEkle(AcilirMenu^.GorevKimlik, Olay);
+  else Gorevler0.OlayEkle(AcilirMenu^.F0.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -265,7 +265,7 @@ begin
 
   if not(AcilirMenu^.FAcilirMenuOlayGeriDonusAdresi = nil) then
     AcilirMenu^.FAcilirMenuOlayGeriDonusAdresi(AcilirMenu, AOlay)
-  else Gorevler0.OlayEkle(AcilirMenu^.GorevKimlik, AOlay);
+  else Gorevler0.OlayEkle(AcilirMenu^.F0.GorevKimlik, AOlay);
 end;
 
 {==============================================================================
@@ -278,13 +278,13 @@ var
   i: TISayi4;
 begin
 
-  AcilirMenu := PAcilirMenu(GorselNesneler0.NesneAl(Kimlik));
+  AcilirMenu := PAcilirMenu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(AcilirMenu = nil) then Exit(False);
 
-  AcilirMenu^.FMenuBaslikListesi^.Ekle(ADeger);
+  AcilirMenu^.FMenuBaslikListesi.Ekle(ADeger);
 
   // AResimSiraNo = -1 = menünün resmi yok
-  if(AResimSiraNo > -1) then AcilirMenu^.FMenuResimListesi^.Ekle(AResimSiraNo);
+  if(AResimSiraNo > -1) then AcilirMenu^.FMenuResimListesi.Ekle(AResimSiraNo);
 
   // menü genişliğini ve yüksekliğini değiştir
   if(AMenuBoyutDegistir) then
@@ -293,13 +293,13 @@ begin
     // genişliğin yeniden belirlenmesi
     i := Length(ADeger) * 8;
     if(i > 100) then i := 100;
-    if(i > AcilirMenu^.FAtananAlan.Genislik) then AcilirMenu^.FAtananAlan.Genislik := i;
+    if(i > AcilirMenu^.F0.FAtananAlan.Genislik) then AcilirMenu^.F0.FAtananAlan.Genislik := i;
 
     // yüksekliğin yeniden belirlenmesi. en fazla 5 eleman görüntülenebilir
-    i := AcilirMenu^.FMenuBaslikListesi^.ElemanSayisi;
+    i := AcilirMenu^.FMenuBaslikListesi.ElemanSayisi;
     if(i > 5) then i := 5;
     i := i * 24;
-    if(i > AcilirMenu^.FAtananAlan.Yukseklik) then AcilirMenu^.FAtananAlan.Yukseklik := i;
+    if(i > AcilirMenu^.F0.FAtananAlan.Yukseklik) then AcilirMenu^.F0.FAtananAlan.Yukseklik := i;
   end;
 
   AcilirMenu^.Boyutlandir;
@@ -315,11 +315,11 @@ var
   AcilirMenu: PAcilirMenu = nil;
 begin
 
-  AcilirMenu := PAcilirMenu(GorselNesneler0.NesneAl(Kimlik));
+  AcilirMenu := PAcilirMenu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(AcilirMenu = nil) then Exit;
 
-  AcilirMenu^.FMenuBaslikListesi^.Temizle;
-  AcilirMenu^.FMenuResimListesi^.Temizle;
+  AcilirMenu^.FMenuBaslikListesi.Temizle;
+  AcilirMenu^.FMenuResimListesi.Temizle;
 end;
 
 end.

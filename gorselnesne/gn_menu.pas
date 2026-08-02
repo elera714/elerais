@@ -23,8 +23,8 @@ type
     // menünün olay işlemesinden sonra olay değerlerini almak isteyen
     // nesne varsa bu değişkene atamasını gerçekleştirmesi gerekmeketdir.
     FMenuOlayGeriDonusAdresi: TOlaylariIsle;
-    FMenuBaslikListesi: PYaziListesi;
-    FMenuResimListesi: PSayiListesi;
+    FMenuBaslikListesi: TYaziListesi;
+    FMenuResimListesi: TSayiListesi;
     function Olustur(AAtaNesne: PGorselNesne; AGNTip: TGNTip; ASol, AUst,
       AGenislik, AYukseklik, AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi: TRenk): PMenu;
     procedure YokEt(AKimlik: TKimlik);
@@ -75,7 +75,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      Menu := PMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      Menu := PMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
       if(Menu <> nil) then Menu^.Goster;
     end;
 
@@ -83,7 +83,7 @@ begin
     ISLEV_GIZLE:
     begin
 
-      Menu := PMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      Menu := PMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
       if(Menu <> nil) then Menu^.Gizle;
     end;
 
@@ -91,7 +91,7 @@ begin
     $010F:
     begin
 
-      Menu := PMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      Menu := PMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
 
       AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
       AResimSiraNo := PISayi4(ADegiskenler + 08)^;
@@ -99,8 +99,8 @@ begin
       if(Menu <> nil) then
       begin
 
-        Menu^.FMenuBaslikListesi^.Ekle(AElemanAdi);
-        Menu^.FMenuResimListesi^.Ekle(AResimSiraNo);
+        Menu^.FMenuBaslikListesi.Ekle(AElemanAdi);
+        Menu^.FMenuResimListesi.Ekle(AResimSiraNo);
         Result := 1;
       end else Result := 0;
     end;
@@ -109,7 +109,7 @@ begin
     $020E:
     begin
 
-      Menu := PMenu(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      Menu := PMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
       if(Menu <> nil) then Result := Menu^.SeciliSiraNo
     end
 
@@ -133,7 +133,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := Menu^.Kimlik;
+  else Result := Menu^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -143,16 +143,16 @@ function TMenu.Olustur(AAtaNesne: PGorselNesne; AGNTip: TGNTip; ASol, AUst,
   AGenislik, AYukseklik, AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi: TRenk): PMenu;
 var
   Menu: PMenu = nil;
-  MenuBaslikListesi: PYaziListesi;
-  MenuResimListesi: PSayiListesi;
+  MenuBaslikListesi: TYaziListesi;
+  MenuResimListesi: TSayiListesi;
 begin
 
   Menu := PMenu(inherited Olustur(ktTuvalNesne, AAtaNesne, ASol, AUst,
     AGenislik, AYukseklik, 2, AKenarlikRengi, AGovdeRengi, 0, ''));
 
-  Menu^.NesneTipi := AGNTip;
+  Menu^.F0.NesneTipi := AGNTip;
 
-  Menu^.Baslik := '';
+  Menu^.F0.Baslik := '';
 
   Menu^.FTuvalNesne := Menu;
 
@@ -165,29 +165,29 @@ begin
 
   Menu^.ElemanYukseklik := AElemanYukseklik;
 
-  Menu^.FCizimBaslangic.Sol := 0;
-  Menu^.FCizimBaslangic.Ust := 0;
+  Menu^.F0.FCizimBaslangic.Sol := 0;
+  Menu^.F0.FCizimBaslangic.Ust := 0;
 
   // menü çizimi için bellekte yer ayır
   Menu^.FCizimBellekAdresi := nil;
 
-  Menu^.FCizimBellekUzunlugu := (Menu^.FAtananAlan.Genislik * Menu^.FAtananAlan.Yukseklik) * 4;
+  Menu^.FCizimBellekUzunlugu := (Menu^.F0.FAtananAlan.Genislik * Menu^.F0.FAtananAlan.Yukseklik) * 4;
   Menu^.FCizimBellekAdresi := GetMem(Menu^.FCizimBellekUzunlugu);
   if(Menu^.FCizimBellekAdresi = nil) then
   begin
 
     // hata olması durumunda nesneyi yok et ve işlevden çık
-    Menu^.YokEt(Menu^.Kimlik);
+    Menu^.YokEt(Menu^.F0.Kimlik);
     Result := nil;
     Exit;
   end;
 
   Menu^.FMenuBaslikListesi := nil;
-  MenuBaslikListesi := YaziListesi0.Olustur;
+  MenuBaslikListesi := GYaziListeleri.Olustur;
   if(MenuBaslikListesi <> nil) then Menu^.FMenuBaslikListesi := MenuBaslikListesi;
 
   Menu^.FMenuResimListesi := nil;
-  MenuResimListesi := SayiListesi0.Olustur;
+  MenuResimListesi := GSayiListeleri.Olustur;
   if(MenuResimListesi <> nil) then Menu^.FMenuResimListesi := MenuResimListesi;
 
   // nesnenin kullanacağı diğer değerler
@@ -206,11 +206,11 @@ var
   Menu: PMenu = nil;
 begin
 
-  Menu := PMenu(GorselNesneler0.NesneAl(AKimlik));
+  Menu := PMenu(GGorselNesneler.NesneAl(AKimlik));
   if(Menu = nil) then Exit;
 
-  if(Menu^.FMenuBaslikListesi <> nil) then YaziListesi0.YokEt(Menu^.FMenuBaslikListesi^.Kimlik);
-  if(Menu^.FMenuResimListesi <> nil) then SayiListesi0.YokEt(Menu^.FMenuResimListesi^.Kimlik);
+  if(Menu^.FMenuBaslikListesi <> nil) then GYaziListeleri.YokEt(Menu^.FMenuBaslikListesi.Kimlik);
+  if(Menu^.FMenuResimListesi <> nil) then GSayiListeleri.YokEt(Menu^.FMenuResimListesi.Kimlik);
 
   if(Menu^.FCizimBellekAdresi <> nil) then FreeMem(Menu^.FCizimBellekAdresi, Menu^.FCizimBellekUzunlugu);
 
@@ -228,7 +228,7 @@ begin
 
   inherited Goster;
 
-  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
+  Menu := PMenu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Menu = nil) then Exit;
 
   GAktifMenu := Menu;
@@ -237,13 +237,13 @@ begin
   Menu^.SeciliSiraNo := -1;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := Menu^.Kimlik;
+  Olay.Kimlik := Menu^.F0.Kimlik;
   Olay.Olay := CO_MENUACILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
   if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
     Menu^.FMenuOlayGeriDonusAdresi(Menu, Olay)
-  else Gorevler0.OlayEkle(Menu^.GorevKimlik, Olay);
+  else Gorevler0.OlayEkle(Menu^.F0.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -259,17 +259,17 @@ begin
 
   GAktifMenu := nil;
 
-  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
+  Menu := PMenu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Menu = nil) then Exit;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := Menu^.Kimlik;
+  Olay.Kimlik := Menu^.F0.Kimlik;
   Olay.Olay := CO_MENUKAPATILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
   if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
     Menu^.FMenuOlayGeriDonusAdresi(Menu, Olay)
-  else Gorevler0.OlayEkle(Menu^.GorevKimlik, Olay);
+  else Gorevler0.OlayEkle(Menu^.F0.GorevKimlik, Olay);
 end;
 
 {==============================================================================
@@ -289,13 +289,13 @@ var
   Menu: PMenu = nil;
 begin
 
-  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
+  Menu := PMenu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Menu = nil) then Exit;
 
-  Menu^.FCizimAlani.Sol := 0;
-  Menu^.FCizimAlani.Ust := 0;
-  Menu^.FCizimAlani.Sag := Menu^.FAtananAlan.Genislik - 1;
-  Menu^.FCizimAlani.Alt := Menu^.FAtananAlan.Yukseklik - 1;
+  Menu^.F0.FCizimAlani.Sol := 0;
+  Menu^.F0.FCizimAlani.Ust := 0;
+  Menu^.F0.FCizimAlani.Sag := Menu^.F0.FAtananAlan.Genislik - 1;
+  Menu^.F0.FCizimAlani.Alt := Menu^.F0.FAtananAlan.Yukseklik - 1;
 
   // önceki ayrılan bellek bölgesini serbest bırak
   if(Menu^.FCizimBellekAdresi <> nil) then
@@ -306,13 +306,13 @@ begin
   end;
 
   // menü çizimi için bellekte yer ayır
-  Menu^.FCizimBellekUzunlugu := (Menu^.FAtananAlan.Genislik * Menu^.FAtananAlan.Yukseklik) * 4;
+  Menu^.FCizimBellekUzunlugu := (Menu^.F0.FAtananAlan.Genislik * Menu^.F0.FAtananAlan.Yukseklik) * 4;
   Menu^.FCizimBellekAdresi := GetMem(Menu^.FCizimBellekUzunlugu);
   if(Menu^.FCizimBellekAdresi = nil) then
   begin
 
     // hata olması durumunda nesneyi yok et ve işlevden çık
-    Menu^.YokEt(Menu^.Kimlik);
+    Menu^.YokEt(Menu^.F0.Kimlik);
     Exit;
   end;
 end;
@@ -323,8 +323,8 @@ end;
 procedure TMenu.Ciz;
 var
   Menu: PMenu = nil;
-  YL: PYaziListesi;
-  SL: PSayiListesi;
+  YL: TYaziListesi;
+  SL: TSayiListesi;
   CizimAlani: TAlan;
   SiraNo, Sol, Ust, Genislik,
   MenudekiElemanSayisi: TISayi4;
@@ -334,21 +334,21 @@ begin
 
   inherited Ciz;
 
-  Menu := PMenu(GorselNesneler0.NesneAl(Kimlik));
+  Menu := PMenu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(Menu = nil) then Exit;
 
   // menü nesnesinin çizim alan koordinatlarını al
-  CizimAlani := Menu^.FCizimAlani;
+  CizimAlani := Menu^.F0.FCizimAlani;
 
   YL := Menu^.FMenuBaslikListesi;
   SL := Menu^.FMenuResimListesi;
 
   // nesnenin elemanı var mı ?
-  if(YL^.ElemanSayisi > 0) then
+  if(YL.ElemanSayisi > 0) then
   begin
 
     // ElemanSayisi değerinin 0 olması resim kullanılmayacağını belirtir
-    if(SL^.ElemanSayisi = 0) then
+    if(SL.ElemanSayisi = 0) then
       ResimCiz := False
     else ResimCiz := True;
 
@@ -369,16 +369,16 @@ begin
     Ust := CizimAlani.Ust + 08;           // 08 = dikey ortalama için
 
     // menü kutusunda görüntülenecek eleman sayısı
-    if(YL^.ElemanSayisi > Menu^.FMenuBaslikListesi^.ElemanSayisi) then
-      MenudekiElemanSayisi := Menu^.FMenuBaslikListesi^.ElemanSayisi + Menu^.IlkSiraNo
-    else MenudekiElemanSayisi := YL^.ElemanSayisi + Menu^.IlkSiraNo;
+    if(YL.ElemanSayisi > Menu^.FMenuBaslikListesi.ElemanSayisi) then
+      MenudekiElemanSayisi := Menu^.FMenuBaslikListesi.ElemanSayisi + Menu^.IlkSiraNo
+    else MenudekiElemanSayisi := YL.ElemanSayisi + Menu^.IlkSiraNo;
 
     // menü içerisini elemanlarla doldurma işlemi
     for SiraNo := Menu^.IlkSiraNo to MenudekiElemanSayisi - 1 do
     begin
 
       // belirtilen elemanın karakter katar değerini al
-      s := YL^.Yazi[SiraNo];
+      s := YL.Yazi[SiraNo];
 
       // elemanın seçili olması durumunda seçili olduğunu belirt
       // belirtilen sıra seçili değilse sadece eleman değerini yaz
@@ -394,7 +394,7 @@ begin
       begin
 
         // menü resmini çiz
-        if(SiraNo >= 0) and (SiraNo <= 15) then KaynaktanResimCiz2(Menu, 4, Ust - 4, SL^.Sayi[SiraNo]);
+        if(SiraNo >= 0) and (SiraNo <= 15) then KaynaktanResimCiz2(Menu, 4, Ust - 4, SL.Sayi[SiraNo]);
       end;
 
       // bir sonraki eleman...
@@ -426,18 +426,18 @@ begin
       OlayYakalamayaBasla(Menu);
 
       // fare basım işleminin gerçekleştiği menü sıra numarası
-      if(Menu^.FMenuBaslikListesi^.ElemanSayisi > 0) then
+      if(Menu^.FMenuBaslikListesi.ElemanSayisi > 0) then
         Menu^.SeciliSiraNo := (AOlay.Deger2 - 4) div Menu^.ElemanYukseklik
       else Menu^.SeciliSiraNo := -1;
 
       // menüyü gizle
-      Menu^.Gorunum := False;
+      Menu^.F0.Gorunum := False;
 
       // uygulamaya veya efendi nesneye mesaj gönder
       AOlay.Olay := FO_TIKLAMA;
       if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
         Menu^.FMenuOlayGeriDonusAdresi(Menu, AOlay)
-      else Gorevler0.OlayEkle(Menu^.GorevKimlik, AOlay);
+      else Gorevler0.OlayEkle(Menu^.F0.GorevKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -450,13 +450,13 @@ begin
   begin
 
     // seçilen elemanın index numarasını belirle
-    if(Menu^.FMenuBaslikListesi^.ElemanSayisi > 0) then
+    if(Menu^.FMenuBaslikListesi.ElemanSayisi > 0) then
       Menu^.SeciliSiraNo := (AOlay.Deger2 - 4) div Menu^.ElemanYukseklik
     else Menu^.SeciliSiraNo := -1;
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Menu^.FareImlecTipi;
+  GecerliFareGostegeTipi := Menu^.F0.FareImlecTipi;
 end;
 
 end.

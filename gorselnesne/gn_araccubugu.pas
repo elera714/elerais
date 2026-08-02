@@ -60,14 +60,14 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      AracCubugu := PAracCubugu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      AracCubugu := PAracCubugu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       AracCubugu^.Goster;
     end;
 
@@ -75,7 +75,7 @@ begin
     $010F:
     begin
 
-      AracCubugu := PAracCubugu(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      AracCubugu := PAracCubugu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if not(AracCubugu = nil) then
         Result := AracCubugu^.DugmeEkle(PISayi4(ADegiskenler + 04)^);
     end
@@ -98,7 +98,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := AracCubugu^.Kimlik;
+  else Result := AracCubugu^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -114,13 +114,13 @@ begin
     28, 2, RENK_GUMUS, RENK_BEYAZ, 0, ''));
 
   // nesnenin ad değeri
-  AracCubugu^.NesneTipi := gntAracCubugu;
+  AracCubugu^.F0.NesneTipi := gntAracCubugu;
 
   AracCubugu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
   AracCubugu^.OlayCagriAdresi := @OlaylariIsle;
 
-  AracCubugu^.FHiza := hzUst;
+  AracCubugu^.F0.FHiza := hzUst;
 
   // düğme değerlerinin ilk değerlerle yüklenmesi
   AracCubugu^.FDugmeSayisi := 0;
@@ -140,14 +140,14 @@ var
   i: TSayi4;
 begin
 
-  AracCubugu := PAracCubugu(GorselNesneler0.NesneAl(AKimlik));
+  AracCubugu := PAracCubugu(GGorselNesneler.NesneAl(AKimlik));
   if(AracCubugu = nil) then Exit;
 
   for i := 0 to AZAMI_DUGME_SAYISI - 1 do
   begin
 
     if not(AracCubugu^.FDugmeler[i] = nil) then
-      AracCubugu^.FDugmeler[i]^.YokEt(AracCubugu^.FDugmeler[i]^.Kimlik);
+      AracCubugu^.FDugmeler[i]^.YokEt(AracCubugu^.FDugmeler[i]^.F0.Kimlik);
   end;
 
   inherited YokEt(AKimlik);
@@ -163,7 +163,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  AracCubugu := PAracCubugu(GorselNesneler0.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(AracCubugu = nil) then Exit;
 
 {  if(AracCubugu^.FDugmeSayisi > 0) then
@@ -189,7 +189,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  AracCubugu := PAracCubugu(GorselNesneler0.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(AracCubugu = nil) then Exit;
 {
   if(AracCubugu^.FDugmeSayisi > 0) then
@@ -223,7 +223,7 @@ var
 //  i: Integer;
 begin
 
-  AracCubugu := PAracCubugu(GorselNesneler0.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(AracCubugu = nil) then Exit;
 
   // öncelikle kendini çiz
@@ -253,7 +253,7 @@ begin
   if(AracCubugu = nil) then Exit;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := AracCubugu^.FareImlecTipi;
+  GecerliFareGostegeTipi := AracCubugu^.F0.FareImlecTipi;
 end;
 
 procedure TAracCubugu.ResimDugmeOlaylariniIsle(AGonderici: PGorselNesne; AOlay: TOlay);
@@ -270,11 +270,11 @@ begin
   if(AOlay.Olay = FO_TIKLAMA) then
   begin
 
-    AOlay.Kimlik := ResimDugmesi^.Kimlik;
+    AOlay.Kimlik := ResimDugmesi^.F0.Kimlik;
 
     if not(AracCubugu^.OlayYonlendirmeAdresi = nil) then
       AracCubugu^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-    else Gorevler0.OlayEkle(ResimDugmesi^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(ResimDugmesi^.F0.GorevKimlik, AOlay);
   end;
 end;
 
@@ -286,7 +286,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  AracCubugu := PAracCubugu(GorselNesneler0.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(AracCubugu = nil) then Exit(HATA_KIMLIK);
 
   if(AracCubugu^.FDugmeSayisi >= AZAMI_DUGME_SAYISI) then Exit(-1);
@@ -294,13 +294,13 @@ begin
   ResimDugmesi := ResimDugmesi^.Olustur(ktBilesen, AracCubugu,
     (FDugmeSayisi * 30) + 4, 1, 24, 24, $10000000 + AResimSiraNo, False);
   ResimDugmesi^.OlayYonlendirmeAdresi := @ResimDugmeOlaylariniIsle;
-  ResimDugmesi^.Gorunum := True;
+  ResimDugmesi^.F0.Gorunum := True;
 
   AracCubugu^.FDugmeler[AracCubugu^.FDugmeSayisi] := ResimDugmesi;
 
   Inc(AracCubugu^.FDugmeSayisi);
 
-  Result := ResimDugmesi^.Kimlik;
+  Result := ResimDugmesi^.F0.Kimlik;
 end;
 
 // araç çubuğuna düğme ekler - çekirdek grafiksel programlama çalışması için
@@ -311,7 +311,7 @@ var
 begin
 
   // nesnenin kimlik, tip değerlerini denetle.
-  AracCubugu := PAracCubugu(GorselNesneler0.NesneAl(Kimlik));
+  AracCubugu := PAracCubugu(GGorselNesneler.NesneAl(F0.Kimlik));
   if(AracCubugu = nil) then Exit(HATA_KIMLIK);
 
   if(AracCubugu^.FDugmeSayisi >= AZAMI_DUGME_SAYISI) then Exit(-1);
@@ -319,13 +319,13 @@ begin
   ResimDugmesi := ResimDugmesi^.Olustur(ktNesne, AracCubugu,
     (FDugmeSayisi * 30) + 4, 1, 24, 24, $30000000 + AResimSiraNo, False);
   ResimDugmesi^.OlayYonlendirmeAdresi := @ResimDugmeOlaylariniIsle;
-  ResimDugmesi^.Gorunum := True;
+  ResimDugmesi^.F0.Gorunum := True;
 
   AracCubugu^.FDugmeler[AracCubugu^.FDugmeSayisi] := ResimDugmesi;
 
   Inc(AracCubugu^.FDugmeSayisi);
 
-  Result := ResimDugmesi^.Kimlik;
+  Result := ResimDugmesi^.F0.Kimlik;
 end;
 
 end.

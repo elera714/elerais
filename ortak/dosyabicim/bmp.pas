@@ -210,7 +210,7 @@ begin
     Masaustu := PMasaustu(AGorselNesne);
     if(Masaustu = nil) then Exit;
 
-    CizimAlani := Masaustu^.FCizimAlani;
+    CizimAlani := Masaustu^.F0.FCizimAlani;
 
     Genislik := AGoruntuYapi.Genislik;
     SatirdakiByteSayisi := Genislik * 4;
@@ -242,7 +242,7 @@ begin
     Pencere := EnUstPencereNesnesiniAl(Resim);
     if(Pencere = nil) then Exit;
 
-    CizimAlani := Resim^.FCizimAlani;
+    CizimAlani := Resim^.F0.FCizimAlani;
 
     if(Resim^.FTuvaleSigdir) then
     begin

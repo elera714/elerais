@@ -27,8 +27,8 @@ var
   SistemdekiAgAygitSayisi: TSayi4 = 0;
 
 procedure AgAygitlariniYukle;
-procedure AygitiSistemeKaydet(APCI: PPCI);
-procedure AgAygitiEkle(APCI: PPCI);
+procedure AygitiSistemeKaydet(APCIYapi: PPCIYapi);
+procedure AgAygitiEkle(APCIYapi: PPCIYapi);
 
 implementation
 
@@ -39,7 +39,7 @@ const
   USTSINIR_AGAYGITI           = 4;
 
 type
-  TYukle = function(APCI: PPCI): TISayi4;
+  TYukle = function(APCIYapi: PPCIYapi): TISayi4;
 
 type
   TAygit = packed record
@@ -53,14 +53,14 @@ var
     (SaticiKimlik: $1022; AygitKimlik: $2000; Yukle: @src_pcnet32.Yukle),
     (SaticiKimlik: $8086; AygitKimlik: $100E; Yukle: @src_e1000.Yukle));
 
-  AgAygitListesi: array[0..USTSINIR_AGAYGITI - 1] of PPCI = (nil, nil, nil, nil);
+  AgAygitListesi: array[0..USTSINIR_AGAYGITI - 1] of PPCIYapi = (nil, nil, nil, nil);
 
 {==============================================================================
   sistemde mevcut (sistem tarafýndan desteklenen) að aygýtlarýný yükler
  ==============================================================================}
 procedure AgAygitlariniYukle;
 var
-  PCIKayit: PPCI;
+  PCIYapi: PPCIYapi;
   Aygit: TAygit;
   AygitSiraNo, DesteklenenAygitSiraNo,
   i: TSayi4;
@@ -77,19 +77,19 @@ begin
     for AygitSiraNo := 0 to USTSINIR_AGAYGITI - 1 do
     begin
 
-      PCIKayit := AgAygitListesi[AygitSiraNo];
-      if(PCIKayit <> nil) then
+      PCIYapi := AgAygitListesi[AygitSiraNo];
+      if(PCIYapi <> nil) then
       begin
 
         for DesteklenenAygitSiraNo := 0 to DESTEKLENEN_AGAYGIT_SAYISI - 1 do
         begin
 
           Aygit := DesteklenenAgAygitlari[DesteklenenAygitSiraNo];
-          if(Aygit.SaticiKimlik = PCIKayit^.SaticiKimlik) and (Aygit.AygitKimlik = PCIKayit^.AygitKimlik) then
+          if(Aygit.SaticiKimlik = PCIYapi^.SaticiKimlik) and (Aygit.AygitKimlik = PCIYapi^.AygitKimlik) then
           begin
 
             // eðer aygýt yüklemesi baþarýlý ise að yükleme deðiþkenini aktifleþtir
-            i := Aygit.Yukle(PCIKayit);
+            i := Aygit.Yukle(PCIYapi);
             if(i = 0) then Inc(SistemdekiAgKartiSayisi);
           end;
         end;
@@ -101,32 +101,32 @@ end;
 {==============================================================================
   yüklenecek aygýt listesine belirtilen aygýtý ekler
  ==============================================================================}
-procedure AygitiSistemeKaydet(APCI: PPCI);
+procedure AygitiSistemeKaydet(APCIYapi: PPCIYapi);
 var
   AygitTipi: TSayi4;
 begin
 
-  AygitTipi := (APCI^.SinifKod shr 16) and $FFFF;
+  AygitTipi := (APCIYapi^.SinifKod shr 16) and $FFFF;
 
   // sistem tarafýndan tanýmlanan aygýtlarý yükle
   if(AygitTipi = PCIAYGIT_AG_ETHERNET) then
-    AgAygitiEkle(APCI)
+    AgAygitiEkle(APCIYapi)
   // virtualbox sanal sürücüyü yükle
   else if(AygitTipi = PCIAYGIT_CEVREBIRIM_DIGER) then
-    if(APCI^.SaticiKimlik = $80EE) and (APCI^.AygitKimlik = $CAFE) then vbox.Yukle(APCI);
+    if(APCIYapi^.SaticiKimlik = $80EE) and (APCIYapi^.AygitKimlik = $CAFE) then vbox.Yukle(APCIYapi);
 end;
 
 {==============================================================================
   yüklenecek ethernet aygýt listesine aygýtý ekler
  ==============================================================================}
-procedure AgAygitiEkle(APCI: PPCI);
+procedure AgAygitiEkle(APCIYapi: PPCIYapi);
 begin
 
   // sisteme eklenecek üstsýnýr að aygýt sayýsý aþýldý mý ?
   if(SistemdekiAgAygitSayisi >= USTSINIR_AGAYGITI) then Exit;
 
   // aygýtý listeye ekle
-  AgAygitListesi[SistemdekiAgAygitSayisi] := APCI;
+  AgAygitListesi[SistemdekiAgAygitSayisi] := APCIYapi;
 
   // aygýt sayýsýný bir artýr
   Inc(SistemdekiAgAygitSayisi);

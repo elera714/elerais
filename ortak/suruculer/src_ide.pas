@@ -185,7 +185,7 @@ begin
       {$ENDIF}
 
       // mevcut ise fiziksel sürücü yapýsýný oluþtur
-      FD := GFizikselDepolama00.FDAygitiOlustur(SURUCUTIP_DISK);
+      FD := GFizikselDepolama.AygitOlustur(SURUCUTIP_DISK);
       if(FD <> nil) then
       begin
 

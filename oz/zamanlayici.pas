@@ -389,10 +389,6 @@ asm
   mov   ZamanlayiciSayaci,ecx
 
   mov   eax,GorevDegisimBayragi
-  cmp   eax,0
-  je    @@cik
-
-  mov   eax,CokluGorevBasladi
   cmp   eax,1
   je    @@kontrol1
 
@@ -535,18 +531,6 @@ asm
 
   pushad
   pushfd
-
-  mov   eax,CokluGorevBasladi
-  cmp   eax,1
-  je    @@kontrol1
-
-  // genel yazmaçlarý geri yükle ve iþlevden çýk
-  popfd
-  popad
-  sti
-  ret
-
-@@kontrol1:
 
   mov   ecx,FCalisanGorevSayisi
   cmp   ecx,1

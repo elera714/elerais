@@ -83,7 +83,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PKarakterKatari(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi)^);
     end;
@@ -91,14 +91,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      SecimDugmesi := PSecimDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SecimDugmesi := PSecimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       SecimDugmesi^.Goster;
     end;
 
     $010F:
     begin
 
-      SecimDugmesi := PSecimDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SecimDugmesi := PSecimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       SecimDugmesi^.FSecimDurumu := PSecimDurumu(ADegiskenler + 04)^;
 
       Pencere := PPencere(SecimDugmesi^.AtaNesne);
@@ -123,7 +123,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := SecimDugmesi^.Kimlik;
+  else Result := SecimDugmesi^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -141,14 +141,14 @@ begin
   SecimDugmesi := PSecimDugmesi(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
     Genislik, 16, 0, 0, 0, 0, ABaslik));
 
-  SecimDugmesi^.NesneTipi := gntSecimDugmesi;
+  SecimDugmesi^.F0.NesneTipi := gntSecimDugmesi;
 
-  SecimDugmesi^.Baslik := ABaslik;
+  SecimDugmesi^.F0.Baslik := ABaslik;
 
   SecimDugmesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  SecimDugmesi^.Odaklanilabilir := True;
-  SecimDugmesi^.Odaklanildi := False;
+  SecimDugmesi^.F0.Odaklanilabilir := True;
+  SecimDugmesi^.F0.Odaklanildi := False;
 
   SecimDugmesi^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -204,11 +204,11 @@ var
   p1: PSayi1;
 begin
 
-  SecimDugmesi := PSecimDugmesi(GorselNesneler0.NesneAl(Kimlik));
+  SecimDugmesi := PSecimDugmesi(GGorselNesneler.NesneAl(F0.Kimlik));
   if(SecimDugmesi = nil) then Exit;
 
   // seçim düğmesi üst nesneye bağlı olarak koordinatlarını al
-  CizimAlani := SecimDugmesi^.FCizimAlani;
+  CizimAlani := SecimDugmesi^.F0.FCizimAlani;
 
   // seçim düğmesi çizim
   if(SecimDugmesi^.FSecimDurumu = sdNormal) then
@@ -243,8 +243,8 @@ begin
   end;
 
   // seçim düğmesi başlığı
-  if(Length(SecimDugmesi^.Baslik) > 0) then YaziYaz(SecimDugmesi, CizimAlani.Sol + 20,
-    CizimAlani.Ust + 2, SecimDugmesi^.Baslik, RENK_SIYAH);
+  if(Length(SecimDugmesi^.F0.Baslik) > 0) then YaziYaz(SecimDugmesi, CizimAlani.Sol + 20,
+    CizimAlani.Ust + 2, SecimDugmesi^.F0.Baslik, RENK_SIYAH);
 end;
 
 {==============================================================================
@@ -271,7 +271,7 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := SecimDugmesi;
-    SecimDugmesi^.Odaklanildi := True;
+    SecimDugmesi^.F0.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
     if(SecimDugmesi^.FareNesneOlayAlanindaMi(SecimDugmesi)) then
@@ -301,13 +301,13 @@ begin
         // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
         if not(SecimDugmesi^.OlayYonlendirmeAdresi = nil) then
           SecimDugmesi^.OlayYonlendirmeAdresi(SecimDugmesi, AOlay)
-        else Gorevler0.OlayEkle(SecimDugmesi^.GorevKimlik, AOlay);
+        else Gorevler0.OlayEkle(SecimDugmesi^.F0.GorevKimlik, AOlay);
       end;
     end;
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := SecimDugmesi^.FareImlecTipi;
+  GecerliFareGostegeTipi := SecimDugmesi^.F0.FareImlecTipi;
 end;
 
 end.

@@ -64,7 +64,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
@@ -73,14 +73,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       GucDugmesi^.Goster;
     end;
 
     ISLEV_GIZLE:
     begin
 
-      GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       GucDugmesi^.Gizle;
     end;
 
@@ -88,16 +88,16 @@ begin
     ISLEV_BOYUTLANDIR:
     begin
 
-      GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(GucDugmesi <> nil) then
       begin
 
         Konum := PKonum(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-        GucDugmesi^.FIlkAtananAlan.Sol := Konum^.Sol;
-        GucDugmesi^.FIlkAtananAlan.Ust := Konum^.Ust;
-        GucDugmesi^.FIlkAtananAlan.Genislik := Boyut^.Genislik;
-        GucDugmesi^.FIlkAtananAlan.Yukseklik := Boyut^.Yukseklik;
+        GucDugmesi^.F0.FIlkAtananAlan.Sol := Konum^.Sol;
+        GucDugmesi^.F0.FIlkAtananAlan.Ust := Konum^.Ust;
+        GucDugmesi^.F0.FIlkAtananAlan.Genislik := Boyut^.Genislik;
+        GucDugmesi^.F0.FIlkAtananAlan.Yukseklik := Boyut^.Yukseklik;
 
         Pencere := PPencere(GucDugmesi^.AtaNesne);
         Pencere^.Ciz;
@@ -107,18 +107,18 @@ begin
     ISLEV_YOKET:
     begin
 
-      GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
-      GucDugmesi^.YokEt(GucDugmesi^.Kimlik);
+      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi^.YokEt(GucDugmesi^.F0.Kimlik);
     end;
 
     $010F:
     begin
 
-      GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if not(GucDugmesi = nil) then
       begin
 
-        GucDugmesi^.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
+        GucDugmesi^.F0.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
       end;
     end;
 
@@ -126,7 +126,7 @@ begin
     $020F:
     begin
 
-      GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(GucDugmesi <> nil) then
         GucDugmesi^.DurumYaz(PKimlik(ADegiskenler + 00)^, PISayi4(ADegiskenler + 04)^);
     end;
@@ -135,18 +135,18 @@ begin
     $030F:
     begin
 
-      GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
 
-      if(GucDugmesi <> nil) and (GucDugmesi^.NesneTipi = gntGucDugmesi) then
+      if(GucDugmesi <> nil) and (GucDugmesi^.F0.NesneTipi = gntGucDugmesi) then
       begin
 
         // bir önceki odak alan nesneyi odaktan çıkar
         GN := PPencere(GucDugmesi^.AtaNesne)^.FAktifNesne;
-        if(GN <> nil) and (GN^.Odaklanilabilir) then GN^.Odaklanildi := False;
+        if(GN <> nil) and (GN^.F0.Odaklanilabilir) then GN^.F0.Odaklanildi := False;
 
         // nelirtilen nesneyi odaklanılan nesne olarak belirle
         PPencere(GucDugmesi^.AtaNesne)^.FAktifNesne := GucDugmesi;
-        GucDugmesi^.Odaklanildi := True;
+        GucDugmesi^.F0.Odaklanildi := True;
       end;
     end;
 
@@ -169,7 +169,7 @@ begin
 
     Result := HATA_NESNEOLUSTURMA
 
-  else Result := GucDugmesi^.Kimlik;
+  else Result := GucDugmesi^.F0.Kimlik;
 end;
 
 {==============================================================================
@@ -185,14 +185,14 @@ begin
     AYukseklik, 4, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK, DUGME_NORMAL_YAZIRENK, ABaslik));
 
   // görsel nesne tipi
-  GucDugmesi^.NesneTipi := gntGucDugmesi;
+  GucDugmesi^.F0.NesneTipi := gntGucDugmesi;
 
-  GucDugmesi^.Baslik := ABaslik;
+  GucDugmesi^.F0.Baslik := ABaslik;
 
   GucDugmesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
 
-  GucDugmesi^.Odaklanilabilir := True;
-  GucDugmesi^.Odaklanildi := False;
+  GucDugmesi^.F0.Odaklanilabilir := True;
+  GucDugmesi^.F0.Odaklanildi := False;
 
   GucDugmesi^.OlayCagriAdresi := @OlaylariIsle;
 
@@ -244,7 +244,7 @@ var
   GucDugmesi: PGucDugmesi;
 begin
 
-  GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(Kimlik));
+  GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(F0.Kimlik));
   if(GucDugmesi = nil) then Exit;
 
   inherited Hizala;
@@ -259,7 +259,7 @@ var
   CizimAlani: TAlan;
 begin
 
-  GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(Kimlik));
+  GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(F0.Kimlik));
   if(GucDugmesi= nil) then Exit;
 
   // düğme başlığı
@@ -270,10 +270,10 @@ begin
   inherited Ciz;
 
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
-  if(GucDugmesi^.Odaklanildi) then
+  if(GucDugmesi^.F0.Odaklanildi) then
   begin
 
-    CizimAlani := GucDugmesi^.FCizimAlani;
+    CizimAlani := GucDugmesi^.F0.FCizimAlani;
     GucDugmesi^.Dikdortgen(GucDugmesi, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
@@ -302,7 +302,7 @@ begin
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere^.FAktifNesne := GucDugmesi;
-    GucDugmesi^.Odaklanildi := True;
+    GucDugmesi^.F0.Odaklanildi := True;
 
     // fare olaylarını yakala
     OlayYakalamayaBasla(GucDugmesi);
@@ -329,7 +329,7 @@ begin
     AOlay.Deger1 := i;
     if not(GucDugmesi^.OlayYonlendirmeAdresi = nil) then
       GucDugmesi^.OlayYonlendirmeAdresi(GucDugmesi, AOlay)
-    else Gorevler0.OlayEkle(GucDugmesi^.GorevKimlik, AOlay);
+    else Gorevler0.OlayEkle(GucDugmesi^.F0.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
@@ -339,7 +339,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := GucDugmesi^.FareImlecTipi;
+  GecerliFareGostegeTipi := GucDugmesi^.F0.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -352,7 +352,7 @@ var
 begin
 
   // kimlik değerinden nesneyi al
-  GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(Kimlik));
+  GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(F0.Kimlik));
   if(GucDugmesi = nil) then Exit;
 
   GucDugmesi^.DolguluCizim := ADolguluCizim;
@@ -375,7 +375,7 @@ var
 begin
 
   // kimlik değerinden nesneyi al
-  GucDugmesi := PGucDugmesi(GorselNesneler0.NesneAl(AKimlik));
+  GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(AKimlik));
   if(GucDugmesi = nil) then Exit;
 
   if(ADurum = 1) then

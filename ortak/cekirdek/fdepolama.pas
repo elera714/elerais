@@ -17,8 +17,8 @@ interface
 uses paylasim;
 
 const
-  USTSINIR_FIZIKSELDEPOLAMA       = 6;
-  ILKDEGER_FDKIMLIK               = $1000;    // fiziksel depolama
+  USTSINIR_FD = 6;              // desteklenen fiziksel depolama aygýt sayýsý
+  ILKDEGER_FDKIMLIK = $1000;    // fiziksel depolama kimlik sayacý
 
 // fiziksel depolama nesnesi - program için
 type
@@ -48,28 +48,28 @@ type
   end;
 
 type
-  TFizikselDepolama0 = object
+  TFizikselDepolama = object
   private
     // fiziksel sürücü listesi. en fazla 2 disket sürücüsü + 4 disk sürücüsü
     FAygitSayisi: TSayi4;
-    FFDAygitListesi: array[0..USTSINIR_FIZIKSELDEPOLAMA - 1] of PFDNesne;
+    FAygitListesi: array[0..USTSINIR_FD - 1] of PFDNesne;
     function Al(ASiraNo: TISayi4): PFDNesne;
     procedure Yaz(ASiraNo: TISayi4; AFDNesne: PFDNesne);
   public
-    procedure Yukle;
-    function FDAygitiOlustur(AAygitTipi: TSayi4): PFDNesne;
-    function FizikselSurucuAl(ASiraNo: TISayi4): PFDNesne;
-    function FizikselSurucuAl2(AKimlik: TKimlik): PFDNesne;
-    function FizikselDepolamaVeriOku(AFDNesne: PFDNesne; ASektorNo,
-      ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
-    function FizikselDepolamaVeriYaz(AFDNesne: PFDNesne; ASektorNo,
-      ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    procedure Create;
+    function AygitOlustur(AAygitTipi: TSayi4): PFDNesne;
+    function SurucuAl(ASiraNo: TISayi4): PFDNesne;
+    function SurucuAl2(AKimlik: TKimlik): PFDNesne;
+    function VeriOku(AFDNesne: PFDNesne; ASektorNo, ASektorSayisi: TSayi4;
+      ABellek: Isaretci): TISayi4;
+    function VeriYaz(AFDNesne: PFDNesne; ASektorNo, ASektorSayisi: TSayi4;
+      ABellek: Isaretci): TISayi4;
     property AygitSayisi: TSayi4 read FAygitSayisi;
     property Aygit[ASiraNo: TISayi4]: PFDNesne read Al write Yaz;
   end;
 
 var
-  GFizikselDepolama00: TFizikselDepolama0;
+  GFizikselDepolama: TFizikselDepolama;
   PDisket1: PFDNesne;
   PDisket2: PFDNesne;
 
@@ -80,15 +80,15 @@ uses sistemmesaj, donusum, src_disket, src_ide;
 {==============================================================================
   sistemdeki fiziksel depolama aygýtlarýný yükler
  ==============================================================================}
-procedure TFizikselDepolama0.Yukle;
+procedure TFizikselDepolama.Create;
 var
   i: TSayi4;
 begin
 
   // fiziksel sürücü deðiþkenlerini sýfýrla
-  GFizikselDepolama00.FAygitSayisi := 0;
+  GFizikselDepolama.FAygitSayisi := 0;
 
-  for i := 0 to USTSINIR_FIZIKSELDEPOLAMA - 1 do Aygit[i] := nil;
+  for i := 0 to USTSINIR_FD - 1 do Aygit[i] := nil;
 
   // floppy aygýtlarýný yükle
   GDisket0 := TDisket.Create;
@@ -97,34 +97,34 @@ begin
   GIDE0 := TIDE.Create;
 end;
 
-function TFizikselDepolama0.Al(ASiraNo: TISayi4): PFDNesne;
+function TFizikselDepolama.Al(ASiraNo: TISayi4): PFDNesne;
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FIZIKSELDEPOLAMA) then
-    Result := FFDAygitListesi[ASiraNo]
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FD) then
+    Result := FAygitListesi[ASiraNo]
   else Result := nil;
 end;
 
-procedure TFizikselDepolama0.Yaz(ASiraNo: TISayi4; AFDNesne: PFDNesne);
+procedure TFizikselDepolama.Yaz(ASiraNo: TISayi4; AFDNesne: PFDNesne);
 begin
 
   // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FIZIKSELDEPOLAMA) then
-    FFDAygitListesi[ASiraNo] := AFDNesne;
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FD) then
+    FAygitListesi[ASiraNo] := AFDNesne;
 end;
 
 {==============================================================================
   fiziksel depolama aygýtý için sistemde sürücü oluþturma iþlevi
  ==============================================================================}
-function TFizikselDepolama0.FDAygitiOlustur(AAygitTipi: TSayi4): PFDNesne;
+function TFizikselDepolama.AygitOlustur(AAygitTipi: TSayi4): PFDNesne;
 var
   FD: PFDNesne;
   i: TSayi4;
 begin
 
   // fiziksel sürücü için yeni bellek yapýsý oluþtur
-  for i := 0 to USTSINIR_FIZIKSELDEPOLAMA - 1 do
+  for i := 0 to USTSINIR_FD - 1 do
   begin
 
     FD := Aygit[i];
@@ -143,7 +143,7 @@ begin
       FD^.FD3.AygitAdi := 'fda' + IntToStr(i + 1);
 
       // fiziksel sürücü sayýsýný artýr
-      Inc(GFizikselDepolama00.FAygitSayisi);
+      Inc(GFizikselDepolama.FAygitSayisi);
 
       Exit(FD);
     end;
@@ -155,18 +155,18 @@ end;
 {==============================================================================
   sýra numarasýna göre fiziksel depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function TFizikselDepolama0.FizikselSurucuAl(ASiraNo: TISayi4): PFDNesne;
+function TFizikselDepolama.SurucuAl(ASiraNo: TISayi4): PFDNesne;
 var
   FD: PFDNesne;
   SiraNo: TISayi4;
   i: TSayi4;
 begin
 
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FIZIKSELDEPOLAMA) then
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FD) then
   begin
 
     SiraNo := -1;
-    for i := 0 to USTSINIR_FIZIKSELDEPOLAMA - 1 do
+    for i := 0 to USTSINIR_FD - 1 do
     begin
 
       FD := Aygit[i];
@@ -182,13 +182,13 @@ end;
 {==============================================================================
   kimlik deðerine göre fiziksel depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
-function TFizikselDepolama0.FizikselSurucuAl2(AKimlik: TKimlik): PFDNesne;
+function TFizikselDepolama.SurucuAl2(AKimlik: TKimlik): PFDNesne;
 var
   FD: PFDNesne;
   i: TSayi4;
 begin
 
-  for i := 0 to USTSINIR_FIZIKSELDEPOLAMA - 1 do
+  for i := 0 to USTSINIR_FD - 1 do
   begin
 
     FD := Aygit[i];
@@ -201,8 +201,8 @@ end;
 {==============================================================================
   fiziksel depolama aygýtýndan veri oku
  ==============================================================================}
-function TFizikselDepolama0.FizikselDepolamaVeriOku(AFDNesne: PFDNesne; ASektorNo,
-  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+function TFizikselDepolama.VeriOku(AFDNesne: PFDNesne; ASektorNo, ASektorSayisi: TSayi4;
+  ABellek: Isaretci): TISayi4;
 begin
 
 {  SISTEM_MESAJ(RENK_MAVI, 'Depolama Kimlik: %d', [AFizikselDepolama^.FD3.Kimlik]);
@@ -217,8 +217,8 @@ end;
 {==============================================================================
   fiziksel depolama aygýtýna veri yaz
  ==============================================================================}
-function TFizikselDepolama0.FizikselDepolamaVeriYaz(AFDNesne: PFDNesne; ASektorNo,
-  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+function TFizikselDepolama.VeriYaz(AFDNesne: PFDNesne; ASektorNo, ASektorSayisi: TSayi4;
+  ABellek: Isaretci): TISayi4;
 begin
 
   Result := AFDNesne^.SektorYaz(AFDNesne, ASektorNo, ASektorSayisi, ABellek);

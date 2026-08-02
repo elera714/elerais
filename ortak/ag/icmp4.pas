@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adý: icmp4.pas
-  Dosya Ýþlevi: ICMP v4 protokol yönetim iþlevlerini içerir
+  Dosya AdÄ±: icmp4.pas
+  Dosya Ä°ÅŸlevi: ICMP v4 protokol yÃ¶netim iÅŸlevlerini iÃ§erir
 
-  Güncelleme Tarihi: 28/07/2026
+  GÃ¼ncelleme Tarihi: 02/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,17 +32,30 @@ type
     Veri: Isaretci;
   end;
 
-procedure ICMPPaketleriniIsle(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
-  AHedefIPAdres: TIP4Adres);
-procedure ICMP4PaketGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
-  AHedefIPAdres: TIP4Adres);
+type
+  TICMP4 = class
+  public
+    constructor Create;
+    procedure PaketGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
+      AHedefIPAdres: TIP4Adres);
+    procedure PaketleriIsle(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
+      AHedefIPAdres: TIP4Adres);
+  end;
+
+var
+  GICMP4: TICMP4;
 
 implementation
 
-uses genel, donusum, ip4, islevler, sistemmesaj, ag;
+uses ip4, islevler, sistemmesaj, ag;
 
-// icmp protokolü üzerinden gelen paketleri iþler
-procedure ICMPPaketleriniIsle(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
+constructor TICMP4.Create;
+begin
+
+end;
+
+// icmp v4 protokolÃ¼ Ã¼zerinden gelen paketleri iÅŸler
+procedure TICMP4.PaketleriIsle(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
   AHedefIPAdres: TIP4Adres);
 var
   s: array[0..128] of TSayi1;
@@ -53,24 +66,24 @@ begin
   Tasi2(@AICMPPaket^.Veri, @s[0], i);
 
   {$IFDEF ICMP4_HATAAYIKLA}
-  SISTEM_MESAJ_IP(RENK_LACIVERT, 'ICMP4 kaynak IP: ', AHedefIPAdres);
-  SISTEM_MESAJ_S16(RENK_LACIVERT, 'ICMP4 veri uzunluðu: ', _VeriUzunlugu, 4);
-  SISTEM_MESAJ(RENK_LACIVERT, 'ICMP4 veri: ' + _Veri, []);
+  SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'ICMP4 BaÅŸlÄ±k Bilgileri:', []);
+  SISTEM_MESAJ_IP4(mtBilgi, RENK_LACIVERT, ' -> Kaynak IP: ', AHedefIPAdres);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, ' -> Veri UzunluÄŸu: ', [i]);
   {$ENDIF}
 
-  // istek (request) mesajýna yanýt
+  // istek (request) mesajÄ±na yanÄ±t
   if(AICMPPaket^.MesajTipi = ICMP4_YANKI_ISTEK) then
   begin
 
-    // yanýt gönder
-    ICMP4PaketGonder(AICMPPaket, APaketUzunlugu, AHedefIPAdres);
-  end
-  else SISTEM_MESAJ(mtUyari, RENK_SIYAH, 'ICMP4.PAS: bilinmeyen mesaj tipi: $%.2x',
+    // yanÄ±t gÃ¶nder
+    PaketGonder(AICMPPaket, APaketUzunlugu, AHedefIPAdres);
+
+  end else SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'ICMP4.PAS: bilinmeyen mesaj tipi: $%.2x',
     [AICMPPaket^.MesajTipi]);
 end;
 
-// icmp v4 protokol paketi hazýrlayýp gönderme iþlevini gerçekleþtirir
-procedure ICMP4PaketGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
+// icmp v4 protokol paketi hazÄ±rlayÄ±p gÃ¶nderme iÅŸlevini gerÃ§ekleÅŸtirir
+procedure TICMP4.PaketGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
   AHedefIPAdres: TIP4Adres);
 var
   ICMPPaket: PICMP4Paket;
@@ -83,7 +96,7 @@ begin
   i := APaketUzunlugu - ICMP4_BASLIK_UZUNLUGU;
   Tasi2(@AICMPPaket^.Veri, @s[0], i);
 
-  // gönderilecek paket için bellek bölgesi oluþtur
+  // gÃ¶nderilecek paket iÃ§in bellek bÃ¶lgesi oluÅŸtur
   ICMPPaket := GetMem(4096);
 
   //IcmpPacket := @IPPacket^.Data;
@@ -98,15 +111,15 @@ begin
   SaglamaToplami := SaglamaToplamiOlustur(ICMPPaket, ICMP4_BASLIK_UZUNLUGU + i, nil, 0);
   ICMPPaket^.SaglamaToplami := SaglamaToplami;
 
-  // sisteme gelen icmp isteðine icmp yanýtý (paket) gönder
+  // sisteme gelen icmp isteÄŸine icmp yanÄ±tÄ± (paket) gÃ¶nder
   IP4PaketGonder(MACAdres255, GAg0.IP4Adres, AHedefIPAdres, ptICMP4, 0,
     ICMPPaket, ICMP4_BASLIK_UZUNLUGU + i);
 
   {$IFDEF ICMP4_HATAAYIKLA}
-  SISTEM_MESAJ_IP(RENK_KIRMIZI, 'ICMP4 yanýtý gönderilen IP: ', AHedefIPAdres);
+  SISTEM_MESAJ_IP4(mtBilgi, RENK_MOR, 'ICMP4 yanÄ±tÄ± gÃ¶nderilen IP: ', AHedefIPAdres);
   {$ENDIF}
 
-  // belleði yok et
+  // belleÄŸi yok et
   FreeMem(ICMPPaket, 4096);
 end;
 

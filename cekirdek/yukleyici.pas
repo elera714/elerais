@@ -35,15 +35,13 @@ implementation
 uses yonetim, gdt, idt, irq, pic, pci, src_klavye, genel, gorev, fdepolama, gercekbellek,
   gorselnesne, dosya, sistemmesaj, mdepolama, islemci, paylasim, usb, zamanlayici,
   ag, src_vesa20, src_com, src_sb, bmp, acpi, k_giysi, giysi_mac, giysi_normal,
-  olayyonetim, giysi, src_ps2;
+  olayyonetim, giysi, src_ps2, src_disket, src_ide, sistem;
 
 {==============================================================================
   çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
  ==============================================================================}
 procedure TYukleyici.Yukle;
 begin
-
-  CokluGorevBasladi := 0;
 
   // çekirdek yükleme öncesi iþlevleri gerçekleþtir
   YukleIslevindenOnceCalistir;
@@ -96,9 +94,6 @@ begin
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Ýþlemci bilgileri alýnýyor...', []);
   GIslemci := TIslemci.Create;
-  GIslemciBilgisi.Satici := GIslemci.SaticiBilgisiAl;
-  GIslemci.OzellikBilgisiAl(GIslemciBilgisi.Ozellik1_EAX, GIslemciBilgisi.Ozellik1_EDX,
-    GIslemciBilgisi.Ozellik1_ECX);
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Zamanlayýcý yükleniyor...', []);
   GZamanlayicilar.Yukle;
@@ -109,10 +104,10 @@ begin
   PCIAygiti0.Yukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ACPI donanýmý yükleniyor...', []);
-  acpi.Yukle;
+  GACPI := TACPI.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Klavye aygýtý yükleniyor...', []);
-  src_klavye.Yukle;
+  GKlavye := TKlavye.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ PS2 fare sürücüsü yükleniyor...', []);
   GFareSurucusu := TFareSurucusu.Create;
@@ -121,10 +116,10 @@ begin
   GUSB := TUSB.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Depolama aygýtlarý yükleniyor...', []);
-  GFizikselDepolama00.Yukle;
+  GFizikselDepolama.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Mantýksal sürücü atamalarý gerçekleþtiriliyor...', []);
-  MantiksalDepolama0 := TMantiksalDepolama.Create;
+  GMantiksalDepolama := TMantiksalDepolama.Create;
 
   {$IFDEF SRC_COM}
   SISTEM_MESAJ(RENK_MAVI, '+ Ýletiþim (COM) portu yükleniyor...', []);
@@ -146,18 +141,18 @@ begin
   GOlayYonetim := TOlayYonetim.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Görsel nesne için bellek iþlemleri yapýlýyor.', []);
-  GorselNesneler0.Yukle;
+  GGorselNesneler := TGorselNesneler.Create;
 
   // çekirdek yükleme sonrasý iþlevleri gerçekleþtir
   YukleIslevindenSonraCalistir;
 
   // pencere giysi birimini yükle
-  Giysiler0.Yukle;
+  GGiysiler := TGiysiler.Create;
+
+  GSistem := TSistem.Create;
 
   // sistem mesajlarýný görmek için bekleme süresi.
   BekleMS(50);
-
-  CokluGorevBasladi := 1;
 end;
 
 {==============================================================================
