@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 11/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,46 +18,49 @@ uses gorselnesne, paylasim, gn_panel;
 
 type
   PGucDugmesi = ^TGucDugmesi;
-  TGucDugmesi = object(TPanel)
+  TGucDugmesi = class(TPanel)
   private
     FDurum: TDugmeDurumu;
   public
-    function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-      ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PGucDugmesi;
-    procedure YokEt(AKimlik: TKimlik);
+    constructor Create; override;
+    destructor Destroy; override;
+    function Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+      ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): TISayi4;
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
     procedure Ciz;
-    procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
     procedure CizimModelDegistir(ADolguluCizim: Boolean; AGovdeRenk1, AGovdeRenk2,
       AYaziRenkNormal, AYaziRenkBasili: TRenk);
     procedure DurumYaz(AKimlik: TKimlik; ADurum: TSayi4);
-    // dolgulu çizim mi, normal çizim mi?                     //479708
+    // dolgulu çizim mi, normal çizim mi?
     property DolguluCizim: Boolean read FDurum1 write FDurum1;
     property YaziRenkNormal: TRenk read FDeger1 write FDeger1;
     property YaziRenkBasili: TRenk read FDeger2 write FDeger2;
   end;
 
 function GucDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
-  ABaslik: string): TKimlik;
+function GucDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik,
+  AYukseklik: TISayi4; ABaslik: string): TKimlik;
 
 implementation
 
-uses genel, gn_islevler, temelgorselnesne, gn_pencere, sistemmesaj, gorev;
+uses genel, gn_islevler, temelgorselnesne, gn_pencere, sistemmesaj, gorev, gn_masaustu;
 
 {==============================================================================
-  güç düğme kesme çağrılarını yönetir
+  güç düğmesi kesme çağrılarını yönetir
  ==============================================================================}
 function GucDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GN: PGorselNesne;
-  Pencere: PPencere;
-  GucDugmesi: PGucDugmesi;
+  GN: TGorselNesne;
+  Pencere: TPencere;
+  GucDugmesi: TGucDugmesi;
   Konum: PKonum;
   Boyut: PBoyut;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
@@ -65,7 +68,7 @@ begin
     begin
 
       GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^,
+      Result := GucDugmesiGNOlustur(GN, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
         PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
     end;
@@ -73,52 +76,52 @@ begin
     ISLEV_GOSTER:
     begin
 
-      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      GucDugmesi^.Goster;
+      GucDugmesi := TGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi.Goster;
     end;
 
     ISLEV_GIZLE:
     begin
 
-      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      GucDugmesi^.Gizle;
+      GucDugmesi := TGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi.Gizle;
     end;
 
     // yeniden boyutlandır
     ISLEV_BOYUTLANDIR:
     begin
 
-      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := TGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(GucDugmesi <> nil) then
       begin
 
         Konum := PKonum(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
         Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
-        GucDugmesi^.F0.FIlkAtananAlan.Sol := Konum^.Sol;
-        GucDugmesi^.F0.FIlkAtananAlan.Ust := Konum^.Ust;
-        GucDugmesi^.F0.FIlkAtananAlan.Genislik := Boyut^.Genislik;
-        GucDugmesi^.F0.FIlkAtananAlan.Yukseklik := Boyut^.Yukseklik;
+        GucDugmesi.FIlkAtananAlan.Sol := Konum^.Sol;
+        GucDugmesi.FIlkAtananAlan.Ust := Konum^.Ust;
+        GucDugmesi.FIlkAtananAlan.Genislik := Boyut^.Genislik;
+        GucDugmesi.FIlkAtananAlan.Yukseklik := Boyut^.Yukseklik;
 
-        Pencere := PPencere(GucDugmesi^.AtaNesne);
-        Pencere^.Ciz;
+        Pencere := TPencere(GucDugmesi.AtaNesne);
+        Pencere.Ciz;
       end;
     end;
 
     ISLEV_YOKET:
     begin
 
-      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      GucDugmesi^.YokEt(GucDugmesi^.F0.Kimlik);
+      GucDugmesi := TGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi.Destroy;
     end;
 
     $010F:
     begin
 
-      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := TGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if not(GucDugmesi = nil) then
       begin
 
-        GucDugmesi^.F0.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
+        GucDugmesi.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
       end;
     end;
 
@@ -126,100 +129,111 @@ begin
     $020F:
     begin
 
-      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := TGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(GucDugmesi <> nil) then
-        GucDugmesi^.DurumYaz(PKimlik(ADegiskenler + 00)^, PISayi4(ADegiskenler + 04)^);
+        GucDugmesi.DurumYaz(PKimlik(ADegiskenler + 00)^, PISayi4(ADegiskenler + 04)^);
     end;
 
     // güç düğmesi nesnesine odaklan. (klavye girişlerini almasını sağla)
     $030F:
     begin
 
-      GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GucDugmesi := TGucDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
 
-      if(GucDugmesi <> nil) and (GucDugmesi^.F0.NesneTipi = gntGucDugmesi) then
+      if(GucDugmesi <> nil) and (GucDugmesi.NesneTipi = gntGucDugmesi) then
       begin
 
         // bir önceki odak alan nesneyi odaktan çıkar
-        GN := PPencere(GucDugmesi^.AtaNesne)^.FAktifNesne;
-        if(GN <> nil) and (GN^.F0.Odaklanilabilir) then GN^.F0.Odaklanildi := False;
+        GN := TPencere(GucDugmesi.AtaNesne).FAktifNesne;
+        if(GN <> nil) and (GN.Odaklanilabilir) then GN.Odaklanildi := False;
 
         // nelirtilen nesneyi odaklanılan nesne olarak belirle
-        PPencere(GucDugmesi^.AtaNesne)^.FAktifNesne := GucDugmesi;
-        GucDugmesi^.F0.Odaklanildi := True;
+        TPencere(GucDugmesi.AtaNesne).FAktifNesne := GucDugmesi;
+        GucDugmesi.Odaklanildi := True;
       end;
     end;
-
-    else Result := HATA_ISLEV;
   end;
 end;
 
 {==============================================================================
-  güç düğme nesnesini oluşturur
+  uygulama için güç düğmesi nesnesi oluşturur - api
  ==============================================================================}
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
-  ABaslik: string): TKimlik;
+function GucDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik,
+  AYukseklik: TISayi4; ABaslik: string): TKimlik;
 var
-  GucDugmesi: PGucDugmesi;
+  GucDugmesi: TGucDugmesi;
 begin
 
-  GucDugmesi := GucDugmesi^.Olustur(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik, ABaslik);
+  GucDugmesi := TGucDugmesi.Create;
 
   if(GucDugmesi = nil) then
 
     Result := HATA_NESNEOLUSTURMA
+  else
+  begin
 
-  else Result := GucDugmesi^.F0.Kimlik;
+    GucDugmesi.Ozellestir(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik, ABaslik);
+
+    Result := GucDugmesi.Kimlik;
+  end;
 end;
 
 {==============================================================================
-  güç düğme nesnesini oluşturur
+  güç düğmesi nesnesi oluşturur
  ==============================================================================}
-function TGucDugmesi.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-  ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): PGucDugmesi;
-var
-  GucDugmesi: PGucDugmesi;
+constructor TGucDugmesi.Create;
 begin
 
-  GucDugmesi := PGucDugmesi(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst, AGenislik,
-    AYukseklik, 4, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK, DUGME_NORMAL_YAZIRENK, ABaslik));
+  inherited Create;
 
-  // görsel nesne tipi
-  GucDugmesi^.F0.NesneTipi := gntGucDugmesi;
+  NesneTipi := gntGucDugmesi;
 
-  GucDugmesi^.F0.Baslik := ABaslik;
+  GGorselNesneler.GorselNesne[FSiraNo] := Self;
+end;
 
-  GucDugmesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
+{==============================================================================
+  güç düğmesi nesnesini yok eder
+ ==============================================================================}
+destructor TGucDugmesi.Destroy;
+begin
 
-  GucDugmesi^.F0.Odaklanilabilir := True;
-  GucDugmesi^.F0.Odaklanildi := False;
+  GGorselNesneler.YokEt(Self);
 
-  GucDugmesi^.OlayCagriAdresi := @OlaylariIsle;
+  inherited Destroy;
+end;
 
-  GucDugmesi^.FDurum := ddNormal;
+{==============================================================================
+  güç düğmesi nesnesini özelleştirir
+ ==============================================================================}
+function TGucDugmesi.Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+  ASol, AUst, AGenislik, AYukseklik: TISayi4; ABaslik: string): TISayi4;
+begin
+
+  Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
+    4, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK, DUGME_NORMAL_YAZIRENK, ABaslik);
+
+  OlayCagriAdresi := @OlaylariIsle;
+
+  Baslik := ABaslik;
+
+  Odaklanilabilir := True;
+  Odaklanildi := False;
+
+  FDurum := ddNormal;
 
   // çizim öndeğerleri
-  GucDugmesi^.DolguluCizim := True;
-  GucDugmesi^.FGovdeRenk1 := DUGME_NORMAL_ILKRENK;
-  GucDugmesi^.FGovdeRenk2 := DUGME_NORMAL_SONRENK;
-  GucDugmesi^.YaziRenkNormal := DUGME_NORMAL_YAZIRENK;
-  GucDugmesi^.YaziRenkBasili := DUGME_BASILI_YAZIRENK;
+  DolguluCizim := True;
+  FGovdeRenk1 := DUGME_NORMAL_ILKRENK;
+  FGovdeRenk2 := DUGME_NORMAL_SONRENK;
+  YaziRenkNormal := DUGME_NORMAL_YAZIRENK;
+  YaziRenkBasili := DUGME_BASILI_YAZIRENK;
 
-  // nesne adresini geri döndür
-  Result := GucDugmesi;
+  // geri dönüş değeri
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
-  güç düğme nesnesini yok eder
- ==============================================================================}
-procedure TGucDugmesi.YokEt(AKimlik: TKimlik);
-begin
-
-  inherited YokEt(AKimlik);
-end;
-
-{==============================================================================
-  güç düğme nesnesini görüntüler
+  güç düğmesi nesnesini görüntüler
  ==============================================================================}
 procedure TGucDugmesi.Goster;
 begin
@@ -228,7 +242,7 @@ begin
 end;
 
 {==============================================================================
-  güç düğme nesnesini gizler
+  güç düğmesi nesnesini gizler
  ==============================================================================}
 procedure TGucDugmesi.Gizle;
 begin
@@ -237,58 +251,49 @@ begin
 end;
 
 {==============================================================================
-  güç düğme nesnesini hizalandırır
+  güç düğmesi nesnesini hizalandırır
  ==============================================================================}
 procedure TGucDugmesi.Hizala;
-var
-  GucDugmesi: PGucDugmesi;
 begin
-
-  GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(GucDugmesi = nil) then Exit;
 
   inherited Hizala;
 end;
 
 {==============================================================================
-  güç düğme nesnesini çizer
+  güç düğmesi nesnesini çizer
  ==============================================================================}
 procedure TGucDugmesi.Ciz;
 var
-  GucDugmesi: PGucDugmesi;
   CizimAlani: TAlan;
 begin
 
-  GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(GucDugmesi= nil) then Exit;
-
   // düğme başlığı
-  if(GucDugmesi^.FDurum = ddNormal) then
-    GucDugmesi^.FYaziRenk := YaziRenkNormal
-  else GucDugmesi^.FYaziRenk := YaziRenkBasili;
+  if(FDurum = ddNormal) then
+    FYaziRenk := YaziRenkNormal
+  else FYaziRenk := YaziRenkBasili;
 
   inherited Ciz;
 
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
-  if(GucDugmesi^.F0.Odaklanildi) then
+  if(Odaklanildi) then
   begin
 
-    CizimAlani := GucDugmesi^.F0.FCizimAlani;
-    GucDugmesi^.Dikdortgen(GucDugmesi, ctNokta, CizimAlani, RENK_SIYAH);
+    CizimAlani := FCizimAlani;
+    Dikdortgen(Self, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
 
 {==============================================================================
-  güç düğme nesne olaylarını işler
+  güç düğmesi nesne olaylarını işler
  ==============================================================================}
-procedure TGucDugmesi.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+procedure TGucDugmesi.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 var
-  Pencere: PPencere;
-  GucDugmesi: PGucDugmesi;
+  Pencere: TPencere;
+  GucDugmesi: TGucDugmesi;
   i: TISayi4;
 begin
 
-  GucDugmesi := PGucDugmesi(AGonderici);
+  GucDugmesi := TGucDugmesi(AGonderici);
 
   // farenin sol tuşuna basım işlemi
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
@@ -298,38 +303,38 @@ begin
     Pencere := EnUstPencereNesnesiniAl(GucDugmesi);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    Pencere^.FAktifNesne := GucDugmesi;
-    GucDugmesi^.F0.Odaklanildi := True;
+    Pencere.FAktifNesne := GucDugmesi;
+    GucDugmesi.Odaklanildi := True;
 
     // fare olaylarını yakala
     OlayYakalamayaBasla(GucDugmesi);
 
     // güç düğmesinin durumunu NORMAL / BASILI olarak değiştir
-    if(GucDugmesi^.FDurum = ddBasili) then
+    if(GucDugmesi.FDurum = ddBasili) then
     begin
 
       i := 0;
-      GucDugmesi^.FDurum := ddNormal;
+      GucDugmesi.FDurum := ddNormal;
     end
     else
     begin
 
       i := 1;
-      GucDugmesi^.FDurum := ddBasili;
+      GucDugmesi.FDurum := ddBasili;
     end;
 
-    // güç düğme nesnesini yeniden çiz
-    GucDugmesi^.Ciz;
+    // güç düğmesi nesnesini yeniden çiz
+    GucDugmesi.Ciz;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := CO_DURUMDEGISTI;
     AOlay.Deger1 := i;
-    if not(GucDugmesi^.OlayYonlendirmeAdresi = nil) then
-      GucDugmesi^.OlayYonlendirmeAdresi(GucDugmesi, AOlay)
-    else Gorevler0.OlayEkle(GucDugmesi^.F0.GorevKimlik, AOlay);
+    if not(GucDugmesi.OlayYonlendirmeAdresi = nil) then
+      GucDugmesi.OlayYonlendirmeAdresi(GucDugmesi, AOlay)
+    else GGorevler.OlayEkle(GucDugmesi.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
@@ -339,7 +344,7 @@ begin
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := GucDugmesi^.F0.FareImlecTipi;
+  GecerliFareGostegeTipi := GucDugmesi.FareImlecTipi;
 end;
 
 {==============================================================================
@@ -347,42 +352,30 @@ end;
  ==============================================================================}
 procedure TGucDugmesi.CizimModelDegistir(ADolguluCizim: Boolean; AGovdeRenk1, AGovdeRenk2,
   AYaziRenkNormal, AYaziRenkBasili: TRenk);
-var
-  GucDugmesi: PGucDugmesi;
 begin
 
-  // kimlik değerinden nesneyi al
-  GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(GucDugmesi = nil) then Exit;
-
-  GucDugmesi^.DolguluCizim := ADolguluCizim;
+  DolguluCizim := ADolguluCizim;
   if(ADolguluCizim) then
-    GucDugmesi^.FCizimModel := 4
-  else GucDugmesi^.FCizimModel := 3;
+    FCizimModel := 4
+  else FCizimModel := 3;
 
-  GucDugmesi^.FGovdeRenk1 := AGovdeRenk1;
-  GucDugmesi^.FGovdeRenk2 := AGovdeRenk2;
-  GucDugmesi^.YaziRenkNormal := AYaziRenkNormal;
-  GucDugmesi^.YaziRenkBasili := AYaziRenkBasili;
+  FGovdeRenk1 := AGovdeRenk1;
+  FGovdeRenk2 := AGovdeRenk2;
+  YaziRenkNormal := AYaziRenkNormal;
+  YaziRenkBasili := AYaziRenkBasili;
 end;
 
 {==============================================================================
-  güç düğme nesnesinin durumunu değiştirir
+  güç düğmesi nesnesinin durumunu değiştirir
  ==============================================================================}
 procedure TGucDugmesi.DurumYaz(AKimlik: TKimlik; ADurum: TSayi4);
-var
-  GucDugmesi: PGucDugmesi;
 begin
 
-  // kimlik değerinden nesneyi al
-  GucDugmesi := PGucDugmesi(GGorselNesneler.NesneAl(AKimlik));
-  if(GucDugmesi = nil) then Exit;
-
   if(ADurum = 1) then
-    GucDugmesi^.FDurum := ddBasili
-  else GucDugmesi^.FDurum := ddNormal;
+    FDurum := ddBasili
+  else FDurum := ddNormal;
 
-  GucDugmesi^.Ciz;
+  Ciz;
 end;
 
 end.

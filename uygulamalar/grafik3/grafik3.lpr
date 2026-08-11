@@ -6,7 +6,7 @@
   Program Adı: grafik3.lpr
   Program İşlevi: çoklu yönlendirilmiş nokta (pixel) işaretleme programı
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 11/08/2026
 
  ==============================================================================}
 {$mode objfpc}

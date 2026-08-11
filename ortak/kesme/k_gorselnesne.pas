@@ -6,7 +6,7 @@
   Dosya Adı: k_gorselnesne.pas
   Dosya İşlevi: görsel nesne işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 11/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,7 +21,7 @@ uses paylasim, gn_masaustu, gn_pencere, gn_dugme, gn_gucdugmesi, gn_listekutusu,
   gn_degerlistesi, gn_izgara, gn_araccubugu, gn_renksecici, gn_sayfakontrol;
 
 const
-  MEVCUT_GN_SAYISI = 27;    // görsel nesne sayısı
+  MEVCUT_GN_SAYISI = 27;    // sistemde mevcut görsel nesne sayısı
 
 var
   GorselNesneListesi: array[1..MEVCUT_GN_SAYISI] of TKesmeCagrisi = (
@@ -49,6 +49,8 @@ var
   IslevNo: TSayi4;
 begin
 
+  Result := HATA_ISLEV;
+
   IslevNo := (AIslevNo and $FF);
 
   if(IslevNo >= 1) and (IslevNo <= MEVCUT_GN_SAYISI) then
@@ -59,9 +61,7 @@ begin
   begin
 
     Result := GorselNesneIslevCagriIslevleri((AIslevNo shr 8) and $FFFF, ADegiskenler);
-  end
-
-  else Result := HATA_NESNE;
+  end;
 end;
 
 end.

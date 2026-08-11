@@ -35,7 +35,8 @@
       <Unit0>
         <Filename Value="calistir.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="9" Y="26"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="24" Y="6"/>
         <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -86,10 +87,7 @@
       <Unit7>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="51"/>
-        <CursorPos X="8" Y="69"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit7>

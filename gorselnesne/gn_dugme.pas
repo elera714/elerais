@@ -394,7 +394,7 @@ begin
   else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
   begin
 
-    // düğme'nin sahibi olan pencere en üstte mi? kontrol et
+    // düğme'nin sahibi olan pencere en üstte mi ? kontrol et
     Pencere := EnUstPencereNesnesiniAl(Dugme);
 
     // en üstte olmaması durumunda en üste getir

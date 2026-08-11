@@ -6,7 +6,7 @@
   Program Adý: donusum.lpr
   Program Ýþlevi: sayýsal deðer çevrim / dönüþüm programý
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 11/08/2026
 
  ==============================================================================}
 {$mode objfpc}
