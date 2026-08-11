@@ -6,7 +6,7 @@
   Program Adý: arpbilgi.lpr
   Program Ýþlevi: ARP girdileri hakkýnda bilgi verir
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 11/08/2026
 
  ==============================================================================}
 {$mode objfpc}

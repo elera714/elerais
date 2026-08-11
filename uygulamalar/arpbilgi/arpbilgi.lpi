@@ -38,7 +38,8 @@
         <Filename Value="arpbilgi.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="saat"/>
-        <CursorPos X="3" Y="18"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="41" Y="17"/>
         <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -214,7 +215,6 @@
       <Unit32>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>

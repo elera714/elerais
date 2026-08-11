@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 10/08/2026
+  Güncelleme Tarihi: 11/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,7 +22,7 @@ type
   public
     FAltDeger, FUstDeger, FMevcutDeger: TISayi8;
     constructor Create; override;
-    destructor Destroy;
+     destructor Destroy; override;
     function Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
       ASol, AUst, AGenislik, AYukseklik: TISayi4): TISayi4;
     procedure Goster;
@@ -96,7 +96,7 @@ begin
 end;
 
 {==============================================================================
-  uygulama için işlem göstergesi nesnesini oluşturur - api
+  uygulama için işlem göstergesi nesnesi oluşturur - api
  ==============================================================================}
 function IslemGostergesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst,
   AGenislik, AYukseklik: TISayi4): TKimlik;
@@ -119,7 +119,7 @@ begin
 end;
 
 {==============================================================================
-  işlem göstergesi nesnesini oluşturur
+  işlem göstergesi nesnesi oluşturur
  ==============================================================================}
 constructor TIslemGostergesi.Create;
 begin
@@ -159,7 +159,7 @@ begin
   FUstDeger := 100;
   FMevcutDeger := 0;
 
-  // nesne adresini geri döndür
+  // geri dönüş değeri
   Result := HATA_YOK;
 end;
 
@@ -251,7 +251,7 @@ begin
 end;
 
 {==============================================================================
-  işlem göstergesi olaylarını işler
+  işlem göstergesi nesne olaylarını işler
  ==============================================================================}
 procedure TIslemGostergesi.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 begin
