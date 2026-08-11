@@ -35,7 +35,7 @@
       <Unit0>
         <Filename Value="kaydirma.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="18" Y="13"/>
+        <IsVisibleTab Value="True"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -70,10 +70,7 @@
       <Unit4>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="15"/>
-        <CursorPos X="22" Y="51"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit4>

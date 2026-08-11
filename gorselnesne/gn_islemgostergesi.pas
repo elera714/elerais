@@ -40,7 +40,7 @@ function IslemGostergesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst,
 
 implementation
 
-uses temelgorselnesne, donusum;
+uses temelgorselnesne, donusum, gn_islevler;
 
 {==============================================================================
   işlem göstergesi kesme çağrılarını yönetir

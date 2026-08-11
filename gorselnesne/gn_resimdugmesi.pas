@@ -6,7 +6,7 @@
   Dosya Adı: gn_resimdugmesi.pas
   Dosya İşlevi: resim düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 11/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,7 +18,7 @@ uses gorev, gorselnesne, paylasim, gn_panel;
 
 type
   PResimDugmesi = ^TResimDugmesi;
-  TResimDugmesi = object(TPanel)
+  TResimDugmesi = class(TPanel)
   private
     FDurum: TDugmeDurumu;
     // Deger: $00ABCDEF - ABCDEF renk değeri ile içeriği boya
@@ -27,20 +27,21 @@ type
     // Deger: $80ABCDEF - ABCDEF sıra numaralı çekirdekteki bitmap resmi çiz
     FKenarlikCiz: Boolean;
   public
-    function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-      ASol, AUst, AGenislik, AYukseklik, AResimSiraNo: TSayi4; AKenarlikCiz: Boolean): PResimDugmesi;
-    procedure YokEt(AKimlik: TKimlik);
+    constructor Create; override;
+    destructor Destroy; override;
+    function Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+      ASol, AUst, AGenislik, AYukseklik, AResimSiraNo: TSayi4; AKenarlikCiz: Boolean): TISayi4;
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
     procedure Ciz;
-    procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
   published
     property Deger: TSayi4 read FDeger1 write FDeger1;
   end;
 
 function ResimDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik,
+function ResimDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYukseklik,
   AResimSiraNo: TSayi4): TKimlik;
 
 implementation
@@ -52,11 +53,13 @@ uses genel, gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj;
  ==============================================================================}
 function ResimDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GN: PGorselNesne;
-  Pencere: PPencere;
-  ResimDugmesi: PResimDugmesi;
+  GN: TGorselNesne;
+  Pencere: TPencere;
+  ResimDugmesi: TResimDugmesi;
   Hiza: THiza;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
@@ -64,92 +67,101 @@ begin
     begin
 
       GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+      Result := ResimDugmesiGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PISayi4(ADegiskenler + 20)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      ResimDugmesi := PResimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      ResimDugmesi^.Goster;
+      ResimDugmesi := TResimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      ResimDugmesi.Goster;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      ResimDugmesi := PResimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      ResimDugmesi := TResimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
-      ResimDugmesi^.F0.FHiza := Hiza;
+      ResimDugmesi.FHiza := Hiza;
 
-      Pencere := PPencere(ResimDugmesi^.FAtaNesne);
-      Pencere^.Guncelle;
-    end
-
-    else Result := HATA_ISLEV;
+      Pencere := TPencere(ResimDugmesi.FAtaNesne);
+      Pencere.Guncelle;
+    end;
   end;
 end;
 
 {==============================================================================
-  resim düğmesi nesnesini oluşturur
+  uygulama için resim düğmesi nesnesi oluşturur - api
  ==============================================================================}
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik,
+function ResimDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYukseklik,
   AResimSiraNo: TSayi4): TKimlik;
 var
-  ResimDugmesi: PResimDugmesi;
+  ResimDugmesi: TResimDugmesi;
 begin
 
-  ResimDugmesi := ResimDugmesi^.Olustur(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
-    AResimSiraNo, True);
+  ResimDugmesi := TResimDugmesi.Create;
 
   if(ResimDugmesi = nil) then
 
     Result := HATA_NESNEOLUSTURMA
+  else
+  begin
 
-  else Result := ResimDugmesi^.F0.Kimlik;
+    ResimDugmesi.Ozellestir(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
+      AResimSiraNo, True);
+
+    Result := ResimDugmesi.Kimlik;
+  end;
 end;
 
 {==============================================================================
-  resim düğmesi nesnesini oluşturur
+  resim düğmesi nesnesi oluşturur
  ==============================================================================}
-function TResimDugmesi.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-  ASol, AUst, AGenislik, AYukseklik, AResimSiraNo: TSayi4; AKenarlikCiz: Boolean): PResimDugmesi;
-var
-  ResimDugmesi: PResimDugmesi;
+constructor TResimDugmesi.Create;
 begin
 
-  ResimDugmesi := PResimDugmesi(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
-    AGenislik, AYukseklik, 0, 0, 0, 0, ''));
+  inherited Create;
 
-  // görsel nesne tipi
-  ResimDugmesi^.F0.NesneTipi := gntResimDugmesi;
+  NesneTipi := gntResimDugmesi;
 
-  ResimDugmesi^.F0.Baslik := '';
-
-  ResimDugmesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
-
-  ResimDugmesi^.F0.Odaklanilabilir := False;
-  ResimDugmesi^.F0.Odaklanildi := False;
-
-  ResimDugmesi^.OlayCagriAdresi := @OlaylariIsle;
-
-  ResimDugmesi^.Deger := AResimSiraNo;
-
-  ResimDugmesi^.FDurum := ddNormal;
-
-  ResimDugmesi^.FKenarlikCiz := AKenarlikCiz;
-
-  // nesne bellek adresini geri döndür
-  Result := ResimDugmesi;
+  GGorselNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
   resim düğmesi nesnesini yok eder
  ==============================================================================}
-procedure TResimDugmesi.YokEt(AKimlik: TKimlik);
+destructor TResimDugmesi.Destroy;
 begin
 
-  inherited YokEt(AKimlik);
+  GGorselNesneler.YokEt(Self);
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  resim düğmesi nesnesini özelleştirir
+ ==============================================================================}
+function TResimDugmesi.Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+  ASol, AUst, AGenislik, AYukseklik, AResimSiraNo: TSayi4; AKenarlikCiz: Boolean): TISayi4;
+begin
+
+  Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
+    0, 0, 0, 0, '');
+
+  OlayCagriAdresi := @OlaylariIsle;
+
+  Odaklanilabilir := False;
+  Odaklanildi := False;
+
+  Deger := AResimSiraNo;
+
+  FDurum := ddNormal;
+
+  FKenarlikCiz := AKenarlikCiz;
+
+  // nesne bellek adresini geri döndür
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
@@ -174,16 +186,11 @@ end;
   resim düğmesi nesnesini hizalandırır
  ==============================================================================}
 procedure TResimDugmesi.Hizala;
-{var
-  ResimDugmesi: PResimDugmesi;}
 begin
 
-  { TODO - aşağıdaki pasifleştirilen kodlar aktifleştiğinde pencere kontrol düğmeleri hatalı etkilenmektedir }
-
-{  ResimDugmesi := PResimDugmesi(ResimDugmesi^.NesneAl2(Kimlik));
-  if(ResimDugmesi = nil) then Exit;
-
-  inherited Hizala;}
+  { TODO - aşağıdaki satırın aktifleştirilmesi için nesnenin pencere kontrol düğmelerinin
+    (büyütme, küçültme, kapatma) hesaplanması gerekiyor }
+  //inherited Hizala;
 end;
 
 {==============================================================================
@@ -191,67 +198,63 @@ end;
  ==============================================================================}
 procedure TResimDugmesi.Ciz;
 var
-  ResimDugmesi: PResimDugmesi;
   CizimAlani: TAlan;
   ResimSiraNo, CizimTipi: TSayi4;
 begin
 
-  ResimDugmesi := PResimDugmesi(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(ResimDugmesi = nil) then Exit;
+  CizimAlani := FCizimAlani;
 
-  CizimAlani := ResimDugmesi^.F0.FCizimAlani;
-
-  CizimTipi := ResimDugmesi^.Deger shr 24;
+  CizimTipi := Deger shr 24;
 
   // resim düğmesi içeriğinin ham resim ile çizilmesi
   if(CizimTipi = $10) then
   begin
 
-    ResimSiraNo := ResimDugmesi^.Deger and $FFFFFF;
+    ResimSiraNo := Deger and $FFFFFF;
 
-    KaynaktanResimCiz(ResimDugmesi, CizimAlani, ResimSiraNo);
+    KaynaktanResimCiz(Self, CizimAlani, ResimSiraNo);
   end
   // resim düğmesi içeriğinin çizilmesi - çekirdek içi çalışma için
   else if(CizimTipi = $30) then
   begin
 
-    ResimSiraNo := ResimDugmesi^.Deger and $FFFFFF;
+    ResimSiraNo := Deger and $FFFFFF;
 
-    KaynaktanResimCiz21(ResimDugmesi, CizimAlani.Sol, CizimAlani.Ust, ResimSiraNo);
+    KaynaktanResimCiz21(Self, CizimAlani.Sol, CizimAlani.Ust, ResimSiraNo);
   end
   // resim düğmesi içeriğinin bitmap resim ile çizilmesi
   else if(CizimTipi = $80) then
   begin
 
-    ResimSiraNo := ResimDugmesi^.Deger and $FFFFFF;
+    ResimSiraNo := Deger and $FFFFFF;
 
-    KaynaktanResimCiz2(ResimDugmesi, CizimAlani.Sol + 1, CizimAlani.Ust + 1, ResimSiraNo);
+    KaynaktanResimCiz2(Self, CizimAlani.Sol + 1, CizimAlani.Ust + 1, ResimSiraNo);
   end
   // resim düğmesi içeriğinin renk ile doldurulması
-  else DikdortgenDoldur(ResimDugmesi, CizimAlani.Sol + 1, CizimAlani.Ust + 1,
+  else DikdortgenDoldur(Self, CizimAlani.Sol + 1, CizimAlani.Ust + 1,
 
-    CizimAlani.Sag - 1, CizimAlani.Alt - 1, ResimDugmesi^.Deger, ResimDugmesi^.Deger);
+    CizimAlani.Sag - 1, CizimAlani.Alt - 1, Deger, Deger);
 
   // kenarlık çizimi
-  if(ResimDugmesi^.FKenarlikCiz) then
+  if(FKenarlikCiz) then
   begin
 
-    if(ResimDugmesi^.FDurum = ddNormal) then
-      Dikdortgen(ResimDugmesi, ctDuz, CizimAlani, RENK_GUMUS)
-    else Dikdortgen(ResimDugmesi, ctDuz, CizimAlani, RENK_SIYAH);
+    if(FDurum = ddNormal) then
+      Dikdortgen(Self, ctDuz, CizimAlani, RENK_GUMUS)
+    else Dikdortgen(Self, ctDuz, CizimAlani, RENK_SIYAH);
   end;
 end;
 
 {==============================================================================
   resim düğmesi nesne olaylarını işler
  ==============================================================================}
-procedure TResimDugmesi.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+procedure TResimDugmesi.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 var
-  Pencere: PPencere;
-  ResimDugmesi: PResimDugmesi;
+  Pencere: TPencere;
+  ResimDugmesi: TResimDugmesi;
 begin
 
-  ResimDugmesi := PResimDugmesi(AGonderici);
+  ResimDugmesi := TResimDugmesi(AGonderici);
   if(ResimDugmesi = nil) then Exit;
 
   // farenin sol tuşuna basım işlemi
@@ -262,7 +265,7 @@ begin
     Pencere := EnUstPencereNesnesiniAl(ResimDugmesi);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
     // bilgi: şu aşamada bu nesne odaklanılabilir bir nesne değil
@@ -270,22 +273,22 @@ begin
     //ResimDugmesi^.Odaklanildi := False;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
-    if(ResimDugmesi^.FareNesneOlayAlanindaMi(ResimDugmesi)) then
+    if(ResimDugmesi.FareNesneOlayAlanindaMi(ResimDugmesi)) then
     begin
 
       // fare olaylarını yakala
       OlayYakalamayaBasla(ResimDugmesi);
 
       // resim düğmesinin durumunu BASILI olarak belirle
-      ResimDugmesi^.FDurum := ddBasili;
+      ResimDugmesi.FDurum := ddBasili;
 
       // resim düğmesi nesnesini yeniden çiz
-      ResimDugmesi^.Ciz;
+      ResimDugmesi.Ciz;
 
       // uygulamaya veya efendi nesneye mesaj gönder
-      if not(ResimDugmesi^.OlayYonlendirmeAdresi = nil) then
-        ResimDugmesi^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-      else Gorevler0.OlayEkle(ResimDugmesi^.F0.GorevKimlik, AOlay);
+      if not(ResimDugmesi.OlayYonlendirmeAdresi = nil) then
+        ResimDugmesi.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
+      else GGorevler.OlayEkle(ResimDugmesi.GorevKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -294,29 +297,29 @@ begin
     // fare olaylarını almayı bırak
     OlayYakalamayiBirak(ResimDugmesi);
 
-    //  basılan resim düğmesini eski konumuna geri getir
-    ResimDugmesi^.FDurum := ddNormal;
+    //  basılan resim düğmesini NORMAL olarak belirle
+    ResimDugmesi.FDurum := ddNormal;
 
     // resim düğmesi nesnesini yeniden çiz
-    ResimDugmesi^.Ciz;
+    ResimDugmesi.Ciz;
 
     // farenin tuş bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
-    if(ResimDugmesi^.FareNesneOlayAlanindaMi(ResimDugmesi)) then
+    if(ResimDugmesi.FareNesneOlayAlanindaMi(ResimDugmesi)) then
     begin
 
       // yakalama & bırakma işlemi bu nesnede olduğu için
       // uygulamaya veya efendi nesneye FO_TIKLAMA mesajı gönder
       AOlay.Olay := FO_TIKLAMA;
-      if not(ResimDugmesi^.OlayYonlendirmeAdresi = nil) then
-        ResimDugmesi^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-      else Gorevler0.OlayEkle(ResimDugmesi^.F0.GorevKimlik, AOlay);
+      if not(ResimDugmesi.OlayYonlendirmeAdresi = nil) then
+        ResimDugmesi.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
+      else GGorevler.OlayEkle(ResimDugmesi.GorevKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
-    if not(ResimDugmesi^.OlayYonlendirmeAdresi = nil) then
-      ResimDugmesi^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-    else Gorevler0.OlayEkle(ResimDugmesi^.F0.GorevKimlik, AOlay);
+    if not(ResimDugmesi.OlayYonlendirmeAdresi = nil) then
+      ResimDugmesi.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
+    else GGorevler.OlayEkle(ResimDugmesi.GorevKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -328,22 +331,22 @@ begin
     if(YakalananGorselNesne <> nil) then
     begin
 
-      if(ResimDugmesi^.FareNesneOlayAlanindaMi(ResimDugmesi)) then
-        ResimDugmesi^.FDurum := ddBasili
-      else ResimDugmesi^.FDurum := ddNormal;
+      if(ResimDugmesi.FareNesneOlayAlanindaMi(ResimDugmesi)) then
+        ResimDugmesi.FDurum := ddBasili
+      else ResimDugmesi.FDurum := ddNormal;
     end;
 
     // resim düğmesi nesnesini yeniden çiz
-    ResimDugmesi^.Ciz;
+    ResimDugmesi.Ciz;
 
     // uygulamaya veya efendi nesneye mesaj gönder
-    if not(ResimDugmesi^.OlayYonlendirmeAdresi = nil) then
-      ResimDugmesi^.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-    else Gorevler0.OlayEkle(ResimDugmesi^.F0.GorevKimlik, AOlay);
+    if not(ResimDugmesi.OlayYonlendirmeAdresi = nil) then
+      ResimDugmesi.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
+    else GGorevler.OlayEkle(ResimDugmesi.GorevKimlik, AOlay);
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := ResimDugmesi^.F0.FareImlecTipi;
+  GecerliFareGostegeTipi := ResimDugmesi.FareImlecTipi;
 end;
 
 end.
