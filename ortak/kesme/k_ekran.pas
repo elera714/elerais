@@ -6,7 +6,7 @@
   Dosya Adı: k_ekran.pas
   Dosya İşlevi: ekran (screen) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 23/06/2020
+  Güncelleme Tarihi: 12/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,28 +20,31 @@ function EkranCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel, gorev, src_vesa20;
+uses gorev, src_vesa20;
 
 {==============================================================================
   ekran kesme çağrılarını yönetir
  ==============================================================================}
 function EkranCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  Islev: TSayi4;
+  IslevNo: TSayi4;
   Konum: PKonum;
 begin
 
-  // işlev no
-  Islev := (AIslevNo and $FF);
+  Result := HATA_ISLEV;
 
-  // AL'ma işlevi
-  if(Islev = 2) then
+  // işlev no
+  IslevNo := (AIslevNo and $FF);
+
+  // ana işlev
+  if(IslevNo = 2) then
   begin
 
-    Islev := ((AIslevNo shr 8) and $FF);
+    // alt işlev
+    IslevNo := ((AIslevNo shr 8) and $FF);
 
     // ekran çözünürlüğünü al
-    if(Islev = 1) then
+    if(IslevNo = 1) then
     begin
 
       // çözünürlük değerlerini belirtilen bellek adreslerine kopyala
@@ -52,12 +55,9 @@ begin
       Konum^.Ust := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
 
       // işlev başarı kodunu geri döndür
-      Result := 1;
+      Result := HATA_YOK;
     end;
-  end
-
-  // işlev belirtilen aralıkta değil ise hata kodunu geri döndür
-  else Result := HATA_ISLEV;
+  end;
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adı: gn_renksecici.pas
   Dosya İşlevi: renk seçim yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 12/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,6 +22,7 @@ const
     RENK_KIRMIZI, RENK_BORDO, RENK_SARI, RENK_ZEYTINYESILI,
     RENK_ACIKYESIL, RENK_YESIL, RENK_ACIKMAVI, RENK_TURKUAZ,
     RENK_MAVI, RENK_LACIVERT, RENK_PEMBE, RENK_MOR);
+
   KenarRenkleri: array[0..15] of TRenk = (
     RENK_SIYAH, RENK_SIYAH, RENK_BEYAZ, RENK_BEYAZ,
     RENK_BEYAZ, RENK_BEYAZ, RENK_SIYAH, RENK_BEYAZ,
@@ -30,36 +31,39 @@ const
 
 type
   PRenkSecici = ^TRenkSecici;
-  TRenkSecici = object(TPanel)
+  TRenkSecici = class(TPanel)
   public
-    function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-      ASol, AUst, AGenislik, AYukseklik: TSayi4): PRenkSecici;
-    procedure YokEt(AKimlik: TKimlik);
+    constructor Create; override;
+    destructor Destroy; override;
+    function Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+      ASol, AUst, AGenislik, AYukseklik: TSayi4): TISayi4;
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
     procedure Ciz;
-    procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
     property FRenkKutuG: TISayi4 read FIDeger1 write FIDeger1;
     property FRenkKutuY: TISayi4 read FIDeger2 write FIDeger2;
     property FSeciliRenkSiraNo: TISayi4 read FIDeger3 write FIDeger3;
   end;
 
 function RenkSeciciCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TSayi4): TKimlik;
+function RenkSeciciGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYukseklik: TSayi4): TKimlik;
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj;
+uses gn_pencere, gn_islevler, temelgorselnesne;
 
 {==============================================================================
-  renk seçici nesne kesme çağrılarını yönetir
+  renk seçici kesme çağrılarını yönetir
  ==============================================================================}
 function RenkSeciciCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GN: PGorselNesne;
-  RenkSecici: PRenkSecici;
+  GN: TGorselNesne;
+  RenkSecici: TRenkSecici;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
@@ -67,78 +71,89 @@ begin
     begin
 
       GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+      Result := RenkSeciciGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PRenk(ADegiskenler + 12)^, PRenk(ADegiskenler + 16)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      RenkSecici := PRenkSecici(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      RenkSecici^.Goster;
+      RenkSecici := TRenkSecici(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      RenkSecici.Goster;
     end;
-
-    else Result := HATA_ISLEV;
   end;
 end;
 
 {==============================================================================
-  renk seçici nesnesini oluşturur
+  uygulama için renk seçici nesnesi oluşturur - api
  ==============================================================================}
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TSayi4): TKimlik;
+function RenkSeciciGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYukseklik: TSayi4): TKimlik;
 var
-  RenkSecici: PRenkSecici;
+  RenkSecici: TRenkSecici;
 begin
 
-  RenkSecici := RenkSecici^.Olustur(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik);
+  RenkSecici := TRenkSecici.Create;
 
   if(RenkSecici = nil) then
 
     Result := HATA_NESNEOLUSTURMA
+  else
+  begin
 
-  else Result := RenkSecici^.F0.Kimlik;
+    RenkSecici.Ozellestir(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik);
+
+    Result := RenkSecici.Kimlik;
+  end;
 end;
 
 {==============================================================================
-  renk seçici nesnesini oluşturur
+  renk seçici nesnesi oluşturur
  ==============================================================================}
-function TRenkSecici.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-  ASol, AUst, AGenislik, AYukseklik: TSayi4): PRenkSecici;
-var
-  RenkSecici: PRenkSecici;
+constructor TRenkSecici.Create;
 begin
 
-  RenkSecici := PRenkSecici(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst, AGenislik,
-    AYukseklik, 0, 0, 0, 0, ''));
+  inherited Create;
 
-  // nesnenin ad değeri
-  RenkSecici^.F0.NesneTipi := gntRenkSecici;
+  NesneTipi := gntRenkSecici;
 
-  RenkSecici^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
-
-  RenkSecici^.F0.Odaklanilabilir := True;
-  RenkSecici^.F0.Odaklanildi := False;
-
-  RenkSecici^.OlayCagriAdresi := @OlaylariIsle;
-
-  // renk kutu genişlik & yükseklik değerlerini belirle
-  RenkSecici^.FRenkKutuG := AGenislik div 8;
-  RenkSecici^.FRenkKutuY := AYukseklik div 2;
-
-  // seçili renk = -1 = seçili renk yok
-  RenkSecici^.FSeciliRenkSiraNo := -1;
-
-  // nesne adresini geri döndür
-  Result := RenkSecici;
+  GGorselNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
   renk seçici nesnesini yok eder
  ==============================================================================}
-procedure TRenkSecici.YokEt(AKimlik: TKimlik);
+destructor TRenkSecici.Destroy;
 begin
 
-  inherited YokEt(AKimlik);
+  GGorselNesneler.YokEt(Self);
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  renk seçici nesnesini özelleştirir
+ ==============================================================================}
+function TRenkSecici.Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+  ASol, AUst, AGenislik, AYukseklik: TSayi4): TISayi4;
+begin
+
+  Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
+    0, 0, 0, 0, '');
+
+  OlayCagriAdresi := @OlaylariIsle;
+
+  Odaklanilabilir := True;
+  Odaklanildi := False;
+
+  // renk kutu genişlik & yükseklik değerlerini belirle
+  FRenkKutuG := AGenislik div 8;
+  FRenkKutuY := AYukseklik div 2;
+
+  // seçili renk = -1 = seçili renk yok
+  FSeciliRenkSiraNo := -1;
+
+  // geri dönüş değeri
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
@@ -163,12 +178,7 @@ end;
   renk seçici nesnesini hizalandırır
  ==============================================================================}
 procedure TRenkSecici.Hizala;
-var
-  RenkSecici: PRenkSecici = nil;
 begin
-
-  RenkSecici := PRenkSecici(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(RenkSecici = nil) then Exit;
 
   inherited Hizala;
 end;
@@ -178,14 +188,10 @@ end;
  ==============================================================================}
 procedure TRenkSecici.Ciz;
 var
-  RenkSecici: PRenkSecici;
   CizimAlani: TAlan;
-  i, j, k: TISayi4;
+  i, j,
+  k: TISayi4;
 begin
-
-  // nesnenin kimlik, tip değerlerini denetle.
-  RenkSecici := PRenkSecici(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(RenkSecici = nil) then Exit;
 
   // 16 rengi 8 sütün, 2 satır olarak çiz. (8 x 2)
   k := 0;
@@ -199,35 +205,35 @@ begin
       CizimAlani.Ust := i * FRenkKutuY;
       CizimAlani.Sag := CizimAlani.Sol + FRenkKutuG - 1;
       CizimAlani.Alt := CizimAlani.Ust + FRenkKutuY - 1;
-      RenkSecici^.DikdortgenDoldur(RenkSecici, CizimAlani, SecimRenkleri[(i * 8) + j],
+      DikdortgenDoldur(Self, CizimAlani, SecimRenkleri[(i * 8) + j],
         SecimRenkleri[(i * 8) + j]);
 
       if(k = FSeciliRenkSiraNo) then
-        RenkSecici^.Dikdortgen(RenkSecici, ctDuz, CizimAlani, KenarRenkleri[FSeciliRenkSiraNo]);
+        Dikdortgen(Self, ctDuz, CizimAlani, KenarRenkleri[FSeciliRenkSiraNo]);
 
       Inc(k);
     end;
   end;
 
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
-  if(RenkSecici^.F0.Odaklanildi) then
+  if(Odaklanildi) then
   begin
 
-    CizimAlani := RenkSecici^.F0.FCizimAlani;
-    RenkSecici^.Dikdortgen(RenkSecici, ctNokta, CizimAlani, RENK_SIYAH);
+    CizimAlani := FCizimAlani;
+    Dikdortgen(Self, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
 
 {==============================================================================
   renk seçici nesne olaylarını işler
  ==============================================================================}
-procedure TRenkSecici.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+procedure TRenkSecici.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 var
-  Pencere: PPencere;
-  RenkSecici: PRenkSecici;
+  Pencere: TPencere;
+  RenkSecici: TRenkSecici;
 begin
 
-  RenkSecici := PRenkSecici(AGonderici);
+  RenkSecici := TRenkSecici(AGonderici);
 
   // farenin sol tuşuna basım işlemi
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
@@ -237,20 +243,20 @@ begin
     Pencere := EnUstPencereNesnesiniAl(RenkSecici);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    Pencere^.FAktifNesne := RenkSecici;
-    RenkSecici^.F0.Odaklanildi := True;
+    Pencere.FAktifNesne := RenkSecici;
+    RenkSecici.Odaklanildi := True;
 
     // fare olaylarını yakala
     OlayYakalamayaBasla(RenkSecici);
 
-    RenkSecici^.FSeciliRenkSiraNo := ((AOlay.Deger2 div RenkSecici^.FRenkKutuY) * 8) +
-      (AOlay.Deger1 div RenkSecici^.FRenkKutuG);
+    RenkSecici.FSeciliRenkSiraNo := ((AOlay.Deger2 div RenkSecici.FRenkKutuY) * 8) +
+      (AOlay.Deger1 div RenkSecici.FRenkKutuG);
 
     // renk seçici nesnesini yeniden çiz
-    RenkSecici^.Ciz;
+    RenkSecici.Ciz;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
@@ -259,29 +265,29 @@ begin
     OlayYakalamayiBirak(RenkSecici);
 
     // renk seçici nesnesini yeniden çiz
-    RenkSecici^.Ciz;
+    RenkSecici.Ciz;
 
     // farenin tuş bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
-    if(RenkSecici^.FareNesneOlayAlanindaMi(RenkSecici)) then
+    if(RenkSecici.FareNesneOlayAlanindaMi(RenkSecici)) then
     begin
 
-      if(RenkSecici^.FSeciliRenkSiraNo > -1) then
+      if(RenkSecici.FSeciliRenkSiraNo > -1) then
       begin
 
         // yakalama & bırakma işlemi bu nesnede olduğu için
         // uygulamaya veya efendi nesneye FO_TIKLAMA mesajı gönder
         AOlay.Olay := FO_TIKLAMA;
-        AOlay.Deger1 := SecimRenkleri[RenkSecici^.FSeciliRenkSiraNo];
+        AOlay.Deger1 := SecimRenkleri[RenkSecici.FSeciliRenkSiraNo];
         AOlay.Deger2 := 0;
-        if not(RenkSecici^.OlayYonlendirmeAdresi = nil) then
-          RenkSecici^.OlayYonlendirmeAdresi(RenkSecici, AOlay)
-        else Gorevler0.OlayEkle(RenkSecici^.F0.GorevKimlik, AOlay);
+        if not(RenkSecici.OlayYonlendirmeAdresi = nil) then
+          RenkSecici.OlayYonlendirmeAdresi(RenkSecici, AOlay)
+        else GGorevler.OlayEkle(RenkSecici.GorevKimlik, AOlay);
       end;
     end;
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := RenkSecici^.F0.FareImlecTipi;
+  GecerliFareGostegeTipi := RenkSecici.FareImlecTipi;
 end;
 
 end.

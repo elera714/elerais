@@ -6,7 +6,7 @@
   Dosya Adı: k_giysi.pas
   Dosya İşlevi: giysi (skin) kesme işlevlerini yönetir
 
-  Güncelleme Tarihi: 07/08/2025
+  Güncelleme Tarihi: 12/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,24 +20,26 @@ function GiysiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses genel, gorev;
+uses gorev, gn_islevler;
 
 function GiysiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  Islev, GiysiSN: TSayi4;
+  IslevNo, GiysiSN: TSayi4;
   p: PKarakterKatari;
 begin
 
+  Result := HATA_ISLEV;
+
   // işlev no
-  Islev := (AIslevNo and $FFFFFF);
+  IslevNo := (AIslevNo and $FFFFFF);
 
   // giysi sayısını geri döndür
-  if(Islev = 1) then
+  if(IslevNo = 1) then
   begin
 
     Result := GGiysiler.ToplamGiysi;
   end
-  else if(Islev = 2) then
+  else if(IslevNo = 2) then
   begin
 
     GiysiSN := PSayi4(ADegiskenler + 00)^;
@@ -45,15 +47,15 @@ begin
     begin
 
       p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-      p^ := GGiysiler.Giysi[GiysiSN]^.Ad;
+      p^ := GGiysiler.Giysi[GiysiSN].Ad;
     end;
   end
-  else if(Islev = 3) then
+  else if(IslevNo = 3) then
   begin
 
     Result :=  GGiysiler.AktifGiysiSN;
   end
-  else if(Islev = 4) then
+  else if(IslevNo = 4) then
   begin
 
     GiysiSN := PSayi4(ADegiskenler + 00)^;
@@ -62,12 +64,9 @@ begin
 
       GGiysiler.AktifGiysiSN := GiysiSN;
       GGiysiler.AktifGiysi := GGiysiler.Giysi[GGiysiler.AktifGiysiSN];
-      GAktifMasaustu^.Ciz;
+      GGorselNesneler.AktifMasaustu.Ciz;
     end;
-  end
-
-  // işlev belirtilen aralıkta değil ise hata kodunu geri döndür
-  else Result := HATA_ISLEV;
+  end;
 end;
 
 end.

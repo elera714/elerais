@@ -6,7 +6,7 @@
   Dosya Adı: giysi_normal.pas
   Dosya İşlevi: pencere nesnesine normal görünüm uygular
 
-  Güncelleme Tarihi: 09/08/2020
+  Güncelleme Tarihi: 12/08/2026
 
   Önemli Notlar:
     1. renk değeri olarak kullanılan -1 değeri renk değerinin olmadığını gösterir
@@ -20,6 +20,12 @@ unit giysi_normal;
 interface
 
 uses paylasim, giysi;
+
+type
+  TGiysiNormal = class(TGiysi)
+  public
+    constructor Create;
+  end;
 
 const
   // başlık = taşıma çubuğu sabitleri
@@ -43,9 +49,9 @@ const
 
   AKTIF_BASLIK_YAZIRENGI  = RENK_BEYAZ;
   PASIF_BASLIK_YAZIRENGI  = RENK_GUMUS;
-  IC_DOLGU_RENGI          = -1;
-  BASLIK_YAZI_S           = -1;
-  BASLIK_YAZI_U           = -1;
+  IC_DOLGU_RENGI          = $FFFFFFFF;
+  BASLIK_YAZI_S           = $FFFFFFFF;
+  BASLIK_YAZI_U           = $FFFFFFFF;
 
   // yeni değerler
   KAPATMA_DUGMESI_S       = -25;
@@ -62,7 +68,7 @@ const
   KUCULTME_DUGMESI_Y      = 12;
 
 const
-  ResimSolUstA: array[0..BASLIK_Y - 1, 0..RESIM_SOLUST_G - 1] of TRenk = (
+  NormalResimSolUstA: array[0..BASLIK_Y - 1, 0..RESIM_SOLUST_G - 1] of TRenk = (
     ($00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010),
     ($00000000, $00B8C8DC, $00B7C7DA, $00B7C7DA, $00B7C7DA, $00B7C7DA, $00B7C7DA, $00B7C7DA),
     ($00000000, $00BCCEE3, $00BCCEE3, $00BCCEE3, $00889EBB, $00889EBB, $00889EBB, $00889EBB),
@@ -88,7 +94,7 @@ const
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC),
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010, $00101010, $00101010, $00101010));
 
-  ResimSolUstP: array[0..BASLIK_Y - 1, 0..RESIM_SOLUST_G - 1] of TRenk = (
+  NormalResimSolUstP: array[0..BASLIK_Y - 1, 0..RESIM_SOLUST_G - 1] of TRenk = (
     ($00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010),
     ($00101010, $00ACACAC, $00ACACAC, $00ACACAC, $00ACACAC, $00ACACAC, $00ACACAC, $00ACACAC),
     ($00101010, $00A2A2A2, $00A2A2A2, $00A2A2A2, $00858585, $00858585, $00858585, $00858585),
@@ -114,7 +120,7 @@ const
     ($00101010, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272),
     ($00181818, $00727272, $00727272, $00727272, $00000000, $00000000, $00000000, $00000000));
 
-  ResimUstA: array[0..BASLIK_Y - 1, 0..RESIM_UST_G - 1] of TRenk = (
+  NormalResimUstA: array[0..BASLIK_Y - 1, 0..RESIM_UST_G - 1] of TRenk = (
     ($00101010, $00101010, $00101010, $00101010),
     ($00B7C7DA, $00B7C7DA, $00B7C7DA, $00B7C7DA),
     ($00889EBB, $00889EBB, $00889EBB, $00889EBB),
@@ -140,7 +146,7 @@ const
     ($00609FCC, $00609FCC, $00609FCC, $00609FCC),
     ($00101010, $00101010, $00101010, $00101010));
 
-  ResimUstP: array[0..BASLIK_Y - 1, 0..RESIM_UST_G - 1] of TRenk = (
+  NormalResimUstP: array[0..BASLIK_Y - 1, 0..RESIM_UST_G - 1] of TRenk = (
     ($00101010, $00101010, $00101010, $00101010),
     ($00ACACAC, $00ACACAC, $00ACACAC, $00ACACAC),
     ($00858585, $00858585, $00858585, $00858585),
@@ -166,7 +172,7 @@ const
     ($00727272, $00727272, $00727272, $00727272),
     ($00000000, $00000000, $00000000, $00000000));
 
-  ResimSagUstA: array[0..BASLIK_Y - 1, 0..RESIM_SAGUST_G - 1] of TRenk = (
+  NormalResimSagUstA: array[0..BASLIK_Y - 1, 0..RESIM_SAGUST_G - 1] of TRenk = (
     ($00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010),
     ($00B7C7DA, $00B7C7DA, $00B7C7DA, $00B7C7DA, $00B7C7DA, $00B7C7DA, $00B8C8DC, $00000000),
     ($00889EBB, $00889EBB, $00889EBB, $00889EBB, $00BCCEE3, $00BCCEE3, $00BCCEE3, $00000000),
@@ -192,7 +198,7 @@ const
     ($00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00000000),
     ($00101010, $00101010, $00101010, $00101010, $00609FCC, $00609FCC, $00609FCC, $00000000));
 
-  ResimSagUstP: array[0..BASLIK_Y - 1, 0..RESIM_SAGUST_G - 1] of TRenk = (
+  NormalResimSagUstP: array[0..BASLIK_Y - 1, 0..RESIM_SAGUST_G - 1] of TRenk = (
     ($00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010),
     ($00ACACAC, $00ACACAC, $00ACACAC, $00ACACAC, $00ACACAC, $00ACACAC, $00ACACAC, $00101010),
     ($00858585, $00858585, $00858585, $00858585, $00A2A2A2, $00A2A2A2, $00A2A2A2, $00101010),
@@ -218,7 +224,7 @@ const
     ($00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00101010),
     ($00000000, $00000000, $00000000, $00000000, $00727272, $00727272, $00727272, $00181818));
 
-  ResimSolA: array[0..RESIM_SOL_Y - 1, 0..RESIM_SOL_G - 1] of TRenk = (
+  NormalResimSolA: array[0..RESIM_SOL_Y - 1, 0..RESIM_SOL_G - 1] of TRenk = (
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010),
@@ -236,7 +242,7 @@ const
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010));
 
-  ResimSolP: array[0..RESIM_SOL_Y - 1, 0..RESIM_SOL_G - 1] of TRenk = (
+  NormalResimSolP: array[0..RESIM_SOL_Y - 1, 0..RESIM_SOL_G - 1] of TRenk = (
     ($00101010, $00727272, $00727272, $00727272, $00101010),
     ($00101010, $00727272, $00727272, $00727272, $00101010),
     ($00101010, $00727272, $00727272, $00727272, $00101010),
@@ -254,7 +260,7 @@ const
     ($00101010, $00727272, $00727272, $00727272, $00101010),
     ($00101010, $00727272, $00727272, $00727272, $00101010));
 
-  ResimSagA: array[0..RESIM_SAG_Y - 1, 0..RESIM_SAG_G - 1] of TRenk = (
+  NormalResimSagA: array[0..RESIM_SAG_Y - 1, 0..RESIM_SAG_G - 1] of TRenk = (
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010),
@@ -272,7 +278,7 @@ const
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00000000, $00609FCC, $00609FCC, $00609FCC, $00101010));
 
-  ResimSagP: array[0..RESIM_SAG_Y - 1, 0..RESIM_SAG_G - 1] of TRenk = (
+  NormalResimSagP: array[0..RESIM_SAG_Y - 1, 0..RESIM_SAG_G - 1] of TRenk = (
     ($00101010, $00727272, $00727272, $00727272, $00101010),
     ($00101010, $00727272, $00727272, $00727272, $00101010),
     ($00101010, $00727272, $00727272, $00727272, $00101010),
@@ -290,42 +296,42 @@ const
     ($00101010, $00727272, $00727272, $00727272, $00101010),
     ($00101010, $00727272, $00727272, $00727272, $00101010));
 
-  ResimSolAltA: array[0..RESIM_SOLALT_Y - 1, 0..RESIM_SOLALT_G - 1] of TRenk = (
+  NormalResimSolAltA: array[0..RESIM_SOLALT_Y - 1, 0..RESIM_SOLALT_G - 1] of TRenk = (
     ($00101010, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00101010, $00609FCC, $00609FCC, $00609FCC, $00609FCC),
     ($00101010, $00609FCC, $00609FCC, $00609FCC, $00609FCC),
     ($00101010, $00609FCC, $00609FCC, $00609FCC, $00609FCC),
     ($00000000, $00000000, $00000000, $00000000, $00101010));
 
-  ResimSolAltP: array[0..RESIM_SOLALT_Y - 1, 0..RESIM_SOLALT_G - 1] of TRenk = (
+  NormalResimSolAltP: array[0..RESIM_SOLALT_Y - 1, 0..RESIM_SOLALT_G - 1] of TRenk = (
     ($00101010, $00727272, $00727272, $00727272, $00101010),
     ($00101010, $00727272, $00727272, $00727272, $00727272),
     ($00101010, $00727272, $00727272, $00727272, $00727272),
     ($00101010, $00727272, $00727272, $00727272, $00727272),
     ($00000000, $00000000, $00000000, $00000000, $00101010));
 
-  ResimAltA: array[0..RESIM_ALT_Y - 1, 0..RESIM_ALT_G - 1] of TRenk = (
+  NormalResimAltA: array[0..RESIM_ALT_Y - 1, 0..RESIM_ALT_G - 1] of TRenk = (
     ($00000000, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010),
     ($00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC),
     ($00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC),
     ($00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC, $00609FCC),
     ($00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010));
 
-  ResimAltP: array[0..RESIM_ALT_Y - 1, 0..RESIM_ALT_G - 1] of TRenk = (
+  NormalResimAltP: array[0..RESIM_ALT_Y - 1, 0..RESIM_ALT_G - 1] of TRenk = (
     ($00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010),
     ($00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272),
     ($00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272),
     ($00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272, $00727272),
     ($00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010, $00101010));
 
-  ResimSagAltA: array[0..RESIM_SAGALT_Y - 1, 0..RESIM_SAGALT_G - 1] of TRenk = (
+  NormalResimSagAltA: array[0..RESIM_SAGALT_Y - 1, 0..RESIM_SAGALT_G - 1] of TRenk = (
     ($00101010, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00609FCC, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00609FCC, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00609FCC, $00609FCC, $00609FCC, $00609FCC, $00101010),
     ($00101010, $00000000, $00000000, $00000000, $00000000));
 
-  ResimSagAltP: array[0..RESIM_SAGALT_Y - 1, 0..RESIM_SAGALT_G - 1] of TRenk = (
+  NormalResimSagAltP: array[0..RESIM_SAGALT_Y - 1, 0..RESIM_SAGALT_G - 1] of TRenk = (
     ($00101010, $00727272, $00727272, $00727272, $00101010),
     ($00727272, $00727272, $00727272, $00727272, $00101010),
     ($00727272, $00727272, $00727272, $00727272, $00101010),
@@ -333,7 +339,7 @@ const
     ($00101010, $00000000, $00000000, $00000000, $00000000));
 
 const
-  KapatmaDugmesiA: array[0..KAPATMA_DUGMESI_Y - 1, 0..KAPATMA_DUGMESI_G - 1] of TRenk = (
+  NormalKapatmaDugmesiA: array[0..KAPATMA_DUGMESI_Y - 1, 0..KAPATMA_DUGMESI_G - 1] of TRenk = (
     ($00000000, $00000000, $00000000, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00000000, $00000000, $00000000),
     ($00000000, $00FFFFFF, $00FFFFFF, $00000000, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00000000, $00FFFFFF, $00FFFFFF, $00000000),
     ($00000000, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00000000, $FFFFFFFF, $FFFFFFFF, $00000000, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00000000),
@@ -347,7 +353,7 @@ const
     ($00000000, $00FFFFFF, $00FFFFFF, $00000000, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00000000, $00FFFFFF, $00FFFFFF, $00000000),
     ($00000000, $00000000, $00000000, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00000000, $00000000, $00000000));
 
-  KapatmaDugmesiP: array[0..KAPATMA_DUGMESI_Y - 1, 0..KAPATMA_DUGMESI_G - 1] of TRenk = (
+  NormalKapatmaDugmesiP: array[0..KAPATMA_DUGMESI_Y - 1, 0..KAPATMA_DUGMESI_G - 1] of TRenk = (
     ($00000000, $00000000, $00000000, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00000000, $00000000, $00000000),
     ($00000000, $00C0C0C0, $00C0C0C0, $00000000, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00000000, $00C0C0C0, $00C0C0C0, $00000000),
     ($00000000, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00000000, $FFFFFFFF, $FFFFFFFF, $00000000, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00000000),
@@ -361,7 +367,7 @@ const
     ($00000000, $00C0C0C0, $00C0C0C0, $00000000, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00000000, $00C0C0C0, $00C0C0C0, $00000000),
     ($00000000, $00000000, $00000000, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00000000, $00000000, $00000000));
 
-  BuyutmeDugmesiA: array[0..BUYUTME_DUGMESI_Y - 1, 0..BUYUTME_DUGMESI_G - 1] of TRenk = (
+  NormalBuyutmeDugmesiA: array[0..BUYUTME_DUGMESI_Y - 1, 0..BUYUTME_DUGMESI_G - 1] of TRenk = (
     ($00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000),
     ($00000000, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00000000),
     ($00000000, $00FFFFFF, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00FFFFFF, $00000000),
@@ -375,7 +381,7 @@ const
     ($00000000, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00000000),
     ($00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000));
 
-  BuyutmeDugmesiP: array[0..BUYUTME_DUGMESI_Y - 1, 0..BUYUTME_DUGMESI_G - 1] of TRenk = (
+  NormalBuyutmeDugmesiP: array[0..BUYUTME_DUGMESI_Y - 1, 0..BUYUTME_DUGMESI_G - 1] of TRenk = (
     ($00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000),
     ($00000000, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00000000),
     ($00000000, $00C0C0C0, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00C0C0C0, $00000000),
@@ -389,7 +395,7 @@ const
     ($00000000, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00000000),
     ($00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000));
 
-  KucultmeDugmesiA: array[0..KUCULTME_DUGMESI_Y - 1, 0..KUCULTME_DUGMESI_G - 1] of TRenk = (
+  NormalKucultmeDugmesiA: array[0..KUCULTME_DUGMESI_Y - 1, 0..KUCULTME_DUGMESI_G - 1] of TRenk = (
     ($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF),
     ($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF),
     ($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF),
@@ -403,7 +409,7 @@ const
     ($00000000, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00000000),
     ($00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000));
 
-  KucultmeDugmesiP: array[0..KUCULTME_DUGMESI_Y - 1, 0..KUCULTME_DUGMESI_G - 1] of TRenk = (
+  NormalKucultmeDugmesiP: array[0..KUCULTME_DUGMESI_Y - 1, 0..KUCULTME_DUGMESI_G - 1] of TRenk = (
     ($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF),
     ($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF),
     ($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF),
@@ -416,73 +422,121 @@ const
     ($00000000, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00000000),
     ($00000000, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00000000),
     ($00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000, $00000000));
-
-var
-  GiysiNormal: TGiysi = (
-    Ad                      : 'Normal Giysi';
-
-    BaslikYukseklik         : BASLIK_Y;
-
-    ResimSolUstGenislik     : RESIM_SOLUST_G;
-    ResimUstGenislik        : RESIM_UST_G;
-    ResimSagUstGenislik     : RESIM_SAGUST_G;
-
-    ResimSolGenislik        : RESIM_SOL_G;
-    ResimSolYukseklik       : RESIM_SOL_Y;
-    ResimSagGenislik        : RESIM_SAG_G;
-    ResimSagYukseklik       : RESIM_SAG_Y;
-
-    ResimSolAltGenislik     : RESIM_SOLALT_G;
-    ResimSolAltYukseklik    : RESIM_SOLALT_Y;
-    ResimAltGenislik        : RESIM_ALT_G;
-    ResimAltYukseklik       : RESIM_ALT_Y;
-    ResimSagAltGenislik     : RESIM_SAGALT_G;
-    ResimSagAltYukseklik    : RESIM_SAGALT_Y;
-
-    AktifBaslikYaziRengi    : AKTIF_BASLIK_YAZIRENGI;
-    PasifBaslikYaziRengi    : PASIF_BASLIK_YAZIRENGI;
-    IcDolguRengi            : IC_DOLGU_RENGI;     // pencere iç rengi sistem tarafından belirlenecek
-    BaslikYaziSol           : BASLIK_YAZI_S;      // başlığın sol başlangıç değeri pencerenin ortası olarak belirlenecek
-    BaslikYaziUst           : BASLIK_YAZI_U;      // başlığın üst başlangıç değeri pencerenin ortası olarak belirlenecek
-
-    KapatmaDugmesiSol       : KAPATMA_DUGMESI_S;
-    KapatmaDugmesiUst       : KAPATMA_DUGMESI_U;
-    KapatmaDugmesiGenislik  : KAPATMA_DUGMESI_G;
-    KapatmaDugmesiYukseklik : KAPATMA_DUGMESI_Y;
-    BuyutmeDugmesiSol       : BUYUTME_DUGMESI_S;
-    BuyutmeDugmesiUst       : BUYUTME_DUGMESI_U;
-    BuyutmeDugmesiGenislik  : BUYUTME_DUGMESI_G;
-    BuyutmeDugmesiYukseklik : BUYUTME_DUGMESI_Y;
-    KucultmeDugmesiSol      : KUCULTME_DUGMESI_S;
-    KucultmeDugmesiUst      : KUCULTME_DUGMESI_U;
-    KucultmeDugmesiGenislik : KUCULTME_DUGMESI_G;
-    KucultmeDugmesiYukseklik: KUCULTME_DUGMESI_Y;
-
-    ResimSolUstA: (Genislik: RESIM_SOLUST_G;  Yukseklik: BASLIK_Y;        BellekAdresi: @ResimSolUstA);
-    ResimSolUstP: (Genislik: RESIM_SOLUST_G;  Yukseklik: BASLIK_Y;        BellekAdresi: @ResimSolUstP);
-    ResimUstA:    (Genislik: RESIM_UST_G;     Yukseklik: BASLIK_Y;        BellekAdresi: @ResimUstA);
-    ResimUstP:    (Genislik: RESIM_UST_G;     Yukseklik: BASLIK_Y;        BellekAdresi: @ResimUstP);
-    ResimSagUstA: (Genislik: RESIM_SAGUST_G;  Yukseklik: BASLIK_Y;        BellekAdresi: @ResimSagUstA);
-    ResimSagUstP: (Genislik: RESIM_SAGUST_G;  Yukseklik: BASLIK_Y;        BellekAdresi: @ResimSagUstP);
-    ResimSolA:    (Genislik: RESIM_SOL_G;     Yukseklik: RESIM_SOL_Y;     BellekAdresi: @ResimSolA);
-    ResimSolP:    (Genislik: RESIM_SOL_G;     Yukseklik: RESIM_SOL_Y;     BellekAdresi: @ResimSolP);
-    ResimSagA:    (Genislik: RESIM_SAG_G;     Yukseklik: RESIM_SAG_Y;     BellekAdresi: @ResimSagA);
-    ResimSagP:    (Genislik: RESIM_SAG_G;     Yukseklik: RESIM_SAG_Y;     BellekAdresi: @ResimSagP);
-    ResimSolAltA: (Genislik: RESIM_SOLALT_G;  Yukseklik: RESIM_SOLALT_Y;  BellekAdresi: @ResimSolAltA);
-    ResimSolAltP: (Genislik: RESIM_SOLALT_G;  Yukseklik: RESIM_SOLALT_Y;  BellekAdresi: @ResimSolAltP);
-    ResimAltA:    (Genislik: RESIM_ALT_G;     Yukseklik: RESIM_ALT_Y;     BellekAdresi: @ResimAltA);
-    ResimAltP:    (Genislik: RESIM_ALT_G;     Yukseklik: RESIM_ALT_Y;     BellekAdresi: @ResimAltP);
-    ResimSagAltA: (Genislik: RESIM_SAGALT_G;  Yukseklik: RESIM_SAGALT_Y;  BellekAdresi: @ResimSagAltA);
-    ResimSagAltP: (Genislik: RESIM_SAGALT_G;  Yukseklik: RESIM_SAGALT_Y;  BellekAdresi: @ResimSagAltP);
-
-    AKapatmaDugmesiRSNo   : 15;
-    ABuyutmeDugmesiRSNo   : 17;
-    AKucultmeDugmesiRSNo  : 19;
-    PKapatmaDugmesiRSNo   : 16;
-    PBuyutmeDugmesiRSNo   : 18;
-    PKucultmeDugmesiRSNo  : 20;
-);
 
 implementation
+
+constructor TGiysiNormal.Create;
+begin
+
+  Ad := 'Normal Giysi';
+
+  BaslikYukseklik := BASLIK_Y;
+
+  ResimSolUstGenislik := RESIM_SOLUST_G;
+  ResimUstGenislik := RESIM_UST_G;
+  ResimSagUstGenislik := RESIM_SAGUST_G;
+
+  ResimSolGenislik := RESIM_SOL_G;
+  ResimSolYukseklik := RESIM_SOL_Y;
+  ResimSagGenislik := RESIM_SAG_G;
+  ResimSagYukseklik := RESIM_SAG_Y;
+
+  ResimSolAltGenislik := RESIM_SOLALT_G;
+  ResimSolAltYukseklik := RESIM_SOLALT_Y;
+  ResimAltGenislik := RESIM_ALT_G;
+  ResimAltYukseklik := RESIM_ALT_Y;
+  ResimSagAltGenislik := RESIM_SAGALT_G;
+  ResimSagAltYukseklik := RESIM_SAGALT_Y;
+
+  AktifBaslikYaziRengi := AKTIF_BASLIK_YAZIRENGI;
+  PasifBaslikYaziRengi := PASIF_BASLIK_YAZIRENGI;
+  IcDolguRengi := IC_DOLGU_RENGI;       // pencere iç rengi sistem tarafından belirlenecek
+  BaslikYaziSol := BASLIK_YAZI_S;       // başlığın sol başlangıç değeri pencerenin ortası olarak belirlenecek
+  BaslikYaziUst := BASLIK_YAZI_U;       // başlığın üst başlangıç değeri pencerenin ortası olarak belirlenecek
+
+  KapatmaDugmesiSol := KAPATMA_DUGMESI_S;
+  KapatmaDugmesiUst := KAPATMA_DUGMESI_U;
+  KapatmaDugmesiGenislik := KAPATMA_DUGMESI_G;
+  KapatmaDugmesiYukseklik := KAPATMA_DUGMESI_Y;
+  BuyutmeDugmesiSol := BUYUTME_DUGMESI_S;
+  BuyutmeDugmesiUst := BUYUTME_DUGMESI_U;
+  BuyutmeDugmesiGenislik := BUYUTME_DUGMESI_G;
+  BuyutmeDugmesiYukseklik := BUYUTME_DUGMESI_Y;
+  KucultmeDugmesiSol := KUCULTME_DUGMESI_S;
+  KucultmeDugmesiUst := KUCULTME_DUGMESI_U;
+  KucultmeDugmesiGenislik := KUCULTME_DUGMESI_G;
+  KucultmeDugmesiYukseklik := KUCULTME_DUGMESI_Y;
+
+  ResimSolUstA.Genislik := RESIM_SOLUST_G;
+  ResimSolUstA.Yukseklik := BASLIK_Y;
+  ResimSolUstA.BellekAdresi := @NormalResimSolUstA;
+
+  ResimSolUstP.Genislik := RESIM_SOLUST_G;
+  ResimSolUstP.Yukseklik := BASLIK_Y;
+  ResimSolUstP.BellekAdresi := @NormalResimSolUstP;
+
+  ResimUstA.Genislik := RESIM_UST_G;
+  ResimUstA.Yukseklik := BASLIK_Y;
+  ResimUstA.BellekAdresi := @NormalResimUstA;
+
+  ResimUstP.Genislik := RESIM_UST_G;
+  ResimUstP.Yukseklik := BASLIK_Y;
+  ResimUstP.BellekAdresi := @NormalResimUstP;
+
+  ResimSagUstA.Genislik := RESIM_SAGUST_G;
+  ResimSagUstA.Yukseklik := BASLIK_Y;
+  ResimSagUstA.BellekAdresi := @NormalResimSagUstA;
+
+  ResimSagUstP.Genislik := RESIM_SAGUST_G;
+  ResimSagUstP.Yukseklik := BASLIK_Y;
+  ResimSagUstP.BellekAdresi := @NormalResimSagUstP;
+
+  ResimSolA.Genislik := RESIM_SOL_G;
+  ResimSolA.Yukseklik := RESIM_SOL_Y;
+  ResimSolA.BellekAdresi := @NormalResimSolA;
+
+  ResimSolP.Genislik := RESIM_SOL_G;
+  ResimSolP.Yukseklik := RESIM_SOL_Y;
+  ResimSolP.BellekAdresi := @NormalResimSolP;
+
+  ResimSagA.Genislik := RESIM_SAG_G;
+  ResimSagA.Yukseklik := RESIM_SAG_Y;
+  ResimSagA.BellekAdresi := @NormalResimSagA;
+
+  ResimSagP.Genislik := RESIM_SAG_G;
+  ResimSagP.Yukseklik := RESIM_SAG_Y;
+  ResimSagP.BellekAdresi := @NormalResimSagP;
+
+  ResimSolAltA.Genislik := RESIM_SOLALT_G;
+  ResimSolAltA.Yukseklik := RESIM_SOLALT_Y;
+  ResimSolAltA.BellekAdresi := @NormalResimSolAltA;
+
+  ResimSolAltP.Genislik := RESIM_SOLALT_G;
+  ResimSolAltP.Yukseklik := RESIM_SOLALT_Y;
+  ResimSolAltP.BellekAdresi := @NormalResimSolAltP;
+
+  ResimAltA.Genislik := RESIM_ALT_G;
+  ResimAltA.Yukseklik := RESIM_ALT_Y;
+  ResimAltA.BellekAdresi := @NormalResimAltA;
+
+  ResimAltP.Genislik := RESIM_ALT_G;
+  ResimAltP.Yukseklik := RESIM_ALT_Y;
+  ResimAltP.BellekAdresi := @NormalResimAltP;
+
+  ResimSagAltA.Genislik := RESIM_SAGALT_G;
+  ResimSagAltA.Yukseklik := RESIM_SAGALT_Y;
+  ResimSagAltA.BellekAdresi := @NormalResimSagAltA;
+
+  ResimSagAltP.Genislik := RESIM_SAGALT_G;
+  ResimSagAltP.Yukseklik := RESIM_SAGALT_Y;
+  ResimSagAltP.BellekAdresi := @NormalResimSagAltP;
+
+  AKapatmaDugmesiRSNo := 15;
+  ABuyutmeDugmesiRSNo := 17;
+  AKucultmeDugmesiRSNo := 19;
+  PKapatmaDugmesiRSNo := 16;
+  PBuyutmeDugmesiRSNo := 18;
+  PKucultmeDugmesiRSNo := 20;
+end;
 
 end.

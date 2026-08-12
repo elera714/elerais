@@ -3,10 +3,10 @@
   Kodlayan: Fatih KILIÇ
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya Adı: giysi_normal.pas
-  Dosya İşlevi: pencere nesnesine normal görünüm uygular
+  Dosya Adı: giysi_elera.pas
+  Dosya İşlevi: pencere nesnesine elera işletim sisteminin resmi giysi görünümünü uygular
 
-  Güncelleme Tarihi: 07/08/2025
+  Güncelleme Tarihi: 12/08/2026
 
   Önemli Notlar:
     1. renk değeri olarak kullanılan -1 değeri renk değerinin olmadığını gösterir
@@ -20,6 +20,12 @@ unit giysi_elera;
 interface
 
 uses paylasim, giysi;
+
+type
+  TGiysiELERA = class(TGiysi)
+  public
+    constructor Create;
+  end;
 
 const
   // başlık = taşıma çubuğu sabitleri
@@ -43,9 +49,9 @@ const
 
   AKTIF_BASLIK_YAZIRENGI  = RENK_BEYAZ;
   PASIF_BASLIK_YAZIRENGI  = RENK_GUMUS;
-  IC_DOLGU_RENGI          = -1;
-  BASLIK_YAZI_S           = -1;
-  BASLIK_YAZI_U           = -1;
+  IC_DOLGU_RENGI          = $FFFFFFFF;
+  BASLIK_YAZI_S           = $FFFFFFFF;
+  BASLIK_YAZI_U           = $FFFFFFFF;
 
   // yeni değerler
   KAPATMA_DUGMESI_S       = -30;
@@ -62,7 +68,7 @@ const
   KUCULTME_DUGMESI_Y      = 16;
 
 const
-  ResimSolUstA: array[0..BASLIK_Y - 1, 0..RESIM_SOLUST_G - 1] of TRenk = (
+  EleraResimSolUstA: array[0..BASLIK_Y - 1, 0..RESIM_SOLUST_G - 1] of TRenk = (
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388),
@@ -96,7 +102,7 @@ const
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323));
 
-  ResimSolUstP: array[0..BASLIK_Y - 1, 0..RESIM_SOLUST_G - 1] of TRenk = (
+  EleraResimSolUstP: array[0..BASLIK_Y - 1, 0..RESIM_SOLUST_G - 1] of TRenk = (
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
@@ -130,7 +136,7 @@ const
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A));
 
-  ResimUstA: array[0..BASLIK_Y - 1, 0..RESIM_UST_G - 1] of TRenk = (
+  EleraResimUstA: array[0..BASLIK_Y - 1, 0..RESIM_UST_G - 1] of TRenk = (
     ($008B2323, $00992388, $008B2323, $00992388),
     ($00992388, $008B2323, $00992388, $008B2323),
     ($008B2323, $00992388, $008B2323, $00992388),
@@ -164,7 +170,7 @@ const
     ($008B2323, $00992388, $008B2323, $00992388),
     ($00992388, $008B2323, $00992388, $008B2323));
 
-  ResimUstP: array[0..BASLIK_Y - 1, 0..RESIM_UST_G - 1] of TRenk = (
+  EleraResimUstP: array[0..BASLIK_Y - 1, 0..RESIM_UST_G - 1] of TRenk = (
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
@@ -198,7 +204,7 @@ const
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A));
 
-  ResimSagUstA: array[0..BASLIK_Y - 1, 0..RESIM_SAGUST_G - 1] of TRenk = (
+  EleraResimSagUstA: array[0..BASLIK_Y - 1, 0..RESIM_SAGUST_G - 1] of TRenk = (
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388),
@@ -232,7 +238,7 @@ const
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323));
 
-  ResimSagUstP: array[0..BASLIK_Y - 1, 0..RESIM_SAGUST_G - 1] of TRenk = (
+  EleraResimSagUstP: array[0..BASLIK_Y - 1, 0..RESIM_SAGUST_G - 1] of TRenk = (
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
@@ -266,7 +272,7 @@ const
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A));
 
-  ResimSolA: array[0..RESIM_SOL_Y - 1, 0..RESIM_SOL_G - 1] of TRenk = (
+  EleraResimSolA: array[0..RESIM_SOL_Y - 1, 0..RESIM_SOL_G - 1] of TRenk = (
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323),
@@ -284,7 +290,7 @@ const
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388));
 
-  ResimSolP: array[0..RESIM_SOL_Y - 1, 0..RESIM_SOL_G - 1] of TRenk = (
+  EleraResimSolP: array[0..RESIM_SOL_Y - 1, 0..RESIM_SOL_G - 1] of TRenk = (
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
@@ -302,7 +308,7 @@ const
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A));
 
-  ResimSagA: array[0..RESIM_SAG_Y - 1, 0..RESIM_SAG_G - 1] of TRenk = (
+  EleraResimSagA: array[0..RESIM_SAG_Y - 1, 0..RESIM_SAG_G - 1] of TRenk = (
     ($00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388),
@@ -320,7 +326,7 @@ const
     ($00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323));
 
-  ResimSagP: array[0..RESIM_SAG_Y - 1, 0..RESIM_SAG_G - 1] of TRenk = (
+  EleraResimSagP: array[0..RESIM_SAG_Y - 1, 0..RESIM_SAG_G - 1] of TRenk = (
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
@@ -338,42 +344,42 @@ const
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A));
 
-  ResimSolAltA: array[0..RESIM_SOLALT_Y - 1, 0..RESIM_SOLALT_G - 1] of TRenk = (
+  EleraResimSolAltA: array[0..RESIM_SOLALT_Y - 1, 0..RESIM_SOLALT_G - 1] of TRenk = (
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323));
 
-  ResimSolAltP: array[0..RESIM_SOLALT_Y - 1, 0..RESIM_SOLALT_G - 1] of TRenk = (
+  EleraResimSolAltP: array[0..RESIM_SOLALT_Y - 1, 0..RESIM_SOLALT_G - 1] of TRenk = (
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A));
 
-  ResimAltA: array[0..RESIM_ALT_Y - 1, 0..RESIM_ALT_G - 1] of TRenk = (
+  EleraResimAltA: array[0..RESIM_ALT_Y - 1, 0..RESIM_ALT_G - 1] of TRenk = (
     ($00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323, $00992388, $008B2323));
 
-  ResimAltP: array[0..RESIM_ALT_Y - 1, 0..RESIM_ALT_G - 1] of TRenk = (
+  EleraResimAltP: array[0..RESIM_ALT_Y - 1, 0..RESIM_ALT_G - 1] of TRenk = (
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A));
 
-  ResimSagAltA: array[0..RESIM_SAGALT_Y - 1, 0..RESIM_SAGALT_G - 1] of TRenk = (
+  EleraResimSagAltA: array[0..RESIM_SAGALT_Y - 1, 0..RESIM_SAGALT_G - 1] of TRenk = (
     ($00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388),
     ($008B2323, $00992388, $008B2323, $00992388, $008B2323),
     ($00992388, $008B2323, $00992388, $008B2323, $00992388));
 
-  ResimSagAltP: array[0..RESIM_SAGALT_Y - 1, 0..RESIM_SAGALT_G - 1] of TRenk = (
+  EleraResimSagAltP: array[0..RESIM_SAGALT_Y - 1, 0..RESIM_SAGALT_G - 1] of TRenk = (
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
     ($005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A),
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D),
@@ -381,7 +387,7 @@ const
     ($005B4C3D, $005B4C4A, $005B4C3D, $005B4C4A, $005B4C3D));
 
 const
-  KapatmaDugmesiA: array[0..KAPATMA_DUGMESI_Y - 1, 0..KAPATMA_DUGMESI_G - 1] of TRenk = (
+  EleraKapatmaDugmesiA: array[0..KAPATMA_DUGMESI_Y - 1, 0..KAPATMA_DUGMESI_G - 1] of TRenk = (
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
@@ -399,7 +405,7 @@ const
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF));
 
-  KapatmaDugmesiP: array[0..KAPATMA_DUGMESI_Y - 1, 0..KAPATMA_DUGMESI_G - 1] of TRenk = (
+  EleraKapatmaDugmesiP: array[0..KAPATMA_DUGMESI_Y - 1, 0..KAPATMA_DUGMESI_G - 1] of TRenk = (
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
@@ -417,7 +423,7 @@ const
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF));
 
-  BuyutmeDugmesiA: array[0..BUYUTME_DUGMESI_Y - 1, 0..BUYUTME_DUGMESI_G - 1] of TRenk = (
+  EleraBuyutmeDugmesiA: array[0..BUYUTME_DUGMESI_Y - 1, 0..BUYUTME_DUGMESI_G - 1] of TRenk = (
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
@@ -435,7 +441,7 @@ const
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF));
 
-  BuyutmeDugmesiP: array[0..BUYUTME_DUGMESI_Y - 1, 0..BUYUTME_DUGMESI_G - 1] of TRenk = (
+  EleraBuyutmeDugmesiP: array[0..BUYUTME_DUGMESI_Y - 1, 0..BUYUTME_DUGMESI_G - 1] of TRenk = (
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
@@ -453,7 +459,7 @@ const
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF));
 
-  KucultmeDugmesiA: array[0..KUCULTME_DUGMESI_Y - 1, 0..KUCULTME_DUGMESI_G - 1] of TRenk = (
+  EleraKucultmeDugmesiA: array[0..KUCULTME_DUGMESI_Y - 1, 0..KUCULTME_DUGMESI_G - 1] of TRenk = (
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
@@ -471,7 +477,7 @@ const
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF));
 
-  KucultmeDugmesiP: array[0..KUCULTME_DUGMESI_Y - 1, 0..KUCULTME_DUGMESI_G - 1] of TRenk = (
+  EleraKucultmeDugmesiP: array[0..KUCULTME_DUGMESI_Y - 1, 0..KUCULTME_DUGMESI_G - 1] of TRenk = (
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
@@ -488,73 +494,121 @@ const
     ($00FFFFFF, $FFFFFFFF, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $00C0C0C0, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $00FFFFFF),
     ($00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF, $00FFFFFF));
-
-var
-  GiysiELERA: TGiysi = (
-    Ad                      : 'ELERA Giysi';
-
-    BaslikYukseklik         : BASLIK_Y;
-
-    ResimSolUstGenislik     : RESIM_SOLUST_G;
-    ResimUstGenislik        : RESIM_UST_G;
-    ResimSagUstGenislik     : RESIM_SAGUST_G;
-
-    ResimSolGenislik        : RESIM_SOL_G;
-    ResimSolYukseklik       : RESIM_SOL_Y;
-    ResimSagGenislik        : RESIM_SAG_G;
-    ResimSagYukseklik       : RESIM_SAG_Y;
-
-    ResimSolAltGenislik     : RESIM_SOLALT_G;
-    ResimSolAltYukseklik    : RESIM_SOLALT_Y;
-    ResimAltGenislik        : RESIM_ALT_G;
-    ResimAltYukseklik       : RESIM_ALT_Y;
-    ResimSagAltGenislik     : RESIM_SAGALT_G;
-    ResimSagAltYukseklik    : RESIM_SAGALT_Y;
-
-    AktifBaslikYaziRengi    : AKTIF_BASLIK_YAZIRENGI;
-    PasifBaslikYaziRengi    : PASIF_BASLIK_YAZIRENGI;
-    IcDolguRengi            : IC_DOLGU_RENGI;     // pencere iç rengi sistem tarafından belirlenecek
-    BaslikYaziSol           : BASLIK_YAZI_S;      // başlığın sol başlangıç değeri pencerenin ortası olarak belirlenecek
-    BaslikYaziUst           : BASLIK_YAZI_U;      // başlığın üst başlangıç değeri pencerenin ortası olarak belirlenecek
-
-    KapatmaDugmesiSol       : KAPATMA_DUGMESI_S;
-    KapatmaDugmesiUst       : KAPATMA_DUGMESI_U;
-    KapatmaDugmesiGenislik  : KAPATMA_DUGMESI_G;
-    KapatmaDugmesiYukseklik : KAPATMA_DUGMESI_Y;
-    BuyutmeDugmesiSol       : BUYUTME_DUGMESI_S;
-    BuyutmeDugmesiUst       : BUYUTME_DUGMESI_U;
-    BuyutmeDugmesiGenislik  : BUYUTME_DUGMESI_G;
-    BuyutmeDugmesiYukseklik : BUYUTME_DUGMESI_Y;
-    KucultmeDugmesiSol      : KUCULTME_DUGMESI_S;
-    KucultmeDugmesiUst      : KUCULTME_DUGMESI_U;
-    KucultmeDugmesiGenislik : KUCULTME_DUGMESI_G;
-    KucultmeDugmesiYukseklik: KUCULTME_DUGMESI_Y;
-
-    ResimSolUstA: (Genislik: RESIM_SOLUST_G;  Yukseklik: BASLIK_Y;        BellekAdresi: @ResimSolUstA);
-    ResimSolUstP: (Genislik: RESIM_SOLUST_G;  Yukseklik: BASLIK_Y;        BellekAdresi: @ResimSolUstP);
-    ResimUstA:    (Genislik: RESIM_UST_G;     Yukseklik: BASLIK_Y;        BellekAdresi: @ResimUstA);
-    ResimUstP:    (Genislik: RESIM_UST_G;     Yukseklik: BASLIK_Y;        BellekAdresi: @ResimUstP);
-    ResimSagUstA: (Genislik: RESIM_SAGUST_G;  Yukseklik: BASLIK_Y;        BellekAdresi: @ResimSagUstA);
-    ResimSagUstP: (Genislik: RESIM_SAGUST_G;  Yukseklik: BASLIK_Y;        BellekAdresi: @ResimSagUstP);
-    ResimSolA:    (Genislik: RESIM_SOL_G;     Yukseklik: RESIM_SOL_Y;     BellekAdresi: @ResimSolA);
-    ResimSolP:    (Genislik: RESIM_SOL_G;     Yukseklik: RESIM_SOL_Y;     BellekAdresi: @ResimSolP);
-    ResimSagA:    (Genislik: RESIM_SAG_G;     Yukseklik: RESIM_SAG_Y;     BellekAdresi: @ResimSagA);
-    ResimSagP:    (Genislik: RESIM_SAG_G;     Yukseklik: RESIM_SAG_Y;     BellekAdresi: @ResimSagP);
-    ResimSolAltA: (Genislik: RESIM_SOLALT_G;  Yukseklik: RESIM_SOLALT_Y;  BellekAdresi: @ResimSolAltA);
-    ResimSolAltP: (Genislik: RESIM_SOLALT_G;  Yukseklik: RESIM_SOLALT_Y;  BellekAdresi: @ResimSolAltP);
-    ResimAltA:    (Genislik: RESIM_ALT_G;     Yukseklik: RESIM_ALT_Y;     BellekAdresi: @ResimAltA);
-    ResimAltP:    (Genislik: RESIM_ALT_G;     Yukseklik: RESIM_ALT_Y;     BellekAdresi: @ResimAltP);
-    ResimSagAltA: (Genislik: RESIM_SAGALT_G;  Yukseklik: RESIM_SAGALT_Y;  BellekAdresi: @ResimSagAltA);
-    ResimSagAltP: (Genislik: RESIM_SAGALT_G;  Yukseklik: RESIM_SAGALT_Y;  BellekAdresi: @ResimSagAltP);
-
-    AKapatmaDugmesiRSNo   : 09;
-    ABuyutmeDugmesiRSNo   : 11;
-    AKucultmeDugmesiRSNo  : 13;
-    PKapatmaDugmesiRSNo   : 10;
-    PBuyutmeDugmesiRSNo   : 12;
-    PKucultmeDugmesiRSNo  : 14;
-);
 
 implementation
+
+constructor TGiysiELERA.Create;
+begin
+
+  Ad := 'ELERA Giysi';
+
+  BaslikYukseklik := BASLIK_Y;
+
+  ResimSolUstGenislik := RESIM_SOLUST_G;
+  ResimUstGenislik := RESIM_UST_G;
+  ResimSagUstGenislik := RESIM_SAGUST_G;
+
+  ResimSolGenislik := RESIM_SOL_G;
+  ResimSolYukseklik := RESIM_SOL_Y;
+  ResimSagGenislik := RESIM_SAG_G;
+  ResimSagYukseklik := RESIM_SAG_Y;
+
+  ResimSolAltGenislik := RESIM_SOLALT_G;
+  ResimSolAltYukseklik := RESIM_SOLALT_Y;
+  ResimAltGenislik := RESIM_ALT_G;
+  ResimAltYukseklik := RESIM_ALT_Y;
+  ResimSagAltGenislik := RESIM_SAGALT_G;
+  ResimSagAltYukseklik := RESIM_SAGALT_Y;
+
+  AktifBaslikYaziRengi := AKTIF_BASLIK_YAZIRENGI;
+  PasifBaslikYaziRengi := PASIF_BASLIK_YAZIRENGI;
+  IcDolguRengi := IC_DOLGU_RENGI;       // pencere iç rengi sistem tarafından belirlenecek
+  BaslikYaziSol := BASLIK_YAZI_S;       // başlığın sol başlangıç değeri pencerenin ortası olarak belirlenecek
+  BaslikYaziUst := BASLIK_YAZI_U;       // başlığın üst başlangıç değeri pencerenin ortası olarak belirlenecek
+
+  KapatmaDugmesiSol := KAPATMA_DUGMESI_S;
+  KapatmaDugmesiUst := KAPATMA_DUGMESI_U;
+  KapatmaDugmesiGenislik := KAPATMA_DUGMESI_G;
+  KapatmaDugmesiYukseklik := KAPATMA_DUGMESI_Y;
+  BuyutmeDugmesiSol := BUYUTME_DUGMESI_S;
+  BuyutmeDugmesiUst := BUYUTME_DUGMESI_U;
+  BuyutmeDugmesiGenislik := BUYUTME_DUGMESI_G;
+  BuyutmeDugmesiYukseklik := BUYUTME_DUGMESI_Y;
+  KucultmeDugmesiSol := KUCULTME_DUGMESI_S;
+  KucultmeDugmesiUst := KUCULTME_DUGMESI_U;
+  KucultmeDugmesiGenislik := KUCULTME_DUGMESI_G;
+  KucultmeDugmesiYukseklik := KUCULTME_DUGMESI_Y;
+
+  ResimSolUstA.Genislik := RESIM_SOLUST_G;
+  ResimSolUstA.Yukseklik := BASLIK_Y;
+  ResimSolUstA.BellekAdresi := @EleraResimSolUstA;
+
+  ResimSolUstP.Genislik := RESIM_SOLUST_G;
+  ResimSolUstP.Yukseklik := BASLIK_Y;
+  ResimSolUstP.BellekAdresi := @EleraResimSolUstP;
+
+  ResimUstA.Genislik := RESIM_UST_G;
+  ResimUstA.Yukseklik := BASLIK_Y;
+  ResimUstA.BellekAdresi := @EleraResimUstA;
+
+  ResimUstP.Genislik := RESIM_UST_G;
+  ResimUstP.Yukseklik := BASLIK_Y;
+  ResimUstP.BellekAdresi := @EleraResimUstP;
+
+  ResimSagUstA.Genislik := RESIM_SAGUST_G;
+  ResimSagUstA.Yukseklik := BASLIK_Y;
+  ResimSagUstA.BellekAdresi := @EleraResimSagUstA;
+
+  ResimSagUstP.Genislik := RESIM_SAGUST_G;
+  ResimSagUstP.Yukseklik := BASLIK_Y;
+  ResimSagUstP.BellekAdresi := @EleraResimSagUstP;
+
+  ResimSolA.Genislik := RESIM_SOL_G;
+  ResimSolA.Yukseklik := RESIM_SOL_Y;
+  ResimSolA.BellekAdresi := @EleraResimSolA;
+
+  ResimSolP.Genislik := RESIM_SOL_G;
+  ResimSolP.Yukseklik := RESIM_SOL_Y;
+  ResimSolP.BellekAdresi := @EleraResimSolP;
+
+  ResimSagA.Genislik := RESIM_SAG_G;
+  ResimSagA.Yukseklik := RESIM_SAG_Y;
+  ResimSagA.BellekAdresi := @EleraResimSagA;
+
+  ResimSagP.Genislik := RESIM_SAG_G;
+  ResimSagP.Yukseklik := RESIM_SAG_Y;
+  ResimSagP.BellekAdresi := @EleraResimSagP;
+
+  ResimSolAltA.Genislik := RESIM_SOLALT_G;
+  ResimSolAltA.Yukseklik := RESIM_SOLALT_Y;
+  ResimSolAltA.BellekAdresi := @EleraResimSolAltA;
+
+  ResimSolAltP.Genislik := RESIM_SOLALT_G;
+  ResimSolAltP.Yukseklik := RESIM_SOLALT_Y;
+  ResimSolAltP.BellekAdresi := @EleraResimSolAltP;
+
+  ResimAltA.Genislik := RESIM_ALT_G;
+  ResimAltA.Yukseklik := RESIM_ALT_Y;
+  ResimAltA.BellekAdresi := @EleraResimAltA;
+
+  ResimAltP.Genislik := RESIM_ALT_G;
+  ResimAltP.Yukseklik := RESIM_ALT_Y;
+  ResimAltP.BellekAdresi := @EleraResimAltP;
+
+  ResimSagAltA.Genislik := RESIM_SAGALT_G;
+  ResimSagAltA.Yukseklik := RESIM_SAGALT_Y;
+  ResimSagAltA.BellekAdresi := @EleraResimSagAltA;
+
+  ResimSagAltP.Genislik := RESIM_SAGALT_G;
+  ResimSagAltP.Yukseklik := RESIM_SAGALT_Y;
+  ResimSagAltP.BellekAdresi := @EleraResimSagAltP;
+
+  AKapatmaDugmesiRSNo := 09;
+  ABuyutmeDugmesiRSNo := 11;
+  AKucultmeDugmesiRSNo := 13;
+  PKapatmaDugmesiRSNo := 10;
+  PBuyutmeDugmesiRSNo := 12;
+  PKucultmeDugmesiRSNo := 14;
+end;
 
 end.

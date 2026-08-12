@@ -6,7 +6,7 @@
   Dosya Adı: giysi.pas
   Dosya İşlevi: giysi (skin) işlevlerini yönetir
 
-  Güncelleme Tarihi: 14/05/2026
+  Güncelleme Tarihi: 12/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,13 +21,13 @@ const
 
 type
   THamResim = record
-    Genislik, Yukseklik: TSayi4;
+    Genislik, Yukseklik: TISayi4;
     BellekAdresi: Isaretci;
   end;
 
 type
   PGiysi = ^TGiysi;
-  TGiysi = record
+  TGiysi = class
     Ad: string;
 
     BaslikYukseklik,
@@ -46,13 +46,13 @@ type
     ResimAltGenislik,
     ResimAltYukseklik,
     ResimSagAltGenislik,
-    ResimSagAltYukseklik,
+    ResimSagAltYukseklik: TISayi4;
 
     AktifBaslikYaziRengi,
     PasifBaslikYaziRengi,
     IcDolguRengi,
     BaslikYaziSol,
-    BaslikYaziUst,
+    BaslikYaziUst: TSayi4;
 
     KapatmaDugmesiSol,
     KapatmaDugmesiUst,
@@ -87,16 +87,16 @@ type
   private
     FToplamGiysi: TSayi4;
     FAktifGiysiSN: TISayi4;
-    FAktifGiysi: PGiysi;
-    FGiysiListesi: array[0..USTSINIR_GIYSI - 1] of PGiysi;
-    function GiysiAl(ASiraNo: TISayi4): PGiysi;
-    procedure GiysiYaz(ASiraNo: TISayi4; AGiysi: PGiysi);
+    FAktifGiysi: TGiysi;
+    FGiysiListesi: array[0..USTSINIR_GIYSI - 1] of TGiysi;
+    function Al(ASiraNo: TISayi4): TGiysi;
+    procedure Yaz(ASiraNo: TISayi4; AGiysi: TGiysi);
   public
     constructor Create;
     property ToplamGiysi: TSayi4 read FToplamGiysi;
-    property Giysi[ASiraNo: TISayi4]: PGiysi read GiysiAl write GiysiYaz;
+    property Giysi[ASiraNo: TISayi4]: TGiysi read Al write Yaz;
     property AktifGiysiSN: TISayi4 read FAktifGiysiSN write FAktifGiysiSN;
-    property AktifGiysi: PGiysi read FAktifGiysi write FAktifGiysi;
+    property AktifGiysi: TGiysi read FAktifGiysi write FAktifGiysi;
   end;
 
 var
@@ -111,28 +111,28 @@ begin
 
   FToplamGiysi := USTSINIR_GIYSI;
 
-  AktifGiysiSN := 0;
+  FGiysiListesi[0] := TGiysiELERA.Create;
+  FGiysiListesi[1] := TGiysiNormal.Create;
+  FGiysiListesi[2] := TGiysiMAC.Create;
 
-  Giysi[0] := @GiysiELERA;
-  Giysi[1] := @GiysiNormal;
-  Giysi[2] := @GiysiMac;
+  AktifGiysiSN := 0;
 
   AktifGiysi := Giysi[AktifGiysiSN];
 end;
 
-function TGiysiler.GiysiAl(ASiraNo: TISayi4): PGiysi;
+function TGiysiler.Al(ASiraNo: TISayi4): TGiysi;
 begin
 
-  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  // aralık kontrol sorgusu
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_GIYSI) then
     Result := FGiysiListesi[ASiraNo]
   else Result := nil;
 end;
 
-procedure TGiysiler.GiysiYaz(ASiraNo: TISayi4; AGiysi: PGiysi);
+procedure TGiysiler.Yaz(ASiraNo: TISayi4; AGiysi: TGiysi);
 begin
 
-  // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
+  // aralık kontrol sorgusu
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_GIYSI) then
     FGiysiListesi[ASiraNo] := AGiysi;
 end;
