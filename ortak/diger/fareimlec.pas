@@ -6,7 +6,7 @@
   Dosya Adı: fareimlec.pas
   Dosya İşlevi: sistem fare gösterge resimlerini içerir
 
-  Güncelleme Tarihi: 02/08/2026
+  Güncelleme Tarihi: 13/08/2026
 
  ==============================================================================}
 {$mode objfpc}
