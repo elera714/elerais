@@ -45,7 +45,7 @@ function DugmeGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYuksekl
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj, gorev;
+uses gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj, gorev, src_ps2;
 
 {==============================================================================
   düğme kesme çağrılarını yönetir
@@ -67,23 +67,23 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := DugmeGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + GGorevler.FAktifGrvBelAdr)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      Dugme := TDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := TDugme(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Dugme.Goster;
     end;
 
     ISLEV_GIZLE:
     begin
 
-      Dugme := TDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := TDugme(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Pencere := TPencere(Dugme.AtaNesne);
 
       Dugme.Gizle;
@@ -94,12 +94,12 @@ begin
     ISLEV_BOYUTLANDIR:
     begin
 
-      Dugme := TDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := TDugme(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if(Dugme <> nil) then
       begin
 
-        Konum := PKonum(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-        Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
+        Konum := PKonum(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
+        Boyut := PBoyut(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr);
         Dugme.FIlkAtananAlan.Sol := Konum^.Sol;
         Dugme.FIlkAtananAlan.Ust := Konum^.Ust;
         Dugme.FIlkAtananAlan.Genislik := Boyut^.Genislik;
@@ -113,7 +113,7 @@ begin
     ISLEV_YOKET:
     begin
 
-      Dugme := TDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := TDugme(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Pencere := TPencere(Dugme.AtaNesne);
 
       Dugme.Destroy;
@@ -123,7 +123,7 @@ begin
     ISLEV_HIZALA:
     begin
 
-      Dugme := TDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := TDugme(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       Dugme.FHiza := Hiza;
 
@@ -135,9 +135,9 @@ begin
     $010F:
     begin
 
-      Dugme := TDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := TDugme(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       if not(Dugme = nil) then
-        Dugme.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
+        Dugme.Baslik := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr)^;
 
       Dugme.Ciz;
     end;
@@ -146,7 +146,7 @@ begin
     $020F:
     begin
 
-      Dugme := TDugme(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Dugme := TDugme(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
 
       if(Dugme <> nil) and (Dugme.NesneTipi = gntDugme) then
       begin
@@ -196,7 +196,7 @@ begin
 
   NesneTipi := gntDugme;
 
-  GGorselNesneler.GorselNesne[FSiraNo] := Self;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
@@ -205,7 +205,7 @@ end;
 destructor TDugme.Destroy;
 begin
 
-  GGorselNesneler.YokEt(Self);
+  GGNesneler.YokEt(Self);
 
   inherited Destroy;
 end;
@@ -220,7 +220,7 @@ begin
   Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
     4, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK, DUGME_NORMAL_YAZIRENK, ABaslik);
 
-  OlayCagriAdresi := @OlaylariIsle;
+  OlayCagriAdr := @OlaylariIsle;
 
   Baslik := ABaslik;
 
@@ -331,9 +331,9 @@ begin
       Dugme.Ciz;
 
       // uygulamaya veya efendi nesneye mesaj gönder
-      if not(Dugme.OlayYonlendirmeAdresi = nil) then
-        Dugme.OlayYonlendirmeAdresi(Dugme, AOlay)
-      else GGorevler.OlayEkle(Dugme.GorevKimlik, AOlay);
+      if not(Dugme.OlayYonlAdr = nil) then
+        Dugme.OlayYonlAdr(Dugme, AOlay)
+      else GGorevler.OlayEkle(Dugme.GrvKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -355,16 +355,16 @@ begin
       // yakalama & bırakma işlemi bu nesnede olduğu için
       // uygulamaya veya efendi nesneye FO_TIKLAMA mesajı gönder
       AOlay.Olay := FO_TIKLAMA;
-      if not(Dugme.OlayYonlendirmeAdresi = nil) then
-        Dugme.OlayYonlendirmeAdresi(Dugme, AOlay)
-      else GGorevler.OlayEkle(Dugme.GorevKimlik, AOlay);
+      if not(Dugme.OlayYonlAdr = nil) then
+        Dugme.OlayYonlAdr(Dugme, AOlay)
+      else GGorevler.OlayEkle(Dugme.GrvKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
-    if not(Dugme.OlayYonlendirmeAdresi = nil) then
-      Dugme.OlayYonlendirmeAdresi(Dugme, AOlay)
-    else GGorevler.OlayEkle(Dugme.GorevKimlik, AOlay);
+    if not(Dugme.OlayYonlAdr = nil) then
+      Dugme.OlayYonlAdr(Dugme, AOlay)
+    else GGorevler.OlayEkle(Dugme.GrvKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -386,9 +386,9 @@ begin
     Dugme.Ciz;
 
     // uygulamaya veya efendi nesneye mesaj gönder
-    if not(Dugme.OlayYonlendirmeAdresi = nil) then
-      Dugme.OlayYonlendirmeAdresi(Dugme, AOlay)
-    else GGorevler.OlayEkle(Dugme.GorevKimlik, AOlay);
+    if not(Dugme.OlayYonlAdr = nil) then
+      Dugme.OlayYonlAdr(Dugme, AOlay)
+    else GGorevler.OlayEkle(Dugme.GrvKimlik, AOlay);
   end
   // nesnenin odağı kaybetmesi durumu
   else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
@@ -431,8 +431,8 @@ begin
     Dugme.Ciz;
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Dugme.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := Dugme.FareImlec;
 end;
 
 {==============================================================================

@@ -40,7 +40,7 @@ function DegerDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, A
 
 implementation
 
-uses temelgorselnesne, gn_islevler;
+uses temelgorselnesne, gn_islevler, src_ps2;
 
 {==============================================================================
   artırma / eksiltme düğme kesme çağrılarını yönetir
@@ -58,15 +58,15 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := DegerDugmesiGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
-        PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := DegerDugmesiGNOlustur(GN, PISayi4(ADegiskenler + 04)^,
+        PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      DegerDugmesi := TDegerDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      DegerDugmesi := TDegerDugmesi(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       DegerDugmesi.Goster;
     end;
   end;
@@ -104,7 +104,7 @@ begin
 
   NesneTipi := gntDegerDugmesi;
 
-  GGorselNesneler.GorselNesne[FSiraNo] := Self;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
@@ -116,7 +116,7 @@ begin
   FArtirmaDugmesi.Destroy;
   FEksiltmeDugmesi.Destroy;
 
-  GGorselNesneler.YokEt(Self);
+  GGNesneler.YokEt(Self);
 
   inherited Destroy;
 end;
@@ -130,17 +130,17 @@ begin
 
   Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, 18, 21, 0, 0, 0, 0, '');
 
-  OlayCagriAdresi := @OlaylariIsle;
+  OlayCagriAdr := @OlaylariIsle;
 
   // $10000000 + 1 = yukarı ok resmi
   FArtirmaDugmesi := TResimDugmesi.Create;
   FArtirmaDugmesi.Ozellestir(ktBilesen, Self, 0, 0, 18, 10, $10000000 + 1, True);
-  FArtirmaDugmesi.OlayYonlendirmeAdresi := @ResimDugmeOlaylariniIsle;
+  FArtirmaDugmesi.OlayYonlAdr := @ResimDugmeOlaylariniIsle;
 
   // $10000000 + 2 = aşağı ok resmi
   FEksiltmeDugmesi := TResimDugmesi.Create;
   FEksiltmeDugmesi.Ozellestir(ktBilesen, Self, 0, 11, 18, 10, $10000000 + 2, True);
-  FEksiltmeDugmesi.OlayYonlendirmeAdresi := @ResimDugmeOlaylariniIsle;
+  FEksiltmeDugmesi.OlayYonlAdr := @ResimDugmeOlaylariniIsle;
 
   // geri dönüş değeri
   Result := HATA_YOK;
@@ -202,8 +202,8 @@ begin
   DegerDugmesi := TDegerDugmesi(AGonderici);
   if(DegerDugmesi = nil) then Exit;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := DegerDugmesi.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := DegerDugmesi.FareImlec;
 end;
 
 {==============================================================================
@@ -229,9 +229,9 @@ begin
       // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
       AOlay.Kimlik := DegerDugmesi.Kimlik;
       AOlay.Deger1 := 0;
-      if not(DegerDugmesi.OlayYonlendirmeAdresi = nil) then
-        DegerDugmesi.OlayYonlendirmeAdresi(DegerDugmesi, AOlay)
-      else GGorevler.OlayEkle(DegerDugmesi.GorevKimlik, AOlay);
+      if not(DegerDugmesi.OlayYonlAdr = nil) then
+        DegerDugmesi.OlayYonlAdr(DegerDugmesi, AOlay)
+      else GGorevler.OlayEkle(DegerDugmesi.GrvKimlik, AOlay);
     end
     else if(AOlay.Kimlik = DegerDugmesi.FEksiltmeDugmesi.Kimlik) then
     begin
@@ -239,9 +239,9 @@ begin
       // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
       AOlay.Kimlik := DegerDugmesi.Kimlik;
       AOlay.Deger1 := 1;
-      if not(DegerDugmesi.OlayYonlendirmeAdresi = nil) then
-        DegerDugmesi.OlayYonlendirmeAdresi(DegerDugmesi, AOlay)
-      else GGorevler.OlayEkle(DegerDugmesi.GorevKimlik, AOlay);
+      if not(DegerDugmesi.OlayYonlAdr = nil) then
+        DegerDugmesi.OlayYonlAdr(DegerDugmesi, AOlay)
+      else GGorevler.OlayEkle(DegerDugmesi.GrvKimlik, AOlay);
     end;
   end;
 end;

@@ -48,7 +48,7 @@ begin
     begin
 
       // çözünürlük değerlerini belirtilen bellek adreslerine kopyala
-      Konum := PKonum(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
+      Konum := PKonum(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr);
 
 
       Konum^.Sol := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;

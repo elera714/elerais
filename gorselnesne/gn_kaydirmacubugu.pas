@@ -46,7 +46,7 @@ function KaydirmaCubuguGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik,
 
 implementation
 
-uses gn_islevler, temelgorselnesne;
+uses gn_islevler, temelgorselnesne, src_ps2;
 
 {==============================================================================
   kaydırma çubuğu kesme çağrılarını yönetir
@@ -66,7 +66,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := KaydirmaCubuguGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PYon(ADegiskenler + 20)^);
     end;
@@ -74,14 +74,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      KaydirmaCubugu := TKaydirmaCubugu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      KaydirmaCubugu := TKaydirmaCubugu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       KaydirmaCubugu.Goster;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      KaydirmaCubugu := TKaydirmaCubugu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      KaydirmaCubugu := TKaydirmaCubugu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       KaydirmaCubugu.FHiza := Hiza;
 
@@ -93,7 +93,7 @@ begin
     $010F:
     begin
 
-      KaydirmaCubugu := TKaydirmaCubugu(GGorselNesneler.NesneTipiniKontrolEt(
+      KaydirmaCubugu := TKaydirmaCubugu(GGNesneler.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntKaydirmaCubugu));
       if(KaydirmaCubugu <> nil) then KaydirmaCubugu.DegerleriBelirle(
         PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
@@ -134,7 +134,7 @@ begin
 
   NesneTipi := gntKaydirmaCubugu;
 
-  GGorselNesneler.GorselNesne[FSiraNo] := Self;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
@@ -146,7 +146,7 @@ begin
   FArtirmaDugmesi.Destroy;
   FEksiltmeDugmesi.Destroy;
 
-  GGorselNesneler.YokEt(Self);
+  GGNesneler.YokEt(Self);
 
   inherited Destroy;
 end;
@@ -176,7 +176,7 @@ begin
   Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, Genislik, Yukseklik,
     3, RENK_GUMUS, RENK_BEYAZ, 0, '');
 
-  OlayCagriAdresi := @OlaylariIsle;
+  OlayCagriAdr := @OlaylariIsle;
 
   // şu aşamada bu nesne odaklanılabilir bir nesne değil
   Odaklanilabilir := False;
@@ -191,12 +191,12 @@ begin
     // $10000000 + 4 = sol ok resmi
     FEksiltmeDugmesi := TResimDugmesi.Create;
     FEksiltmeDugmesi.Ozellestir(ktBilesen, Self, 0, 0, 19, Yukseklik, $10000000 + 4, True);
-    FEksiltmeDugmesi.OlayYonlendirmeAdresi := @ResimDugmesiOlaylariniIsle;
+    FEksiltmeDugmesi.OlayYonlAdr := @ResimDugmesiOlaylariniIsle;
 
     // $10000000 + 3 = sağ ok resmi
     FArtirmaDugmesi := TResimDugmesi.Create;
     FArtirmaDugmesi.Ozellestir(ktBilesen, Self, Genislik - 19, 0, 19, Yukseklik, $10000000 + 3, True);
-    FArtirmaDugmesi.OlayYonlendirmeAdresi := @ResimDugmesiOlaylariniIsle;
+    FArtirmaDugmesi.OlayYonlAdr := @ResimDugmesiOlaylariniIsle;
   end
   else
   begin
@@ -204,12 +204,12 @@ begin
     // $10000000 + 1 = yukarı ok resmi
     FEksiltmeDugmesi := TResimDugmesi.Create;
     FEksiltmeDugmesi.Ozellestir(ktBilesen, Self, 0, 0, 19, 19, $10000000 + 1, True);
-    FEksiltmeDugmesi.OlayYonlendirmeAdresi := @ResimDugmesiOlaylariniIsle;
+    FEksiltmeDugmesi.OlayYonlAdr := @ResimDugmesiOlaylariniIsle;
 
     // $10000000 + 2 = aşağı ok resmi
     FArtirmaDugmesi := TResimDugmesi.Create;
     FArtirmaDugmesi.Ozellestir(ktBilesen, Self, 0, Yukseklik - 19, 19, 19, $10000000 + 2, True);
-    FArtirmaDugmesi.OlayYonlendirmeAdresi := @ResimDugmesiOlaylariniIsle;
+    FArtirmaDugmesi.OlayYonlAdr := @ResimDugmesiOlaylariniIsle;
   end;
 
   MevcutDeger := 0;
@@ -349,8 +349,8 @@ begin
     //KaydirmaCubugu^.Odaklanildi := False;
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := KaydirmaCubugu.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := KaydirmaCubugu.FareImlec;
 end;
 
 {==============================================================================
@@ -396,13 +396,13 @@ begin
     AOlay.Deger1 := KaydirmaCubugu.MevcutDeger;
 
     // uygulamaya veya efendi nesneye mesaj gönder
-    if not(KaydirmaCubugu.OlayYonlendirmeAdresi = nil) then
-      KaydirmaCubugu.OlayYonlendirmeAdresi(KaydirmaCubugu, AOlay)
-    else GGorevler.OlayEkle(KaydirmaCubugu.GorevKimlik, AOlay);
+    if not(KaydirmaCubugu.OlayYonlAdr = nil) then
+      KaydirmaCubugu.OlayYonlAdr(KaydirmaCubugu, AOlay)
+    else GGorevler.OlayEkle(KaydirmaCubugu.GrvKimlik, AOlay);
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := KaydirmaCubugu.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := KaydirmaCubugu.FareImlec;
 end;
 
 {==============================================================================

@@ -52,7 +52,7 @@ function RenkSeciciGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYu
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne;
+uses gn_pencere, gn_islevler, temelgorselnesne, src_ps2;
 
 {==============================================================================
   renk seçici kesme çağrılarını yönetir
@@ -70,7 +70,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := RenkSeciciGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PRenk(ADegiskenler + 12)^, PRenk(ADegiskenler + 16)^);
     end;
@@ -78,7 +78,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      RenkSecici := TRenkSecici(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      RenkSecici := TRenkSecici(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       RenkSecici.Goster;
     end;
   end;
@@ -116,7 +116,7 @@ begin
 
   NesneTipi := gntRenkSecici;
 
-  GGorselNesneler.GorselNesne[FSiraNo] := Self;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
@@ -125,7 +125,7 @@ end;
 destructor TRenkSecici.Destroy;
 begin
 
-  GGorselNesneler.YokEt(Self);
+  GGNesneler.YokEt(Self);
 
   inherited Destroy;
 end;
@@ -140,7 +140,7 @@ begin
   Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
     0, 0, 0, 0, '');
 
-  OlayCagriAdresi := @OlaylariIsle;
+  OlayCagriAdr := @OlaylariIsle;
 
   Odaklanilabilir := True;
   Odaklanildi := False;
@@ -279,15 +279,15 @@ begin
         AOlay.Olay := FO_TIKLAMA;
         AOlay.Deger1 := SecimRenkleri[RenkSecici.FSeciliRenkSiraNo];
         AOlay.Deger2 := 0;
-        if not(RenkSecici.OlayYonlendirmeAdresi = nil) then
-          RenkSecici.OlayYonlendirmeAdresi(RenkSecici, AOlay)
-        else GGorevler.OlayEkle(RenkSecici.GorevKimlik, AOlay);
+        if not(RenkSecici.OlayYonlAdr = nil) then
+          RenkSecici.OlayYonlAdr(RenkSecici, AOlay)
+        else GGorevler.OlayEkle(RenkSecici.GrvKimlik, AOlay);
       end;
     end;
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := RenkSecici.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := RenkSecici.FareImlec;
 end;
 
 end.

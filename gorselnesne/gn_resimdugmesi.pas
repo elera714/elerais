@@ -46,7 +46,7 @@ function ResimDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, A
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj;
+uses genel, gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj, src_ps2;
 
 {==============================================================================
   resim düğmesi kesme çağrılarını yönetir
@@ -66,7 +66,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := ResimDugmesiGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^, PISayi4(ADegiskenler + 20)^);
     end;
@@ -74,14 +74,14 @@ begin
     ISLEV_GOSTER:
     begin
 
-      ResimDugmesi := TResimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      ResimDugmesi := TResimDugmesi(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       ResimDugmesi.Goster;
     end;
 
     ISLEV_HIZALA:
     begin
 
-      ResimDugmesi := TResimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      ResimDugmesi := TResimDugmesi(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Hiza := PHiza(ADegiskenler + 04)^;
       ResimDugmesi.FHiza := Hiza;
 
@@ -125,7 +125,7 @@ begin
 
   NesneTipi := gntResimDugmesi;
 
-  GGorselNesneler.GorselNesne[FSiraNo] := Self;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
@@ -134,7 +134,7 @@ end;
 destructor TResimDugmesi.Destroy;
 begin
 
-  GGorselNesneler.YokEt(Self);
+  GGNesneler.YokEt(Self);
 
   inherited Destroy;
 end;
@@ -149,7 +149,7 @@ begin
   Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
     0, 0, 0, 0, '');
 
-  OlayCagriAdresi := @OlaylariIsle;
+  OlayCagriAdr := @OlaylariIsle;
 
   Odaklanilabilir := False;
   Odaklanildi := False;
@@ -286,9 +286,9 @@ begin
       ResimDugmesi.Ciz;
 
       // uygulamaya veya efendi nesneye mesaj gönder
-      if not(ResimDugmesi.OlayYonlendirmeAdresi = nil) then
-        ResimDugmesi.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-      else GGorevler.OlayEkle(ResimDugmesi.GorevKimlik, AOlay);
+      if not(ResimDugmesi.OlayYonlAdr = nil) then
+        ResimDugmesi.OlayYonlAdr(ResimDugmesi, AOlay)
+      else GGorevler.OlayEkle(ResimDugmesi.GrvKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -310,16 +310,16 @@ begin
       // yakalama & bırakma işlemi bu nesnede olduğu için
       // uygulamaya veya efendi nesneye FO_TIKLAMA mesajı gönder
       AOlay.Olay := FO_TIKLAMA;
-      if not(ResimDugmesi.OlayYonlendirmeAdresi = nil) then
-        ResimDugmesi.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-      else GGorevler.OlayEkle(ResimDugmesi.GorevKimlik, AOlay);
+      if not(ResimDugmesi.OlayYonlAdr = nil) then
+        ResimDugmesi.OlayYonlAdr(ResimDugmesi, AOlay)
+      else GGorevler.OlayEkle(ResimDugmesi.GrvKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
-    if not(ResimDugmesi.OlayYonlendirmeAdresi = nil) then
-      ResimDugmesi.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-    else GGorevler.OlayEkle(ResimDugmesi.GorevKimlik, AOlay);
+    if not(ResimDugmesi.OlayYonlAdr = nil) then
+      ResimDugmesi.OlayYonlAdr(ResimDugmesi, AOlay)
+    else GGorevler.OlayEkle(ResimDugmesi.GrvKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
@@ -340,13 +340,13 @@ begin
     ResimDugmesi.Ciz;
 
     // uygulamaya veya efendi nesneye mesaj gönder
-    if not(ResimDugmesi.OlayYonlendirmeAdresi = nil) then
-      ResimDugmesi.OlayYonlendirmeAdresi(ResimDugmesi, AOlay)
-    else GGorevler.OlayEkle(ResimDugmesi.GorevKimlik, AOlay);
+    if not(ResimDugmesi.OlayYonlAdr = nil) then
+      ResimDugmesi.OlayYonlAdr(ResimDugmesi, AOlay)
+    else GGorevler.OlayEkle(ResimDugmesi.GrvKimlik, AOlay);
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := ResimDugmesi.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := ResimDugmesi.FareImlec;
 end;
 
 end.

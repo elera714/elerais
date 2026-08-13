@@ -43,7 +43,7 @@ function GirisKutusuGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik,
 
 implementation
 
-uses gn_islevler, gn_pencere, genel, temelgorselnesne, gorev, sistemmesaj, src_klavye;
+uses gn_islevler, gn_pencere, temelgorselnesne, gorev, src_klavye, src_ps2;
 
 {==============================================================================
   giriş kutusu kesme çağrılarını yönetir
@@ -63,16 +63,16 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := GirisKutusuGNOlustur(GN, PISayi4(ADegiskenler + 04)^,
       PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
-      PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
+      PKarakterKatari(PSayi4(ADegiskenler + 20)^ + GGorevler.FAktifGrvBelAdr)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      GirisKutusu := TGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := TGirisKutusu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       GirisKutusu.Goster;
     end;
 
@@ -80,8 +80,8 @@ begin
     $010E:
     begin
 
-      GirisKutusu := TGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+      GirisKutusu := TGirisKutusu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
       p1^ := GirisKutusu.Baslik;
     end;
 
@@ -89,8 +89,8 @@ begin
     $010F:
     begin
 
-      GirisKutusu := TGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+      GirisKutusu := TGirisKutusu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
       GirisKutusu.Baslik := p1^;
       GirisKutusu.Ciz;
     end;
@@ -99,7 +99,7 @@ begin
     $020F:
     begin
 
-      GirisKutusu := TGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := TGirisKutusu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       p2 := PLongBool(ADegiskenler + 04);
       GirisKutusu.Yazilamaz := p2^;
       GirisKutusu.Ciz;
@@ -109,7 +109,7 @@ begin
     $030F:
     begin
 
-      GirisKutusu := TGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := TGirisKutusu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       p2 := PLongBool(ADegiskenler + 04);
       GirisKutusu.SadeceRakam := p2^;
     end;
@@ -118,7 +118,7 @@ begin
     $040F:
     begin
 
-      GirisKutusu := TGirisKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      GirisKutusu := TGirisKutusu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
 
       if(GirisKutusu <> nil) and (GirisKutusu.NesneTipi = gntGirisKutusu) then
       begin
@@ -168,7 +168,7 @@ begin
 
   NesneTipi := gntGirisKutusu;
 
-  GGorselNesneler.GorselNesne[FSiraNo] := Self;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
@@ -180,7 +180,7 @@ begin
   // nesne içerisindeki silme düğmesini yok et
   FSilmeDugmesi.Destroy;
 
-  GGorselNesneler.YokEt(Self);
+  GGNesneler.YokEt(Self);
 
   inherited Destroy;
 end;
@@ -200,7 +200,7 @@ begin
   Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
     2, RENK_GUMUS, RENK_BEYAZ, RENK_SIYAH, ABaslik);
 
-  OlayCagriAdresi := @OlaylariIsle;
+  OlayCagriAdr := @OlaylariIsle;
 
   Baslik := ABaslik;
 
@@ -210,7 +210,7 @@ begin
   Yazilamaz := False;
   SadeceRakam := False;
 
-  FareImlecTipi := fitGiris;
+  FareImlec := fitGiris;
 
   i := Length(Baslik);
   ImlecX := i;
@@ -219,7 +219,7 @@ begin
   FSilmeDugmesi := TDugme.Create;
   FSilmeDugmesi.Ozellestir(ktBilesen, Self, AGenislik - 12, 2, 10, 16, 'X');
   FSilmeDugmesi.CizimModelDegistir(False, RENK_BEYAZ, RENK_BEYAZ, RENK_SIYAH, RENK_KIRMIZI);
-  FSilmeDugmesi.OlayYonlendirmeAdresi := @SilmeDugmeOlaylariniIsle;
+  FSilmeDugmesi.OlayYonlAdr := @SilmeDugmeOlaylariniIsle;
 
   // geri dönüş değeri
   Result := HATA_YOK;
@@ -333,9 +333,9 @@ begin
     Ciz;
 
     // uygulamaya veya efendi nesneye mesaj gönder
-    if not(OlayYonlendirmeAdresi = nil) then
-      OlayYonlendirmeAdresi(Self, AOlay)
-    else GGorevler.OlayEkle(GorevKimlik, AOlay);
+    if not(OlayYonlAdr = nil) then
+      OlayYonlAdr(Self, AOlay)
+    else GGorevler.OlayEkle(GrvKimlik, AOlay);
   end
   // klavye tuş basımı
   else if(AOlay.Olay = CO_TUSBASILDI) then
@@ -399,9 +399,9 @@ begin
 
             // uygulamaya veya efendi nesneye mesaj gönder
             AOlay.Deger1 := Tus;
-            if not(OlayYonlendirmeAdresi = nil) then
-              OlayYonlendirmeAdresi(Self, AOlay)
-            else GGorevler.OlayEkle(GorevKimlik, AOlay);
+            if not(OlayYonlAdr = nil) then
+              OlayYonlAdr(Self, AOlay)
+            else GGorevler.OlayEkle(GrvKimlik, AOlay);
           end
           // geri silme tuşu
           else if(C = #8) then
@@ -433,9 +433,9 @@ begin
             Baslik := s;
 
             AOlay.Deger1 := Tus;
-            if not(OlayYonlendirmeAdresi = nil) then
-              OlayYonlendirmeAdresi(Self, AOlay)
-            else GGorevler.OlayEkle(GorevKimlik, AOlay);
+            if not(OlayYonlAdr = nil) then
+              OlayYonlAdr(Self, AOlay)
+            else GGorevler.OlayEkle(GrvKimlik, AOlay);
           end
           else
           begin
@@ -452,9 +452,9 @@ begin
 
                 // uygulamaya veya efendi nesneye mesaj gönder
                 AOlay.Deger1 := Tus;
-                if not(OlayYonlendirmeAdresi = nil) then
-                  OlayYonlendirmeAdresi(Self, AOlay)
-                else GGorevler.OlayEkle(GorevKimlik, AOlay);
+                if not(OlayYonlAdr = nil) then
+                  OlayYonlAdr(Self, AOlay)
+                else GGorevler.OlayEkle(GrvKimlik, AOlay);
               end;
             end
             else
@@ -465,9 +465,9 @@ begin
               Baslik := s;
 
               AOlay.Deger1 := Tus;
-              if not(OlayYonlendirmeAdresi = nil) then
-                OlayYonlendirmeAdresi(Self, AOlay)
-              else GGorevler.OlayEkle(GorevKimlik, AOlay);
+              if not(OlayYonlAdr = nil) then
+                OlayYonlAdr(Self, AOlay)
+              else GGorevler.OlayEkle(GrvKimlik, AOlay);
             end;
 
             i := ImlecX;
@@ -515,8 +515,8 @@ begin
     Ciz;
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := Self.FareImlec;
 end;
 
 {==============================================================================

@@ -37,7 +37,7 @@ function DurumCubuguGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AY
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, hamresim, gorev;
+uses gn_pencere, gn_islevler, temelgorselnesne, hamresim, gorev, src_ps2;
 
 {==============================================================================
   durum çubuğu kesme çağrılarını yönetir
@@ -56,16 +56,16 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := DurumCubuguGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + GGorevler.FAktifGrvBelAdr)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      DurumCubugu := TDurumCubugu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      DurumCubugu := TDurumCubugu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       DurumCubugu.Goster;
     end;
 
@@ -73,8 +73,8 @@ begin
     $010F:
     begin
 
-      DurumCubugu := TDurumCubugu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+      DurumCubugu := TDurumCubugu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
       DurumCubugu.Baslik := p1^;
       DurumCubugu.Ciz;
     end;
@@ -114,7 +114,7 @@ begin
 
   NesneTipi := gntDurumCubugu;
 
-  GGorselNesneler.GorselNesne[FSiraNo] := Self;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
@@ -123,7 +123,7 @@ end;
 destructor TDurumCubugu.Destroy;
 begin
 
-  GGorselNesneler.YokEt(Self);
+  GGNesneler.YokEt(Self);
 
   inherited Destroy;
 end;
@@ -141,7 +141,7 @@ begin
   Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
     2, $D4D0C8, $D4D0C8, 0, '');
 
-  OlayCagriAdresi := @OlaylariIsle;
+  OlayCagriAdr := @OlaylariIsle;
 
   Baslik := ADurumYazi;
 
@@ -254,17 +254,17 @@ begin
 
       // uygulamaya veya efendi nesneye mesaj gönder
       AOlay.Olay := FO_TIKLAMA;
-      if not(DurumCubugu.OlayYonlendirmeAdresi = nil) then
-        DurumCubugu.OlayYonlendirmeAdresi(DurumCubugu, AOlay)
-      else GGorevler.OlayEkle(DurumCubugu.GorevKimlik, AOlay);
+      if not(DurumCubugu.OlayYonlAdr = nil) then
+        DurumCubugu.OlayYonlAdr(DurumCubugu, AOlay)
+      else GGorevler.OlayEkle(DurumCubugu.GrvKimlik, AOlay);
     end;
 
     // fare olaylarını almayı bırak
     OlayYakalamayiBirak(DurumCubugu);
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := DurumCubugu.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := DurumCubugu.FareImlec;
 end;
 
 end.

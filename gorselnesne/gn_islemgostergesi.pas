@@ -62,7 +62,7 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
       Result := IslemGostergesiGNOlustur(GN, PISayi4(ADegiskenler + 04)^,
       PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
     end;
@@ -70,7 +70,7 @@ begin
     ISLEV_GOSTER:
     begin
 
-      IslemGostergesi := TIslemGostergesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      IslemGostergesi := TIslemGostergesi(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       IslemGostergesi.Goster;
     end;
 
@@ -78,19 +78,20 @@ begin
     $010F:
     begin
 
-      IslemGostergesi := TIslemGostergesi(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
-        gntIslemGostergesi));
-      if(IslemGostergesi <> nil) then IslemGostergesi.DegerleriBelirle(PISayi4(ADegiskenler + 04)^,
-        PISayi4(ADegiskenler + 08)^);
+      IslemGostergesi := TIslemGostergesi(GGNesneler.NesneTipiniKontrolEt(
+        PKimlik(ADegiskenler + 00)^, gntIslemGostergesi));
+      if(IslemGostergesi <> nil) then IslemGostergesi.DegerleriBelirle(
+        PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
     end;
 
     // nesne gösterge pozisyonunu belirle
     $020F:
     begin
 
-      IslemGostergesi := TIslemGostergesi(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
-        gntIslemGostergesi));
-      if(IslemGostergesi <> nil) then IslemGostergesi.MevcutDegerYaz(PISayi4(ADegiskenler + 04)^);
+      IslemGostergesi := TIslemGostergesi(GGNesneler.NesneTipiniKontrolEt(
+        PKimlik(ADegiskenler + 00)^, gntIslemGostergesi));
+      if(IslemGostergesi <> nil) then IslemGostergesi.MevcutDegerYaz(
+        PISayi4(ADegiskenler + 04)^);
     end;
   end;
 end;
@@ -128,7 +129,7 @@ begin
 
   NesneTipi := gntIslemGostergesi;
 
-  GGorselNesneler.GorselNesne[FSiraNo] := Self;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
@@ -137,7 +138,7 @@ end;
 destructor TIslemGostergesi.Destroy;
 begin
 
-  GGorselNesneler.YokEt(Self);
+  GGNesneler.YokEt(Self);
 
   inherited Destroy;
 end;
@@ -152,7 +153,7 @@ begin
   Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
     0, 0, 0, 0, '');
 
-  OlayCagriAdresi := @OlaylariIsle;
+  OlayCagriAdr := @OlaylariIsle;
 
   // diğer değer atamaları
   FAltDeger := 1;

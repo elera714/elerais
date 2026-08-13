@@ -6,7 +6,7 @@
   Program Adý: resimgor.lpr
   Program Ýþlevi: resim görüntüleyici program
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 13/08/2026
 
  ==============================================================================}
 {$mode objfpc}
