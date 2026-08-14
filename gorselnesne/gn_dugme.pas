@@ -6,7 +6,7 @@
   Dosya Adı: gn_dugme.pas
   Dosya İşlevi: düğme (TButton) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -308,7 +308,7 @@ begin
   begin
 
     // düğme'nin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(Dugme);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Dugme);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
@@ -322,7 +322,7 @@ begin
     begin
 
       // fare olaylarını yakala
-      OlayYakalamayaBasla(Dugme);
+      GGNesneler.OlayYakalamayaBasla(Dugme);
 
       // düğme'nin durumunu BASILI olarak belirle
       Dugme.FDurum := ddBasili;
@@ -340,7 +340,7 @@ begin
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(Dugme);
+    GGNesneler.OlayYakalamayiBirak(Dugme);
 
     //  basılan düğmeyi eski konumuna geri getir
     Dugme.FDurum := ddNormal;
@@ -373,7 +373,7 @@ begin
     // 1 - fare göstergesi düğmenin içerisindeyse
     // 2 - fare göstergesi düğmenin dışarısındaysa
     // koşula göre düğmenin durumunu yeniden çiz ...
-    if(YakalananGorselNesne <> nil) then
+    if(GGNesneler.YakalananGorselNesne <> nil) then
     begin
 
       if(Dugme.FareNesneOlayAlanindaMi(Dugme)) then
@@ -395,7 +395,7 @@ begin
   begin
 
     // düğme'nin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(Dugme);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Dugme);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
@@ -415,7 +415,7 @@ begin
   begin
 
     // düğme'nin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(Dugme);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Dugme);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);

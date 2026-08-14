@@ -6,7 +6,7 @@
   Dosya Adı: gn_giriskutusu.pas
   Dosya İşlevi: giriş kutusu (TEdit) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -315,7 +315,7 @@ begin
   begin
 
     // giriş kutusunun sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(Self);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Self);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
@@ -485,7 +485,7 @@ begin
   begin
 
     // giriş kutusu nesnesinin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(Self);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Self);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
@@ -502,7 +502,7 @@ begin
   begin
 
     // giriş kutusu nesnesinin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(Self);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Self);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);

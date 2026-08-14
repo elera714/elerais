@@ -6,7 +6,7 @@
   Dosya Adı: gn_durumcubugu.pas
   Dosya İşlevi: durum çubuğu (TStatusBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -233,7 +233,7 @@ begin
   begin
 
     // durum çubuğunun sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(DurumCubugu);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(DurumCubugu);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
@@ -242,7 +242,7 @@ begin
     begin
 
       // fare olaylarını yakala
-      OlayYakalamayaBasla(DurumCubugu);
+      GGNesneler.OlayYakalamayaBasla(DurumCubugu);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
@@ -260,7 +260,7 @@ begin
     end;
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(DurumCubugu);
+    GGNesneler.OlayYakalamayiBirak(DurumCubugu);
   end;
 
   // aktif fare göstergesini güncelle

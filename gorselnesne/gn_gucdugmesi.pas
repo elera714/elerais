@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -300,7 +300,7 @@ begin
   begin
 
     // güç düğmesinin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(GucDugmesi);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(GucDugmesi);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
@@ -310,7 +310,7 @@ begin
     GucDugmesi.Odaklanildi := True;
 
     // fare olaylarını yakala
-    OlayYakalamayaBasla(GucDugmesi);
+    GGNesneler.OlayYakalamayaBasla(GucDugmesi);
 
     // güç düğmesinin durumunu NORMAL / BASILI olarak değiştir
     if(GucDugmesi.FDurum = ddBasili) then
@@ -340,7 +340,7 @@ begin
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(GucDugmesi);
+    GGNesneler.OlayYakalamayiBirak(GucDugmesi);
   end;
 
   // aktif fare göstergesini güncelle

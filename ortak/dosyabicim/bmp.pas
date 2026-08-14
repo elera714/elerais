@@ -6,7 +6,7 @@
   Dosya Adı: bmp.pas
   Dosya İşlevi: bmp dosya işlevlerini içerir
 
-  Güncelleme Tarihi: 12/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -238,7 +238,7 @@ begin
     if(Resim = nil) then Exit;
 
     // ata nesne kontrolü. ata nesne pencere değilse çık
-    Pencere := EnUstPencereNesnesiniAl(Resim);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Resim);
     if(Pencere = nil) then Exit;
 
     CizimAlani := Resim.FCizimAlani;

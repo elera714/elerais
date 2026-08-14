@@ -6,7 +6,7 @@
   Dosya Adı: gn_kaydirmacubugu.pas
   Dosya İşlevi: kaydırma çubuğu (TScrollBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -338,7 +338,7 @@ begin
   begin
 
     // kaydırma çubuğunun sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(KaydirmaCubugu);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(KaydirmaCubugu);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);

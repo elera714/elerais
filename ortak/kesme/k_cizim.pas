@@ -6,7 +6,7 @@
   Dosya Adı: k_cizim.pas
   Dosya İşlevi: grafiksel ekrana çizim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/02/2025
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,16 +20,16 @@ function CizimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses gorselnesne, genel, src_vesa20;
+uses gorselnesne, src_vesa20, gn_islevler;
 
 {==============================================================================
   görsel nesne çizim kesmelerini içerir
  ==============================================================================}
 function CizimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GN: PGorselNesne;
+  GN: TGorselNesne;
   Alan: TAlan;
-  Islev: TSayi4;
+  IslevNo: TSayi4;
   Sol, Ust, Sag, Alt,
   YariCap: TISayi4;
 begin
@@ -37,17 +37,17 @@ begin
   Result := HATA_ISLEV;
 
   // işlev no
-  Islev := (AIslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
   // nesneye nokta (pixel) yazma işlemi
-  if(Islev = 1) then
+  if(IslevNo = 1) then
   begin
 
     // nesneyi kontrol et
-    GN := GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
+    GN := GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
     if(GN = nil) then Exit;
 
-    Alan := GN^.CizimAlaniniAl2(GN^.F0.Kimlik);
+    Alan := GN.CizimAlaniniAl2;
     Sol := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     Ust := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
 
@@ -59,14 +59,14 @@ begin
   end
 
   // dikdörtgen çiz
-  else if(Islev = 2) then
+  else if(IslevNo = 2) then
   begin
 
     // nesneyi kontrol et
-    GN := GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
+    GN := GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
     if(GN = nil) then Exit;
 
-    Alan := GN^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
+    Alan := GN.CizimAlaniniAl2;
     Sol := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     Ust := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
     Sag := PISayi4(ADegiskenler + 12)^ + Sol;
@@ -75,7 +75,7 @@ begin
     if(PBoolean(ADegiskenler + 24)^) then
     begin
 
-      GN^.DikdortgenDoldur(GN, Sol, Ust, Sag, Alt, PRenk(ADegiskenler + 20)^,
+      GN.DikdortgenDoldur(GN, Sol, Ust, Sag, Alt, PRenk(ADegiskenler + 20)^,
         PRenk(ADegiskenler + 20)^);
 
       Result := 1;
@@ -87,38 +87,38 @@ begin
       Alan.Ust := Ust;
       Alan.Sag := Sag;
       Alan.Alt := Alt;
-      GN^.Dikdortgen(GN, ctDuz, Alan, PRenk(ADegiskenler + 20)^);
+      GN.Dikdortgen(GN, ctDuz, Alan, PRenk(ADegiskenler + 20)^);
 
       Result := 1;
     end;
   end
 
   // çizgi çiz
-  else if(Islev = 3) then
+  else if(IslevNo = 3) then
   begin
 
     // nesneyi kontrol et
-    GN := GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
+    GN := GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
     if(GN = nil) then Exit;
 
-    Alan := GN^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
+    Alan := GN.CizimAlaniniAl2;
     Sol := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     Ust := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
     Sag := PISayi4(ADegiskenler + 12)^ + Alan.Sol;
     Alt := PISayi4(ADegiskenler + 16)^ + Alan.Ust;
 
-    GN^.Cizgi(GN, PCizgiTipi(ADegiskenler + 20)^, Sol, Ust, Sag, Alt, PRenk(ADegiskenler + 24)^);
+    GN.Cizgi(GN, PCizgiTipi(ADegiskenler + 20)^, Sol, Ust, Sag, Alt, PRenk(ADegiskenler + 24)^);
   end
 
   // daire çiz
-  else if(Islev = 4) then
+  else if(IslevNo = 4) then
   begin
 
     // nesneyi kontrol et
-    GN := GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
+    GN := GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntPencere);
     if(GN = nil) then Exit;
 
-    Alan := GN^.CizimAlaniniAl2(PKimlik(ADegiskenler + 00)^);
+    Alan := GN.CizimAlaniniAl2;
     Sol := PISayi4(ADegiskenler + 04)^ + Alan.Sol;
     Ust := PISayi4(ADegiskenler + 08)^ + Alan.Ust;
     YariCap := PISayi4(ADegiskenler + 12)^;
@@ -126,12 +126,12 @@ begin
     if(PBoolean(ADegiskenler + 20)^) then
     begin
 
-      GN^.DaireDoldur(GN, Sol, Ust, YariCap, PISayi4(ADegiskenler + 16)^);
+      GN.DaireDoldur(GN, Sol, Ust, YariCap, PISayi4(ADegiskenler + 16)^);
     end
     else
     begin
 
-      GN^.Daire(Sol, Ust, YariCap, PISayi4(ADegiskenler + 16)^);
+      GN.Daire(Sol, Ust, YariCap, PISayi4(ADegiskenler + 16)^);
     end;
   end;
 end;

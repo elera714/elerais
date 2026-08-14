@@ -6,7 +6,7 @@
   Dosya Adı: gn_etiket.pas
   Dosya İşlevi: etiket (TLabel) nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -79,7 +79,7 @@ begin
       Etiket.Baslik := p^;
 
       // etiketin bağlı olduğu pencere nesnesini güncelle
-      Pencere := EnUstPencereNesnesiniAl(Etiket);
+      Pencere := GGNesneler.EnUstPencereNesnesiniAl(Etiket);
       if not(Pencere = nil) then Pencere.Guncelle;
     end;
 
@@ -91,7 +91,7 @@ begin
       Etiket.FYaziRenk := PRenk(ADegiskenler + 04)^;
 
       // etiketin bağlı olduğu pencere nesnesini güncelle
-      Pencere := EnUstPencereNesnesiniAl(Etiket);
+      Pencere := GGNesneler.EnUstPencereNesnesiniAl(Etiket);
       if not(Pencere = nil) then Pencere.Guncelle;
     end;
   end;
@@ -223,13 +223,13 @@ begin
   begin
 
     // etiketin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(Etiket);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Etiket);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
 
     // fare olaylarını yakala
-    OlayYakalamayaBasla(Etiket);
+    GGNesneler.OlayYakalamayaBasla(Etiket);
 
     // etiket nesnesini yeniden çiz
     Etiket.Ciz;
@@ -243,7 +243,7 @@ begin
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(Etiket);
+    GGNesneler.OlayYakalamayiBirak(Etiket);
 
     // etiket nesnesini yeniden çiz
     Etiket.Ciz;

@@ -6,7 +6,7 @@
   Dosya Adı: gn_listekutusu.pas
   Dosya İşlevi: liste kutusu (TListBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 13/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -357,7 +357,7 @@ begin
   begin
 
     // liste kutusunun sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(ListeKutusu);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(ListeKutusu);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
@@ -371,7 +371,7 @@ begin
     begin
 
       // fare olaylarını yakala
-      OlayYakalamayaBasla(ListeKutusu);
+      GGNesneler.OlayYakalamayaBasla(ListeKutusu);
 
       // seçilen sıra numarasını belirle
       SSN := (AOlay.Deger2 - 4) div 18;
@@ -386,7 +386,7 @@ begin
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(ListeKutusu);
+    GGNesneler.OlayYakalamayiBirak(ListeKutusu);
 
     // fare bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
     if(ListeKutusu.FareNesneOlayAlanindaMi(ListeKutusu)) then
@@ -404,7 +404,7 @@ begin
   begin
 
     // eğer nesne yakalanmış ise
-    if(YakalananGorselNesne <> nil) then
+    if(GGNesneler.YakalananGorselNesne <> nil) then
     begin
 
       // fare liste kutusunun yukarısında ise

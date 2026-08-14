@@ -6,7 +6,7 @@
   Dosya Adı: pit.pas
   Dosya İşlevi: programlanabilir zamanlayıcı (programmable interval timer) işlevlerini içerir
 
-  Güncelleme Tarihi: 21/09/2019
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}

@@ -6,7 +6,7 @@
   Dosya Adı: gn_resimdugmesi.pas
   Dosya İşlevi: resim düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,7 +46,7 @@ function ResimDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, A
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj, src_ps2;
+uses gn_pencere, gn_islevler, temelgorselnesne, src_ps2;
 
 {==============================================================================
   resim düğmesi kesme çağrılarını yönetir
@@ -262,7 +262,7 @@ begin
   begin
 
     // resim düğmesinin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(ResimDugmesi);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(ResimDugmesi);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
@@ -277,7 +277,7 @@ begin
     begin
 
       // fare olaylarını yakala
-      OlayYakalamayaBasla(ResimDugmesi);
+      GGNesneler.OlayYakalamayaBasla(ResimDugmesi);
 
       // resim düğmesinin durumunu BASILI olarak belirle
       ResimDugmesi.FDurum := ddBasili;
@@ -295,7 +295,7 @@ begin
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(ResimDugmesi);
+    GGNesneler.OlayYakalamayiBirak(ResimDugmesi);
 
     //  basılan resim düğmesini NORMAL olarak belirle
     ResimDugmesi.FDurum := ddNormal;
@@ -328,7 +328,7 @@ begin
     // 1 - fare göstergesi resim düğmesinin içerisindeyse
     // 2 - fare göstergesi resim düğmesinin dışarısındaysa
     // koşula göre resim düğmesinin durumunu yeniden çiz ...
-    if(YakalananGorselNesne <> nil) then
+    if(GGNesneler.YakalananGorselNesne <> nil) then
     begin
 
       if(ResimDugmesi.FareNesneOlayAlanindaMi(ResimDugmesi)) then

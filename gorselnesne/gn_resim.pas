@@ -6,7 +6,7 @@
   Dosya Adı: gn_resim.pas
   Dosya İşlevi: resim (TImage) nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -253,13 +253,13 @@ begin
   begin
 
     // resim nesnesinin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(Resim);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Resim);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
 
     // fare olaylarını yakala
-    OlayYakalamayaBasla(Resim);
+    GGNesneler.OlayYakalamayaBasla(Resim);
 
     // uygulamaya veya efendi nesneye mesaj gönder
     if not(Resim.OlayYonlAdr = nil) then
@@ -270,7 +270,7 @@ begin
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(Resim);
+    GGNesneler.OlayYakalamayiBirak(Resim);
 
     // farenin tuş bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
     if(Resim.FareNesneOlayAlanindaMi(Resim)) then

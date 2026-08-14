@@ -46,15 +46,17 @@ begin
     if(GiysiSN < GGiysiler.ToplamGiysi) then
     begin
 
-      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+      p := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
       p^ := GGiysiler.Giysi[GiysiSN].Ad;
     end;
   end
+
   else if(IslevNo = 3) then
   begin
 
     Result :=  GGiysiler.AktifGiysiSN;
   end
+
   else if(IslevNo = 4) then
   begin
 
@@ -64,7 +66,7 @@ begin
 
       GGiysiler.AktifGiysiSN := GiysiSN;
       GGiysiler.AktifGiysi := GGiysiler.Giysi[GGiysiler.AktifGiysiSN];
-      GGorselNesneler.AktifMasaustu.Ciz;
+      GGNesneler.AktifMasaustu.Ciz;
     end;
   end;
 end;

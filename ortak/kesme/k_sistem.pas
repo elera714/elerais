@@ -6,7 +6,7 @@
   Dosya Adı: k_sistem.pas
   Dosya İşlevi: sistem kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 02/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -23,8 +23,8 @@ implementation
 uses sistem, gorev, src_vesa20, islemci;
 
 type
-  PIslemciBilgisi = ^TIslemciBilgisi;
-  TIslemciBilgisi = record
+  PIslemciBilgisi3 = ^TIslemciBilgisi3;
+  TIslemciBilgisi3 = record
     Satici: string;                   // cpu id = 0
     Ozellik1_EAX, Ozellik1_EDX,
     Ozellik1_ECX: TSayi4;             // cpu id = 1
@@ -33,7 +33,7 @@ type
 function SistemCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
   SB: PSistemBilgisi;
-  IB: PIslemciBilgisi;
+  IB: PIslemciBilgisi3;
   IslevNo, i: TSayi4;
   s: string;
   p: Isaretci;
@@ -48,7 +48,7 @@ begin
   if(IslevNo = 1) then
   begin
 
-    SB := PSistemBilgisi(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
+    SB := PSistemBilgisi(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr);
     SB^.SistemAdi := SistemAdi;
     SB^.DerlemeBilgisi := DerlemeTarihi;
     SB^.FPCMimari := FPCMimari;
@@ -56,16 +56,18 @@ begin
     SB^.YatayCozunurluk := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk;
     SB^.DikeyCozunurluk := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk;
   end
+
   // işlemci bilgisini al
   else if(IslevNo = 2) then
   begin
 
-    IB := PIslemciBilgisi(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
+    IB := PIslemciBilgisi3(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr);
     IB^.Satici := GIslemci.Satici;
     IB^.Ozellik1_EAX := GIslemci.Ozellik1_EAX;
     IB^.Ozellik1_EDX := GIslemci.Ozellik1_EDX;
     IB^.Ozellik1_ECX := GIslemci.Ozellik1_ECX;
   end
+
   // sistem sürücü / klasör / dosya bilgisini al
   // sistem ile ilgili tüm sürücü / klasör / dosya bilgileri bu işlev yoluyla alınacaktır
   else if(IslevNo = 3) then
@@ -80,7 +82,7 @@ begin
       else s := '';
     end;
 
-    p := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+    p := Isaretci(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
     PKarakterKatari(p)^ := s;
   end
 

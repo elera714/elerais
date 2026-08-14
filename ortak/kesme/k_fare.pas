@@ -6,7 +6,7 @@
   Dosya Adı: k_fare.pas
   Dosya İşlevi: fare (mouse) kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 31/07/2016
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,7 +28,7 @@ uses src_ps2, gorev;
 function FareCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
   IslevNo: TSayi4;
-  K: PKonum;
+  Konum: PKonum;
 begin
 
   Result := HATA_ISLEV;
@@ -41,10 +41,10 @@ begin
   begin
 
     // fare konum değerini belirtilen bellek adreslerine kopyala
-    K := PKonum(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
+    Konum := PKonum(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
 
-    K^.Sol := GFareSurucusu.YatayKonum;
-    K^.Ust := GFareSurucusu.DikeyKonum;
+    Konum^.Sol := GFareSurucusu.YatayKonum;
+    Konum^.Ust := GFareSurucusu.DikeyKonum;
     Result := HATA_YOK;
   end;
 end;

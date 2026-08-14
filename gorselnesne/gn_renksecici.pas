@@ -6,7 +6,7 @@
   Dosya Adı: gn_renksecici.pas
   Dosya İşlevi: renk seçim yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 12/08/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -240,7 +240,7 @@ begin
   begin
 
     // renk seçicinin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(RenkSecici);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(RenkSecici);
 
     // en üstte olmaması durumunda en üste getir
     if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
@@ -250,7 +250,7 @@ begin
     RenkSecici.Odaklanildi := True;
 
     // fare olaylarını yakala
-    OlayYakalamayaBasla(RenkSecici);
+    GGNesneler.OlayYakalamayaBasla(RenkSecici);
 
     RenkSecici.FSeciliRenkSiraNo := ((AOlay.Deger2 div RenkSecici.FRenkKutuY) * 8) +
       (AOlay.Deger1 div RenkSecici.FRenkKutuG);
@@ -262,7 +262,7 @@ begin
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(RenkSecici);
+    GGNesneler.OlayYakalamayiBirak(RenkSecici);
 
     // renk seçici nesnesini yeniden çiz
     RenkSecici.Ciz;

@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 23/07/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -93,7 +93,7 @@ function UzunlukAl16(ADeger: TSayi4): TSayi4;
 
 implementation
 
-uses genel, cmos, donusum;
+uses cmos, donusum;
 
 {==============================================================================
   oluşturulacak mesajların ana yükleme işlevlerini içerir
