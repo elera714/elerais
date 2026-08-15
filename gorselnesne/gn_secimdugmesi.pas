@@ -6,7 +6,7 @@
   Dosya Adı: gn_secimdugmesi.pas
   Dosya İşlevi: seçim düğmesi (TRadioButton) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 15/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -47,124 +47,140 @@ const
 
 type
   PSecimDugmesi = ^TSecimDugmesi;
-  TSecimDugmesi = object(TPanel)
+  TSecimDugmesi = class(TPanel)
   private
     FSecimDurumu: TSecimDurumu;
   public
-    function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-      ASol, AUst: TISayi4; ABaslik: string): PSecimDugmesi;
-    procedure YokEt(AKimlik: TKimlik);
+    constructor Create; override;
+    destructor Destroy; override;
+    function Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+      ASol, AUst: TISayi4; ABaslik: string): TISayi4;
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
     procedure Ciz;
-    procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
   end;
 
 function SecimDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TISayi4; ABaslik: string): TKimlik;
+function SecimDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst: TISayi4; ABaslik: string): TKimlik;
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, gorev;
+uses gn_pencere, gn_islevler, gorev, src_ps2;
 
 {==============================================================================
   seçim düğmesi çağrılarını yönetir
  ==============================================================================}
 function SecimDugmeCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GN: PGorselNesne;
-  Pencere: PPencere;
-  SecimDugmesi: PSecimDugmesi;
+  GN: TGorselNesne;
+  Pencere: TPencere;
+  SecimDugmesi: TSecimDugmesi;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := SecimDugmesiGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+        PKarakterKatari(PSayi4(ADegiskenler + 12)^ + GGorevler.FAktifGrvBelAdr)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      SecimDugmesi := PSecimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      SecimDugmesi^.Goster;
+      SecimDugmesi := TSecimDugmesi(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SecimDugmesi.Goster;
     end;
 
     $010F:
     begin
 
-      SecimDugmesi := PSecimDugmesi(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      SecimDugmesi^.FSecimDurumu := PSecimDurumu(ADegiskenler + 04)^;
+      SecimDugmesi := TSecimDugmesi(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      SecimDugmesi.FSecimDurumu := PSecimDurumu(ADegiskenler + 04)^;
 
-      Pencere := PPencere(SecimDugmesi^.AtaNesne);
-      if not(Pencere = nil) then Pencere^.Guncelle;
-    end
-
-    else Result := HATA_ISLEV;
+      Pencere := TPencere(SecimDugmesi.AtaNesne);
+      if not(Pencere = nil) then Pencere.Guncelle;
+    end;
   end;
 end;
 
 {==============================================================================
-  seçim düğmesi nesnesini oluşturur
+  uygulama için seçim düğmesi nesnesi oluşturur - api
  ==============================================================================}
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TISayi4; ABaslik: string): TKimlik;
+function SecimDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst: TISayi4; ABaslik: string): TKimlik;
 var
-  SecimDugmesi: PSecimDugmesi;
+  SecimDugmesi: TSecimDugmesi;
 begin
 
-  SecimDugmesi := SecimDugmesi^.Olustur(ktNesne, AAtaNesne, ASol, AUst, ABaslik);
+  SecimDugmesi := TSecimDugmesi.Create;
 
   if(SecimDugmesi = nil) then
 
     Result := HATA_NESNEOLUSTURMA
+  else
+  begin
 
-  else Result := SecimDugmesi^.F0.Kimlik;
+    SecimDugmesi.Ozellestir(ktNesne, AAtaNesne, ASol, AUst, ABaslik);
+
+    Result := SecimDugmesi.Kimlik;
+  end;
 end;
 
 {==============================================================================
-  seçim düğmesi nesnesini oluşturur
+  seçim düğmesi nesnesi oluşturur
  ==============================================================================}
-function TSecimDugmesi.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-  ASol, AUst: TISayi4; ABaslik: string): PSecimDugmesi;
-var
-  SecimDugmesi: PSecimDugmesi;
-  Genislik: TSayi4;
+constructor TSecimDugmesi.Create;
 begin
 
-  Genislik := 16 + 4 + (Length(ABaslik) * 8);
+  inherited Create;
 
-  SecimDugmesi := PSecimDugmesi(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
-    Genislik, 16, 0, 0, 0, 0, ABaslik));
+  NesneTipi := gntSecimDugmesi;
 
-  SecimDugmesi^.F0.NesneTipi := gntSecimDugmesi;
-
-  SecimDugmesi^.F0.Baslik := ABaslik;
-
-  SecimDugmesi^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
-
-  SecimDugmesi^.F0.Odaklanilabilir := True;
-  SecimDugmesi^.F0.Odaklanildi := False;
-
-  SecimDugmesi^.OlayCagriAdresi := @OlaylariIsle;
-
-  SecimDugmesi^.FSecimDurumu := sdNormal;
-
-  // nesne adresini geri döndür
-  Result := SecimDugmesi;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
   seçim düğmesi nesnesini yok eder
  ==============================================================================}
-procedure TSecimDugmesi.YokEt(AKimlik: TKimlik);
+destructor TSecimDugmesi.Destroy;
 begin
 
-  inherited YokEt(AKimlik);
+  GGNesneler.YokEt(Self);
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  seçim düğmesi nesnesini özelleştirir
+ ==============================================================================}
+function TSecimDugmesi.Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+  ASol, AUst: TISayi4; ABaslik: string): TISayi4;
+var
+  G: TSayi4;
+begin
+
+  G := 16 + 4 + (Length(ABaslik) * 8);
+
+  Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, G,
+    16, 0, 0, 0, 0, ABaslik);
+
+  OlayCagriAdr := @OlaylariIsle;
+
+  Baslik := ABaslik;
+
+  Odaklanilabilir := True;
+  Odaklanildi := False;
+
+  FSecimDurumu := sdNormal;
+
+  // geri dönüş değeri
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
@@ -198,20 +214,16 @@ end;
  ==============================================================================}
 procedure TSecimDugmesi.Ciz;
 var
-  SecimDugmesi: PSecimDugmesi;
   CizimAlani: TAlan;
   Y, D: TISayi4;      // Yatay / Dikey
   p1: PSayi1;
 begin
 
-  SecimDugmesi := PSecimDugmesi(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(SecimDugmesi = nil) then Exit;
-
   // seçim düğmesi üst nesneye bağlı olarak koordinatlarını al
-  CizimAlani := SecimDugmesi^.F0.FCizimAlani;
+  CizimAlani := FCizimAlani;
 
   // seçim düğmesi çizim
-  if(SecimDugmesi^.FSecimDurumu = sdNormal) then
+  if(FSecimDurumu = sdNormal) then
   begin
 
     p1 := PByte(@SecimDugmeNormal);
@@ -221,12 +233,12 @@ begin
       for Y := 1 to 12 do
       begin
 
-        if(p1^ = 1) then PixelYaz(SecimDugmesi, CizimAlani.Sol + 1 + Y, CizimAlani.Ust + 1 + D, $6485B5);
+        if(p1^ = 1) then PixelYaz(Self, CizimAlani.Sol + 1 + Y, CizimAlani.Ust + 1 + D, $6485B5);
         Inc(p1);
       end;
     end;
   end
-  else if(SecimDugmesi^.FSecimDurumu = sdSecili) then
+  else if(FSecimDurumu = sdSecili) then
   begin
 
     p1 := PByte(@SecimDugmeSecili);
@@ -236,27 +248,27 @@ begin
       for Y := 1 to 12 do
       begin
 
-        if(p1^ = 1) then PixelYaz(SecimDugmesi, CizimAlani.Sol + 1 + Y, CizimAlani.Ust + 1 + D, $6485B5);
+        if(p1^ = 1) then PixelYaz(Self, CizimAlani.Sol + 1 + Y, CizimAlani.Ust + 1 + D, $6485B5);
         Inc(p1);
       end;
     end;
   end;
 
   // seçim düğmesi başlığı
-  if(Length(SecimDugmesi^.F0.Baslik) > 0) then YaziYaz(SecimDugmesi, CizimAlani.Sol + 20,
-    CizimAlani.Ust + 2, SecimDugmesi^.F0.Baslik, RENK_SIYAH);
+  if(Length(Baslik) > 0) then YaziYaz(Self, CizimAlani.Sol + 20,
+    CizimAlani.Ust + 2, Baslik, RENK_SIYAH);
 end;
 
 {==============================================================================
   seçim düğmesi nesne olaylarını işler
  ==============================================================================}
-procedure TSecimDugmesi.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+procedure TSecimDugmesi.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 var
-  Pencere: PPencere;
-  SecimDugmesi: PSecimDugmesi;
+  Pencere: TPencere;
+  SecimDugmesi: TSecimDugmesi;
 begin
 
-  SecimDugmesi := PSecimDugmesi(AGonderici);
+  SecimDugmesi := TSecimDugmesi(AGonderici);
   if(SecimDugmesi = nil) then Exit;
 
   // farenin sol tuşuna basım işlemi
@@ -264,50 +276,51 @@ begin
   begin
 
     // seçim düğmesinin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(SecimDugmesi);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(SecimDugmesi);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GGNesneler.AktifPencere) then
+      Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    Pencere^.FAktifNesne := SecimDugmesi;
-    SecimDugmesi^.F0.Odaklanildi := True;
+    Pencere.FAktifNesne := SecimDugmesi;
+    SecimDugmesi.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
-    if(SecimDugmesi^.FareNesneOlayAlanindaMi(SecimDugmesi)) then
-      OlayYakalamayaBasla(SecimDugmesi);
+    if(SecimDugmesi.FareNesneOlayAlanindaMi(SecimDugmesi)) then
+      GGNesneler.OlayYakalamayaBasla(SecimDugmesi);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(SecimDugmesi);
+    GGNesneler.OlayYakalamayiBirak(SecimDugmesi);
 
     // farenin tuş bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
-    if(SecimDugmesi^.FareNesneOlayAlanindaMi(SecimDugmesi)) then
+    if(SecimDugmesi.FareNesneOlayAlanindaMi(SecimDugmesi)) then
     begin
 
       // sadece seçim durumu normal (seçili değil) olduğunda işlem yap
-      if(SecimDugmesi^.FSecimDurumu = sdNormal) then
+      if(SecimDugmesi.FSecimDurumu = sdNormal) then
       begin
 
-        SecimDugmesi^.FSecimDurumu := sdSecili;
+        SecimDugmesi.FSecimDurumu := sdSecili;
 
-        SecimDugmesi^.Ciz;
+        SecimDugmesi.Ciz;
 
         AOlay.Olay := CO_DURUMDEGISTI;
         AOlay.Deger1 := TISayi4(sdSecili);
 
         // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
-        if not(SecimDugmesi^.OlayYonlendirmeAdresi = nil) then
-          SecimDugmesi^.OlayYonlendirmeAdresi(SecimDugmesi, AOlay)
-        else Gorevler0.OlayEkle(SecimDugmesi^.F0.GorevKimlik, AOlay);
+        if not(SecimDugmesi.OlayYonlAdr = nil) then
+          SecimDugmesi.OlayYonlAdr(SecimDugmesi, AOlay)
+        else GGorevler.OlayEkle(SecimDugmesi.GrvKimlik, AOlay);
       end;
     end;
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := SecimDugmesi^.F0.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := SecimDugmesi.FareImlec;
 end;
 
 end.

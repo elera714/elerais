@@ -6,7 +6,7 @@
   Dosya Adý: dhcp4_i.pas
   Dosya Ýþlevi: DHCP v4 istemci protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 22/06/2026
+  Güncelleme Tarihi: 15/08/2026
 
   Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
 
@@ -264,7 +264,7 @@ procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev
 
 implementation
 
-uses baglanti, donusum, islevler, sistemmesaj, ag;
+uses baglantilar, donusum, islevler, sistemmesaj, ag;
 
 {==============================================================================
   DHCP sunucularýna keþif mesajý gönderir
@@ -393,11 +393,12 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btAktif, ptUDP, IPAdresi,
+    DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
       B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -545,11 +546,11 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(ATeklifEdilenIPAdresi.IPAdres);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btAktif, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
       B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -720,11 +721,11 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btAktif, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
       B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -888,11 +889,11 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(AIstenenIPAdresi.IPAdres);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btAktif, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
       B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -1022,11 +1023,11 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btAktif, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
       B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -1152,11 +1153,11 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(AIPAdres.IPAdres);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btAktif, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
       B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
@@ -1239,11 +1240,11 @@ begin
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
   IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  B := GBaglantilar.BaglantiOlustur(itIP4, btAktif, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
       B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);

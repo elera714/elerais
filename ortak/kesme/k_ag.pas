@@ -6,7 +6,7 @@
   Dosya Adı: k_ag.pas
   Dosya İşlevi: ağ (network) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 26/07/2026
+  Güncelleme Tarihi: 15/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -38,18 +38,18 @@ var
  ==============================================================================}
 function AgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  SiraNo: TSayi4;
+  IslevNo: TSayi4;
 begin
 
   Result := HATA_ISLEV;
 
   // işlev no
-  SiraNo := (AIslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
   // işlevi ilgili protokole yönlendir
-  if(SiraNo >= 1) and (SiraNo <= 2) then
+  if(IslevNo >= 1) and (IslevNo <= 2) then
 
-    Result := AgCagriListesi[SiraNo](((AIslevNo shr 8) and $FFFF), ADegiskenler);
+    Result := AgCagriListesi[IslevNo](((AIslevNo shr 8) and $FFFF), ADegiskenler);
 end;
 
 end.

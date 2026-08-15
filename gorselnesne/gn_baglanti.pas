@@ -6,7 +6,7 @@
   Dosya Adı: gn_baglanti.pas
   Dosya İşlevi: bağlantı nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/08/2026
+  Güncelleme Tarihi: 15/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -217,7 +217,7 @@ begin
     Pencere := GGNesneler.EnUstPencereNesnesiniAl(Baglanti);
 
     // en üstte olmaması durumunda en üste getir
-    if(Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
+    if(Pencere <> GGNesneler.AktifPencere) then Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
     // bilgi: şu aşamada bu nesne odaklanılabilir bir nesne değil

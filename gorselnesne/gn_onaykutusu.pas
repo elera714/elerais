@@ -6,7 +6,7 @@
   Dosya Adı: gn_onaykutusu.pas
   Dosya İşlevi: onay kutusu (TCheckBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 15/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -31,35 +31,36 @@ const
 
 type
   POnayKutusu = ^TOnayKutusu;
-  TOnayKutusu = object(TPanel)
+  TOnayKutusu = class(TPanel)
   private
     FOncekiSecimDurumu,
     FSecimDurumu: TSecimDurumu;
   public
-    function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-      ASol, AUst: TISayi4; ABaslik: string): POnayKutusu;
-    procedure YokEt(AKimlik: TKimlik);
+    constructor Create; override;
+    destructor Destroy; override;
+    function Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+      ASol, AUst: TISayi4; ABaslik: string): TISayi4;
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
     procedure Ciz;
-    procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
   end;
 
 function IsaretKutusuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TISayi4; ABaslik: string): TKimlik;
+function OnayKutusuGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst: TISayi4; ABaslik: string): TKimlik;
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, gorev;
+uses gn_pencere, gn_islevler, temelgorselnesne, gorev, src_ps2;
 
 {==============================================================================
   onay kutusu çağrılarını yönetir
  ==============================================================================}
 function IsaretKutusuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GN: PGorselNesne;
-  OnayKutusu: POnayKutusu;
+  GN: TGorselNesne;
+  OnayKutusu: TOnayKutusu;
 begin
 
   Result := HATA_ISLEV;
@@ -69,76 +70,91 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := OnayKutusuGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+        PKarakterKatari(PSayi4(ADegiskenler + 12)^ + GGorevler.FAktifGrvBelAdr)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      OnayKutusu := POnayKutusu(GGorselNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
-      OnayKutusu^.Goster;
+      OnayKutusu := TOnayKutusu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      OnayKutusu.Goster;
     end;
   end;
 end;
 
 {==============================================================================
-  onay kutusu nesnesini oluşturur
+  uygulama için onay kutusu nesnesi oluşturur - api
  ==============================================================================}
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TISayi4; ABaslik: string): TKimlik;
+function OnayKutusuGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst: TISayi4; ABaslik: string): TKimlik;
 var
-  OnayKutusu: POnayKutusu;
+  OnayKutusu: TOnayKutusu;
 begin
 
-  OnayKutusu := OnayKutusu^.Olustur(ktNesne, AAtaNesne, ASol, AUst, ABaslik);
+  OnayKutusu := TOnayKutusu.Create;
 
   if(OnayKutusu = nil) then
 
     Result := HATA_NESNEOLUSTURMA
+  else
+  begin
 
-  else Result := OnayKutusu^.F0.Kimlik;
+    OnayKutusu.Ozellestir(ktNesne, AAtaNesne, ASol, AUst, ABaslik);
+
+    Result := OnayKutusu.Kimlik;
+  end;
 end;
 
 {==============================================================================
-  onay kutusu nesnesini oluşturur
+  onay kutusu nesnesi oluşturur
  ==============================================================================}
-function TOnayKutusu.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-  ASol, AUst: TISayi4; ABaslik: string): POnayKutusu;
-var
-  OnayKutusu: POnayKutusu;
-  Genislik: TSayi4;
+constructor TOnayKutusu.Create;
 begin
 
-  Genislik := 16 + 3 + (Length(ABaslik) * 8);
+  inherited Create;
 
-  OnayKutusu := POnayKutusu(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
-    Genislik, 16, 0, 0, 0, 0, ABaslik));
+  NesneTipi := gntOnayKutusu;
 
-  OnayKutusu^.F0.NesneTipi := gntOnayKutusu;
-
-  OnayKutusu^.F0.Baslik := ABaslik;
-
-  OnayKutusu^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
-
-  OnayKutusu^.F0.Odaklanilabilir := True;
-  OnayKutusu^.F0.Odaklanildi := False;
-
-  OnayKutusu^.OlayCagriAdresi := @OlaylariIsle;
-
-  OnayKutusu^.FSecimDurumu := sdNormal;
-
-  // nesne adresini geri döndür
-  Result := OnayKutusu;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
   onay kutusu nesnesini yok eder
  ==============================================================================}
-procedure TOnayKutusu.YokEt(AKimlik: TKimlik);
+destructor TOnayKutusu.Destroy;
 begin
 
-  inherited YokEt(AKimlik);
+  GGNesneler.YokEt(Self);
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  onay kutusu nesnesini özelleştirir
+ ==============================================================================}
+function TOnayKutusu.Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+  ASol, AUst: TISayi4; ABaslik: string): TISayi4;
+var
+  G: TSayi4;
+begin
+
+  G := 16 + 3 + (Length(ABaslik) * 8);
+
+  Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, G,
+    16, 0, 0, 0, 0, ABaslik);
+
+  OlayCagriAdr := @OlaylariIsle;
+
+  Baslik := ABaslik;
+
+  Odaklanilabilir := True;
+  Odaklanildi := False;
+
+  FSecimDurumu := sdNormal;
+
+  // geri dönüş değeri
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
@@ -163,12 +179,7 @@ end;
   onay kutusu nesnesini hizalandırır
  ==============================================================================}
 procedure TOnayKutusu.Hizala;
-var
-  OnayKutusu: POnayKutusu = nil;
 begin
-
-  OnayKutusu := POnayKutusu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(OnayKutusu = nil) then Exit;
 
   inherited Hizala;
 end;
@@ -178,31 +189,27 @@ end;
  ==============================================================================}
 procedure TOnayKutusu.Ciz;
 var
-  OnayKutusu: POnayKutusu;
   CizimAlani: TAlan;
   Y, D: TISayi4;      // Yatay / Dikey
   p1: PSayi1;
 begin
 
-  OnayKutusu := POnayKutusu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(OnayKutusu = nil) then Exit;
-
   // nesne çizim alanı
-  CizimAlani := OnayKutusu^.F0.FCizimAlani;
+  CizimAlani := FCizimAlani;
 
   CizimAlani.Sag := CizimAlani.Sol + 15;
   CizimAlani.Alt := CizimAlani.Ust + 15;
 
   // onay kutusu normal durum çizimi
-  if(OnayKutusu^.FSecimDurumu = sdNormal) then
+  if(FSecimDurumu = sdNormal) then
 
-    DikdortgenDoldur(OnayKutusu, CizimAlani, RENK_GUMUS, RENK_BEYAZ)
+    DikdortgenDoldur(Self, CizimAlani, RENK_GUMUS, RENK_BEYAZ)
 
-  else if(OnayKutusu^.FSecimDurumu = sdSecili) then
   // onay kutusu seçilmiş durum çizimi
+  else if(FSecimDurumu = sdSecili) then
   begin
 
-    DikdortgenDoldur(OnayKutusu, CizimAlani, RENK_GUMUS, $6485B5);
+    DikdortgenDoldur(Self, CizimAlani, RENK_GUMUS, $6485B5);
 
     p1 := PByte(@ResimOnay);
     for D := 1 to 10 do
@@ -211,35 +218,35 @@ begin
       for Y := 1 to 10 do
       begin
 
-        if(p1^ = 1) then PixelYaz(OnayKutusu, CizimAlani.Sol + 2 + Y, CizimAlani.Ust + 1 + D, RENK_BEYAZ);
+        if(p1^ = 1) then PixelYaz(Self, CizimAlani.Sol + 2 + Y, CizimAlani.Ust + 1 + D, RENK_BEYAZ);
         Inc(p1);
       end;
     end;
   end;
 
   // onay kutusu başlığı
-  if(Length(OnayKutusu^.F0.Baslik) > 0) then
-    YaziYaz(OnayKutusu, CizimAlani.Sag + 3, CizimAlani.Ust + 1, OnayKutusu^.F0.Baslik, RENK_SIYAH);
+  if(Length(Baslik) > 0) then
+    YaziYaz(Self, CizimAlani.Sag + 3, CizimAlani.Ust + 1, Baslik, RENK_SIYAH);
 
   // nesne odaklanılmış ise nesnenin kenarlarını işaretle
-  if(OnayKutusu^.F0.Odaklanildi) then
+  if(Odaklanildi) then
   begin
 
-    CizimAlani := OnayKutusu^.F0.FCizimAlani;
-    OnayKutusu^.Dikdortgen(OnayKutusu, ctNokta, CizimAlani, RENK_SIYAH);
+    CizimAlani := FCizimAlani;
+    Dikdortgen(Self, ctNokta, CizimAlani, RENK_SIYAH);
   end;
 end;
 
 {==============================================================================
   onay kutusu nesne olaylarını işler
  ==============================================================================}
-procedure TOnayKutusu.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+procedure TOnayKutusu.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 var
-  Pencere: PPencere;
-  OnayKutusu: POnayKutusu;
+  Pencere: TPencere;
+  OnayKutusu: TOnayKutusu;
 begin
 
-  OnayKutusu := POnayKutusu(AGonderici);
+  OnayKutusu := TOnayKutusu(AGonderici);
   if(OnayKutusu = nil) then Exit;
 
   // farenin sol tuşuna basım işlemi
@@ -247,64 +254,65 @@ begin
   begin
 
     // onay kutusu'nun sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(OnayKutusu);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(OnayKutusu);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GGNesneler.AktifPencere) then
+      Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
-    Pencere^.FAktifNesne := OnayKutusu;
-    OnayKutusu^.F0.Odaklanildi := True;
+    Pencere.FAktifNesne := OnayKutusu;
+    OnayKutusu.Odaklanildi := True;
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
-    if(OnayKutusu^.FareNesneOlayAlanindaMi(OnayKutusu)) then
+    if(OnayKutusu.FareNesneOlayAlanindaMi(OnayKutusu)) then
     begin
 
       // fare olaylarını yakala
-      OlayYakalamayaBasla(OnayKutusu);
+      GGNesneler.OlayYakalamayaBasla(OnayKutusu);
 
       // mevcut durum değerini sakla
-      FOncekiSecimDurumu := OnayKutusu^.FSecimDurumu;
+      FOncekiSecimDurumu := OnayKutusu.FSecimDurumu;
 
-      if(OnayKutusu^.FSecimDurumu = sdNormal) then
-        OnayKutusu^.FSecimDurumu := sdSecili
-      else OnayKutusu^.FSecimDurumu := sdNormal;
+      if(OnayKutusu.FSecimDurumu = sdNormal) then
+        OnayKutusu.FSecimDurumu := sdSecili
+      else OnayKutusu.FSecimDurumu := sdNormal;
 
       // onay kutusu nesnesini yeniden çiz
-      OnayKutusu^.Ciz;
+      OnayKutusu.Ciz;
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(OnayKutusu);
+    GGNesneler.OlayYakalamayiBirak(OnayKutusu);
 
     // farenin tuş bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
-    if(OnayKutusu^.FareNesneOlayAlanindaMi(OnayKutusu)) then
+    if(OnayKutusu.FareNesneOlayAlanindaMi(OnayKutusu)) then
     begin
 
       // yakalama & bırakma işlemi bu nesnede olduğu için
       // nesneye durum değişiklik mesajı gönder
       AOlay.Olay := CO_DURUMDEGISTI;
-      if(OnayKutusu^.FSecimDurumu = sdNormal) then
+      if(OnayKutusu.FSecimDurumu = sdNormal) then
         AOlay.Deger1 := 0
       else AOlay.Deger1 := 1;
 
       // nesnenin olay çağrı adresini çağır veya uygulamaya mesaj gönder
-      if not(OnayKutusu^.OlayYonlendirmeAdresi = nil) then
-        OnayKutusu^.OlayYonlendirmeAdresi(OnayKutusu, AOlay)
-      else Gorevler0.OlayEkle(OnayKutusu^.F0.GorevKimlik, AOlay);
+      if not(OnayKutusu.OlayYonlAdr = nil) then
+        OnayKutusu.OlayYonlAdr(OnayKutusu, AOlay)
+      else GGorevler.OlayEkle(OnayKutusu.GrvKimlik, AOlay);
 
     // aksi durumda onay kutusu durumunu bir önceki duruma getir
-    end else OnayKutusu^.FSecimDurumu := OnayKutusu^.FOncekiSecimDurumu;
+    end else OnayKutusu.FSecimDurumu := OnayKutusu.FOncekiSecimDurumu;
 
     // onay kutusu nesnesini yeniden çiz
-    OnayKutusu^.Ciz;
+    OnayKutusu.Ciz;
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := OnayKutusu^.F0.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := OnayKutusu.FareImlec;
 end;
 
 end.

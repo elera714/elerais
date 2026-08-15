@@ -6,7 +6,7 @@
   Dosya Adı: gn_dugme.pas
   Dosya İşlevi: düğme (TButton) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/08/2026
+  Güncelleme Tarihi: 15/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -311,7 +311,8 @@ begin
     Pencere := GGNesneler.EnUstPencereNesnesiniAl(Dugme);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GGNesneler.AktifPencere) then
+      Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere.FAktifNesne := Dugme;
@@ -398,7 +399,8 @@ begin
     Pencere := GGNesneler.EnUstPencereNesnesiniAl(Dugme);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GGNesneler.AktifPencere) then
+      Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere.FAktifNesne := nil;
@@ -418,7 +420,8 @@ begin
     Pencere := GGNesneler.EnUstPencereNesnesiniAl(Dugme);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GGNesneler.AktifPencere) then
+      Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
     Pencere.FAktifNesne := Dugme;

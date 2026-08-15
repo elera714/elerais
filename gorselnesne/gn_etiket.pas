@@ -6,7 +6,7 @@
   Dosya Adı: gn_etiket.pas
   Dosya İşlevi: etiket (TLabel) nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/08/2026
+  Güncelleme Tarihi: 15/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -226,7 +226,8 @@ begin
     Pencere := GGNesneler.EnUstPencereNesnesiniAl(Etiket);
 
     // en üstte olmaması durumunda en üste getir
-    if not(Pencere = nil) and (Pencere <> GAktifPencere) then Pencere.EnUsteGetir(Pencere);
+    if not(Pencere = nil) and (Pencere <> GGNesneler.AktifPencere) then
+      Pencere.EnUsteGetir(Pencere);
 
     // fare olaylarını yakala
     GGNesneler.OlayYakalamayaBasla(Etiket);
