@@ -6,7 +6,7 @@
   Dosya Adı: icmp4.pas
   Dosya İşlevi: ICMP v4 protokol yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 02/08/2026
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -112,7 +112,7 @@ begin
   ICMPPaket^.SaglamaToplami := SaglamaToplami;
 
   // sisteme gelen icmp isteğine icmp yanıtı (paket) gönder
-  IP4PaketGonder(MACAdres255, GAg0.IP4Adres, AHedefIPAdres, ptICMP4, 0,
+  IP4PaketGonder(MACAdres255, GAg.IP4Adres, AHedefIPAdres, ptICMP4, 0,
     ICMPPaket, ICMP4_BASLIK_UZUNLUGU + i);
 
   {$IFDEF ICMP4_HATAAYIKLA}

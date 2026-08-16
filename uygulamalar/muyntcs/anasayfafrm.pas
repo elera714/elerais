@@ -59,7 +59,7 @@ var
   FELERA: TGucDugmesi;
   FSaatDegeri, FTarihDegeri, FAgBilgisi: TEtiket;
   FZamanlayici: TZamanlayici;
-  FAgBilgisiDurum: TAgBilgisi;
+  FAgBilgisiDurum: TAgBilgisi3;
 
 implementation
 

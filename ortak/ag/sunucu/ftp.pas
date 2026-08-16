@@ -6,15 +6,17 @@
   Dosya Adý: ftp.pas
   Dosya Ýþlevi: FTP (dosya) sunucu protokol iþlevlerini yönetir
 
-  Güncelleme Tarihi: 25/07/2026
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}
 unit ftp;
 
+{ TODO - utf8 kod desteði eklenecek }
+
 interface
 
-uses paylasim, baglanti;
+uses paylasim, baglantilar;
 
 const
   USTSINIR_FTPISTEMCI     = 10;
@@ -42,15 +44,16 @@ type
   public
     constructor Create;
     property Istemciler[ASiraNo: TISayi4]: TBaglanti read Al write Yaz;
-    function Ekle(APaketTipi: TSayi4; AIPAdres: Isaretci; AKaynakPort,
-      AHedefPort: TSayi4): TBaglanti;
+    function Ekle(AIletisimTipi: TIletisimTipi; AIPAdres: Isaretci; AYerelPort,
+      AUzakPort: TSayi4): TBaglanti;
     property AktifIstemciSayisi: TSayi4 read FAktifIstemciSayisi;
   end;
 
 var
-  FTPSunucu0: TFTPSunucu;
+  GFTPSunucu: TFTPSunucu;
 
-procedure SunucuIslevFTP(APaketTipi: TSayi4; ABaglanti: TBaglanti; AEthernetPaket: PEthernetPaket);
+procedure SunucuIslevFTP(AIletisimTipi: TIletisimTipi; ABaglanti: TBaglanti;
+  AEthernetPaket: PEthernetPaket);
 
 implementation
 
@@ -86,11 +89,10 @@ begin
     FIstemciler[ASiraNo] := ABaglanti;
 end;
 
-function TFTPSunucu.Ekle(APaketTipi: TSayi4; AIPAdres: Isaretci; AKaynakPort,
-  AHedefPort: TSayi4): TBaglanti;
+function TFTPSunucu.Ekle(AIletisimTipi: TIletisimTipi; AIPAdres: Isaretci; AYerelPort,
+  AUzakPort: TSayi4): TBaglanti;
 var
-  B, B2: TBaglanti;
-  IT: TIletisimTipi;
+  B: TBaglanti;
   i: TSayi4;
   IPAdres: string;
 begin
@@ -98,60 +100,53 @@ begin
   Result := nil;
 
   // azami baðlantý sayýsý kontrolü
-  if(FTPSunucu0.AktifIstemciSayisi >= USTSINIR_FTPISTEMCI) then Exit(nil);
+  if(GFTPSunucu.AktifIstemciSayisi >= USTSINIR_FTPISTEMCI) then Exit(nil);
 
   // istekte bulunan bilgisayar daha önce ayný port numarasýndan istekte bulunmuþ mu?
   for i := 0 to USTSINIR_FTPISTEMCI - 1 do
   begin
 
-    B2 := FTPSunucu0.Istemciler[i];
-    if not(B2 = nil) then
+    B := GFTPSunucu.Istemciler[i];
+    if not(B = nil) then
     begin
 
-      if(B2.YerelPort = AKaynakPort) then Exit(nil);
+      if(AYerelPort = B.UzakPort) then Exit(nil);
     end;
   end;
 
-  if(APaketTipi = PROTOKOL_IP6) then
+  if(AIletisimTipi = itIP6) then
     IPAdres := IP_KarakterKatari6(PIP6Adres2(AIPAdres)^)
   else IPAdres := IP_KarakterKatari4(PIP4Adres(AIPAdres)^);
 
-  // istemci için baðlantý oluþtur
-  if(APaketTipi = PROTOKOL_IP6) then
-    IT := itIP6
-  else IT := itIP4;
-
-  B := GBaglantilar.BaglantiOlustur(IT,  btPasif, ptTCP, IPAdres, AKaynakPort, AHedefPort);
+  B := GBaglantilar.BaglantiOlustur(AIletisimTipi,  btPasif, ptTCP, IPAdres,
+    AYerelPort, AUzakPort);
   if(B = nil) then Exit(nil);
 
   // oluþturulan baðlantýyý kaydet
   for i := 0 to USTSINIR_FTPISTEMCI - 1 do
   begin
 
-    B2 := FTPSunucu0.Istemciler[i];
-    if(B2 = nil) then
+    if(GFTPSunucu.Istemciler[i] = nil) then
     begin
 
-      FTPSunucu0.Istemciler[i] := B;
+      GFTPSunucu.Istemciler[i] := B;
 
-      { TODO - durumu yeni yapýlandýrmaya göre uygun bir þekilde belirle }
-      B.BaglantiDurum := bdKapali;
-
-      Inc(FTPSunucu0.FAktifIstemciSayisi);
+      Inc(GFTPSunucu.FAktifIstemciSayisi);
 
       Exit(B);
     end;
   end;
 end;
 
-procedure SunucuIslevFTP(APaketTipi: TSayi4; ABaglanti: TBaglanti; AEthernetPaket: PEthernetPaket);
+procedure SunucuIslevFTP(AIletisimTipi: TIletisimTipi; ABaglanti: TBaglanti;
+  AEthernetPaket: PEthernetPaket);
 var
   B: TBaglanti;
   IP6Paket: PIP6Paket;
   IP4Paket: PIP4Paket;
   TCPPaket: PTCPPaket;
   KaynakIP: Isaretci;
-  KaynakPort, HedefPort,
+  YerelPort, UzakPort,
   IPUzunluk, U: TSayi2;
   i: TSayi4;
   p: PChar;
@@ -161,14 +156,14 @@ begin
   IP6Paket := PIP6Paket(@AEthernetPaket^.Veri);
   IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
 
-  if(APaketTipi = PROTOKOL_IP6) then
+  if(AIletisimTipi = itIP6) then
   begin
 
     KaynakIP := @IP6Paket^.KaynakIP;
     TCPPaket := PTCPPaket(@IP6Paket^.Veri);
     IPUzunluk := IP6Paket^.TasinanVeriU;
   end
-  else if(APaketTipi = PROTOKOL_IP4) then
+  else if(AIletisimTipi = itIP4) then
   begin
 
     KaynakIP := @IP4Paket^.KaynakIP;
@@ -179,11 +174,11 @@ begin
   if(ABaglanti = nil) then
   begin
 
-    KaynakPort := ntohs(TCPPaket^.YerelPort);      // paketi gönderen cihazýn portu
-    HedefPort := ntohs(TCPPaket^.UzakPort);        // paketi alan cihazýn yerel portu (bu bilgisayar)
+    YerelPort := ntohs(TCPPaket^.YerelPort);        // paketi gönderen cihazýn portu
+    UzakPort := ntohs(TCPPaket^.UzakPort);          // paketi alan cihazýn yerel portu (bu bilgisayar)
 
     // bu aþamada istemciden SYN mesajý gelmiþ, sunucu olarak istemciye SYN + ACK mesajý göndrilmiþtir
-    B := FTPSunucu0.Ekle(APaketTipi, KaynakIP, KaynakPort, HedefPort);
+    B := GFTPSunucu.Ekle(AIletisimTipi, KaynakIP, YerelPort, UzakPort);
     if not(B = nil) then
     begin
 
@@ -193,20 +188,20 @@ begin
       B.OnayNo := ntohs(TCPPaket^.SiraNo) + 1;
       B.HedefMACAdres := AEthernetPaket^.KaynakMACAdres;
 
-      if(APaketTipi = PROTOKOL_IP6) then
+      if(AIletisimTipi = itIP6) then
         B.HedefIP6Adres := PIP6Adres(KaynakIP)^
       else B.HedefIP4Adres := PIP4Adres(KaynakIP)^;
 
-      if(APaketTipi = PROTOKOL_IP6) then
-        TCPPaketGonder(APaketTipi, B, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)
-      else TCPPaketGonder(APaketTipi, B, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
+      if(AIletisimTipi = itIP6) then
+        TCPPaketGonder(B, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP6SYNSonEk, 12, True)
+      else TCPPaketGonder(B, TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
 
       B.BaglantiDurum := bdBaglantiBekleniyor;
     end
     else
     begin
 
-      SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Dosya Sunucusu: zaten mevcut. Kaynak port: %d', [KaynakPort]);
+      SISTEM_MESAJ(mtUyari, RENK_BORDO, 'Dosya Sunucusu: zaten mevcut. Kaynak port: %d', [YerelPort]);
     end;
   end
   // baðlantý kuran bilgisayarýn baðlantýyý kapatma isteði
@@ -219,15 +214,11 @@ begin
     i := ntohs(TCPPaket^.SiraNo);
     ABaglanti.OnayNo := i + 1;
 
-    if(APaketTipi = PROTOKOL_IP6) then
-      TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
-    else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
+    TCPPaketGonder(ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
     ABaglanti.BaglantiDurum := bdKapanmayiBekliyor;
 
-    if(APaketTipi = PROTOKOL_IP6) then
-      TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0)
-    else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
+    TCPPaketGonder(ABaglanti, TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
 
     ABaglanti.BaglantiDurum := bdSonOnay;
   end
@@ -242,7 +233,7 @@ begin
       ABaglanti.SiraNo := i;
 
       i := ntohs(TCPPaket^.SiraNo);
-      if(APaketTipi = PROTOKOL_IP6) then
+      if(AIletisimTipi = itIP6) then
         U := ntohs(IPUzunluk) - 20
       else U := ntohs(IPUzunluk) - 40;
       ABaglanti.OnayNo := i + U;
@@ -263,16 +254,14 @@ begin
         ABaglanti.SiraNo := i;
 
         i := ntohs(TCPPaket^.SiraNo);
-        if(APaketTipi = PROTOKOL_IP6) then
+        if(AIletisimTipi = itIP6) then
           U := ntohs(IPUzunluk) - 20
         else U := ntohs(IPUzunluk) - 40;
         ABaglanti.OnayNo := i + U;
 
-        if(APaketTipi = PROTOKOL_IP6) then
-          TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
-        else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
+        TCPPaketGonder(ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
-        ABaglanti.Yaz(APaketTipi, SifreGirisi, Length(SifreGirisi));
+        ABaglanti.Yaz(SifreGirisi, Length(SifreGirisi));
       end
       else if(s2 = 'PASS') then
       begin
@@ -281,17 +270,15 @@ begin
         ABaglanti.SiraNo := i;
 
         i := ntohs(TCPPaket^.SiraNo);
-        if(APaketTipi = PROTOKOL_IP6) then
+        if(AIletisimTipi = itIP6) then
           U := ntohs(IPUzunluk) - 20
         else U := ntohs(IPUzunluk) - 40;
         ABaglanti.OnayNo := i + U;
 
-        if(APaketTipi = PROTOKOL_IP6) then
-          TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
-        else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
+        TCPPaketGonder(ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
-        //Baglantilar0.Yaz(ABaglanti^.Kimlik, GirisHatali, Length(GirisHatali));
-        ABaglanti.Yaz(APaketTipi, GirisBasarili, Length(GirisBasarili));
+        //ABaglanti.Yaz(GirisHatali, Length(GirisHatali));
+        ABaglanti.Yaz(GirisBasarili, Length(GirisBasarili));
       end
       else if(s2 = 'QUIT') then
       begin
@@ -300,16 +287,14 @@ begin
         ABaglanti.SiraNo := i;
 
         i := ntohs(TCPPaket^.SiraNo);
-        if(APaketTipi = PROTOKOL_IP6) then
+        if(AIletisimTipi = itIP6) then
           U := ntohs(IPUzunluk) - 20
         else U := ntohs(IPUzunluk) - 40;
         ABaglanti.OnayNo := i + U;
 
-        if(APaketTipi = PROTOKOL_IP6) then
-          TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0)
-        else TCPPaketGonder(APaketTipi, ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
+        TCPPaketGonder(ABaglanti, TCP_BAYRAK_KABUL, nil, 0);
 
-        ABaglanti.Yaz(APaketTipi, BaglantiKapatiliyor, Length(BaglantiKapatiliyor));
+        ABaglanti.Yaz(BaglantiKapatiliyor, Length(BaglantiKapatiliyor));
       end;
     end;
   end
@@ -328,7 +313,7 @@ begin
       i := ntohs(TCPPaket^.SiraNo);
       ABaglanti.OnayNo := i;
 
-      ABaglanti.Yaz(APaketTipi, Tanitim, Length(Tanitim));
+      ABaglanti.Yaz(Tanitim, Length(Tanitim));
     end
     else if(ABaglanti.BaglantiDurum = bdSonOnay) then
     begin
@@ -340,14 +325,14 @@ begin
       for i := 0 to USTSINIR_FTPISTEMCI - 1 do
       begin
 
-        B := FTPSunucu0.Istemciler[i];
+        B := GFTPSunucu.Istemciler[i];
         if not(B = nil) and (B.YerelPort = ABaglanti.YerelPort) then
         begin
 
           ABaglanti.Destroy;
-          FTPSunucu0.Istemciler[i] := nil;
+          GFTPSunucu.Istemciler[i] := nil;
 
-          Dec(FTPSunucu0.FAktifIstemciSayisi);
+          Dec(GFTPSunucu.FAktifIstemciSayisi);
           Exit;
         end;
       end;

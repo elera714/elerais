@@ -6,7 +6,7 @@
   Program Adý: agbilgi.lpr
   Program Ýþlevi: að yapýlandýrmasý hakkýnda bilgi verir
 
-  Güncelleme Tarihi: 26/07/2026
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}

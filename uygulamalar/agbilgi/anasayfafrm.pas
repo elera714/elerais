@@ -82,8 +82,11 @@ begin
 end;
 
 procedure TfrmAnaSayfa.IcerigiGuncelle;
+var
+  i: TISayi4;
 begin
 
+  i := FDegerListesi.SeciliSiraNoAl;
   FDegerListesi.Temizle;
   FDegerListesi.DegerEkle('MAC Adresi|' + MAC_KarakterKatari(FAgBilgisi.MACAdres), RENK_SIYAH);
   FDegerListesi.DegerEkle('IP6 Adresi|' + IP_KarakterKatari6(PIP6Adres2(@FAgBilgisi.IP6Adres)^), RENK_SIYAH);
@@ -95,6 +98,7 @@ begin
   FDegerListesi.DegerEkle('IP Kira Süresi|' + IntToStr(FAgBilgisi.IPKiraSuresi), RENK_SIYAH);
   FDegerListesi.DegerEkle('Gelen Byte|' + IntToStr(FAgBilgisi.GelenByte), RENK_SIYAH);
   FDegerListesi.DegerEkle('Giden Byte|' + IntToStr(FAgBilgisi.GidenByte), RENK_SIYAH);
+  FDegerListesi.SeciliSiraNoBelirle(i);
 end;
 
 end.
