@@ -6,7 +6,7 @@
   Dosya Adı: gn_acilirmenu.pas
   Dosya İşlevi: açılır menü (TPopupMenu) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 31/07/2026
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,40 +18,41 @@ uses gorselnesne, paylasim, n_yazilistesi, n_sayilistesi, gn_menu;
 
 type
   PAcilirMenu = ^TAcilirMenu;
-  TAcilirMenu = object(TMenu)
+  TAcilirMenu = class(TMenu)
   public
     // nesne, karma liste gibi bir nesnenin yardımcı nesnesi mi?
     FYardimciNesne: Boolean;
     FAcilirMenuOlayGeriDonusAdresi: TOlaylariIsle;
-    function Olustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik,
+    constructor Create; override;
+    destructor Destroy; override;
+    function Ozellestir(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYukseklik,
       AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi,
-      ASeciliYaziRengi: TRenk): PAcilirMenu;
-    procedure YokEt(AKimlik: TKimlik);
+      ASeciliYaziRengi: TRenk): TISayi4;
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
     procedure Boyutlandir;
     procedure Ciz;
-    procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
     function MenuEkle(ADeger: string; AResimSiraNo: TISayi4 = -1;
       AMenuBoyutDegistir: Boolean = False): Boolean;
     procedure Temizle;
   end;
 
 function AcilirMenuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi,
+function AcilirMenuGNOlustur(AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi,
   ASeciliYaziRengi: TRenk): TKimlik;
 
 implementation
 
-uses genel, temelgorselnesne, gorev, src_ps2, sistemmesaj;
+uses temelgorselnesne, gorev, src_ps2, gn_masaustu, gn_islevler;
 
 {==============================================================================
   açılır menü kesme çağrılarını yönetir
  ==============================================================================}
 function AcilirMenuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  AcilirMenu: PAcilirMenu = nil;
+  AcilirMenu: TAcilirMenu;
   AElemanAdi: string;
   AResimSiraNo: TISayi4;
 begin
@@ -63,39 +64,40 @@ begin
     // nesne oluştur
     ISLEV_OLUSTUR:
 
-      Result := NesneOlustur(PISayi4(ADegiskenler + 00)^, PISayi4(ADegiskenler + 04)^,
+      Result := AcilirMenuGNOlustur(PISayi4(ADegiskenler + 00)^, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
 
     // açılır menüyü görüntüle
     ISLEV_GOSTER:
     begin
 
-      AcilirMenu := PAcilirMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := TAcilirMenu(GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
-      if(AcilirMenu <> nil) then AcilirMenu^.Goster;
+      if(AcilirMenu <> nil) then AcilirMenu.Goster;
     end;
 
     // açılır menüyü gizle
     ISLEV_GIZLE:
     begin
 
-      AcilirMenu := PAcilirMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := TAcilirMenu(GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
-      if(AcilirMenu <> nil) then AcilirMenu^.Gizle;
+      if(AcilirMenu <> nil) then AcilirMenu.Gizle;
     end;
 
     // eleman ekle
     $010F:
     begin
 
-      AcilirMenu := PAcilirMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := TAcilirMenu(GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
 
-      AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
+      AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr)^;
       AResimSiraNo := PISayi4(ADegiskenler + 08)^;
 
       if(AcilirMenu <> nil) then
-        Result := TISayi4(AcilirMenu^.MenuEkle(AElemanAdi, AResimSiraNo))
+
+        Result := TISayi4(AcilirMenu.MenuEkle(AElemanAdi, AResimSiraNo))
       else Result := 0;
     end;
 
@@ -103,66 +105,88 @@ begin
     $020E:
     begin
 
-      AcilirMenu := PAcilirMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
+      AcilirMenu := TAcilirMenu(GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
         gntAcilirMenu));
-      if(AcilirMenu <> nil) then Result := AcilirMenu^.SeciliSiraNo
+      if(AcilirMenu <> nil) then Result := AcilirMenu.SeciliSiraNo
     end;
   end;
 end;
 
 {==============================================================================
-  açılır menü nesnesini oluşturur
+  uygulama için açılır menü nesnesi oluşturur - api
  ==============================================================================}
-function NesneOlustur(AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi,
+function AcilirMenuGNOlustur(AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi,
   ASeciliYaziRengi: TRenk): TKimlik;
 var
-  AcilirMenu: PAcilirMenu = nil;
+  Masaustu: TMasaustu;
+  AcilirMenu: TAcilirMenu;
 begin
 
-  { TODO : GAktifMasaustu değeri API işlevlerinde değiştirilerek nesnenin sahibi olan nesne atanacak }
-  AcilirMenu := AcilirMenu^.Olustur(GAktifMasaustu, 0, 0, 300, (24 * 5) + 6, 24,
-    AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi, ASeciliYaziRengi);
+  AcilirMenu := TAcilirMenu.Create;
 
   if(AcilirMenu = nil) then
 
     Result := HATA_NESNEOLUSTURMA
+  else
+  begin
 
-  else Result := AcilirMenu^.F0.Kimlik;
+    Masaustu := GGNesneler.AktifMasaustu;
+
+    AcilirMenu.Ozellestir(Masaustu, 0, 0, 300, (24 * 5) + 6, 24,
+      AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi, ASeciliYaziRengi);
+
+    Result := AcilirMenu.Kimlik;
+  end;
 end;
 
 {==============================================================================
-  açılır menü nesnesini oluşturur
+  açılır menü nesnesi oluşturur
  ==============================================================================}
-function TAcilirMenu.Olustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik,
-  AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi,
-  ASeciliYaziRengi: TRenk): PAcilirMenu;
-var
-  AcilirMenu: PAcilirMenu = nil;
+constructor TAcilirMenu.Create;
 begin
 
-  AcilirMenu := PAcilirMenu(inherited Olustur(AAtaNesne, gntAcilirMenu, ASol, AUst,
-    AGenislik, AYukseklik, AElemanYukseklik, AKenarlikRengi, AGovdeRengi));
+  inherited Create;
 
-  AcilirMenu^.FMenuOlayGeriDonusAdresi := @OlaylariIsle;
-  AcilirMenu^.FAcilirMenuOlayGeriDonusAdresi := nil;
-
-  AcilirMenu^.FYardimciNesne := False;
-
-  AcilirMenu^.SecimRenk := ASecimRengi;
-  AcilirMenu^.NormalYaziRenk := ANormalYaziRengi;
-  AcilirMenu^.SeciliYaziRenk := ASeciliYaziRengi;
-
-  // nesne adresini geri döndür
-  Result := AcilirMenu;
+  { bilgi:
+    1. nesne tipi Ozellestir işleviyle gerçekleşmekte
+    2. görsel nesne listesine ekleme işlevi ana sınıf (TMenu) tarafından gerçekleşmekte }
 end;
 
 {==============================================================================
   açılır menü nesnesini yok eder
  ==============================================================================}
-procedure TAcilirMenu.YokEt(AKimlik: TKimlik);
+destructor TAcilirMenu.Destroy;
 begin
 
-  inherited YokEt(AKimlik);
+  { bilgi: nesneyi görsel nesne listesinden çıkarma işlevi ana sınıf (TMenu)
+    tarafından gerçekleşmekte }
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  açılır menü nesnesini özelleştirir
+ ==============================================================================}
+function TAcilirMenu.Ozellestir(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYukseklik,
+  AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYaziRengi,
+  ASeciliYaziRengi: TRenk): TISayi4;
+begin
+
+  inherited Ozellestir(AAtaNesne, gntAcilirMenu, ASol, AUst,
+    AGenislik, AYukseklik, AElemanYukseklik, AKenarlikRengi, AGovdeRengi);
+
+  FMenuOlayGeriDonusAdresi := @OlaylariIsle;
+
+  FAcilirMenuOlayGeriDonusAdresi := nil;
+
+  FYardimciNesne := False;
+
+  SecimRenk := ASecimRengi;
+  NormalYaziRenk := ANormalYaziRengi;
+  SeciliYaziRenk := ASeciliYaziRengi;
+
+  // geri dönüş değeri
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
@@ -170,16 +194,12 @@ end;
  ==============================================================================}
 procedure TAcilirMenu.Goster;
 var
-  AcilirMenu: PAcilirMenu = nil;
   Olay: TOlay;
 begin
 
   inherited Goster;
 
-  AcilirMenu := PAcilirMenu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(AcilirMenu = nil) then Exit;
-
-  if(AcilirMenu^.FYardimciNesne) then
+  if(FYardimciNesne) then
   begin
 
   end
@@ -187,18 +207,18 @@ begin
   begin
 
     // menüyü farenin bulunduğu konumda görüntüle
-    AcilirMenu^.F0.FAtananAlan.Sol := GFareSurucusu.YatayKonum;
-    AcilirMenu^.F0.FAtananAlan.Ust := GFareSurucusu.DikeyKonum;
+    FAtananAlan.Sol := GFareSurucusu.YatayKonum;
+    FAtananAlan.Ust := GFareSurucusu.DikeyKonum;
   end;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := AcilirMenu^.F0.Kimlik;
+  Olay.Kimlik := Kimlik;
   Olay.Olay := CO_MENUACILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
-  if not(AcilirMenu^.FMenuOlayGeriDonusAdresi = nil) then
-    AcilirMenu^.FMenuOlayGeriDonusAdresi(AcilirMenu, Olay)
-  else Gorevler0.OlayEkle(AcilirMenu^.F0.GorevKimlik, Olay);
+  if not(FMenuOlayGeriDonusAdresi = nil) then
+    FMenuOlayGeriDonusAdresi(Self, Olay)
+  else GGorevler.OlayEkle(GrvKimlik, Olay);
 end;
 
 {==============================================================================
@@ -206,23 +226,19 @@ end;
  ==============================================================================}
 procedure TAcilirMenu.Gizle;
 var
-  AcilirMenu: PAcilirMenu = nil;
   Olay: TOlay;
 begin
 
   inherited Gizle;
 
-  AcilirMenu := PAcilirMenu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(AcilirMenu = nil) then Exit;
-
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := AcilirMenu^.F0.Kimlik;
+  Olay.Kimlik := Kimlik;
   Olay.Olay := CO_MENUKAPATILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
-  if not(AcilirMenu^.FMenuOlayGeriDonusAdresi = nil) then
-    AcilirMenu^.FMenuOlayGeriDonusAdresi(AcilirMenu, Olay)
-  else Gorevler0.OlayEkle(AcilirMenu^.F0.GorevKimlik, Olay);
+  if not(FMenuOlayGeriDonusAdresi = nil) then
+    FMenuOlayGeriDonusAdresi(Self, Olay)
+  else GGorevler.OlayEkle(GrvKimlik, Olay);
 end;
 
 {==============================================================================
@@ -255,36 +271,32 @@ end;
 {==============================================================================
   açılır menü nesne olaylarını işler
  ==============================================================================}
-procedure TAcilirMenu.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+procedure TAcilirMenu.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 var
-  AcilirMenu: PAcilirMenu = nil;
+  AcilirMenu: TAcilirMenu;
 begin
 
-  AcilirMenu := PAcilirMenu(AGonderici);
+  AcilirMenu := TAcilirMenu(AGonderici);
   if(AcilirMenu = nil) then Exit;
 
-  if not(AcilirMenu^.FAcilirMenuOlayGeriDonusAdresi = nil) then
-    AcilirMenu^.FAcilirMenuOlayGeriDonusAdresi(AcilirMenu, AOlay)
-  else Gorevler0.OlayEkle(AcilirMenu^.F0.GorevKimlik, AOlay);
+  if not(AcilirMenu.FAcilirMenuOlayGeriDonusAdresi = nil) then
+    AcilirMenu.FAcilirMenuOlayGeriDonusAdresi(AcilirMenu, AOlay)
+  else GGorevler.OlayEkle(AcilirMenu.GrvKimlik, AOlay);
 end;
 
 {==============================================================================
-  menü nesnesine menü elemanı ekler
+  açılır menü nesnesine eleman ekler
  ==============================================================================}
 function TAcilirMenu.MenuEkle(ADeger: string; AResimSiraNo: TISayi4 = -1;
   AMenuBoyutDegistir: Boolean = False): Boolean;
 var
-  AcilirMenu: PAcilirMenu = nil;
   i: TISayi4;
 begin
 
-  AcilirMenu := PAcilirMenu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(AcilirMenu = nil) then Exit(False);
-
-  AcilirMenu^.FMenuBaslikListesi.Ekle(ADeger);
+  FMenuBaslikListesi.Ekle(ADeger);
 
   // AResimSiraNo = -1 = menünün resmi yok
-  if(AResimSiraNo > -1) then AcilirMenu^.FMenuResimListesi.Ekle(AResimSiraNo);
+  if(AResimSiraNo > -1) then FMenuResimListesi.Ekle(AResimSiraNo);
 
   // menü genişliğini ve yüksekliğini değiştir
   if(AMenuBoyutDegistir) then
@@ -293,33 +305,28 @@ begin
     // genişliğin yeniden belirlenmesi
     i := Length(ADeger) * 8;
     if(i > 100) then i := 100;
-    if(i > AcilirMenu^.F0.FAtananAlan.Genislik) then AcilirMenu^.F0.FAtananAlan.Genislik := i;
+    if(i > FAtananAlan.Genislik) then FAtananAlan.Genislik := i;
 
     // yüksekliğin yeniden belirlenmesi. en fazla 5 eleman görüntülenebilir
-    i := AcilirMenu^.FMenuBaslikListesi.ElemanSayisi;
+    i := FMenuBaslikListesi.ElemanSayisi;
     if(i > 5) then i := 5;
     i := i * 24;
-    if(i > AcilirMenu^.F0.FAtananAlan.Yukseklik) then AcilirMenu^.F0.FAtananAlan.Yukseklik := i;
+    if(i > FAtananAlan.Yukseklik) then FAtananAlan.Yukseklik := i;
   end;
 
-  AcilirMenu^.Boyutlandir;
+  Boyutlandir;
 
   Result := Boolean(TISayi4(True));
 end;
 
 {==============================================================================
-  menü nesnesinin elemanlarını temizler
+  açılır menü nesnesinin elemanlarını temizler
  ==============================================================================}
 procedure TAcilirMenu.Temizle;
-var
-  AcilirMenu: PAcilirMenu = nil;
 begin
 
-  AcilirMenu := PAcilirMenu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(AcilirMenu = nil) then Exit;
-
-  AcilirMenu^.FMenuBaslikListesi.Temizle;
-  AcilirMenu^.FMenuResimListesi.Temizle;
+  FMenuBaslikListesi.Temizle;
+  FMenuResimListesi.Temizle;
 end;
 
 end.

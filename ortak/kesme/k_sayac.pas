@@ -6,7 +6,7 @@
   Dosya Adı: k_sayac.pas
   Dosya İşlevi: sayaç kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 19/07/2020
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,26 +21,27 @@ function SayacCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses cmos, gorev;
+uses cmos, gorev, zamanlayici;
 
 function SayacCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
   P1: PSayi1;
   P2: PSayi2;
-  Deger4: TSayi4;
   Saat, Dakika, Saniye: TSayi1;
   Gun, Ay, Yil, HaftaninGunu: TSayi2;
-  Islev: TSayi4;
+  IslevNo, Deger4: TSayi4;
 begin
 
+  Result := HATA_ISLEV;
+
   // işlev no
-  Islev := (AIslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
   // geçerli saat değerini al
-  if(Islev = 1) then
+  if(IslevNo = 1) then
   begin
 
-    P1 := Isaretci(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
+    P1 := Isaretci(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
 
     SaatAl(Saat, Dakika, Saniye);
     P1^ := Saat;
@@ -49,11 +50,12 @@ begin
     Inc(P1);
     P1^ := Saniye;
   end
+
   // geçerli tarih değerini al
-  else if(Islev = 2) then
+  else if(IslevNo = 2) then
   begin
 
-    P2 := Isaretci(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
+    P2 := Isaretci(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
 
     TarihAl(Gun, Ay, Yil, HaftaninGunu);
     P2^ := Gun;
@@ -64,18 +66,16 @@ begin
     Inc(P2);
     P2^ := HaftaninGunu;
   end
+
   // belirtilen milisaniye kadar bekle
-  else if(Islev = $10) then
+  else if(IslevNo = $10) then
   begin
 
     Deger4 := PSayi4(ADegiskenler)^;
 
-    Deger4 := ZamanlayiciSayaci + Deger4;
-    while (Deger4 > ZamanlayiciSayaci) do begin asm int $20; end; end;
-  end
-
-  // işlev belirtilen aralıkta değilse hata kodunu geri döndür
-  else Result := HATA_ISLEV;
+    Deger4 := GZamanlayicilar.FZamanlayiciSayaci + Deger4;
+    while (Deger4 > GZamanlayicilar.FZamanlayiciSayaci) do begin asm int $20; end; end;
+  end;
 end;
 
 end.

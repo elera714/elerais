@@ -6,7 +6,7 @@
   Dosya Adı: sunucular.pas
   Dosya İşlevi: çekirdek içerisinde çalışan sunucuları yönetir
 
-  Güncelleme Tarihi: 25/07/2026
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,13 +14,14 @@ unit sunucular;
 
 interface
 
-uses paylasim, baglanti, http, ftp;
+uses paylasim, baglantilar, http, ftp;
 
 const
   HIZMETVEREN_SUNUCU_SAYISI = 2;
 
 type
-  TSunucuIslev = procedure(APaketTipi: TSayi4; ABaglanti: TBaglanti; AEthernetPaket: PEthernetPaket);
+  TSunucuIslev = procedure(AIletisimTipi: TIletisimTipi; ABaglanti: TBaglanti;
+    AEthernetPaket: PEthernetPaket);
 
   PSunucuYapisi = ^TSunucuYapisi;
   TSunucuYapisi = record

@@ -3,7 +3,7 @@
   Kodlayan: Fatih KILIÇ
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya Adı: k_baglanti.pas
+  Dosya Adı: k_baglantilar.pas
   Dosya İşlevi: ağ bağlantı (socket) yönetim işlevlerini içerir
 
   Güncelleme Tarihi: 15/08/2026
@@ -135,8 +135,7 @@ begin
       j := PSayi4(ADegiskenler + 08)^;
 
       B := GBaglantilar.Baglanti[BaglantiKimlik];
-      if not(B = nil) then
-        B.Yaz(PROTOKOL_IP4, Isaretci(i + GGorevler.FAktifGrvBelAdr), j);
+      if not(B = nil) then B.Yaz(Isaretci(i + GGorevler.FAktifGrvBelAdr), j);
     end
 
     // bağlantıyı kapat

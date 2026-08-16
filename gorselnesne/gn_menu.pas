@@ -6,7 +6,7 @@
   Dosya Adı: gn_menu.pas
   Dosya İşlevi: menü yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,22 +18,23 @@ uses gorselnesne, paylasim, gn_panel, n_yazilistesi, n_sayilistesi;
 
 type
   PMenu = ^TMenu;
-  TMenu = object(TPanel)
+  TMenu = class(TPanel)
   public
     // menünün olay işlemesinden sonra olay değerlerini almak isteyen
     // nesne varsa bu değişkene atamasını gerçekleştirmesi gerekmeketdir.
     FMenuOlayGeriDonusAdresi: TOlaylariIsle;
     FMenuBaslikListesi: TYaziListesi;
     FMenuResimListesi: TSayiListesi;
-    function Olustur(AAtaNesne: PGorselNesne; AGNTip: TGNTip; ASol, AUst,
-      AGenislik, AYukseklik, AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi: TRenk): PMenu;
-    procedure YokEt(AKimlik: TKimlik);
+    constructor Create; override;
+    destructor Destroy; override;
+    function Ozellestir(AAtaNesne: TGorselNesne; AGNTip: TGNTip; ASol, AUst,
+      AGenislik, AYukseklik, AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi: TRenk): TISayi4;
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
     procedure Boyutlandir;
     procedure Ciz;
-    procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
     // her bir elemanın yüksekliği
     property ElemanYukseklik: TISayi4 read FIDeger1 write FIDeger1;
     // seçili sıra no
@@ -47,60 +48,62 @@ type
   end;
 
 function MenuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISayi4): TKimlik;
+function MenuGNOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISayi4): TKimlik;
 
 implementation
 
-uses genel, temelgorselnesne, gn_islevler, sistemmesaj, gorev;
+uses temelgorselnesne, gn_islevler, gorev, gn_masaustu, src_ps2;
 
 {==============================================================================
   menü kesme çağrılarını yönetir
  ==============================================================================}
 function MenuCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  Menu: PMenu = nil;
+  Menu: TMenu;
   AElemanAdi: string;
   AResimSiraNo: TISayi4;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
     // nesne oluştur
     ISLEV_OLUSTUR:
 
-      Result := NesneOlustur(PISayi4(ADegiskenler + 00)^, PISayi4(ADegiskenler + 04)^,
+      Result := MenuGNOlustur(PISayi4(ADegiskenler + 00)^, PISayi4(ADegiskenler + 04)^,
         PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
 
     // menüyü görüntüle
     ISLEV_GOSTER:
     begin
 
-      Menu := PMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
-      if(Menu <> nil) then Menu^.Goster;
+      Menu := TMenu(GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      if(Menu <> nil) then Menu.Goster;
     end;
 
     // menüyü gizle
     ISLEV_GIZLE:
     begin
 
-      Menu := PMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
-      if(Menu <> nil) then Menu^.Gizle;
+      Menu := TMenu(GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      if(Menu <> nil) then Menu.Gizle;
     end;
 
     // eleman ekle
     $010F:
     begin
 
-      Menu := PMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      Menu := TMenu(GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
 
-      AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^;
+      AElemanAdi := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr)^;
       AResimSiraNo := PISayi4(ADegiskenler + 08)^;
 
       if(Menu <> nil) then
       begin
 
-        Menu^.FMenuBaslikListesi.Ekle(AElemanAdi);
-        Menu^.FMenuResimListesi.Ekle(AResimSiraNo);
+        Menu.FMenuBaslikListesi.Ekle(AElemanAdi);
+        Menu.FMenuResimListesi.Ekle(AResimSiraNo);
         Result := 1;
       end else Result := 0;
     end;
@@ -109,112 +112,109 @@ begin
     $020E:
     begin
 
-      Menu := PMenu(GGorselNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
-      if(Menu <> nil) then Result := Menu^.SeciliSiraNo
-    end
-
-    else Result := HATA_ISLEV;
+      Menu := TMenu(GGNesneler.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^, gntMenu));
+      if(Menu <> nil) then Result := Menu.SeciliSiraNo
+    end;
   end;
 end;
 
 {==============================================================================
-  menü nesnesini oluşturur
+  uygulama için menü nesnesi oluşturur - api
  ==============================================================================}
-function NesneOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISayi4): TKimlik;
+function MenuGNOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISayi4): TKimlik;
 var
-  Menu: PMenu = nil;
+  Masaustu: TMasaustu;
+  Menu: TMenu;
 begin
 
-  { TODO : GAktifMasaustu nesnesi ileride değiştirilerek nesnenin sahibi ata nesne olarak atanabilir }
-  Menu := Menu^.Olustur(GAktifMasaustu, gntMenu, ASol, AUst, AGenislik, AYukseklik,
-    AElemanYukseklik, RENK_GRI, RENK_BEYAZ);
+  Menu := TMenu.Create;
 
   if(Menu = nil) then
 
     Result := HATA_NESNEOLUSTURMA
-
-  else Result := Menu^.F0.Kimlik;
-end;
-
-{==============================================================================
-  menü nesnesini oluşturur
- ==============================================================================}
-function TMenu.Olustur(AAtaNesne: PGorselNesne; AGNTip: TGNTip; ASol, AUst,
-  AGenislik, AYukseklik, AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi: TRenk): PMenu;
-var
-  Menu: PMenu = nil;
-  MenuBaslikListesi: TYaziListesi;
-  MenuResimListesi: TSayiListesi;
-begin
-
-  Menu := PMenu(inherited Olustur(ktTuvalNesne, AAtaNesne, ASol, AUst,
-    AGenislik, AYukseklik, 2, AKenarlikRengi, AGovdeRengi, 0, ''));
-
-  Menu^.F0.NesneTipi := AGNTip;
-
-  Menu^.F0.Baslik := '';
-
-  Menu^.FTuvalNesne := Menu;
-
-  Menu^.OlayCagriAdresi := @OlaylariIsle;
-  Menu^.FMenuOlayGeriDonusAdresi := nil;
-
-  Menu^.SecimRenk := $7FB3D5;
-  Menu^.NormalYaziRenk := RENK_SIYAH;
-  Menu^.SeciliYaziRenk := RENK_BEYAZ;
-
-  Menu^.ElemanYukseklik := AElemanYukseklik;
-
-  Menu^.F0.FCizimBaslangic.Sol := 0;
-  Menu^.F0.FCizimBaslangic.Ust := 0;
-
-  // menü çizimi için bellekte yer ayır
-  Menu^.FCizimBellekAdresi := nil;
-
-  Menu^.FCizimBellekUzunlugu := (Menu^.F0.FAtananAlan.Genislik * Menu^.F0.FAtananAlan.Yukseklik) * 4;
-  Menu^.FCizimBellekAdresi := GetMem(Menu^.FCizimBellekUzunlugu);
-  if(Menu^.FCizimBellekAdresi = nil) then
+  else
   begin
 
-    // hata olması durumunda nesneyi yok et ve işlevden çık
-    Menu^.YokEt(Menu^.F0.Kimlik);
-    Result := nil;
-    Exit;
+    { TODO : GAktifMasaustu nesnesi ileride değiştirilerek nesnenin sahibi ata nesne olarak atanabilir }
+    Masaustu := GGNesneler.AktifMasaustu;
+
+    Menu.Ozellestir(Masaustu, gntMenu, ASol, AUst, AGenislik, AYukseklik,
+      AElemanYukseklik, RENK_GRI, RENK_BEYAZ);
+
+    Result := Menu.Kimlik;
   end;
-
-  Menu^.FMenuBaslikListesi := nil;
-  MenuBaslikListesi := GYaziListeleri.Olustur;
-  if(MenuBaslikListesi <> nil) then Menu^.FMenuBaslikListesi := MenuBaslikListesi;
-
-  Menu^.FMenuResimListesi := nil;
-  MenuResimListesi := GSayiListeleri.Olustur;
-  if(MenuResimListesi <> nil) then Menu^.FMenuResimListesi := MenuResimListesi;
-
-  // nesnenin kullanacağı diğer değerler
-  Menu^.IlkSiraNo := 0;
-  Menu^.SeciliSiraNo := -1;     // seçili sıra yok
-
-  // nesne adresini geri döndür
-  Result := Menu;
 end;
 
 {==============================================================================
-  nesne ve nesneye ayrılan kaynakları yok eder
+  menü nesnesi oluşturur
  ==============================================================================}
-procedure TMenu.YokEt(AKimlik: TKimlik);
-var
-  Menu: PMenu = nil;
+constructor TMenu.Create;
 begin
 
-  Menu := PMenu(GGorselNesneler.NesneAl(AKimlik));
-  if(Menu = nil) then Exit;
+  inherited Create;
 
-  if(Menu^.FMenuBaslikListesi <> nil) then GYaziListeleri.YokEt(Menu^.FMenuBaslikListesi.Kimlik);
-  if(Menu^.FMenuResimListesi <> nil) then GSayiListeleri.YokEt(Menu^.FMenuResimListesi.Kimlik);
+  { bilgi: nesne tipi Ozellestir ileviyle gerçekleşmekte }
+  //NesneTipi := gntMenu;
 
-  if(Menu^.FCizimBellekAdresi <> nil) then FreeMem(Menu^.FCizimBellekAdresi, Menu^.FCizimBellekUzunlugu);
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 
-  inherited YokEt(AKimlik);
+  FMenuBaslikListesi := TYaziListesi.Create;
+  FMenuResimListesi := TSayiListesi.Create;
+end;
+
+{==============================================================================
+  menü nesnesini yok eder
+ ==============================================================================}
+destructor TMenu.Destroy;
+begin
+
+  if(FMenuResimListesi <> nil) then FMenuResimListesi.Destroy;
+  if(FMenuBaslikListesi <> nil) then FMenuBaslikListesi.Destroy;
+
+  if(FCizimBellekAdresi <> nil) then FreeMem(FCizimBellekAdresi, FCizimBellekUzunlugu);
+
+  GGNesneler.YokEt(Self, False);
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  menü nesnesini özelleştirir
+ ==============================================================================}
+function TMenu.Ozellestir(AAtaNesne: TGorselNesne; AGNTip: TGNTip; ASol, AUst,
+  AGenislik, AYukseklik, AElemanYukseklik: TISayi4; AKenarlikRengi, AGovdeRengi: TRenk): TISayi4;
+begin
+
+  Yapilandir2(ktTuvalNesne, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
+    2, AKenarlikRengi, AGovdeRengi, 0, '');
+
+  NesneTipi := AGNTip;
+
+  OlayCagriAdr := @OlaylariIsle;
+
+  FMenuOlayGeriDonusAdresi := nil;
+
+  SecimRenk := $7FB3D5;
+  NormalYaziRenk := RENK_SIYAH;
+  SeciliYaziRenk := RENK_BEYAZ;
+
+  ElemanYukseklik := AElemanYukseklik;
+
+  FCizimBaslangic.Sol := 0;
+  FCizimBaslangic.Ust := 0;
+
+  // menü çizimi için bellekte yer ayır
+  FCizimBellekAdresi := nil;
+
+  FCizimBellekUzunlugu := (FAtananAlan.Genislik * FAtananAlan.Yukseklik) * 4;
+  FCizimBellekAdresi := GetMem(FCizimBellekUzunlugu);
+
+  // nesnenin kullanacağı diğer değerler
+  IlkSiraNo := 0;
+  SeciliSiraNo := -1;     // seçili sıra yok
+
+  // geri dönüş değeri
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
@@ -222,28 +222,24 @@ end;
  ==============================================================================}
 procedure TMenu.Goster;
 var
-  Menu: PMenu = nil;
   Olay: TOlay;
 begin
 
   inherited Goster;
 
-  Menu := PMenu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(Menu = nil) then Exit;
-
-  GAktifMenu := Menu;
+  GGNesneler.AktifMenu := Self;
 
   // daha önceden seçilmiş index değerini kaldır
-  Menu^.SeciliSiraNo := -1;
+  SeciliSiraNo := -1;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := Menu^.F0.Kimlik;
+  Olay.Kimlik := Kimlik;
   Olay.Olay := CO_MENUACILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
-  if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
-    Menu^.FMenuOlayGeriDonusAdresi(Menu, Olay)
-  else Gorevler0.OlayEkle(Menu^.F0.GorevKimlik, Olay);
+  if not(FMenuOlayGeriDonusAdresi = nil) then
+    FMenuOlayGeriDonusAdresi(Self, Olay)
+  else GGorevler.OlayEkle(GrvKimlik, Olay);
 end;
 
 {==============================================================================
@@ -251,25 +247,21 @@ end;
  ==============================================================================}
 procedure TMenu.Gizle;
 var
-  Menu: PMenu = nil;
   Olay: TOlay;
 begin
 
   inherited Gizle;
 
-  GAktifMenu := nil;
-
-  Menu := PMenu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(Menu = nil) then Exit;
+  GGNesneler.AktifMenu := nil;
 
   // menünün açıldığına dair nesne sahibine mesaj gönder
-  Olay.Kimlik := Menu^.F0.Kimlik;
+  Olay.Kimlik := Kimlik;
   Olay.Olay := CO_MENUKAPATILDI;
   Olay.Deger1 := 0;
   Olay.Deger2 := 0;
-  if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
-    Menu^.FMenuOlayGeriDonusAdresi(Menu, Olay)
-  else Gorevler0.OlayEkle(Menu^.F0.GorevKimlik, Olay);
+  if not(FMenuOlayGeriDonusAdresi = nil) then
+    FMenuOlayGeriDonusAdresi(Self, Olay)
+  else GGorevler.OlayEkle(GrvKimlik, Olay);
 end;
 
 {==============================================================================
@@ -285,34 +277,29 @@ end;
   menü nesnesini boyutlandırır
  ==============================================================================}
 procedure TMenu.Boyutlandir;
-var
-  Menu: PMenu = nil;
 begin
 
-  Menu := PMenu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(Menu = nil) then Exit;
-
-  Menu^.F0.FCizimAlani.Sol := 0;
-  Menu^.F0.FCizimAlani.Ust := 0;
-  Menu^.F0.FCizimAlani.Sag := Menu^.F0.FAtananAlan.Genislik - 1;
-  Menu^.F0.FCizimAlani.Alt := Menu^.F0.FAtananAlan.Yukseklik - 1;
+  FCizimAlani.Sol := 0;
+  FCizimAlani.Ust := 0;
+  FCizimAlani.Sag := FAtananAlan.Genislik - 1;
+  FCizimAlani.Alt := FAtananAlan.Yukseklik - 1;
 
   // önceki ayrılan bellek bölgesini serbest bırak
-  if(Menu^.FCizimBellekAdresi <> nil) then
+  if(FCizimBellekAdresi <> nil) then
   begin
 
-    FreeMem(Menu^.FCizimBellekAdresi, Menu^.FCizimBellekUzunlugu);
-    Menu^.FCizimBellekAdresi := nil;
+    FreeMem(FCizimBellekAdresi, FCizimBellekUzunlugu);
+    FCizimBellekAdresi := nil;
   end;
 
   // menü çizimi için bellekte yer ayır
-  Menu^.FCizimBellekUzunlugu := (Menu^.F0.FAtananAlan.Genislik * Menu^.F0.FAtananAlan.Yukseklik) * 4;
-  Menu^.FCizimBellekAdresi := GetMem(Menu^.FCizimBellekUzunlugu);
-  if(Menu^.FCizimBellekAdresi = nil) then
+  FCizimBellekUzunlugu := (FAtananAlan.Genislik * FAtananAlan.Yukseklik) * 4;
+  FCizimBellekAdresi := GetMem(FCizimBellekUzunlugu);
+  if(FCizimBellekAdresi = nil) then
   begin
 
     // hata olması durumunda nesneyi yok et ve işlevden çık
-    Menu^.YokEt(Menu^.F0.Kimlik);
+    Destroy;
     Exit;
   end;
 end;
@@ -322,9 +309,6 @@ end;
  ==============================================================================}
 procedure TMenu.Ciz;
 var
-  Menu: PMenu = nil;
-  YL: TYaziListesi;
-  SL: TSayiListesi;
   CizimAlani: TAlan;
   SiraNo, Sol, Ust, Genislik,
   MenudekiElemanSayisi: TISayi4;
@@ -334,21 +318,15 @@ begin
 
   inherited Ciz;
 
-  Menu := PMenu(GGorselNesneler.NesneAl(F0.Kimlik));
-  if(Menu = nil) then Exit;
-
   // menü nesnesinin çizim alan koordinatlarını al
-  CizimAlani := Menu^.F0.FCizimAlani;
-
-  YL := Menu^.FMenuBaslikListesi;
-  SL := Menu^.FMenuResimListesi;
+  CizimAlani := FCizimAlani;
 
   // nesnenin elemanı var mı ?
-  if(YL.ElemanSayisi > 0) then
+  if(FMenuBaslikListesi.ElemanSayisi > 0) then
   begin
 
     // ElemanSayisi değerinin 0 olması resim kullanılmayacağını belirtir
-    if(SL.ElemanSayisi = 0) then
+    if(FMenuResimListesi.ElemanSayisi = 0) then
       ResimCiz := False
     else ResimCiz := True;
 
@@ -369,36 +347,37 @@ begin
     Ust := CizimAlani.Ust + 08;           // 08 = dikey ortalama için
 
     // menü kutusunda görüntülenecek eleman sayısı
-    if(YL.ElemanSayisi > Menu^.FMenuBaslikListesi.ElemanSayisi) then
-      MenudekiElemanSayisi := Menu^.FMenuBaslikListesi.ElemanSayisi + Menu^.IlkSiraNo
-    else MenudekiElemanSayisi := YL.ElemanSayisi + Menu^.IlkSiraNo;
+    if(FMenuBaslikListesi.ElemanSayisi > FMenuBaslikListesi.ElemanSayisi) then
+      MenudekiElemanSayisi := FMenuBaslikListesi.ElemanSayisi + IlkSiraNo
+    else MenudekiElemanSayisi := FMenuBaslikListesi.ElemanSayisi + IlkSiraNo;
 
     // menü içerisini elemanlarla doldurma işlemi
-    for SiraNo := Menu^.IlkSiraNo to MenudekiElemanSayisi - 1 do
+    for SiraNo := IlkSiraNo to MenudekiElemanSayisi - 1 do
     begin
 
       // belirtilen elemanın karakter katar değerini al
-      s := YL.Yazi[SiraNo];
+      s := FMenuBaslikListesi.Yazi[SiraNo];
 
       // elemanın seçili olması durumunda seçili olduğunu belirt
       // belirtilen sıra seçili değilse sadece eleman değerini yaz
-      if(SiraNo = Menu^.SeciliSiraNo) then
+      if(SiraNo = SeciliSiraNo) then
       begin
 
-        Menu^.DikdortgenDoldur(Menu, Sol, Ust - 4, Genislik, Ust + 20, $60A3AE, $60A3AE);
+        DikdortgenDoldur(Self, Sol, Ust - 4, Genislik, Ust + 20, $60A3AE, $60A3AE);
 
-        Menu^.YaziYaz(Menu, Sol + 5, Ust, s, RENK_BEYAZ);
-      end else Menu^.YaziYaz(Menu, Sol + 5, Ust, s, RENK_SIYAH);
+        YaziYaz(Self, Sol + 5, Ust, s, RENK_BEYAZ);
+      end else YaziYaz(Self, Sol + 5, Ust, s, RENK_SIYAH);
 
       if(ResimCiz) then
       begin
 
         // menü resmini çiz
-        if(SiraNo >= 0) and (SiraNo <= 15) then KaynaktanResimCiz2(Menu, 4, Ust - 4, SL.Sayi[SiraNo]);
+        if(SiraNo >= 0) and (SiraNo <= 15) then KaynaktanResimCiz2(Self, 4, Ust - 4,
+          FMenuResimListesi.Sayi[SiraNo]);
       end;
 
       // bir sonraki eleman...
-      Ust := Ust + Menu^.ElemanYukseklik;
+      Ust := Ust + ElemanYukseklik;
     end;
   end;
 end;
@@ -406,12 +385,12 @@ end;
 {==============================================================================
   menü nesne olaylarını işler
  ==============================================================================}
-procedure TMenu.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+procedure TMenu.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 var
-  Menu: PMenu = nil;
+  Menu: TMenu;
 begin
 
-  Menu := PMenu(AGonderici);
+  Menu := TMenu(AGonderici);
   if(Menu = nil) then Exit;
 
   // sol fare tuş basımı
@@ -419,44 +398,44 @@ begin
   begin
 
     // sol tuşa basım işlemi nesnenin olay alanında mı gerçekleşti ?
-    if(Menu^.FareNesneOlayAlanindaMi(Menu)) then
+    if(Menu.FareNesneOlayAlanindaMi(Menu)) then
     begin
 
       // fare olaylarını yakala
-      OlayYakalamayaBasla(Menu);
+      GGNesneler.OlayYakalamayaBasla(Menu);
 
       // fare basım işleminin gerçekleştiği menü sıra numarası
-      if(Menu^.FMenuBaslikListesi.ElemanSayisi > 0) then
-        Menu^.SeciliSiraNo := (AOlay.Deger2 - 4) div Menu^.ElemanYukseklik
-      else Menu^.SeciliSiraNo := -1;
+      if(Menu.FMenuBaslikListesi.ElemanSayisi > 0) then
+        Menu.SeciliSiraNo := (AOlay.Deger2 - 4) div Menu.ElemanYukseklik
+      else Menu.SeciliSiraNo := -1;
 
       // menüyü gizle
-      Menu^.F0.Gorunum := False;
+      Menu.Gorunum := False;
 
       // uygulamaya veya efendi nesneye mesaj gönder
       AOlay.Olay := FO_TIKLAMA;
-      if not(Menu^.FMenuOlayGeriDonusAdresi = nil) then
-        Menu^.FMenuOlayGeriDonusAdresi(Menu, AOlay)
-      else Gorevler0.OlayEkle(Menu^.F0.GorevKimlik, AOlay);
+      if not(Menu.FMenuOlayGeriDonusAdresi = nil) then
+        Menu.FMenuOlayGeriDonusAdresi(Menu, AOlay)
+      else GGorevler.OlayEkle(Menu.GrvKimlik, AOlay);
     end;
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(Menu);
+    GGNesneler.OlayYakalamayiBirak(Menu);
   end
   else if(AOlay.Olay = FO_HAREKET) then
   begin
 
     // seçilen elemanın index numarasını belirle
-    if(Menu^.FMenuBaslikListesi.ElemanSayisi > 0) then
-      Menu^.SeciliSiraNo := (AOlay.Deger2 - 4) div Menu^.ElemanYukseklik
-    else Menu^.SeciliSiraNo := -1;
+    if(Menu.FMenuBaslikListesi.ElemanSayisi > 0) then
+      Menu.SeciliSiraNo := (AOlay.Deger2 - 4) div Menu.ElemanYukseklik
+    else Menu.SeciliSiraNo := -1;
   end;
 
-  // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Menu^.F0.FareImlecTipi;
+  // aktif fare göstergesini güncelle
+  GFareSurucusu.AktifFareImlec := Menu.FareImlec;
 end;
 
 end.

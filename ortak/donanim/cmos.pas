@@ -6,7 +6,7 @@
   Dosya Adı: cmos.pas
   Dosya İşlevi: CMOS yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -24,7 +24,7 @@ implementation
 uses port, donusum;
 
 {==============================================================================
-  CMOS'tan saat bilgisini alır
+  CMOS saat bilgisini alır
  ==============================================================================}
 procedure SaatAl(out Saat, Dakika, Saniye: TSayi1);
 var
@@ -54,7 +54,7 @@ begin
 end;
 
 {==============================================================================
-  CMOS'tan tarih bilgisini alır
+  CMOS tarih bilgisini alır
  ==============================================================================}
 procedure TarihAl(out Gun, Ay, Yil, HaftaninGunu: TSayi2);
 var
