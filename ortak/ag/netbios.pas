@@ -1,12 +1,12 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasına bakınız
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adı: netbios.pas
-  Dosya İşlevi: netbios api işlevlerini yönetir
+  Dosya AdÄ±: netbios.pas
+  Dosya Ä°ÅŸlevi: netbios api iÅŸlevlerini yÃ¶netir
 
-  Güncelleme Tarihi: 22/06/2026
+  GÃ¼ncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit netbios;
 
 interface
 
-uses udp, baglanti, paylasim;
+uses udp, baglantilar, paylasim;
 
 type
   PNetBiosServis = ^TNetBiosServis;
@@ -28,16 +28,33 @@ type
     Veriler: Isaretci;
   end;
 
-procedure DNSSorgulariniYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
+type
+  TNetBios = class
+  public
+    constructor Create;
+    procedure SorgulariYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
+  end;
+
+var
+  GNetBios: TNetBios;
+
+procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
+procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
+procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
 
 implementation
 
-uses sistemmesaj, donusum, genel, islevler, ag;
+uses sistemmesaj, donusum, islevler, ag;
+
+constructor TNetBios.Create;
+begin
+
+end;
 
 {==============================================================================
-  dns sorgularını yanıtlar
+  netbios sorgularÄ±nÄ± yanÄ±tlar
  ==============================================================================}
-procedure DNSSorgulariniYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
+procedure TNetBios.SorgulariYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
 var
   NB, NB2: PNetBiosServis;
   Veri: array[0..511] of TSayi1;
@@ -53,10 +70,6 @@ var
   VeriBaslangic: TSayi4;
 begin
 
-  {$IFDEF UDP_BILGI}
-  UDPBaslikBilgileriniGoruntule(AUDPBaslik);
-  {$ENDIF}
-
   NB := @AUDPBaslik^.Veri;
 
 {  SISTEM_MESAJ(RENK_MOR, 'UDP: NetBios', []);
@@ -67,15 +80,15 @@ begin
   SISTEM_MESAJ_S16(RENK_LACIVERT, '-> YetkiSayisi: ', ntohs(NB^.YetkiSayisi), 4);
   SISTEM_MESAJ_S16(RENK_LACIVERT, '-> DigerSayisi: ', ntohs(NB^.DigerSayisi), 4); }
 
-  // sorgu sayısı ve yanıt sayısı kontrolü
+  // sorgu sayÄ±sÄ± ve yanÄ±t sayÄ±sÄ± kontrolÃ¼
   SorguSayisi := ntohs(NB^.SorguSayisi);
   DigerSayisi := ntohs(NB^.DigerSayisi);
 
-  // SADECE 1 adet sorguya sahip başlık değerlendirilecek
+  // SADECE 1 adet sorguya sahip baÅŸlÄ±k deÄŸerlendirilecek
   if(SorguSayisi <> 1) then Exit;
   //if(DigerSayisi <> 1) then Exit;
 
-  // sorgu ile gönderilen verilerin yerleştirileceği bellek alanının sıra numarası (index)
+  // sorgu ile gÃ¶nderilen verilerin yerleÅŸtirileceÄŸi bellek alanÄ±nÄ±n sÄ±ra numarasÄ± (index)
   VeriSN := 0;
 
   NetBIOSAdi := '';
@@ -84,7 +97,7 @@ begin
 
   Veri[VeriSN] := PSayi1(PB1)^; Inc(VeriSN);
 
-  Inc(PB1);    // uzunluğu atla
+  Inc(PB1);    // uzunluÄŸu atla
   while PB1^ <> 0 do
   begin
 
@@ -103,19 +116,19 @@ begin
   end;
   NetBIOSAdi := Trim(NetBIOSAdi);
 
-  // istek ad sıfır sonlandırma işareti
+  // istek ad sÄ±fÄ±r sonlandÄ±rma iÅŸareti
   Veri[VeriSN] := PSayi1(PB1)^; Inc(VeriSN);
 
-  // sıfır sonlandırmayı atla
+  // sÄ±fÄ±r sonlandÄ±rmayÄ± atla
   Inc(PB1);
 
-  // type ve sınıf değerini atla
+  // type ve sÄ±nÄ±f deÄŸerini atla
   PB2 := PSayi2(PB1);
   IstekTipi := ntohs(PB2^);
   Inc(PB2);
   IstekSinifi := ntohs(PB2^);
 
-  // yapıyı gönderilecek verilerle doldur ------------------------------------->
+  // yapÄ±yÄ± gÃ¶nderilecek verilerle doldur ------------------------------------->
 
   if(NetBIOSAdi = '*') and (IstekTipi = $21) and (IstekSinifi = $01) then
   begin
@@ -123,19 +136,19 @@ begin
     // IstekTipi = nbstat
     Ekle2Byte(@Veri[VeriSN], $0021); Inc(VeriSN, 2);
 
-    // gönderilen yanıt = sınıf = IM
+    // gÃ¶nderilen yanÄ±t = sÄ±nÄ±f = IM
     Ekle2Byte(@Veri[VeriSN], $0001); Inc(VeriSN, 2);
 
     // TTL
     Ekle4Byte(@Veri[VeriSN], $00000000); Inc(VeriSN, 4);
 
-    // veri uzunluğu
-    // değer ataması tüm veriler atandıktan sonra aşağıda gerçekleşecektir
+    // veri uzunluÄŸu
+    // deÄŸer atamasÄ± tÃ¼m veriler atandÄ±ktan sonra aÅŸaÄŸÄ±da gerÃ§ekleÅŸecektir
     VeriUzunlukSN := VeriSN;
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
     VeriBaslangic := VeriSN;
 
-    // yanıt olarak gönderilecek ad sayısı
+    // yanÄ±t olarak gÃ¶nderilecek ad sayÄ±sÄ±
     EkleByte(@Veri[VeriSN], $04); Inc(VeriSN);
 
     // aktif
@@ -144,7 +157,7 @@ begin
     EkleByte(@Veri[VeriSN], $00); Inc(VeriSN);
     Ekle2Byte(@Veri[VeriSN], $0400); Inc(VeriSN, 2);
 
-    // grup adı / aktif
+    // grup adÄ± / aktif
     s := BuyutVeTamamla(GGrupAdi, 15);
     Tasi2(@s[1], @Veri[VeriSN], 15); Inc(VeriSN, 15);
     EkleByte(@Veri[VeriSN], $00); Inc(VeriSN);
@@ -156,56 +169,56 @@ begin
     EkleByte(@Veri[VeriSN], $20); Inc(VeriSN);
     Ekle2Byte(@Veri[VeriSN], $0400); Inc(VeriSN, 2);
 
-    // grup adı / aktif
+    // grup adÄ± / aktif
     s := BuyutVeTamamla(GGrupAdi, 15);
     Tasi2(@s[1], @Veri[VeriSN], 15); Inc(VeriSN, 15);
     EkleByte(@Veri[VeriSN], $1E); Inc(VeriSN);
     Ekle2Byte(@Veri[VeriSN], $8400); Inc(VeriSN, 2);
 
     // mac adresi
-    Tasi2(@GAg0.MACAdres, @Veri[VeriSN], 6); Inc(VeriSN, 6);
-    // atlayıcı (jumpers)
+    Tasi2(@GAg.MACAdres, @Veri[VeriSN], 6); Inc(VeriSN, 6);
+    // atlayÄ±cÄ± (jumpers)
     EkleByte(@Veri[VeriSN], $00); Inc(VeriSN);
     // test sonucu
     EkleByte(@Veri[VeriSN], $00); Inc(VeriSN);
-    // sürüm numarası
+    // sÃ¼rÃ¼m numarasÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // istatistik aralığı
+    // istatistik aralÄ±ÄŸÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // crc sayısı
+    // crc sayÄ±sÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // hizalama hata sayısı
+    // hizalama hata sayÄ±sÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // çarpışan/uyumsuz sayısı
+    // Ã§arpÄ±ÅŸan/uyumsuz sayÄ±sÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // gönderimi iptal edilenlerin sayısı
+    // gÃ¶nderimi iptal edilenlerin sayÄ±sÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // güzel gönderilenlerin sayısı
+    // gÃ¼zel gÃ¶nderilenlerin sayÄ±sÄ±
     Ekle4Byte(@Veri[VeriSN], $00000000); Inc(VeriSN, 4);
-    // güzel alınanların sayısı
+    // gÃ¼zel alÄ±nanlarÄ±n sayÄ±sÄ±
     Ekle4Byte(@Veri[VeriSN], $00000000); Inc(VeriSN, 4);
-    // yeniden iletim sayısı
+    // yeniden iletim sayÄ±sÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // kaynak koşul sayısı
+    // kaynak koÅŸul sayÄ±sÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // komut blok sayısı
+    // komut blok sayÄ±sÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // bekleyen oturum saysı
+    // bekleyen oturum saysÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // azami bekleyen oturum sayısı
+    // azami bekleyen oturum sayÄ±sÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // azami toplam oturum olasılığı
+    // azami toplam oturum olasÄ±lÄ±ÄŸÄ±
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
-    // oturum veri paket uzunluğu
+    // oturum veri paket uzunluÄŸu
     Ekle2Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 2);
 
     // fazladan 4 byte
     Ekle4Byte(@Veri[VeriSN], $0000); Inc(VeriSN, 4);
 
-    // veri uzunluğu
+    // veri uzunluÄŸu
     Ekle2Byte(@Veri[VeriUzunlukSN], VeriSN - VeriBaslangic);
 
-    //SISTEM_MESAJ(RENK_MOR, 'NetBios -> Gönderilen Veri U: %d', [VeriSN]);
+    //SISTEM_MESAJ(RENK_MOR, 'NetBios -> GÃ¶nderilen Veri U: %d', [VeriSN]);
 
     NB2 := GetMem(4096);
 
@@ -219,15 +232,15 @@ begin
     Tasi2(@Veri[0], p, VeriSN);
 
     IPAdresi := IP_KarakterKatari4(AIPPaket^.KaynakIP);
-    B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
-      ntohs(AUDPBaslik^.HedefPort));
+    B := GBaglantilar.BaglantiOlustur(itIP4, btPasif, ptUDP, IPAdresi,
+      ntohs(AUDPBaslik^.KaynakPort), ntohs(AUDPBaslik^.HedefPort));
     if not(B = nil) then
     begin
 
-      if(B.Baglan(itIP4, btYayin) <> -1) then
+      if(B.Baglan(btYayin) <> -1) then
       begin
 
-        B.Yaz(PROTOKOL_IP4, NB2, VeriSN + 12);
+        B.Yaz(NB2, VeriSN + 12);
 
         B.BaglantiyiKes;
       end;
@@ -235,17 +248,41 @@ begin
 
     FreeMem(NB2, 4096);
 
-    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'NetBios yanıtı gönderildi...', []);
+    SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'NetBios yanÄ±tÄ± gÃ¶nderildi...', []);
   end
   else
   begin
 
-    SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'NetBios yanıtı gönderilmedi!', []);
-    SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'NetBios Bilgileri................: ', []);
-    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Sorgulanan Ad: %s', [NetBIOSAdi]);
-    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - İstek Tipi: %d', [IstekTipi]);
-    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - İstek Sınıfı: %d', [IstekSinifi]);
+    SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'YanÄ±tlanmayan NetBios isteÄŸi:', []);
+    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, ' -> Sorgulanan Ad: %s', [NetBIOSAdi]);
+    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, ' -> Ä°stek Tipi: %d', [IstekTipi]);
+    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, ' -> Ä°stek SÄ±nÄ±fÄ±: %d', [IstekSinifi]);
   end;
+end;
+
+// indy yardÄ±mcÄ± iÅŸlev - veriye word deÄŸer ekleme (veriler big-endian biÃ§iminde)
+procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
+begin
+
+  PSayi1(AHedef)^ := ADeger;
+end;
+
+// indy yardÄ±mcÄ± iÅŸlev - veriye word deÄŸer ekleme (veriler big-endian biÃ§iminde)
+procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
+begin
+
+  EkleByte(AHedef + 0, Byte(ADeger shr 8));
+  EkleByte(AHedef + 1, Byte(ADeger and $FF));
+end;
+
+// indy yardÄ±mcÄ± iÅŸlev - veriye dword deÄŸer ekleme (veriler big-endian biÃ§iminde)
+procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
+begin
+
+  EkleByte(AHedef + 0, Byte(ADeger shr 24));
+  EkleByte(AHedef + 1, Byte(ADeger shr 16));
+  EkleByte(AHedef + 2, Byte(ADeger shr 8));
+  EkleByte(AHedef + 3, Byte(ADeger and $FF));
 end;
 
 end.

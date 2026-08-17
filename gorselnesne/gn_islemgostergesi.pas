@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -40,7 +40,7 @@ function IslemGostergesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst,
 
 implementation
 
-uses temelgorselnesne, donusum, gn_islevler;
+uses donusum, gn_islevler;
 
 {==============================================================================
   işlem göstergesi kesme çağrılarını yönetir

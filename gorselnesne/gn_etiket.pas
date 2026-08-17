@@ -6,7 +6,7 @@
   Dosya Adı: gn_etiket.pas
   Dosya İşlevi: etiket (TLabel) nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -37,7 +37,7 @@ function EtiketGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYuksek
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne, gorev, src_ps2;
+uses gn_pencere, gn_islevler, gorev, src_ps2;
 
 {==============================================================================
   etiket nesne kesme çağrılarını yönetir

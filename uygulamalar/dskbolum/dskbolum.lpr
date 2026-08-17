@@ -6,7 +6,7 @@
   Program Adý: dskbolum.lpr
   Program Ýþlevi: sistemdeki mantýksal sürücü bilgisini verir
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}

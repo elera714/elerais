@@ -6,7 +6,7 @@
   Dosya Adı: gn_dugme.pas
   Dosya İşlevi: düğme (TButton) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -45,7 +45,7 @@ function DugmeGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYuksekl
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne, sistemmesaj, gorev, src_ps2;
+uses gn_pencere, gn_islevler, sistemmesaj, gorev, src_ps2;
 
 {==============================================================================
   düğme kesme çağrılarını yönetir

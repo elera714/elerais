@@ -6,7 +6,7 @@
   Dosya Adı: gn_degerdugmesi.pas
   Dosya İşlevi: artırma / eksiltme (TUpDown) düğme yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 12/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -40,7 +40,7 @@ function DegerDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, A
 
 implementation
 
-uses temelgorselnesne, gn_islevler, src_ps2;
+uses gn_islevler, src_ps2;
 
 {==============================================================================
   artırma / eksiltme düğme kesme çağrılarını yönetir

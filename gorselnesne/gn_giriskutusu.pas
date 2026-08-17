@@ -6,7 +6,7 @@
   Dosya Adı: gn_giriskutusu.pas
   Dosya İşlevi: giriş kutusu (TEdit) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -43,7 +43,7 @@ function GirisKutusuGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik,
 
 implementation
 
-uses gn_islevler, gn_pencere, temelgorselnesne, gorev, src_klavye, src_ps2;
+uses gn_islevler, gn_pencere, gorev, src_klavye, src_ps2;
 
 {==============================================================================
   giriş kutusu kesme çağrılarını yönetir

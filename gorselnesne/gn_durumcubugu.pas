@@ -6,7 +6,7 @@
   Dosya Adı: gn_durumcubugu.pas
   Dosya İşlevi: durum çubuğu (TStatusBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -37,7 +37,7 @@ function DurumCubuguGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AY
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne, hamresim, gorev, src_ps2;
+uses gn_pencere, gn_islevler, hamresim, gorev, src_ps2;
 
 {==============================================================================
   durum çubuğu kesme çağrılarını yönetir

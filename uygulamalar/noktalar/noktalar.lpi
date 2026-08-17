@@ -38,7 +38,9 @@
       <Unit0>
         <Filename Value="noktalar.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="58" Y="19"/>
+        <UnitName Value="saat"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="75"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -274,9 +276,7 @@
       <Unit44>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="49"/>
         <CursorPos X="8" Y="61"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>

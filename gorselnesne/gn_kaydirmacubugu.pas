@@ -6,7 +6,7 @@
   Dosya Adı: gn_kaydirmacubugu.pas
   Dosya İşlevi: kaydırma çubuğu (TScrollBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 18/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,7 +46,7 @@ function KaydirmaCubuguGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik,
 
 implementation
 
-uses gn_islevler, temelgorselnesne, src_ps2;
+uses gn_islevler, src_ps2;
 
 {==============================================================================
   kaydırma çubuğu kesme çağrılarını yönetir

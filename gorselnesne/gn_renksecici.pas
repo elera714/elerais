@@ -6,7 +6,7 @@
   Dosya Adı: gn_renksecici.pas
   Dosya İşlevi: renk seçim yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -52,7 +52,7 @@ function RenkSeciciGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYu
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne, src_ps2;
+uses gn_pencere, gn_islevler, src_ps2;
 
 {==============================================================================
   renk seçici kesme çağrılarını yönetir

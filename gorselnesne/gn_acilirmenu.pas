@@ -6,7 +6,7 @@
   Dosya Adı: gn_acilirmenu.pas
   Dosya İşlevi: açılır menü (TPopupMenu) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -45,7 +45,7 @@ function AcilirMenuGNOlustur(AKenarlikRengi, AGovdeRengi, ASecimRengi, ANormalYa
 
 implementation
 
-uses temelgorselnesne, gorev, src_ps2, gn_masaustu, gn_islevler;
+uses gorev, src_ps2, gn_masaustu, gn_islevler;
 
 {==============================================================================
   açılır menü kesme çağrılarını yönetir

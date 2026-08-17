@@ -6,7 +6,7 @@
   Dosya Adı: gn_onaykutusu.pas
   Dosya İşlevi: onay kutusu (TCheckBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -52,7 +52,7 @@ function OnayKutusuGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst: TISayi4; ABasl
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne, gorev, src_ps2;
+uses gn_pencere, gn_islevler, gorev, src_ps2;
 
 {==============================================================================
   onay kutusu çağrılarını yönetir

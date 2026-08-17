@@ -6,7 +6,7 @@
   Dosya Adı: gn_resimdugmesi.pas
   Dosya İşlevi: resim düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,7 +46,7 @@ function ResimDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, A
 
 implementation
 
-uses gn_pencere, gn_islevler, temelgorselnesne, src_ps2;
+uses gn_pencere, gn_islevler, src_ps2;
 
 {==============================================================================
   resim düğmesi kesme çağrılarını yönetir

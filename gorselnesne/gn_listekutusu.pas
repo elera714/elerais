@@ -6,7 +6,7 @@
   Dosya Adı: gn_listekutusu.pas
   Dosya İşlevi: liste kutusu (TListBox) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -47,7 +47,7 @@ function ListeKutusuGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AY
 
 implementation
 
-uses gn_islevler, gn_pencere, temelgorselnesne, gorev, src_ps2;
+uses gn_islevler, gn_pencere, gorev, src_ps2;
 
 {==============================================================================
   liste kutusu kesme çağrılarını yönetir

@@ -6,7 +6,7 @@
   Dosya Adı: gn_izgara.pas
   Dosya İşlevi: ızgara nesnesi (TStringGrid) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -57,7 +57,7 @@ function IzgaraGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYuksek
 
 implementation
 
-uses gn_islevler, gn_pencere, temelgorselnesne, sistemmesaj, gorev, src_ps2;
+uses gn_islevler, gn_pencere, sistemmesaj, gorev, src_ps2;
 
 {==============================================================================
   ızgara nesnesi kesme çağrılarını yönetir

@@ -14,7 +14,7 @@ unit gn_resim;
 
 interface
 
-uses gorselnesne, paylasim, temelgorselnesne, gn_panel;
+uses gorselnesne, paylasim, gn_panel;
 
 type
   PResim = ^TResim;

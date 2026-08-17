@@ -6,7 +6,7 @@
   Dosya Adı: gn_menu.pas
   Dosya İşlevi: menü yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -52,7 +52,7 @@ function MenuGNOlustur(ASol, AUst, AGenislik, AYukseklik, AElemanYukseklik: TISa
 
 implementation
 
-uses temelgorselnesne, gn_islevler, gorev, gn_masaustu, src_ps2;
+uses gn_islevler, gorev, gn_masaustu, src_ps2;
 
 {==============================================================================
   menü kesme çağrılarını yönetir

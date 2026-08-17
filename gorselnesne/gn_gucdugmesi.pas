@@ -6,7 +6,7 @@
   Dosya Adı: gn_gucdugmesi.pas
   Dosya İşlevi: güç düğmesi yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -46,7 +46,7 @@ function GucDugmesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik,
 
 implementation
 
-uses gn_islevler, temelgorselnesne, gn_pencere, gorev, src_ps2;
+uses gn_islevler, gn_pencere, gorev, src_ps2;
 
 {==============================================================================
   güç düğmesi kesme çağrılarını yönetir

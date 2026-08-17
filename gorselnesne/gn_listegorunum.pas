@@ -6,7 +6,7 @@
   Dosya Adı: gn_listegorunum.pas
   Dosya İşlevi: liste görünüm (TListView) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/08/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -47,7 +47,7 @@ function ListeGorunumGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, A
 
 implementation
 
-uses gn_islevler, gn_pencere, temelgorselnesne, gorev, src_ps2;
+uses gn_islevler, gn_pencere, gorev, src_ps2;
 
 {==============================================================================
   liste görünüm kesme çağrılarını yönetir
