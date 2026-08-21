@@ -4,9 +4,9 @@
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
   Dosya Adı: k_pci.pas
-  Dosya İşlevi: pci yönetim işlevlerini içerir
+  Dosya İşlevi: pci kesme yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/07/2025
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,85 +27,96 @@ uses pci, gorev;
  ==============================================================================}
 function PCICagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  PAygit: PPCIYapi;
-  p: Isaretci;
-  Islev: TSayi1;
-  PCIAygitSiraNo: TSayi4;
+  P: TPCI;
+  P3: PPCI3;
+  IslevNo: TSayi4;
+  SiraNo: TSayi4; { TISayi4 olması gerekiyor, değiştirildiğinde sistem kilitleniyor }
 begin
 
+  Result := HATA_ISLEV;
+
   // işlev no
-  Islev := (AIslevNo and $FF);
+  IslevNo := (AIslevNo and $FF);
 
   // toplam pci aygıt sayısını al
-  if(Islev = 1) then
+  if(IslevNo = 1) then
   begin
 
-    Result := PCIAygiti0.ToplamAygit;
+    Result := GPCIAygitlar.ToplamAygit;
   end
 
   // pci bilgilerini al
-  else if(Islev = 2) then
+  else if(IslevNo = 2) then
   begin
 
-    PCIAygitSiraNo := PSayi4(ADegiskenler + 00)^;
-    if(PCIAygitSiraNo >= 0) and (PCIAygitSiraNo < PCIAygiti0.ToplamAygit) then
+    SiraNo := PISayi4(ADegiskenler + 00)^;
+    if(SiraNo >= 0) and (SiraNo < GPCIAygitlar.ToplamAygit) then
     begin
 
-      p := Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
-      PAygit := PCIAygiti0.PCI[PCIAygitSiraNo];
-      if not(PAygit = nil) then Move(PAygit^, Isaretci(p)^, PCI_YAPIUZUNLUGU);
+      P3 := PPCI3(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
+      P := GPCIAygitlar.PCI[SiraNo];
+      if not(P = nil) then
+      begin
+
+        P3^.Yol := P.FYol;
+        P3^.Aygit := P.FAygit;
+        P3^.Islev := P.FIslev;
+        P3^.AYRLD0 := 0;
+        P3^.SaticiKimlik := P.FSaticiKimlik;
+        P3^.AygitKimlik := P.FAygitKimlik;
+        P3^.SinifKod := P.FSinifKod;
+        Result := HATA_YOK;
+      end else Result := HATA_DEGERARALIKDISI;
     end else Result := HATA_DEGERARALIKDISI;
   end
 
   // pci aygıtından 1 byte veri oku
-  else if(Islev = 3) then
+  else if(IslevNo = 3) then
   begin
 
-    Result := PCIAygiti0.Oku1(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
+    Result := GPCIAygitlar.Oku1(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
       PSayi4(ADegiskenler + 08)^, PSayi4(ADegiskenler + 12)^) and $FF;
   end
 
   // pci aygıtından 2 byte veri oku
-  else if(Islev = 4) then
+  else if(IslevNo = 4) then
   begin
 
-    Result := PCIAygiti0.Oku2(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
+    Result := GPCIAygitlar.Oku2(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
       PSayi4(ADegiskenler + 08)^, PSayi4(ADegiskenler + 12)^) and $FFFF;
   end
 
   // pci aygıtından 4 byte veri oku
-  else if(Islev = 5) then
+  else if(IslevNo = 5) then
   begin
 
-    Result := PCIAygiti0.Oku4(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
+    Result := GPCIAygitlar.Oku4(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^,
       PSayi4(ADegiskenler + 08)^, PSayi4(ADegiskenler + 12)^);
   end
 
   // pci aygıtına 1 byte veri yaz
-  else if(Islev = 6) then
+  else if(IslevNo = 6) then
   begin
 
-    PCIAygiti0.Yaz1(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
+    GPCIAygitlar.Yaz1(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
       PSayi4(ADegiskenler + 12)^, PSayi4(ADegiskenler + 16)^);
   end
 
   // pci aygıtına 2 byte veri yaz
-  else if(Islev = 7) then
+  else if(IslevNo = 7) then
   begin
 
-    PCIAygiti0.Yaz2(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
+    GPCIAygitlar.Yaz2(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
       PSayi4(ADegiskenler + 12)^, PSayi4(ADegiskenler + 16)^);
   end
 
   // pci aygıtına 4 byte veri yaz
-  else if(Islev = 8) then
+  else if(IslevNo = 8) then
   begin
 
-    PCIAygiti0.Yaz4(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
+    GPCIAygitlar.Yaz4(PSayi4(ADegiskenler + 00)^, PSayi4(ADegiskenler + 04)^, PSayi4(ADegiskenler + 08)^,
       PSayi4(ADegiskenler + 12)^, PSayi4(ADegiskenler + 16)^);
-  end
-
-  else Result := HATA_ISLEV;
+  end;
 end;
 
 end.

@@ -64,7 +64,7 @@ type
 
     // pci işlevleri
     function ToplamPCIAygitSayisiAl: TISayi4; assembler;
-    procedure PCIAygitBilgisiAl(AAygitSiraNo: TSayi4; ABellek: Isaretci); assembler;
+    procedure PCIAygitBilgisiAl(AAygitSiraNo: TISayi4; ABellek: Isaretci); assembler;
     function PCIOku1(AYol, AAygit, AIslev, ASiraNo: TSayi4): TSayi1; assembler;
     function PCIOku2(AYol, AAygit, AIslev, ASiraNo: TSayi4): TSayi2; assembler;
     function PCIOku4(AYol, AAygit, AIslev, ASiraNo: TSayi4): TSayi4; assembler;
@@ -323,7 +323,7 @@ asm
   int   $34
 end;
 
-procedure TGenel.PCIAygitBilgisiAl(AAygitSiraNo: TSayi4; ABellek: Isaretci); assembler;
+procedure TGenel.PCIAygitBilgisiAl(AAygitSiraNo: TISayi4; ABellek: Isaretci); assembler;
 asm
   push  DWORD ABellek
   push  DWORD AAygitSiraNo

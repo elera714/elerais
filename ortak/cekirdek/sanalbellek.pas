@@ -6,7 +6,7 @@
   Dosya Adı: sanalbellek.pas
   Dosya İşlevi: sanal bellek (virtual memory) işlevlerini içerir
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -31,7 +31,7 @@ implementation
  ==============================================================================}
 procedure Yukle;
 var
-  _BellekAdresi: PSayi4;
+  BellekAdresi: PSayi4;
   i, j: TSayi4;
 begin
 
@@ -41,27 +41,27 @@ begin
 
   // dizin girişleri
   // her bir girdi sayfa tablosu için 4MB'lık bir alan adreslemesi sağlamaktadır
-  _BellekAdresi := PSayi4(GERCEKBELLEK_DIZINADRESI);
+  BellekAdresi := PSayi4(GERCEKBELLEK_DIZINADRESI);
   j := GERCEKBELLEK_TABLOADRESI;
   for i := 0 to 1024 - 1 do
   begin
 
-    _BellekAdresi^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
-    Inc(_BellekAdresi);
+    BellekAdresi^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
+    Inc(BellekAdresi);
     j := j + 4096;
   end;
 
   // sayfa girişleri
   // her bir 1024 girdi 4 MB'dır. (1024 * 1024 = 4GB)
   // 16 * 4 = 64MB'lık alanın sayfalanması
-  _BellekAdresi := PSayi4(GERCEKBELLEK_TABLOADRESI);
+  BellekAdresi := PSayi4(GERCEKBELLEK_TABLOADRESI);
   j := 0;
   // for i := 0 to (1024 * 16) - 1 do
   for i := 0 to (1024 * 1024) - 1 do
   begin
 
-    _BellekAdresi^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
-    Inc(_BellekAdresi);
+    BellekAdresi^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
+    Inc(BellekAdresi);
     j := j + 4096;
   end;
 
@@ -74,36 +74,36 @@ end;
 procedure SanalBellekEslestir(ASanalBellekAdresi, AGercekBellekAdresi, ASayfaSayisi: TSayi4;
   ABayrak: TSayi1);
 var
-  _SanalBellek: PLongWord;
-  _GercekBellek: LongWord;
+  SanalBellek: PLongWord;
+  GercekBellek: LongWord;
   i: Integer;
 begin
 
-  _SanalBellek := PSayi4(GERCEKBELLEK_TABLOADRESI + ((ASanalBellekAdresi and $FFFFF000) shr 10));
-  _GercekBellek := AGercekBellekAdresi;
+  SanalBellek := PSayi4(GERCEKBELLEK_TABLOADRESI + ((ASanalBellekAdresi and $FFFFF000) shr 10));
+  GercekBellek := AGercekBellekAdresi;
 
   for i := 0 to ASayfaSayisi - 1 do
   begin
 
-    _SanalBellek^ := _GercekBellek or ABayrak;
-    Inc(_SanalBellek);
-    _GercekBellek := _GercekBellek + 4096;
+    SanalBellek^ := GercekBellek or ABayrak;
+    Inc(SanalBellek);
+    GercekBellek := GercekBellek + 4096;
   end;
 
   // TLB belleğini tazele
-  _GercekBellek := ASanalBellekAdresi and $FFFFF000;
+  GercekBellek := ASanalBellekAdresi and $FFFFF000;
 
   for i := 0 to ASayfaSayisi - 1 do
   begin
 
   asm
     push    eax
-    mov     eax,_GercekBellek
+    mov     eax,GercekBellek
     invlpg  [eax]
     pop     eax
   end;
 
-    _GercekBellek := _GercekBellek + 4096;
+    GercekBellek := GercekBellek + 4096;
   end;
 end;
 
@@ -117,16 +117,16 @@ end;
 // sanal belleğin fiziksel adres karşılığını alır
 function GercekBellekAdresiniAl(ASanalBellekAdresi: TSayi4): TSayi4;
 var
-  _SanalBellek: PSayi4;
+  SanalBellek: PSayi4;
 begin
 
-  _SanalBellek := PSayi4(GERCEKBELLEK_TABLOADRESI + ((ASanalBellekAdresi and $FFFFF000) shr 10));
-  Result := (_SanalBellek^ and $FFFFF000);
+  SanalBellek := PSayi4(GERCEKBELLEK_TABLOADRESI + ((ASanalBellekAdresi and $FFFFF000) shr 10));
+  Result := (SanalBellek^ and $FFFFF000);
 end;
 
 procedure ProgramIcinSayfaOlustur;
 var
-  _HedefBellek: PSayi4;
+  HedefBellek: PSayi4;
   i, j: TSayi4;
 begin
 
@@ -136,27 +136,27 @@ begin
 
   // dizin girişleri
   // her bir girdi sayfa tablosu için 4MB'lık bir alan adreslemesi sağlamaktadır
-  _HedefBellek := PSayi4($2800000);
+  HedefBellek := PSayi4($2800000);
   j := $2900000;
   for i := 0 to 1024 - 1 do
   begin
 
-    _HedefBellek^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
-    Inc(_HedefBellek);
+    HedefBellek^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
+    Inc(HedefBellek);
     j := j + 4096;
   end;
 
   // sayfa girişleri
   // 16 * 4 = 64MB'lık alanın sayfalanması
   // her bir 1024 girdi 4 MB'dır
-  _HedefBellek := PLongWord($2900000);
+  HedefBellek := PLongWord($2900000);
   j := $2700000; //0;
   // for i := 0 to (1024 * 64) - 1 do
   for i := 0 to (1024 * 1024) - 1 do
   begin
 
-    _HedefBellek^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
-    Inc(_HedefBellek);
+    HedefBellek^ := j or (SAYFA_YAZILABILIR or SAYFA_MEVCUT);
+    Inc(HedefBellek);
     j := j + 4096;
   end;
 end;

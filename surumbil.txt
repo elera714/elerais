@@ -4,6 +4,8 @@
   + görsel nesne object yapıları class yapılarına dönüştürüldü
   + thread nesnesi oluşturuldu. çekirdek içerisindeki modüler yapılar thread nesnesine dönüştürüldü
 
+  - çoklu ethernet kart desteği çalışmaları başladı
+
 *******************************************************************************
   Sürüm: 0.4.1 (sunucu / istemci) - 24.07.2026 (R37) - Beta
 *******************************************************************************

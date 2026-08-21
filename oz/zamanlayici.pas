@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 23/04/2026
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,6 +19,7 @@ uses paylasim, port, gorselnesne;
 
 const
   USTSINIR_ZAMANLAYICI = 128;
+  CALISMA_FREKANSI = 100;
 
 type
   //  TODO             zdIptal buradan ve api iþlevlerinden çýkarýlarak iptal edilecek
@@ -26,51 +27,53 @@ type
 
 type
   PZamanlayici = ^TZamanlayici;
-  TZamanlayici = record
+  TZamanlayici = class
     Kimlik: TKimlik;
-    GorevKimlik: TKimlik;
-    ZamanlayiciDurum: TZamanlayiciDurum;
+    GrvKimlik: TKimlik;
+    Durum: TZamanlayiciDurum;
     TetiklemeSuresi, GeriSayimSayaci: TSayi4;
-    OlayYonlendirmeAdresi: TOlaylariIsle;
+    OlayYonlAdr: TOlaylariIsle;
   end;
 
 type
   PZamanlayicilar = ^TZamanlayicilar;
-  TZamanlayicilar = object
+  TZamanlayicilar = class
   private
-    FOlusturulanZamanlayici: TSayi4;
-    FZamanlayiciListesi: array[0..USTSINIR_ZAMANLAYICI - 1] of PZamanlayici;
-    function ZamanlayiciAl(ASiraNo: TISayi4): PZamanlayici;
-    procedure ZamanlayiciYaz(ASiraNo: TISayi4; AZamanlayici: PZamanlayici);
+    // çalýþan zamanlayýcý sayýsýný sýfýrla
+    FToplamZamanlayiciSayisi: TSayi4;
+    FZamanlayiciListesi: array[0..USTSINIR_ZAMANLAYICI - 1] of TZamanlayici;
+    function Al(ASiraNo: TISayi4): TZamanlayici;
+    procedure Yaz(ASiraNo: TISayi4; AZamanlayici: TZamanlayici);
   public
-    procedure Yukle;
-    function Olustur(AMiliSaniye: TSayi4): PZamanlayici;
-    function BosZamanlayiciBul: PZamanlayici;
-    procedure YokEt(AZamanlayici: PZamanlayici);
-    property Zamanlayici[ASiraNo: TISayi4]: PZamanlayici read ZamanlayiciAl write ZamanlayiciYaz;
-    property OlusturulanZamanlayici: TSayi4 read FOlusturulanZamanlayici write FOlusturulanZamanlayici;
+    // zamanlayýcý (timer) kesmesinin her bir kesme oluþumunda artan sayaç
+    FZamanlayiciSayaci: TSayi4;
+    constructor Create;
+    function Olustur(AMiliSaniye: TSayi4): TZamanlayici;
+    function BosZamanlayiciBul: TZamanlayici;
+    procedure YokEt(AZamanlayici: TZamanlayici);
+    procedure ZamanlayicilariKontrolEt;
+    procedure ZamanlayicilariDurdur(AGorevKimlik: TKimlik);
+    procedure ZamanlayicilariYokEt(AGorevKimlik: TKimlik);
+    procedure BekleMS(AMilisaniye: TSayi4);
+    property Zamanlayici[ASiraNo: TISayi4]: TZamanlayici read Al write Yaz;
+    property ToplamZamanlayiciSayisi: TSayi4 read FToplamZamanlayiciSayisi write FToplamZamanlayiciSayisi;
   end;
 
 var
   GZamanlayicilar: TZamanlayicilar;
   ZamanlayicilarKilit: TSayi4 = 0;
 
-procedure ZamanlayicilariKontrolEt;
-procedure ZamanlayicilariDurdur(AGorevKimlik: TKimlik);
-procedure ZamanlayicilariYokEt(AGorevKimlik: TKimlik);
-procedure BekleMS(AMilisaniye: TSayi4);
-procedure TekGorevZamanlayiciIslevi;
 procedure OtomatikGorevDegistir;
 procedure ElleGorevDegistir;
 
 implementation
 
-uses gorev, idt, irq, pit, pic, sistemmesaj;
+uses gorev, idt, irq, pit, pic;
 
 {==============================================================================
   zamanlayýcý nesnelerinin ana yükleme iþlevlerini içerir
  ==============================================================================}
-procedure TZamanlayicilar.Yukle;
+constructor TZamanlayicilar.Create;
 var
   i: TSayi4;
 begin
@@ -84,11 +87,14 @@ begin
   // %10001110 = 1 = mevcut, 00 = DPL0, 0, 1 = 32 bit kod, 110 - kesme kapýsý
   KesmeGirisiBelirle($20, @OtomatikGorevDegistir, SECICI_SISTEM_KOD * 8, %10001110);
 
-  // saat vuruþ frekansýný düzenle. 100 tick = 1 saniye
-  ZamanlayiciFrekansiniDegistir(100);
+  // saat vuruþ frekansýný düzenle. (saniyedeki vuruþ sayýsý)
+  ZamanlayiciFrekansiniDegistir(CALISMA_FREKANSI);
+
+  // zamanlayýcý sayacýný sýfýrla
+  FZamanlayiciSayaci := 0;
 
   // çalýþan zamanlayýcý sayýsýný sýfýrla
-  OlusturulanZamanlayici := 0;
+  ToplamZamanlayiciSayisi := 0;
 
   // bellek bölgesini zamanlayýcý yapýlarýyla eþleþtir
   for i := 0 to USTSINIR_ZAMANLAYICI - 1 do Zamanlayici[i] := nil;
@@ -100,19 +106,17 @@ begin
   sti;
 end;
 
-function TZamanlayicilar.ZamanlayiciAl(ASiraNo: TISayi4): PZamanlayici;
+function TZamanlayicilar.Al(ASiraNo: TISayi4): TZamanlayici;
 begin
 
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_ZAMANLAYICI) then
     Result := FZamanlayiciListesi[ASiraNo]
   else Result := nil;
 end;
 
-procedure TZamanlayicilar.ZamanlayiciYaz(ASiraNo: TISayi4; AZamanlayici: PZamanlayici);
+procedure TZamanlayicilar.Yaz(ASiraNo: TISayi4; AZamanlayici: TZamanlayici);
 begin
 
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_ZAMANLAYICI) then
     FZamanlayiciListesi[ASiraNo] := AZamanlayici;
 end;
@@ -120,38 +124,37 @@ end;
 {==============================================================================
   zamanlayýcý nesnesi oluþturur
  ==============================================================================}
-function TZamanlayicilar.Olustur(AMiliSaniye: TSayi4): PZamanlayici;
+function TZamanlayicilar.Olustur(AMiliSaniye: TSayi4): TZamanlayici;
 var
-  Z: PZamanlayici;
+  Z: TZamanlayici;
   i: TSayi4;
 begin
+
+  Result := nil;
 
   // boþ bir zamanlayýcý nesnesi bul
   Z := BosZamanlayiciBul;
   if(Z <> nil) then
   begin
 
-    Z^.TetiklemeSuresi := AMiliSaniye;
-    Z^.GeriSayimSayaci := AMiliSaniye;
-    Z^.OlayYonlendirmeAdresi := nil;
+    Z.TetiklemeSuresi := AMiliSaniye;
+    Z.GeriSayimSayaci := AMiliSaniye;
+    Z.OlayYonlAdr := nil;
 
-    i := OlusturulanZamanlayici;
+    i := FToplamZamanlayiciSayisi;
     Inc(i);
-    OlusturulanZamanlayici := i;
+    FToplamZamanlayiciSayisi := i;
 
     Exit(Z);
   end;
-
-  // geri dönüþ deðeri
-  Result := Z;
 end;
 
 {==============================================================================
   boþ (kullanýlmayan) zamanlayýcý bulur
  ==============================================================================}
-function TZamanlayicilar.BosZamanlayiciBul: PZamanlayici;
+function TZamanlayicilar.BosZamanlayiciBul: TZamanlayici;
 var
-  Z: PZamanlayici;
+  Z: TZamanlayici;
   i: TSayi4;
 begin
 
@@ -166,13 +169,13 @@ begin
     begin
 
       // nesne için bellekte yer ayýr ve nesne iþaretçisini listeye ekle
-      Z := GetMem(SizeOf(TZamanlayici));
+      Z := TZamanlayici.Create;
       Zamanlayici[i] := Z;
 
       // ilk deðer atamalarý
-      Z^.Kimlik := i;
-      Z^.GorevKimlik := FAktifGorev;
-      Z^.ZamanlayiciDurum := zdDurduruldu;
+      Z.Kimlik := i;
+      Z.GrvKimlik := GGorevler.FAktifGrv;
+      Z.Durum := zdDurduruldu;
 
 //      KritikBolgedenCik(ZamanlayicilarKilit);
       Exit(Z);
@@ -187,7 +190,7 @@ end;
 {==============================================================================
   zamanlayýcý nesnesini yok eder.
  ==============================================================================}
-procedure TZamanlayicilar.YokEt(AZamanlayici: PZamanlayici);
+procedure TZamanlayicilar.YokEt(AZamanlayici: TZamanlayici);
 var
   i: TSayi4;
 begin
@@ -199,15 +202,15 @@ begin
   begin
 
     // zamanlayýc nesnesini listeden çýkar
-    Zamanlayici[AZamanlayici^.Kimlik] := nil;
+    Zamanlayici[AZamanlayici.Kimlik] := nil;
 
     // zamanlayýcý için bellekte ayrýlan yeri yok et
-    FreeMem(AZamanlayici, SizeOf(TZamanlayici));
+    AZamanlayici.Destroy;
 
     // zamanlayýcý nesnesini bir azalt
-    i := OlusturulanZamanlayici;
+    i := FToplamZamanlayiciSayisi;
     Dec(i);
-    OlusturulanZamanlayici := i;
+    FToplamZamanlayiciSayisi := i;
   end;
 
 //  KritikBolgedenCik(ZamanlayicilarKilit);
@@ -216,16 +219,16 @@ end;
 {==============================================================================
   zamanlayýcýlarý tetikler (IRQ00 tarafýndan çaðrýlýr)
  ==============================================================================}
-procedure ZamanlayicilariKontrolEt;
+procedure TZamanlayicilar.ZamanlayicilariKontrolEt;
 var
   G: PGorev;
-  Z: PZamanlayici;
+  Z: TZamanlayici;
   Olay: TOlay;
   GeriSayimSayaci, i: TISayi4;
 begin
 
   // zamanlayýcý nesnesi yok ise çýk
-  if(GZamanlayicilar.OlusturulanZamanlayici = 0) then Exit;
+  if(GZamanlayicilar.ToplamZamanlayiciSayisi = 0) then Exit;
 
 //  while KritikBolgeyeGir(ZamanlayicilarKilit) = False do;
 
@@ -236,34 +239,34 @@ begin
     Z := GZamanlayicilar.Zamanlayici[i];
 
     // eðer çalýþýyorsa
-    if not(Z = nil) and (Z^.ZamanlayiciDurum = zdCalisiyor) then
+    if not(Z = nil) and (Z.Durum = zdCalisiyor) then
     begin
 
       // zamanlayýcý sayacýný 1 azalt
-      GeriSayimSayaci := Z^.GeriSayimSayaci;
+      GeriSayimSayaci := Z.GeriSayimSayaci;
       Dec(GeriSayimSayaci);
-      Z^.GeriSayimSayaci := GeriSayimSayaci;
+      Z.GeriSayimSayaci := GeriSayimSayaci;
 
       // sayaç 0 deðerini bulmuþsa
       if(GeriSayimSayaci = 0) then
       begin
 
         // yeni sayým için geri sayým deðerini yeniden yükle
-        Z^.GeriSayimSayaci := Z^.TetiklemeSuresi;
+        Z.GeriSayimSayaci := Z.TetiklemeSuresi;
 
         Olay.Kimlik := i;
         Olay.Olay := CO_ZAMANLAYICI;
         Olay.Deger1 := 0;
         Olay.Deger2 := 0;
 
-        if not(Z^.OlayYonlendirmeAdresi = nil) then
+        if not(Z.OlayYonlAdr = nil) then
 
-          Z^.OlayYonlendirmeAdresi(nil, Olay)
+          Z.OlayYonlAdr(nil, Olay)
         else
         begin
 
-          G := GorevAl(Z^.GorevKimlik);
-          Gorevler0.OlayEkle(G^.Kimlik, Olay);
+          G := GorevAl(Z.GrvKimlik);
+          GGorevler.OlayEkle(G^.Kimlik, Olay);
         end;
       end;
     end;
@@ -275,9 +278,9 @@ end;
 {==============================================================================
   bir süreçe ait tüm zamanlayýcý nesnelerini durdurur
  ==============================================================================}
-procedure ZamanlayicilariDurdur(AGorevKimlik: TKimlik);
+procedure TZamanlayicilar.ZamanlayicilariDurdur(AGorevKimlik: TKimlik);
 var
-  Z: PZamanlayici;
+  Z: TZamanlayici;
   i: TSayi4;
 begin
 
@@ -290,11 +293,11 @@ begin
     Z := GZamanlayicilar.Zamanlayici[i];
 
     // zamanlayýcý nesnesi aranan iþleme mi ait
-    if not(Z = nil) and (Z^.GorevKimlik = AGorevKimlik) then
+    if not(Z = nil) and (Z.GrvKimlik = AGorevKimlik) then
     begin
 
       // nesneyi yok et
-      Z^.ZamanlayiciDurum := zdDurduruldu;
+      Z.Durum := zdDurduruldu;
     end;
   end;
 
@@ -304,9 +307,9 @@ end;
 {==============================================================================
   bir süreçe ait tüm zamanlayýcý nesnelerini yok eder.
  ==============================================================================}
-procedure ZamanlayicilariYokEt(AGorevKimlik: TKimlik);
+procedure TZamanlayicilar.ZamanlayicilariYokEt(AGorevKimlik: TKimlik);
 var
-  Z: PZamanlayici;
+  Z: TZamanlayici;
   i: TSayi4;
 begin
 
@@ -319,7 +322,7 @@ begin
     Z := GZamanlayicilar.Zamanlayici[i];
 
     // zamanlayýcý nesnesi aranan iþleme mi ait
-    if not(Z = nil) and (Z^.GorevKimlik = AGorevKimlik) then
+    if not(Z = nil) and (Z.GrvKimlik = AGorevKimlik) then
     begin
 
       // nesneyi yok et
@@ -333,28 +336,16 @@ end;
 {==============================================================================
   milisaniye cinsinden bekleme iþlemi yapar
   100 milisaniye = 1 saniye
+  bilgi: bu iþlev ana çekirdek içerisinde kullanýlmamalýdýr, aksi durumda ana çalýþma kilitlenir
  ==============================================================================}
-{ TODO : önemli bilgi: bu iþlev ana thread'ý bekletmekte, dolayýsýyla sistemi
-  belirtilen süre kadar kilitlemektedir. bu problemin önüne geçmek için thread
-  çalýþmasý gerçekleþtirilecek }
-procedure BekleMS(AMilisaniye: TSayi4);
+procedure TZamanlayicilar.BekleMS(AMilisaniye: TSayi4);
 var
   Sayac: TSayi4;
 begin
 
   // AMilisaniye * 100 saniye bekle
-  Sayac := ZamanlayiciSayaci + AMilisaniye;
-  while (Sayac > ZamanlayiciSayaci) do;
-end;
-
-{==============================================================================
-  tek görevli ortamda (çoklu ortama geçmeden önce) çalýþan zamanlayýcý iþlevi
- ==============================================================================}
-procedure TekGorevZamanlayiciIslevi;
-begin
-
-  { TODO : çalýþabilirliði test edilecek }
-  Inc(ZamanlayiciSayaci);
+  Sayac := FZamanlayiciSayaci + AMilisaniye;
+  while (Sayac > FZamanlayiciSayaci) do;
 end;
 
 {==============================================================================
@@ -370,7 +361,7 @@ asm
   pushfd
 
   // çalýþan görevin DS yazmacýný sakla
-  // not : ds = es = ss = fs = gs olduðu için tek yazmacýn saklanmasý yeterlidir.
+  // not : ds = es = ss olduðu için tek yazmacýn saklanmasý yeterlidir.
   mov   ax,ds
   push  eax
 
@@ -384,16 +375,18 @@ asm
   je    @@cik
 
   // zamanlayýcý sayacýný artýr.
-  mov   ecx,ZamanlayiciSayaci
+  mov   esi,[GZamanlayicilar]
+  mov   ecx,[esi + TZamanlayicilar.FZamanlayiciSayaci]
   inc   ecx
-  mov   ZamanlayiciSayaci,ecx
+  mov   [esi + TZamanlayicilar.FZamanlayiciSayaci],ecx
 
-  mov   eax,GorevDegisimBayragi
+  // görev deðiþimi yapýlsýn mý?
+  mov   eax,GGorevler.FGorevDegisimBayragi
   cmp   eax,1
   je    @@kontrol1
 
 @@cik:
-  // çalýþan proses'in segment yazmaçlarýný eski konumuna geri döndür
+  // yazmaçlarý geri yükle ve kesmeden çýk
   pop   eax
   mov   ds,ax
   mov   es,ax
@@ -401,7 +394,6 @@ asm
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  // genel yazmaçlarý geri yükle ve kesmeden çýk
   popfd
   popad
   sti
@@ -410,7 +402,8 @@ asm
 @@kontrol1:
 
   // uygulamalar tarafýndan oluþturulan zamanlayýcý nesnelerini denetle
-  call  ZamanlayicilariKontrolEt
+  mov eax,GZamanlayicilar
+  call  TZamanlayicilar.ZamanlayicilariKontrolEt
 
   // her 1 saniyede kontrol edilecek dahili iþlevler - (þu aþamada gerekli deðil)
 {  mov edx,0
@@ -423,55 +416,51 @@ asm
 @@yenigorev:
 
   // tek bir görev çalýþýyorsa görev deðiþikliði yapma, çýk
-  mov   ecx,FCalisanGorevSayisi
+  mov   ecx,GGorevler.FCalisanGorevSayisi
   cmp   ecx,1
   je    @@cik
-{
+
   // görevin belirlenen süre kadar çalýþmasýný saðla
-  mov   eax,FAktifGorev
-  shl   eax,2
-  mov   esi,GorevListesi[eax]
-  mov   eax,[esi + TGorev.FCalismaSuresiSayacMS]
+  mov   eax,GGorevler.FAktifGrv
+  mov   esi,GGorevler.Gorev[eax * 4]
+  mov   eax,[esi + TGorev.CalismaSureSayac]
   dec   eax
+  mov   [esi + TGorev.CalismaSureSayac],eax
   jz    @@bir_sonraki_gorev
-  mov   [esi + TGorev.FCalismaSuresiSayacMS],eax
   jmp   @@cik
 
 @@bir_sonraki_gorev:
 
-  // sayacý öndeðere eþitle
-  mov   eax,[esi + TGorev.FCalismaSuresiMS]
-  mov   [esi + TGorev.FCalismaSuresiSayacMS],eax
-}
+  // mevcut görevin sayacý sýfýrlandýðý için görevin sayacýný güncelle
+  mov   eax,[esi + TGorev.CalismaSureMS]
+  mov   [esi + TGorev.CalismaSureSayac],eax
+
   // geçiþ yapýlacak bir sonraki görevi bul
   call  CalistirilacakBirSonrakiGoreviBul
-  mov   FAktifGorev,eax
+  mov   GGorevler.FAktifGrv,eax
 
   // aktif görevin bellek baþlangýç adresini al
-  mov   eax,FAktifGorev
-  shl   eax,2
-  mov   esi,Gorevler0.Gorev[eax]
-  mov   eax,[esi + TGorev.BellekBaslangicAdresi]
-  mov   FAktifGorevBellekAdresi,eax
+  mov   eax,GGorevler.FAktifGrv
+  mov   esi,GGorevler.Gorev[eax * 4]
+  mov   eax,[esi + TGorev.BellekBasAdr]
+  mov   GGorevler.FAktifGrvBelAdr,eax
 
   // görev deðiþiklik sayacýný bir artýr
-  mov   eax,FAktifGorev
-  shl   eax,2
-  mov   esi,Gorevler0.Gorev[eax]
-  mov   eax,[esi + TGorev.GorevSayaci]
+  mov   eax,GGorevler.FAktifGrv
+  mov   esi,GGorevler.Gorev[eax * 4]
+  mov   eax,[esi + TGorev.GrvSayac]
   inc   eax
-  mov   [esi + TGorev.GorevSayaci],eax
+  mov   [esi + TGorev.GrvSayac],eax
 
   // GorevDegisimSayisi = kilitlenmeleri denetleyebilmek için eklenen deðiþken
-  mov   eax,GorevDegisimSayisi
+  mov   eax,GGorevler.FGorevDegisimSayisi
   inc   eax
-  mov   GorevDegisimSayisi,eax
+  mov   GGorevler.FGorevDegisimSayisi,eax
 
   // görevin öncelik seviyesine göre görev geçiþini gerçekleþtir
-  mov   ecx,FAktifGorev
+  mov   ecx,GGorevler.FAktifGrv
   mov   eax,ecx
-  shl   eax,2
-  mov   esi,Gorevler0.Gorev[eax]
+  mov   esi,GGorevler.Gorev[eax * 4]
   mov   eax,[esi + TGorev.SeviyeNo]
   cmp   eax,CALISMA_SEVIYE0
   jz    @@TSS_SEVIYE0
@@ -481,7 +470,7 @@ asm
   inc   ecx
   imul  ecx,3
   shl   ecx,3
-//  add   ecx,3
+  add   ecx,3
   mov   @@SECICI,cx
   jmp   @@son
 
@@ -494,7 +483,7 @@ asm
 
 @@son:
 
-  // çalýþan görevin seçici (selector) yazmaçlarýný eski konumuna geri döndür
+  // yazmaçlarý geri yükle ve kesmeden çýk
   pop   eax
   mov   ds,ax
   mov   es,ax
@@ -503,7 +492,6 @@ asm
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  // çalýþan görevin genel yazmaçlarýný eski konumuna geri döndür
   popfd
   popad
 
@@ -512,7 +500,7 @@ asm
 // iþlemi belirtilen göreve devret
 @@JMPKOD:
   db  $EA
-// donaným destekli görev deðiþimlerinde ADRES (offset) gözardý edilir
+// bilgi: donaným destekli görev deðiþimlerinde ADRES (offset) gözardý edilir
 @@ADRES:
   dd  0
 @@SECICI:
@@ -532,7 +520,7 @@ asm
   pushad
   pushfd
 
-  mov   ecx,FCalisanGorevSayisi
+  mov   ecx,GGorevler.FCalisanGorevSayisi
   cmp   ecx,1
   jg    @@yenigorev
 
@@ -544,29 +532,25 @@ asm
 @@yenigorev:
 
   call  CalistirilacakBirSonrakiGoreviBul
-//  mov   eax,0
-  mov   FAktifGorev,eax
+  mov   GGorevler.FAktifGrv,eax
 
   // aktif görevin bellek baþlangýç adresini al
-  mov   eax,FAktifGorev
-  shl   eax,2
-  mov   esi,Gorevler0.Gorev[eax]
-  mov   eax,[esi + TGorev.BellekBaslangicAdresi]
-  mov   FAktifGorevBellekAdresi,eax
+  mov   eax,GGorevler.FAktifGrv
+  mov   esi,GGorevler.Gorev[eax * 4]
+  mov   eax,[esi + TGorev.BellekBasAdr]
+  mov   GGorevler.FAktifGrvBelAdr,eax
 
   // görev deðiþiklik sayacýný bir artýr
-  mov   eax,FAktifGorev
-  shl   eax,2
-  mov   esi,Gorevler0.Gorev[eax]
-  mov   eax,[esi + TGorev.GorevSayaci]
+  mov   eax,GGorevler.FAktifGrv
+  mov   esi,GGorevler.Gorev[eax * 4]
+  mov   eax,[esi + TGorev.GrvSayac]
   inc   eax
-  mov   [esi + TGorev.GorevSayaci],eax
+  mov   [esi + TGorev.GrvSayac],eax
 
   // görevin öncelik seviyesine göre görev geçiþini gerçekleþtir
-  mov   ecx,FAktifGorev
+  mov   ecx,GGorevler.FAktifGrv
   mov   eax,ecx
-  shl   eax,2
-  mov   esi,Gorevler0.Gorev[eax]
+  mov   esi,GGorevler.Gorev[eax * 4]
   mov   eax,[esi + TGorev.SeviyeNo]
   cmp   eax,CALISMA_SEVIYE0
   jz    @@TSS_SEVIYE0
@@ -576,7 +560,7 @@ asm
   inc   ecx
   imul  ecx,3
   shl   ecx,3
-//  add   ecx,3
+  add   ecx,3
   mov   @@SECICI,cx
   jmp   @@son
 
@@ -594,7 +578,7 @@ asm
 // iþlemi belirtilen göreve devret
 @@JMPKOD:
   db  $EA
-// donaným destekli görev deðiþimlerinde ADRES (offset) gözardý edilir
+// bilgi: donaným destekli görev deðiþimlerinde ADRES (offset) gözardý edilir
 @@ADRES:
   dd  0
 @@SECICI:

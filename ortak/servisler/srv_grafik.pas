@@ -6,7 +6,7 @@
   Dosya Adý: srv_grafik.pas
   Dosya Ýþlevi: dahili servis: çekirdek içi grafiksel bilgilendirme
 
-  Güncelleme Tarihi: 17/08/2026
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit srv_grafik;
 
 interface
 
-uses paylasim, gn_pencere, gn_islemgostergesi, thread, gorev;
+uses paylasim, gn_pencere, gn_islemgostergesi, thread;
 
 const
   P_BASLIK_YUKSEKLIK = 24;
@@ -169,11 +169,14 @@ begin
   SDPencere.DikdortgenDoldur(SDPencere, CizimAlani, RENK_SIYAH, RENK_BEYAZ);
 
   SDPencere.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 8, 'Çkrdk:', RENK_TURKUAZ);
-  SDPencere.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, False, 8, GSistem.FSistemSayaci, RENK_TURKUAZ);
-  SDPencere.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'Nesne:', RENK_MOR);
-  SDPencere.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24, GGNesneler.FToplamGorselNesne, RENK_MOR);
-  SDPencere.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'Görev:', RENK_KIRMIZI);
-  SDPencere.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40, GGorevler.FCalisanGorevSayisi, RENK_KIRMIZI);
+  SDPencere.SayiYaz16(SDPencere, 64, P_BASLIK_YUKSEKLIK + 8, False, 8,
+    GSistem.FSistemSayaci, RENK_TURKUAZ);
+  SDPencere.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 24, 'Zaman:', RENK_MOR);
+  SDPencere.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 24,
+    GZamanlayicilar.FZamanlayiciSayaci div CALISMA_FREKANSI, RENK_MOR);
+  SDPencere.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'Nesne:', RENK_KIRMIZI);
+  SDPencere.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40,
+    GGNesneler.FToplamGorselNesne, RENK_KIRMIZI);
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adý: src_klavye.pas
   Dosya Ýþlevi: standart klavye sürücüsü
 
-  Güncelleme Tarihi: 20/07/2026
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -66,6 +66,12 @@ var
 type
   TKlavye = class
   public
+    FSistemTusDurumuKontrolSol: TTusDurum;
+    FSistemTusDurumuKontrolSag: TTusDurum;
+    FSistemTusDurumuAltSol: TTusDurum;
+    FSistemTusDurumuAltSag: TTusDurum;
+    FSistemTusDurumuDegisimSol: TTusDurum;
+    FSistemTusDurumuDegisimSag: TTusDurum;
     constructor Create;
     function KlavyedenTusAl(var ATusDegeri: TSayi2): TTusDurum;
   end;
