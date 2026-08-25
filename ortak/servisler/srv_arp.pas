@@ -6,7 +6,7 @@
   Dosya Adý: srv_arp.pas
   Dosya Ýþlevi: dahili servis: arp tablo güncelliðini gerçekleþtirir
 
-  Güncelleme Tarihi: 19/07/2026
+  Güncelleme Tarihi: 25/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -44,7 +44,7 @@ begin
 
   repeat
 
-    if not(GARP = nil) then GARP.ARPTablosunuGuncelle;
+    if not(GARPTablosu = nil) then GARPTablosu.ARPTablosunuGuncelle;
 
   until True = False;
 end;

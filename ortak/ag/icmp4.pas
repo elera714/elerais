@@ -6,7 +6,7 @@
   Dosya Adı: icmp4.pas
   Dosya İşlevi: ICMP v4 protokol yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/08/2026
+  Güncelleme Tarihi: 25/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -34,24 +34,28 @@ type
 
 type
   TICMP4 = class
+  private
+    FBaglanti: TObject;
+    FICMP4PaketSayisi: TSayi4;
   public
-    constructor Create;
+    constructor Create(ABaglanti: TObject);
     procedure PaketGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
       AHedefIPAdres: TIP4Adres);
     procedure PaketleriIsle(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4;
       AHedefIPAdres: TIP4Adres);
+    property ICMP4PaketSayisi: TSayi4 read FICMP4PaketSayisi write FICMP4PaketSayisi;
   end;
-
-var
-  GICMP4: TICMP4;
 
 implementation
 
-uses ip4, islevler, sistemmesaj, ag;
+uses islevler, sistemmesaj, baglantilar;
 
-constructor TICMP4.Create;
+constructor TICMP4.Create(ABaglanti: TObject);
 begin
 
+  FBaglanti := ABaglanti;
+
+  FICMP4PaketSayisi := 0;
 end;
 
 // icmp v4 protokolü üzerinden gelen paketleri işler
@@ -77,6 +81,8 @@ begin
 
     // yanıt gönder
     PaketGonder(AICMPPaket, APaketUzunlugu, AHedefIPAdres);
+
+    Inc(FICMP4PaketSayisi);
 
   end else SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'ICMP4.PAS: bilinmeyen mesaj tipi: $%.2x',
     [AICMPPaket^.MesajTipi]);
@@ -112,8 +118,8 @@ begin
   ICMPPaket^.SaglamaToplami := SaglamaToplami;
 
   // sisteme gelen icmp isteğine icmp yanıtı (paket) gönder
-  IP4PaketGonder(MACAdres255, GAg.IP4Adres, AHedefIPAdres, ptICMP4, 0,
-    ICMPPaket, ICMP4_BASLIK_UZUNLUGU + i);
+  TBaglanti(FBaglanti).FIP4.IPAdresleriniBelirle(TBaglanti(FBaglanti).IP4Adres, AHedefIPAdres);
+  TBaglanti(FBaglanti).FIP4.PaketGonder(MACAdres255, ptICMP4, 0, ICMPPaket, ICMP4_BASLIK_UZUNLUGU + i);
 
   {$IFDEF ICMP4_HATAAYIKLA}
   SISTEM_MESAJ_IP4(mtBilgi, RENK_MOR, 'ICMP4 yanıtı gönderilen IP: ', AHedefIPAdres);

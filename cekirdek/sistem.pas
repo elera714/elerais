@@ -6,7 +6,7 @@
   Dosya Adý: sistem.pas
   Dosya Ýþlevi: sistem yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 28/07/2026
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,6 +20,12 @@ uses paylasim;
 type
   TSistem = class
   public
+    FSistemSayaci, FCagriSayaci,
+    FGrafikSayaci: TSayi4;
+    // 24 x 24 sistemler. yukleyici.pas dosyasýndan yükleme iþlemi yapýlýr
+    FSistemResimler,
+    FSistemResimler2: TGoruntuYapi;
+    constructor Create;
     procedure BilgisayariKapat;
     procedure YenidenBaslat;
     procedure SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
@@ -31,7 +37,16 @@ var
 
 implementation
 
-uses port, dosya, gorselnesne, gorev, genel, donusum, sistemmesaj;
+uses port, dosya, gorselnesne, gorev, donusum, sistemmesaj, gn_masaustu, gn_islevler;
+
+constructor TSistem.Create;
+begin
+
+  // sistem sayaçlarýný sýfýrla
+  FSistemSayaci := 0;
+  FCagriSayaci := 0;
+  FGrafikSayaci := 0;
+end;
 
 procedure TSistem.BilgisayariKapat;
 begin
@@ -86,10 +101,10 @@ begin
   IzKaydiOlustur(DosyaAdi, 'Sistem ' + TS + ' itibariyle ' + s + #13#10, False);
 end;
 
-// çalýþan uygulama listesinin dosyaya kaydetme iþlemi
+// çalýþan uygulama listesinin dosyaya kaydedilme iþlemi
 procedure TSistem.CalisanUygulamalariKaydet;
 var
-  GN: PGorselNesne;
+  GN: TGorselNesne;
   P: TProgramKayit;
   CalisanPSayisi,
   i, j: TISayi4;
@@ -104,26 +119,26 @@ begin
   if(Sonuc = HATA_YOK) then
   begin
 
-    CalisanPSayisi := CalisanProgramSayisiniAl(GAktifMasaustu^.F0.Kimlik);
+    CalisanPSayisi := CalisanProgramSayisiniAl(GGNesneler.AktifMasaustu.Kimlik);
 
     for i := 0 to CalisanPSayisi - 1 do
     begin
 
-      P := CalisanProgramBilgisiAl(i, GAktifMasaustu^.F0.Kimlik);
+      P := CalisanProgramBilgisiAl(i, GGNesneler.AktifMasaustu.Kimlik);
       j := Length(P.DosyaAdi);
       if(P.DosyaAdi[j] = 'c') then
       begin
 
         s := P.DosyaAdi;
 
-        GN := GGorselNesneler.NesneAl(P.PencereKimlik);
+        GN := GGNesneler.NesneAl(P.PencereKimlik);
         if not(GN = nil) then
         begin
 
-          s := s + ';' + IntToStr(GN^.F0.FAtananAlan.Sol);
-          s := s + ';' + IntToStr(GN^.F0.FAtananAlan.Ust);
-          s := s + ';' + IntToStr(GN^.F0.FAtananAlan.Genislik);
-          s := s + ';' + IntToStr(GN^.F0.FAtananAlan.Yukseklik);
+          s := s + ';' + IntToStr(GN.FAtananAlan.Sol);
+          s := s + ';' + IntToStr(GN.FAtananAlan.Ust);
+          s := s + ';' + IntToStr(GN.FAtananAlan.Genislik);
+          s := s + ';' + IntToStr(GN.FAtananAlan.Yukseklik);
 
           WriteLn(DosyaKimlik, s);
         end;

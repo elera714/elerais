@@ -78,6 +78,7 @@ type
     procedure Yaz(ASiraNo: TISayi4; APCI: TPCI);
   public
     constructor Create;
+    procedure AygitlariSorgula;
     function Oku1(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi1;
     function Oku2(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi2;
     function Oku4(AYol, AAygit, AIslev, ASiraNo: TSayi1): TSayi4;
@@ -96,23 +97,32 @@ var
 
 implementation
 
-uses aygityonetimi, port;
+uses port;
 
 {==============================================================================
-  sistemde mevcut pci aygıtlarının ana yükleme işlevlerini içerir
+  nesne ilk yükleme işlevleri
  ==============================================================================}
 constructor TPCIAygitlar.Create;
 var
-  P: TPCI;
-  Yol, Aygit, Islev,
   i: TSayi4;
 begin
 
   // toplam aygıt sayısını sıfırla
   ToplamAygit := 0;
 
-  // bellek girişlerini sıfırla
+  // nesne girişlerini sıfırla
   for i := 0 to AZAMI_PCIAYGITSAYISI - 1 do PCI[i] := nil;
+end;
+
+{==============================================================================
+  sistemde mevcut pci aygıtlarını sorgular
+ ==============================================================================}
+procedure TPCIAygitlar.AygitlariSorgula;
+var
+  P: TPCI;
+  Yol, Aygit, Islev,
+  i: TSayi4;
+begin
 
   // yol / aygıt / işlev girişlerini sorgula
 
@@ -168,9 +178,6 @@ begin
             // Class Code[8bit] + SubClass[8bit] + ProgIF[8bit] + Revision ID[8bit]
             // üst 24 bit sınıf kodu, alt 8 bit revizyon kodu
             P.FSinifKod := Oku4(Yol, Aygit, Islev, 8);
-
-            // aygıtı yüklenecek aygıt listesine ekle
-            GAygitlar.AygitiSistemeKaydet(P);
 
             // aygıt sayısını bir artır
             i := FToplamAygit;
