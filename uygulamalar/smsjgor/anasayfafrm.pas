@@ -16,7 +16,7 @@ type
     FdugTemizle: TDugme;
     FSistemMesaj: TSistemMesaj;
     FZamanlayici: TZamanlayici;
-    FMesajKayit: TMesajKayit;
+    FMesajKayit: TMesajKayit3;
   public
     procedure Olustur;
     procedure Goster;
@@ -66,7 +66,7 @@ begin
 
   FPencere.Gorunum := True;
 
-  FZamanlayici.Olustur(100);
+  FZamanlayici.Olustur(1000);
   FZamanlayici.Baslat;
 
   ToplamMesaj := 0;

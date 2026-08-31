@@ -137,7 +137,7 @@ begin
         FSonuc.YaziEkle('Tip: ' + IntToStr(DNS.RecType) + #13#10);
         FSonuc.YaziEkle('Sýnýf: ' + IntToStr(DNS.RecClass) + #13#10);
         FSonuc.YaziEkle('Yaþam Ömrü: ' + IntToStr(DNS.TTL) + #13#10);
-        FSonuc.YaziEkle('IP Adresi: ' + IP_KarakterKatari(DNS.RData));
+        FSonuc.YaziEkle('IP Adresi: ' + IP_KarakterKatari4(DNS.RData));
 
         FDurumCubugu.DurumYazisiDegistir('Beklemede.');
         DNS.YokEt;

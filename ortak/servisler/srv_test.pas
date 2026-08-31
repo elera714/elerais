@@ -38,7 +38,7 @@ begin
 
   repeat
 
-    GZamanlayicilar.BekleMS(30 * 100);
+    GZamanlayicilar.BekleMS(30 * CALISMA_FREKANSI);
 
     SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'test servis kontrol...', []);
 

@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 21/08/2026
+  Güncelleme Tarihi: 30/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,8 +18,8 @@ interface
 uses paylasim, port, gorselnesne;
 
 const
-  USTSINIR_ZAMANLAYICI = 128;
-  CALISMA_FREKANSI = 100;
+  USTSINIR_ZAMANLAYICI  = 128;
+  CALISMA_FREKANSI      = 1000;
 
 type
   //  TODO             zdIptal buradan ve api iþlevlerinden çýkarýlarak iptal edilecek

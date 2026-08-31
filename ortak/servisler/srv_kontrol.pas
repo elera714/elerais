@@ -6,7 +6,7 @@
   Dosya Adý: srv_kontrol.pas
   Dosya Ýþlevi: dahili seervis: çekirdek yazýlýmýnýn deðiþim kontrolünü gerçekleþtirir
 
-  Güncelleme Tarihi: 17/08/2026
+  Güncelleme Tarihi: 30/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -57,7 +57,7 @@ begin
   begin
 
     // 5 saniyede bir denetim
-    Sayac := GZamanlayicilar.FZamanlayiciSayaci + 5 * 100;
+    Sayac := GZamanlayicilar.FZamanlayiciSayaci + (5 * CALISMA_FREKANSI);
     while (Sayac > GZamanlayicilar.FZamanlayiciSayaci) do;
 
     DosyaBulundu := False;
@@ -106,17 +106,17 @@ begin
 
         IslemGostergesi := TIslemGostergesi.Create;
         IslemGostergesi.Ozellestir(ktNesne, Pencere, 2, 1, 170, 18);
-        IslemGostergesi.DegerleriBelirle(0, 25);
+        IslemGostergesi.DegerleriBelirle(0, 100);
         IslemGostergesi.Goster;
 
         Pencere.Goster;
 
-        for i := 24 downto 0 do
+        for i := 99 downto 0 do
         begin
 
           IslemGostergesi.MevcutDegerYaz(i);
 
-          Sayac := GZamanlayicilar.FZamanlayiciSayaci + 10;
+          Sayac := GZamanlayicilar.FZamanlayiciSayaci + (CALISMA_FREKANSI div 20);
           while (Sayac > GZamanlayicilar.FZamanlayiciSayaci) do;
         end;
 
@@ -124,7 +124,7 @@ begin
 
         Pencere.Gizle;
 
-        Sayac := GZamanlayicilar.FZamanlayiciSayaci + 500;
+        Sayac := GZamanlayicilar.FZamanlayiciSayaci + (1 * CALISMA_FREKANSI);
         while (Sayac > GZamanlayicilar.FZamanlayiciSayaci) do;
       end;
     end;

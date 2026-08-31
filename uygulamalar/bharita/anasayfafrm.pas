@@ -55,8 +55,8 @@ begin
 
   FPencere.Gorunum := True;
 
-  // 5 saniyelik frekansla güncelle
-  FZamanlayici.Olustur(5 * 100);
+  // 2 saniyelik frekansla güncelle
+  FZamanlayici.Olustur(2 * 1000);
   FZamanlayici.Baslat;
 end;
 

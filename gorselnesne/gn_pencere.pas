@@ -6,7 +6,7 @@
   Dosya Adı: gn_pencere.pas
   Dosya İşlevi: pencere (TForm) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 18/08/2026
+  Güncelleme Tarihi: 30/08/2026
 
   Önemli Bilgiler:
 
@@ -117,6 +117,8 @@ begin
 
       Pencere := TPencere(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       Pencere.Goster;
+
+      if(Pencere <> nil) then Pencere.EnUsteGetir(Pencere);
     end;
 
     ISLEV_GIZLE:
@@ -428,6 +430,8 @@ end;
 procedure TPencere.Goster;
 begin
 
+  FYenidenCiz := True;
+
   inherited Goster;
 end;
 
@@ -545,8 +549,6 @@ var
   PencereAktif: Boolean;
   RenkBellek: PRenk;
 begin
-
-  FCiziliyor := True;
 
   Boyutlandir;
 
@@ -861,6 +863,8 @@ begin
     end;
   end;
 
+  FYenidenCiz := True;
+
   // uygulamaya veya efendi nesneye mesaj gönder
   Olay.Kimlik := Self.Kimlik;
   Olay.Olay := CO_CIZIM;
@@ -869,8 +873,6 @@ begin
   if not(OlayYonlAdr = nil) then
     OlayYonlAdr(Self, Olay)
   else GGorevler.OlayEkle(GrvKimlik, Olay);
-
-  FCiziliyor := False;
 end;
 
 {==============================================================================
@@ -1110,7 +1112,7 @@ begin
 
         GFareSurucusu.AktifFareImlec := fitBoyutTum;
 
-        APencere.Guncelle;
+        //APencere.Guncelle;
       end
       else
       begin
@@ -1464,6 +1466,8 @@ end;
  ==============================================================================}
 procedure TPencere.Guncelle;
 begin
+
+  FYenidenCiz := True;
 
   Boyutlandir;
 

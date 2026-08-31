@@ -180,7 +180,7 @@ begin
   // masaüstünü görüntüle
   FMasaustu.Goster;
 
-  FZamanlayici.Olustur(100);
+  FZamanlayici.Olustur(1000);
   FZamanlayici.Baslat;
 
   // masaüstü için ELERA düðmesine baðlý menü oluþtur

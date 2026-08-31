@@ -6,7 +6,7 @@
   Dosya Adı: gn_masaustu.pas
   Dosya İşlevi: masaüstü yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 18/08/2026
+  Güncelleme Tarihi: 30/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -257,6 +257,8 @@ begin
 
   inherited Goster;
 
+  FYenidenCiz := True;
+
   // masaüstünü aktifleştir
   Aktiflestir;
 
@@ -312,16 +314,18 @@ var
 begin
 
   // masaüstü arka plan resmini çiz
-  if(Gorunum) then
+  if(Gorunum) and (FYenidenCiz) then
   begin
 
     if(MasaustuArkaPlan = 1) then
       MasaustunuRenkIleDoldur
     else BMPGoruntusuCiz(gntMasaustu, Self, FGoruntuYapi);
-  end;
 
-  i := Length(SistemAdi) * 8;
-  YaziYaz(Self, FCizimAlani.Genislik - i, 0, SistemAdi, RENK_BEYAZ);
+    i := Length(SistemAdi) * 8;
+    YaziYaz(Self, FCizimAlani.Genislik - i, 0, SistemAdi, RENK_BEYAZ);
+
+    FYenidenCiz := False;
+  end;
 
   // tüm pencereleri yeniden çiz
   GGNesneler.PencereleriYenidenCiz;
@@ -394,6 +398,8 @@ begin
 
     // aktif masaüstü olarak belirle
     GGNesneler.AktifMasaustu := Self;
+
+    FYenidenCiz := True;
   end;
 end;
 
@@ -427,6 +433,8 @@ begin
   // masaüstünün renk değerini değiştir
   MasaustuArkaPlan := 1;
   MasaustuRenk := ARenk;
+
+  FYenidenCiz := True;
 
   if(Gorunum) then Ciz;
 end;
@@ -465,6 +473,8 @@ begin
     MasaustuArkaPlan := 1;
     MasaustuRenk := RENK_SIYAH;
   end;
+
+  FYenidenCiz := True;
 
   if(Gorunum) then Ciz;
 

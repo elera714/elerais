@@ -42,7 +42,7 @@ begin
 
   FPencere.Gorunum := True;
 
-  FZamanlayici.Olustur(50);
+  FZamanlayici.Olustur(500);
   FZamanlayici.Baslat;
 end;
 

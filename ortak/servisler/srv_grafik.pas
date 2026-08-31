@@ -6,7 +6,7 @@
   Dosya Adý: srv_grafik.pas
   Dosya Ýþlevi: dahili servis: çekirdek içi grafiksel bilgilendirme
 
-  Güncelleme Tarihi: 21/08/2026
+  Güncelleme Tarihi: 30/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,7 +32,7 @@ type
 implementation
 
 uses gn_etiket, mdepolama, elr1, sistemmesaj, gorselnesne, gercekbellek, sistem,
-  src_vesa20, gn_islevler, zamanlayici;
+  src_vesa20, gn_islevler, zamanlayici, fdepolama, src_disket;
 
 var
   SDPencere: TPencere;
@@ -59,7 +59,7 @@ end;
 procedure TServisGrafik.Execute;
 begin
 
-  GZamanlayicilar.BekleMS(300);
+  GZamanlayicilar.BekleMS(3 * CALISMA_FREKANSI);
 
   Basla;
 
@@ -139,7 +139,7 @@ begin
 
   // 5000 döngüde bir disk kullaným kapasitesinin hesaplanmasý
   Inc(DiskSayac);
-  if(DiskSayac = 100000) then
+  if(DiskSayac = 5000) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'Disk kullaným alaný hesaplanýyor...', []);

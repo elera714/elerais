@@ -6,7 +6,7 @@
   Dosya Adý: anagorselnesne.pas
   Dosya Ýþlevi: görsel nesne yapýsýnýn ortak / temel deðiþkenlerini içerir
 
-  Güncelleme Tarihi: 18/08/2026
+  Güncelleme Tarihi: 30/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -72,9 +72,9 @@ type
     FHiza: THiza;
     // nesneye yazýlacak yazýnýn yatay + dikey hizalanmasý
     FYaziHiza: TYaziHiza;
-    // nesnenin o anda çizilip çizilmediðini belirten deðiþken.
+    // nesnenin yeniden çizilip çizilmeyeceðini belirten deðiþken.
     // bilgi: pencere çiziminin kontrolü için eklendi
-    FCiziliyor: Boolean;
+    FYenidenCiz: Boolean;
 
     // aþaðýdaki deðiþkenler görsel nesnelerin genel kullaným deðiþkenleridir
     FDeger1, FDeger2, FDeger3: TSayi4;
@@ -139,6 +139,8 @@ constructor TAnaGorselNesne.Create;
 begin
 
   Baslik := '';
+
+  FYenidenCiz := False;
 end;
 
 {==============================================================================

@@ -53,7 +53,7 @@ end;
 procedure TfrmAnaSayfa.Goster;
 begin
 
-  FZamanlayici.Olustur(30);
+  FZamanlayici.Olustur(300);
 
   FPencere.Gorunum := True;
 

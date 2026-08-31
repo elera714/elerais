@@ -6,7 +6,7 @@
   Dosya Adı: gorselnesne.pas
   Dosya İşlevi: tüm görsel nesnelerin türediği temel görsel ana yapı
 
-  Güncelleme Tarihi: 18/08/2026
+  Güncelleme Tarihi: 30/08/2026
 
   Bilgi: bu görsel yapı, tüm nesnelerin ihtiyaç duyabileceği ana yapıları içerir
 
@@ -277,7 +277,7 @@ begin
   FGovdeRenk2 := AGovdeRenk2;
   FYaziRenk := AYaziRenk;
 
-  FCiziliyor := False;
+  FYenidenCiz := False;
 
   FEtiket := 0;
 
