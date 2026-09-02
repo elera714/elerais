@@ -3,7 +3,9 @@
 *******************************************************************************
   + görsel nesne object yapıları class yapılarına dönüştürüldü
   + thread nesnesi oluşturuldu. çekirdek içerisindeki modüler yapılar thread nesnesine dönüştürüldü
+  + çekirdek frekansı 100mhz'de çalışacak şekilde yeniden tasarlandı
 
+  - ağ protokolleri sınıf (class) çalışmaları kapsamında yeniden tasarlanıyor
   - çoklu ethernet kart desteği çalışmaları başladı
 
 *******************************************************************************
