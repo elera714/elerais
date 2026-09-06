@@ -6,7 +6,7 @@
   Dosya Adý: netbios.pas
   Dosya Ýþlevi: netbios api iþlevlerini yönetir
 
-  Güncelleme Tarihi: 22/06/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit netbios;
 
 interface
 
-uses udp, baglanti, paylasim;
+uses udp, baglantilar, paylasim;
 
 type
   PNetBiosServis = ^TNetBiosServis;
@@ -28,22 +28,41 @@ type
     Veriler: Isaretci;
   end;
 
-procedure DNSSorgulariniYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
+type
+  TNetBios = class
+  public
+    FBaglanti: TObject;
+    constructor Create(ABaglanti: TObject);
+    procedure SorgulariYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
+  end;
+
+var
+  GNetBios: TNetBios;
+
+procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
+procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
+procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
 
 implementation
 
-uses sistemmesaj, donusum, genel, islevler, ag;
+uses sistemmesaj, donusum, islevler, ag, ethernet, aygityonetimi;
+
+constructor TNetBios.Create(ABaglanti: TObject);
+begin
+
+  FBaglanti := ABaglanti;
+end;
 
 {==============================================================================
-  dns sorgularýný yanýtlar
+  netbios sorgularýný yanýtlar
  ==============================================================================}
-procedure DNSSorgulariniYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
+procedure TNetBios.SorgulariYanitla(AIPPaket: PIP4Paket; AUDPBaslik: PUDPPaket);
 var
   NB, NB2: PNetBiosServis;
   Veri: array[0..511] of TSayi1;
   SorguSayisi, DigerSayisi,
   IstekTipi, IstekSinifi: TSayi2;
-  NetBIOSAdi, s, IPAdresi: string;
+  NetBIOSAdi, s, IP4Adres: string;
   PB1: PByte;
   PB2: PSayi2;
   B1, B2, B3: TSayi1;
@@ -52,10 +71,6 @@ var
   VeriSN, VeriUzunlukSN,
   VeriBaslangic: TSayi4;
 begin
-
-  {$IFDEF UDP_BILGI}
-  UDPBaslikBilgileriniGoruntule(AUDPBaslik);
-  {$ENDIF}
 
   NB := @AUDPBaslik^.Veri;
 
@@ -163,7 +178,7 @@ begin
     Ekle2Byte(@Veri[VeriSN], $8400); Inc(VeriSN, 2);
 
     // mac adresi
-    Tasi2(@GAg0.MACAdres, @Veri[VeriSN], 6); Inc(VeriSN, 6);
+    Tasi2(@TBaglanti(FBaglanti).FEthernet.MACAdres, @Veri[VeriSN], 6); Inc(VeriSN, 6);
     // atlayýcý (jumpers)
     EkleByte(@Veri[VeriSN], $00); Inc(VeriSN);
     // test sonucu
@@ -218,16 +233,16 @@ begin
     p := @NB2^.Veriler;
     Tasi2(@Veri[0], p, VeriSN);
 
-    IPAdresi := IP_KarakterKatari4(AIPPaket^.KaynakIP);
-    B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, ntohs(AUDPBaslik^.KaynakPort),
-      ntohs(AUDPBaslik^.HedefPort));
+    IP4Adres := IP_KarakterKatari4(AIPPaket^.KaynakIP4Adres);
+    B := GAgBaglantisi.BaglantiOlustur(itIP4, btPasif, ptUDP, IP4Adres,
+      ntohs(AUDPBaslik^.KaynakPort), ntohs(AUDPBaslik^.HedefPort));
     if not(B = nil) then
     begin
 
-      if(B.Baglan(itIP4, btYayin) <> -1) then
+      if(B.Baglan(btYayin) <> -1) then
       begin
 
-        B.Yaz(PROTOKOL_IP4, NB2, VeriSN + 12);
+        B.Yaz(NB2, VeriSN + 12);
 
         B.BaglantiyiKes;
       end;
@@ -240,12 +255,36 @@ begin
   else
   begin
 
-    SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'NetBios yanýtý gönderilmedi!', []);
-    SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'NetBios Bilgileri................: ', []);
-    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Sorgulanan Ad: %s', [NetBIOSAdi]);
-    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Ýstek Tipi: %d', [IstekTipi]);
-    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Ýstek Sýnýfý: %d', [IstekSinifi]);
+    SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'Yanýtlanmayan NetBios isteði:', []);
+    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, ' -> Sorgulanan Ad: %s', [NetBIOSAdi]);
+    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, ' -> Ýstek Tipi: %d', [IstekTipi]);
+    SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, ' -> Ýstek Sýnýfý: %d', [IstekSinifi]);
   end;
+end;
+
+// indy yardýmcý iþlev - veriye word deðer ekleme (veriler big-endian biçiminde)
+procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
+begin
+
+  PSayi1(AHedef)^ := ADeger;
+end;
+
+// indy yardýmcý iþlev - veriye word deðer ekleme (veriler big-endian biçiminde)
+procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
+begin
+
+  EkleByte(AHedef + 0, Byte(ADeger shr 8));
+  EkleByte(AHedef + 1, Byte(ADeger and $FF));
+end;
+
+// indy yardýmcý iþlev - veriye dword deðer ekleme (veriler big-endian biçiminde)
+procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
+begin
+
+  EkleByte(AHedef + 0, Byte(ADeger shr 24));
+  EkleByte(AHedef + 1, Byte(ADeger shr 16));
+  EkleByte(AHedef + 2, Byte(ADeger shr 8));
+  EkleByte(AHedef + 3, Byte(ADeger and $FF));
 end;
 
 end.

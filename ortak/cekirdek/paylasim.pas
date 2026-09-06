@@ -30,7 +30,7 @@ const
   SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.4.1 - R37';
   {$ELSE}
   SistemTipi: TSayi4 = SISTEM_TIPI_ISTEMCI;
-  SistemAdi: string = 'ELERA ÝS (Ýstemci)- 0.4.1 - R37';
+  SistemAdi: string = 'ELERA ÝS (Ýstemci) - 0.4.1 - R37';
   {$ENDIF}
   DerlemeTarihi: string = {$i %DATE%};
   FPCMimari: string = {$i %FPCTARGET%};
@@ -46,6 +46,11 @@ var
 
 type
   PObject = ^TObject;
+
+const
+  // uygulamalarýn tick çalýþma süreleri
+  DPL0_SUREMS = 2;
+  DPL3_SUREMS = 1;
 
 type
   { TODO - TIletisimTipi deðerleri ana tiplerdir. TProtokolTipi buna göre düzenlenecek }
@@ -72,7 +77,6 @@ type
     GrafikSatirByteUz: TSayi2;
     CekirdekBaslangicAdresi: TSayi4;
     CekirdekKodUzunluk: TSayi4;
-    Sil: TSayi4;
   end;
 
 const
@@ -209,13 +213,13 @@ type
   TIP4Adres = array[0..3] of TSayi1;
 
 type
-  TIPAdresIslev = record
-    IPAdres: TIP4Adres;
+  TIP4AdresIslev = record
+    IP4Adres: TIP4Adres;
     procedure Sifirla;
     function IPAdres0Mi: Boolean;
     function IPAdres255Mi: Boolean;
-    function IPAgAraligiIcinde(AAgIPAdresi: TIP4Adres): Boolean;
-    class operator = (const IP1, IP2: TIPAdresIslev): Boolean;
+    function IPAgAraligiIcinde(AIP4Adres: TIP4Adres): Boolean;
+    class operator = (const IP41, IP42: TIP4AdresIslev): Boolean;
   end;
 
 type
@@ -231,23 +235,8 @@ type
     class operator = (const MAC1, MAC2: TMACAdresIslev): Boolean;
   end;
 
-
-var
-  // GN_UZUNLUK deðiþkeni, görsel nesne yapýlarý içerisinde en uzun yapýlý nesne olan
-  // TPencere nesnesinin uzunluðu alýnarak;
-  // gn_islevler.Yukle iþlevi tarafýndan 16'nýn katlarý olarak belirlenmiþtir
-  GN_UZUNLUK: TISayi4;
-
-const
-  // GN_UZUNLUK uzunluðunda tanýmlanacak toplam görsel nesne sayýsý
-  USTSINIR_GORSELNESNE  = 256;
-  USTSINIR_MASAUSTU     = 4;
-
 var
   CekirdekBaslangicAdresi, CekirdekUzunlugu: TSayi4;
-
-  // görevin ana penceresinin ortalanmasýný saðlar
-  AnaPencereyiOrtala: Boolean = False;
 
 type
   PAygitSurucusu = ^TAygitSurucusu;
@@ -260,14 +249,6 @@ type
 type
   PYon = ^TYon;
   TYon = (yYatay, yDikey);
-
-type
-  PIslemciBilgisi = ^TIslemciBilgisi;
-  TIslemciBilgisi = record
-    Satici: string;                   // cpu id = 0
-    Ozellik1_EAX, Ozellik1_EDX,
-    Ozellik1_ECX: TSayi4;             // cpu id = 1
-  end;
 
 type
   PPOlay = ^POlay;
@@ -320,8 +301,8 @@ type
     YasamSuresi,
     Protokol: TSayi1;
     SaglamaToplami: TSayi2;
-    KaynakIP,
-    HedefIP: TIP4Adres;
+    KaynakIP4Adres,
+    HedefIP4Adres: TIP4Adres;
     Veri: Isaretci;
   end;
 
@@ -336,7 +317,7 @@ type
     TasinanVeriP: TSayi1;
     HopLimit: TSayi1;
     KaynakIP,
-    HedefIP: TIP6Adres;
+    HedefIP6: TIP6Adres;
     Veri: Isaretci;
   end;
 
@@ -344,8 +325,8 @@ type
   // tcp ve udp v6 kontrol toplamý için ek baþlýk yapýsý
   PEk6Baslik = ^TEk6Baslik;
   TEk6Baslik = packed record         // pseudo header
-    KaynakIP: TIP6Adres;
-    HedefIP: TIP6Adres;
+    KaynakIP6: TIP6Adres;
+    HedefIP6: TIP6Adres;
     Uzunluk: TSayi4;                  // udp veya tcp 'nin data ile beraber uzunluðu
     Sifir: array[0..2] of TSayi1;
     Protokol: TSayi1;
@@ -354,8 +335,8 @@ type
   // tcp ve udp v4 kontrol toplamý için ek baþlýk yapýsý
   PEk4Baslik = ^TEk4Baslik;
   TEk4Baslik = packed record         // pseudo header
-    KaynakIP: TIP4Adres;
-    HedefIP: TIP4Adres;
+    KaynakIP4Adres: TIP4Adres;
+    HedefIP4Adres: TIP4Adres;
     Sifir,
     Protokol: TSayi1;
     Uzunluk: TSayi2;                // udp veya tcp 'nin data ile beraber uzunluðu
@@ -366,35 +347,35 @@ const
   SURUCUTIP_DISK    = 2;
 
 const   // DST = dosya sistem tipi (FAT)
-  DST_BELIRSIZ      = Byte($00);
-  DST_FAT12         = Byte($01);
-  DST_FAT16         = Byte($04);
-  DST_FAT32         = Byte($0B);
-  DST_FAT32LBA      = Byte($0C);
-  DST_ELR1          = Byte($40);
+  DST_BELIRSIZ      = TSayi1($00);
+  DST_FAT12         = TSayi1($01);
+  DST_FAT16         = TSayi1($04);
+  DST_FAT32         = TSayi1($0B);
+  DST_FAT32LBA      = TSayi1($0C);
+  DST_ELR1          = TSayi1($40);
 
 type
   // 12 & 16 bitlik boot kayýt yapýsý
   PAcilisKayit1x = ^TAcilisKayit1x;
   TAcilisKayit1x = packed record
-    AYRLDI1: array[0..2] of Byte;             // 00..02
+    AYRLDI1: array[0..2] of TSayi1;           // 00..02
     OEMAdi: array[0..7] of Char;              // 03..10
     SektorBasinaByte: Word;                   // 11..12
-    ZincirBasinaSektor: Byte;                 // 13..13
+    KBS: TSayi1;                              // 13..13 - Küme Baþýna Sektör
     AyrilmisSektor1: Word;                    // 14..15
-    DATSayisi: Byte;                          // 16..16
+    DATSayisi: TSayi1;                        // 16..16
     AzamiDizinGirisi: Word;                   // 17..18
     ToplamSektorSayisi1x: Word;               // 19..20
-    MedyaTip: Byte;                           // 21..21
-    DATBasinaSektor: Word;                    // 22..23   - SADECE FAT12 / FAT16 için
+    MedyaTip: TSayi1;                         // 21..21
+    DATBasinaSektor: Word;                    // 22..23 - SADECE FAT12 / FAT16 için
     IzBasinaSektor: Word;                     // 24..25
     KafaSayisi: Word;                         // 26..27
     BolumOncesiSektorSayisi: TSayi4;          // 28..31
     ToplamSektorSayisi32: TSayi4;             // 32..35
 
-    AygitNo: Byte;                            // 36..36
-    AYRLDI2: Byte;                            // 37..37
-    GenisletilmisAcilisImzasi: Byte;          // 38..38
+    AygitNo: TSayi1;                          // 36..36
+    AYRLDI2: TSayi1;                          // 37..37
+    GenisletilmisAcilisImzasi: TSayi1;        // 38..38
     SeriNo: TSayi4;                           // 39..42
     Etiket: array[0..10] of Char;             // 43..53
     DosyaSistemEtiket: array[0..7] of Char;   // 54..61
@@ -405,15 +386,15 @@ type
   // 32 bitlik boot kayýt yapýsý
   PAcilisKayit32 = ^TAcilisKayit32;
   TAcilisKayit32 = packed record
-    AYRLDI1: array[0..2] of Byte;             // 00..02
+    AYRLDI1: array[0..2] of TSayi1;           // 00..02
     OEMAdi: array[0..7] of Char;              // 03..10
     SektorBasinaByte: Word;                   // 11..12
-    ZincirBasinaSektor: Byte;                 // 13..13
+    KBS: TSayi1;                              // 13..13  - Küme Baþýna Sektör
     AyrilmisSektor1: Word;                    // 14..15
-    DATSayisi: Byte;                          // 16..16
+    DATSayisi: TSayi1;                        // 16..16
     AzamiDizinGirisi: Word;                   // 17..18
     ToplamSektorSayisi1x: Word;               // 19..20
-    MedyaTip: Byte;                           // 21..21
+    MedyaTip: TSayi1;                         // 21..21
     DAT1xBasinaSektor: Word;                  // 22..23   - SADECE FAT12 / FAT16 için
     IzBasinaSektor: Word;                     // 24..25
     KafaSayisi: Word;                         // 26..27
@@ -426,10 +407,10 @@ type
     DizinGirisindekiZincirSayisi: TSayi4;     // 44..47
     DosyaSistemSektorNoBilgi: Word;           // 48..49
     AcilisSektorNo: Word;                     // 50..51
-    AyrilmisSektor2: array[0..11] of Byte;    // 52..63
-    AygitNo: Byte;                            // 64..64
-    Bayraklar2: Byte;                         // 65..65
-    Imza: Byte;                               // 66..66
+    AyrilmisSektor2: array[0..11] of TSayi1;  // 52..63
+    AygitNo: TSayi1;                          // 64..64
+    Bayraklar2: TSayi1;                       // 65..65
+    Imza: TSayi1;                             // 66..66
     EtiketKimlik: array[0..3] of Char;        // 67..70
     Etiket: array[0..10] of Char;             // 71..81
     DosyaSistemEtiket: array[0..7] of Char;   // 82..89
@@ -518,19 +499,12 @@ type
   TDosyaAyirmaTablosu = record
     IlkSektor: TSayi2;
     ToplamSektor: TSayi2;
-    ZincirBasinaSektor: TSayi1;
-  end;
-
-type
-  PIDEDisk = ^TIDEDisk;
-  TIDEDisk = record
-    AnaPort, KontrolPort: TSayi2;
-    Kanal: TSayi1;
+    KBS: TSayi1;                // Küme Baþýma Sektör
   end;
 
 type
   TSektorIslev = function(AFizikselDepolama: Isaretci; AIlkSektor,
-    ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4 of object;
 
 // sistem dosya arama yapýsý
 type
@@ -557,46 +531,15 @@ type
   end;
 
 type
-  TKesmeCagrisi = function(IslevNo: TSayi4; Degiskenler: Isaretci): TISayi4;
+  TKesmeCagrisi = function(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 type
   PCizgiTipi = ^TCizgiTipi;
   TCizgiTipi = (ctDuz, ctNokta);
 
 type
-  PEkranKartBilgisi = ^TEkranKartBilgisi;
-  TEkranKartBilgisi = record
-    BellekUzunlugu: TSayi2;
-    EkranMod: TSayi2;
-    YatayCozunurluk, DikeyCozunurluk: TISayi4;
-    BellekAdresi: TSayi4;
-    PixelBasinaBitSayisi: TSayi1;
-    NoktaBasinaByteSayisi: TSayi1;
-    SatirdakiByteSayisi: TSayi2;
-  end;
-
-type
   TIslev = procedure;
-
-type
-  PTCPPaket = ^TTCPPaket;
-  TTCPPaket = packed record
-    {SrcIpAddr,
-    DestIpAddr: TIPAdres;
-    Zero: Byte;
-    Protocol: Byte;
-    Length: Word;               // tcp header + data}
-    YerelPort,
-    UzakPort: TSayi2;
-    SiraNo,                     // sequence number
-    OnayNo: TSayi4;
-    BaslikU: TSayi1;            // 11111000 = 111111 = Data Offset, 000 = Reserved
-    Bayrak: TSayi1;
-    Pencere: TSayi2;
-    SaglamaToplami,
-    AcilIsaretci: TSayi2;       // urgent pointer
-    Secenekler: Isaretci;
-  end;
+  TOIslev = procedure of object;
 
 type
   PKonum = ^TKonum;
@@ -642,14 +585,6 @@ type
   TDugmeDurumu = (ddNormal, ddBasili);
   TFareImlecTipi = (fitOK, fitGiris, fitEl, fitBoyutKBGD, fitBoyutKG,
     fitIslem, fitBekle, fitYasak, fitBoyutBD, fitBoyutKDGB, fitBoyutTum);
-
-var
-  SistemTusDurumuKontrolSol: TTusDurum;
-  SistemTusDurumuKontrolSag: TTusDurum;
-  SistemTusDurumuAltSol    : TTusDurum;
-  SistemTusDurumuAltSag    : TTusDurum;
-  SistemTusDurumuDegisimSol: TTusDurum;
-  SistemTusDurumuDegisimSag: TTusDurum;
 
 const
   // çekirdeðin ürettiði genel olaylar - çekirdek olay (CO)
@@ -747,33 +682,10 @@ type
   end;
 
 var
-  AgYuklendi: Boolean = False;
-
-  SistemSayaci, CagriSayaci, GrafikSayaci: TSayi4;
-  ZamanlayiciSayaci: TSayi4 = 0;
-  // görev deðiþiminin yapýlýp yapýlmamasý deðiþkeni.
-  // 0 = görev deðiþtirme, 1 = görev deðiþtir
-  GorevDegisimBayragi: TSayi4 = 0;
-  // çoklu görev iþleminin baþlayýp baþlamadýðýný gösteren deðiþken
-  // 0 = baþlamadý, 1 = baþladý
-  CokluGorevBasladi: TSayi4 = 0;
-
-  GecerliFareGostegeTipi: TFareImlecTipi;
-
-  // að - gelen paket sayýlarý
-  ICMP4PaketSayisi: TSayi4 = 0;
-  ICMP6PaketSayisi: TSayi4 = 0;
-  TCP4PaketSayisi: TSayi4 = 0;
-  TCP6PaketSayisi: TSayi4 = 0;
-  UDPPaketSayisi: TSayi4 = 0;
-  GAEPaketSayisi: TSayi4 = 0;     // GözArdýEdilen paket sayýsý
-
   // sistem açýlýþýnda çekirdeðin yüklendiði tarih + saat
   // bilgi: bu deðiþken yapýsý, çekirdek dosyasýnýn (cekirdek.bin) sistemin yükleme
   // sonrasýnda deðiþimini takip içindir
   CekirdekYuklemeTS: TTarihSaat;
-
-  BellekDegeriniGoster: Boolean = False;
 
   MAC333300000001: TMACAdres = ($33, $33, $00, $00, $00, $01);
   MAC333300000002: TMACAdres = ($33, $33, $00, $00, $00, $02);
@@ -788,7 +700,7 @@ const
   IP6AdresFF02_0102: TIP6Adres = (
     $ff, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $02);
 
-  YayinIP6Adresi: TIP6Adres = (
+  YayinIP6Adres: TIP6Adres = (
     $ff, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $ff, $cd, $ef, $01);
 
 var
@@ -813,13 +725,13 @@ type
 
 type
   // program için (API) görev yapýsý
-  PGorevKayit = ^TGorevKayit;
-  TGorevKayit = record
+  PGorevKayit3 = ^TGorevKayit3;
+  TGorevKayit3 = record
     GorevDurum: TGorevDurum;            // görev durumu
     GorevKimlik: TKimlik;               // görev kimliði - sýra numarasý
     GorevSayaci: TSayi4;                // görevin kaç kez çalýþtýðý
-    BellekBaslangicAdresi: TSayi4;      // görevin yerleþtirildiði bellek adresi
-    BellekUzunlugu: TSayi4;             // görev bellek uzunluðu + yýðýn bellek uzunluðu
+    BellekBasAdresi: TSayi4;            // görevin yerleþtirildiði bellek adresi
+    BellekUz: TSayi4;                   // görev bellek uzunluðu + yýðýn bellek uzunluðu
     OlaySayisi: TSayi4;                 // görev için iþlenmeyi bekleyen olay sayýsý
     DosyaAdi: string;                   // programýn yüklendiði dosya adý
   end;
@@ -855,10 +767,6 @@ type
     B, G, R: TSayi1;
   end;
 
-var
-  // ip adresinin otomatik alýnýp alýnmamasý durumu bu deðiþkenler kontrol edilmektedir
-  IPAdresiniOtomatikAl: Boolean;
-
 type
   PAgBilgisi3 = ^TAgBilgisi3;
   TAgBilgisi3 = record
@@ -875,7 +783,7 @@ var
 
   // ethernet kart mac adresi
   { TODO - buradan ilgili yere taþýnacak }
-  GMacAdres: TMACAdres = ($00, $00, $00, $00, $00, $00);
+  //GMacAdres: TMACAdres = ($00, $00, $00, $00, $00, $00);
 
   // sistemin çalýþtýðý bilgisayarýn adý - bu bilgisayarýn adý
   GBilgisayarAdi: string = 'elera';         // netbios için GBilgisayarAdi + GAlanAdi uzunluðu 15 byte'ý geçmemeli
@@ -894,13 +802,9 @@ var
 
   SistemUyariBellekAdresi: Isaretci;
 
-function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
   ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;
 function ProtokolTipAdi(AProtokolTipi: TProtokolTipi): string;
-procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
-procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
-procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
 function KritikBolgeyeGir(var ABellek: TSayi4): Boolean;
 procedure KritikBolgedenCik(var ABellek: TSayi4);
 function TarihSaatBilgisiAl: string;
@@ -908,17 +812,6 @@ function TarihSaatBilgisiAl: string;
 implementation
 
 uses cmos, donusum;
-
-function NoktaAlanIcindeMi(ANokta: TKonum; AAlan: TAlan): Boolean;
-begin
-
-  Result := False;
-
-  if(ANokta.Sol >= AAlan.Sol) and (ANokta.Sol <= AAlan.Sag) and
-    (ANokta.Ust >= AAlan.Ust) and (ANokta.Ust <= AAlan.Alt) then
-
-  Result := True;
-end;
 
 {==============================================================================
   verilerin toplam saðlama iþlemini gerçekleþtirir
@@ -1037,33 +930,6 @@ begin
   end;
 end;
 
-// indy yardýmcý iþlev - veriye word deðer ekleme (veriler big-endian biçiminde)
-procedure EkleByte(AHedef: Isaretci; const ADeger: TSayi1);
-begin
-
-  PSayi1(AHedef)^ := ADeger;
-end;
-
-// indy yardýmcý iþlev - veriye word deðer ekleme (veriler big-endian biçiminde)
-procedure Ekle2Byte(AHedef: Isaretci; const ADeger: TSayi2);
-begin
-
-  EkleByte(AHedef + 0, Byte(ADeger shr 8));
-  EkleByte(AHedef + 1, Byte(ADeger and $FF));
-end;
-
-// indy yardýmcý iþlev - veriye dword deðer ekleme (veriler big-endian biçiminde)
-procedure Ekle4Byte(AHedef: Isaretci; const ADeger: TSayi4);
-begin
-
-  EkleByte(AHedef + 0, Byte(ADeger shr 24));
-  EkleByte(AHedef + 1, Byte(ADeger shr 16));
-  EkleByte(AHedef + 2, Byte(ADeger shr 8));
-  EkleByte(AHedef + 3, Byte(ADeger and $FF));
-end;
-
-{ TMACAdresIslev }
-
 class operator TMACAdresIslev.=(const MAC1, MAC2: TMACAdresIslev): Boolean;
 var
   i: TSayi4;
@@ -1114,15 +980,15 @@ begin
   Result := True;
 end;
 
-procedure TIPAdresIslev.Sifirla;
+procedure TIP4AdresIslev.Sifirla;
 var
   i: TSayi4;
 begin
 
-  for i := 0 to 3 do IPAdres[i] := 0;
+  for i := 0 to 3 do IP4Adres[i] := 0;
 end;
 
-function TIPAdresIslev.IPAdres0Mi: Boolean;
+function TIP4AdresIslev.IPAdres0Mi: Boolean;
 var
   i: TSayi4;
 begin
@@ -1130,13 +996,13 @@ begin
   for i := 0 to 3 do
   begin
 
-    if(IPAdres[i] <> 0) then Exit(False);
+    if(IP4Adres[i] <> 0) then Exit(False);
   end;
 
   Result := True;
 end;
 
-function TIPAdresIslev.IPAdres255Mi: Boolean;
+function TIP4AdresIslev.IPAdres255Mi: Boolean;
 var
   i: TSayi4;
 begin
@@ -1144,7 +1010,7 @@ begin
   for i := 0 to 3 do
   begin
 
-    if(IPAdres[i] <> 255) then Exit(False);
+    if(IP4Adres[i] <> 255) then Exit(False);
   end;
 
   Result := True;
@@ -1155,7 +1021,7 @@ end;
 // istenen ip adresi: 192.168.1.110
 // dhcp ip adresi   : 192.168.1.1
 // ilk 3 byte deðerinin ayný olmasý ip adresinin ayný aðda olduðunu gösterir
-function TIPAdresIslev.IPAgAraligiIcinde(AAgIPAdresi: TIP4Adres): Boolean;
+function TIP4AdresIslev.IPAgAraligiIcinde(AIP4Adres: TIP4Adres): Boolean;
 var
   i: TSayi4;
 begin
@@ -1163,14 +1029,14 @@ begin
   for i := 0 to 2 do
   begin
 
-    if(IPAdres[i] <> AAgIPAdresi[i]) then Exit(False);
+    if(IP4Adres[i] <> AIP4Adres[i]) then Exit(False);
   end;
 
   Result := True;
 end;
 
 
-class operator TIPAdresIslev.=(const IP1, IP2: TIPAdresIslev): Boolean;
+class operator TIP4AdresIslev.=(const IP41, IP42: TIP4AdresIslev): Boolean;
 var
   i: TSayi4;
 begin
@@ -1178,7 +1044,7 @@ begin
   for i := 0 to 3 do
   begin
 
-    if(IP1.IPAdres[i] <> IP2.IPAdres[i]) then Exit(False);
+    if(IP41.IP4Adres[i] <> IP42.IP4Adres[i]) then Exit(False);
   end;
 
   Result := True;

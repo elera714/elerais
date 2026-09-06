@@ -277,8 +277,9 @@ const
     (SaticiKimlik: $80ee; AygitKimlik: $beef; AygitAdi: 'VirtualBox Graphics Adapter'));
 
 var
-  ToplamPCIAygitSayisi, AygitSiraNo,
-  TemelAdres, Deger32, i, k: TSayi4;
+  ToplamPCIAygitSayisi, TemelAdres,
+  Deger32, i, k: TSayi4;
+  AygitSiraNo: TISayi4;
   PCIAygitBilgisi: TPCIAygitBilgisi;
   Deger8: TSayi1;
   SinifKod, SaticiKimlik, AygitAdi: string;

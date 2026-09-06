@@ -28,6 +28,8 @@ type
     procedure DegerEkle(ADeger: string; AYaziRengi: TRenk);
     procedure Temizle;
     function SeciliYaziAl: string;
+    function SeciliSiraNoAl: TISayi4;
+    procedure SeciliSiraNoBelirle(ASiraNo: TISayi4);
     property Kimlik: TKimlik read FKimlik;
   end;
 
@@ -40,6 +42,8 @@ procedure _DegerListesiBaslikBelirle(AKimlik: TKimlik; ABaslik1, ABaslik2: strin
 procedure _DegerListesiDegerEkle(AKimlik: TKimlik; ADeger: string; AYaziRengi: TRenk); assembler;
 procedure _DegerListesiTemizle(AKimlik: TKimlik); assembler;
 procedure _DegerListesiSeciliYaziAl(AKimlik: TKimlik; AHedefBellek: Isaretci); assembler;
+function _DegerListesiSeciliSiraNoAl(AKimlik: TKimlik): TISayi4; assembler;
+procedure _DegerListesiSeciliSiraNoBelirle(AKimlik: TKimlik; ASiraNo: TISayi4); assembler;
 
 implementation
 
@@ -88,6 +92,18 @@ begin
 
   _DegerListesiSeciliYaziAl(FKimlik, Isaretci(@s[0]));
   Result := s;
+end;
+
+function TDegerListesi.SeciliSiraNoAl: TISayi4;
+begin
+
+  Result := _DegerListesiSeciliSiraNoAl(FKimlik);
+end;
+
+procedure TDegerListesi.SeciliSiraNoBelirle(ASiraNo: TISayi4);
+begin
+
+  _DegerListesiSeciliSiraNoBelirle(FKimlik, ASiraNo);
 end;
 
 function _DegerListesiOlustur(AAtaKimlik: TKimlik; ASol, AUst, AGenislik,
@@ -155,6 +171,23 @@ asm
   push  DWORD AHedefBellek
   push  DWORD AKimlik
   mov   eax,DEGERLISTESI_AL_SECILIYAZI
+  int   $34
+  add   esp,8
+end;
+
+function _DegerListesiSeciliSiraNoAl(AKimlik: TKimlik): TISayi4;
+asm
+  push  DWORD AKimlik
+  mov   eax,DEGERLISTESI_AL_SECILISN
+  int   $34
+  add   esp,4
+end;
+
+procedure _DegerListesiSeciliSiraNoBelirle(AKimlik: TKimlik; ASiraNo: TISayi4);
+asm
+  push  DWORD ASiraNo
+  push  DWORD AKimlik
+  mov   eax,DEGERLISTESI_YAZ_SECILISN
   int   $34
   add   esp,8
 end;

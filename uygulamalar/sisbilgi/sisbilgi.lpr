@@ -6,7 +6,7 @@
   Program Adý: sisbilgi.lpr
   Program Ýþlevi: sistem hakkýnda bilgi verir
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}

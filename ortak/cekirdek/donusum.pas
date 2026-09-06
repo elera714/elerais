@@ -6,7 +6,7 @@
   Dosya Adı: donusum.pas
   Dosya İşlevi: değer dönüşüm (convert) işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 06/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -25,10 +25,10 @@ function DateToStr(ATarih: TTarih): string;
 function StrToHex(ADeger: string): TSayi4;
 function IntToStr(ADeger: TISayi4): string;
 function MAC_KarakterKatari(AMACAdres: TMACAdres): string;
-function IP_KarakterKatari4(AIPAdres: TIP4Adres): string;
-function IP_KarakterKatari6(AIPAdres: TIP6Adres2): string;
-function StrToIP6(AIPAdres: string): TIP6Adres;
-function StrToIP4(AIPAdres: string): TIP4Adres;
+function IP_KarakterKatari4(AIP4Adres: TIP4Adres): string;
+function IP_KarakterKatari6(AIP6Adres: TIP6Adres2): string;
+function StrToIP6(AIP6Adres: string): TIP6Adres;
+function StrToIP4(AIP4Adres: string): TIP4Adres;
 function LowerCase(AKarakter: Char): Char;
 function UpperCase(AKarakter: Char): Char;
 function UpperCase(ADeger: string): string;
@@ -249,7 +249,7 @@ end;
 {==============================================================================
   IP v4 adresini karakter katarına dönüştürür
  ==============================================================================}
-function IP_KarakterKatari4(AIPAdres: TIP4Adres): string;
+function IP_KarakterKatari4(AIP4Adres: TIP4Adres): string;
 var
   Toplam, i: TSayi4;
   Deger: string[3];
@@ -262,7 +262,7 @@ begin
   for i := 0 to 3 do
   begin
 
-    Deger := IntToStr(AIPAdres[i]);
+    Deger := IntToStr(AIP4Adres[i]);
     Toplam := Toplam + Length(Deger);
     Result := Result + Deger;
 
@@ -279,7 +279,7 @@ end;
 {==============================================================================
   IP v6 adresini karakter katarına dönüştürür
  ==============================================================================}
-function IP_KarakterKatari6(AIPAdres: TIP6Adres2): string;
+function IP_KarakterKatari6(AIP6Adres: TIP6Adres2): string;
 var
   i: TSayi4;
   Deger: string[4];
@@ -291,7 +291,7 @@ begin
   for i := 0 to 7 do
   begin
 
-    Deger := HexStr(ntohs(AIPAdres[i]), 4);
+    Deger := HexStr(ntohs(AIP6Adres[i]), 4);
     Result := Result + Deger;
 
     if(i < 7) then Result := Result + ':'
@@ -303,7 +303,7 @@ end;
 {==============================================================================
   karakter katar değerini IP v6 adres değerine dönüştürür
  ==============================================================================}
-function StrToIP6(AIPAdres: string): TIP6Adres;
+function StrToIP6(AIP6Adres: string): TIP6Adres;
 begin
 
   { TODO - düzenle }
@@ -313,9 +313,9 @@ end;
 {==============================================================================
   karakter katar değerini IP v4 adres değerine dönüştürür
  ==============================================================================}
-function StrToIP4(AIPAdres: string): TIP4Adres;
+function StrToIP4(AIP4Adres: string): TIP4Adres;
 var
-  IPAdres, s: string;
+  IP4Adres, s: string;
   NoktaSayisi, SiraNo,
   Sonuc, i: TSayi1;
   s2: TSayi2;
@@ -325,16 +325,16 @@ label
 begin
 
   // ip adresinin sağ / sol taraflarındaki boşlukları yok et
-  IPAdres := Trim(AIPAdres);
+  IP4Adres := Trim(AIP4Adres);
   NoktaSayisi := 0;
   SiraNo := 0;
   s := '';
 
   // ip adresini çevir
-  for i := 1 to Length(IPAdres) do
+  for i := 1 to Length(IP4Adres) do
   begin
 
-    Deger := IPAdres[i];
+    Deger := IP4Adres[i];
     if(Deger = '.') then
     begin
 
@@ -355,7 +355,7 @@ begin
     begin
 
       if(Deger in ['0'..'9']) then
-        s := s + IPAdres[i]
+        s := s + IP4Adres[i]
       else Goto Hata;
     end;
   end;

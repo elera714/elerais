@@ -3,25 +3,25 @@
   Kodlayan: Fatih KILIÇ
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
-  Dosya Adý: temelgorselnesne.pas
-  Dosya Ýþlevi: temel görsel nesne yapýsýný içerir
+  Dosya Adý: anagorselnesne.pas
+  Dosya Ýþlevi: görsel nesne yapýsýnýn ortak / temel deðiþkenlerini içerir
 
-  Güncelleme Tarihi: 26/05/2026
+  Güncelleme Tarihi: 30/08/2026
 
  ==============================================================================}
 {$mode objfpc}
-unit temelgorselnesne;
+unit anagorselnesne;
 
 interface
 
 uses paylasim;
 
 type
-  PTemelGorselNesne = ^TTemelGorselNesne;
-  TTemelGorselNesne = object
+  PAnaGorselNesne = ^TAnaGorselNesne;
+  TAnaGorselNesne = class
   private
     // nesnenin sahibi olan görev / program
-    FGorevKimlik: TKimlik;
+    FGrvKimlik: TKimlik;
     // nesnenin tipi
     FNesneTipi: TGNTip;
     // nesnenin adý
@@ -35,13 +35,14 @@ type
     //        kavye tuþlarýna basýldýðýnda olaylar bu nesneye gider
     FOdaklanilabilir: Boolean;
     FOdaklanildi: Boolean;
+    function NesneAdiAl(AGNTip: TGNTip): string;
   public
     // nesne kimliði. kimlik deðeri
     Kimlik: TKimlik;
     // nesnenin dizi içerisindeki sýra numarasý
     FSiraNo: TSayi4;
     // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
-    FareImlecTipi: TFareImlecTipi;
+    FareImlec: TFareImlecTipi;
     // nesnenin alt bileþen nesne sayýsý (pencerenin kontrol düðmeleri vb)
     // bilgi: her nesne kendi bileþenini kendisi kontrol edecek þekilde yapýlandýracak
     FAltBilesenSayisi: TSayi4;
@@ -71,9 +72,9 @@ type
     FHiza: THiza;
     // nesneye yazýlacak yazýnýn yatay + dikey hizalanmasý
     FYaziHiza: TYaziHiza;
-    // nesnenin o anda çizilip çizilmediðini belirten deðiþken.
+    // nesnenin yeniden çizilip çizilmeyeceðini belirten deðiþken.
     // bilgi: pencere çiziminin kontrolü için eklendi
-    FCiziliyor: Boolean;
+    FYenidenCiz: Boolean;
 
     // aþaðýdaki deðiþkenler görsel nesnelerin genel kullaným deðiþkenleridir
     FDeger1, FDeger2, FDeger3: TSayi4;
@@ -83,12 +84,13 @@ type
     procedure NesneTipiYaz(AGNTip: TGNTip);
     procedure BaslikYaz(ABaslik: string);
   public
-    procedure YokEt(AKimlik: TKimlik); virtual; abstract;
+    constructor Create; virtual;
+    destructor Destroy; override;
     property AltBilesenSayisi: TSayi4 read FAltBilesenSayisi write FAltBilesenSayisi;
     property AltNesneSayisi: TSayi4 read FAltNesneSayisi write FAltNesneSayisi;
     property AltNesneBellekAdresi: Isaretci read FAltNesneBellekAdresi write FAltNesneBellekAdresi;
   published
-    property GorevKimlik: TKimlik read FGorevKimlik write FGorevKimlik;
+    property GrvKimlik: TKimlik read FGrvKimlik write FGrvKimlik;
     property NesneTipi: TGNTip read FNesneTipi write NesneTipiYaz;
     property NesneAdi: string read FNesneAdi;
     property Baslik: string read FBaslik write BaslikYaz;
@@ -126,17 +128,37 @@ var
   SayfaKontrolSayac: TISayi4 = 0;
   SecimDugmesiSayac: TISayi4 = 0;
 
-function NesneAdiAl(AGNTip: TGNTip): string;
-
 implementation
 
-uses donusum, sistemmesaj;
+uses donusum;
+
+{==============================================================================
+  görsel ana nesneyi oluþturur
+ ==============================================================================}
+constructor TAnaGorselNesne.Create;
+begin
+
+  Baslik := '';
+
+  FYenidenCiz := False;
+end;
+
+{==============================================================================
+  görsel ana nesneyi yok eder
+ ==============================================================================}
+destructor TAnaGorselNesne.Destroy;
+begin
+
+  inherited;
+end;
 
 {==============================================================================
   görsel nesneler için isim üretir
  ==============================================================================}
-function NesneAdiAl(AGNTip: TGNTip): string;
+function TAnaGorselNesne.NesneAdiAl(AGNTip: TGNTip): string;
 begin
+
+  Result := '?';
 
   // nesne sýralamasý alfabetiktir
 
@@ -279,7 +301,15 @@ begin
   end;
 end;
 
-procedure TTemelGorselNesne.NesneTipiYaz(AGNTip: TGNTip);
+procedure TAnaGorselNesne.BaslikYaz(ABaslik: string);
+begin
+
+  if(ABaslik = FBaslik) then Exit;
+
+  FBaslik := ABaslik;
+end;
+
+procedure TAnaGorselNesne.NesneTipiYaz(AGNTip: TGNTip);
 begin
 
   if(AGNTip = FNesneTipi) then Exit;
@@ -289,14 +319,6 @@ begin
   FNesneAdi := NesneAdiAl(AGNTip);
 
   FBaslik := FNesneAdi;
-end;
-
-procedure TTemelGorselNesne.BaslikYaz(ABaslik: string);
-begin
-
-  if(ABaslik = FBaslik) then Exit;
-
-  FBaslik := ABaslik;
 end;
 
 end.

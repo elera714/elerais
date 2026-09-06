@@ -4,7 +4,7 @@
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
   Dosya Adý: ip6.pas
-  Dosya Ýþlevi: ip v6 paket yönetim iþlevlerini içerir
+  Dosya Ýþlevi: ip tutanak (protokol) v6 yönetim iþlevlerini içerir
 
   Güncelleme Tarihi: 10/06/2026
 
@@ -14,24 +14,58 @@ unit ip6;
 
 interface
 
-uses paylasim, ag, sistemmesaj;
+uses paylasim, sistemmesaj, ip;
 
 const
   IP6_BASLIK_U = 40;
 
-procedure IP6PaketleriniIsle(AEthernetPaket: PEthernetPaket; AIPPaketUzunluk: TISayi4);
-procedure IP6PaketGonder(AHedefMACAdres: TMACAdres; AKaynakIP, AHedefIP: TIP6Adres;
-  AProtokolTipi: TProtokolTipi; AHopSiniri: TSayi4; AVeri: Isaretci; AVeriUzunlugu: TSayi2);
+type
+  TIP6 = class(TIP)
+  private
+    FKaynakIP6Adres, FHedefIP6Adres: TIP6Adres;
+  public
+    constructor Create(ABaglanti: TObject); override;
+    procedure Ozellestir(AKaynakIP6Adres, AHedefIP6Adres: TIP6Adres);
+    procedure Gonder(AHedefMACAdres: TMACAdres; AVeri: Isaretci; AVeriU: TSayi4); override;
+    procedure PaketleVeGonder(AHedefMACAdres: TMACAdres; AProtokolTipi: TProtokolTipi;
+      AHopSiniri: TSayi4; AVeri: Isaretci; AVeriUzunlugu: TSayi4);
+    procedure VerileriIsle(AEthernetPaket: PEthernetPaket; AIPPaketUzunluk: TISayi4);
+  end;
 
 implementation
 
-uses donusum, icmp6, udp, tcp, islevler, genel;
+uses donusum, icmp6, udp, tcp, islevler, ag, baglantilar;
 
 var
   GIPTanimlayici: TSayi2 = $BABA;
 
+{==============================================================================
+  ip tutanak (protokol) ana yükleme iþlevlerini içerir
+ ==============================================================================}
+constructor TIP6.Create(ABaglanti: TObject);
+begin
+
+  inherited Create(ABaglanti);
+end;
+
+{==============================================================================
+  sýnýf bilgilerini özelleþtirir
+ ==============================================================================}
+procedure TIP6.Ozellestir(AKaynakIP6Adres, AHedefIP6Adres: TIP6Adres);
+begin
+
+  FKaynakIP6Adres := AKaynakIP6Adres;
+  FHedefIP6Adres := AHedefIP6Adres;
+end;
+
+procedure TIP6.Gonder(AHedefMACAdres: TMACAdres; AVeri: Isaretci; AVeriU: TSayi4);
+begin
+
+  TBaglanti(FBaglanti).FEthernet.Gonder(AHedefMACAdres, ptIP6, AVeri, AVeriU);
+end;
+
 // sisteme gelen tüm ip paketlerini iþler
-procedure IP6PaketleriniIsle(AEthernetPaket: PEthernetPaket; AIPPaketUzunluk: TISayi4);
+procedure TIP6.VerileriIsle(AEthernetPaket: PEthernetPaket; AIPPaketUzunluk: TISayi4);
 var
   IPPaket: PIP6Paket;
   i: TSayi2;
@@ -65,25 +99,25 @@ begin
     begin   }
 
   // yönlendirici talebi - router solicitation
-  if(IP6Karsilastir(IPPaket^.HedefIP, IP6AdresFF02_0002)) then
+  if(IP6Karsilastir(IPPaket^.HedefIP6, IP6AdresFF02_0002)) then
   begin
 
-    ICMPPaketleriniIsle(AEthernetPaket);
-    Inc(ICMP6PaketSayisi);
+    GICMP6.VerileriIsle(AEthernetPaket);
+    Inc(GAg.FICMP6PaketSayisi);
   end
-  else if(IP6Karsilastir(IPPaket^.HedefIP, IP6AdresFF02_0102)) then
+  else if(IP6Karsilastir(IPPaket^.HedefIP6, IP6AdresFF02_0102)) then
   begin
 
-    UDPPaketleriniIsle(AEthernetPaket);
-    Inc(UDPPaketSayisi);
+    GUDP.VerileriIsle(AEthernetPaket);
+    Inc(GAg.FUDPPaketSayisi);
   end
-  else if(IP6Karsilastir(IPPaket^.HedefIP, YayinIP6Adresi)) then
+  else if(IP6Karsilastir(IPPaket^.HedefIP6, YayinIP6Adres)) then
   begin
 
     { TODO - çalýþmýyor }
-    SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Son asama2', []);
-    ICMPPaketleriniIsle(AEthernetPaket);
-    Inc(ICMP6PaketSayisi);
+    //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Son asama2', []);
+    GICMP6.VerileriIsle(AEthernetPaket);
+    Inc(GAg.FICMP6PaketSayisi);
   end
   else
   begin
@@ -92,23 +126,22 @@ begin
     if(IPPaket^.TasinanVeriP = PROTOKOL_ICMP6) then
     begin
 
-      ICMPPaketleriniIsle(AEthernetPaket);
-      Inc(ICMP6PaketSayisi);
+      GICMP6.VerileriIsle(AEthernetPaket);
+      Inc(GAg.FICMP6PaketSayisi);
     end
     // tcp protokolü
     else if(IPPaket^.TasinanVeriP = PROTOKOL_TCP) then
     begin
 
-      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'DAT', []);
-      TCPPaketleriniIsle(AEthernetPaket);
-      Inc(TCP6PaketSayisi);
+      GTCP.VerileriIsle(AEthernetPaket);
+      Inc(GAg.FTCP6PaketSayisi);
     end
     // udp protokolü
     else if(IPPaket^.TasinanVeriP = PROTOKOL_UDP) then
     begin
 
-      UDPPaketleriniIsle(AEthernetPaket);
-      Inc(UDPPaketSayisi);
+      GUDP.VerileriIsle(AEthernetPaket);
+      Inc(GAg.FUDPPaketSayisi);
     end
     else
     begin
@@ -122,8 +155,8 @@ begin
 end;
 
 // ip v6 protokolü üzerinden paket gönderim iþlevlerini gerçekleþtirir
-procedure IP6PaketGonder(AHedefMACAdres: TMACAdres; AKaynakIP, AHedefIP: TIP6Adres;
-  AProtokolTipi: TProtokolTipi; AHopSiniri: TSayi4; AVeri: Isaretci; AVeriUzunlugu: TSayi2);
+procedure TIP6.PaketleVeGonder(AHedefMACAdres: TMACAdres; AProtokolTipi: TProtokolTipi;
+  AHopSiniri: TSayi4; AVeri: Isaretci; AVeriUzunlugu: TSayi4);
 var
   IPPaket: PIP6Paket;
   SaglamaToplami: TSayi2;
@@ -144,16 +177,16 @@ begin
   end;
 
   IPPaket^.HopLimit := AHopSiniri;
-  IPPaket^.KaynakIP := AKaynakIP;
-  IPPaket^.HedefIP := AHedefIP;
+  IPPaket^.KaynakIP := FKaynakIP6Adres;
+  IPPaket^.HedefIP6 := FHedefIP6Adres;
 
   //Inc(GIPTanimlayici);
 
   v := @IPPaket^.Veri;
   Tasi2(AVeri, v, AVeriUzunlugu);
 
-  // paketi donanýma (ethernet) gönder
-  GAg0.AgKartinaVeriGonder(AHedefMACAdres, ptIP6, IPPaket, AVeriUzunlugu + IP6_BASLIK_U);
+  // paketi ip katmanýna gönder
+  Gonder(AHedefMACAdres, IPPaket, AVeriUzunlugu + IP6_BASLIK_U);
 
   FreeMem(IPPaket, AVeriUzunlugu + IP6_BASLIK_U);
 end;

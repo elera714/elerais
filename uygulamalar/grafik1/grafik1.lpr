@@ -6,7 +6,7 @@
   Program Adı: grafik1.lpr
   Program İşlevi: grafik test programı
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 10/08/2026
 
  ==============================================================================}
 {$mode objfpc}

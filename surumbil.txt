@@ -1,8 +1,12 @@
 *******************************************************************************
   Sürüm: 0.4.2 (sunucu / istemci) - 00.00.0000 (R38) - Beta
 *******************************************************************************
+  + görsel nesne object yapıları class yapılarına dönüştürüldü
+  + thread nesnesi oluşturuldu. çekirdek içerisindeki modüler yapılar thread nesnesine dönüştürüldü
+  + çekirdek frekansı 100mhz'de çalışacak şekilde yeniden tasarlandı
 
-  + object yapıları class yapılarına dönüştürülüyor
+  - ağ protokolleri sınıf (class) çalışmaları kapsamında yeniden tasarlanıyor
+  - çoklu ethernet kart desteği çalışmaları başladı
 
 *******************************************************************************
   Sürüm: 0.4.1 (sunucu / istemci) - 24.07.2026 (R37) - Beta

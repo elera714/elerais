@@ -14,32 +14,39 @@ unit fat32;
 
 interface
 
-uses paylasim, islevler, gorev, dosya, fdepolama, mdepolama;
+uses paylasim, islevler, gorev, mdepolama, dosyalar, dosya;
+
+type
+  TFAT32 = class(TDosya)
+  public
+    constructor Create(AKimlikNo: TISayi4; FDST: TSayi4); override;
+
+    procedure Append; override;
+    function CreateDir: Boolean; override;
+    procedure Read(AHedefBellek: Isaretci); override;
+    procedure ReWrite; override;
+  end;
 
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
   var ADosyaArama: TDosyaArama): TISayi4;
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
 procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
-procedure ReWrite(ADosyaKimlik: TKimlik);
-procedure Append(ADosyaKimlik: TKimlik);
 procedure Reset(ADosyaKimlik: TKimlik);
 procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
 procedure WriteLn(ADosyaKimlik: TKimlik; AVeri: string);
-procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
 function IOResult: TISayi4;
 function FileSize(ADosyaKimlik: TKimlik): TISayi8;
 function EOF(ADosyaKimlik: TKimlik): Boolean;
 procedure CloseFile(ADosyaKimlik: TKimlik);
-function CreateDir(ADosyaKimlik: TKimlik): Boolean;
 function RemoveDir(ADosyaKimlik: TKimlik): Boolean;
 function DeleteFile(ADosyaKimlik: TKimlik): Boolean;
 
 function BirSonrakiKumeyiAl(ADosyaKimlik: TKimlik; var AKumeNo: TISayi4): Boolean;
 function KokGirdisiListele32(AAranacakDeger: string; var ADosyaArama: TDosyaArama): TSayi4;
-function KokGirdisindeAra32(var ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TSayi4;
+function KokGirdisindeAra32(ADosyaIslem: PDosya; AAranacakDeger: string): TSayi4;
 function DizinGirdisiListele32(AAranacakDeger: string; var ADosyaArama: TDosyaArama): TSayi4;
-function DizinGirisindeAra32(var ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TSayi4;
+function DizinGirisindeAra32(ADosyaIslem: PDosya; AAranacakDeger: string): TSayi4;
 
 implementation
 
@@ -52,16 +59,16 @@ uses donusum, sistemmesaj, gercekbellek;
 function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
  var ADosyaArama: TDosyaArama): TISayi4;
 var
-  DI: PDosyaIslem;
+  D: TDosya;
 begin
 
   UzunDosyaAdi[0] := #0;
   UzunDosyaAdi[1] := #0;
 
-  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
-  DI^.Aranan := AAramaSuzgec;
+  D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
+  D.Aranan := AAramaSuzgec;
 
-  case DI^.KlasorDerinlik of
+  case D.KlasorDerinlik of
     0: Result := KokGirdisiListele32(AAramaSuzgec, ADosyaArama);
     else Result := DizinGirdisiListele32(AAramaSuzgec, ADosyaArama);
   end;
@@ -73,14 +80,14 @@ end;
  ==============================================================================}
 function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
 var
+  D: TDosya;
   Aranan: string;
-  DI: PDosyaIslem;
 begin
 
-  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
-  Aranan := DI^.Aranan;
+  D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
+  Aranan := D.Aranan;
 
-  case DI^.KlasorDerinlik of
+  case D.KlasorDerinlik of
     0: Result := KokGirdisiListele32(Aranan, ADosyaArama);
     else Result := DizinGirdisiListele32(Aranan, ADosyaArama);
   end;
@@ -105,30 +112,11 @@ begin
 end;
 
 {==============================================================================
-  dosya oluþturma iþlevini gerçekleþtirir
-  uyarý: iþlev SADECE dosya.pas tarafýndan çaðrýlmalýdýr!
- ==============================================================================}
-procedure ReWrite(ADosyaKimlik: TKimlik);
-begin
-
-  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat32.ReWrite iþlevi yazýlacak', []);
-end;
-
-{==============================================================================
-  dosyaya veri eklemek için dosya açma iþlevlerini gerçekleþtirir
- ==============================================================================}
-procedure Append(ADosyaKimlik: TKimlik);
-begin
-
-  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat12.Append iþlevi yazýlacak', []);
-end;
-
-{==============================================================================
   dosyayý okumadan önce ön hazýrlýk iþlevlerini gerçekleþtirir
  ==============================================================================}
 procedure Reset(ADosyaKimlik: TKimlik);
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DosyaArama: TDosyaArama;
   TamAramaYolu: string;
   Bulundu,
@@ -136,34 +124,34 @@ var
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then
   begin
 
-    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    D.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
     Exit;
   end;
 
   // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
 
   // tam dosya adýný al
-  TamAramaYolu := DI^.MD.MD3.AygitAdi + ':' + DI^.Klasor + '*.*';
+  TamAramaYolu := D.MD.FAygitAdi + ':' + D.Klasor + '*.*';
 
   // arama iþleminin daha önce oluþturulan dosya kimlik üzerinden devam etmesi için
   // kimlik deðeri arama kaydýna iliþkilendiriliyor
-  DosyaArama.Kimlik := DI^.Kimlik;
+  DosyaArama.Kimlik := D.Kimlik;
 
   // dosyayý dosya tablosunda bul
   Bulundu := False;
   AramaTamamlandi := False;
-  if(dosya.FindFirst(TamAramaYolu, 0, DosyaArama, False) = 0) then
+  if(dosyalar.FindFirst(TamAramaYolu, 0, DosyaArama, False) = 0) then
   begin
 
     repeat
 
-      AramaTamamlandi := dosya.FindNext(DosyaArama) = 1;
-      if(DosyaArama.DosyaAdi = DI^.DosyaAdi) then Bulundu := True;
+      AramaTamamlandi := dosyalar.FindNext(DosyaArama) = 1;
+      if(DosyaArama.DosyaAdi = D.DosyaAdi) then Bulundu := True;
 
     until (Bulundu) or (AramaTamamlandi);
 
@@ -171,7 +159,7 @@ begin
   end;
 
   // dosyanýn BULUNAMAMASI halinde
-  if not(Bulundu) then DI^.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+  if not(Bulundu) then D.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
 end;
 
 {==============================================================================
@@ -193,114 +181,6 @@ begin
 end;
 
 {==============================================================================
-  dosya okuma iþlemini gerçekleþtirir
- ==============================================================================}
-procedure Read(ADosyaKimlik: TKimlik; AHedefBellek: Isaretci);
-var
-  DI: PDosyaIslem;
-  YeniDATSiraNo, OkunacakFAT,
-  DATSiraNo, Zincir,
-  SektorIS: TISayi4;
-  OkumaSonuc: Boolean;
-  DG: PDizinGirdisi;
-  ZincirBasinaSektor,
-  OkunacakSektorSayisi,
-  KopyalanacakVeriUzunlugu,
-  VeriU, i: TSayi4;
-begin
-
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit;
-
-  // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
-
-  DG := PDizinGirdisi(DI^.TSI + DI^.SektorIciKonum);
-
-  VeriU := DG^.DosyaUzunlugu;
-  if(VeriU = 0) then Exit;
-
-  Zincir := DG^.BaslangicKumeNo;
-
-  ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
-
-  // FAT tablosu için bellekte yer ayýr
-  GetMem(DI^.BellekSHT, 512);
-
-  OkumaSonuc := False;
-
-  repeat
-
-    // okunacak byte'ý sektör sayýsýna çevir
-    OkunacakSektorSayisi := ZincirBasinaSektor;
-    if(VeriU >= (ZincirBasinaSektor * 512)) then
-    begin
-
-      KopyalanacakVeriUzunlugu := ZincirBasinaSektor * 512;
-      VeriU := VeriU - KopyalanacakVeriUzunlugu;
-    end
-    else
-    begin
-
-      KopyalanacakVeriUzunlugu := VeriU;
-      VeriU := 0;
-    end;
-
-    // okunacak cluster numarasý
-    i := (Zincir - 2) * ZincirBasinaSektor;
-    i := i + DI^.MD.Acilis.IlkVeriSektorNo;
-
-    // sektörü belleðe oku
-    GetMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
-
-    if(DI^.MD.FD^.SektorOku(DI^.MD.FD, i, OkunacakSektorSayisi, DI^.Bellek2) = HATA_YOK) then
-    begin
-
-      Tasi2(DI^.Bellek2, AHedefBellek, KopyalanacakVeriUzunlugu);
-      //FreeMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
-
-      {if(SektorIS < HATA_YOK) then
-      begin
-
-        DI^.Gorev^.DosyaSonIslemDurum := SektorIS;
-        Exit;
-      end;}
-
-      // okunacak bilginin yerleþtirileceði bir sonraki adresi belirle
-      AHedefBellek := AHedefBellek + KopyalanacakVeriUzunlugu;
-
-      OkunacakFAT := (Zincir * 4) div 512;
-
-      // depolama aygýtýnýn ilk FAT kopyasýnýn tümünü belleðe yükle
-      if(DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor +
-        OkunacakFAT, 1, DI^.BellekSHT) = HATA_YOK) then
-      begin
-  {    if(SektorIS < HATA_YOK) then
-      begin
-
-        DI^.Gorev^.DosyaSonIslemDurum := SektorIS;
-        FreeMem(DATBellek, 512);
-        Exit;
-      end;
-  }
-        // zincir deðerini 4 ile çarp ve bir sonraki zincir deðerini al
-        YeniDATSiraNo := (Zincir * 4) mod 512;
-        DATSiraNo := PSayi4(DI^.BellekSHT + YeniDATSiraNo)^;
-
-        Zincir := DATSiraNo;
-      end;
-    end;
-
-    FreeMem(DI^.Bellek2, OkunacakSektorSayisi * 512);
-
-  // eðer 0xfff8..0xffff aralýðýndaysa bu dosyanýn en son cluster'idir
-  until (Zincir = $FFFFFFF) or (VeriU = 0) or (OkumaSonuc);
-
-  FreeMem(DI^.BellekSHT, 512);
-end;
-
-{==============================================================================
   dosya ile yapýlmýþ en son iþlemin sonucunu döndürür
  ==============================================================================}
 function IOResult: TISayi4;
@@ -315,23 +195,23 @@ end;
  ==============================================================================}
 function FileSize(ADosyaKimlik: TKimlik): TISayi8;
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   DG: PDizinGirdisi;
 begin
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then
   begin
 
-    DI^.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
+    D.Gorev^.DosyaSonIslemDurum := HATA_KIMLIK;
     Exit(-1);
   end;
 
   // en son iþlem hatalý ise çýk
-  if(DI^.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit(-1);
+  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit(-1);
 
-  DG := PDizinGirdisi(DI^.TSI + DI^.SektorIciKonum);
+  DG := PDizinGirdisi(D.TSI + D.SektorIciKonum);
 
   Result := DG^.DosyaUzunlugu;
 end;
@@ -350,16 +230,6 @@ end;
  ==============================================================================}
 procedure CloseFile(ADosyaKimlik: TKimlik);
 begin
-end;
-
-{==============================================================================
-  klasör oluþturma iþlevini gerçekleþtirir
- ==============================================================================}
-function CreateDir(ADosyaKimlik: TKimlik): Boolean;
-begin
-
-  Result := False;
-  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat32.CreateDir iþlevi yazýlacak', []);
 end;
 
 {==============================================================================
@@ -388,7 +258,7 @@ end;
  ==============================================================================}
 function BirSonrakiKumeyiAl(ADosyaKimlik: TKimlik; var AKumeNo: TISayi4): Boolean;
 var
-  DI: PDosyaIslem;
+  D: TDosya;
   Sonuc: TISayi4;
   i: TSayi4;
 begin
@@ -396,19 +266,18 @@ begin
   Result := True;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaKimlik];
-  if(DI = nil) then Exit(False);
+  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  if(D = nil) then Exit(False);
 
   // fat'in 1. kopyasý belleðe yüklenmemiþse ilk FAT kopyasýnýn tümünü belleðe yükle
   //if(DI^.BellekSHTDurum = False) then
   begin
 
-    GetMem(DI^.BellekSHT, 512);
+    GetMem(D.BellekSHT, 512);
 
     i := (AKumeNo * 4) div 512;
 
-    Sonuc := DI^.MD.FD^.SektorOku(DI^.MD.FD, DI^.MD.Acilis.DosyaAyirmaTablosu.IlkSektor +
-      i, 1, DI^.BellekSHT);
+    Sonuc := D.MD.FD.FOku(D.MD.Acilis.DosyaAyirmaTablosu.IlkSektor + i, 1, D.BellekSHT);
 
     if(Sonuc <> HATA_YOK) then Exit(False);
   end;
@@ -418,9 +287,9 @@ begin
 
   // zincir deðerini 4 ile çarp ve bir sonraki zincir deðerini al
   i := (AKumeNo * 4) mod 512;
-  AKumeNo := PISayi4(DI^.BellekSHT + i)^;
+  AKumeNo := PISayi4(D.BellekSHT + i)^;
 
-  FreeMem(DI^.BellekSHT, 512);
+  FreeMem(D.BellekSHT, 512);
 end;
 
 {==============================================================================
@@ -428,13 +297,13 @@ end;
  ==============================================================================}
 function KokGirdisiListele32(AAranacakDeger: string; var ADosyaArama: TDosyaArama): TSayi4;
 var
+  D: TDosya;
   DizinGirdisi: PDizinGirdisi;
   TumGirislerOkundu,
   UzunDosyaAdiBulundu: Boolean;
-  DI: PDosyaIslem;
   i: TISayi4;
   j: TSayi4;
-  ZincirBasinaSektor: TSayi1;
+  KBS: TSayi1;
 begin
 
   // Result = 0 = dosya - dizin girdisi okundu,
@@ -449,47 +318,47 @@ begin
   UzunDosyaAdiBulundu := False;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+  D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
 
   //SISTEM_MESAJ(mtBilgi, RENK_MOR, 'DI^.SektorKumeNo: %d', [DI^.SektorKumeNo]);
 
-  ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
+  KBS := D.MD.Acilis.DosyaAyirmaTablosu.KBS;
 
   // aramaya baþla
   repeat
 
     // bir sonraki girdiye konumlan
-    Inc(DI^.SektorIciKonum, 32);
+    Inc(D.SektorIciKonum, 32);
 
-    if(DI^.SektorIciKonum >= 512) then //16) then
+    if(D.SektorIciKonum >= 512) then //16) then
     begin
 
-      DI^.SektorIciKonum := 0;
-      Inc(DI^.ZincirNo);
+      D.SektorIciKonum := 0;
+      Inc(D.ZincirNo);
 
-      if(DI^.ZincirNo >= ZincirBasinaSektor) then
+      if(D.ZincirNo >= KBS) then
       begin
 
         // yeni küme numarasý al
-        DI^.ZincirNo := 0;
+        D.ZincirNo := 0;
 
-        if not(BirSonrakiKumeyiAl(DI^.Kimlik, DI^.SektorKumeNo)) then Exit(1);
+        if not(BirSonrakiKumeyiAl(D.Kimlik, D.SektorKumeNo)) then Exit(1);
       end;
     end;
 
-    if(DI^.SektorIciKonum = 0) then
+    if(D.SektorIciKonum = 0) then
     begin
 
       // bir sonraki dizin giriþini oku
-      j := DI^.MD.Acilis.IlkVeriSektorNo;
-      j := j + ((DI^.SektorKumeNo - 2) * ZincirBasinaSektor);
-      j := j + DI^.ZincirNo;
+      j := D.MD.Acilis.IlkVeriSektorNo;
+      j := j + ((D.SektorKumeNo - 2) * KBS);
+      j := j + D.ZincirNo;
 
-      if(DI^.MD.FD^.SektorOku(DI^.MD.FD, j, 1, DI^.TSI) <> HATA_YOK) then Exit(1);
+      if(D.MD.FD.FOku(j, 1, D.TSI) <> HATA_YOK) then Exit(1);
     end;
 
     // dosya giriþ tablosuna konumlan
-    DizinGirdisi := PDizinGirdisi(DI^.TSI + DI^.SektorIciKonum);
+    DizinGirdisi := PDizinGirdisi(D.TSI + D.SektorIciKonum);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
     if(DizinGirdisi^.DosyaAdi[0] = #00) then
@@ -571,7 +440,7 @@ end;
   kök dizin giriþinden dosya / klasör bulur ve geriye ilgili giriþin küme
   numarasýný döndürür
  ==============================================================================}
-function KokGirdisindeAra32(var ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TSayi4;
+function KokGirdisindeAra32(ADosyaIslem: PDosya; AAranacakDeger: string): TSayi4;
 var
   DA: TDosyaArama;
   Sonuc: TSayi4;
@@ -598,13 +467,13 @@ end;
  ==============================================================================}
 function DizinGirdisiListele32(AAranacakDeger: string; var ADosyaArama: TDosyaArama): TSayi4;
 var
+  D: TDosya;
   DizinGirdisi: PDizinGirdisi;
   TumGirislerOkundu,
   UzunDosyaAdiBulundu: Boolean;
-  DI: PDosyaIslem;
   i: TISayi4;
   j: TSayi4;
-  ZincirBasinaSektor: TSayi1;
+  KBS: TSayi1;
 begin
 
   // Result = 0 = dosya - dizin girdisi okundu,
@@ -619,9 +488,9 @@ begin
   UzunDosyaAdiBulundu := False;
 
   // dosya iþlem yapýsý bellek bölgesine konumlan
-  DI := Dosyalar0.DosyaIslem[ADosyaArama.Kimlik];
+  D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
 
-  ZincirBasinaSektor := DI^.MD.Acilis.DosyaAyirmaTablosu.ZincirBasinaSektor;
+  KBS := D.MD.Acilis.DosyaAyirmaTablosu.KBS;
 
   //SISTEM_MESAJ(mtBilgi, RENK_MOR, 'DizinGirdisiListele32: %d', [DI^.SektorKumeNo]);
 
@@ -629,37 +498,37 @@ begin
   repeat
 
     // bir sonraki girdiye konumlan
-    Inc(DI^.SektorIciKonum, 32);
+    Inc(D.SektorIciKonum, 32);
 
-    if(DI^.SektorIciKonum >= 512) then //16) then
+    if(D.SektorIciKonum >= 512) then //16) then
     begin
 
-      DI^.SektorIciKonum := 0;
-      Inc(DI^.ZincirNo);
+      D.SektorIciKonum := 0;
+      Inc(D.ZincirNo);
 
-      if(DI^.ZincirNo >= ZincirBasinaSektor) then
+      if(D.ZincirNo >= KBS) then
       begin
 
         // yeni küme numarasý al
-        DI^.ZincirNo := 0;
+        D.ZincirNo := 0;
 
-        if not(BirSonrakiKumeyiAl(DI^.Kimlik, DI^.SektorKumeNo)) then Exit(1);
+        if not(BirSonrakiKumeyiAl(D.Kimlik, D.SektorKumeNo)) then Exit(1);
       end;
     end;
 
-    if(DI^.SektorIciKonum = 0) then
+    if(D.SektorIciKonum = 0) then
     begin
 
       // bir sonraki dizin giriþini oku
-      j := DI^.MD.Acilis.IlkVeriSektorNo;
-      j := j + ((DI^.SektorKumeNo - 2) * ZincirBasinaSektor);
-      j := j + DI^.ZincirNo;
+      j := D.MD.Acilis.IlkVeriSektorNo;
+      j := j + ((D.SektorKumeNo - 2) * KBS);
+      j := j + D.ZincirNo;
 
-      if(DI^.MD.FD^.SektorOku(DI^.MD.FD, j, 1, DI^.TSI) <> HATA_YOK) then Exit(1);
+      if(D.MD.FD.FOku(j, 1, D.TSI) <> HATA_YOK) then Exit(1);
     end;
 
     // dosya giriþ tablosuna konumlan
-    DizinGirdisi := PDizinGirdisi(DI^.TSI + DI^.SektorIciKonum);
+    DizinGirdisi := PDizinGirdisi(D.TSI + D.SektorIciKonum);
 
     // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
     if(DizinGirdisi^.DosyaAdi[0] = #00) then
@@ -741,7 +610,7 @@ end;
   dizin giriþinden dosya / klasör bilgilerini bulup, geriye ilgili giriþin küme
   numarasýný döndürür
  ==============================================================================}
-function DizinGirisindeAra32(var ADosyaIslem: PDosyaIslem; AAranacakDeger: string): TSayi4;
+function DizinGirisindeAra32(ADosyaIslem: PDosya; AAranacakDeger: string): TSayi4;
 var
   DA: TDosyaArama;
   Sonuc: TSayi4;
@@ -761,6 +630,122 @@ begin
     end else Exit(0);
 
   until True = False;
+end;
+
+constructor TFAT32.Create(AKimlikNo: TISayi4; FDST: TSayi4);
+begin
+
+  inherited Create(AKimlikNo, FDST);
+end;
+
+{==============================================================================
+  dosyaya veri eklemek için dosya açma iþlevlerini gerçekleþtirir
+ ==============================================================================}
+procedure TFAT32.Append;
+begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat12.Append iþlevi yazýlacak', []);
+end;
+
+{==============================================================================
+  klasör oluþturma iþlevini gerçekleþtirir
+ ==============================================================================}
+function TFAT32.CreateDir: Boolean;
+begin
+
+  Result := False;
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat32.CreateDir iþlevi yazýlacak', []);
+end;
+
+{==============================================================================
+  dosya okuma iþlemini gerçekleþtirir
+ ==============================================================================}
+procedure TFAT32.Read(AHedefBellek: Isaretci);
+var
+  DG: PDizinGirdisi;
+  YeniKumeSN, OkunacakFAT,
+  KumeNo, Sonuc: TISayi4;
+  KBS, KopyalanacakVeriUzunlugu,
+  VeriU, i: TSayi4;
+begin
+
+  // en son iþlem hatalý ise çýk
+  if(Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
+
+  DG := PDizinGirdisi(TSI + SektorIciKonum);
+
+  VeriU := DG^.DosyaUzunlugu;
+  if(VeriU = 0) then Exit;
+
+  KumeNo := DG^.BaslangicKumeNo;
+
+  KBS := MD.Acilis.DosyaAyirmaTablosu.KBS;
+
+  // FAT tablosu için bellekte yer ayýr
+  GetMem(BellekSHT, 512);
+
+  // okunacak sektör için bellek ayýr
+  GetMem(Bellek2, KBS * 512);
+
+  repeat
+
+    // okunacak veri miktarý
+    if(VeriU >= (KBS * 512)) then
+    begin
+
+      KopyalanacakVeriUzunlugu := KBS * 512;
+      VeriU := VeriU - KopyalanacakVeriUzunlugu;
+    end
+    else
+    begin
+
+      KopyalanacakVeriUzunlugu := VeriU;
+      VeriU := 0;
+    end;
+
+    // okunacak küme numarasý
+    i := (KumeNo - 2) * KBS;
+
+    Sonuc := MD.FD.FOku(MD.Acilis.IlkVeriSektorNo + i, KBS, Bellek2);
+    if(Sonuc = HATA_YOK) then
+    begin
+
+      Tasi2(Bellek2, AHedefBellek, KopyalanacakVeriUzunlugu);
+
+      // okunacak bilginin yerleþtirileceði bir sonraki adresi belirle
+      AHedefBellek := AHedefBellek + KopyalanacakVeriUzunlugu;
+
+      OkunacakFAT := (KumeNo * 4) div 512;
+
+      // mantýksal depolama aygýtýnýn ilgili FAT sektörünü belleðe yükle
+      Sonuc := MD.FD.FOku(MD.Acilis.DosyaAyirmaTablosu.IlkSektor + OkunacakFAT,
+        1, BellekSHT);
+      if(Sonuc = HATA_YOK) then
+      begin
+
+        // küme deðerini 4 ile çarp ve bir sonraki küme deðerini al
+        YeniKumeSN := (KumeNo * 4) mod 512;
+        KumeNo := PSayi4(BellekSHT + YeniKumeSN)^;
+      end;
+    end;
+
+  // eðer 0xfff8..0xffff aralýðýndaysa bu dosyanýn en son cluster'idir
+  until (KumeNo >= $0FFFFFF8) or (Sonuc <> HATA_YOK) or (VeriU = 0);
+
+  // kullanýlan bellekleri serbest býrak
+  FreeMem(Bellek2, KBS * 512);
+
+  FreeMem(BellekSHT, 512);
+end;
+
+{==============================================================================
+  dosya oluþturma iþlevini gerçekleþtirir
+  uyarý: iþlev SADECE dosya.pas tarafýndan çaðrýlmalýdýr!
+ ==============================================================================}
+procedure TFAT32.ReWrite;
+begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'fat32.ReWrite iþlevi yazýlacak', []);
 end;
 
 end.

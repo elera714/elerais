@@ -22,6 +22,9 @@ const
   // sistem için ayrýlmýþ RAM = 10MB
   SISTEME_AYRILMIS_RAM  = $0A00000;
 
+var
+  BellekDegeriniGoster: Boolean = False;
+
 type
   PHafiza = ^THafiza;
   THafiza = record

@@ -15,89 +15,52 @@ unit yonetim;
 
 interface
 
-uses paylasim, gn_pencere, zamanlayici, dns, gorselnesne, irq, arge, thread,
-  n_sayilistesi, n_yazilistesi, elr1;
+uses paylasim, gn_pencere, zamanlayici, gorselnesne, arge;
 
 type
-  TMyThread = class(TThread)
-  private
-    //procedure ShowStatus;
-  protected
-    procedure Execute; override;
+  TYonetim = object
   public
-    constructor Create(CreateSuspended: Boolean);
-  end;
-
-type
-
-  { TMyThread2 }
-
-  TMyThread2 = class(TThread)
-  private
-    //procedure ShowStatus;
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(CreateSuspended: Boolean);
+    procedure Yukle;
+    procedure SistemAnaKontrol;
+    procedure CekirdekDosyaTSDegeriniKaydet;
+    procedure KaydedilenProgramlariYenidenYukle;
+    procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
   end;
 
 var
-  _DNS: PDNS = nil;
-  Arge0: TArGe;
-
-procedure Yukle;
-procedure SistemAnaKontrol;
-procedure CekirdekDosyaTSDegeriniKaydet;
-procedure KaydedilenProgramlariYenidenYukle;
-procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
-procedure ListeleriIlkDegerlerleYukle;
+  GArge: TArGe;
+  GYonetim0: TYonetim;
 
 implementation
 
-uses gdt, gorev, src_klavye, genel, ag, dhcp4_i, sistemmesaj, src_vesa20, cmos,
-  gn_masaustu, src_disket, vbox, usb, ohci, port, prg_grafik, prg_kontrol, dosya,
-  src_e1000, fdepolama, islevler, mdepolama, donusum, arp, gercekbellek, pci, baglanti;
+uses gdt, gorev, src_klavye, dhcpv4i, sistemmesaj, dosyalar, gn_masaustu, src_disket,
+  srv_grafik, srv_kontrol, srv_test, fdepolama, mdepolama, baglantilar, olayyonetim,
+  gn_islevler, src_ps2, thread, srv_arp, aygityonetimi, sistem, aygit;
 
 {==============================================================================
   sistem ilk yükleme iþlevlerini gerçekleþtirir
  ==============================================================================}
-procedure Yukle;
+procedure TYonetim.Yukle;
 var
   G: PGorev;
   GMBilgi: PGMBilgi;
   Olay: POlay;
-  GrafikESP, KontrolESP,
-  OHCIESP, ARPESP0, ARPESP1,
+  OHCIESP, ARPESP1,
   Prg1ESP, Prg2ESP: Isaretci;
+  PrgTest: TPrgTest;
+  ServisKontrol: TServisKontrol;
+  ServisGrafik: TServisGrafik;
+  ServisARP: TServisARP;
 begin
 
   GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
-
-  // video bilgilerini al
-  EkranKartSurucusu0.KartBilgisi.BellekUzunlugu := GMBilgi^.GrafikBellekUzunlugu;
-  EkranKartSurucusu0.KartBilgisi.EkranMod := GMBilgi^.GrafikEkranMod;
-  EkranKartSurucusu0.KartBilgisi.YatayCozunurluk := GMBilgi^.GrafikCozunurlukX;
-  EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk := GMBilgi^.GrafikCozunurlukY;
-  EkranKartSurucusu0.KartBilgisi.BellekAdresi := GMBilgi^.GrafikBellekAdresi;
-  //VIDEO_MEM_ADDR;
-  EkranKartSurucusu0.KartBilgisi.PixelBasinaBitSayisi := GMBilgi^.GrafikPxBasinaBit;
-  EkranKartSurucusu0.KartBilgisi.NoktaBasinaByteSayisi := (GMBilgi^.GrafikPxBasinaBit div 8);
-  EkranKartSurucusu0.KartBilgisi.SatirdakiByteSayisi := GMBilgi^.GrafikSatirByteUz;
 
   // çekirdek bilgilerini al
   CekirdekBaslangicAdresi := GMBilgi^.CekirdekBaslangicAdresi;
   CekirdekUzunlugu := GMBilgi^.CekirdekKodUzunluk;
 
-  // zamanlayýcý sayacýný sýfýrla
-  ZamanlayiciSayaci := 0;
-
-  // sistem sayacýný sýfýrla
-  SistemSayaci := 0;
-  CagriSayaci := 0;
-  GrafikSayaci := 0;
-
   // öndeðer fare göstergesini belirle
-  GecerliFareGostegeTipi := fitBekle;
+  GFareSurucusu.AktifFareImlec := fitBekle;
 
   // çekirdeðin kullanacaðý TSS'nin içeriðini sýfýrla
   FillByte(GorevTSSListesi[0]^, 104, $00);
@@ -126,15 +89,15 @@ begin
 
   // sistem görev deðerlerini belirle
   G := GetMem(SizeOf(TGorev));
-  Gorevler0.Gorev[0] := G;
+  GGorevler.Gorev[0] := G;
   G^.SeviyeNo := CALISMA_SEVIYE0;
-  G^.GorevSayaci := 0;
-  G^.BellekBaslangicAdresi := CekirdekBaslangicAdresi;
-  G^.CalismaSuresiMS := 20;
-  G^.CalismaSuresiSayacMS := 20;
+  G^.GrvSayac := 0;
+  G^.BellekBasAdr := CekirdekBaslangicAdresi;
+  G^.CalismaSureMS := DPL0_SUREMS;
+  G^.CalismaSureSayac := DPL0_SUREMS;
 
   { TODO - CekirdekUzunlugu -> *4K olarak hesaplanacak }
-  G^.BellekUzunlugu := CekirdekUzunlugu;
+  G^.BellekUz := CekirdekUzunlugu;
 
   // çekirdek için olay iþlemleri gerçekleþmeyecek
   G^.OlaySayisi := 0;
@@ -149,36 +112,46 @@ begin
   // görev olay sayýsý
   G^.OlaySayisi := 0;
 
-  Gorevler0.DurumDegistir(0, gdCalisiyor);
+  GGorevler.DurumDegistir(0, gdCalisiyor);
 
   // çalýþan ve oluþturulan görev deðerlerini belirle
-  FCalisanGorevSayisi := 1;
-  FAktifGorev := 0;
+  GGorevler.FCalisanGorevSayisi := 1;
+  GGorevler.FAktifGrv := 0;
 
   // grafik iþlevlerini yönetecek görevi oluþtur
-  GrafikESP := GetMem(8192);
-  Memur('grafik yöneticisi', @GrafikYonetimi, TSayi4(GrafikESP), CALISMA_SEVIYE0);
+  ServisGrafik := TServisGrafik.Create('SGrafik');
+  ServisGrafik.Start;
 
   // sistem kontrol görevi oluþtur
-  KontrolESP := GetMem(8192);
-  Memur('sistem denetim', @KontrolYonetimi, TSayi4(KontrolESP), CALISMA_SEVIYE0);
+  PrgTest := TPrgTest.Create('STest');
+  PrgTest.Start;
+
+  ServisKontrol := TServisKontrol.Create('SKontrol');
+  ServisKontrol.Start;
+
+  PrgTest := TPrgTest.Create('SPrgTest');
+  PrgTest.Start;
 
   // ohci kontrol görevi oluþtur
+  {GPrgOHCI := TPrgOHCI.Create;
   GetMem(OHCIESP, 4096);
-  Memur('ohci', @ohci.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0);
+  Memur('ohci', @GPrgOHCI.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0, True);}
+
 
   // arp tablosu güncelleme görevi oluþtur
-  ARPESP0 := GetMem(4096);
-  Memur('arp_güncelleme', @ARPTablosunuGuncelle, TSayi4(ARPESP0), CALISMA_SEVIYE0);
+  { TODO - aþaðýdaki 2 iþlev Create iþlevinden sonraki bir yere eklenecek }
+  ServisARP := TServisARP.Create('SARPGüncelleme');
+  ServisARP.Start;
 
-  ARPESP1 := GetMem(4096);
-  Memur('arp_dolaþým', @CihazlaraARPMesajiGonder, TSayi4(ARPESP1), CALISMA_SEVIYE0);
+  {ARPESP1 := GetMem(4096);
+  Memur('arp_dolaþým', @GARP.CihazlaraARPMesajiGonder, TSayi4(ARPESP1),
+    CALISMA_SEVIYE0, True);}
 
   {GetMem(Prg1ESP, 4096);
-  Memur('prg1', @Prg1, TSayi4(Prg1ESP), CALISMA_SEVIYE0);
+  Memur('prg1', @Program1, TSayi4(Prg1ESP), CALISMA_SEVIYE0, True);
 
   GetMem(Prg2ESP, 4096);
-  Memur('prg2', @Prg2, TSayi4(Prg2ESP), CALISMA_SEVIYE0);}
+  Memur('prg2', @Program2, TSayi4(Prg2ESP), CALISMA_SEVIYE0, True);}
 
   // ilk TSS'yi yükle
   // not : tss'nin yükleme iþlevi görev geçiþini gerçekleþtirmez. sadece
@@ -192,7 +165,7 @@ end;
 {==============================================================================
   sistem ana kontrol kýsmý
  ==============================================================================}
-procedure SistemAnaKontrol;
+procedure TYonetim.SistemAnaKontrol;
 const
   PingHedefIP6Adres: TIP6Adres = (
     $fe, $80, $00, $00, $00, $00, $00, $00, $41, $02, $05, $a3, $ba, $0a, $ed, $02);
@@ -203,58 +176,52 @@ var
   TusKarakterDegeri: char;
   TusDurum: TTusDurum;
   i: TSayi4;
-  Masaustu: PMasaustu;
+  Masaustu: TMasaustu;
   GN: PGorselNesne;
   Olay: TOlay;
-  MD: PMDNesne;
-  T: TMyThread;
+  MD: TMDNesne;
   G: PGorev;
   DosyaKimlik: TKimlik;
   Durum: Boolean;
-  FD: PFDNesne;
+  FD: TFDAygiti;
   //T: TMyThread;
   //T2: TMyThread2;
   PingSiraNo: TSayi4 = 111;
   p: PChar;
   B, B2: TBaglanti;
+  Bag: TAgBaglantisi;
 begin
 
   i := 100;
 
-  // masaüstü uygulamasýnýn çalýþmasýný tamamlamasýný bekle
-  BekleMS(100);
+  // masaüstü aktif olana kadar bekle
+  while GGNesneler.AktifMasaustu = nil do;
 
-  // çekirdek deðiþim kontrol için cekirdek.bin dosyasýnýn yðklenme aþamasýndaki
+  // çekirdek deðiþim kontrol için cekirdek.bin dosyasýnýn yüklenme aþamasýndaki
   // tarih + saat deðerlerini kaydet
   CekirdekDosyaTSDegeriniKaydet;
 
   KaydedilenProgramlariYenidenYukle;
 
-  SistemTusDurumuKontrolSol := tdYok;
-  SistemTusDurumuKontrolSag := tdYok;
-  SistemTusDurumuAltSol := tdYok;
-  SistemTusDurumuAltSag := tdYok;
-  SistemTusDurumuDegisimSol := tdYok;
-  SistemTusDurumuDegisimSag := tdYok;
+  GKlavye.FSistemTusDurumuKontrolSol := tdYok;
+  GKlavye.FSistemTusDurumuKontrolSag := tdYok;
+  GKlavye.FSistemTusDurumuAltSol := tdYok;
+  GKlavye.FSistemTusDurumuAltSag := tdYok;
+  GKlavye.FSistemTusDurumuDegisimSol := tdYok;
+  GKlavye.FSistemTusDurumuDegisimSag := tdYok;
 
-  // masaüstü aktif olana kadar bekle
-  while GAktifMasaustu = nil do;
-
-  // sistem deðer görüntüleyicisini baþlat
-  SistemDegerleriBasla;
-
-  {Arge0 := TArGe.Create(2);
-  Arge0.Calistir;}
+  {GArge := TArGe.Create(2);
+  GArge.Calistir;}
 
   while True do
   begin
 
     // sistem sayacýný artýr
-    Inc(SistemSayaci);
+    Inc(GSistem.FSistemSayaci);
 
     // klavyeden basýlan tuþu al
     // 2 bytelýk TusDegeri deðiþken deðerinin üst byte'ý kontrol deðeri, alt byte'ý ise karakter deðeridir
-    TusDurum := KlavyedenTusAl(TusDegeri);
+    TusDurum := GKlavye.KlavyedenTusAl(TusDegeri);
     TusKontrolDegeri := (TusDegeri shr 8);
     TusKarakterDegeri := Char(TusDegeri and $FF);
 
@@ -267,20 +234,20 @@ begin
         //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Basýlan Tuþ Deðeri: %x', [TusDegeri]);
 
         if(TusDegeri = TUS_KONTROL_SOL) then
-          SistemTusDurumuKontrolSol := tdBasildi
+          GKlavye.FSistemTusDurumuKontrolSol := tdBasildi
         else if(TusDegeri = TUS_KONTROL_SAG) then
-          SistemTusDurumuKontrolSag := tdBasildi
+          GKlavye.FSistemTusDurumuKontrolSag := tdBasildi
         else if(TusDegeri = TUS_ALT_SOL) then
-          SistemTusDurumuAltSol := tdBasildi
+          GKlavye.FSistemTusDurumuAltSol := tdBasildi
         else if(TusDegeri = TUS_ALT_SAG) then
-          SistemTusDurumuAltSag := tdBasildi
+          GKlavye.FSistemTusDurumuAltSag := tdBasildi
         else if(TusDegeri = TUS_DEGISIM_SOL) then
-          SistemTusDurumuDegisimSol := tdBasildi
+          GKlavye.FSistemTusDurumuDegisimSol := tdBasildi
         else if(TusDegeri = TUS_DEGISIM_SAG) then
-          SistemTusDurumuDegisimSag := tdBasildi;
+          GKlavye.FSistemTusDurumuDegisimSag := tdBasildi;
 
-        if(SistemTusDurumuKontrolSol = tdBasildi) or
-          (SistemTusDurumuKontrolSag = tdBasildi) then
+        if(GKlavye.FSistemTusDurumuKontrolSol = tdBasildi) or
+          (GKlavye.FSistemTusDurumuKontrolSag = tdBasildi) then
         begin
 
           // DHCP sunucusundan IP adresi al
@@ -288,13 +255,11 @@ begin
           if(TusKarakterDegeri = '2') then
           begin
 
-            if(AgYuklendi) then
+            if(GAygitlar.ToplamAgAygitSayisi > 0) then
             begin
 
-              // að bilgileri öndeðerlerle yükleniyor
-              //GAg0.IlkAdresDegerleriniYukle;
-
-              //DHCPIpAdresiAl;
+              GAgBaglantilari.AktifBaglanti.IP4AdresiAlindi := False;
+              GDHCPv4i.IpAdresiAl;
             end
             else
             begin
@@ -307,22 +272,39 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            B := TBaglanti.Create;
-            B2 := B;
+            //DosyalariKopyala;
 
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %x', [@B.UzakPort]);
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %x', [@B2.UzakPort]);
+            DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
+
+            {if(GBaglantilar.BaglantiSayisi > 0) then
+            begin
+
+              for i := 0 to GBaglantilar.BaglantiSayisi - 1 do
+              begin
+
+                Bag := GBaglantilar.Baglanti0[i];
+
+                SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Bað: %d', [i + 1]);
+                SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ad: %s', [Bag.Ad]);
+                SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ad: %d', [Bag.FSiraNo]);
+              end;
+            end;}
+
+            //GAygitlar.Aygit[0].FVeriGonder(nil, i);
+            {asm int 2; end;}
+
+            {GAg.IPAdresiAlindi := False;
+            DHCPIpAdresiAl;}
+
+
 
             //SistemKlasorleriniOlustur;
             //vbox.Listele;
             //KomsuIstegiGonder(PingHedefIP6Adres);
 
-            //Gorevler0.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
+            //GGorevler.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
 
             //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
-
-            //T := TMyThread.Create(True);
-            {T.Start;}
 
             //AssertErrorProc := @AssertIslev;
             //Assert(1 > 2, 'Merhaba');
@@ -344,7 +326,7 @@ begin
               PingSiraNo, @PingVeri[1], 32);
             Inc(PingSiraNo);}
 
-            //Gorevler0.Calistir('disk1:\dskgor.c', CALISMA_SEVIYE3)
+            //GGorevler.Calistir('disk1:\dskgor.c', CALISMA_SEVIYE3)
             //elr1.SistemKlasorleriniSil;
 
             //iiiii := Align(SizeOf(TIzgara) + 64, 16);
@@ -356,33 +338,33 @@ begin
           else if(TusKarakterDegeri = '5') then
           begin
 
-            MD := MantiksalDepolama0.MantiksalSurucuAl('disk2');
+            MD := GMantiksalDepolama.SurucuAl('disk2');
             if not(MD = nil) then ELR1DiskBicimle(MD);
           end
           // program çalýþtýrma programýný çalýþtýr
           else if(TusKarakterDegeri = 'c') then
 
-            Gorevler0.Calistir('calistir.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('calistir.c', CALISMA_SEVIYE3)
 
           // dosya yöneticisi programýný çalýþtýr
           else if(TusKarakterDegeri = 'd') then
 
-            Gorevler0.Calistir('dsyyntcs.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('dsyyntcs.c', CALISMA_SEVIYE3)
 
           // görev yöneticisi programýný çalýþtýr
           else if(TusKarakterDegeri = 'g') then
 
             //GGorevler.Calistir('yzmcgor2.c', CALISMA_SEVIYE3)
-            Gorevler0.Calistir('grvyntcs.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('grvyntcs.c', CALISMA_SEVIYE3)
 
           // giriþ kutusundaki veriyi panoya kopyala
           else if(TusKarakterDegeri = 'k') then
           begin
 
-            if(GAktifPencere <> nil) then
+            if(GGNesneler.AktifPencere <> nil) then
             begin
 
-              GN := GAktifPencere^.FAktifNesne;
+              GN := PGorselNesne(GGNesneler.AktifPencere.FAktifNesne);
               if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
               begin
 
@@ -394,21 +376,21 @@ begin
           // mesaj görüntüleme programýný çalýþtýr
           else if(TusKarakterDegeri = 'm') then
 
-            Gorevler0.Calistir('smsjgor.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('smsjgor.c', CALISMA_SEVIYE3)
 
           // resim görüntüleme programýný çalýþtýr
           else if(TusKarakterDegeri = 'r') then
 
-            Gorevler0.Calistir('resimgor.c', CALISMA_SEVIYE3)
+            GGorevler.Calistir('resimgor.c', CALISMA_SEVIYE3)
 
           // panodaki veriyi giriþ kutusuna yapýþtýr
           else if(TusKarakterDegeri = 'y') then
           begin
 
-            if(GAktifPencere <> nil) then
+            if(GGNesneler.AktifPencere <> nil) then
             begin
 
-              GN := GAktifPencere^.FAktifNesne;
+              GN := PGorselNesne(GGNesneler.AktifPencere.FAktifNesne);
               if(GN <> nil) and (GN^.NesneTipi = gntGirisKutusu) then
               begin
 
@@ -425,33 +407,33 @@ begin
             //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Aktif Masaüstü: %d', [i])
 
             // aktif masaüstünü deðiþtir
-            Masaustu := GMasaustuListesi[i];
+            Masaustu := GGNesneler.Masaustleri[i];
             if not(Masaustu = nil) then
             begin
 
               // masaüstünü aktif olarak iþaretle
-              GAktifMasaustu := Masaustu;
-              GAktifMasaustu^.Aktiflestir;
+              GGNesneler.AktifMasaustu := Masaustu;
+              GGNesneler.AktifMasaustu.Aktiflestir;
 
               // masaüstünü çiz
-              GAktifMasaustu^.Ciz;
+              GGNesneler.AktifMasaustu.Ciz;
             end;
           end;
         end
-        else if(SistemTusDurumuAltSol = tdBasildi) or (SistemTusDurumuAltSag = tdBasildi) then
+        else if(GKlavye.FSistemTusDurumuAltSol = tdBasildi) or (GKlavye.FSistemTusDurumuAltSag = tdBasildi) then
         begin
 
           // aktif uygulamaya kendisini kapatma mesajý gönder
           if(TusDegeri = TUS_F4) then
           begin
 
-            Olay.Kimlik := GAktifPencere^.Kimlik;
+            Olay.Kimlik := GGNesneler.AktifPencere.Kimlik;
             Olay.Olay := CO_SONLANDIR;
             Olay.Deger1 := 0;
             Olay.Deger2 := 0;
-            if not(GAktifPencere^.OlayYonlendirmeAdresi = nil) then
-              GAktifPencere^.OlayYonlendirmeAdresi(GAktifPencere, Olay)
-            else Gorevler0.OlayEkle(GAktifPencere^.GorevKimlik, Olay);
+            if not(GGNesneler.AktifPencere.OlayYonlAdr = nil) then
+              GGNesneler.AktifPencere.OlayYonlAdr(GGNesneler.AktifPencere, Olay)
+            else GGorevler.OlayEkle(GGNesneler.AktifPencere.GrvKimlik, Olay);
           end;
         end
         else
@@ -472,22 +454,22 @@ begin
       begin
 
         if(TusDegeri = TUS_KONTROL_SOL) then
-          SistemTusDurumuKontrolSol := tdBirakildi
+          GKlavye.FSistemTusDurumuKontrolSol := tdBirakildi
         else if(TusDegeri = TUS_KONTROL_SAG) then
-          SistemTusDurumuKontrolSag := tdBirakildi
+          GKlavye.FSistemTusDurumuKontrolSag := tdBirakildi
         else if(TusDegeri = TUS_ALT_SOL) then
-          SistemTusDurumuAltSol := tdBirakildi
+          GKlavye.FSistemTusDurumuAltSol := tdBirakildi
         else if(TusDegeri = TUS_ALT_SAG) then
-          SistemTusDurumuAltSag := tdBirakildi
+          GKlavye.FSistemTusDurumuAltSag := tdBirakildi
         else if(TusDegeri = TUS_DEGISIM_SOL) then
-          SistemTusDurumuDegisimSol := tdBirakildi
+          GKlavye.FSistemTusDurumuDegisimSol := tdBirakildi
         else if(TusDegeri = TUS_DEGISIM_SAG) then
-          SistemTusDurumuDegisimSag := tdBirakildi;
+          GKlavye.FSistemTusDurumuDegisimSag := tdBirakildi;
       end;
     end;
 
-    //if(GAg0.Aktif) then
-    GAg0.AgKartiVeriAlmaIslevi;
+    if(GAgBaglantilari <> nil) and (GAgBaglantilari.AgBaglantiSayisi > 0) then
+      GAgBaglantilari.AktifBaglanti.VeriAlmaIslevi;
 
     // fare olaylarýný iþle
     GOlayYonetim.FareOlaylariniIsle;
@@ -501,7 +483,7 @@ begin
 end;
 
 // sistemin yüklenme esnasýnda çekirdeðin tarih + saat deðerini kaydeder
-procedure CekirdekDosyaTSDegeriniKaydet;
+procedure TYonetim.CekirdekDosyaTSDegeriniKaydet;
 var
   i: TISayi4;
   AramaKaydi: TDosyaArama;
@@ -534,9 +516,9 @@ begin
   FindClose(AramaKaydi);
 end;
 
-procedure KaydedilenProgramlariYenidenYukle;
+procedure TYonetim.KaydedilenProgramlariYenidenYukle;
 var
-  GN: PGorselNesne;
+  GN: TGorselNesne;
   s, DosyaAdi, s2: string;
   MUGorev: PGorev;
   Konum: TKonum;
@@ -611,19 +593,19 @@ begin
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Sol: "%d, Üst: %d"', [Sol, Ust]);
           SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Geniþlik: "%d, Yükseklik: %d"', [Genislik, Yukseklik]);}
 
-          MUGorev := Gorevler0.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + DosyaAdi, CALISMA_SEVIYE3);
+          MUGorev := GGorevler.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + DosyaAdi, CALISMA_SEVIYE3);
 
-          BekleMS(50);
+          GZamanlayicilar.BekleMS(CALISMA_FREKANSI div 2);
 
-          GN := GorselNesneler0.NesneAl(PPencere(MUGorev^.AktifPencere)^.Kimlik);
+          GN := GGNesneler.NesneAl(TPencere(MUGorev^.AktifPencere).Kimlik);
 
-          PPencere(GN)^.FAtananAlan.Sol := Konum.Sol;
-          PPencere(GN)^.FAtananAlan.Ust := Konum.Ust;
-          PPencere(GN)^.FAtananAlan.Genislik := Boyut.Genislik;
-          PPencere(GN)^.FAtananAlan.Yukseklik := Boyut.Yukseklik;
-          PPencere(GN)^.Guncelle;
+          TPencere(GN).FAtananAlan.Sol := Konum.Sol;
+          TPencere(GN).FAtananAlan.Ust := Konum.Ust;
+          TPencere(GN).FAtananAlan.Genislik := Boyut.Genislik;
+          TPencere(GN).FAtananAlan.Yukseklik := Boyut.Yukseklik;
+          TPencere(GN).Guncelle;
 
-          PMasaustu(GN^.AtaNesne)^.Ciz;
+          TMasaustu(GN.AtaNesne).Ciz;
         end;
       end;
     until i = 0;
@@ -634,50 +616,10 @@ begin
   CloseFile(DosyaKimlik);
 end;
 
-procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
+procedure TYonetim.AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Assert: %s', [msg]);
-end;
-
-{ TMyThread2 }
-
-procedure TMyThread2.Execute;
-begin
-
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'TMyThread2', []);
-end;
-
-constructor TMyThread2.Create(CreateSuspended: Boolean);
-begin
-
-  inherited Create(CreateSuspended);
-end;
-
-{ TMyThread }
-
-procedure TMyThread.Execute;
-begin
-
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'TMyThread', []);
-  //BekleMS(200);
-end;
-
-constructor TMyThread.Create(CreateSuspended: Boolean);
-begin
-
-  inherited Create(CreateSuspended);
-  //FreeOnTerminate := True;
-end;
-
-{==============================================================================
-  çalýþtýrýlacak iþlemlerin ana yükleme iþlevlerini içerir
- ==============================================================================}
-procedure ListeleriIlkDegerlerleYukle;
-begin
-
-  YaziListesi0.Yukle;
-  SayiListesi0.Yukle;
 end;
 
 end.

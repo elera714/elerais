@@ -1,29 +1,33 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adý: dhcp4_i.pas
-  Dosya Ýþlevi: DHCP v4 istemci protokol iþlevlerini yönetir
+  Dosya AdÄ±: dhcpv4.pas
+  Dosya Ä°ÅŸlevi: DHCP v4 protokol iÅŸlevlerini yÃ¶netir
 
-  Güncelleme Tarihi: 22/06/2026
+  GÃ¼ncelleme Tarihi: 26/08/20256
 
-  Bilgi: sadece kullanýlan sabit, deðiþken ve iþlevler türkçeye çevrilmiþtir
+  Bilgi: sadece kullanÄ±lan sabit, deÄŸiÅŸken ve iÅŸlevler tÃ¼rkÃ§eye Ã§evrilmiÅŸtir
 
  ==============================================================================}
 {$mode objfpc}
-unit dhcp4_i;
+unit dhcpv4;
 
 interface
 
 uses paylasim;
 
 const
-  { TODO - dns sunucusu tarafýndan yapýlandýrýlacak, þu aþamada dhcp sunucu tarafýndan
-    gönderilecek deðer olarak belirlenmiþtir }
-  // aþaðýdaki 2 deðer þu aþamada dhcp sunucusu tarafýndan kullanýlmaktadýr
-  DNSIPAdresi: TIP4Adres  = (127, 0, 0, 1);
+  { TODO - dns sunucusu tarafÄ±ndan yapÄ±landÄ±rÄ±lacak, ÅŸu aÅŸamada dhcp sunucu tarafÄ±ndan
+    gÃ¶nderilecek deÄŸer olarak belirlenmiÅŸtir }
+  // aÅŸaÄŸÄ±daki 2 deÄŸer ÅŸu aÅŸamada dhcp sunucusu tarafÄ±ndan kullanÄ±lmaktadÄ±r
+  DNSIP4Adres: TIP4Adres  = (127, 0, 0, 1);
   AgGecidi: TIP4Adres     = (127, 0, 0, 1);
+
+var
+  // bilgi (inform) mesajÄ±nÄ±n gÃ¶nderilip gÃ¶nderilmediÄŸi
+  BilgiMesajiGonderildi: Boolean = False;
 
 type
   PDHCP4Yapi = ^TDHCP4Yapi;
@@ -32,8 +36,8 @@ type
     RelayIcin: TSayi1;
   	GonderenKimlik: TSayi4;
   	Sure, Bayraklar: TSayi2;
-  	IstemciIPAdres, IstemciyeAtanacakIPAdresi, SunucuIPAdres,
-    AgGecidiIPAdres: TIP4Adres;
+  	IstemciIP4Adres, IstemciyeAtanacakIP4Adres, SunucuIP4Adres,
+    AgGecidiIP4Adres: TIP4Adres;
   	IstemciMACAdres: TMACAdres;
   	AYRLDI1: TSayi4;
   	AYRLDI2: TSayi4;
@@ -67,10 +71,10 @@ const
   DHCP_LEASE_UNKNOWN                      = TSayi1(12);
   DHCP_LEASE_ACTIVE                       = TSayi1(13);
 
-  // seçenek tipleri
+  // seÃ§enek tipleri
   DHCP_OPTION_PAD                         = TSayi1(0);
   DHCP_SECIM_ALTAG_MASKESI                = TSayi1(1);
-  DHCP_SECIM_ZAMAN_OFFSET                 = TSayi1(2);      // kullanýlmýyor
+  DHCP_SECIM_ZAMAN_OFFSET                 = TSayi1(2);      // kullanÄ±lmÄ±yor
   DHCP_SECIM_YONLENDIRICI                 = TSayi1(3);
   DHCP_OPTION_TIME_SERVER                 = TSayi1(4);
   DHCP_OPTION_NAME_SERVER                 = TSayi1(5);
@@ -232,7 +236,7 @@ const
   DHCP_SECIM_OZEL_PROXY_OTOKESIF          = TSayi1(252);
   DHCP_SECIM_SON                          = TSayi1(255);
 
-  DHCP_SIHIRLI_CEREZ                      = TSayi4($63825363);    // network byte sýralý kodlama
+  DHCP_SIHIRLI_CEREZ                      = TSayi4($63825363);    // network byte sÄ±ralÄ± kodlama
   DHCP_GONDEREN_KIMLIK                    = TSayi4($3903F328);
 
 type
@@ -243,42 +247,36 @@ type
     Mesaj: Isaretci;
   end;
 
-procedure DHCPIpAdresiAl;
-{ Discover }
-procedure DHCPKesifMesajiGonder;
-{ Offer }
-procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi: TIPAdresIslev;
-  AMACAdres: TMACAdres);
-{ Request }
-procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIP4Adres);
-{ Request -> Ack }
-procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: TIPAdresIslev;
-  AMACAdres: TMACAdresIslev);
-{ Inform }
-procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIP4Adres);
-{ Inform -> Ack }
-procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres: TIPAdresIslev;
-  AMACAdres: TMACAdresIslev);
-{ NAck }
-procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
+type
+  TDHCPv4 = class
+  public
+    { Discover }
+    procedure DHCPKesifMesajiGonder;
+    { Offer }
+    procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4;
+      ATeklifEdilenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdres);
+    { Request }
+    procedure DHCPIstekMesajiGonder(ADHCPSunucuIP4Adres, AIstenenIP4Adres: TIP4Adres);
+    { Request -> Ack }
+    procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4;
+      AIstenenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
+    { Inform }
+    procedure DHCPBilgilendirmeMesajiGonder(AIstemciIP4Adres: TIP4Adres);
+    { Inform -> Ack }
+    procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4;
+      AIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
+    { NAck }
+    procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
+  end;
 
 implementation
 
-uses baglanti, donusum, islevler, sistemmesaj, ag;
+uses baglantilar, donusum, aygityonetimi, islevler;
 
 {==============================================================================
-  DHCP sunucularýna keþif mesajý gönderir
+  DHCP sunucusuna keÅŸif mesajÄ± gÃ¶nderir
  ==============================================================================}
-procedure DHCPIpAdresiAl;
-begin
-
-  DHCPKesifMesajiGonder;
-end;
-
-{==============================================================================
-  DHCP sunucusuna keþif mesajý gönderir
- ==============================================================================}
-procedure DHCPKesifMesajiGonder;
+procedure TDHCPv4.DHCPKesifMesajiGonder;
 var
   B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
@@ -287,25 +285,25 @@ var
   p1: PSayi1;
   pc: PChar;
   DHCPYapiUzunlugu: TSayi4;
-  IPAdresi: string;
+  IP4Adres: string;
 begin
 
   DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
-	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluÄŸu
 	DHCPYapi^.RelayIcin := 0;
 	DHCPYapi^.GonderenKimlik := ntohs(DHCP_GONDEREN_KIMLIK);
 	DHCPYapi^.Sure := 0;
 	DHCPYapi^.Bayraklar := 0;
-	DHCPYapi^.IstemciIPAdres := IP4Adres0;
-	DHCPYapi^.IstemciyeAtanacakIPAdresi := IP4Adres0;
-	DHCPYapi^.SunucuIPAdres := IP4Adres0;
-	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
+	DHCPYapi^.IstemciIP4Adres := IP4Adres0;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := IP4Adres0;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPYapi^.IstemciMACAdres := GAg0.MACAdres;
+  DHCPYapi^.IstemciMACAdres := GAygitlar.AktifEthernet.MACAdres;
 	DHCPYapi^.AYRLDI1 := 0;
 	DHCPYapi^.AYRLDI2 := 0;
 	DHCPYapi^.AYRLDI3 := 0;
@@ -314,14 +312,14 @@ begin
   FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
 	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
 
-  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  // en sondaki iÅŸaretÃ§i hariÃ§ (DigerSecenekler) yapÄ± uzunluÄŸu
   DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
 
-  // diðer seçenekler
+  // diÄŸer seÃ§enekler
   p1 := @DHCPYapi^.DigerSecenekler;
 
-  // dhcp mesaj kodlamasý
-  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+  // dhcp mesaj kodlamasÄ±
+  // 1. byte = mesaj tip, 2. byte = mesajÄ±n uzunluÄŸu, 3. byte = mesajÄ±n kendisi
 
   // dhcp mesaj tipi
   p1^ := DHCP_SECIM_MESAJ_TIP;
@@ -338,14 +336,14 @@ begin
   p1^ := 7;                               // uzunluk
   Inc(p1);
   p1^ := 1;
-  Inc(p1);                                // donaným tipi = 1 (ethernet)
+  Inc(p1);                                // donanÄ±m tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
-  MACAdres^ := GAg0.MACAdres;
+  MACAdres^ := GAygitlar.AktifEthernet.MACAdres;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
 
   Inc(p1, 6);
 
-  // bilgisayar adý
+  // bilgisayar adÄ±
   i := Length(GTamBilgisayarAdi);
   p1^ := DHCP_SECIM_YEREL_AD;
   Inc(p1);
@@ -392,15 +390,16 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  IP4Adres := IP_KarakterKatari4(IPAdres255);
+  B := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ptUDP, IP4Adres, DHCP_ISTEMCI_PORT,
+    DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
-      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
       B.BaglantiyiKes;
     end;
@@ -410,33 +409,33 @@ begin
 end;
 
 {==============================================================================
-  DHCP istemcisine teklif mesajý gönderir
+  DHCP istemcisine teklif mesajÄ± gÃ¶nderir
  ==============================================================================}
-procedure DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4; ATeklifEdilenIPAdresi: TIPAdresIslev;
-  AMACAdres: TMACAdres);
+procedure TDHCPv4.DHCPTeklifMesajiGonder(AGonderenKimlik: TSayi4;
+  ATeklifEdilenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdres);
 var
   B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
-  IPAdres: PIP4Adres;
+  IP4Adres: PIP4Adres;
   p1: PSayi1;
   p4: PSayi4;
   DHCPYapiUzunlugu: TSayi4;
-  IPAdresi: string;
+  IP4AdresStr: string;
 begin
 
   DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
-	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluÄŸu
 	DHCPYapi^.RelayIcin := 0;
 	DHCPYapi^.GonderenKimlik := ntohs(AGonderenKimlik);
 	DHCPYapi^.Sure := 0;
 	DHCPYapi^.Bayraklar := 0;
-	DHCPYapi^.IstemciIPAdres := IP4Adres0;
-	DHCPYapi^.IstemciyeAtanacakIPAdresi := ATeklifEdilenIPAdresi.IPAdres;
-	DHCPYapi^.SunucuIPAdres := IP4Adres0;
-	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
+	DHCPYapi^.IstemciIP4Adres := IP4Adres0;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := ATeklifEdilenIP4Adres.IP4Adres;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
   DHCPYapi^.IstemciMACAdres := AMACAdres;
@@ -448,14 +447,14 @@ begin
   FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
 	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
 
-  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  // en sondaki iÅŸaretÃ§i hariÃ§ (DigerSecenekler) yapÄ± uzunluÄŸu
   DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
 
-  // diðer seçenekler
+  // diÄŸer seÃ§enekler
   p1 := @DHCPYapi^.DigerSecenekler;
 
-  // dhcp mesaj kodlamasý
-  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+  // dhcp mesaj kodlamasÄ±
+  // 1. byte = mesaj tip, 2. byte = mesajÄ±n uzunluÄŸu, 3. byte = mesajÄ±n kendisi
 
   // dhcp mesaj tipi
   p1^ := DHCP_SECIM_MESAJ_TIP;
@@ -472,10 +471,10 @@ begin
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := GAg0.IP4Adres;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := GAgBaglantilari.AktifBaglanti.IP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_IP_KIRALAMA_SURESI;
@@ -508,26 +507,26 @@ begin
   p1 := Isaretci(p4);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
-  // alt að maskesi - 2 + 4 byte
+  // alt aÄŸ maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_ALTAG_MASKESI;
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := GAg0.AltAgMaskesi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := GAgBaglantilari.AktifBaglanti.AltAgMaskesi;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
-  // alt að maskesi - 2 + 4 byte
+  // alt aÄŸ maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_YONLENDIRICI;
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := AgGecidi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := AgGecidi;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // dns sunucusu - 2 + 4 byte
@@ -535,24 +534,25 @@ begin
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := DNSIPAdresi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := DNSIP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari4(ATeklifEdilenIPAdresi.IPAdres);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  IP4AdresStr := IP_KarakterKatari4(ATeklifEdilenIP4Adres.IP4Adres);
+  B := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ptUDP, IP4AdresStr, DHCP_SUNUCU_PORT,
+    DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
-      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
       B.BaglantiyiKes;
     end;
@@ -562,37 +562,37 @@ begin
 end;
 
 {==============================================================================
-  DHCP sunucusuna istek mesajý gönderir
+  DHCP sunucusuna istek mesajÄ± gÃ¶nderir
  ==============================================================================}
-procedure DHCPIstekMesajiGonder(ADHCPSunucuIPAdresi, AIstenenIPAdresi: TIP4Adres);
+procedure TDHCPv4.DHCPIstekMesajiGonder(ADHCPSunucuIP4Adres, AIstenenIP4Adres: TIP4Adres);
 var
   B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
-  IPAdres: PIP4Adres;
+  IP4Adres: PIP4Adres;
   MACAdres: PMACAdres;
   i: TSayi1;
   p1: PSayi1;
   pc: PChar;
   DHCPYapiUzunlugu: TSayi4;
-  IPAdresi: string;
+  IP4AdresStr: string;
 begin
 
   DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
-	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluÄŸu
 	DHCPYapi^.RelayIcin := 0;
 	DHCPYapi^.GonderenKimlik := ntohs(DHCP_GONDEREN_KIMLIK);
 	DHCPYapi^.Sure := 0;
 	DHCPYapi^.Bayraklar := 0;
-	DHCPYapi^.IstemciIPAdres := IP4Adres0;
-	DHCPYapi^.IstemciyeAtanacakIPAdresi := IP4Adres0;
-	DHCPYapi^.SunucuIPAdres := IP4Adres0;
-	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
+	DHCPYapi^.IstemciIP4Adres := IP4Adres0;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := IP4Adres0;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPYapi^.IstemciMACAdres := GAg0.MACAdres;
+  DHCPYapi^.IstemciMACAdres := GAygitlar.AktifEthernet.MACAdres;
 	DHCPYapi^.AYRLDI1 := 0;
 	DHCPYapi^.AYRLDI2 := 0;
 	DHCPYapi^.AYRLDI3 := 0;
@@ -601,14 +601,14 @@ begin
   FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
 	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
 
-  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  // en sondaki iÅŸaretÃ§i hariÃ§ (DigerSecenekler) yapÄ± uzunluÄŸu
   DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
 
-  // diðer seçenekler
+  // diÄŸer seÃ§enekler
   p1 := @DHCPYapi^.DigerSecenekler;
 
-  // dhcp mesaj kodlamasý
-  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+  // dhcp mesaj kodlamasÄ±
+  // 1. byte = mesaj tip, 2. byte = mesajÄ±n uzunluÄŸu, 3. byte = mesajÄ±n kendisi
 
   // dhcp mesaj tipi
   p1^ := DHCP_SECIM_MESAJ_TIP;
@@ -625,9 +625,9 @@ begin
   p1^ := 7;                               // uzunluk
   Inc(p1);
   p1^ := 1;
-  Inc(p1);                                // donaným tipi = 1 (ethernet)
+  Inc(p1);                                // donanÄ±m tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
-  MACAdres^ := GAg0.MACAdres;
+  MACAdres^ := GAygitlar.AktifEthernet.MACAdres;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
 
   Inc(p1, 6);
@@ -637,10 +637,10 @@ begin
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := AIstenenIPAdresi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := AIstenenIP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // istenen ip adresi - 2 + 4 byte
@@ -648,13 +648,13 @@ begin
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := ADHCPSunucuIPAdresi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := ADHCPSunucuIP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
-  // bilgisayar adý
+  // bilgisayar adÄ±
   i := Length(GTamBilgisayarAdi);
   p1^ := DHCP_SECIM_YEREL_AD;
   Inc(p1);
@@ -666,7 +666,7 @@ begin
   p1 := Isaretci(pc);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + i;
 
-  // tam bilgisayar adý - (domain adý dahil)
+  // tam bilgisayar adÄ± - (domain adÄ± dahil)
   i := Length(GTamBilgisayarAdi);
   p1^ := DHCP_SECIM_TAM_ISTEMCI_ADI;
   Inc(p1);
@@ -719,15 +719,16 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  IP4AdresStr := IP_KarakterKatari4(IPAdres255);
+  B := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ptUDP, IP4AdresStr, DHCP_ISTEMCI_PORT,
+    DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
-      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
       B.BaglantiyiKes;
     end;
@@ -737,35 +738,35 @@ begin
 end;
 
 {==============================================================================
-  DHCP istemcisinin istek mesajýna onay yanýtý gönderir
+  DHCP istemcisinin istek mesajÄ±na onay yanÄ±tÄ± gÃ¶nderir
  ==============================================================================}
-procedure DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIstenenIPAdresi: TIPAdresIslev;
-  AMACAdres: TMACAdresIslev);
+procedure TDHCPv4.DHCPIstegeOnayMesajiGonder(AGonderenKimlik: TSayi4;
+  AIstenenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
 var
   B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
-  IPAdres: PIP4Adres;
+  IP4Adres: PIP4Adres;
   i: TSayi1;
   p1: PSayi1;
   p4: PSayi4;
   pc: PChar;
   DHCPYapiUzunlugu: TSayi4;
-  IPAdresi: string;
+  IP4AdresStr: string;
 begin
 
   DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
-	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluÄŸu
 	DHCPYapi^.RelayIcin := 0;
 	DHCPYapi^.GonderenKimlik := ntohs(AGonderenKimlik);
 	DHCPYapi^.Sure := 0;
 	DHCPYapi^.Bayraklar := 0;
-	DHCPYapi^.IstemciIPAdres := IP4Adres0;
-	DHCPYapi^.IstemciyeAtanacakIPAdresi := AIstenenIPAdresi.IPAdres;
-	DHCPYapi^.SunucuIPAdres := IP4Adres0;
-	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
+	DHCPYapi^.IstemciIP4Adres := IP4Adres0;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := AIstenenIP4Adres.IP4Adres;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
   DHCPYapi^.IstemciMACAdres := AMACAdres.MACAdres;
@@ -777,14 +778,14 @@ begin
   FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
 	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
 
-  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  // en sondaki iÅŸaretÃ§i hariÃ§ (DigerSecenekler) yapÄ± uzunluÄŸu
   DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
 
-  // diðer seçenekler
+  // diÄŸer seÃ§enekler
   p1 := @DHCPYapi^.DigerSecenekler;
 
-  // dhcp mesaj kodlamasý
-  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+  // dhcp mesaj kodlamasÄ±
+  // 1. byte = mesaj tip, 2. byte = mesajÄ±n uzunluÄŸu, 3. byte = mesajÄ±n kendisi
 
   // dhcp mesaj tipi
   p1^ := DHCP_SECIM_MESAJ_TIP;
@@ -801,10 +802,10 @@ begin
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := GAg0.IP4Adres;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := GAgBaglantilari.AktifBaglanti.IP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_IP_KIRALAMA_SURESI;
@@ -837,26 +838,26 @@ begin
   p1 := Isaretci(p4);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
-  // alt að maskesi - 2 + 4 byte
+  // alt aÄŸ maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_ALTAG_MASKESI;
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := GAg0.AltAgMaskesi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := GAgBaglantilari.AktifBaglanti.AltAgMaskesi;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
-  // alt að maskesi - 2 + 4 byte
+  // alt aÄŸ maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_YONLENDIRICI;
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := AgGecidi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := AgGecidi;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // dns sunucusu - 2 + 4 byte
@@ -864,13 +865,13 @@ begin
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := DNSIPAdresi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := DNSIP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
-  // alan adý - 2 byte + ad uzunluðu + 1 byte
+  // alan adÄ± - 2 byte + ad uzunluÄŸu + 1 byte
   i := Length(GAlanAdi);
   p1^ := DHCP_SECIM_ALAN_ADI;
   Inc(p1);
@@ -887,15 +888,16 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari4(AIstenenIPAdresi.IPAdres);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  IP4AdresStr := IP_KarakterKatari4(AIstenenIP4Adres.IP4Adres);
+  B := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ptUDP, IP4AdresStr, DHCP_SUNUCU_PORT,
+    DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
-      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
       B.BaglantiyiKes;
     end;
@@ -905,9 +907,9 @@ begin
 end;
 
 {==============================================================================
-  DHCP sunucusuna bilgilendirme mesajý gönderir
+  DHCP sunucusuna bilgilendirme mesajÄ± gÃ¶nderir
  ==============================================================================}
-procedure DHCPBilgilendirmeMesajiGonder(AIstemciIPAdres: TIP4Adres);
+procedure TDHCPv4.DHCPBilgilendirmeMesajiGonder(AIstemciIP4Adres: TIP4Adres);
 var
   B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
@@ -916,25 +918,25 @@ var
   p1: PSayi1;
   pc: PChar;
   DHCPYapiUzunlugu: TSayi4;
-  IPAdresi: string;
+  IP4AdresStr: string;
 begin
 
   DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
-	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluÄŸu
 	DHCPYapi^.RelayIcin := 0;
 	DHCPYapi^.GonderenKimlik := ntohs(DHCP_GONDEREN_KIMLIK);
 	DHCPYapi^.Sure := 0;
 	DHCPYapi^.Bayraklar := 0;
-	DHCPYapi^.IstemciIPAdres := AIstemciIPAdres;
-	DHCPYapi^.IstemciyeAtanacakIPAdresi := IP4Adres0;
-	DHCPYapi^.SunucuIPAdres := IP4Adres0;
-	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
+	DHCPYapi^.IstemciIP4Adres := AIstemciIP4Adres;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := IP4Adres0;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
-  DHCPYapi^.IstemciMACAdres := GAg0.MACAdres;
+  DHCPYapi^.IstemciMACAdres := GAygitlar.AktifEthernet.MACAdres;
 	DHCPYapi^.AYRLDI1 := 0;
 	DHCPYapi^.AYRLDI2 := 0;
 	DHCPYapi^.AYRLDI3 := 0;
@@ -943,14 +945,14 @@ begin
   FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
 	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
 
-  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  // en sondaki iÅŸaretÃ§i hariÃ§ (DigerSecenekler) yapÄ± uzunluÄŸu
   DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
 
-  // diðer seçenekler
+  // diÄŸer seÃ§enekler
   p1 := @DHCPYapi^.DigerSecenekler;
 
-  // dhcp mesaj kodlamasý
-  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+  // dhcp mesaj kodlamasÄ±
+  // 1. byte = mesaj tip, 2. byte = mesajÄ±n uzunluÄŸu, 3. byte = mesajÄ±n kendisi
 
   // dhcp mesaj tipi
   p1^ := DHCP_SECIM_MESAJ_TIP;
@@ -967,14 +969,14 @@ begin
   p1^ := 7;                               // uzunluk
   Inc(p1);
   p1^ := 1;
-  Inc(p1);                                // donaným tipi = 1 (ethernet)
+  Inc(p1);                                // donanÄ±m tipi = 1 (ethernet)
   MACAdres := PMACAdres(p1);
-  MACAdres^ := GAg0.MACAdres;
+  MACAdres^ := GAygitlar.AktifEthernet.MACAdres;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
 
   Inc(p1, 6);
 
-  // bilgisayar adý
+  // bilgisayar adÄ±
   i := Length(GTamBilgisayarAdi);
   p1^ := DHCP_SECIM_YEREL_AD;
   Inc(p1);
@@ -1021,15 +1023,16 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+  IP4AdresStr := IP_KarakterKatari4(IPAdres255);
+  B := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ptUDP, IP4AdresStr, DHCP_ISTEMCI_PORT,
+    DHCP_SUNUCU_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
-      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
       B.BaglantiyiKes;
     end;
@@ -1039,32 +1042,32 @@ begin
 end;
 
 {==============================================================================
-  DHCP istemcisinin bilgilendirme mesajýna onay yanýtý gönderir
+  DHCP istemcisinin bilgilendirme mesajÄ±na onay yanÄ±tÄ± gÃ¶nderir
  ==============================================================================}
-procedure DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4; AIPAdres: TIPAdresIslev;
-  AMACAdres: TMACAdresIslev);
+procedure TDHCPv4.DHCPBilgilendirmeyeOnayMesajiGonder(AGonderenKimlik: TSayi4;
+  AIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
 var
   B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
-  IPAdres: PIP4Adres;
+  IP4Adres: PIP4Adres;
   p1: PSayi1;
   DHCPYapiUzunlugu: TSayi4;
-  IPAdresi: string;
+  IP4AdresStr: string;
 begin
 
   DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
-	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluÄŸu
 	DHCPYapi^.RelayIcin := 0;
 	DHCPYapi^.GonderenKimlik := ntohs(AGonderenKimlik);
 	DHCPYapi^.Sure := 0;
 	DHCPYapi^.Bayraklar := 0;
-	DHCPYapi^.IstemciIPAdres := IP4Adres0;
-	DHCPYapi^.IstemciyeAtanacakIPAdresi := IP4Adres0;
-	DHCPYapi^.SunucuIPAdres := IP4Adres0;
-	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
+	DHCPYapi^.IstemciIP4Adres := IP4Adres0;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := IP4Adres0;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
   DHCPYapi^.IstemciMACAdres := AMACAdres.MACAdres;
@@ -1076,14 +1079,14 @@ begin
   FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
 	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
 
-  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  // en sondaki iÅŸaretÃ§i hariÃ§ (DigerSecenekler) yapÄ± uzunluÄŸu
   DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
 
-  // diðer seçenekler
+  // diÄŸer seÃ§enekler
   p1 := @DHCPYapi^.DigerSecenekler;
 
-  // dhcp mesaj kodlamasý
-  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+  // dhcp mesaj kodlamasÄ±
+  // 1. byte = mesaj tip, 2. byte = mesajÄ±n uzunluÄŸu, 3. byte = mesajÄ±n kendisi
 
   // dhcp mesaj tipi
   p1^ := DHCP_SECIM_MESAJ_TIP;
@@ -1100,32 +1103,32 @@ begin
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := GAg0.IP4Adres;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := GAgBaglantilari.AktifBaglanti.IP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
-  // alt að maskesi - 2 + 4 byte
+  // alt aÄŸ maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_ALTAG_MASKESI;
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := GAg0.AltAgMaskesi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := GAgBaglantilari.AktifBaglanti.AltAgMaskesi;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
-  // alt að maskesi - 2 + 4 byte
+  // alt aÄŸ maskesi - 2 + 4 byte
   p1^ := DHCP_SECIM_YONLENDIRICI;
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := AgGecidi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := AgGecidi;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   // dns sunucusu - 2 + 4 byte
@@ -1133,10 +1136,10 @@ begin
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := DNSIPAdresi;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := DNSIP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_OZEL_PROXY_OTOKESIF;
@@ -1151,15 +1154,16 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari4(AIPAdres.IPAdres);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  IP4AdresStr := IP_KarakterKatari4(AIP4Adres.IP4Adres);
+  B := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ptUDP, IP4AdresStr, DHCP_SUNUCU_PORT,
+    DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
-      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
       B.BaglantiyiKes;
     end;
@@ -1169,31 +1173,31 @@ begin
 end;
 
 {==============================================================================
-  DHCP istemcisine ret mesajý gönderir
+  DHCP istemcisine ret mesajÄ± gÃ¶nderir
  ==============================================================================}
-procedure DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
+procedure TDHCPv4.DHCPRetMesajiGonder(AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
 var
   B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
-  IPAdres: PIP4Adres;
+  IP4Adres: PIP4Adres;
   p1: PSayi1;
   DHCPYapiUzunlugu: TSayi4;
-  IPAdresi: string;
+  IP4AdresStr: string;
 begin
 
   DHCPYapi := GetMem(4096);
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
-	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluÄŸu
 	DHCPYapi^.RelayIcin := 0;
 	DHCPYapi^.GonderenKimlik := ntohs(AGonderenKimlik);
 	DHCPYapi^.Sure := 0;
 	DHCPYapi^.Bayraklar := 0;
-	DHCPYapi^.IstemciIPAdres := IP4Adres0;
-	DHCPYapi^.IstemciyeAtanacakIPAdresi := IP4Adres0;
-	DHCPYapi^.SunucuIPAdres := IP4Adres0;
-	DHCPYapi^.AgGecidiIPAdres := IP4Adres0;
+	DHCPYapi^.IstemciIP4Adres := IP4Adres0;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := IP4Adres0;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
 
   // IstemciMACAdres 6 + 10 = 16 byte
   DHCPYapi^.IstemciMACAdres := AMACAdres.MACAdres;
@@ -1205,14 +1209,14 @@ begin
   FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
 	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
 
-  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  // en sondaki iÅŸaretÃ§i hariÃ§ (DigerSecenekler) yapÄ± uzunluÄŸu
   DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
 
-  // diðer seçenekler
+  // diÄŸer seÃ§enekler
   p1 := @DHCPYapi^.DigerSecenekler;
 
-  // dhcp mesaj kodlamasý
-  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+  // dhcp mesaj kodlamasÄ±
+  // 1. byte = mesaj tip, 2. byte = mesajÄ±n uzunluÄŸu, 3. byte = mesajÄ±n kendisi
 
   // dhcp mesaj tipi
   p1^ := DHCP_SECIM_MESAJ_TIP;
@@ -1229,24 +1233,25 @@ begin
   Inc(p1);
   p1^ := 4;
   Inc(p1);
-  IPAdres := Isaretci(p1);
-  IPAdres^ := GAg0.IP4Adres;
-  Inc(IPAdres);
-  p1 := Isaretci(IPAdres);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := GAgBaglantilari.AktifBaglanti.IP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
 
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  IPAdresi := IP_KarakterKatari4(IPAdres255);
-  B := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi, DHCP_SUNUCU_PORT, DHCP_ISTEMCI_PORT);
+  IP4AdresStr := IP_KarakterKatari4(IPAdres255);
+  B := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ptUDP, IP4AdresStr, DHCP_SUNUCU_PORT,
+    DHCP_ISTEMCI_PORT);
   if not(B = nil) then
   begin
 
-    if(B.Baglan(itIP4, btYayin) <> -1) then
+    if(B.Baglan(btYayin) <> -1) then
     begin
 
-      B.Yaz(PROTOKOL_IP4, @DHCPYapi[0], DHCPYapiUzunlugu);
+      B.Yaz(@DHCPYapi[0], DHCPYapiUzunlugu);
 
       B.BaglantiyiKes;
     end;

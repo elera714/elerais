@@ -9,7 +9,7 @@
   Bilgi: USTSINIR_MESAJ adedince sistem mesajı çekirdekte yukarıdan aşağıya doğru sıralı olarak depolanır,
     tüm mesaj alanları dolduğunda kayıtlı mesajlar bir yukarı kaydırılarak yeni mesaj en alta eklenir
 
-  Güncelleme Tarihi: 23/07/2026
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -86,14 +86,14 @@ procedure SISTEM_MESAJ_YAZI(AMesajTipi: TMesajTipi; ARenk: TRenk;
 procedure SISTEM_MESAJ_MAC(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
   AMACAdres: TMACAdres);
 procedure SISTEM_MESAJ_IP4(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIP4Adres);
+  AIP4Adres: TIP4Adres);
 procedure SISTEM_MESAJ_IP6(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIP6Adres);
+  AIP6Adres: TIP6Adres);
 function UzunlukAl16(ADeger: TSayi4): TSayi4;
 
 implementation
 
-uses genel, cmos, donusum;
+uses cmos, donusum;
 
 {==============================================================================
   oluşturulacak mesajların ana yükleme işlevlerini içerir
@@ -477,16 +477,16 @@ end;
   sistem kayıtlarına mesaj ekle - mesaj + ip v4 adres birleşimi
  ==============================================================================}
 procedure SISTEM_MESAJ_IP4(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIP4Adres);
+  AIP4Adres: TIP4Adres);
 var
-  IPAdres: string[15];
+  IP4Adres: string[15];
   s: string;
 begin
 
   // ip v4 adres değerini karaktere çevir
-  IPAdres := IP_KarakterKatari4(AIPAdres);
+  IP4Adres := IP_KarakterKatari4(AIP4Adres);
 
-  s := AMesaj + IPAdres;
+  s := AMesaj + IP4Adres;
 
   if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;
@@ -495,16 +495,16 @@ end;
   sistem kayıtlarına mesaj ekle - mesaj + ip v6 adres birleşimi
  ==============================================================================}
 procedure SISTEM_MESAJ_IP6(AMesajTipi: TMesajTipi; ARenk: TRenk; AMesaj: string;
-  AIPAdres: TIP6Adres);
+  AIP6Adres: TIP6Adres);
 var
-  IPAdres: string[39];
+  IP4Adres: string[39];
   s: string;
 begin
 
   // ip v6 adres değerini karaktere çevir
-  IPAdres := IP_KarakterKatari6(TIP6Adres2(PIP6Adres2(@AIPAdres)^));
+  IP4Adres := IP_KarakterKatari6(TIP6Adres2(PIP6Adres2(@AIP6Adres)^));
 
-  s := AMesaj + IPAdres;
+  s := AMesaj + IP4Adres;
 
   if(GSistemMesaj.ServisCalisiyor) then GSistemMesaj.Ekle(AMesajTipi, ARenk, s);
 end;

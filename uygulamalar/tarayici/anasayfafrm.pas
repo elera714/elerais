@@ -103,7 +103,7 @@ begin
 
   FPencere.Gorunum := True;
 
-  FZamanlayici.Olustur(100);
+  FZamanlayici.Olustur(1000);
   FZamanlayici.Baslat;
 
   SayfaIstendi := False;
@@ -248,7 +248,7 @@ begin
             Exit;
           end;
 
-          IPAdresi := IP_KarakterKatari(DNS.RData);
+          IPAdresi := IP_KarakterKatari4(DNS.RData);
 
           DNS.YokEt;
         end;

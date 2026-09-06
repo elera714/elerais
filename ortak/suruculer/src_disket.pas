@@ -25,7 +25,10 @@ interface
   2 * 80 * 18 * 512 = 1474560 = 1.44
 
 }
-uses paylasim, port, fdepolama;
+uses paylasim, port, fdepolama, aygit;
+
+const
+  USTSINIR_DISKETAYGIT = 2;
 
 const
   DISKET_TEMEL          = $3F0;       // base addres
@@ -44,35 +47,90 @@ var
   IRQ6Tetiklendi: Boolean;
   DURUM0, DURUM1, DURUM2: TSayi1;
 
-procedure Yukle;
-procedure MotorAc(AFDNesne: PFDNesne);
-procedure MotorKapat(AFDNesne: PFDNesne);
+type
+  TDisket = class(TFDAygiti)
+  public
+    FIslemYapiliyor: Boolean;         // True = sürücü iþlem yapmakta, False = sürücü boþta
+    FMotorBeklemeSuresi: TSayi4;      // motor kapatma geri sayým sayacý (þu an sadece floppy sürücüsü için, 3 saniye)
+    FSonIzKonumu: TISayi1;            // floppy sürücüsünün kafasýnýn bulunduðu son iz (track) no
+
+    constructor Create; override;
+
+    function Oku(AIlkSektor, ASektorSayisi: TSayi4; AHedefBellek: Isaretci): TISayi4;
+    function Yaz(AIlkSektor, ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    function TekSektorOku(ASektorNo: TSayi4): Boolean;
+    function TekSektorYaz(ASektorNo: TSayi4): Boolean;
+
+    procedure MotorAc;
+    procedure MotorKapat;
+    function DurumOku: TSayi1;
+    procedure DurumYaz(ADeger: TSayi1);
+    function Konumlan0(AFDAygiti: TFDAygiti): Boolean;
+    function Konumlan(AFDAygiti: TFDAygiti; AIz, AKafa: TSayi1): Boolean;
+  end;
+
+type
+  TDisketAygitlari = class
+  private
+    FToplamAygit: TSayi4;
+    FDisketAygitlari: array[0..USTSINIR_DISKETAYGIT - 1] of TDisket;
+    function Al(ASiraNo: TISayi4): TDisket;
+    procedure Yaz(ASiraNo: TISayi4; ADisket: TDisket);
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure VeritabaniOlustur;
+    property DisketAygitlari[ASiraNo: TISayi4]: TDisket read Al write Yaz;
+    property ToplamAygit: TSayi4 read FToplamAygit;
+  end;
+
 procedure DMA2Yukle(Op: Byte);
-function DurumOku: TSayi1;
-procedure DurumYaz(ADeger: TSayi1);
 function Bekle: Boolean;
 procedure IRQ6KesmeIslevi;
-function Konumlan0(AFDNesne: PFDNesne): Boolean;
-function Konumlan(AFDNesne: PFDNesne; AIz, AKafa: TSayi1): Boolean;
 procedure DisketSurucuMotorunuKontrolEt;
 procedure SektoruAyristir(ASektorNo: TSayi2; var AKafa, AIz, ASektor: TSayi1);
-function TekSektorOku(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
-function TekSektorYaz(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
-function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): TISayi4;
-function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
+
+var
+  GDisketAygitlari: TDisketAygitlari;
 
 implementation
 
-uses irq, zamanlayici, aygityonetimi, islevler, sistemmesaj;
+uses irq, zamanlayici, islevler, sistemmesaj;
 
-{==============================================================================
-  disket sürücü ilk yükleme iþlevlerini içerir
- ==============================================================================}
-procedure Yukle;
+constructor TDisketAygitlari.Create;
 var
-  FD: PFDNesne;
+  i: TSayi4;
+begin
+
+  FToplamAygit := 0;
+
+  for i := 0 to USTSINIR_DISKETAYGIT - 1 do DisketAygitlari[i] := nil;
+end;
+
+destructor TDisketAygitlari.Destroy;
+begin
+
+  inherited Destroy;
+end;
+
+function TDisketAygitlari.Al(ASiraNo: TISayi4): TDisket;
+begin
+
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DISKETAYGIT) then
+    Result := FDisketAygitlari[ASiraNo]
+  else Result := nil;
+end;
+
+procedure TDisketAygitlari.Yaz(ASiraNo: TISayi4; ADisket: TDisket);
+begin
+
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DISKETAYGIT) then
+    FDisketAygitlari[ASiraNo] := ADisket;
+end;
+
+procedure TDisketAygitlari.VeritabaniOlustur;
+var
+  FD: TFDAygiti;
   i, j: TSayi1;
 begin
 
@@ -104,25 +162,22 @@ begin
     if(j > 0) then
     begin
 
-      FD := FizikselDepolama0.FDAygitiOlustur(SURUCUTIP_DISKET);
+      FD := GFizikselDepolama.AygitOlustur(SURUCUTIP_DISKET);
       if(FD <> nil) then
       begin
 
-        FD^.Ozellikler := j;
-        FD^.SektorOku := @SektorOku;
-        FD^.SektorYaz := @SektorYaz;
-        FD^.Aygit.AnaPort := $3F0;
-        FD^.Aygit.Kanal := 0;
-        FD^.SonIzKonumu := -1;
+        FD.FAnaPort := $3F0;
+        FD.FKanal := 0;
+        FD.FOku := @TDisket(FD).Oku;
+        FD.FYaz := @TDisket(FD).Yaz;
 
-        FD^.FD3.SilindirSayisi := 18;
-        FD^.FD3.KafaSayisi := 2;
-        FD^.FD3.IzBasinaSektorSayisi := 80;
-        FD^.FD3.ToplamSektorSayisi := 18 * 2 * 80;
+        TDisket(FD).FOzellikler := j;
+        TDisket(FD).FSonIzKonumu := -1;
 
-        // disket sürücü motorunu kapat
-        FD^.IslemYapiliyor := False;
-        FD^.MotorSayac := $1000000;
+        FD.FSilindirSayisi := 18;
+        FD.FKafaSayisi := 2;
+        FD.FIzBasinaSektorSayisi := 80;
+        FD.FToplamSektorSayisi := 18 * 2 * 80;
 
         PDisket1 := FD;
       end;
@@ -133,25 +188,22 @@ begin
     if(j > 0) then
     begin
 
-      FD := FizikselDepolama0.FDAygitiOlustur(SURUCUTIP_DISKET);
+      FD := GFizikselDepolama.AygitOlustur(SURUCUTIP_DISKET);
       if(FD <> nil) then
       begin
 
-        FD^.Ozellikler := j;
-        FD^.SektorOku := @SektorOku;
-        FD^.SektorYaz := @SektorYaz;
-        FD^.Aygit.AnaPort:= $3F0;
-        FD^.Aygit.Kanal := 1;
-        FD^.SonIzKonumu := -1;
+        FD.FAnaPort := $3F0;
+        FD.FKanal := 1;
+        FD.FOku := @TDisket(FD).Oku;
+        FD.FYaz := @TDisket(FD).Yaz;
 
-        FD^.FD3.SilindirSayisi := 18;
-        FD^.FD3.KafaSayisi := 2;
-        FD^.FD3.IzBasinaSektorSayisi := 80;
-        FD^.FD3.ToplamSektorSayisi := 18 * 2 * 80;
+        TDisket(FD).FOzellikler := j;
+        TDisket(FD).FSonIzKonumu := -1;
 
-        // disket sürücü motorunu kapat
-        FD^.IslemYapiliyor := False;
-        FD^.MotorSayac := $1000000;
+        FD.FSilindirSayisi := 18;
+        FD.FKafaSayisi := 2;
+        FD.FIzBasinaSektorSayisi := 80;
+        FD.FToplamSektorSayisi := 18 * 2 * 80;
 
         PDisket2 := FD;
       end;
@@ -166,13 +218,29 @@ begin
 end;
 
 {==============================================================================
+  disket sürücü ilk yükleme iþlevlerini içerir
+ ==============================================================================}
+constructor TDisket.Create;
+begin
+
+  inherited Create;
+
+  FIslemYapiliyor := False;
+
+  // 0 = motor kapalý
+  FMotorBeklemeSuresi := 0;
+
+  FSonIzKonumu := -1;
+end;
+
+{==============================================================================
   disket sürücü motorunu çalýþtýrýr
  ==============================================================================}
-procedure MotorAc(AFDNesne: PFDNesne);
+procedure TDisket.MotorAc;
 begin
 
   // eðer aygýt ile ilgili iþlem yapýlmakta ise çýk (motor zaten açýk)
-  if(AFDNesne^.IslemYapiliyor) then
+  if(FIslemYapiliyor) then
   begin
 
     //SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 1', []);
@@ -181,47 +249,43 @@ begin
 
   // eðer aygýt ile ilgili iþlem tamamlanmýþ ve motorun kapanmasý için geri sayým
   // gerçekleþmekte ise geri sayým iþlemini iptal et
-  if(AFDNesne^.IslemYapiliyor = False) and (AFDNesne^.MotorSayac > 0) then
+  if(FIslemYapiliyor = False) then
   begin
 
-    AFDNesne^.IslemYapiliyor := True;
-    //SISTEM_MESAJ(RENK_KIRMIZI, 'Disket->MotorAc durumu zaten aktif 2', []);
-    Exit;
+    FIslemYapiliyor := True;
+
+    // motor açma iþlemlerini gerçekleþtir
+    PortYaz1(DISKET_CIKISYAZMAC, 0);
+
+    // motor'u aç
+    if(FKanal = 0) then
+    begin
+
+      PortYaz1(DISKET_CIKISYAZMAC, $1C);
+      //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket1->Motor açýldý...', []);
+    end
+    else
+    begin
+
+      PortYaz1(DISKET_CIKISYAZMAC, $2D);
+      //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket2->Motor açýldý...', []);
+    end;
+
+    // CCR = 500kbits/s
+    //PortYaz1(DISKET_AYARYAZMAC, 0);
+
+    // BekleMS(150);
   end;
-
-  // motor açma iþlemlerini gerçekleþtir
-  AFDNesne^.IslemYapiliyor := True;
-
-  PortYaz1(DISKET_CIKISYAZMAC, 0);
-
-  // motor'u aç
-  if(AFDNesne^.Aygit.Kanal = 0) then
-  begin
-
-    PortYaz1(DISKET_CIKISYAZMAC, $1C);
-    //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket1->Motor açýldý...', []);
-  end
-  else
-  begin
-
-    PortYaz1(DISKET_CIKISYAZMAC, $2D);
-    //SISTEM_MESAJ(mtBilgi, RENK_YESIL, 'Disket2->Motor açýldý...', []);
-  end;
-
-  // CCR = 500kbits/s
-  //PortYaz1(DISKET_AYARYAZMAC, 0);
-
-  // BekleMS(150);
 end;
 
 {==============================================================================
   disket sürücü motorunu durdurur
  ==============================================================================}
-procedure MotorKapat(AFDNesne: PFDNesne);
+procedure TDisket.MotorKapat;
 begin
 
   // motor'u kapat
-  if(AFDNesne^.Aygit.Kanal = 0) then
+  if(FKanal = 0) then
   begin
 
     PortYaz1(DISKET_CIKISYAZMAC, $C);
@@ -272,7 +336,7 @@ end;
 {==============================================================================
   disket sürücü denetleyicisinden bilgi alma iþlevi
  ==============================================================================}
-function DurumOku: TSayi1;
+function TDisket.DurumOku: TSayi1;
 var
   i: TSayi4;
 begin
@@ -294,7 +358,7 @@ end;
 {==============================================================================
   disket sürücü denetleyicisine bilgi gönderme iþlevi
  ==============================================================================}
-procedure DurumYaz(ADeger: TSayi1);
+procedure TDisket.DurumYaz(ADeger: TSayi1);
 var
   i: TSayi4;
 begin
@@ -326,10 +390,10 @@ begin
   // kesme tetiklenmedi durumuna getiriliyor
   IRQ6Tetiklendi := False;
 
-  i := ZamanlayiciSayaci + 150;
+  i := GZamanlayicilar.FZamanlayiciSayaci + (2 * CALISMA_FREKANSI);
 
   // þart true olduðu müddetçe devam et
-  while (i > ZamanlayiciSayaci) do
+  while (i > GZamanlayicilar.FZamanlayiciSayaci) do
   begin
 
     if(IRQ6Tetiklendi) then Exit;
@@ -354,7 +418,7 @@ end;
 {==============================================================================
   disket okuma kafasýný baþlangýç konumuna (0. sektör) getirir (calibrate)
  ==============================================================================}
-function Konumlan0(AFDNesne: PFDNesne): Boolean;
+function TDisket.Konumlan0(AFDAygiti: TFDAygiti): Boolean;
 var
   _Iz: TSayi1;
 begin
@@ -363,7 +427,7 @@ begin
   IRQ6Tetiklendi := False;
 
   DurumYaz(7);                                      // Konumlan0
-  DurumYaz(AFDNesne^.Aygit.Kanal);                  // kafa no (0) + sürücü
+  DurumYaz(AFDAygiti.FKanal);                  // kafa no (0) + sürücü
 
   // iþlemin bitmesini bekle
   Bekle;
@@ -385,7 +449,7 @@ end;
 {==============================================================================
   floppy okuma kafasýný belirtilen iz'e (track) konumlandýrýr
  ==============================================================================}
-function Konumlan(AFDNesne: PFDNesne; AIz, AKafa: TSayi1): Boolean;
+function TDisket.Konumlan(AFDAygiti: TFDAygiti; AIz, AKafa: TSayi1): Boolean;
 var
   _Iz: TSayi1;
 begin
@@ -396,7 +460,7 @@ begin
   IRQ6Tetiklendi := False;
 
   DurumYaz($F);                                                   // Konumlan
-  DurumYaz((AKafa shl 2) or AFDNesne^.Aygit.Kanal);               // kafa no + sürücü
+  DurumYaz((AKafa shl 2) or AFDAygiti.FKanal);               // kafa no + sürücü
   DurumYaz(AIz);
 
   // iþlemin bitmesini bekle
@@ -432,14 +496,14 @@ begin
     // 1..4 = motor kapanma durumunda
     // 5 = motor açýk
 
-    if(PDisket1^.IslemYapiliyor = False) and (PDisket1^.MotorSayac > 0) then
+    if(TDisket(PDisket1).FIslemYapiliyor = False) and (TDisket(PDisket1).FMotorBeklemeSuresi > 0) then
     begin
 
-      Dec(PDisket1^.MotorSayac);
-      if(PDisket1^.MotorSayac = 0) then
+      if((TDisket(PDisket1).FMotorBeklemeSuresi) < GZamanlayicilar.FZamanlayiciSayaci) then
       begin
 
-        MotorKapat(PDisket1);
+        TDisket(PDisket1).MotorKapat;
+        TDisket(PDisket1).FMotorBeklemeSuresi := 0;
       end;
     end;
   end;
@@ -454,14 +518,14 @@ begin
     // 1..4 = motor kapanma durumunda
     // 5 = motor açýk
 
-    if(PDisket2^.IslemYapiliyor = False) and (PDisket2^.MotorSayac > 0) then
+    if(TDisket(PDisket2).FIslemYapiliyor = False) and (TDisket(PDisket2).FMotorBeklemeSuresi > 0) then
     begin
 
-      Dec(PDisket2^.MotorSayac);
-      if(PDisket2^.MotorSayac = 0) then
+      if((TDisket(PDisket2).FMotorBeklemeSuresi) < GZamanlayicilar.FZamanlayiciSayaci) then
       begin
 
-        MotorKapat(PDisket2);
+        TDisket(PDisket2).MotorKapat;
+        TDisket(PDisket2).FMotorBeklemeSuresi := 0;
       end;
     end;
   end;
@@ -484,7 +548,7 @@ end;
 {==============================================================================
   disketten tek bir sektör okuma iþlevini gerçekleþtirir
  ==============================================================================}
-function TekSektorOku(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
+function TDisket.TekSektorOku(ASektorNo: TSayi4): Boolean;
 var
   _Kafa, _Iz, _Sektor: TSayi1;
 begin
@@ -513,7 +577,7 @@ begin
   end;
 }
   // kafanýn konumlandýðý izi kaydet
-  AFDNesne^.SonIzKonumu := _Iz;
+  FSonIzKonumu := _Iz;
 
   // DMA2'yi aygýttan okuma için ayarla
   DMA2Yukle(DMA_OKU);
@@ -523,7 +587,7 @@ begin
 
   // MFS sektör oku
   DurumYaz($E6);
-  DurumYaz((_Kafa shl 2) or AFDNesne^.Aygit.Kanal);
+  DurumYaz((_Kafa shl 2) or FKanal);
   DurumYaz(_Iz);
   DurumYaz(_Kafa);
   DurumYaz(_Sektor);
@@ -549,14 +613,14 @@ end;
 {==============================================================================
   diskete tek bir sektör yazma iþlevini gerçekleþtirir
  ==============================================================================}
-function TekSektorYaz(AFDNesne: PFDNesne; ASektorNo: TSayi4): Boolean;
-const
-  s: string = 'merhaba';
+function TDisket.TekSektorYaz(ASektorNo: TSayi4): Boolean;
+//const
+//  s: string = 'merhaba';
 var
   _Kafa, _Iz, _Sektor: TSayi1;
 begin
 
-  Tasi2(@s, Pointer(DMA_BELLEKADRESI), 512);
+  //Tasi2(@s, Pointer(DMA_BELLEKADRESI), 512);
 
   Result := False;
 
@@ -582,7 +646,7 @@ begin
   end;
 }
   // kafanýn konumlandýðý izi kaydet
-  AFDNesne^.SonIzKonumu := _Iz;
+  FSonIzKonumu := _Iz;
 
   // DMA2'yi aygýttan okuma için ayarla
   DMA2Yukle(DMA_YAZ);
@@ -592,7 +656,7 @@ begin
 
   // MFS sektör oku
   DurumYaz($45);
-  DurumYaz((_Kafa shl 2) or AFDNesne^.Aygit.Kanal);
+  DurumYaz((_Kafa shl 2) or FKanal);
   DurumYaz(_Iz);
   DurumYaz(_Kafa);
   DurumYaz(_Sektor);
@@ -621,17 +685,12 @@ end;
 {==============================================================================
   disket sürücü sektör okuma iþlevi
  ==============================================================================}
-function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  AHedefBellek: Isaretci): TISayi4;
+function TDisket.Oku(AIlkSektor, ASektorSayisi: TSayi4; AHedefBellek: Isaretci): TISayi4;
 var
-  FD: PFDNesne;
   _BellekAdresi: Isaretci;
   _OkumaSonuc: Boolean;
   _OkunacakSektor, _SektorSayisi, i: TSayi4;
 begin
-
-  // sürücü bilgisine konumlan
-  FD := AFizikselSurucu;
 
   // öndeðer dönüþ deðeri
   Result := 0;
@@ -643,7 +702,7 @@ begin
   _SektorSayisi := ASektorSayisi;
 
   // motoru aç
-  MotorAc(FD);
+  MotorAc;
 
   repeat
 
@@ -651,7 +710,7 @@ begin
     begin
 
       // belirtilen sektörü oku
-      _OkumaSonuc := TekSektorOku(FD, _OkunacakSektor);
+      _OkumaSonuc := TekSektorOku(_OkunacakSektor);
       if(_OkumaSonuc = True) then Break;
     end;
 
@@ -675,33 +734,31 @@ begin
 
       // eðer okuma baþarý ile gerçekleþmemiþse mevcut iz durumunu deðiþtir
       // not: bu iþlem kalibrasyon için yapýlmaktadýr.
-      FD^.SonIzKonumu := -1;
+      FSonIzKonumu := -1;
 
       Result := 1;
       Exit;
     end;
 
-    // motoru kapat
-    FD^.IslemYapiliyor := False;
-    FD^.MotorSayac := $1000000;
+    // iþlem tamamlandý
+    FIslemYapiliyor := False;
+
+    // 5 saniye sonra motoru kapat
+    FMotorBeklemeSuresi := GZamanlayicilar.FZamanlayiciSayaci + (3 * CALISMA_FREKANSI);
 
   until (_SektorSayisi = 0);
 end;
 
+
 {==============================================================================
   disket sürücü sektör okuma iþlevi
  ==============================================================================}
-function SektorYaz(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
+function TDisket.Yaz(AIlkSektor, ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 var
-  FD: PFDNesne;
   _BellekAdresi: Isaretci;
   _OkumaSonuc: Boolean;
   _OkunacakSektor, _SektorSayisi, i: TSayi4;
 begin
-
-  // sürücü bilgisine konumlan
-  FD := AFizikselDepolama;
 
   // öndeðer dönüþ deðeri
   Result := 0;
@@ -713,13 +770,15 @@ begin
   _SektorSayisi := ASektorSayisi;
 
   // motoru aç
-  MotorAc(FD);
+  MotorAc;
 
-  TekSektorYaz(AFizikselDepolama, AIlkSektor);
+  TekSektorYaz(AIlkSektor);
 
-  // motoru kapat
-  FD^.IslemYapiliyor := False;
-  FD^.MotorSayac := $1000000;
+  // iþlem tamamlandý
+  FIslemYapiliyor := False;
+
+  // 5 saniye sonra motoru kapat
+  FMotorBeklemeSuresi := GZamanlayicilar.FZamanlayiciSayaci + (3 * CALISMA_FREKANSI);
 end;
 
 end.

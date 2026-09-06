@@ -85,6 +85,8 @@ English:
 
 ![Dosya Yöneticisi](dsyyntcs.png)
 
+![Tasarım](tasarim.png)
+
 ![DNS](dns.png)
 
 ![Tarayıcı](tarayici.png)

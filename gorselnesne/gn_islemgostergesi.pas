@@ -6,7 +6,7 @@
   Dosya Adı: gn_islemgostergesi.pas
   Dosya İşlevi: işlem göstergesi (TProgressBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 19/07/2026
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,36 +18,40 @@ uses gorselnesne, paylasim, gn_panel;
 
 type
   PIslemGostergesi = ^TIslemGostergesi;
-  TIslemGostergesi = object(TPanel)
+  TIslemGostergesi = class(TPanel)
   public
     FAltDeger, FUstDeger, FMevcutDeger: TISayi8;
-    function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-      ASol, AUst, AGenislik, AYukseklik: TISayi4): PIslemGostergesi;
-    procedure YokEt(AKimlik: TKimlik);
+    constructor Create; override;
+     destructor Destroy; override;
+    function Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+      ASol, AUst, AGenislik, AYukseklik: TISayi4): TISayi4;
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
     procedure Ciz;
-    procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
     procedure DegerleriBelirle(AAltDeger, AUstDeger: TISayi8);
     procedure MevcutDegerYaz(AMevcutDeger: TISayi8);
   end;
 
 function IslemGostergesiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik;
+function IslemGostergesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst,
+  AGenislik, AYukseklik: TISayi4): TKimlik;
 
 implementation
 
-uses temelgorselnesne, donusum, giysi_mac;
+uses donusum, gn_islevler;
 
 {==============================================================================
   işlem göstergesi kesme çağrılarını yönetir
  ==============================================================================}
 function IslemGostergesiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GN: PGorselNesne;
-  IG: PIslemGostergesi;
+  GN: TGorselNesne;
+  IslemGostergesi: TIslemGostergesi;
 begin
+
+  Result := HATA_ISLEV;
 
   // $DDCCBBAA
   //      BBAA  -> kesme tarafından değerlendirildi
@@ -58,94 +62,106 @@ begin
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
-        PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := IslemGostergesiGNOlustur(GN, PISayi4(ADegiskenler + 04)^,
+      PISayi4(ADegiskenler + 08)^, PISayi4(ADegiskenler + 12)^, PISayi4(ADegiskenler + 16)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      IG := PIslemGostergesi(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
-      IG^.Goster;
+      IslemGostergesi := TIslemGostergesi(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      IslemGostergesi.Goster;
     end;
 
     // alt, üst değerlerini belirle
     $010F:
     begin
 
-      IG := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
-        gntIslemGostergesi));
-      if(IG <> nil) then IG^.DegerleriBelirle(PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
+      IslemGostergesi := TIslemGostergesi(GGNesneler.NesneTipiniKontrolEt(
+        PKimlik(ADegiskenler + 00)^, gntIslemGostergesi));
+      if(IslemGostergesi <> nil) then IslemGostergesi.DegerleriBelirle(
+        PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
     end;
 
     // nesne gösterge pozisyonunu belirle
     $020F:
     begin
 
-      IG := PIslemGostergesi(GorselNesneler0.NesneTipiniKontrolEt(PKimlik(ADegiskenler + 00)^,
-        gntIslemGostergesi));
-      if(IG <> nil) then IG^.MevcutDegerYaz(PISayi4(ADegiskenler + 04)^);
-    end
-
-    else Result := HATA_ISLEV;
+      IslemGostergesi := TIslemGostergesi(GGNesneler.NesneTipiniKontrolEt(
+        PKimlik(ADegiskenler + 00)^, gntIslemGostergesi));
+      if(IslemGostergesi <> nil) then IslemGostergesi.MevcutDegerYaz(
+        PISayi4(ADegiskenler + 04)^);
+    end;
   end;
 end;
 
 {==============================================================================
-  işlem göstergesi nesnesini oluşturur
+  uygulama için işlem göstergesi nesnesi oluşturur - api
  ==============================================================================}
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4): TKimlik;
+function IslemGostergesiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst,
+  AGenislik, AYukseklik: TISayi4): TKimlik;
 var
-  IG: PIslemGostergesi;
+  IslemGostergesi: TIslemGostergesi;
 begin
 
-  IG := IG^.Olustur(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik);
+  IslemGostergesi := TIslemGostergesi.Create;
 
-  if(IG = nil) then
+  if(IslemGostergesi = nil) then
 
     Result := HATA_NESNEOLUSTURMA
+  else
+  begin
 
-  else Result := IG^.Kimlik;
+    IslemGostergesi.Ozellestir(ktNesne, AAtaNesne, ASol, AUst, AGenislik, AYukseklik);
+
+    Result := IslemGostergesi.Kimlik;
+  end;
 end;
 
 {==============================================================================
-  işlem göstergesi nesnesini oluşturur
+  işlem göstergesi nesnesi oluşturur
  ==============================================================================}
-function TIslemGostergesi.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-  ASol, AUst, AGenislik, AYukseklik: TISayi4): PIslemGostergesi;
-var
-  IG: PIslemGostergesi;
+constructor TIslemGostergesi.Create;
 begin
 
-  IG := PIslemGostergesi(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
-    AGenislik, AYukseklik, 0, 0, 0, 0, ''));
+  inherited Create;
 
-  // görsel nesne tipi
-  IG^.NesneTipi := gntIslemGostergesi;
+  NesneTipi := gntIslemGostergesi;
 
-  IG^.Baslik := '';
-
-  IG^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
-
-  IG^.OlayCagriAdresi := @OlaylariIsle;
-
-  // diğer değer atamaları
-  IG^.FAltDeger := 1;
-  IG^.FUstDeger := 100;
-  IG^.FMevcutDeger := 0;
-
-  // nesne adresini geri döndür
-  Result := IG;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
   işlem göstergesi nesnesini yok eder
  ==============================================================================}
-procedure TIslemGostergesi.YokEt(AKimlik: TKimlik);
+destructor TIslemGostergesi.Destroy;
 begin
 
-  inherited YokEt(AKimlik);
+  GGNesneler.YokEt(Self);
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  işlem göstergesi nesnesini özelleştirir
+ ==============================================================================}
+function TIslemGostergesi.Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+  ASol, AUst, AGenislik, AYukseklik: TISayi4): TISayi4;
+begin
+
+  Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, AGenislik, AYukseklik,
+    0, 0, 0, 0, '');
+
+  OlayCagriAdr := @OlaylariIsle;
+
+  // diğer değer atamaları
+  FAltDeger := 1;
+  FUstDeger := 100;
+  FMevcutDeger := 0;
+
+  // geri dönüş değeri
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
@@ -170,12 +186,7 @@ end;
   işlem göstergesi nesnesini hizalandırır
  ==============================================================================}
 procedure TIslemGostergesi.Hizala;
-var
-  IG: PIslemGostergesi;
 begin
-
-  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
-  if(IG = nil) then Exit;
 
   inherited Hizala;
 end;
@@ -185,7 +196,6 @@ end;
  ==============================================================================}
 procedure TIslemGostergesi.Ciz;
 var
-  IG: PIslemGostergesi;
   CizimAlani, CizimAlani2: TAlan;
   i1: TISayi8;
   s: string;
@@ -194,25 +204,22 @@ var
   DegerGosterim: TSayi4;
 begin
 
-  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
-  if(IG = nil) then Exit;
-
   // giriş kutusunun çizim alan koordinatlarını al
-  CizimAlani := IG^.FCizimAlani;
+  CizimAlani := FCizimAlani;
 
-  i1 := (IG^.FUstDeger - IG^.FAltDeger) + 1;
-  d1 := (IG^.FMevcutDeger * 100) div i1;
+  i1 := (FUstDeger - FAltDeger) + 1;
+  d1 := (FMevcutDeger * 100) div i1;
   d2 := (CizimAlani.Sag / 100);
   d2 := d1 * d2;
 
   // ön renk doldurma işlemi. dolgu öncesi çizim
-  IG^.DikdortgenDoldur(IG, CizimAlani.Sol, CizimAlani.Ust, CizimAlani.Sag, CizimAlani.Alt,
-    $F1F1F1, RENK_BEYAZ);
+  DikdortgenDoldur(Self, CizimAlani.Sol, CizimAlani.Ust, CizimAlani.Sag,
+    CizimAlani.Alt, $F1F1F1, RENK_BEYAZ);
 
   // artan renk ile (eğimli) doldur
   CizimAlani2 := CizimAlani;
   CizimAlani2.Sag := CizimAlani2.Sol + Round(d2);
-  IG^.EgimliDoldur(IG, CizimAlani2, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK);
+  EgimliDoldur(Self, CizimAlani2, DUGME_NORMAL_ILKRENK, DUGME_NORMAL_SONRENK);
 
   // 1 = mevcut değer
   // 2 = kalan değer
@@ -230,24 +237,24 @@ begin
 
     CizimAlani2 := CizimAlani;
     case DegerGosterim of
-      1: s := IntToStr(IG^.FMevcutDeger);
-      2: s := IntToStr(IG^.FUstDeger - IG^.FMevcutDeger);
-      3: s := IntToStr(IG^.FUstDeger) + '/' + IntToStr(IG^.FMevcutDeger);
-      4: s := IntToStr(IG^.FUstDeger) + '/' + IntToStr(IG^.FUstDeger - IG^.FMevcutDeger);
-      5: s := '%' + IntToStr((IG^.FMevcutDeger * 100) div IG^.FUstDeger);
-      6: s := '%' + IntToStr(((IG^.FUstDeger - IG^.FMevcutDeger) * 100) div IG^.FUstDeger);
+      1: s := IntToStr(FMevcutDeger);
+      2: s := IntToStr(FUstDeger - FMevcutDeger);
+      3: s := IntToStr(FUstDeger) + '/' + IntToStr(FMevcutDeger);
+      4: s := IntToStr(FUstDeger) + '/' + IntToStr(FUstDeger - FMevcutDeger);
+      5: s := '%' + IntToStr((FMevcutDeger * 100) div FUstDeger);
+      6: s := '%' + IntToStr(((FUstDeger - FMevcutDeger) * 100) div FUstDeger);
     end;
 
     i := (CizimAlani2.Sag - (Length(s) * 8)) div 2;
     j := ((CizimAlani2.Alt - 16) div 2) + 1;
-    IG^.YaziYaz(IG, CizimAlani2.Sol + i, CizimAlani2.Ust + j, s, RENK_LACIVERT);
+    YaziYaz(Self, CizimAlani2.Sol + i, CizimAlani2.Ust + j, s, RENK_LACIVERT);
   end;
 end;
 
 {==============================================================================
-  işlem göstergesi olaylarını işler
+  işlem göstergesi nesne olaylarını işler
  ==============================================================================}
-procedure TIslemGostergesi.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+procedure TIslemGostergesi.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 begin
 
   // işlenecek hiçbir olay yok
@@ -257,15 +264,11 @@ end;
   işlem göstergesi en alt, en üst değerlerini belirler
  ==============================================================================}
 procedure TIslemGostergesi.DegerleriBelirle(AAltDeger, AUstDeger: TISayi8);
-var
-  IG: PIslemGostergesi;
 begin
 
-  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
-
-  IG^.FAltDeger := AAltDeger;
-  IG^.FUstDeger := AUstDeger;
-  IG^.FMevcutDeger := 0;
+  FAltDeger := AAltDeger;
+  FUstDeger := AUstDeger;
+  FMevcutDeger := 0;
 
   Ciz;
 end;
@@ -274,13 +277,9 @@ end;
   işlem göstergesi mevcut konum değerini belirler
  ==============================================================================}
 procedure TIslemGostergesi.MevcutDegerYaz(AMevcutDeger: TISayi8);
-var
-  IG: PIslemGostergesi;
 begin
 
-  IG := PIslemGostergesi(GorselNesneler0.NesneAl(Kimlik));
-
-  IG^.FMevcutDeger := AMevcutDeger;
+  FMevcutDeger := AMevcutDeger;
 
   Ciz;
 end;

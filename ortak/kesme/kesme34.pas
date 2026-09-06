@@ -6,7 +6,7 @@
   Dosya Adı: kesme34.pas
   Dosya İşlevi: uygulamaların kesme ($34) isteklerini yönlendirir
 
-  Güncelleme Tarihi: 12/07/2025
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,7 +27,7 @@ implementation
 
 uses k_ekran, k_gorselnesne, k_olay, k_dosya, k_yazim, k_sayac, k_cizim, k_sistem,
   k_zamanlayici, k_sistemmesaj, k_bellek, k_gorev, k_pci, k_ag, k_depolama, k_fare,
-  k_baglanti, k_diger, k_giysi, gorev;
+  k_baglantilar, k_diger, k_giysi, gorev, sistem;
 
 var
   UygulamaYiginAdresi: Isaretci;
@@ -51,14 +51,15 @@ asm
   mov   ds,bx
   mov   es,bx
 
-  mov   ecx,CagriSayaci
-  inc   ecx
-  mov   CagriSayaci,ecx
+  mov   esi,[GSistem]
+  mov   ebx,[esi + TSistem.FCagriSayaci]
+  inc   ebx
+  mov   [esi + TSistem.FCagriSayaci],ebx
 
   // uygulamanın yığına sürdüğü değişken adresine konumlan
-  mov   edx,[esp + 12 + 04]               // sistem esp (ring0)
-  mov   edx,[edx + 12]                    // program esp (ring3)
-  add   edx,FAktifGorevBellekAdresi       // + program bellek başlangıç adresi
+  mov   edx,[esp + 12 + 04]                 // sistem esp (ring0)
+  mov   edx,[edx + 12]                      // program esp (ring3)
+  add   edx,GGorevler.FAktifGrvBelAdr       // + program bellek başlangıç adresi
   mov   UygulamaYiginAdresi,edx
 
   // eax = işlev çağrı numarası

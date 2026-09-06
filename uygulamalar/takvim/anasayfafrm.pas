@@ -109,8 +109,18 @@ end;
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;
 begin
 
+  if(AOlay.Olay = CO_SECIMDEGISTI) and (AOlay.Kimlik = FKLYil.Kimlik) then
+  begin
+
+    TakvimiOlustur(2021 + FKLYil.BaslikSiraNo, 1 + FKLAy.BaslikSiraNo, BuGun);
+  end
+  else if(AOlay.Olay = CO_SECIMDEGISTI) and (AOlay.Kimlik = FKLAy.Kimlik) then
+  begin
+
+    TakvimiOlustur(2021 + FKLYil.BaslikSiraNo, 1 + FKLAy.BaslikSiraNo, BuGun);
+  end
   // çekirdek tarafýndan gönderilen programýn kendisini sonlandýrma talimatý
-  if(AOlay.Olay = CO_SONLANDIR) then
+  else if(AOlay.Olay = CO_SONLANDIR) then
   begin
 
     FGorev.Sonlandir(-1);

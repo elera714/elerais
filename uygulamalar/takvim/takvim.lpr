@@ -6,7 +6,7 @@
   Program Adý: takvim.lpr
   Program Ýþlevi: takvim uygulamasý
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 16/08/2026
 
  ==============================================================================}
 {$mode objfpc}

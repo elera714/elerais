@@ -5,16 +5,12 @@
   gerekli çalýþmalar yapýlarak rtl_cekirdek\inc\system_orjinal.inc dosyasýyla orjinalleþtirilecektir
   (diðer tüm dosyalar fpc sürüm 3.0.4 olup orjinalleþtirilmiþ kod dosyalarýdýr)
 - rtl_uygulama klasörü altýndaki dosyalar orjinalleþtirilecektir
-- program baþlama/bitiþ arasýndaki fazla/eksik bellek durumlarý pencere bazýnda çözümlendi, diðer nesneler de kontrol edilecek
 - listegorunum nesnesine eleman sayýsý, seçili eleman oku / yaz iþlevi eklenecek (görev yöneticisi için)
-- çekirdek içeriðinin yeniden özelleþtirilebilmesi için ayarlar sayfasý oluþturulacak
 - usb uhci kod çalýþmalarý (usb / uhci)
 - çekirdek sürücü model çalýþmalarý (görev)
 - ses kartý ile ilgili iþlevler aktif ve çalýþýr hale getirilecek
-- object yapýlarý class yapýlarýna çevrilecek
 - program geliþtirmek için tasarlanan widget'in grafiksel arabirimi tasarlanacak
 - servis iþlemleri için ayrý görevler tanýmlanacak
-- utf-8 çalýþmasý (baþta fat32 olmak üzere) sistem genelinde uygulanacak
 - donanýmsal çokgörevlilik, yazýlýmsal çokgörevlilik (software multitasking) olarak deðiþtirilecek
 - sayfalama (paging) özelliði çekirdeðe eklenecek
 - tüm aygýt sürücülerinin (device driver) standartlaþmasý
@@ -22,7 +18,6 @@
 - dosya biçim bilgileri alýnarak program için gereken bellek belirlenecek
 - cdrom desteði eklenecek
 - sistem imajýnýn iso formatýnda oluþturulmasý saðlanacak
-- thread desteði eklenecek
 - kum saati fare iþlevi dýþarý taþma problemi giderilecek
 - deðiþik geniþliðe sahip font tip(ler)i tanýmlanacak
 - lost_focus + got_focus olaylarý oluþturularak tüm nesnelere uygulanacak

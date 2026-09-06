@@ -3,18 +3,18 @@
   Kodlayan: Fatih KILIÇ
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
-  Dosya Adı: dhcp4_s.pas
+  Dosya Adı: dhcpv4s.pas
   Dosya İşlevi: DHCP v4 sunucu protokol işlevlerini yönetir
 
   Güncelleme Tarihi: 18/06/2026
 
  ==============================================================================}
 {$mode objfpc}
-unit dhcp4_s;
+unit dhcpv4s;
 
 interface
 
-uses paylasim, dhcp4_i;
+uses paylasim, dhcpv4;
 
 const
   USTSINIR_DHCPKAYIT      = 256;
@@ -34,31 +34,31 @@ type
   end;
 
 type
-  TDHCPSunucu = class
+  TDHCPv4s = class(TDHCPv4)
   private
     FDHCPKayitListesi: array[0..USTSINIR_DHCPKAYIT - 1] of PDHCPKayit;
     function DHCPKayitAl(ASiraNo: TISayi4): PDHCPKayit;
     procedure DHCPKayitYaz(ASiraNo: TISayi4; ADHCPKayit: PDHCPKayit);
   public
     constructor Create;
-    function HavuzdanIPAdresiAl(AMACAdres: TMACAdresIslev): TIPAdresIslev;
-    function IPAdresiVerilsinMi(AIstenenIPAdres: TIPAdresIslev; AMACAdres: TMACAdresIslev): Boolean;
+    function HavuzdanIPAdresiAl(AMACAdres: TMACAdresIslev): TIP4AdresIslev;
+    function IPAdresiVerilsinMi(AIstenenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev): Boolean;
     property DHCPKayit[ASiraNo: TISayi4]: PDHCPKayit read DHCPKayitAl write DHCPKayitYaz;
-    procedure DHCPSunucuPaketleriniIsle(ADHCPYapi: PDHCP4Yapi);
+    procedure VerileriIsle(ADHCPYapi: PDHCP4Yapi);
   end;
 
 var
-  DHCPSunucu0: TDHCPSunucu;
+  GDHCPv4: TDHCPv4s;
   DHCPSunucuKilit: TSayi4 = 0;
 
 implementation
 
-uses donusum, sistemmesaj, ag;
+uses donusum, sistemmesaj, ag, baglantilar;
 
 {==============================================================================
   dhcp sunucusu ana yükleme işlevlerini içerir
  ==============================================================================}
-constructor TDHCPSunucu.Create;
+constructor TDHCPv4s.Create;
 var
   i: TSayi4;
 begin
@@ -76,7 +76,7 @@ begin
   end;
 end;
 
-function TDHCPSunucu.DHCPKayitAl(ASiraNo: TISayi4): PDHCPKayit;
+function TDHCPv4s.DHCPKayitAl(ASiraNo: TISayi4): PDHCPKayit;
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -85,7 +85,7 @@ begin
   else Result := nil;
 end;
 
-procedure TDHCPSunucu.DHCPKayitYaz(ASiraNo: TISayi4; ADHCPKayit: PDHCPKayit);
+procedure TDHCPv4s.DHCPKayitYaz(ASiraNo: TISayi4; ADHCPKayit: PDHCPKayit);
 begin
 
   // istenen verinin belirtilen aralıkta olup olmadığını kontrol et
@@ -96,14 +96,14 @@ end;
 {==============================================================================
   istemci için havuzdan kullanılabilir ip adresi alır
  ==============================================================================}
-function TDHCPSunucu.HavuzdanIPAdresiAl(AMACAdres: TMACAdresIslev): TIPAdresIslev;
+function TDHCPv4s.HavuzdanIPAdresiAl(AMACAdres: TMACAdresIslev): TIP4AdresIslev;
 var
   D: PDHCPKayit;
-  KullanilabilirIP: TIPAdresIslev;
+  KullanilabilirIP: TIP4AdresIslev;
   i: TSayi4;
 begin
 
-  KullanilabilirIP.IPAdres := GAg0.IP4Adres;
+  KullanilabilirIP.IP4Adres := GAgBaglantilari.AktifBaglanti.IP4Adres;
 
   for i := AYRILMIS_IPSAYISI to USTSINIR_DHCPKAYIT - 1 do
   begin
@@ -120,7 +120,7 @@ begin
       D^.Durum := kdAtanacak;
       D^.MACAdres := AMACAdres;
 
-      KullanilabilirIP.IPAdres[3] := i;
+      KullanilabilirIP.IP4Adres[3] := i;
       Exit(KullanilabilirIP);
     end;
   end;
@@ -133,17 +133,17 @@ end;
 {==============================================================================
   istenen ip adresinin istemciye verilip verilmeyeceğine karar verir
  ==============================================================================}
-function TDHCPSunucu.IPAdresiVerilsinMi(AIstenenIPAdres: TIPAdresIslev; AMACAdres: TMACAdresIslev): Boolean;
+function TDHCPv4s.IPAdresiVerilsinMi(AIstenenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev): Boolean;
 var
   D: PDHCPKayit;
-  IPAdres: TIPAdresIslev;
+  IP4Adres: TIP4AdresIslev;
   i: TSayi4;
   AyniAgda: Boolean;
 begin
 
-  IPAdres := AIstenenIPAdres;
+  IP4Adres := AIstenenIP4Adres;
 
-  AyniAgda := IPAdres.IPAgAraligiIcinde(GAg0.IP4Adres);
+  AyniAgda := IP4Adres.IPAgAraligiIcinde(GAgBaglantilari.AktifBaglanti.IP4Adres);
   if not(AyniAgda) then Exit(False);
 
   for i := AYRILMIS_IPSAYISI to USTSINIR_DHCPKAYIT - 1 do
@@ -169,12 +169,12 @@ end;
 {==============================================================================
   DHCP sunucu paketlerini işler
  ==============================================================================}
-procedure TDHCPSunucu.DHCPSunucuPaketleriniIsle(ADHCPYapi: PDHCP4Yapi);
+procedure TDHCPv4s.VerileriIsle(ADHCPYapi: PDHCP4Yapi);
 var
   DHCPMesaj: PDHCPMesaj;
   AnaMT, MT, DonanimTipi, i: TSayi1;
-  IstemciIP, DHCPSunucuIPAdresi,
-  IstenenIPAdres, IPAdres: TIPAdresIslev;
+  IstemciIP4, DHCPSunucuIP4Adresi,
+  IstenenIP4Adres, IP4Adres: TIP4AdresIslev;
   MACAdres, IstemciMACAdres: TMACAdresIslev;
   p1: PByte;
   IstemciAdi, SaticiSTanitici: string;
@@ -182,13 +182,13 @@ begin
 
 //  while KritikBolgeyeGir(DHCPSunucuKilit) = False do;
 
-  IstenenIPAdres.Sifirla;
+  IstenenIP4Adres.Sifirla;
   MACAdres.Sifirla;
 
   // gelen mesajın DHCP_SECIM_MESAJ_TIP değeri
   AnaMT := 0;
 
-  IstemciIP.IPAdres := ADHCPYapi^.IstemciIPAdres;
+  IstemciIP4.IP4Adres := ADHCPYapi^.IstemciIP4Adres;
   IstemciMACAdres.MACAdres := ADHCPYapi^.IstemciMACAdres;
 
   // seçenek olarak alınan yapıyı döngü içerisinde irdele
@@ -196,7 +196,7 @@ begin
   MT := DHCPMesaj^.Tip;
   i := DHCPMesaj^.Uzunluk;
 
-  // seçeneğin sonuna gelinceye kadar tü_IPAdres seçenekleri işleme al
+  // seçeneğin sonuna gelinceye kadar tüm seçenekleri işleme al
   while MT <> DHCP_SECIM_SON do
   begin
 
@@ -216,11 +216,11 @@ begin
 
     else if(MT = DHCP_SECIM_ISTEK_IP_ADRES) then
 
-      IstenenIPAdres.IPAdres := PIP4Adres(@DHCPMesaj^.Mesaj)^
+      IstenenIP4Adres.IP4Adres := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
     else if(MT = DHCP_SECIM_SUNUCU_TANIMLAYICI) then
 
-      DHCPSunucuIPAdresi.IPAdres := PIP4Adres(@DHCPMesaj^.Mesaj)^
+      DHCPSunucuIP4Adresi.IP4Adres := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
     else if(MT = DHCP_SECIM_SATICI_SINIF_TANITICISI) then
 
@@ -247,7 +247,7 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_MOR, 'DHCP-İstemci Adı: %s', [IstemciAdi]);
   SISTEM_MESAJ(mtBilgi, RENK_MOR, 'DHCP-SaticiSTanitici: %s', [SaticiSTanitici]);}
 
-  // alınan mesaj bir yanıt _IPAdresı?
+  // alınan mesaj bir yanıt mesajı mı?
   if(ADHCPYapi^.Islem = DHCP_BOOT_MTIP_ISTEK) then
   begin
 
@@ -255,23 +255,23 @@ begin
     if(AnaMT = DHCP_MTIP_KESIF) then
     begin
 
-      IPAdres := DHCPSunucu0.HavuzdanIPAdresiAl(IstemciMACAdres);
-      if(IPAdres.IPAdres0Mi = False) then
-        DHCPTeklifMesajiGonder(htons(ADHCPYapi^.GonderenKimlik), IPAdres, IstemciMACAdres.MACAdres)
+      IP4Adres := GDHCPv4.HavuzdanIPAdresiAl(IstemciMACAdres);
+      if(IP4Adres.IPAdres0Mi = False) then
+        DHCPTeklifMesajiGonder(htons(ADHCPYapi^.GonderenKimlik), IP4Adres, IstemciMACAdres.MACAdres)
     end
 
     else if(AnaMT = DHCP_MTIP_ISTEK) then
     begin
 
-      if(DHCPSunucu0.IPAdresiVerilsinMi(IstenenIPAdres, IstemciMACAdres)) then
+      if(GDHCPv4.IPAdresiVerilsinMi(IstenenIP4Adres, IstemciMACAdres)) then
 
-        DHCPIstegeOnayMesajiGonder(htons(ADHCPYapi^.GonderenKimlik), IstenenIPAdres, MACAdres)
+        DHCPIstegeOnayMesajiGonder(htons(ADHCPYapi^.GonderenKimlik), IstenenIP4Adres, MACAdres)
       else DHCPRetMesajiGonder(htons(ADHCPYapi^.GonderenKimlik), MACAdres);
     end
     else if(AnaMT = DHCP_BILGILENDIRME) then
     begin
 
-      DHCPBilgilendirmeyeOnayMesajiGonder(htons(ADHCPYapi^.GonderenKimlik), IstemciIP, MACAdres);
+      DHCPBilgilendirmeyeOnayMesajiGonder(htons(ADHCPYapi^.GonderenKimlik), IstemciIP4, MACAdres);
     end;
   end;
 

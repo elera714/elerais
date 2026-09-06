@@ -46,7 +46,7 @@ begin
 
   FPencere.Gorunum := True;
 
-  FZamanlayici.Olustur(50);
+  FZamanlayici.Olustur(500);
 end;
 
 function TfrmAnaSayfa.OlaylariIsle(AOlay: TOlay): TISayi4;

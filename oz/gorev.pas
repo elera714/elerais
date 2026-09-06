@@ -15,7 +15,7 @@ unit gorev;
 
 interface
 
-uses paylasim, gn_masaustu;
+uses paylasim, gn_masaustu, gorselnesne;
 
 const
   // çalýþma seviye numaralarý (0..3)
@@ -30,14 +30,6 @@ const
   USTSINIR_OLAY         = 64;
   PROGRAM_YIGIN_BELLEK  = TSayi4(5 * 4096);       // program yýðýný (stack) için ayrýlacak bellek (*4K)
   DEFTER_BELLEK_U       = TSayi4(10 * 4096);      // defter programý için program belleðinde ayrýlacak alan (*4K)
-
-var
-  { TODO - object yapýsýnýn içerisine dahil edilecek }
-  FCalisanGorevSayisi: TSayi4;            // oluþturulan / çalýþan program sayýsý
-  FAktifGorev: TISayi4;                   // o an çalýþan program
-  FAktifGorevBellekAdresi: TSayi4;        // o an çalýþan programýn yüklendiði bellek adresi
-  GorevDegisimSayisi: TSayi4 = 0;         // çekirdek baþladýðý andan itibaren gerçekleþtirilen görev deðiþim sayýsý
-  GorevBayrakDegeri: TSayi4 = 0;          // her görev çalýþtýrma / sonlandýrma / aktifleþtirme durumunda 1 artýrýlýr
 
 type
   TDosyaTip = (dtDiger, dtCalistirilabilir, dtSurucu, dtResim, dtBelge);
@@ -56,19 +48,19 @@ type
     SeviyeNo: TSayi4;                     // görevin çalýþma seviye numarasý (0..3)
     Durum: TGorevDurum;                   // görev çalýþma durumu
 
-    BellekBaslangicAdresi: TSayi4;        // görevin yüklendiði bellek baþlangýç adresi
-    BellekUzunlugu: TSayi4;               // görevin kullandýðý bellek uzunluðu (*4K)
-    YiginBellekUzunlugu: TSayi4;          // görev yýðýnýnýn bellek uzunluðu (*4K)
-    KodBaslangicAdresi: TSayi4;           // görev kodlarýnýn ilk çalýþmaya baþlayacaðý bellek adresi
-    YiginBaslangicAdresi: TSayi4;         // iþlemin yýðýn baþlangýç adresi
+    BellekBasAdr: TSayi4;                 // görevin yüklendiði bellek baþlangýç adresi
+    BellekUz: TSayi4;                     // görevin kullandýðý bellek uzunluðu (*4K)
+    YiginBellekUz: TSayi4;                // görev yýðýnýnýn bellek uzunluðu (*4K)
+    KodBasAdresi: TSayi4;                 // görev kodlarýnýn ilk çalýþmaya baþlayacaðý bellek adresi
+    YiginBasAdresi: TSayi4;               // iþlemin yýðýn baþlangýç adresi
 
-    AktifMasaustu: PMasaustu;             // görevin çalýþtýðý aktif masaüstü
-    AktifPencere: PObject;                // görevin sahip olduðu pencere
+    AktifMasaustu: TMasaustu;             // görevin çalýþtýðý aktif masaüstü
+    AktifPencere: TGorselNesne;           // görevin sahip olduðu pencere
 
-    GorevSayaci: TSayi4;                  // zamanlayýcý her tetiklendiðinde artan görev deðiþim sayacý
+    GrvSayac: TSayi4;                     // zamanlayýcý her tetiklendiðinde artan görev deðiþim sayacý
 
-    CalismaSuresiMS,                      // görevin çalýþacaðý süre (irq0 tick sayýsý)
-    CalismaSuresiSayacMS: TSayi4;         // görevin çalýþacaðý sürenin sayaç deðeri
+    CalismaSureMS,                        // görevin çalýþacaðý süre (irq0 tick sayýsý)
+    CalismaSureSayac: TSayi4;             // görevin çalýþacaðý sürenin sayaç deðeri
 
     OlayBellekAdresi: POlay;              // göreve ait olaylarýn yerleþtirileceði bellek bölgesi
     OlaySayisi: TSayi4;                   // görev olay sayýsý
@@ -81,7 +73,7 @@ type
     HataESP,                              // esp
     HataBayrak: TISayi4;                  // flags
 
-//    KullanilanBellek: TSayi4;             // görevin byte olarak kullandýðý tüm kaynaklar toplamý (TODO - kodlanacak }
+//    KullanilanBellek: TSayi4;           // görevin byte olarak kullandýðý tüm kaynaklar toplamý (TODO - kodlanacak }
 
     DosyaAdi,                             // görev dosya adý
     ProgramAdi: string;                   // program adý
@@ -94,6 +86,12 @@ type
     function GorevAl(ASiraNo: TISayi4): PGorev;
     procedure GorevYaz(ASiraNo: TISayi4; AGorev: PGorev);
   public
+    FAktifGrv: TISayi4;                 // o an çalýþan program
+    FCalisanGorevSayisi: TSayi4;        // oluþturulan / çalýþan program sayýsý
+    FAktifGrvBelAdr: TSayi4;            // o an çalýþan programýn yüklendiði bellek adresi
+    FGorevDegisimSayisi: TSayi4;        // çekirdek baþladýðý andan itibaren gerçekleþtirilen görev deðiþim sayýsý
+    FGorevBayrakDegeri: TSayi4;         // her görev çalýþtýrma / sonlandýrma / aktifleþtirme durumunda 1 artýrýlýr
+    FGorevDegisimBayragi: TSayi4;       // görev deðiþim bayraðý: 0 = görev deðiþtirme, 1 = görev deðiþtir
     procedure Yukle;
     function Olustur: PGorev;
     procedure DurumDegistir(AGorevKimlik: TKimlik; AGorevDurum: TGorevDurum);
@@ -113,7 +111,7 @@ type
   end;
 
 var
-  Gorevler0: TGorevler;
+  GGorevler: TGorevler;
   GorevKilit: TSayi4 = 0;
 
 function GorevBilgisiAl(AGorevSiraNo: TISayi4): PGorev;
@@ -124,13 +122,11 @@ function GorevSiraNumarasiniAl(AGorevSiraNo: TISayi4): TKimlik;
 function CalistirilacakBirSonrakiGoreviBul: TKimlik;
 function IliskiliProgramAl(ADosyaUzanti: string): TDosyaIliskisi;
 procedure IsaretlenenGorevleriSonlandir;
-function Memur(AGorevAdi: string; AIslev: TIslev; AYiginDegeri: TSayi4; ASeviyeNo: TSayi4): TSayi4;
 function GorevAl(AGorevKimlik: TKimlik = -1): PGorev;
 
 implementation
 
-uses gdt, dosya, sistemmesaj, donusum, zamanlayici, gn_islevler, gn_pencere, islevler,
-  gorselnesne;
+uses gdt, dosyalar, sistemmesaj, donusum, zamanlayici, gn_islevler, gn_pencere, islevler;
 
 const
   IstisnaAciklamaListesi: array[0..15] of string = (
@@ -182,6 +178,8 @@ procedure TGorevler.Yukle;
 var
   i: TISayi4;
 begin
+
+  FGorevDegisimBayragi := 1;
 
   // bellek giriþlerini görev yapýlarýyla eþleþtir
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do Gorev[i] := nil;
@@ -309,7 +307,7 @@ begin
   if not(GeciciDosyaBellek = nil) then FreeMem(GeciciDosyaBellek, DosyaUyari.Uzunluk);
 
   // boþ iþlem giriþi bul
-  G := Gorevler0.Olustur;
+  G := GGorevler.Olustur;
   if(G = nil) then
   begin
 
@@ -359,30 +357,30 @@ begin
   G^.SeviyeNo := ASeviyeNo;
 
   // görev deðiþim sayacýný sýfýrla
-  G^.GorevSayaci := 0;
+  G^.GrvSayac := 0;
 
   // bellek baþlangýç adresi
-  G^.BellekBaslangicAdresi := TSayi4(DosyaBellek);
+  G^.BellekBasAdr := TSayi4(DosyaBellek);
 
   // görev çalýþma süreleri
-  G^.CalismaSuresiMS := 2;
-  G^.CalismaSuresiSayacMS := 2;
+  G^.CalismaSureMS := DPL3_SUREMS;
+  G^.CalismaSureSayac := DPL3_SUREMS;
 
   // bellek miktarý
-  G^.BellekUzunlugu := ProgramBellekU;
-  G^.YiginBellekUzunlugu := PROGRAM_YIGIN_BELLEK;
+  G^.BellekUz := ProgramBellekU;
+  G^.YiginBellekUz := PROGRAM_YIGIN_BELLEK;
 
   // iþlem baþlangýç adresi
-  G^.KodBaslangicAdresi := ELFBaslik^.KodBaslangicAdresi;
+  G^.KodBasAdresi := ELFBaslik^.KodBaslangicAdresi;
 
   //SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'A: %x', [G^.KodBaslangicAdresi]);
 
   // iþlemin yýðýn adresi
-  G^.YiginBaslangicAdresi := (G^.BellekUzunlugu + G^.YiginBellekUzunlugu) - 64;
+  G^.YiginBasAdresi := (G^.BellekUz + G^.YiginBellekUz) - 64;
 
   // dosyanýn çalýþtýrýlmasý için seçicileri oluþtur
-  Gorevler0.SecicileriOlustur(G^.Kimlik, G^.BellekUzunlugu + G^.YiginBellekUzunlugu,
-    G^.BellekBaslangicAdresi, G^.KodBaslangicAdresi, G^.YiginBaslangicAdresi);
+  GGorevler.SecicileriOlustur(G^.Kimlik, G^.BellekUz + G^.YiginBellekUz,
+    G^.BellekBasAdr, G^.KodBasAdresi, G^.YiginBasAdresi);
 
   // iþlemin adý
   G^.DosyaAdi := DosyaAdi;
@@ -396,7 +394,7 @@ begin
   // program bellek baþlangýcýnýn ilk 32 byte'ý çekirdeðin programa
   // bilgi vermesi amacýyla ayrýlmýþtýr.
   PSayi4(DosyaBellek + 00)^ := TSayi4(DosyaBellek);
-  PSayi4(DosyaBellek + 04)^ := G^.BellekUzunlugu - DEFTER_BELLEK_U;
+  PSayi4(DosyaBellek + 04)^ := G^.BellekUz - DEFTER_BELLEK_U;
 
   PSayi4(DosyaBellek + 32)^ := 0;
   p1 := PChar(DosyaBellek + 32 + 4);
@@ -422,7 +420,7 @@ begin
   Inc(FCalisanGorevSayisi);
 
   // görev bayrak deðerini artýr
-  Inc(GorevBayrakDegeri);
+  Inc(GGorevler.FGorevBayrakDegeri);
 
   // programýn iz kayýt dosyasýný oluþtur
   TS := TarihSaatBilgisiAl;
@@ -447,7 +445,7 @@ var
 begin
 
   // boþ iþlem giriþi bul
-  G := Gorevler0.BosGorevBul;
+  G := GGorevler.BosGorevBul;
 
   Result := G;
 end;
@@ -481,7 +479,7 @@ begin
       G^.AktifPencere := nil;
 
       // görev giriþini ayrýlmýþ olarak iþaretle ve çaðýran iþleve geri dön
-      //Gorevler0.DurumDegistir(i, gdOlusturuldu);
+      //GGorevler.DurumDegistir(i, gdOlusturuldu);
       G^.Durum := gdOlusturuldu;
       Exit(G);
     end;
@@ -580,7 +578,7 @@ begin
   G := Gorev[AGorevKimlik];
   if(G = nil) then Exit;
 
-  if(G^.GorevSayaci <> ASayacDegeri) then G^.GorevSayaci := ASayacDegeri;
+  if(G^.GrvSayac <> ASayacDegeri) then G^.GrvSayac := ASayacDegeri;
 end;
 
 {==============================================================================
@@ -612,7 +610,7 @@ begin
   if(G = nil) then
   begin
 
-    KritikBolgedenCik(OlayKilit);
+//    KritikBolgedenCik(OlayKilit);
     Exit;
   end;
 
@@ -652,7 +650,7 @@ var
   G: PGorev;
 begin
 
-  while KritikBolgeyeGir(OlayKilit) = False do;
+//  while KritikBolgeyeGir(OlayKilit) = False do;
 
   // öndeðer çýkýþ deðeri
   Result := False;
@@ -661,7 +659,7 @@ begin
   if(G = nil) then
   begin
 
-    KritikBolgedenCik(OlayKilit);
+//    KritikBolgedenCik(OlayKilit);
     Exit;
   end;
 
@@ -671,7 +669,7 @@ begin
   if(i = 0) then
   begin
 
-    KritikBolgedenCik(OlayKilit);
+//    KritikBolgedenCik(OlayKilit);
     Exit;
   end;
 
@@ -696,7 +694,7 @@ begin
     // olay sayacýný azalt
     G^.OlaySayisi := i;
 
-    KritikBolgedenCik(OlayKilit);
+//    KritikBolgedenCik(OlayKilit);
     Exit;
   end;
 
@@ -709,7 +707,7 @@ begin
   // olay sayacýný azalt
   G^.OlaySayisi := i;
 
-  KritikBolgedenCik(OlayKilit);
+//  KritikBolgedenCik(OlayKilit);
 end;
 
 {==============================================================================
@@ -751,13 +749,13 @@ begin
   end;
 
   // göreve ait zamanlayýcýlarý durdur
-  ZamanlayicilariDurdur(AGorevKimlik);
+  GZamanlayicilar.ZamanlayicilariDurdur(AGorevKimlik);
 
   // göreve ait pencere ve alt görsel nesneleri yok et
-  GorselNesneler0.PencereyiYokEt(AGorevKimlik);
+  GGNesneler.PencereyiYokEt(AGorevKimlik);
 
   // göreve ait zamanlayýcýlarý yok et
-  ZamanlayicilariYokEt(AGorevKimlik);
+  GZamanlayicilar.ZamanlayicilariYokEt(AGorevKimlik);
 
   // göreve ait olay bellek bölgesini iptal et
   { TODO : 1. bu iþlev olay yönetim sistem nesnesinin içerisine dahil edilecek
@@ -765,7 +763,7 @@ begin
   FreeMem(G^.OlayBellekAdresi, 4096);
 
   // görev için ayrýlan bellek bölgesini serbest býrak
-  FreeMem(Isaretci(G^.BellekBaslangicAdresi), G^.BellekUzunlugu + G^.YiginBellekUzunlugu);
+  FreeMem(Isaretci(G^.BellekBasAdr), G^.BellekUz + G^.YiginBellekUz);
 
   // görevi iþlem listesinden çýkart
   Gorev[G^.Kimlik] := nil;
@@ -775,7 +773,7 @@ begin
   Dec(FCalisanGorevSayisi);
 
   // görev bayrak deðerini artýr
-  Inc(GorevBayrakDegeri);
+  Inc(GGorevler.FGorevBayrakDegeri);
 
   Result := 0;
 
@@ -811,7 +809,7 @@ begin
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
-    G := Gorevler0.Gorev[i];
+    G := GGorevler.Gorev[i];
 
     // listenin ilgili sýrasýnda görev mevcut ise görev sýra numarasýný bir artýr
     if not(G = nil) then Inc(j);
@@ -837,18 +835,18 @@ begin
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
-    G := Gorevler0.Gorev[i];
+    G := GGorevler.Gorev[i];
 
     // 1. görev boþ deðilse
     // 2. pencereye sahip ise
     // 3. pencere tipi baþlýksýz deðilse
     if not(G = nil) and not(G^.AktifPencere = nil) and
-      not(PPencere(G^.AktifPencere)^.FPencereTipi = ptBasliksiz) then
+      not(TPencere(G^.AktifPencere).FPencereTipi = ptBasliksiz) then
     begin
 
       if(AMasaustuKimlik = -1) then
         Inc(Result)
-      else if(G^.AktifMasaustu^.Kimlik = AMasaustuKimlik) then
+      else if(G^.AktifMasaustu.Kimlik = AMasaustuKimlik) then
         Inc(Result);
     end;
   end;
@@ -863,7 +861,7 @@ end;
 function GorevBayrakDegeriniAl: TSayi4;
 begin
 
-  Result := GorevBayrakDegeri;
+  Result := GGorevler.FGorevBayrakDegeri;
 end;
 
 {==============================================================================
@@ -882,18 +880,18 @@ begin
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
-    G := Gorevler0.Gorev[i];
+    G := GGorevler.Gorev[i];
 
     // 1. görev boþ deðilse
     // 2. pencereye sahip ise
     // 3. pencere tipi baþlýksýz deðilse
     if not(G = nil) and not(G^.AktifPencere = nil) and
-      not(PPencere(G^.AktifPencere)^.FPencereTipi = ptBasliksiz) then
+      not(TPencere(G^.AktifPencere).FPencereTipi = ptBasliksiz) then
     begin
 
       if(AMasaustuKimlik = -1) then
         Inc(ArananGorev)
-      else if(G^.AktifMasaustu^.Kimlik = AMasaustuKimlik) then
+      else if(G^.AktifMasaustu.Kimlik = AMasaustuKimlik) then
         Inc(ArananGorev);
     end;
 
@@ -901,10 +899,10 @@ begin
     if(AGorevSiraNo = ArananGorev) then
     begin
 
-      Result.PencereKimlik := PPencere(G^.AktifPencere)^.Kimlik;
+      Result.PencereKimlik := TPencere(G^.AktifPencere).Kimlik;
       Result.GorevKimlik := G^.Kimlik;
-      Result.PencereTipi := PPencere(G^.AktifPencere)^.FPencereTipi;
-      Result.PencereDurum := PPencere(G^.AktifPencere)^.FPencereDurum;
+      Result.PencereTipi := TPencere(G^.AktifPencere).FPencereTipi;
+      Result.PencereDurum := TPencere(G^.AktifPencere).FPencereDurum;
       Result.DosyaAdi := G^.DosyaAdi;
       Exit;
     end;
@@ -972,7 +970,7 @@ begin
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
-    G := Gorevler0.Gorev[i];
+    G := GGorevler.Gorev[i];
 
     // görev çalýþýyor ise görev sýra numarasýný bir artýr
     if not(G = nil) and (G^.Durum = gdCalisiyor) then Inc(j);
@@ -995,7 +993,7 @@ var
 begin
 
   // çalýþan göreve konumlan
-  GorevKimlik := FAktifGorev;
+  GorevKimlik := GGorevler.FAktifGrv;
 
   // bir sonraki görevden itibaren tüm görevleri incele
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do
@@ -1004,7 +1002,7 @@ begin
     Inc(GorevKimlik);
     if(GorevKimlik > USTSINIR_GOREVSAYISI) then GorevKimlik := 0;
 
-    G := Gorevler0.Gorev[GorevKimlik];
+    G := GGorevler.Gorev[GorevKimlik];
 
     // çalýþan görev aranan görev ise çaðýran iþleve geri dön
     if not(G = nil) and (G^.Durum = gdCalisiyor) then Break;
@@ -1056,102 +1054,20 @@ begin
   for i := 0 to USTSINIR_GOREVSAYISI - 1 do
   begin
 
-    G := Gorevler0.Gorev[i];
+    G := GGorevler.Gorev[i];
     if not(G = nil) and (G^.Durum = gdSonlandiriliyor) then
-      Gorevler0.Sonlandir(G^.Kimlik, G^.HataKodu);
+      GGorevler.Sonlandir(G^.Kimlik, G^.HataKodu);
   end;
 
 //  KritikBolgedenCik(GorevKilit);
-end;
-
-{==============================================================================
-  görev için belli bir görevi yerine getiren iþlev oluþturur - (thread)
-  bilgi: saçma sapan kelime olan thread kelimesini kullanmayý uygun bulmuyorum
- ==============================================================================}
-function Memur(AGorevAdi: string; AIslev: TIslev; AYiginDegeri: TSayi4; ASeviyeNo: TSayi4): TSayi4;
-var
-  G: PGorev;
-  // yazmaçlarýn girdi içerisindeki sýra numaralarý
-  SNYazmacCS, SNYazmacDS, SNYazmacTSS,
-  i: TSayi4;
-begin
-
-  while KritikBolgeyeGir(GorevKilit) = False do;
-
-  G := Gorevler0.BosGorevBul;
-  if not(G = nil) then
-  begin
-
-    i := G^.Kimlik;
-
-    // uygulamanýn TSS, CS, DS seçicilerini belirle, her bir program 3 seçici içerir
-    SNYazmacCS := (i * 3) + 1;
-    SNYazmacDS := SNYazmacCS + 1;
-    SNYazmacTSS := SNYazmacDS + 1;
-
-    // kod seçicisi (CS)
-    // Eriþim  : 1 = mevcut, 00 = DPL0, 11 = kod yazmaç, 0 = dallanýlamaz, 1 = okunabilir, 0 = eriþilmedi
-    // Esneklik: 1 = gran = 4K çözünürlük, 1 = 32 bit, 0, 1 = bana tahsis edildi, 1111 = uzunluk 16..19 bit
-    GDTRGirdisiEkle(SNYazmacCS, 0, $FFFFFFFF, %10011010, %11011111);
-    // veri seçicisi (DS)
-    // Eriþim  : 1 = mevcut, 00 = DPL0, 10 = veri yazmaç, 0 = artarak büyüyen, 1 = yazýlabilir, 0 = eriþilmedi
-    // Esneklik: 1 = gran = 4K çözünürlük, 1 = 32 bit, 0, 1 = bana tahsis edildi, 1111 = uzunluk 16..19 bit
-    GDTRGirdisiEkle(SNYazmacDS, 0, $FFFFFFFF, %10010010, %11011111);
-    // görev seçicisi (TSS)
-    // Eriþim  : 1 = mevcut, 00 = DPL0, 010 = 32 bit kullanýlabilir TSS, 0 = meþgul biti (meþgul deðil), 1
-    // Esneklik: 1 = gran = 1Byte çözünürlük, 00, 1 = bana tahsis edildi, 0000 = uzunluk 16..19 bit
-    GDTRGirdisiEkle(SNYazmacTSS, TSayi4(GorevTSSListesi[i]), 104,
-      %10001001, %00010000);
-
-    // denetçinin kullanacaðý TSS'nin içeriðini sýfýrla
-    FillByte(GorevTSSListesi[i]^, 104, $00);
-
-    GorevTSSListesi[i]^.EIP := TSayi4(AIslev);    // DPL 0
-    GorevTSSListesi[i]^.EFLAGS := $202;
-    GorevTSSListesi[i]^.ESP := AYiginDegeri - 1000;
-    GorevTSSListesi[i]^.CS := SNYazmacCS * 8;
-    GorevTSSListesi[i]^.DS := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.ES := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.SS := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.FS := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.GS := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.SS0 := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.ESP0 := AYiginDegeri - 1000;
-
-    // sistem görev deðerlerini belirle
-    G^.SeviyeNo := ASeviyeNo;
-    G^.GorevSayaci := 0;
-    G^.BellekBaslangicAdresi := TSayi4(@AIslev);
-    G^.CalismaSuresiMS := 20;
-    G^.CalismaSuresiSayacMS := 20;
-    G^.BellekUzunlugu := $FFFFFFFF;
-    G^.OlaySayisi := 0;
-    G^.OlayBellekAdresi := nil;
-    G^.AktifMasaustu := nil;
-    G^.AktifPencere := nil;
-
-    // sistem görev adý (dosya adý)
-    G^.DosyaAdi := 'cekirdek.bin';
-    G^.ProgramAdi := AGorevAdi;
-
-    // sistem görevini çalýþýyor olarak iþaretle
-    Gorevler0.DurumDegistir(i, gdCalisiyor);
-
-    // çalýþan ve oluþturulan görev deðerlerini belirle
-    Inc(FCalisanGorevSayisi);
-
-    Result := SNYazmacCS;
-  end;
-
-  KritikBolgedenCik(GorevKilit);
 end;
 
 function GorevAl(AGorevKimlik: TKimlik = -1): PGorev;
 begin
 
   if(AGorevKimlik = -1) then
-    Result := Gorevler0.Gorev[FAktifGorev]
-  else Result := Gorevler0.Gorev[AGorevKimlik];
+    Result := GGorevler.Gorev[GGorevler.FAktifGrv]
+  else Result := GGorevler.Gorev[AGorevKimlik];
 end;
 
 end.

@@ -16,24 +16,31 @@ interface
 
 uses pci, paylasim;
 
-procedure Yukle(APCI: PPCI);
-procedure EHCIAygitBilgileriniGoster;
+type
+  TEHCI = class
+  public
+    constructor Create(APCI: TPCI);
+    procedure EHCIAygitBilgileriniGoster;
+  end;
+
+var
+  GEHCI: TEHCI;
 
 implementation
 
 uses sistemmesaj;
 
 var
-  EHCIAygit: PPCI = nil;
+  EHCIAygit: TPCI;
 
-procedure Yukle(APCI: PPCI);
+constructor TEHCI.Create(APCI: TPCI);
 begin
 
   EHCIAygit := APCI;
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '  -> USB:EHCI kontrol aygýtý bulundu...', []);
 end;
 
-procedure EHCIAygitBilgileriniGoster;
+procedure TEHCI.EHCIAygitBilgileriniGoster;
 var
   _TemelAdres, _StructuralParams, _CapabilityParams,
   _OperationalReg, _Deger4: TSayi4;
@@ -45,7 +52,7 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'USB-EHCI Genel Bilgiler:', []);
 
-    _TemelAdres := (PCIAygiti0.Oku4(EHCIAygit^.Yol, EHCIAygit^.Aygit, EHCIAygit^.Islev, $10)
+    _TemelAdres := (GPCIAygitlar.Oku4(EHCIAygit.FYol, EHCIAygit.FAygit, EHCIAygit.FIslev, $10)
       and $FFFFFF00);
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'USB Ana Adres: $%.8x', [_TemelAdres]);
 

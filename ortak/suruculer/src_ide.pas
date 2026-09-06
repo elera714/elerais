@@ -16,7 +16,10 @@ unit src_ide;
 
 interface
 
-uses paylasim, port;
+uses paylasim, port, aygit;
+
+const
+  USTSINIR_DISKAYGIT = 8;
 
 const
   ATAYAZMAC_VERI                    = $00;    // okunabilir / yazýlabilir
@@ -111,39 +114,98 @@ type
 var
   SektorOkuYazKilit: TSayi4 = 0;
 
-procedure Yukle;
-procedure IRQ14KesmeIslevi;
-procedure IRQ15KesmeIslevi;
-function SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
-function IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
-function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
-function IDEAygitiHazirMi(AIDEDisk: PIDEDisk): Boolean;
-function VeriHazirMi(AIDEDisk: PIDEDisk): Boolean;
-procedure Bekle(AIDEDisk: PIDEDisk);
-function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
-function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
-function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
+type
+  PIDEYapi = ^TIDEYapi;
+  TIDEYapi = record
+    AnaPort, KontrolPort: TSayi2;
+    Kanal: TSayi1;
+  end;
+
+type
+  TIDEDisk = class(TFDAygiti)
+  public
+    constructor Create; override;
+
+    function Oku(AIlkSektor, ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    function Yaz28(AIlkSektor, ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    function IDEAygitiMesgulMuYeni: Boolean;
+
+    procedure Bekle(AIDEYapi: PIDEYapi);
+    procedure IRQ14KesmeIslevi;
+    procedure IRQ15KesmeIslevi;
+  end;
+
+type
+  TDiskAygitlari = class
+  private
+    FToplamAygit: TSayi4;
+    FDiskAygitlari: array[0..USTSINIR_DISKAYGIT - 1] of TIDEDisk;
+    function Al(ASiraNo: TISayi4): TIDEDisk;
+    procedure Yaz(ASiraNo: TISayi4; AIDEDisk: TIDEDisk);
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    function SistemdekiIDEAygitlariniBul(AAnaPort, AKanal: TSayi4): Boolean;
+    function IDEAygitBilgisiniAl(AAnaPort, AKanal: TSayi4; AAygitBilgisi: Isaretci): Boolean;
+    function IDEAygitiMesgulMu(AAnaPort: TSayi4): Boolean;
+    function IDEAygitiHazirMi(AIDEYapi: PIDEYapi): Boolean;
+    function VeriHazirMi(AIDEYapi: PIDEYapi): Boolean;
+
+
+    procedure VeritabaniOlustur;
+    property DiskAygitlari[ASiraNo: TISayi4]: TIDEDisk read Al write Yaz;
+    property ToplamAygit: TSayi4 read FToplamAygit;
+  end;
+
+var
+  GDiskAygitlari: TDiskAygitlari;
 
 implementation
 
-uses aygityonetimi, irq, sistemmesaj, donusum, gorev, fdepolama;
+uses irq, sistemmesaj, fdepolama;
 
 var
-  IDEDiskListesi: array[0..3] of TIDEDisk = (
+  IDEDiskListesi: array[0..3] of TIDEYapi = (
     (AnaPort: $1F0; KontrolPort: $3F6; Kanal: ATA_KANAL0),
     (AnaPort: $1F0; KontrolPort: $3F6; Kanal: ATA_KANAL1),
     (AnaPort: $170; KontrolPort: $376; Kanal: ATA_KANAL0),
     (AnaPort: $170; KontrolPort: $376; Kanal: ATA_KANAL1));
 
-{==============================================================================
-  sistemde mevcut ide disk sürücülerini yükler
- ==============================================================================}
-procedure Yukle;
+constructor TDiskAygitlari.Create;
 var
-  FD: PFDNesne;
+  i: TSayi4;
+begin
+
+  FToplamAygit := 0;
+
+  for i := 0 to USTSINIR_DISKAYGIT - 1 do DiskAygitlari[i] := nil;
+end;
+
+destructor TDiskAygitlari.Destroy;
+begin
+
+  inherited Destroy;
+end;
+
+function TDiskAygitlari.Al(ASiraNo: TISayi4): TIDEDisk;
+begin
+
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DISKAYGIT) then
+    Result := FDiskAygitlari[ASiraNo]
+  else Result := nil;
+end;
+
+procedure TDiskAygitlari.Yaz(ASiraNo: TISayi4; AIDEDisk: TIDEDisk);
+begin
+
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DISKAYGIT) then
+    FDiskAygitlari[ASiraNo] := AIDEDisk;
+end;
+
+procedure TDiskAygitlari.VeritabaniOlustur;
+var
+  FD: TFDAygiti;
   Bellek: TATA4;
   i: TSayi4;
 begin
@@ -161,11 +223,11 @@ begin
   begin
 
     // ide aygýtý mevcut mu ?
-    if(SistemdekiIDEAygitlariniBul(@IDEDiskListesi[i])) then
+    if(SistemdekiIDEAygitlariniBul(IDEDiskListesi[i].AnaPort, IDEDiskListesi[i].Kanal)) then
     begin
 
       // ide disk bilgilerini al
-      IDEAygitBilgisiniAl(@IDEDiskListesi[i], @Bellek);
+      IDEAygitBilgisiniAl(IDEDiskListesi[i].AnaPort, IDEDiskListesi[i].Kanal, @Bellek);
 
       {$IFDEF IDE_BILGI}
       SISTEM_MESAJ(RENK_LACIVERT, '  + IDE Aygýt: ' + IntToStr(i + 1), []);
@@ -178,29 +240,40 @@ begin
       {$ENDIF}
 
       // mevcut ise fiziksel sürücü yapýsýný oluþtur
-      FD := FizikselDepolama0.FDAygitiOlustur(SURUCUTIP_DISK);
+      FD := GFizikselDepolama.AygitOlustur(SURUCUTIP_DISK);
       if(FD <> nil) then
       begin
 
-        FD^.Ozellikler := 0;
-        FD^.SektorOku := @SektorOku;
-        FD^.SektorYaz := @SektorYaz28;
-        FD^.Aygit.AnaPort := IDEDiskListesi[i].AnaPort;
-        FD^.Aygit.Kanal := IDEDiskListesi[i].Kanal;
+        FD.FAnaPort := IDEDiskListesi[i].AnaPort;
+        FD.FKanal := IDEDiskListesi[i].Kanal;
 
-        FD^.FD3.SilindirSayisi := Bellek.SilindirSayisi;
-        FD^.FD3.KafaSayisi := Bellek.KafaSayisi;
-        FD^.FD3.IzBasinaSektorSayisi := Bellek.IzBasinaSektor;
-        FD^.FD3.ToplamSektorSayisi := Bellek.SilindirSayisi * Bellek.KafaSayisi * Bellek.IzBasinaSektor;
+        TIDEDisk(FD).FOzellikler := 0;
+
+        FD.FOku := @TIDEDisk(FD).Oku;
+        FD.FYaz := @TIDEDisk(FD).Yaz28;
+
+        FD.FSilindirSayisi := Bellek.SilindirSayisi;
+        FD.FKafaSayisi := Bellek.KafaSayisi;
+        FD.FIzBasinaSektorSayisi := Bellek.IzBasinaSektor;
+        FD.FToplamSektorSayisi := Bellek.SilindirSayisi * Bellek.KafaSayisi * Bellek.IzBasinaSektor;
       end;
     end;
   end;
 end;
 
 {==============================================================================
+  sistemde mevcut ide disk sürücülerini yükler
+ ==============================================================================}
+constructor TIDEDisk.Create;
+begin
+
+  inherited Create;
+end;
+
+{==============================================================================
   birinci disk IRQ rutini
  ==============================================================================}
-procedure IRQ14KesmeIslevi;
+procedure TIDEDisk.IRQ14KesmeIslevi;
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'IRQ14 tetiklendi', []);
@@ -209,7 +282,7 @@ end;
 {==============================================================================
   ikinci disk IRQ rutini
  ==============================================================================}
-procedure IRQ15KesmeIslevi;
+procedure TIDEDisk.IRQ15KesmeIslevi;
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'IRQ15 tetiklendi', []);
@@ -218,7 +291,7 @@ end;
 {==============================================================================
   sistemde mevcut ide aygýtýný denetler
  ==============================================================================}
-function SistemdekiIDEAygitlariniBul(AIDEDisk: PIDEDisk): Boolean;
+function TDiskAygitlari.SistemdekiIDEAygitlariniBul(AAnaPort, AKanal: TSayi4): Boolean;
 var
   i: TSayi1;
 begin
@@ -226,24 +299,24 @@ begin
   // öndeðer geri dönüþ deðeri
   Result := False;
 
-  i := (AIDEDisk^.Kanal shl 4) or $A0;
-  PortYaz1(AIDEDisk^.AnaPort + ATAYAZMAC_AYGITSECIM, i);
+  i := (AKanal shl 4) or $A0;
+  PortYaz1(AAnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   // aygýt meþgul mü ?
-  if(IDEAygitiMesgulMu(AIDEDisk)) then Exit;
+  if(IDEAygitiMesgulMu(AAnaPort)) then Exit;
 
-  i := (AIDEDisk^.Kanal shl 4) or $A0;
-  PortYaz1(AIDEDisk^.AnaPort + ATAYAZMAC_AYGITSECIM, i);
+  i := (AKanal shl 4) or $A0;
+  PortYaz1(AAnaPort + ATAYAZMAC_AYGITSECIM, i);
 
-  if(PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_AYGITSECIM) <> i) then Exit;
+  if(PortAl1(AAnaPort + ATAYAZMAC_AYGITSECIM) <> i) then Exit;
 
-  PortYaz1(AIDEDisk^.AnaPort + ATAYAZMAC_SILINDIR_B01, $AA);
-  if(PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_SILINDIR_B01) <> $AA) then Exit;
+  PortYaz1(AAnaPort + ATAYAZMAC_SILINDIR_B01, $AA);
+  if(PortAl1(AAnaPort + ATAYAZMAC_SILINDIR_B01) <> $AA) then Exit;
 
-  PortYaz1(AIDEDisk^.AnaPort + ATAYAZMAC_SILINDIR_B01, $55);
-  if(PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_SILINDIR_B01) <> $55) then Exit;
+  PortYaz1(AAnaPort + ATAYAZMAC_SILINDIR_B01, $55);
+  if(PortAl1(AAnaPort + ATAYAZMAC_SILINDIR_B01) <> $55) then Exit;
 
-  i := PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_DURUM);
+  i := PortAl1(AAnaPort + ATAYAZMAC_DURUM);
   if((i and ATAYAZMAC_DURUM_AYGITHAZIR) = 0) then Exit;
 
   Result := True;
@@ -252,7 +325,7 @@ end;
 {==============================================================================
   ide aygýtýyla ilgili tanýmlayýcý bilgileri alýr
  ==============================================================================}
-function IDEAygitBilgisiniAl(AIDEDisk: PIDEDisk; AAygitBilgisi: Isaretci): Boolean;
+function TDiskAygitlari.IDEAygitBilgisiniAl(AAnaPort, AKanal: TSayi4; AAygitBilgisi: Isaretci): Boolean;
 var
   PortNo: TSayi2;
   i: TSayi1;
@@ -260,17 +333,17 @@ begin
 
   Result := False;
 
-  i := (AIDEDisk^.Kanal shl 4) or $A0;
-  PortYaz1(AIDEDisk^.AnaPort + ATAYAZMAC_AYGITSECIM, i);
+  i := (AKanal shl 4) or $A0;
+  PortYaz1(AAnaPort + ATAYAZMAC_AYGITSECIM, i);
 
-  if(IDEAygitiMesgulMu(AIDEDisk)) then Exit;
+  if(IDEAygitiMesgulMu(AAnaPort)) then Exit;
 
-  PortYaz1(AIDEDisk^.AnaPort + $206, 2);
-  PortYaz1(AIDEDisk^.AnaPort + ATAYAZMAC_KOMUT, $EC);
+  PortYaz1(AAnaPort + $206, 2);
+  PortYaz1(AAnaPort + ATAYAZMAC_KOMUT, $EC);
 
-  if(IDEAygitiMesgulMu(AIDEDisk)) then Exit;
+  if(IDEAygitiMesgulMu(AAnaPort)) then Exit;
 
-  PortNo := AIDEDisk^.AnaPort;
+  PortNo := AAnaPort;
 
   asm
     pushad
@@ -288,7 +361,7 @@ end;
 {==============================================================================
   ide aygýtýnýn meþgul olup olmadýðýný denetler
  ==============================================================================}
-function IDEAygitiMesgulMu(AIDEDisk: PIDEDisk): Boolean;
+function TDiskAygitlari.IDEAygitiMesgulMu(AAnaPort: TSayi4): Boolean;
 var
   i: TSayi4;
   j: TSayi1;
@@ -299,7 +372,26 @@ begin
   for i := 0 to 999 do
   begin
 
-    j := PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_DURUM);
+    j := PortAl1(AAnaPort + ATAYAZMAC_DURUM);
+    if((j and ATAYAZMAC_DURUM_MESGUL) = 0) then Exit(False);
+  end;
+end;
+
+{==============================================================================
+  ide aygýtýnýn meþgul olup olmadýðýný denetler
+ ==============================================================================}
+function TIDEDisk.IDEAygitiMesgulMuYeni: Boolean;
+var
+  i: TSayi4;
+  j: TSayi1;
+begin
+
+  Result := True;
+
+  for i := 0 to 999 do
+  begin
+
+    j := PortAl1(FAnaPort + ATAYAZMAC_DURUM);
     if((j and ATAYAZMAC_DURUM_MESGUL) = 0) then Exit(False);
   end;
 end;
@@ -307,7 +399,7 @@ end;
 {==============================================================================
   ide aygýtý bilgi transferi için hazýr mý ?
  ==============================================================================}
-function IDEAygitiHazirMi(AIDEDisk: PIDEDisk): Boolean;
+function TDiskAygitlari.IDEAygitiHazirMi(AIDEYapi: PIDEYapi): Boolean;
 var
   i: TSayi4;
   j: TSayi1;
@@ -318,7 +410,7 @@ begin
   for i := 0 to 999 do
   begin
 
-    j := PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_DURUM);
+    j := PortAl1(AIDEYapi^.AnaPort + ATAYAZMAC_DURUM);
     if((j and ATAYAZMAC_DURUM_AYGITHAZIR) = ATAYAZMAC_DURUM_AYGITHAZIR) then Exit(True);
   end;
 end;
@@ -326,7 +418,7 @@ end;
 {==============================================================================
   aygýtta veri hazýr mý ?
  ==============================================================================}
-function VeriHazirMi(AIDEDisk: PIDEDisk): Boolean;
+function TDiskAygitlari.VeriHazirMi(AIDEYapi: PIDEYapi): Boolean;
 var
   i: TSayi4;
   j: TSayi1;
@@ -337,7 +429,7 @@ begin
   for i := 0 to 9 do
   begin
 
-    j := PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_DURUM);
+    j := PortAl1(AIDEYapi^.AnaPort + ATAYAZMAC_DURUM);
     if((j and ATAYAZMAC_DURUM_VERIHAZIR) = ATAYAZMAC_DURUM_VERIHAZIR) then Exit(True);
   end;
 end;
@@ -345,31 +437,20 @@ end;
 {==============================================================================
   bekleme iþlevi
  ==============================================================================}
-procedure Bekle(AIDEDisk: PIDEDisk);
+procedure TIDEDisk.Bekle(AIDEYapi: PIDEYapi);
 begin
 
-  PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_ALTDURUM);
-  PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_ALTDURUM);
-  PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_ALTDURUM);
-  PortAl1(AIDEDisk^.AnaPort + ATAYAZMAC_ALTDURUM);
-end;
-
-function SektorOku(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
-begin
-
-  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
-
-  Result := SektorOku28(AFizikselSurucu, AIlkSektor, ASektorSayisi, ABellek);
+  PortAl1(AIDEYapi^.AnaPort + ATAYAZMAC_ALTDURUM);
+  PortAl1(AIDEYapi^.AnaPort + ATAYAZMAC_ALTDURUM);
+  PortAl1(AIDEYapi^.AnaPort + ATAYAZMAC_ALTDURUM);
+  PortAl1(AIDEYapi^.AnaPort + ATAYAZMAC_ALTDURUM);
 end;
 
 {==============================================================================
   LBA modunda 28 bitlik <>tör okuma iþlemi yapar
  ==============================================================================}
-function SektorOku28(AFizikselSurucu: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
+function TIDEDisk.Oku(AIlkSektor, ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 var
-  FD: PFDNesne;
   BellekAdresi: Isaretci;
   PortNo: TSayi2;
   i: TSayi1;
@@ -389,11 +470,8 @@ begin
 
 //  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
 
-  // sürücü bilgisine konumlan
-  FD := AFizikselSurucu;
-
   // aygýt meþgulse çýk
-  if(IDEAygitiMesgulMu(@FD^.Aygit)) then
+  if(IDEAygitiMesgulMuYeni) then
   begin
 
     KritikBolgedenCik(SektorOkuYazKilit);
@@ -401,37 +479,37 @@ begin
   end;
 
   //okunacak sektör sayýsý
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORSAYISI, OkunacakSektorSayisi);
+  PortYaz1(FAnaPort + ATAYAZMAC_SEKTORSAYISI, OkunacakSektorSayisi);
 
   //okunacak sektör numarasý (28 bit)
   // LBA 07..00
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORNO, (AIlkSektor and $FF));
+  PortYaz1(FAnaPort + ATAYAZMAC_SEKTORNO, (AIlkSektor and $FF));
   // LBA 15..08
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
+  PortYaz1(FAnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
   // LBA 23..16
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
+  PortYaz1(FAnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
   // 0..3 bit - lba 27..24
   i := ((AIlkSektor shr 24) and $0F);
   // 4. bit - aygýt seçimi
-  i := i or (FD^.Aygit.Kanal shl 4);
+  i := i or (FKanal shl 4);
   // 7. bit - 1, 6. bit - LBA ise 1, 5. bit = 1
   i := i or %11100000;
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_AYGITSECIM, i);
+  PortYaz1(FAnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   // sektör oku komutu gönder
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTOROKU);
+  PortYaz1(FAnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTOROKU);
 
   //Bekle(@FD^.Aygit);
 
   SektorIS := HATA_YOK;
 
-  PortNo := FD^.Aygit.AnaPort;
+  PortNo := FAnaPort;
 
   // okuma iþlevini gerçekleþtir
   TekrarSayisi := 0;
   repeat
 
-    if(IDEAygitiMesgulMu(@FD^.Aygit) = False) then
+    if(IDEAygitiMesgulMuYeni = False) then
     begin
 
       asm
@@ -469,10 +547,8 @@ end;
 {==============================================================================
   LBA modunda 28 bitlik sektör yazma iþlemi yapar
  ==============================================================================}
-function SektorYaz28(AFizikselDepolama: Isaretci; AIlkSektor, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
+function TIDEDisk.Yaz28(AIlkSektor, ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 var
-  FD: PFDNesne;
   BellekAdresi: Isaretci;
   PortNo: TSayi2;
   i: TSayi1;
@@ -486,11 +562,8 @@ begin
 
 //  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
 
-  // sürücü bilgisine konumlan
-  FD := PFDNesne(AFizikselDepolama);
-
   // aygýt meþgulse çýk
-  if(IDEAygitiMesgulMu(@FD^.Aygit)) then
+  if(IDEAygitiMesgulMuYeni) then
   begin
 
     //KritikBolgedenCik(SektorOkuYazKilit);
@@ -498,37 +571,37 @@ begin
   end;
 
   // yazýlacak sektör sayýsý
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORSAYISI, YazilacakSektorSayisi);
+  PortYaz1(FAnaPort + ATAYAZMAC_SEKTORSAYISI, YazilacakSektorSayisi);
 
   //okunacak sektör numarasý (28 bit)
   // LBA 07..00
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SEKTORNO, (AIlkSektor and $FF));
+  PortYaz1(FAnaPort + ATAYAZMAC_SEKTORNO, (AIlkSektor and $FF));
   // LBA 15..08
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
+  PortYaz1(FAnaPort + ATAYAZMAC_SILINDIR_B01, ((AIlkSektor shr 8) and $FF));
   // LBA 23..16
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
+  PortYaz1(FAnaPort + ATAYAZMAC_SILINDIR_B23, ((AIlkSektor shr 16) and $FF));
   // 0..3 bit - lba 27..24
   i := ((AIlkSektor shr 24) and $0F);
   // 4. bit - aygýt seçimi
-  i := i or (FD^.Aygit.Kanal shl 4);
+  i := i or (FKanal shl 4);
   // 7. bit - 1, 6. bit - LBA ise 1, 5. bit = 1
   i := i or %11100000;
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_AYGITSECIM, i);
+  PortYaz1(FAnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   // sektör oku komutu gönder
-  PortYaz1(FD^.Aygit.AnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTORYAZ);
+  PortYaz1(FAnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTORYAZ);
 
   //Bekle(@FD^.Aygit);
 
   SektorIS := HATA_YOK;
 
-  PortNo := FD^.Aygit.AnaPort;
+  PortNo := FAnaPort;
 
   // okuma iþlevini gerçekleþtir
   TekrarSayisi := 0;
   repeat
 
-    if(IDEAygitiMesgulMu(@FD^.Aygit) = False) then
+    if(IDEAygitiMesgulMuYeni = False) then
     begin
 
       asm

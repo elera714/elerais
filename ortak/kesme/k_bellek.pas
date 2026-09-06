@@ -20,7 +20,7 @@ function BellekCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses genel, islevler, gorev, gercekbellek;
+uses islevler, gorev, gercekbellek;
 
 {==============================================================================
   bellek kesme çağrılarını yönetir
@@ -38,11 +38,11 @@ begin
   if(IslevNo = 1) then
   begin
 
-    p := PSayi4(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr);
     p^ := CekirdekBaslangicAdresi;
-    p := PSayi4(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
     p^ := CekirdekBaslangicAdresi + CekirdekUzunlugu;
-    p := PSayi4(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr);
     p^ := CekirdekUzunlugu;
 
     Result := 1;
@@ -52,15 +52,15 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    p := PSayi4(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr);
     p^ := GercekBellek0.ToplamBlok;
-    p := PSayi4(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
     p^ := GercekBellek0.AyrilmisBlok;
-    p := PSayi4(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr);
     p^ := GercekBellek0.KullanilmisBlok;
-    p := PSayi4(PSayi4(ADegiskenler + 12)^ + FAktifGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 12)^ + GGorevler.FAktifGrvBelAdr);
     p^ := GercekBellek0.ToplamBlok - GercekBellek0.KullanilmisBlok;
-    p := PSayi4(PSayi4(ADegiskenler + 16)^ + FAktifGorevBellekAdresi);
+    p := PSayi4(PSayi4(ADegiskenler + 16)^ + GGorevler.FAktifGrvBelAdr);
     p^ := 4096;
 
     Result := 1;
@@ -79,7 +79,7 @@ begin
     else}
     begin
 
-      Tasi2(Isaretci(Kaynak), Isaretci(Hedef + FAktifGorevBellekAdresi), Uzunluk);
+      Tasi2(Isaretci(Kaynak), Isaretci(Hedef + GGorevler.FAktifGrvBelAdr), Uzunluk);
       Result := 1;
     end;
   end

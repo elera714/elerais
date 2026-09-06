@@ -6,7 +6,7 @@
   Program Adı: noktalar.lpr
   Program İşlevi: nokta işaretleme test programı
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 17/08/2026
 
  ==============================================================================}
 {$mode objfpc}

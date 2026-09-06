@@ -6,7 +6,7 @@
   Dosya Adı: port.pas
   Dosya İşlevi: donanım port yazım / alım işlevlerini içerir
 
-  Güncelleme Tarihi: 15/09/2019
+  Güncelleme Tarihi: 18/08/2026
 
  ==============================================================================}
 {$mode objfpc}

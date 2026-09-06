@@ -47,7 +47,7 @@ begin
     Dizi[i] := 0;
   end;
 
-  FZamanlayici.Olustur(30);
+  FZamanlayici.Olustur(300);
   FZamanlayici.Baslat;
 end;
 

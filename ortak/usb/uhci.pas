@@ -77,11 +77,11 @@ type
   end;
 
 var
-  UHCIAygit: PPCI = nil;
+  UHCIAygit: TPCI;
   PortNo: TSayi2;
   UHCI_CERCEVE_ADRESI: TSayi4 = (14 * 1024 * 1024);
 
-procedure Yukle(APCI: PPCI);
+procedure Yukle(APCI: TPCI);
 procedure UHCIAygitBilgileriniGoster;
 procedure USBSifirla;
 procedure PaketGonder;
@@ -90,7 +90,7 @@ implementation
 
 uses sistemmesaj, port;
 
-procedure Yukle(APCI: PPCI);
+procedure Yukle(APCI: TPCI);
 begin
 
   UHCIAygit := APCI;
@@ -108,12 +108,12 @@ begin
 
     SISTEM_MESAJ(mtBilgi, RENK_MOR, 'USB-UHCI Genel Bilgiler:', []);
 
-    PortNo := PCIAygiti0.Oku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, $20) and $FFFC;
+    PortNo := GPCIAygitlar.Oku4(UHCIAygit.FYol, UHCIAygit.FAygit, UHCIAygit.FIslev, $20) and $FFFC;
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Giriþ/Çýkýþ Port No: $%.2x', [PortNo]);
 
-    _Deger4 := PCIAygiti0.Oku4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, 4);
+    _Deger4 := GPCIAygitlar.Oku4(UHCIAygit.FYol, UHCIAygit.FAygit, UHCIAygit.FIslev, 4);
     _Deger4 := _Deger4 or $405;
-    PCIAygiti0.Yaz4(UHCIAygit^.Yol, UHCIAygit^.Aygit, UHCIAygit^.Islev, 4, _Deger4);
+    GPCIAygitlar.Yaz4(UHCIAygit.FYol, UHCIAygit.FAygit, UHCIAygit.FIslev, 4, _Deger4);
 
     _CerceveAdresi := PSayi4(UHCI_CERCEVE_ADRESI);
     for i := 0 to 1023 do

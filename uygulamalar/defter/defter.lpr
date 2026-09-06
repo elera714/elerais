@@ -6,7 +6,7 @@
   Program Adý: defter.lpr
   Program Ýþlevi: metin düzenleme programý
 
-  Güncelleme Tarihi: 23/07/2026
+  Güncelleme Tarihi: 17/08/2026
 
   Bilgi: çekirdek tarafýndan defter.c programýna bilgileri iþlemesi için
     Isaretci(4)^ adresinde 4096 * 10 byte yer tahsis edilmiþtir.

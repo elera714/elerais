@@ -80,7 +80,7 @@ function YeniIP6AdresiAl: TIP6Adres;
 
 implementation
 
-uses sistemmesaj, donusum, islevler;
+uses sistemmesaj, donusum, islevler, baglantilar;
 
 // dhcp v6 protokolü üzerinden gelen paketleri iþler
 procedure DHCPv6SorgulariniYanitla(AEthernetPaket: PEthernetPaket);
@@ -197,7 +197,7 @@ begin
     Secenek^.Kod := ntohs(TSayi2($0017));
     Secenek^.Uzunluk := ntohs(TSayi2(16));
     p2 := PByte(@Secenek^.Veri);
-    PIP6Adres(p2)^ := GAg0.IP6Adres;
+    PIP6Adres(p2)^ := GAgBaglantilari.AktifBaglanti.IP6Adres;
     Inc(p2, 16);
     Inc(DHCPYapiU, 20);
 
@@ -213,7 +213,7 @@ begin
     Inc(p2, 1);
     Inc(DHCPYapiU, 13);
 
-    UDPPaketGonder(PROTOKOL_IP6, AEthernetPaket^.KaynakMACAdres, @GAg0.IP6Adres,
+    GUDP.PaketleVeGonder(itIP6, AEthernetPaket^.KaynakMACAdres, @GAgBaglantilari.AktifBaglanti.IP6Adres,
       @IPPaket^.KaynakIP, HedefPort, KaynakPort, HedefPaket, DHCPYapiU);
 
     FreeMem(HedefPaket, 512);
@@ -312,7 +312,7 @@ begin
     Secenek^.Kod := ntohs(TSayi2($0017));
     Secenek^.Uzunluk := ntohs(TSayi2(16));
     p2 := PByte(@Secenek^.Veri);
-    PIP6Adres(p2)^ := GAg0.IP6Adres;
+    PIP6Adres(p2)^ := GAgBaglantilari.AktifBaglanti.IP6Adres;
     Inc(p2, 16);
     Inc(DHCPYapiU, 20);
 
@@ -328,7 +328,7 @@ begin
     Inc(p2, 1);
     Inc(DHCPYapiU, 13);
 
-    UDPPaketGonder(PROTOKOL_IP6, AEthernetPaket^.KaynakMACAdres, @GAg0.IP6Adres,
+    GUDP.PaketleVeGonder(itIP6, AEthernetPaket^.KaynakMACAdres, @GAgBaglantilari.AktifBaglanti.IP6Adres,
       @IPPaket^.KaynakIP, HedefPort, KaynakPort, HedefPaket, DHCPYapiU);
 
     FreeMem(HedefPaket, 512);
@@ -413,7 +413,7 @@ begin
     Inc(p2, 1);
     Inc(DHCPYapiU, 17); }
 
-    UDPPaketGonder(PROTOKOL_IP6, AEthernetPaket^.KaynakMACAdres, @GAg0.IP6Adres,
+    GUDP.PaketleVeGonder(itIP6, AEthernetPaket^.KaynakMACAdres, @GAgBaglantilari.AktifBaglanti.IP6Adres,
       @IPPaket^.KaynakIP, HedefPort, KaynakPort, HedefPaket, DHCPYapiU);
 
     FreeMem(HedefPaket, 512);

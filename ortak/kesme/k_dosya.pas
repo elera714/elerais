@@ -20,7 +20,7 @@ function DosyaCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses dosya, gorev;
+uses dosyalar, gorev;
 
 {==============================================================================
   dosya (file) kesme çaðrýlarýný yönetir
@@ -41,16 +41,15 @@ begin
     2:
     begin
 
-      Result := FindFirst(PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^,
-        PSayi4(ADegiskenler + 04)^, PDosyaArama(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi)^);
+      Result := FindFirst(PKarakterKatari(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr)^,
+        PSayi4(ADegiskenler + 04)^, PDosyaArama(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr)^);
     end;
 
     // dosya aramayý devam ettir
     3:
     begin
 
-      Result := FindNext(PDosyaArama(PSayi4(ADegiskenler + 00)^ +
-        FAktifGorevBellekAdresi)^);
+      Result := FindNext(PDosyaArama(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr)^);
     end;
 
     // dosya aramayý sonlandýr
@@ -58,15 +57,15 @@ begin
     begin
 
       Result := FindClose(PDosyaArama(PSayi4(ADegiskenler + 00)^ +
-        FAktifGorevBellekAdresi)^);
+        GGorevler.FAktifGrvBelAdr)^);
     end;
 
     // iþlem yapýlacak dosya atamasýný gerçekleþtir
     5:
     begin
 
-      AssignFile(PKimlik(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^,
-        PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi))^);
+      AssignFile(PKimlik(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr)^,
+        PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr))^);
     end;
 
     // dosyayý aç
@@ -102,7 +101,7 @@ begin
     begin
 
       Read(PKimlik(ADegiskenler + 00)^, Isaretci(PSayi4(ADegiskenler + 04)^ +
-        FAktifGorevBellekAdresi));
+        GGorevler.FAktifGrvBelAdr));
     end;
 
     // dosyayý kapat
@@ -116,7 +115,7 @@ begin
     12:
     begin
 
-      s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
+      s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr)^;
       DeleteFile(s);
     end;
 
@@ -124,7 +123,7 @@ begin
     13:
     begin
 
-      s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + FAktifGorevBellekAdresi)^;
+      s := PKarakterKatari(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr)^;
       RemoveDir(s);
     end;
 
@@ -140,7 +139,7 @@ begin
     begin
 
       Write(PKimlik(ADegiskenler + 00)^,
-        PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi))^);
+        PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr))^);
     end;
   end;
 end;

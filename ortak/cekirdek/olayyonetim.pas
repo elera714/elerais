@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 13/04/2026
+  Güncelleme Tarihi: 29/07/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit olayyonetim;
 
 interface
 
-uses gorselnesne, paylasim, gn_menu, gn_acilirmenu, sistemmesaj, gn_pencere;
+uses gorselnesne, paylasim, gn_menu, gn_acilirmenu, gn_pencere;
 
 type
   TOlayYonetim = class
@@ -23,7 +23,7 @@ type
     FSonBasilanFareTusu: TSayi1;
     FOncekiOlayAlanGN: PGorselNesne;     // bir önceki olay alan görsel nesne
   protected
-    procedure OlaylariYonlendir(AGorselNesne: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariYonlendir(AGorselNesne: TGorselNesne; AOlay: TOlay);
   public
     constructor Create;
     function FareOlayiAl: TOlay;
@@ -31,9 +31,12 @@ type
     procedure KlavyeOlaylariniIsle(ATusDegeri: TSayi2; ATusDurum: TTusDurum);
   end;
 
+var
+  GOlayYonetim: TOlayYonetim;
+
 implementation
 
-uses genel, gn_islevler, src_ps2, gorev;
+uses gn_islevler, src_ps2, gorev;
 
 {==============================================================================
   olay deðiþkenlerini ilk deðerlerle yükler
@@ -42,7 +45,6 @@ constructor TOlayYonetim.Create;
 begin
 
   FOncekiOlayAlanGN := nil;
-  YakalananGorselNesne := nil;
 
   FSonBasilanFareTusu := 0;
 end;
@@ -160,31 +162,31 @@ end;
  ==============================================================================}
 procedure TOlayYonetim.FareOlaylariniIsle;
 var
-  P: PPencere;
-  OlayAlanGN, PencereAktifGN: PGorselNesne;
+  P: TPencere;
+  OlayAlanGN, PencereAktifGN: TGorselNesne;
   Olay: TOlay;
   Konum: TKonum;
 
   // ilgili nesnenin baðlý olduðu en üst pencere nesnesini alýr
-  function NesneninPenceresiniAl: PPencere;
+  function NesneninPenceresiniAl: TPencere;
   var
-    P: PGorselNesne;
+    GN: TGorselNesne;
   begin
 
     Result := nil;
 
-    P := OlayAlanGN;
+    GN := OlayAlanGN;
 
     // görsel nesne aþaðýdaki görsel nesnelerden biri ise çýk
-    if(P^.NesneTipi = gntMasaustu) or (P^.NesneTipi = gntMenu) or
-      (P^.NesneTipi = gntAcilirMenu) then Exit;
+    if(GN.NesneTipi = gntMasaustu) or (GN.NesneTipi = gntMenu) or
+      (GN.NesneTipi = gntAcilirMenu) then Exit;
 
     // nesne en üst nesne tipi ise çýk
-    if(P^.NesneTipi = gntPencere) then Exit(PPencere(P));
+    if(GN.NesneTipi = gntPencere) then Exit(TPencere(GN));
 
-    while not (P^.AtaNesne^.NesneTipi = gntPencere) do P := P^.AtaNesne;
+    while not (GN.AtaNesne.NesneTipi = gntPencere) do GN := GN.AtaNesne;
 
-    if(P^.AtaNesne^.NesneTipi = gntPencere) then Result := PPencere(P^.AtaNesne);
+    if(GN.AtaNesne.NesneTipi = gntPencere) then Result := TPencere(GN.AtaNesne);
   end;
 begin
 
@@ -200,9 +202,9 @@ begin
 
     // fare yatay & dikey koordinatýnda bulunan nesneyi al
     // bilgi: yakalanan nesnenin önceliði vardýr
-    if(YakalananGorselNesne <> nil) then
-      OlayAlanGN := YakalananGorselNesne
-    else OlayAlanGN := GorselNesneBul(Konum);
+    if(GGNesneler.YakalananGorselNesne <> nil) then
+      OlayAlanGN := GGNesneler.YakalananGorselNesne
+    else OlayAlanGN := GGNesneler.GorselNesneBul(Konum);
 
     // farenin bulunduðu noktada görsel nesne yok ise çýk
     if(OlayAlanGN = nil) then Exit;
@@ -220,15 +222,15 @@ begin
 
       P := NesneninPenceresiniAl;
 
-      PencereAktifGN := P^.FAktifNesne;
+      PencereAktifGN := P.FAktifNesne;
 
       // 1. pencerenin kendisine sol tuþ ile basýldýysa
       // -> sol tuþa basýlma olayý pencereye gönderiliyor
-      if(P^.Kimlik = OlayAlanGN^.Kimlik) then
+      if(P.Kimlik = OlayAlanGN.Kimlik) then
       begin
 
         // ana mesajý görsel nesneye gönder
-        Olay.Kimlik := OlayAlanGN^.Kimlik;
+        Olay.Kimlik := OlayAlanGN.Kimlik;
         OlaylariYonlendir(OlayAlanGN, Olay);
       end
       // 2. pencerenin iç görsel nesnelerinden birine sol tuþ ile basýldýysa
@@ -239,13 +241,13 @@ begin
         if(PencereAktifGN = nil) then
         begin
 
-          if(OlayAlanGN^.Odaklanilabilir) then
+          if(OlayAlanGN.Odaklanilabilir) then
           begin
 
-            P^.FAktifNesne := OlayAlanGN;
+            P.FAktifNesne := OlayAlanGN;
 
-            OlayAlanGN^.Odaklanildi := True;
-            Olay.Kimlik := OlayAlanGN^.Kimlik;
+            OlayAlanGN.Odaklanildi := True;
+            Olay.Kimlik := OlayAlanGN.Kimlik;
             Olay.Olay := CO_ODAKKAZANILDI;
             OlaylariYonlendir(OlayAlanGN, Olay);
           end;
@@ -254,8 +256,8 @@ begin
         else if(PencereAktifGN = OlayAlanGN) then
         begin
 
-          OlayAlanGN^.Odaklanildi := True;
-          Olay.Kimlik := OlayAlanGN^.Kimlik;
+          OlayAlanGN.Odaklanildi := True;
+          Olay.Kimlik := OlayAlanGN.Kimlik;
           Olay.Olay := CO_ODAKKAZANILDI;
           OlaylariYonlendir(OlayAlanGN, Olay);
         end
@@ -263,29 +265,29 @@ begin
         else if(OlayAlanGN <> PencereAktifGN) then
         begin
 
-          if(OlayAlanGN^.Odaklanilabilir) then
+          if(OlayAlanGN.Odaklanilabilir) then
           begin
 
-            if(PencereAktifGN <> nil) and (PencereAktifGN^.Gorunum) then
+            if(PencereAktifGN <> nil) and (PencereAktifGN.Gorunum) then
             begin
 
-              PencereAktifGN^.Odaklanildi := False;
-              Olay.Kimlik := PencereAktifGN^.Kimlik;
+              PencereAktifGN.Odaklanildi := False;
+              Olay.Kimlik := PencereAktifGN.Kimlik;
               Olay.Olay := CO_ODAKKAYBEDILDI;
               OlaylariYonlendir(PencereAktifGN, Olay);
             end;
           end;
 
-          P^.FAktifNesne := OlayAlanGN;
+          P.FAktifNesne := OlayAlanGN;
 
-          OlayAlanGN^.Odaklanildi := True;
-          Olay.Kimlik := OlayAlanGN^.Kimlik;
+          OlayAlanGN.Odaklanildi := True;
+          Olay.Kimlik := OlayAlanGN.Kimlik;
           Olay.Olay := CO_ODAKKAZANILDI;
           OlaylariYonlendir(OlayAlanGN, Olay);
         end;
 
         // asýl ana mesajý görsel nesneye gönder
-        Olay.Kimlik := OlayAlanGN^.Kimlik;
+        Olay.Kimlik := OlayAlanGN.Kimlik;
         Olay.Olay := FO_SOLTUS_BASILDI;
         OlaylariYonlendir(OlayAlanGN, Olay);
       end;
@@ -295,7 +297,7 @@ begin
     begin
 
       // nesneye yönlendirilecek parametreleri hazýrla
-      Olay.Kimlik := OlayAlanGN^.Kimlik;
+      Olay.Kimlik := OlayAlanGN.Kimlik;
 
       // bilgi: kaydýrma olayýnýn olmasý durumunda Deger1 deðeri tekerlek dönme sayýsýný içerir
       if(Olay.Olay <> FO_KAYDIRMA) then Olay.Deger1 := Konum.Sol;
@@ -320,15 +322,16 @@ begin
   if(ATusDegeri <> 0) then
   begin
 
-    if(GAktifPencere <> nil) then
+    if(GGNesneler.AktifPencere <> nil) then
     begin
 
       // aktif nesne belirli mi?
-      if(GAktifPencere^.FAktifNesne <> nil) then
+      if(GGNesneler.AktifPencere.FAktifNesne <> nil) then
       begin
 
         // aktif nesne giriþ kutusu nesnesi mi?
-        //if(GAktifNesne^.GorselNesneTipi = gntGirisKutusu) then
+        if(GGNesneler.AktifPencere.FAktifNesne.NesneTipi = gntGirisKutusu) or
+          (GGNesneler.AktifPencere.FAktifNesne.NesneTipi = gntDefter) then
         begin
 
           // odaklanýlan nesneye mesajý gönder
@@ -336,7 +339,7 @@ begin
             Olay.Olay := CO_TUSBASILDI
           else Olay.Olay := CO_TUSBIRAKILDI;
           Olay.Deger1 := ATusDegeri;
-          OlaylariYonlendir(GAktifPencere^.FAktifNesne, Olay);
+          OlaylariYonlendir(GGNesneler.AktifPencere.FAktifNesne, Olay);
         end;
       end;
     end;
@@ -348,29 +351,31 @@ end;
 
   bilgi: tüm çekirdek içi olaylarýnýn görsel nesnelere yönlendirildiði iþlev
  ==============================================================================}
-procedure TOlayYonetim.OlaylariYonlendir(AGorselNesne: PGorselNesne; AOlay: TOlay);
+procedure TOlayYonetim.OlaylariYonlendir(AGorselNesne: TGorselNesne; AOlay: TOlay);
 var
   Gorev: PGorev;
 begin
 
-  Gorev := GorevAl(AGorselNesne^.GorevKimlik);
+  Gorev := GorevAl(AGorselNesne.GrvKimlik);
 
   // görev çalýþmýyorsa nesneye olay gönderme
   if(Gorev = nil) or (Gorev^.Durum <> gdCalisiyor) then Exit;
 
   // bu iþleve yönlendirilen olayý görsel nesneye yönlendir
-  if not(AGorselNesne^.OlayCagriAdresi = nil) then
-    AGorselNesne^.OlayCagriAdresi(AGorselNesne, AOlay);
+  if not(AGorselNesne.OlayCagriAdr = nil) then
+    AGorselNesne.OlayCagriAdr(AGorselNesne, AOlay);
 
   // tuþ basýmý esnasýnda açýk bir menü var ise kapatýlacak
   if(AOlay.Olay = FO_SOLTUS_BASILDI) or (AOlay.Olay = FO_SAGTUS_BASILDI) then
   begin
 
-    if not(GAktifMenu = nil) then
+    if not(GGNesneler.AktifMenu = nil) then
     begin
 
-      if(GAktifMenu^.NesneTipi = gntMenu) then PMenu(GAktifMenu)^.Gizle
-      else if(GAktifMenu^.NesneTipi = gntAcilirMenu) then PAcilirMenu(GAktifMenu)^.Gizle
+      if(GGNesneler.AktifMenu.NesneTipi = gntMenu) then
+        TMenu(GGNesneler.AktifMenu).Gizle
+      else if(GGNesneler.AktifMenu.NesneTipi = gntAcilirMenu) then
+        TAcilirMenu(GGNesneler.AktifMenu).Gizle
     end;
   end;
 end;

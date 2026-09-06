@@ -29,7 +29,7 @@ type
   end;
 
 type
-  TFareSurucusu = object
+  TFareSurucusu = class
   private
     // -> yazılımsal hızlandırma amaçlı değişkenler
     FYatayKonum, FDikeyKonum: TISayi4;
@@ -37,6 +37,7 @@ type
     FFareDugmeleri: TSayi1;
     FKaydirmaDegeri: TISayi4;
     FAygitPaketUzunlugu: TSayi4;
+    FAktifFareImlec: TFareImlecTipi;
     procedure KlavyeKontrolcuyeYaz(AKomut: Byte);
     function AygitCikisiDoluMu: Boolean;
     function AygitGirisiBosMu: Boolean;
@@ -44,20 +45,24 @@ type
     function VeriAl(var AVeri: TSayi1): Boolean;
     function KomutGonder(AKomut: TSayi1): Boolean;
   public
-    procedure Yukle;
+    constructor Create;
     function OlaylariAl(AFareOlay: PFareOlay): Boolean;
   published
     property YatayKonum: Integer read FYatayKonum;
     property DikeyKonum: Integer read FDikeyKonum;
     property FareDugmeleri: Byte read FFareDugmeleri;
     property KaydirmaDegeri: TISayi4 read FKaydirmaDegeri;
+    property AktifFareImlec: TFareImlecTipi read FAktifFareImlec write FAktifFareImlec;
   end;
+
+var
+  GFareSurucusu: TFareSurucusu;
 
 procedure FareKesmeCagrisi;
 
 implementation
 
-uses genel, irq, port, src_vesa20, src_klavye;
+uses irq, port, src_vesa20, src_klavye;
 
 const
   KLAVYE_VERI_PORT    = $60;        // okunabilir / yazılabilir
@@ -74,7 +79,7 @@ var
 {==============================================================================
   ps / 2 fare sürücü yükleme işlevlerini içerir
  ==============================================================================}
-procedure TFareSurucusu.Yukle;
+constructor TFareSurucusu.Create;
 var
   Komut: TSayi1;
 begin
@@ -85,8 +90,8 @@ begin
   FAygitPaketUzunlugu := 3;
 
   // fare kursor pozisyonu
-  FYatayKonum := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk div 2;
-  FDikeyKonum := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk div 2;
+  FYatayKonum := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk div 2;
+  FDikeyKonum := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk div 2;
   FHiz := 1.5;
   FFareDugmeleri := 0;
   FKaydirmaDegeri := 0;
@@ -195,8 +200,8 @@ begin
     // x limit denetimi
     if(FYatayKonum < 0) then
       FYatayKonum := 0
-    else if(FYatayKonum > EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1) then
-      FYatayKonum := EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1;
+    else if(FYatayKonum > GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1) then
+      FYatayKonum := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1;
 
     // bilgi: fare y hareketi. Y SGN + 8 bit = toplam 9 bit
     // eğer hareket aşağıya doğru ise gelen değer negatif
@@ -224,8 +229,8 @@ begin
     // x limit denetimi
     if(FDikeyKonum < 0) then
       FDikeyKonum := 0
-    else if(FDikeyKonum > EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1) then
-      FDikeyKonum := EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1;
+    else if(FDikeyKonum > GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1) then
+      FDikeyKonum := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1;
 
     // paket sayısı 3'ten fazla ise diğer değerleri de işle
     if(FAygitPaketUzunlugu > 3) then

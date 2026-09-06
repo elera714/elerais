@@ -6,7 +6,7 @@
   Dosya Adı: islemci.pas
   Dosya İşlevi: işlemci (cpu) işlevlerini içerir
 
-  Güncelleme Tarihi: 23/08/2020
+  Güncelleme Tarihi: 02/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,20 +17,45 @@ interface
 
 uses paylasim;
 
-var
-  // işlemci kabiliyetleri
-  iFPU, iTSC, iMSR, iAPIC, iMTRR, iACPI, iMMX,
-  iSSE, iSSE2, iSSE3, iVMX, iSSE41, iSSE42, iAVX: Boolean;
+type
+  TIslemci = class
+  private
+    FSatici: string;                    // cpu id = 0
+    FOzellik1_EAX,
+    FOzellik1_EDX,
+    FOzellik1_ECX: TSayi4;              // cpu id = 1
 
-function IslemciSaticisiniAl: string;
-procedure IslemciOzellikleriniAl1(var Aeax, Aedx, Aecx: TSayi4);
+    // işlemci kabiliyetleri
+    FFPU, FTSC, FMSR, FAPIC, FMTRR, FACPI, FMMX,
+    FSSE, FSSE2, FSSE3, FVMX, FSSE41, FSSE42, FAVX: Boolean;
+  public
+    constructor Create;
+    function SaticiBilgisiAl: string;
+    procedure OzellikBilgisiAl(var AEAX, AEDX, AECX: TSayi4);
+  published
+    property Satici: string read FSatici;
+    property Ozellik1_EAX: TSayi4 read FOzellik1_EAX;
+    property Ozellik1_EDX: TSayi4 read FOzellik1_EDX;
+    property Ozellik1_ECX: TSayi4 read FOzellik1_ECX;
+  end;
+
+var
+  GIslemci: TIslemci;
 
 implementation
+
+constructor TIslemci.Create;
+begin
+
+  FSatici := SaticiBilgisiAl;
+
+  OzellikBilgisiAl(FOzellik1_EAX, FOzellik1_EDX, FOzellik1_ECX);
+end;
 
 {==============================================================================
   işlemci satıcı bilgisini alır
  ==============================================================================}
-function IslemciSaticisiniAl: string;
+function TIslemci.SaticiBilgisiAl: string;
 begin
 
   asm
@@ -51,13 +76,13 @@ begin
 end;
 
 {==============================================================================
-  işlemci bilgisi ve özelliklerini döndürür
+  işlemci bilgisi ve özelliklerini alır
   https://en.wikipedia.org/wiki/CPUID adresinden ayrıntılı bilgilere bakılabilir.
  ==============================================================================}
-procedure IslemciOzellikleriniAl1(var Aeax, Aedx, Aecx: TSayi4);
+procedure TIslemci.OzellikBilgisiAl(var AEAX, AEDX, AECX: TSayi4);
 var
-  _eax, _edx,
-  _ecx: TSayi4;
+  YEAX, YEDX,
+  YECX: TSayi4;
 begin
 
   asm
@@ -67,35 +92,35 @@ begin
     inc eax
     cpuid
 
-    lea edi,_eax
+    lea edi,YEAX
     mov [edi],eax
-    lea edi,_edx
+    lea edi,YEDX
     mov [edi],edx
-    lea edi,_ecx
+    lea edi,YECX
     mov [edi],ecx
 
     popad
   end;
 
-  Aeax := _eax;
-  Aedx := _edx;
-  Aecx := _ecx;
+  AEAX := YEAX;
+  AEDX := YEDX;
+  AECX := YECX;
 
-  iFPU  := (Aedx and (1 shl 00)) = (1 shl 00);
-  iTSC  := (Aedx and (1 shl 04)) = (1 shl 04);
-  iMSR  := (Aedx and (1 shl 05)) = (1 shl 05);
-  iAPIC := (Aedx and (1 shl 09)) = (1 shl 09);
-  iMTRR := (Aedx and (1 shl 12)) = (1 shl 12);
-  iACPI := (Aedx and (1 shl 22)) = (1 shl 22);
-  iMMX  := (Aedx and (1 shl 23)) = (1 shl 23);
-  iSSE  := (Aedx and (1 shl 25)) = (1 shl 25);
-  iSSE2 := (Aedx and (1 shl 26)) = (1 shl 26);
+  FFPU  := (AEDX and (1 shl 00)) = (1 shl 00);
+  FTSC  := (AEDX and (1 shl 04)) = (1 shl 04);
+  FMSR  := (AEDX and (1 shl 05)) = (1 shl 05);
+  FAPIC := (AEDX and (1 shl 09)) = (1 shl 09);
+  FMTRR := (AEDX and (1 shl 12)) = (1 shl 12);
+  FACPI := (AEDX and (1 shl 22)) = (1 shl 22);
+  FMMX  := (AEDX and (1 shl 23)) = (1 shl 23);
+  FSSE  := (AEDX and (1 shl 25)) = (1 shl 25);
+  FSSE2 := (AEDX and (1 shl 26)) = (1 shl 26);
 
-  iSSE3 := (Aecx and (1 shl 00)) = (1 shl 00);
-  iVMX  := (Aecx and (1 shl 05)) = (1 shl 05);
-  iSSE41:= (Aecx and (1 shl 19)) = (1 shl 19);
-  iSSE42:= (Aecx and (1 shl 20)) = (1 shl 20);
-  iAVX  := (Aecx and (1 shl 28)) = (1 shl 28);
+  FSSE3 := (AECX and (1 shl 00)) = (1 shl 00);
+  FVMX  := (AECX and (1 shl 05)) = (1 shl 05);
+  FSSE41:= (AECX and (1 shl 19)) = (1 shl 19);
+  FSSE42:= (AECX and (1 shl 20)) = (1 shl 20);
+  FAVX  := (AECX and (1 shl 28)) = (1 shl 28);
 end;
 
 end.

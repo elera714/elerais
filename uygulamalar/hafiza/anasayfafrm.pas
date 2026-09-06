@@ -100,7 +100,7 @@ begin
 
           FSeciliDugme2^.BaslikDegistir(IntToStr(FSeciliDugme2^.Etiket));
 
-          FGenel.Bekle(40);
+          FGenel.Bekle(400);
 
           FSeciliDugme1^.Gizle;
           FSeciliDugme2^.Gizle;
@@ -109,7 +109,7 @@ begin
           if(BulunanCiftSayisi = 8) then
           begin
 
-            FGenel.Bekle(40);
+            FGenel.Bekle(400);
 
             for i := 0 to 15 do FDugmeler[i].YokEt;
 
@@ -123,7 +123,7 @@ begin
 
           FSeciliDugme2^.BaslikDegistir(IntToStr(FSeciliDugme2^.Etiket));
 
-          FGenel.Bekle(40);
+          FGenel.Bekle(400);
 
           FSeciliDugme1^.BaslikDegistir('?');
           FSeciliDugme2^.BaslikDegistir('?');

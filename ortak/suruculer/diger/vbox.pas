@@ -17,7 +17,7 @@ interface
 
 uses paylasim, sistemmesaj, pci;
 
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(APCI: TPCI): TISayi4;
 procedure Listele;
 procedure IcerigiGoruntule;
 procedure VBoxKesmeCagrisi;
@@ -106,10 +106,10 @@ var
 {==============================================================================
   að ilk deðer yüklemelerini gerçekleþtirir
  ==============================================================================}
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(APCI: TPCI): TISayi4;
 begin
 
-  PCIAygit := APCI^;
+  PCIAygit := APCI;
   Result := -1;
 end;
 
@@ -118,16 +118,16 @@ var
   KesmeAktif: TSayi2;
 begin
 
-  VBPort := PCIAygiti0.Oku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, PCI_BAR0);
-  VBBellek := PCIAygiti0.Oku4(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, PCI_BAR1) and $FFFFFFF0;
-  KesmeAktif := PCIAygiti0.Oku2(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, PCI_KOMUT);
-  VBKesmeNo := PCIAygiti0.Oku1(PCIAygit.Yol, PCIAygit.Aygit, PCIAygit.Islev, PCI_KESME_NO);
+  VBPort := GPCIAygitlar.Oku4(PCIAygit.FYol, PCIAygit.FAygit, PCIAygit.FIslev, PCI_BAR0);
+  VBBellek := GPCIAygitlar.Oku4(PCIAygit.FYol, PCIAygit.FAygit, PCIAygit.FIslev, PCI_BAR1) and $FFFFFFF0;
+  KesmeAktif := GPCIAygitlar.Oku2(PCIAygit.FYol, PCIAygit.FAygit, PCIAygit.FIslev, PCI_KOMUT);
+  VBKesmeNo := GPCIAygitlar.Oku1(PCIAygit.FYol, PCIAygit.FAygit, PCIAygit.FIslev, PCI_KESME_NO);
 
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Yol: %d', [PCIAygit.Yol]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt: %d', [PCIAygit.Aygit]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Ýþlev: %d', [PCIAygit.Islev]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Satýcý Kimlik: $%.4x', [PCIAygit.SaticiKimlik]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt Kimlik: $%.4x', [PCIAygit.AygitKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Yol: %d', [PCIAygit.FYol]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt: %d', [PCIAygit.FAygit]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Ýþlev: %d', [PCIAygit.FIslev]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Satýcý Kimlik: $%.4x', [PCIAygit.FSaticiKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt Kimlik: $%.4x', [PCIAygit.FAygitKimlik]);
 
   if((VBPort and 1) = 1) then
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Port: $%.4x', [VBPort and $FFFFFFFC])

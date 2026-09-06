@@ -6,7 +6,7 @@
   Dosya Adı: hamresim.pas
   Dosya İşlevi: renk değerleriyle kodlanmış, biçimlendirilmemiş ham resimleri içerir
 
-  Güncelleme Tarihi: 13/08/2025
+  Güncelleme Tarihi: 12/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -381,41 +381,41 @@ var
   HamResimler: array[0..HAMRESIM_SAYISI - 1] of THamResim = (
 
     // genel ham resimler
-    (Genislik: 24;  Yukseklik: 24;  BellekAdresi: @ResimProgram),                   // 00
-    (Genislik: 07;  Yukseklik: 04;  BellekAdresi: @ResimOKUst),                     // 01
-    (Genislik: 07;  Yukseklik: 04;  BellekAdresi: @ResimOKAlt),                     // 02
-    (Genislik: 04;  Yukseklik: 07;  BellekAdresi: @ResimOKSag),                     // 03
-    (Genislik: 04;  Yukseklik: 07;  BellekAdresi: @ResimOKSol),                     // 04
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @DurumCubuguResim),               // 05
-    (Genislik: 24;  Yukseklik: 24;  BellekAdresi: @Klasor),                         // 06
-    (Genislik: 24;  Yukseklik: 24;  BellekAdresi: @BirOnceki),                      // 07
-    (Genislik: 24;  Yukseklik: 24;  BellekAdresi: @BirSonraki),                     // 08
+    (Genislik: 24;  Yukseklik: 24;  BellekAdresi: @ResimProgram),                       // 00
+    (Genislik: 07;  Yukseklik: 04;  BellekAdresi: @ResimOKUst),                         // 01
+    (Genislik: 07;  Yukseklik: 04;  BellekAdresi: @ResimOKAlt),                         // 02
+    (Genislik: 04;  Yukseklik: 07;  BellekAdresi: @ResimOKSag),                         // 03
+    (Genislik: 04;  Yukseklik: 07;  BellekAdresi: @ResimOKSol),                         // 04
+    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @DurumCubuguResim),                   // 05
+    (Genislik: 24;  Yukseklik: 24;  BellekAdresi: @Klasor),                             // 06
+    (Genislik: 24;  Yukseklik: 24;  BellekAdresi: @BirOnceki),                          // 07
+    (Genislik: 24;  Yukseklik: 24;  BellekAdresi: @BirSonraki),                         // 08
 
     // giysiler - (skins)
 
     // sisteme özel (elera işletim sistemi) giysi
-    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.KapatmaDugmesiA),    // 09
-    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.KapatmaDugmesiP),    // 10
-    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.BuyutmeDugmesiA),    // 11
-    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.BuyutmeDugmesiP),    // 12
-    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.KucultmeDugmesiA),   // 13
-    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.KucultmeDugmesiP),   // 14
+    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.EleraKapatmaDugmesiA),   // 09
+    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.EleraKapatmaDugmesiP),   // 10
+    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.EleraBuyutmeDugmesiA),   // 11
+    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.EleraBuyutmeDugmesiP),   // 12
+    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.EleraKucultmeDugmesiA),  // 13
+    (Genislik: 16;  Yukseklik: 16;  BellekAdresi: @giysi_elera.EleraKucultmeDugmesiP),  // 14
 
     // normal / standart giysi
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.KapatmaDugmesiA),   // 15
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.KapatmaDugmesiP),   // 16
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.BuyutmeDugmesiA),   // 17
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.BuyutmeDugmesiP),   // 18
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.KucultmeDugmesiA),  // 19
-    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.KucultmeDugmesiP),  // 20
+    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.NormalKapatmaDugmesiA), // 15
+    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.NormalKapatmaDugmesiP), // 16
+    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.NormalBuyutmeDugmesiA), // 17
+    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.NormalBuyutmeDugmesiP), // 18
+    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.NormalKucultmeDugmesiA),// 19
+    (Genislik: 12;  Yukseklik: 12;  BellekAdresi: @giysi_normal.NormalKucultmeDugmesiP),// 20
 
     // mac giysi
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.KapatmaDugmesiA),      // 21
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.KapatmaDugmesiP),      // 22
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.BuyutmeDugmesiA),      // 23
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.BuyutmeDugmesiP),      // 24
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.KucultmeDugmesiA),     // 25
-    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.KucultmeDugmesiP));    // 26
+    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.MacKapatmaDugmesiA),       // 21
+    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.MacKapatmaDugmesiP),       // 22
+    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.MacBuyutmeDugmesiA),       // 23
+    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.MacBuyutmeDugmesiP),       // 24
+    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.MacKucultmeDugmesiA),      // 25
+    (Genislik: 14;  Yukseklik: 14;  BellekAdresi: @giysi_mac.MacKucultmeDugmesiP));     // 26
 
 implementation
 

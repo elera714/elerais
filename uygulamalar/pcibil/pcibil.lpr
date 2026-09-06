@@ -6,7 +6,7 @@
   Program Adý: pcibil.lpr
   Program Ýþlevi: pci aygýtlarý hakkýnda bilgi verir
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}

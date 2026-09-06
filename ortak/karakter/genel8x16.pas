@@ -6,7 +6,7 @@
   Dosya Adı: genel8x16.pas
   Dosya İşlevi: sistem öndeğer yazı tipi karakter setini içerir
 
-  Güncelleme Tarihi: 17/07/2026
+  Güncelleme Tarihi: 02/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -29,13 +29,13 @@ type
     Genislik,                   // karakter genişliği
     Yukseklik,                  // karakter yüksekliği
     YT,                         // yatay +/- tolerans değeri
-    DT: TISayi1;                // dikey +/- tolerans değeri
+    DT: TISayi4;                // dikey +/- tolerans değeri
     Adres: Isaretci;            // karakter resim başlangıç adresi
   end;
 
 const
-  WW = 1;   // işaretlenecek
-  oo = 0;   // işaretlenmeyecek
+  MM = 1;   // işaretlenecek
+  ii = 0;   // işaretlenmeyecek
 
 {==============================================================================
   font tanımlamaları
@@ -44,1048 +44,1048 @@ const
   // bu karakter boşluk karakteri olup, boşluğun çizilmesi için değil
   // tasarımsal olarak zeminin çizilmesi için tanımlanmıştır
   KAR032: array[1..1, 1..8] of TSayi1 = (
-    (oo,oo,oo,oo,oo,oo,oo,oo));
+    (ii,ii,ii,ii,ii,ii,ii,ii));
 
   KAR033: array[1..10, 1..1] of TSayi1 = (
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (oo),
-    (WW),
-    (WW));
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (ii),
+    (MM),
+    (MM));
 
   KAR034: array[1..4, 1..5] of TSayi1 = (
-    (WW,WW,oo,WW,WW),
-    (WW,WW,oo,WW,WW),
-    (WW,oo,oo,WW,oo),
-    (WW,oo,oo,WW,oo));
+    (MM,MM,ii,MM,MM),
+    (MM,MM,ii,MM,MM),
+    (MM,ii,ii,MM,ii),
+    (MM,ii,ii,MM,ii));
 
   KAR035: array[1..10, 1..6] of TSayi1 = (
-    (oo,oo,WW,oo,oo,WW),
-    (oo,oo,WW,oo,oo,WW),
-    (oo,WW,oo,oo,WW,oo),
-    (WW,WW,WW,WW,WW,WW),
-    (oo,WW,oo,oo,WW,oo),
-    (oo,WW,oo,oo,WW,oo),
-    (WW,WW,WW,WW,WW,WW),
-    (oo,WW,oo,oo,WW,oo),
-    (WW,oo,oo,WW,oo,oo),
-    (WW,oo,oo,WW,oo,oo));
+    (ii,ii,MM,ii,ii,MM),
+    (ii,ii,MM,ii,ii,MM),
+    (ii,MM,ii,ii,MM,ii),
+    (MM,MM,MM,MM,MM,MM),
+    (ii,MM,ii,ii,MM,ii),
+    (ii,MM,ii,ii,MM,ii),
+    (MM,MM,MM,MM,MM,MM),
+    (ii,MM,ii,ii,MM,ii),
+    (MM,ii,ii,MM,ii,ii),
+    (MM,ii,ii,MM,ii,ii));
 
   KAR036: array[1..10, 1..4] of TSayi1 = (
-    (oo,oo,WW,oo),
-    (oo,WW,WW,WW),
-    (WW,oo,oo,WW),
-    (WW,oo,oo,oo),
-    (oo,WW,WW,oo),
-    (oo,oo,oo,WW),
-    (WW,oo,oo,WW),
-    (WW,WW,WW,oo),
-    (oo,oo,WW,oo),
-    (oo,oo,WW,oo));
+    (ii,ii,MM,ii),
+    (ii,MM,MM,MM),
+    (MM,ii,ii,MM),
+    (MM,ii,ii,ii),
+    (ii,MM,MM,ii),
+    (ii,ii,ii,MM),
+    (MM,ii,ii,MM),
+    (MM,MM,MM,ii),
+    (ii,ii,MM,ii),
+    (ii,ii,MM,ii));
 
   KAR037: array[1..8, 1..5] of TSayi1 = (
-    (oo,WW,oo,oo,oo),
-    (WW,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,WW),
-    (WW,WW,WW,oo,oo),
-    (oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,WW),
-    (oo,oo,oo,WW,oo));
+    (ii,MM,ii,ii,ii),
+    (MM,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,MM),
+    (MM,MM,MM,ii,ii),
+    (ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,MM),
+    (ii,ii,ii,MM,ii));
 
   KAR038: array[1..7, 1..5] of TSayi1 = (
-    (oo,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo),
-    (oo,WW,oo,oo,oo),
-    (oo,WW,WW,oo,oo),
-    (WW,oo,WW,oo,WW),
-    (WW,oo,oo,WW,oo),
-    (oo,WW,WW,WW,WW));
+    (ii,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii),
+    (ii,MM,ii,ii,ii),
+    (ii,MM,MM,ii,ii),
+    (MM,ii,MM,ii,MM),
+    (MM,ii,ii,MM,ii),
+    (ii,MM,MM,MM,MM));
 
   KAR039: array[1..4, 1..1] of TSayi1 = (
-    (WW),
-    (WW),
-    (WW),
-    (WW));
+    (MM),
+    (MM),
+    (MM),
+    (MM));
 
   KAR040: array[1..10, 1..2] of TSayi1 = (
-    (oo,WW),
-    (oo,WW),
-    (WW,oo),
-    (WW,oo),
-    (WW,oo),
-    (WW,oo),
-    (WW,oo),
-    (WW,oo),
-    (oo,WW),
-    (oo,WW));
+    (ii,MM),
+    (ii,MM),
+    (MM,ii),
+    (MM,ii),
+    (MM,ii),
+    (MM,ii),
+    (MM,ii),
+    (MM,ii),
+    (ii,MM),
+    (ii,MM));
 
   KAR041: array[1..10, 1..2] of TSayi1 = (
-    (WW,oo),
-    (WW,oo),
-    (oo,WW),
-    (oo,WW),
-    (oo,WW),
-    (oo,WW),
-    (oo,WW),
-    (oo,WW),
-    (WW,oo),
-    (WW,oo));
+    (MM,ii),
+    (MM,ii),
+    (ii,MM),
+    (ii,MM),
+    (ii,MM),
+    (ii,MM),
+    (ii,MM),
+    (ii,MM),
+    (MM,ii),
+    (MM,ii));
 
   KAR042: array[1..5, 1..5] of TSayi1 = (
-    (oo,oo,WW,oo,oo),
-    (WW,WW,WW,WW,WW),
-    (oo,oo,WW,oo,oo),
-    (oo,WW,oo,WW,oo),
-    (oo,WW,oo,WW,oo));
+    (ii,ii,MM,ii,ii),
+    (MM,MM,MM,MM,MM),
+    (ii,ii,MM,ii,ii),
+    (ii,MM,ii,MM,ii),
+    (ii,MM,ii,MM,ii));
 
   KAR043: array[1..7, 1..7] of TSayi1 = (
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (WW,WW,WW,WW,WW,WW,WW),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo));
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (MM,MM,MM,MM,MM,MM,MM),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii));
 
   KAR044: array[1..4, 1..3] of TSayi1 = (
-    (oo,WW,WW),
-    (oo,WW,oo),
-    (WW,WW,oo),
-    (WW,oo,oo));
+    (ii,MM,MM),
+    (ii,MM,ii),
+    (MM,MM,ii),
+    (MM,ii,ii));
 
   KAR045: array[1..1, 1..6] of TSayi1 = (
-    (WW,WW,WW,WW,WW,WW));
+    (MM,MM,MM,MM,MM,MM));
 
   KAR046: array[1..2, 1..2] of TSayi1 = (
-    (WW,WW),
-    (WW,WW));
+    (MM,MM),
+    (MM,MM));
 
   KAR047: array[1..10, 1..5] of TSayi1 = (
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,WW,oo),
-    (oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo),
-    (oo,WW,oo,oo,oo),
-    (WW,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo));
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,MM,ii),
+    (ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii),
+    (ii,MM,ii,ii,ii),
+    (MM,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii));
 
   KAR048: array[1..8, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo));
+    (ii,MM,MM,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii));
 
   KAR049: array[1..8, 1..5] of TSayi1 = (
-    (oo,oo,WW,oo,oo),
-    (WW,WW,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (WW,WW,WW,WW,WW));
+    (ii,ii,MM,ii,ii),
+    (MM,MM,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (MM,MM,MM,MM,MM));
 
   KAR050: array[1..8, 1..5] of TSayi1 = (
-    (oo,WW,WW,WW,oo),
-    (WW,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo),
-    (WW,oo,oo,oo,WW),
-    (WW,WW,WW,WW,WW));
+    (ii,MM,MM,MM,ii),
+    (MM,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii),
+    (MM,ii,ii,ii,MM),
+    (MM,MM,MM,MM,MM));
 
   KAR051: array[1..8, 1..5] of TSayi1 = (
-    (oo,WW,WW,WW,oo),
-    (WW,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,WW,WW,oo),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,WW),
-    (oo,WW,WW,WW,oo));
+    (ii,MM,MM,MM,ii),
+    (MM,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,MM,MM,ii),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,MM),
+    (ii,MM,MM,MM,ii));
 
   KAR052: array[1..8, 1..6] of TSayi1 = (
-    (oo,oo,oo,WW,WW,oo),
-    (oo,oo,WW,oo,WW,oo),
-    (oo,WW,oo,oo,WW,oo),
-    (oo,WW,oo,oo,WW,oo),
-    (WW,WW,WW,WW,WW,WW),
-    (oo,oo,oo,oo,WW,oo),
-    (oo,oo,oo,oo,WW,oo),
-    (oo,oo,oo,WW,WW,WW));
+    (ii,ii,ii,MM,MM,ii),
+    (ii,ii,MM,ii,MM,ii),
+    (ii,MM,ii,ii,MM,ii),
+    (ii,MM,ii,ii,MM,ii),
+    (MM,MM,MM,MM,MM,MM),
+    (ii,ii,ii,ii,MM,ii),
+    (ii,ii,ii,ii,MM,ii),
+    (ii,ii,ii,MM,MM,MM));
 
   KAR053: array[1..8, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,WW,WW),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,WW,WW,WW,oo),
-    (oo,oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo));
+    (ii,MM,MM,MM,MM,MM),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,MM,MM,MM,ii),
+    (ii,ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii));
 
   KAR054: array[1..8, 1..5] of TSayi1 = (
-    (oo,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo),
-    (WW,oo,oo,oo,oo),
-    (WW,WW,WW,WW,oo),
-    (WW,oo,oo,oo,WW),
-    (WW,oo,oo,oo,WW),
-    (WW,oo,oo,oo,WW),
-    (oo,WW,WW,WW,oo));
+    (ii,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii),
+    (MM,ii,ii,ii,ii),
+    (MM,MM,MM,MM,ii),
+    (MM,ii,ii,ii,MM),
+    (MM,ii,ii,ii,MM),
+    (MM,ii,ii,ii,MM),
+    (ii,MM,MM,MM,ii));
 
   KAR055: array[1..8, 1..6] of TSayi1 = (
-    (WW,WW,WW,WW,WW,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW,oo),
-    (oo,oo,oo,oo,WW,oo),
-    (oo,oo,oo,WW,oo,oo),
-    (oo,oo,oo,WW,oo,oo),
-    (oo,oo,oo,WW,oo,oo));
+    (MM,MM,MM,MM,MM,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM,ii),
+    (ii,ii,ii,ii,MM,ii),
+    (ii,ii,ii,MM,ii,ii),
+    (ii,ii,ii,MM,ii,ii),
+    (ii,ii,ii,MM,ii,ii));
 
   KAR056: array[1..8, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo));
+    (ii,MM,MM,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii));
 
   KAR057: array[1..8, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,WW),
-    (oo,oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW,oo),
-    (WW,WW,WW,WW,oo,oo));
+    (ii,MM,MM,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,MM),
+    (ii,ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM,ii),
+    (MM,MM,MM,MM,ii,ii));
 
   KAR058: array[1..6, 1..2] of TSayi1 = (
-    (WW,WW),
-    (WW,WW),
-    (oo,oo),
-    (oo,oo),
-    (WW,WW),
-    (WW,WW));
+    (MM,MM),
+    (MM,MM),
+    (ii,ii),
+    (ii,ii),
+    (MM,MM),
+    (MM,MM));
 
   KAR059: array[1..7, 1..3] of TSayi1 = (
-    (oo,WW,WW),
-    (oo,WW,WW),
-    (oo,oo,oo),
-    (oo,oo,oo),
-    (oo,WW,WW),
-    (WW,WW,oo),
-    (WW,oo,oo));
+    (ii,MM,MM),
+    (ii,MM,MM),
+    (ii,ii,ii),
+    (ii,ii,ii),
+    (ii,MM,MM),
+    (MM,MM,ii),
+    (MM,ii,ii));
 
   KAR060: array[1..7, 1..6] of TSayi1 = (
-    (oo,oo,oo,oo,oo,WW),
-    (oo,oo,oo,WW,WW,oo),
-    (oo,oo,WW,oo,oo,oo),
-    (WW,WW,oo,oo,oo,oo),
-    (oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,WW,oo),
-    (oo,oo,oo,oo,oo,WW));
+    (ii,ii,ii,ii,ii,MM),
+    (ii,ii,ii,MM,MM,ii),
+    (ii,ii,MM,ii,ii,ii),
+    (MM,MM,ii,ii,ii,ii),
+    (ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,MM,ii),
+    (ii,ii,ii,ii,ii,MM));
 
   KAR061: array[1..3, 1..6] of TSayi1 = (
-    (WW,WW,WW,WW,WW,WW),
-    (oo,oo,oo,oo,oo,oo),
-    (WW,WW,WW,WW,WW,WW));
+    (MM,MM,MM,MM,MM,MM),
+    (ii,ii,ii,ii,ii,ii),
+    (MM,MM,MM,MM,MM,MM));
 
   KAR062: array[1..7, 1..6] of TSayi1 = (
-    (WW,oo,oo,oo,oo,oo),
-    (oo,WW,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo),
-    (oo,oo,oo,oo,WW,WW),
-    (oo,oo,oo,WW,oo,oo),
-    (oo,WW,WW,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo));
+    (MM,ii,ii,ii,ii,ii),
+    (ii,MM,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii),
+    (ii,ii,ii,ii,MM,MM),
+    (ii,ii,ii,MM,ii,ii),
+    (ii,MM,MM,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii));
 
   KAR063: array[1..8, 1..5] of TSayi1 = (
-    (oo,WW,WW,WW,oo),
-    (WW,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,oo,oo,oo),
-    (oo,WW,WW,oo,oo));
+    (ii,MM,MM,MM,ii),
+    (MM,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,ii,ii,ii),
+    (ii,MM,MM,ii,ii));
 
   KAR064: array[1..10, 1..5] of TSayi1 = (
-    (oo,WW,WW,WW,oo),
-    (WW,oo,oo,oo,WW),
-    (WW,oo,oo,oo,WW),
-    (WW,oo,oo,WW,WW),
-    (WW,oo,WW,oo,WW),
-    (WW,oo,WW,oo,WW),
-    (WW,oo,oo,WW,WW),
-    (WW,oo,oo,oo,oo),
-    (WW,oo,oo,oo,WW),
-    (oo,WW,WW,WW,oo));
+    (ii,MM,MM,MM,ii),
+    (MM,ii,ii,ii,MM),
+    (MM,ii,ii,ii,MM),
+    (MM,ii,ii,MM,MM),
+    (MM,ii,MM,ii,MM),
+    (MM,ii,MM,ii,MM),
+    (MM,ii,ii,MM,MM),
+    (MM,ii,ii,ii,ii),
+    (MM,ii,ii,ii,MM),
+    (ii,MM,MM,MM,ii));
 
   KAR065: array[1..8, 1..7] of TSayi1 = (
-    (oo,oo,WW,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,WW,oo,WW,oo,oo),
-    (oo,oo,WW,oo,WW,oo,oo),
-    (oo,oo,WW,oo,WW,oo,oo),
-    (oo,oo,WW,WW,WW,oo,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,WW,WW,oo,WW,WW,WW));
+    (ii,ii,MM,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,MM,ii,MM,ii,ii),
+    (ii,ii,MM,ii,MM,ii,ii),
+    (ii,ii,MM,ii,MM,ii,ii),
+    (ii,ii,MM,MM,MM,ii,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,MM,MM,ii,MM,MM,MM));
 
   KAR066: array[1..8, 1..6] of TSayi1 = (
-    (WW,WW,WW,WW,WW,oo),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (WW,WW,WW,WW,WW,oo));
+    (MM,MM,MM,MM,MM,ii),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (MM,MM,MM,MM,MM,ii));
 
   KAR067: array[1..8, 1..6] of TSayi1 = (
-    (oo,oo,WW,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,oo,WW,WW,WW,oo));
+    (ii,ii,MM,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,ii,MM,MM,MM,ii));
 
   KAR068: array[1..8, 1..6] of TSayi1 = (
-    (WW,WW,WW,WW,oo,oo),
-    (oo,WW,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,WW,oo),
-    (WW,WW,WW,WW,oo,oo));
+    (MM,MM,MM,MM,ii,ii),
+    (ii,MM,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,MM,ii),
+    (MM,MM,MM,MM,ii,ii));
 
   KAR069: array[1..8, 1..6] of TSayi1 = (
-    (WW,WW,WW,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,WW,oo,oo),
-    (oo,WW,WW,WW,oo,oo),
-    (oo,WW,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,WW),
-    (WW,WW,WW,WW,WW,WW));
+    (MM,MM,MM,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,MM,ii,ii),
+    (ii,MM,MM,MM,ii,ii),
+    (ii,MM,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,MM),
+    (MM,MM,MM,MM,MM,MM));
 
   KAR070: array[1..8, 1..6] of TSayi1 = (
-    (WW,WW,WW,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,WW,oo,oo),
-    (oo,WW,WW,WW,oo,oo),
-    (oo,WW,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (WW,WW,WW,oo,oo,oo));
+    (MM,MM,MM,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,MM,ii,ii),
+    (ii,MM,MM,MM,ii,ii),
+    (ii,MM,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (MM,MM,MM,ii,ii,ii));
 
   KAR071: array[1..8, 1..7] of TSayi1 = (
-    (oo,oo,WW,WW,WW,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,WW,WW,WW),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo,oo));
+    (ii,ii,MM,MM,MM,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,MM,MM,MM),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii,ii));
 
   KAR072: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,WW,WW,WW,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,WW,WW,oo,WW,WW,WW));
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,MM,MM,MM,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,MM,MM,ii,MM,MM,MM));
 
   KAR073: array[1..8, 1..5] of TSayi1 = (
-    (WW,WW,WW,WW,WW),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (WW,WW,WW,WW,WW));
+    (MM,MM,MM,MM,MM),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (MM,MM,MM,MM,MM));
 
   KAR074: array[1..8, 1..6] of TSayi1 = (
-    (oo,oo,WW,WW,WW,WW),
-    (oo,oo,oo,oo,WW,oo),
-    (oo,oo,oo,oo,WW,oo),
-    (oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,WW,oo),
-    (oo,WW,WW,WW,oo,oo));
+    (ii,ii,MM,MM,MM,MM),
+    (ii,ii,ii,ii,MM,ii),
+    (ii,ii,ii,ii,MM,ii),
+    (ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,MM,ii),
+    (ii,MM,MM,MM,ii,ii));
 
   KAR075: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,WW,oo,oo),
-    (oo,WW,oo,WW,oo,oo,oo),
-    (oo,WW,WW,WW,oo,oo,oo),
-    (oo,WW,oo,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,WW,WW,oo,oo,WW,WW));
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,MM,ii,ii),
+    (ii,MM,ii,MM,ii,ii,ii),
+    (ii,MM,MM,MM,ii,ii,ii),
+    (ii,MM,ii,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,MM,MM,ii,ii,MM,MM));
 
   KAR076: array[1..8, 1..6] of TSayi1 = (
-    (WW,WW,WW,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (WW,WW,WW,WW,WW,WW));
+    (MM,MM,MM,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (MM,MM,MM,MM,MM,MM));
 
   KAR077: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,WW,oo,WW,WW,oo),
-    (oo,WW,WW,oo,WW,WW,oo),
-    (oo,WW,oo,WW,oo,WW,oo),
-    (oo,WW,oo,WW,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,WW,WW,oo,WW,WW,WW));
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,MM,ii,MM,MM,ii),
+    (ii,MM,MM,ii,MM,MM,ii),
+    (ii,MM,ii,MM,ii,MM,ii),
+    (ii,MM,ii,MM,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,MM,MM,ii,MM,MM,MM));
 
   KAR078: array[1..8, 1..8] of TSayi1 = (
-    (WW,WW,WW,oo,oo,WW,WW,WW),
-    (oo,WW,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,WW,oo,oo,WW,oo),
-    (oo,WW,oo,WW,oo,oo,WW,oo),
-    (oo,WW,oo,oo,WW,oo,WW,oo),
-    (oo,WW,oo,oo,WW,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,WW,oo),
-    (WW,WW,WW,oo,oo,WW,WW,oo));
+    (MM,MM,MM,ii,ii,MM,MM,MM),
+    (ii,MM,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,MM,ii,ii,MM,ii),
+    (ii,MM,ii,MM,ii,ii,MM,ii),
+    (ii,MM,ii,ii,MM,ii,MM,ii),
+    (ii,MM,ii,ii,MM,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,MM,ii),
+    (MM,MM,MM,ii,ii,MM,MM,ii));
 
   KAR079: array[1..8, 1..7] of TSayi1 = (
-    (oo,oo,WW,WW,WW,oo,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo,oo));
+    (ii,ii,MM,MM,MM,ii,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii,ii));
 
   KAR080: array[1..8, 1..6] of TSayi1 = (
-    (WW,WW,WW,WW,WW,oo),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (WW,WW,WW,oo,oo,oo));
+    (MM,MM,MM,MM,MM,ii),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (MM,MM,MM,ii,ii,ii));
 
   KAR081: array[1..9, 1..7] of TSayi1 = (
-    (oo,oo,WW,WW,WW,oo,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo,oo),
-    (oo,oo,WW,WW,WW,WW,WW));
+    (ii,ii,MM,MM,MM,ii,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii,ii),
+    (ii,ii,MM,MM,MM,MM,MM));
 
   KAR082: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,WW,WW,oo,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,WW,WW,WW,oo,oo),
-    (oo,WW,oo,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,WW,WW,oo,oo,oo,WW));
+    (MM,MM,MM,MM,MM,ii,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,MM,MM,MM,ii,ii),
+    (ii,MM,ii,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,MM,MM,ii,ii,ii,MM));
 
   KAR083: array[1..8, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,oo,WW),
-    (WW,oo,oo,oo,WW,WW),
-    (WW,oo,oo,oo,oo,oo),
-    (oo,WW,WW,WW,WW,oo),
-    (oo,oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,oo,WW),
-    (WW,WW,oo,oo,oo,WW),
-    (WW,oo,WW,WW,WW,oo));
+    (ii,MM,MM,MM,ii,MM),
+    (MM,ii,ii,ii,MM,MM),
+    (MM,ii,ii,ii,ii,ii),
+    (ii,MM,MM,MM,MM,ii),
+    (ii,ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,ii,MM),
+    (MM,MM,ii,ii,ii,MM),
+    (MM,ii,MM,MM,MM,ii));
 
   KAR084: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,WW,WW,WW,WW),
-    (WW,oo,oo,WW,oo,oo,WW),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,WW,WW,WW,oo,oo));
+    (MM,MM,MM,MM,MM,MM,MM),
+    (MM,ii,ii,MM,ii,ii,MM),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,MM,MM,MM,ii,ii));
 
   KAR085: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo,oo));
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii,ii));
 
   KAR086: array[1..8, 1..8] of TSayi1 = (
-    (WW,WW,WW,oo,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo,WW,oo,oo),
-    (oo,oo,oo,WW,WW,oo,oo,oo),
-    (oo,oo,oo,WW,WW,oo,oo,oo));
+    (MM,MM,MM,ii,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii,MM,ii,ii),
+    (ii,ii,ii,MM,MM,ii,ii,ii),
+    (ii,ii,ii,MM,MM,ii,ii,ii));
 
   KAR087: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,WW,oo,WW,oo),
-    (oo,WW,oo,WW,oo,WW,oo),
-    (oo,WW,oo,WW,oo,WW,oo),
-    (oo,WW,oo,WW,oo,WW,oo),
-    (oo,oo,WW,oo,WW,oo,oo));
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,MM,ii,MM,ii),
+    (ii,MM,ii,MM,ii,MM,ii),
+    (ii,MM,ii,MM,ii,MM,ii),
+    (ii,MM,ii,MM,ii,MM,ii),
+    (ii,ii,MM,ii,MM,ii,ii));
 
   KAR088: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,WW,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,WW,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,WW,WW,oo,WW,WW,WW));
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,MM,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,MM,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,MM,MM,ii,MM,MM,MM));
 
   KAR089: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,WW,oo,oo),
-    (oo,oo,WW,oo,WW,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,WW,WW,WW,oo,oo));
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,MM,ii,ii),
+    (ii,ii,MM,ii,MM,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,MM,MM,MM,ii,ii));
 
   KAR090: array[1..8, 1..5] of TSayi1 = (
-    (WW,WW,WW,WW,WW),
-    (WW,oo,oo,oo,WW),
-    (oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo),
-    (WW,oo,oo,oo,WW),
-    (WW,WW,WW,WW,WW));
+    (MM,MM,MM,MM,MM),
+    (MM,ii,ii,ii,MM),
+    (ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii),
+    (MM,ii,ii,ii,MM),
+    (MM,MM,MM,MM,MM));
 
   KAR091: array[1..10, 1..3] of TSayi1 = (
-    (WW,WW,WW),
-    (WW,oo,oo),
-    (WW,oo,oo),
-    (WW,oo,oo),
-    (WW,oo,oo),
-    (WW,oo,oo),
-    (WW,oo,oo),
-    (WW,oo,oo),
-    (WW,oo,oo),
-    (WW,WW,WW));
+    (MM,MM,MM),
+    (MM,ii,ii),
+    (MM,ii,ii),
+    (MM,ii,ii),
+    (MM,ii,ii),
+    (MM,ii,ii),
+    (MM,ii,ii),
+    (MM,ii,ii),
+    (MM,ii,ii),
+    (MM,MM,MM));
 
   KAR092: array[1..10, 1..4] of TSayi1 = (
-    (WW,oo,oo,oo),
-    (WW,oo,oo,oo),
-    (oo,WW,oo,oo),
-    (oo,WW,oo,oo),
-    (oo,oo,WW,oo),
-    (oo,oo,WW,oo),
-    (oo,oo,WW,oo),
-    (oo,oo,oo,WW),
-    (oo,oo,oo,WW),
-    (oo,oo,oo,WW));
+    (MM,ii,ii,ii),
+    (MM,ii,ii,ii),
+    (ii,MM,ii,ii),
+    (ii,MM,ii,ii),
+    (ii,ii,MM,ii),
+    (ii,ii,MM,ii),
+    (ii,ii,MM,ii),
+    (ii,ii,ii,MM),
+    (ii,ii,ii,MM),
+    (ii,ii,ii,MM));
 
   KAR093: array[1..10, 1..3] of TSayi1 = (
-    (WW,WW,WW),
-    (oo,oo,WW),
-    (oo,oo,WW),
-    (oo,oo,WW),
-    (oo,oo,WW),
-    (oo,oo,WW),
-    (oo,oo,WW),
-    (oo,oo,WW),
-    (oo,oo,WW),
-    (WW,WW,WW));
+    (MM,MM,MM),
+    (ii,ii,MM),
+    (ii,ii,MM),
+    (ii,ii,MM),
+    (ii,ii,MM),
+    (ii,ii,MM),
+    (ii,ii,MM),
+    (ii,ii,MM),
+    (ii,ii,MM),
+    (MM,MM,MM));
 
   KAR094: array[1..4, 1..5] of TSayi1 = (
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,WW,oo,WW,oo),
-    (WW,oo,oo,oo,WW));
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,MM,ii,MM,ii),
+    (MM,ii,ii,ii,MM));
 
   KAR095: array[1..1, 1..8] of TSayi1 = (
-    (WW,WW,WW,WW,WW,WW,WW,WW));
+    (MM,MM,MM,MM,MM,MM,MM,MM));
 
   KAR096: array[1..2, 1..2] of TSayi1 = (
-    (WW,oo),
-    (oo,WW));
+    (MM,ii),
+    (ii,MM));
 
   KAR097: array[1..6, 1..7] of TSayi1 = (
-    (oo,WW,WW,WW,WW,oo,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (oo,WW,WW,WW,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,WW,WW,oo),
-    (oo,WW,WW,WW,oo,WW,WW));
+    (ii,MM,MM,MM,MM,ii,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (ii,MM,MM,MM,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,MM,MM,ii),
+    (ii,MM,MM,MM,ii,MM,MM));
 
   KAR098: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,oo,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo,oo),
-    (oo,WW,oo,WW,WW,WW,oo),
-    (oo,WW,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,oo,oo,oo,WW),
-    (WW,WW,oo,WW,WW,WW,oo));
+    (MM,MM,ii,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii,ii),
+    (ii,MM,ii,MM,MM,MM,ii),
+    (ii,MM,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,ii,ii,ii,MM),
+    (MM,MM,ii,MM,MM,MM,ii));
 
   KAR099: array[1..6, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,oo,WW),
-    (WW,oo,oo,oo,WW,WW),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo));
+    (ii,MM,MM,MM,ii,MM),
+    (MM,ii,ii,ii,MM,MM),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii));
 
   KAR100: array[1..8, 1..7] of TSayi1 = (
-    (oo,oo,oo,oo,WW,WW,oo),
-    (oo,oo,oo,oo,oo,WW,oo),
-    (oo,WW,WW,WW,oo,WW,oo),
-    (WW,oo,oo,oo,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,WW,WW,oo),
-    (oo,WW,WW,WW,oo,WW,WW));
+    (ii,ii,ii,ii,MM,MM,ii),
+    (ii,ii,ii,ii,ii,MM,ii),
+    (ii,MM,MM,MM,ii,MM,ii),
+    (MM,ii,ii,ii,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,MM,MM,ii),
+    (ii,MM,MM,MM,ii,MM,MM));
 
   KAR101: array[1..6, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,WW,WW,WW,WW,WW),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo),
-    (oo,WW,WW,WW,WW,WW));
+    (ii,MM,MM,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,MM,MM,MM,MM,MM),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii),
+    (ii,MM,MM,MM,MM,MM));
 
   KAR102: array[1..8, 1..6] of TSayi1 = (
-    (oo,oo,oo,WW,WW,WW),
-    (oo,oo,WW,oo,oo,oo),
-    (WW,WW,WW,WW,WW,WW),
-    (oo,oo,WW,oo,oo,oo),
-    (oo,oo,WW,oo,oo,oo),
-    (oo,oo,WW,oo,oo,oo),
-    (oo,oo,WW,oo,oo,oo),
-    (WW,WW,WW,WW,WW,WW));
+    (ii,ii,ii,MM,MM,MM),
+    (ii,ii,MM,ii,ii,ii),
+    (MM,MM,MM,MM,MM,MM),
+    (ii,ii,MM,ii,ii,ii),
+    (ii,ii,MM,ii,ii,ii),
+    (ii,ii,MM,ii,ii,ii),
+    (ii,ii,MM,ii,ii,ii),
+    (MM,MM,MM,MM,MM,MM));
 
   KAR103: array[1..8, 1..7] of TSayi1 = (
-    (oo,WW,WW,WW,oo,WW,WW),
-    (WW,oo,oo,oo,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,WW,WW,oo),
-    (oo,WW,WW,WW,oo,WW,oo),
-    (oo,oo,oo,oo,oo,WW,oo),
-    (oo,WW,WW,WW,WW,oo,oo));
+    (ii,MM,MM,MM,ii,MM,MM),
+    (MM,ii,ii,ii,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,MM,MM,ii),
+    (ii,MM,MM,MM,ii,MM,ii),
+    (ii,ii,ii,ii,ii,MM,ii),
+    (ii,MM,MM,MM,MM,ii,ii));
 
   KAR104: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,oo,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo,oo),
-    (oo,WW,oo,WW,WW,oo,oo),
-    (oo,WW,WW,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,WW,WW,oo,WW,WW,WW));
+    (MM,MM,ii,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii,ii),
+    (ii,MM,ii,MM,MM,ii,ii),
+    (ii,MM,MM,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,MM,MM,ii,MM,MM,MM));
 
   KAR105: array[1..8, 1..5] of TSayi1 = (
-    (oo,oo,WW,oo,oo),
-    (oo,oo,oo,oo,oo),
-    (WW,WW,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (WW,WW,WW,WW,WW));
+    (ii,ii,MM,ii,ii),
+    (ii,ii,ii,ii,ii),
+    (MM,MM,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (MM,MM,MM,MM,MM));
 
   KAR106: array[1..10, 1..5] of TSayi1 = (
-    (oo,oo,oo,WW,oo),
-    (oo,oo,oo,oo,oo),
-    (oo,WW,WW,WW,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,WW),
-    (WW,WW,WW,WW,oo));
+    (ii,ii,ii,MM,ii),
+    (ii,ii,ii,ii,ii),
+    (ii,MM,MM,MM,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,MM),
+    (MM,MM,MM,MM,ii));
 
   KAR107: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,oo,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo,oo),
-    (oo,WW,oo,WW,WW,WW,WW),
-    (oo,WW,oo,oo,WW,oo,oo),
-    (oo,WW,WW,WW,oo,oo,oo),
-    (oo,WW,oo,WW,oo,oo,oo),
-    (oo,WW,oo,oo,WW,oo,oo),
-    (WW,WW,oo,oo,WW,WW,WW));
+    (MM,MM,ii,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii,ii),
+    (ii,MM,ii,MM,MM,MM,MM),
+    (ii,MM,ii,ii,MM,ii,ii),
+    (ii,MM,MM,MM,ii,ii,ii),
+    (ii,MM,ii,MM,ii,ii,ii),
+    (ii,MM,ii,ii,MM,ii,ii),
+    (MM,MM,ii,ii,MM,MM,MM));
 
   KAR108: array[1..8, 1..5] of TSayi1 = (
-    (oo,WW,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (WW,WW,WW,WW,WW));
+    (ii,MM,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (MM,MM,MM,MM,MM));
 
   KAR109: array[1..6, 1..8] of TSayi1 = (
-    (WW,WW,oo,WW,oo,oo,WW,oo),
-    (oo,WW,WW,oo,WW,WW,oo,WW),
-    (oo,WW,oo,oo,WW,oo,oo,WW),
-    (oo,WW,oo,oo,WW,oo,oo,WW),
-    (oo,WW,oo,oo,WW,oo,oo,WW),
-    (WW,WW,WW,oo,WW,WW,oo,WW));
+    (MM,MM,ii,MM,ii,ii,MM,ii),
+    (ii,MM,MM,ii,MM,MM,ii,MM),
+    (ii,MM,ii,ii,MM,ii,ii,MM),
+    (ii,MM,ii,ii,MM,ii,ii,MM),
+    (ii,MM,ii,ii,MM,ii,ii,MM),
+    (MM,MM,MM,ii,MM,MM,ii,MM));
 
   KAR110: array[1..6, 1..7] of TSayi1 = (
-    (WW,WW,oo,WW,WW,oo,oo),
-    (oo,WW,WW,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,WW,WW,oo,WW,WW,WW));
+    (MM,MM,ii,MM,MM,ii,ii),
+    (ii,MM,MM,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,MM,MM,ii,MM,MM,MM));
 
   KAR111: array[1..6, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo));
+    (ii,MM,MM,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii));
 
   KAR112: array[1..8, 1..6] of TSayi1 = (
-    (WW,WW,oo,WW,WW,oo),
-    (oo,WW,WW,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (WW,WW,WW,oo,oo,oo));
+    (MM,MM,ii,MM,MM,ii),
+    (ii,MM,MM,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (MM,MM,MM,ii,ii,ii));
 
   KAR113: array[1..8, 1..7] of TSayi1 = (
-    (oo,WW,WW,WW,oo,WW,WW),
-    (WW,oo,oo,oo,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,WW,WW,oo),
-    (oo,WW,WW,WW,oo,WW,oo),
-    (oo,oo,oo,oo,oo,WW,oo),
-    (oo,oo,oo,oo,WW,WW,WW));
+    (ii,MM,MM,MM,ii,MM,MM),
+    (MM,ii,ii,ii,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,MM,MM,ii),
+    (ii,MM,MM,MM,ii,MM,ii),
+    (ii,ii,ii,ii,ii,MM,ii),
+    (ii,ii,ii,ii,MM,MM,MM));
 
   KAR114: array[1..6, 1..6] of TSayi1 = (
-    (WW,WW,oo,WW,WW,WW),
-    (oo,WW,WW,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (WW,WW,WW,WW,WW,oo));
+    (MM,MM,ii,MM,MM,MM),
+    (ii,MM,MM,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (MM,MM,MM,MM,MM,ii));
 
   KAR115: array[1..6, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,WW,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo),
-    (oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,WW,WW,WW,WW,oo));
+    (ii,MM,MM,MM,MM,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii),
+    (ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,MM,MM,MM,MM,ii));
 
   KAR116: array[1..7, 1..6] of TSayi1 = (
-    (oo,WW,oo,oo,oo,oo),
-    (WW,WW,WW,WW,WW,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,oo,WW,WW,WW,oo));
+    (ii,MM,ii,ii,ii,ii),
+    (MM,MM,MM,MM,MM,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,ii,MM,MM,MM,ii));
 
   KAR117: array[1..6, 1..7] of TSayi1 = (
-    (WW,WW,oo,oo,WW,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,WW,WW,oo),
-    (oo,oo,WW,WW,oo,WW,WW));
+    (MM,MM,ii,ii,MM,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,MM,MM,ii),
+    (ii,ii,MM,MM,ii,MM,MM));
 
   KAR118: array[1..6, 1..8] of TSayi1 = (
-    (WW,WW,WW,oo,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo,WW,oo,oo),
-    (oo,oo,oo,WW,WW,oo,oo,oo),
-    (oo,oo,oo,WW,WW,oo,oo,oo));
+    (MM,MM,MM,ii,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii,MM,ii,ii),
+    (ii,ii,ii,MM,MM,ii,ii,ii),
+    (ii,ii,ii,MM,MM,ii,ii,ii));
 
   KAR119: array[1..6, 1..7] of TSayi1 = (
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,WW,oo,WW,oo),
-    (oo,WW,oo,WW,oo,WW,oo),
-    (oo,WW,oo,WW,oo,WW,oo),
-    (oo,oo,WW,oo,WW,oo,oo));
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,MM,ii,MM,ii),
+    (ii,MM,ii,MM,ii,MM,ii),
+    (ii,MM,ii,MM,ii,MM,ii),
+    (ii,ii,MM,ii,MM,ii,ii));
 
   KAR120: array[1..6, 1..6] of TSayi1 = (
-    (WW,WW,oo,oo,WW,WW),
-    (oo,WW,oo,oo,WW,oo),
-    (oo,oo,WW,WW,oo,oo),
-    (oo,oo,WW,WW,oo,oo),
-    (oo,WW,oo,oo,WW,oo),
-    (WW,WW,oo,oo,WW,WW));
+    (MM,MM,ii,ii,MM,MM),
+    (ii,MM,ii,ii,MM,ii),
+    (ii,ii,MM,MM,ii,ii),
+    (ii,ii,MM,MM,ii,ii),
+    (ii,MM,ii,ii,MM,ii),
+    (MM,MM,ii,ii,MM,MM));
 
   KAR121: array[1..8, 1..7] of TSayi1 = (
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,oo,WW,oo,oo),
-    (oo,oo,WW,oo,WW,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo,oo),
-    (oo,WW,WW,WW,oo,oo,oo));
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,ii,MM,ii,ii),
+    (ii,ii,MM,ii,MM,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii,ii),
+    (ii,MM,MM,MM,ii,ii,ii));
 
   KAR122: array[1..6, 1..5] of TSayi1 = (
-    (WW,WW,WW,WW,WW),
-    (WW,oo,oo,WW,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,WW,oo,oo,oo),
-    (WW,oo,oo,oo,WW),
-    (WW,WW,WW,WW,WW));
+    (MM,MM,MM,MM,MM),
+    (MM,ii,ii,MM,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,MM,ii,ii,ii),
+    (MM,ii,ii,ii,MM),
+    (MM,MM,MM,MM,MM));
 
   KAR123: array[1..9, 1..3] of TSayi1 = (
-    (oo,oo,WW),
-    (oo,WW,oo),
-    (oo,WW,oo),
-    (oo,WW,oo),
-    (WW,oo,oo),
-    (oo,WW,oo),
-    (oo,WW,oo),
-    (oo,WW,oo),
-    (oo,oo,WW));
+    (ii,ii,MM),
+    (ii,MM,ii),
+    (ii,MM,ii),
+    (ii,MM,ii),
+    (MM,ii,ii),
+    (ii,MM,ii),
+    (ii,MM,ii),
+    (ii,MM,ii),
+    (ii,ii,MM));
 
   KAR124: array[1..10, 1..1] of TSayi1 = (
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (WW),
-    (WW));
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (MM),
+    (MM));
 
   KAR125: array[1..9, 1..3] of TSayi1 = (
-    (WW,oo,oo),
-    (oo,WW,oo),
-    (oo,WW,oo),
-    (oo,WW,oo),
-    (oo,oo,WW),
-    (oo,WW,oo),
-    (oo,WW,oo),
-    (oo,WW,oo),
-    (WW,oo,oo));
+    (MM,ii,ii),
+    (ii,MM,ii),
+    (ii,MM,ii),
+    (ii,MM,ii),
+    (ii,ii,MM),
+    (ii,MM,ii),
+    (ii,MM,ii),
+    (ii,MM,ii),
+    (MM,ii,ii));
 
   KAR126: array[1..2, 1..6] of TSayi1 = (
-    (oo,WW,WW,oo,oo,WW),
-    (WW,oo,oo,WW,WW,oo));
+    (ii,MM,MM,ii,ii,MM),
+    (MM,ii,ii,MM,MM,ii));
 
   KAR128: array[1..11, 1..6] of TSayi1 = (
-    (oo,oo,WW,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,WW),
-    (oo,oo,WW,WW,WW,oo),
-    (oo,oo,oo,WW,oo,oo),
-    (oo,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo));
+    (ii,ii,MM,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,MM),
+    (ii,ii,MM,MM,MM,ii),
+    (ii,ii,ii,MM,ii,ii),
+    (ii,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii));
 
   KAR153: array[1..10, 1..7] of TSayi1 = (
-    (oo,oo,WW,oo,oo,WW,oo),
-    (oo,oo,oo,oo,oo,oo,oo),
-    (oo,oo,WW,WW,WW,oo,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,oo,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo,oo));
+    (ii,ii,MM,ii,ii,MM,ii),
+    (ii,ii,ii,ii,ii,ii,ii),
+    (ii,ii,MM,MM,MM,ii,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,ii,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii,ii));
 
   KAR154: array[1..10, 1..7] of TSayi1 = (
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,oo,oo,oo,oo,oo),
-    (WW,WW,WW,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo,oo));
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,ii,ii,ii,ii,ii),
+    (MM,MM,MM,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii,ii));
 
   KAR189: array[1..8, 1..8] of TSayi1 = (
-    (WW,WW,oo,oo,oo,oo,oo,oo),
-    (oo,WW,oo,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo,oo),
-    (WW,WW,WW,WW,WW,oo,oo,oo),
-    (oo,oo,WW,oo,oo,WW,WW,WW),
-    (oo,WW,oo,oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,oo,oo,WW,oo),
-    (oo,oo,oo,oo,oo,WW,WW,WW));
+    (MM,MM,ii,ii,ii,ii,ii,ii),
+    (ii,MM,ii,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii,ii),
+    (MM,MM,MM,MM,MM,ii,ii,ii),
+    (ii,ii,MM,ii,ii,MM,MM,MM),
+    (ii,MM,ii,ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,ii,ii,MM,ii),
+    (ii,ii,ii,ii,ii,MM,MM,MM));
 
   KAR208: array[1..11, 1..7] of TSayi1 = (
-    (oo,WW,oo,oo,WW,oo,oo),
-    (oo,oo,WW,WW,oo,oo,oo),
-    (oo,oo,oo,oo,oo,oo,oo),
-    (oo,oo,WW,WW,WW,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,WW,WW,WW),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo,oo));
+    (ii,MM,ii,ii,MM,ii,ii),
+    (ii,ii,MM,MM,ii,ii,ii),
+    (ii,ii,ii,ii,ii,ii,ii),
+    (ii,ii,MM,MM,MM,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,MM,MM,MM),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii,ii));
 
   KAR221: array[1..10, 1..5] of TSayi1 = (
-    (oo,oo,WW,oo,oo),
-    (oo,oo,oo,oo,oo),
-    (WW,WW,WW,WW,WW),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (WW,WW,WW,WW,WW));
+    (ii,ii,MM,ii,ii),
+    (ii,ii,ii,ii,ii),
+    (MM,MM,MM,MM,MM),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (MM,MM,MM,MM,MM));
 
   KAR222: array[1..11, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,oo,WW),
-    (WW,oo,oo,oo,WW,WW),
-    (WW,oo,oo,oo,oo,oo),
-    (oo,WW,WW,WW,WW,oo),
-    (oo,oo,oo,oo,oo,WW),
-    (oo,oo,oo,oo,oo,WW),
-    (WW,WW,oo,oo,oo,WW),
-    (WW,oo,WW,WW,WW,oo),
-    (oo,oo,oo,WW,oo,oo),
-    (oo,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo));
+    (ii,MM,MM,MM,ii,MM),
+    (MM,ii,ii,ii,MM,MM),
+    (MM,ii,ii,ii,ii,ii),
+    (ii,MM,MM,MM,MM,ii),
+    (ii,ii,ii,ii,ii,MM),
+    (ii,ii,ii,ii,ii,MM),
+    (MM,MM,ii,ii,ii,MM),
+    (MM,ii,MM,MM,MM,ii),
+    (ii,ii,ii,MM,ii,ii),
+    (ii,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii));
 
   KAR231: array[1..9, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,oo,WW),
-    (WW,oo,oo,oo,WW,WW),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,oo),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo),
-    (oo,oo,oo,WW,oo,oo),
-    (oo,oo,oo,oo,WW,oo),
-    (oo,oo,WW,WW,WW,oo));
+    (ii,MM,MM,MM,ii,MM),
+    (MM,ii,ii,ii,MM,MM),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,ii),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii),
+    (ii,ii,ii,MM,ii,ii),
+    (ii,ii,ii,ii,MM,ii),
+    (ii,ii,MM,MM,MM,ii));
 
   KAR240: array[1..11, 1..7] of TSayi1 = (
-    (oo,WW,oo,oo,WW,oo,oo),
-    (oo,oo,WW,WW,oo,oo,oo),
-    (oo,oo,oo,oo,oo,oo,oo),
-    (oo,WW,WW,WW,oo,WW,WW),
-    (WW,oo,oo,oo,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,oo,WW,oo),
-    (WW,oo,oo,oo,WW,WW,oo),
-    (oo,WW,WW,WW,oo,WW,oo),
-    (oo,oo,oo,oo,oo,WW,oo),
-    (oo,WW,WW,WW,WW,oo,oo));
+    (ii,MM,ii,ii,MM,ii,ii),
+    (ii,ii,MM,MM,ii,ii,ii),
+    (ii,ii,ii,ii,ii,ii,ii),
+    (ii,MM,MM,MM,ii,MM,MM),
+    (MM,ii,ii,ii,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,ii,MM,ii),
+    (MM,ii,ii,ii,MM,MM,ii),
+    (ii,MM,MM,MM,ii,MM,ii),
+    (ii,ii,ii,ii,ii,MM,ii),
+    (ii,MM,MM,MM,MM,ii,ii));
 
   KAR246: array[1..8, 1..6] of TSayi1 = (
-    (oo,WW,oo,oo,WW,oo),
-    (oo,oo,oo,oo,oo,oo),
-    (oo,WW,WW,WW,WW,oo),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo));
+    (ii,MM,ii,ii,MM,ii),
+    (ii,ii,ii,ii,ii,ii),
+    (ii,MM,MM,MM,MM,ii),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii));
 
   KAR252: array[1..8, 1..7] of TSayi1 = (
-    (oo,WW,oo,oo,WW,oo,oo),
-    (oo,oo,oo,oo,oo,oo,oo),
-    (WW,WW,oo,oo,WW,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,oo,WW,oo),
-    (oo,WW,oo,oo,WW,WW,oo),
-    (oo,oo,WW,WW,oo,WW,WW));
+    (ii,MM,ii,ii,MM,ii,ii),
+    (ii,ii,ii,ii,ii,ii,ii),
+    (MM,MM,ii,ii,MM,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,ii,MM,ii),
+    (ii,MM,ii,ii,MM,MM,ii),
+    (ii,ii,MM,MM,ii,MM,MM));
 
   KAR253: array[1..6, 1..5] of TSayi1 = (
-    (WW,WW,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (oo,oo,WW,oo,oo),
-    (WW,WW,WW,WW,WW));
+    (MM,MM,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (ii,ii,MM,ii,ii),
+    (MM,MM,MM,MM,MM));
 
   KAR254: array[1..9, 1..6] of TSayi1 = (
-    (oo,WW,WW,WW,WW,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (oo,WW,WW,WW,WW,oo),
-    (oo,oo,oo,oo,oo,WW),
-    (WW,oo,oo,oo,oo,WW),
-    (WW,WW,WW,WW,WW,oo),
-    (oo,oo,WW,oo,oo,oo),
-    (oo,oo,oo,WW,oo,oo),
-    (oo,WW,WW,WW,oo,oo));
+    (ii,MM,MM,MM,MM,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (ii,MM,MM,MM,MM,ii),
+    (ii,ii,ii,ii,ii,MM),
+    (MM,ii,ii,ii,ii,MM),
+    (MM,MM,MM,MM,MM,ii),
+    (ii,ii,MM,ii,ii,ii),
+    (ii,ii,ii,MM,ii,ii),
+    (ii,MM,MM,MM,ii,ii));
 
   KAR255: array[1..14, 1..8] of TSayi1 = (
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW),
-    (WW,WW,WW,WW,WW,WW,WW,WW));
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM),
+    (MM,MM,MM,MM,MM,MM,MM,MM));
 
 {==============================================================================
   KARakter tanım tablosu

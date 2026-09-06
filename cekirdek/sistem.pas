@@ -6,7 +6,7 @@
   Dosya Adý: sistem.pas
   Dosya Ýþlevi: sistem yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/07/2026
+  Güncelleme Tarihi: 05/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,16 +17,38 @@ interface
 
 uses paylasim;
 
-procedure BilgisayariKapat;
-procedure YenidenBaslat;
-procedure SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
-procedure CalisanUygulamalariKaydet;
+type
+  TSistem = class
+  public
+    FSistemSayaci, FCagriSayaci,
+    FGrafikSayaci: TSayi4;
+    // 24 x 24 sistemler. yukleyici.pas dosyasýndan yükleme iþlemi yapýlýr
+    FSistemResimler,
+    FSistemResimler2: TGoruntuYapi;
+    constructor Create;
+    procedure BilgisayariKapat;
+    procedure YenidenBaslat;
+    procedure SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
+    procedure CalisanUygulamalariKaydet;
+  end;
+
+var
+  GSistem: TSistem;
 
 implementation
 
-uses port, dosya, gorselnesne, gorev, genel, donusum, sistemmesaj;
+uses port, dosyalar, gorselnesne, gorev, donusum, sistemmesaj, gn_islevler;
 
-procedure BilgisayariKapat;
+constructor TSistem.Create;
+begin
+
+  // sistem sayaçlarýný sýfýrla
+  FSistemSayaci := 0;
+  FCagriSayaci := 0;
+  FGrafikSayaci := 0;
+end;
+
+procedure TSistem.BilgisayariKapat;
 begin
 
   // öncelikle sistem ayarlarýný kaydet
@@ -35,7 +57,7 @@ begin
   asm cli; hlt; end;
 end;
 
-procedure YenidenBaslat;
+procedure TSistem.YenidenBaslat;
 var
   B1: TSayi1;
 begin
@@ -55,7 +77,7 @@ begin
   asm @@1: hlt; jmp @@1; end;
 end;
 
-procedure SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
+procedure TSistem.SistemAyarlariniKaydet(AKaydetmeSebebi: TSayi4);
 var
   DosyaAdi,
   TS, s: string;
@@ -79,10 +101,10 @@ begin
   IzKaydiOlustur(DosyaAdi, 'Sistem ' + TS + ' itibariyle ' + s + #13#10, False);
 end;
 
-// çalýþan uygulama listesinin dosyaya kaydetme iþlemi
-procedure CalisanUygulamalariKaydet;
+// çalýþan uygulama listesinin dosyaya kaydedilme iþlemi
+procedure TSistem.CalisanUygulamalariKaydet;
 var
-  GN: PGorselNesne;
+  GN: TGorselNesne;
   P: TProgramKayit;
   CalisanPSayisi,
   i, j: TISayi4;
@@ -97,26 +119,26 @@ begin
   if(Sonuc = HATA_YOK) then
   begin
 
-    CalisanPSayisi := CalisanProgramSayisiniAl(GAktifMasaustu^.Kimlik);
+    CalisanPSayisi := CalisanProgramSayisiniAl(GGNesneler.AktifMasaustu.Kimlik);
 
     for i := 0 to CalisanPSayisi - 1 do
     begin
 
-      P := CalisanProgramBilgisiAl(i, GAktifMasaustu^.Kimlik);
+      P := CalisanProgramBilgisiAl(i, GGNesneler.AktifMasaustu.Kimlik);
       j := Length(P.DosyaAdi);
       if(P.DosyaAdi[j] = 'c') then
       begin
 
         s := P.DosyaAdi;
 
-        GN := GorselNesneler0.NesneAl(P.PencereKimlik);
+        GN := GGNesneler.NesneAl(P.PencereKimlik);
         if not(GN = nil) then
         begin
 
-          s := s + ';' + IntToStr(GN^.FAtananAlan.Sol);
-          s := s + ';' + IntToStr(GN^.FAtananAlan.Ust);
-          s := s + ';' + IntToStr(GN^.FAtananAlan.Genislik);
-          s := s + ';' + IntToStr(GN^.FAtananAlan.Yukseklik);
+          s := s + ';' + IntToStr(GN.FAtananAlan.Sol);
+          s := s + ';' + IntToStr(GN.FAtananAlan.Ust);
+          s := s + ';' + IntToStr(GN.FAtananAlan.Genislik);
+          s := s + ';' + IntToStr(GN.FAtananAlan.Yukseklik);
 
           WriteLn(DosyaKimlik, s);
         end;

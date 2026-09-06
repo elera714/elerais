@@ -31,23 +31,23 @@ const
 procedure TfrmAnaSayfa.Olustur;
 begin
 
-  FPencere.Olustur(-1, 100, 100, 270, 260, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
+  FPencere.Olustur(-1, 100, 100, 262, 225, ptBoyutlanabilir, PencereAdi, RENK_BEYAZ);
   if(FPencere.Kimlik < 0) then FGorev.Sonlandir(-1);
 
-  FdugKaydirmaCubugu1.Olustur(FPencere.Kimlik, 30, 10, 200, 15, yYatay);
+  FdugKaydirmaCubugu1.Olustur(FPencere.Kimlik, 30, 10, 205, 15, yYatay);
   FdugKaydirmaCubugu1.DegerleriBelirle(0, 5);
   FdugKaydirmaCubugu1.Goster;
 
-  FdugKaydirmaCubugu2.Olustur(FPencere.Kimlik, 30, 195, 200, 15, yYatay);
-  FdugKaydirmaCubugu2.DegerleriBelirle(0, 10);
+  FdugKaydirmaCubugu2.Olustur(FPencere.Kimlik, 30, 195, 205, 15, yYatay);
+  FdugKaydirmaCubugu2.DegerleriBelirle(0, 50);
   FdugKaydirmaCubugu2.Goster;
 
-  FdugKaydirmaCubugu3.Olustur(FPencere.Kimlik, 10, 10, 15, 200, yDikey);
-  FdugKaydirmaCubugu3.DegerleriBelirle(0, 15);
+  FdugKaydirmaCubugu3.Olustur(FPencere.Kimlik, 10, 10, 15, 205, yDikey);
+  FdugKaydirmaCubugu3.DegerleriBelirle(0, 100);
   FdugKaydirmaCubugu3.Goster;
 
-  FdugKaydirmaCubugu4.Olustur(FPencere.Kimlik, 235, 10, 15, 200, yDikey);
-  FdugKaydirmaCubugu4.DegerleriBelirle(0, 20);
+  FdugKaydirmaCubugu4.Olustur(FPencere.Kimlik, 232, 10, 15, 205, yDikey);
+  FdugKaydirmaCubugu4.DegerleriBelirle(0, 1000);
   FdugKaydirmaCubugu4.Goster;
 end;
 

@@ -214,6 +214,7 @@ cd yzmcgor2
 call derle.bat
 IF %ERRORLEVEL% NEQ 0 GOTO CIK
 cd..
+
 CLS
 ECHO "Tum projeler basariyla derlendi..."
 PAUSE

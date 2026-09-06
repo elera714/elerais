@@ -1,14 +1,14 @@
 {==============================================================================
 
-  Kodlayan: Fatih KILIÇ
-  Telif Bilgisi: haklar.txt dosyasýna bakýnýz
+  Kodlayan: Fatih KILIÃ‡
+  Telif Bilgisi: haklar.txt dosyasÄ±na bakÄ±nÄ±z
 
-  Dosya Adý: gorselnesne.pas
-  Dosya Ýþlevi: tüm görsel nesnelerin türediði temel görsel ana yapý
+  Dosya AdÄ±: gorselnesne.pas
+  Dosya Ä°ÅŸlevi: tÃ¼m gÃ¶rsel nesnelerin tÃ¼rediÄŸi temel gÃ¶rsel ana yapÄ±
 
-  Güncelleme Tarihi: 22/07/2026
+  GÃ¼ncelleme Tarihi: 05/09/2026
 
-  Bilgi: bu görsel yapý, tüm nesnelerin ihtiyaç duyabileceði ana yapýlarý içerir
+  Bilgi: bu gÃ¶rsel yapÄ±, tÃ¼m nesnelerin ihtiyaÃ§ duyabileceÄŸi ana yapÄ±larÄ± iÃ§erir
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,42 +16,46 @@ unit gorselnesne;
 
 interface
 
-uses paylasim, temelgorselnesne;
+uses paylasim, anagorselnesne;
 
 const
+  USTSINIR_GORSELNESNE  = 256;
+  USTSINIR_MASAUSTU     = 4;
+
   NOKTA_BOSLUKSAYISI = 3;
 
 type
+  TGorselNesne = class;
+
+  TOlaylariIsle = procedure(AGonderici: TGorselNesne; AOlay: TOlay) of object;
+
   PGorselNesne = ^TGorselNesne;
-  PPGorselNesne = ^PGorselNesne;
-
-  TOlaylariIsle = procedure(AGonderici: PGorselNesne; AOlay: TOlay) of object;
-
-  TGorselNesne = object(TTemelGorselNesne)
+  TGorselNesne = class(TAnaGorselNesne)
   public
     // FCizimModel
-    //   0: dolgu ve yazý yok
-    //   1: arka plan rengi yok, yazý var
-    //   2: arka plan rengi var, yazý yok
-    //   3: FGovdeRenk1 = kenarlýk rengi, FGovdeRenk2 = dolgu rengi
-    //   4: FGovdeRenk1'den FGovdeRenk2'ye doðru eðimli dolgu
+    //   0: dolgu ve yazÄ± yok
+    //   1: arka plan rengi yok, yazÄ± var
+    //   2: arka plan rengi var, yazÄ± yok
+    //   3: FGovdeRenk1 = kenarlÄ±k rengi, FGovdeRenk2 = dolgu rengi
+    //   4: FGovdeRenk1'den FGovdeRenk2'ye doÄŸru eÄŸimli dolgu
     FCizimModel: TSayi4;
     FGovdeRenk1, FGovdeRenk2,
     FYaziRenk: TRenk;
 
-    FTuvalNesne: PGorselNesne;                  // nesnenin çizim yapýlacaðý en üst çizim nesnesi
-    FAtaNesne: PGorselNesne;                    // nesnenin atasý
-    FCizimBellekAdresi: Isaretci;               // pencere ve alt görsel nesnelerin çizileceði bellek adresi
-    FCizimBellekUzunlugu: TSayi4;               // FCizimBellekAdresi deðiþkeninin iþaret ettiði belleðin uzunluðu
+    FTuvalNesne: TGorselNesne;                  // nesnenin Ã§izim yapÄ±lacaÄŸÄ± en Ã¼st Ã§izim nesnesi
+    FAtaNesne: TGorselNesne;                    // nesnenin atasÄ±
+    FCizimBellekAdresi: Isaretci;               // pencere ve alt gÃ¶rsel nesnelerin Ã§izileceÄŸi bellek adresi
+    FCizimBellekUzunlugu: TSayi4;               // FCizimBellekAdresi deÄŸiÅŸkeninin iÅŸaret ettiÄŸi belleÄŸin uzunluÄŸu
 
-    OlayCagriAdresi: TOlaylariIsle;             // olaylarýn yönlendirildiði nesne olay çaðrý adresi
-    OlayYonlendirmeAdresi: TOlaylariIsle;       // görsel nesneler tarafýndan bileþenlerin olaylarýnýn yönlendirileceði olay adresi
+    OlayCagriAdr: TOlaylariIsle;                // olaylarÄ±n yÃ¶nlendirildiÄŸi nesne olay Ã§aÄŸrÄ± adresi
+    OlayYonlAdr: TOlaylariIsle;                 // gÃ¶rsel nesneler tarafÄ±ndan bileÅŸenlerin olaylarÄ±nÄ±n yÃ¶nlendirileceÄŸi olay adresi
 
-    FEtiket: TSayi4;                            // nesneyi kullanacak programýn kullanýmý için
-
-    function Olustur(AKullanimTipi: TKullanimTipi; AGNTip: TGNTip; AAtaNesne: PGorselNesne;
-      ASol, AUst, AGenislik, AYukseklik: TISayi4; ACizimModel: TSayi4;
-      AGovdeRenk1, AGovdeRenk2, AYaziRenk: TRenk; ABaslik: string): PGorselNesne;
+    FEtiket: TSayi4;                            // nesneyi kullanacak programÄ±n kullanÄ±mÄ± iÃ§in
+    constructor Create; override;
+    destructor Destroy; override;
+    function Yapilandir1(AKullanimTipi: TKullanimTipi; AGNTip: TGNTip; ANesne,
+      AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+      ACizimModel: TSayi4; AGovdeRenk1, AGovdeRenk2, AYaziRenk: TRenk; ABaslik: string): TISayi4;
 
     procedure Goster;
     procedure Gizle;
@@ -61,873 +65,457 @@ type
     procedure HizaAlaniniSifirla;
     procedure Hizala;
 
-    function CizimAlaniniAl(AKimlik: TKimlik): TAlan;
-    function CizimAlaniniAl2(AKimlik: TKimlik): TAlan;
+    function CizimAlaniniAl: TAlan;
+    function CizimAlaniniAl2: TAlan;
     function AtaNesneGorunurMu: Boolean;
-    function FareNesneOlayAlanindaMi(AGorselNesne: PGorselNesne): Boolean;
+    function FareNesneOlayAlanindaMi(AGorselNesne: TGorselNesne): Boolean;
     function NoktaAlanIcerisindeMi(NoktaA1, NoktaB1: TISayi4;
       AAlan: TAlan): Boolean;
-    property AtaNesne: PGorselNesne read FAtaNesne write FAtaNesne;
+    property AtaNesne: TGorselNesne read FAtaNesne write FAtaNesne;
 
-    // kernel için çaðrýlar (for kernel)
-    procedure PixelYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; ARenk: TRenk);
-    procedure YaziYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; AYazi: string; ARenk: TRenk);
-    procedure YaziYaz(AGorselNesne: PGorselNesne; AYaziHiza: TYaziHiza;
-      AAlan: TAlan; AYazi: string; ARenk: TRenk);
-    procedure AlanaYaziYaz(AGorselNesne: PGorselNesne; AAlan: TAlan;
-      ASol, AUst: TISayi4; AKarakterDizi: string; ARenk: TRenk);
-    procedure SayiYaz16(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; AOnEkYaz:
-      LongBool; AHaneSayisi, ADeger: TISayi4; ARenk: TRenk);
-    procedure SaatYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; ASaat: TSaat; ARenk: TRenk);
-    procedure HarfYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
-      AKarakter: Char; AZeminRengi, AYaziRengi: TRenk);
-    procedure SayiYaz10(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
-      ASayi: TISayi4; ARenk: TRenk);
-    procedure MACAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
-      AMACAdres: TMACAdres; ARenk: TRenk);
-    procedure IPAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4; AIPAdres: TIP4Adres;
+    // kernel iÃ§in Ã§aÄŸrÄ±lar (for kernel)
+    procedure PixelYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4; ARenk: TRenk);
+    procedure YaziYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4; AYazi: string;
       ARenk: TRenk);
-    procedure Dikdortgen(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+    procedure YaziYaz(AGorselNesne: TGorselNesne; AYaziHiza: TYaziHiza;
+      AAlan: TAlan; AYazi: string; ARenk: TRenk);
+    procedure AlanaYaziYaz(AGorselNesne: TGorselNesne; AAlan: TAlan;
+      ASol, AUst: TISayi4; AKarakterDizi: string; ARenk: TRenk);
+    procedure SayiYaz16(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4; AOnEkYaz:
+      LongBool; AHaneSayisi, ADeger: TISayi4; ARenk: TRenk);
+    procedure SaatYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4; ASaat: TSaat;
+      ARenk: TRenk);
+    procedure HarfYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4;
+      AKarakter: Char; AZeminRengi, AYaziRengi: TRenk);
+    procedure SayiYaz10(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4;
+      ASayi: TISayi4; ARenk: TRenk);
+    procedure MACAdresYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4;
+      AMACAdres: TMACAdres; ARenk: TRenk);
+    procedure IP4AdresiYaz(AGorselNesne: TGorselNesne; ASol, AUst: TSayi4;
+      AIP4Adres: TIP4Adres; ARenk: TRenk);
+    procedure Dikdortgen(AGorselNesne: TGorselNesne; ACizgiTipi: TCizgiTipi;
       AAlan: TAlan; ACizgiRengi: TRenk);
-    procedure DikdortgenDoldur(AGorselNesne: PGorselNesne; ASol, AUst,
+    procedure DikdortgenDoldur(AGorselNesne: TGorselNesne; ASol, AUst,
       ASag, AAlt: TISayi4; ACizgiRengi, ADolguRengi: TRenk);
-    procedure DikdortgenDoldur(AGorselNesne: PGorselNesne; AAlan: TAlan;
+    procedure DikdortgenDoldur(AGorselNesne: TGorselNesne; AAlan: TAlan;
       ACizgiRengi, ADolguRengi: TRenk);
     procedure Doldur4(AGorselNesne: PGorselNesne; AAlan: TAlan; ASol, AUst,
       ASag, AAlt: TISayi4; ACizgiRengi, ADolguRengi: TRenk);
-    procedure BMPGoruntusuCiz(AGNTip: TGNTip; AGorselNesne: PGorselNesne;
+    procedure BMPGoruntusuCiz(AGNTip: TGNTip; AGorselNesne: TGorselNesne;
       AGoruntuYapi: TGoruntuYapi);
-    procedure Cizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+    procedure Cizgi(AGorselNesne: TGorselNesne; ACizgiTipi: TCizgiTipi;
       ASol, AUst, ASag, AAlt: TISayi4; ACizgiRengi: TRenk);
     procedure Daire(ASol, AUst, AYariCap: TISayi4; ARenk: TRenk);
-    procedure DaireDoldur(AGorselNesne: PGorselNesne; ASol, AUst,
+    procedure DaireDoldur(AGorselNesne: TGorselNesne; ASol, AUst,
       AYariCap: TISayi4; ARenk: TRenk);
-    procedure YatayCizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+    procedure YatayCizgi(AGorselNesne: TGorselNesne; ACizgiTipi: TCizgiTipi;
       ASol, AUst, ASag: TISayi4; ARenk: TRenk);
-    procedure DikeyCizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+    procedure DikeyCizgi(AGorselNesne: TGorselNesne; ACizgiTipi: TCizgiTipi;
       ASol, AUst, AAlt: TISayi4; ARenk: TRenk);
-    procedure EgimliDoldur(AGorselNesne: PGorselNesne; AAlan: TAlan;
+    procedure EgimliDoldur(AGorselNesne: TGorselNesne; AAlan: TAlan;
       ARenk1, ARenk2: TRenk);
-    procedure EgimliDoldur2(AGorselNesne: PGorselNesne; AAlan: TAlan;
+    procedure EgimliDoldur2(AGorselNesne: TGorselNesne; AAlan: TAlan;
       ARenk1, ARenk2: TRenk);
-    procedure EgimliDoldur3(AGorselNesne: PGorselNesne; AAlan: TAlan; ARenk1, ARenk2: TRenk);
-    procedure KenarlikCiz(AGorselNesne: PGorselNesne; AAlan: TAlan;
+    procedure EgimliDoldur3(AGorselNesne: TGorselNesne; AAlan: TAlan; ARenk1, ARenk2: TRenk);
+    procedure KenarlikCiz(AGorselNesne: TGorselNesne; AAlan: TAlan;
       AKalinlik: TSayi4);
-    procedure HamResimCiz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
+    procedure HamResimCiz(AGorselNesne: TGorselNesne; ASol, AUst: TSayi4;
       AHamResimBellekAdresi: Isaretci);
-    procedure KaynaktanResimCiz(AGorselNesne: PGorselNesne; AAlan: TAlan; AResimSiraNo: TISayi4);
-    procedure KaynaktanResimCiz2(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
+    procedure KaynaktanResimCiz(AGorselNesne: TGorselNesne; AAlan: TAlan; AResimSiraNo: TISayi4);
+    procedure KaynaktanResimCiz2(AGorselNesne: TGorselNesne; ASol, AUst: TSayi4;
       AResimSiraNo: TISayi4);
-    procedure KaynaktanResimCiz21(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
+    procedure KaynaktanResimCiz21(AGorselNesne: TGorselNesne; ASol, AUst: TSayi4;
       AResimSiraNo: TISayi4);
 
-    // program için çaðrýlar (for program)
+    // program iÃ§in Ã§aÄŸrÄ±lar (for program)
     procedure Kesme_YaziYaz(ASol, AUst: TISayi4; AKarakterDizi: string; ARenk: TRenk);
     procedure Kesme_SayiYaz16(ASol, AUst: TISayi4; AOnEkYaz: LongBool;
       AHaneSayisi, ADeger: TISayi4; ARenk: TRenk);
     procedure Kesme_SaatYaz(ASol, AUst: TISayi4; ASaat: TSaat; ARenk: TRenk);
   end;
 
-type
-  PGorselNesneler = ^TGorselNesneler;
-  TGorselNesneler = object
-  private
-    FGorselNesneListesi: array[0..USTSINIR_GORSELNESNE - 1] of PGorselNesne;
-    FToplamGNSayisi,
-    FToplamMasaustu: TSayi4;
-    function GorselNesneAl(ASiraNo: TISayi4): PGorselNesne;
-    procedure GorselNesneYaz(ASiraNo: TISayi4; AGorselNesne: PGorselNesne);
-  public
-    procedure Yukle;
-    function Olustur(AGNTip: TGNTip): PGorselNesne;
-    procedure YokEt(AKimlik: TKimlik);
-    function AtaNesneyeEkle(AGorselNesne, AAtaNesne: PGorselNesne): Boolean;
-    function AtaNesnedenCikar(AGorselNesne: PGorselNesne): Boolean;
-    function NesneAl(AKimlik: TKimlik): PGorselNesne;
-    function NesneTipiniKontrolEt(AKimlik: TKimlik; AGNTip: TGNTip): PGorselNesne;
-    procedure PencereyiYokEt(AGorevKimlik: TKimlik);
-    property GorselNesne[ASiraNo: TISayi4]: PGorselNesne read GorselNesneAl write GorselNesneYaz;
-  published
-    property ToplamGNSayisi: TSayi4 read FToplamGNSayisi write FToplamGNSayisi;
-    property ToplamMasaustu: TSayi4 read FToplamMasaustu write FToplamMasaustu;
-  end;
-
-
-var
-  GorselNesneler0: TGorselNesneler;
-  GorselNesnelerKilit: TSayi4 = 0;
-
 implementation
 
-uses genel, genel8x16, donusum, bmp, gn_islevler, sistemmesaj, gn_pencere,
-  hamresim, giysi_normal, giysi_mac, gorev, src_vesa20, gn_masaustu, gn_araccubugu,
-  gn_baglanti, gn_defter, gn_degerdugmesi, gn_degerlistesi, gn_dugme, gn_durumcubugu,
-  gn_etiket, gn_giriskutusu, gn_gucdugmesi, gn_islemgostergesi, gn_izgara,
-  gn_karmaliste, gn_kaydirmacubugu, gn_listegorunum, gn_listekutusu, gn_onaykutusu,
-  gn_panel, gn_renksecici, gn_resim, gn_resimdugmesi, gn_sayfakontrol, gn_secimdugmesi;
+uses src_ps2, genel8x16, donusum, bmp, gn_islevler, gn_pencere, hamresim, gorev,
+  src_vesa20, sistem;
 
 {==============================================================================
-  görsel nesne yükleme iþlevlerini gerçekleþtirir
+  gÃ¶rsel ana nesneyi oluÅŸturur
  ==============================================================================}
-procedure TGorselNesneler.Yukle;
+constructor TGorselNesne.Create;
 var
   i: TSayi4;
-  j: TKimlik;
 begin
 
-  { TODO : 64 Byte = fazladan ayrýlan ve þu an hesaplanamadýðý için en üst deðer
-    olarak ayrýlan temkin deðeri. gereken deðer teyit edilip otomatikleþtirilecek }
-  // üstteki açýklama durumu deðiþkenin 1024 olarak deðiþtirilmesiyle pasifleþtirilmiþtir
-  GN_UZUNLUK := 1024; //Align(SizeOf(TPencere) + 64, 16);
+  inherited Create;
 
-  // nesneye ait iþaretçileri bellek bölgeleriyle eþleþtir
-  for i := 0 to USTSINIR_GORSELNESNE - 1 do GorselNesneler0.GorselNesne[i] := nil;
+  i := GGNesneler.KimlikNoAl;
+  FSiraNo := i;
+  Kimlik := (i shl 10) or %1010101011;
 
-  // görsel nesne deðiþkenlerini ilk deðerlerle yükle
-  ToplamMasaustu := 0;
-  ToplamGNSayisi := 0;
-  GAktifMasaustu := nil;
-  GAktifPencere := nil;
-  GAktifMenu := nil;
-  YakalananGorselNesne := nil;
+  GGNesneler.ToplamGorselNesne := GGNesneler.ToplamGorselNesne + 1;
 end;
 
 {==============================================================================
-  görsel nesne nesnesini oluþturur
+  gÃ¶rsel ana nesneyi yok eder
  ==============================================================================}
-function TGorselNesneler.Olustur(AGNTip: TGNTip): PGorselNesne;
-var
-  GN: PGorselNesne;
-  i: TSayi4;
+destructor TGorselNesne.Destroy;
 begin
 
-//  while KritikBolgeyeGir(GorselNesnelerKilit) = False do;
-
-  // tüm nesneleri ara
-  for i := 0 to USTSINIR_GORSELNESNE - 1 do
-  begin
-
-    GN := GorselNesne[i];
-
-    // eðer nesne kullanýlmamýþ ise ... (0. bit 0 ise)
-    if(GN = nil) then
-    begin
-
-      GN := GetMem(GN_UZUNLUK);
-      GorselNesne[i] := GN;
-
-      // nesne içeriðini sýfýrla
-      FillByte(GN^, GN_UZUNLUK, 0);
-
-      GN^.FSiraNo := i;
-      GN^.Kimlik := (i shl 10) or %1010101011;
-      GN^.NesneTipi := AGNTip;
-
-      // oluþturulmuþ nesne sayýsýný 1 artýr
-      Inc(FToplamGNSayisi);
-
-//      KritikBolgedenCik(GorselNesnelerKilit);
-
-      // geri dönecek deðer
-      Result := GN;
-
-      Exit;
-    end;
-  end;
-
-//  KritikBolgedenCik(GorselNesnelerKilit);
-
-  Result := nil;
+  inherited Destroy;
 end;
 
 {==============================================================================
-  görsel nesneyi yok eder
+  gÃ¶rsel nesnenin deÄŸiÅŸkenlerini Ã¶zelleÅŸtirir
  ==============================================================================}
-procedure TGorselNesneler.YokEt(AKimlik: TKimlik);
+function TGorselNesne.Yapilandir1(AKullanimTipi: TKullanimTipi; AGNTip: TGNTip; ANesne,
+  AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
+  ACizimModel: TSayi4; AGovdeRenk1, AGovdeRenk2, AYaziRenk: TRenk; ABaslik: string): TISayi4;
 var
-  i: TKimlik;
-  GN: PGorselNesne;
-begin
-
-//  while KritikBolgeyeGir(GorselNesnelerKilit) = False do;
-
-  i := AKimlik shr 10;
-
-  // eðer nesne istenen aralýkta ise yok et
-  GN := GorselNesne[i];
-  if not(GN = nil) then
-  begin
-
-    //Mesaj(GN^.Kimlik);
-
-    //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Nesne: %s', [GN^.NesneAdi]);
-
-    if(AtaNesnedenCikar(GN)) then
-    begin
-
-      GorselNesne[i] := nil;
-      FreeMem(GN, GN_UZUNLUK);
-      //GN := nil;
-
-      Dec(FToplamGNSayisi);
-    end;
-    //Result := True;
-  end; //else Result := False;
-
-//  KritikBolgedenCik(GorselNesnelerKilit);
-end;
-
-{==============================================================================
-  nesneyi ata nesnesine alt nesne olarak ekler
- ==============================================================================}
-function TGorselNesneler.AtaNesneyeEkle(AGorselNesne, AAtaNesne: PGorselNesne): Boolean;
-begin
-
-  Result := False;
-
-  // ata nesnenin alt nesneleri için bellek oluþturulmuþ mu ?
-  if(AAtaNesne^.AltNesneBellekAdresi = nil) then
-  begin
-
-    // ata nesne için bellek oluþtur
-    AAtaNesne^.AltNesneBellekAdresi := GetMem(4096);
-  end;
-
-  if(AAtaNesne^.AltNesneBellekAdresi = nil) then
-  begin
-
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'GORSELNESNE.PAS: Hata: Nesne için ata nesnede bellek alaný ayrýlamýyor!', []);
-    Exit;
-  end;
-
-  // alt nesne toplam nesne sayýsý aþýlmamýþsa ...
-  if(AAtaNesne^.AltNesneSayisi < 1024) then
-  begin
-
-    // nesneyi üst nesneye kaydet
-    PPGorselNesne(AAtaNesne^.AltNesneBellekAdresi)[AAtaNesne^.AltNesneSayisi] := AGorselNesne;
-
-    // üst nesnenin nesne saysýný 1 artýr
-    AAtaNesne^.FAltNesneSayisi := AAtaNesne^.FAltNesneSayisi + 1;
-
-    Result := True;
-  end;
-end;
-
-{==============================================================================
-  gorsel nesneyi ata nesne dizisinden çýkarýr
-  iþlev aþaðýdaki alt iþlevleri yerine getirir
-  1. gorsel nesneyi ata nesne dizisinden çýkarýr
-  2. diziyi sola dayalý olarak yeniden sýralar
-  3. ata nesnenin alt nesne sayýsýný 1 azaltýr
-  4. ata nesne alt nesne sayýsýnýn 0 olmasý durumunda alt nesne için ayrýlan bellek
-     bölgesini serbest býrakarak deðiþken bölgesine nil deðeri atamasý gerçekleþtirir
- ==============================================================================}
-function TGorselNesneler.AtaNesnedenCikar(AGorselNesne: PGorselNesne): Boolean;
-var
-  AGN, GN: PGorselNesne;
-  GNBellekAdresi: PPGorselNesne;
-  i, j: TSayi4;
-begin
-
-  Result := False;
-
-  AGN := GorselNesneler0.GorselNesne[AGorselNesne^.AtaNesne^.FSiraNo];
-  if(AGN = nil) then Exit;
-
-  GNBellekAdresi := AGN^.AltNesneBellekAdresi;
-  if(AGN^.AltNesneSayisi = 1) then
-  begin
-
-    GN := GNBellekAdresi[0];
-    if not(GN = nil) and (GN = AGorselNesne) then
-    begin
-
-      GNBellekAdresi[0] := nil;
-      AGN^.AltNesneSayisi := 0;
-
-      // alt nesne bellek adresini serbest býrak
-      FreeMem(AGN^.AltNesneBellekAdresi, 4096);
-      AGN^.AltNesneBellekAdresi := nil;
-
-      Exit(True);
-    end;
-  end
-  else
-  begin
-
-    for i := 0 to AGN^.AltNesneSayisi - 1 do
-    begin
-
-      GN := GNBellekAdresi[i];
-      if not(GN = nil) and (GN = AGorselNesne) then
-      begin
-
-        // 1.1 dizinin son nesnesi çýkarýlacaksa
-        if((i + 1) = AGN^.AltNesneSayisi) then
-        begin
-
-          GNBellekAdresi[i] := nil;
-        end
-        else
-        // 1.2 dizinin diðer nesneleri çýkarýlacaksa
-        begin
-
-          // çýkarýlacak nesnenin saðýndaki tüm nesneleri sola kaydýr
-          for j := i + 1 to AGN^.AltNesneSayisi - 1 do
-          begin
-
-            GNBellekAdresi[j - 1] := GNBellekAdresi[j];
-          end;
-
-          // son nesneyi nil olarak iþaretle
-          GNBellekAdresi[j] := nil;
-        end;
-
-        // alt nesne sayýsýný bir azalt
-        j := AGN^.FAltNesneSayisi;
-        Dec(j);
-        AGN^.FAltNesneSayisi := j;
-
-        // alt nesne sayýsýnýn 0 olmasý durumunda bellek adresini serbest býrak
-        if(AGN^.AltNesneSayisi = 0) then
-        begin
-
-          FreeMem(AGN^.AltNesneBellekAdresi, 4096);
-          AGN^.AltNesneBellekAdresi := nil;
-        end;
-
-        Exit(True);
-      end;
-    end;
-  end;
-end;
-
-function TGorselNesneler.GorselNesneAl(ASiraNo: TISayi4): PGorselNesne;
-begin
-
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_GORSELNESNE) then
-    Result := FGorselNesneListesi[ASiraNo]
-  else Result := nil;
-end;
-
-procedure TGorselNesneler.GorselNesneYaz(ASiraNo: TISayi4; AGorselNesne: PGorselNesne);
-begin
-
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_GORSELNESNE) then
-    FGorselNesneListesi[ASiraNo] := AGorselNesne;
-end;
-
-{==============================================================================
-  nesne kimliðinden nesneyi alýr
- ==============================================================================}
-function TGorselNesneler.NesneAl(AKimlik: TKimlik): PGorselNesne;
-var
-  i: TKimlik;
-begin
-
-  i := AKimlik shr 10;
-
-  if(i >= 0) and (i < USTSINIR_GORSELNESNE) then
-    Result := GorselNesne[i]
-  else Result := nil;
-end;
-
-{==============================================================================
-  nesnenin nesne tipini kontrol eder
- ==============================================================================}
-function TGorselNesneler.NesneTipiniKontrolEt(AKimlik: TKimlik; AGNTip: TGNTip): PGorselNesne;
-var
-  GN: PGorselNesne;
-  i: TKimlik;
-begin
-
-  Result := nil;
-
-  i := AKimlik shr 10;
-
-  // nesne istenen sayý aralýðýnda ise
-  GN := GorselNesne[i];
-  if(GN = nil) then Exit;
-
-  // nesne kimlik, tipini kontrol et
-  if(GN^.Kimlik = AKimlik) and (GN^.NesneTipi = AGNTip) then Exit(GN);
-end;
-
-{==============================================================================
-  görevin ana penceresi ve pencereye ait tüm alt nesneleri yok eder
- ==============================================================================}
-procedure TGorselNesneler.PencereyiYokEt(AGorevKimlik: TKimlik);
-var
-  Masaustu: PMasaustu;
-  Pencere,
-  GN, GN2: PGorselNesne;
-  i, j, k,
-  ANSayisi: TSayi4;
-
-  procedure NesneyiYokEt(ANesne: PGorselNesne);
-  begin
-
-    case ANesne^.NesneTipi of
-      //gntAcilirMenu     :
-      gntAracCubugu     : PAracCubugu(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntBaglanti       : PBaglanti(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntDefter         : PDefter(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntDegerDugmesi   : PDegerDugmesi(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntDegerListesi   : PDegerListesi(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntDugme          : PDugme(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntDurumCubugu    : PDurumCubugu(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntEtiket         : PEtiket(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntGirisKutusu    : PGirisKutusu(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntGucDugmesi     : PGucDugmesi(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntIslemGostergesi: PIslemGostergesi(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntIzgara         : PIzgara(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntKarmaListe     : PKarmaListe(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntKaydirmaCubugu : PKaydirmaCubugu(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntListeGorunum   : PListeGorunum(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntListeKutusu    : PListeKutusu(ANesne)^.YokEt(ANesne^.Kimlik);
-      //gntMasaustu;
-      //gntMenu;
-      gntOnayKutusu     : POnayKutusu(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntPanel          : PPanel(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntPencere        : PPencere(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntRenkSecici     : PRenkSecici(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntResim          : PResim(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntResimDugmesi   : PResimDugmesi(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntSayfaKontrol   : PSayfaKontrol(ANesne)^.YokEt(ANesne^.Kimlik);
-      gntSecimDugmesi   : PSecimDugmesi(ANesne)^.YokEt(ANesne^.Kimlik);
-    end;
-  end;
-begin
-
-  // geçerli bir masaüstü var mý ?
-  Masaustu := GAktifMasaustu;
-  if not(Masaustu = nil) then
-  begin
-
-    // masaüstü nesnesinin alt nesnesi var ise
-    if(Masaustu^.AltNesneSayisi > 0) then
-    begin
-
-      // masaüstü alt nesnelerini teker teker ara
-      for i := 0 to Masaustu^.AltNesneSayisi - 1 do
-      begin
-
-        Pencere := PPGorselNesne(Masaustu^.AltNesneBellekAdresi)[i];
-
-        // aranan pencerenin sahibi olan görev ile araþtýrýlan görev kimliði eþit mi?
-        // öyle ise pencere ve alt nesnelerini yok et
-        if(Pencere^.GorevKimlik = AGorevKimlik) then
-        begin
-
-          // pencere nesnesinin SADECE alt nesnelerini yok et
-          ANSayisi := Pencere^.AltNesneSayisi;
-          ANSayisi := ANSayisi - Pencere^.AltBilesenSayisi;
-
-          // pencere nesnesinin alt nesnesi var mý?
-          if(ANSayisi > 0) then
-          begin
-
-            // pencere nesnesinin alt nesnelerini ata nesneden çýkar (yok et)
-            for j := Pencere^.AltNesneSayisi - 1 downto Pencere^.AltBilesenSayisi do
-            begin
-
-              GN := PPGorselNesne(Pencere^.AltNesneBellekAdresi)[j];
-
-              // nesnenin panel olmasý durumunda panele ait alt nesneleri yok et
-              if(GN^.NesneTipi = gntPanel) and (GN^.AltNesneSayisi > 0) then
-              begin
-
-                for k := GN^.AltNesneSayisi - 1 downto 0 do
-                begin
-
-                  GN2 := PPGorselNesne(GN^.AltNesneBellekAdresi)[k];
-                  NesneyiYokEt(GN2);
-                end;
-              end;
-
-              // panel nesnesini yok et
-              NesneyiYokEt(GN);
-            end;
-          end;
-
-          // pencereyi nesnesini yok et
-          NesneyiYokEt(Pencere);
-
-          // bir sonraki döngüye devam etmeden çýk
-          Exit;
-        end;
-      end;
-    end;
-  end;
-end;
-
-function TGorselNesne.Olustur(AKullanimTipi: TKullanimTipi; AGNTip: TGNTip;
-  AAtaNesne: PGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
-  ACizimModel: TSayi4; AGovdeRenk1, AGovdeRenk2, AYaziRenk: TRenk;
-  ABaslik: string): PGorselNesne;
-var
-  AtaGorselNesne: PGorselNesne;
-  GN: PGorselNesne;
-  //GorselNesneTipi: TGNTip;
+  AtaGN: TGorselNesne;
 begin
 
   if(AAtaNesne = nil) then
-    AtaGorselNesne := nil
-  else AtaGorselNesne := GorselNesneler0.NesneAl(AAtaNesne^.Kimlik);
+    AtaGN := nil
+  else AtaGN := GGNesneler.NesneAl(AAtaNesne.Kimlik);
 
-  // görsel ana yapý nesnesini oluþtur
-  GN := PGorselNesne(GorselNesneler0.Olustur(AGNTip));
-  if(GN = nil) then Exit(nil);
-
-  // görsel nesneyi ata nesneye ekle
-  if not(AtaGorselNesne = nil) then
+  // gÃ¶rsel nesneyi ata nesneye ekle
+  if not(AtaGN = nil) then
   begin
 
-    if(GorselNesneler0.AtaNesneyeEkle(GN, AtaGorselNesne) = False) then
+    if(GGNesneler.AtaNesneyeEkle(ANesne, AtaGN) = False) then
     begin
 
-      // hata olmasý durumunda nesneyi yok et ve iþlevden çýk
-      GorselNesneler0.YokEt(GN^.Kimlik);
-      Exit(nil);
+      // hata olmasÄ± durumunda nesneyi yok et ve iÅŸlevden Ã§Ä±k
+      { TODO - gerekli kodlar yazÄ±lacak }
+      Exit(-1);
     end;
   end;
 
-  // temel nesne deðerlerini ata
-  GN^.GorevKimlik := FAktifGorev;
-  GN^.AtaNesne := AtaGorselNesne;
+  // temel nesne deÄŸerlerini ata
+  GrvKimlik := GGorevler.FAktifGrv;
+  AtaNesne := AtaGN;
 
-  // nesne olaylarý öndeðer olarak nesneyi oluþturan programa yönlendirilecek
-  // aksi durumda belirtilen çaðrý adresine yönlendirilecek
-  GN^.OlayCagriAdresi := nil;
-  GN^.OlayYonlendirmeAdresi := nil;
+  // nesne olaylarÄ± Ã¶ndeÄŸer olarak nesneyi oluÅŸturan programa yÃ¶nlendirilecek
+  // aksi durumda belirtilen Ã§aÄŸrÄ± adresine yÃ¶nlendirilecek
+  OlayCagriAdr := nil;
+  OlayYonlAdr := nil;
 
-  GN^.FHiza := hzYok;
+  FHiza := hzYok;
 
-  GN^.FKalinlik.Sol := 0;
-  GN^.FKalinlik.Ust := 0;
-  GN^.FKalinlik.Sag := 0;
-  GN^.FKalinlik.Alt := 0;
+  FKalinlik.Sol := 0;
+  FKalinlik.Ust := 0;
+  FKalinlik.Sag := 0;
+  FKalinlik.Alt := 0;
 
-  GN^.FAtananAlan.Sol := ASol;
-  GN^.FAtananAlan.Ust := AUst;
-  GN^.FAtananAlan.Genislik := AGenislik;
-  GN^.FAtananAlan.Yukseklik := AYukseklik;
+  FAtananAlan.Sol := ASol;
+  FAtananAlan.Ust := AUst;
+  FAtananAlan.Genislik := AGenislik;
+  FAtananAlan.Yukseklik := AYukseklik;
 
-  GN^.FIlkAtananAlan := GN^.FAtananAlan;
+  FIlkAtananAlan := FAtananAlan;
 
-  GN^.FKullanimTipi := AKullanimTipi;
+  FKullanimTipi := AKullanimTipi;
 
-  // öndeðer olarak çizim alaný ve alt çizim alaný eþit olarak deðerlendiriliyor
-  // nesnenin kendisi bu deðeri deðiþtirebilir
-  GN^.FCizimAlani.Sol := 0;
-  GN^.FCizimAlani.Ust := 0;
-  GN^.FCizimAlani.Sag := GN^.FAtananAlan.Genislik - 1;
-  GN^.FCizimAlani.Alt := GN^.FAtananAlan.Yukseklik - 1;
+  // Ã¶ndeÄŸer olarak Ã§izim alanÄ± ve alt Ã§izim alanÄ± eÅŸit olarak deÄŸerlendiriliyor
+  // nesnenin kendisi bu deÄŸeri deÄŸiÅŸtirebilir
+  FCizimAlani.Sol := 0;
+  FCizimAlani.Ust := 0;
+  FCizimAlani.Sag := FAtananAlan.Genislik - 1;
+  FCizimAlani.Alt := FAtananAlan.Yukseklik - 1;
 
-
-  if(GN^.FKullanimTipi = ktNesne) then
+  if(FKullanimTipi = ktNesne) then
   begin
 
-    if(AtaGorselNesne = nil) then
+    if(AtaGN = nil) then
     begin
 
-      GN^.FCizimBaslangic.Sol := 0;
-      GN^.FCizimBaslangic.Ust := 0;
+      FCizimBaslangic.Sol := 0;
+      FCizimBaslangic.Ust := 0;
     end
     else
     begin
 
-      GN^.FCizimBaslangic.Sol := AtaGorselNesne^.FCizimBaslangic.Sol +
-        AtaGorselNesne^.FKalinlik.Sol + ASol;
-      GN^.FCizimBaslangic.Ust := AtaGorselNesne^.FCizimBaslangic.Ust +
-        AtaGorselNesne^.FKalinlik.Ust + AUst;
+      FCizimBaslangic.Sol := AtaGN.FCizimBaslangic.Sol + AtaGN.FKalinlik.Sol + ASol;
+      FCizimBaslangic.Ust := AtaGN.FCizimBaslangic.Ust + AtaGN.FKalinlik.Ust + AUst;
     end;
   end
   else
-  // bileþen
+  // bileÅŸen
   begin
 
-    GN^.FCizimBaslangic.Sol := AtaGorselNesne^.FCizimBaslangic.Sol + ASol;
-    GN^.FCizimBaslangic.Ust := AtaGorselNesne^.FCizimBaslangic.Ust + AUst;
+    FCizimBaslangic.Sol := AtaGN.FCizimBaslangic.Sol + ASol;
+    FCizimBaslangic.Ust := AtaGN.FCizimBaslangic.Ust + AUst;
   end;
 
-  GN^.FHiza := hzYok;
-  GN^.FHizaAlani := GN^.FCizimAlani;
+  FHiza := hzYok;
+  FHizaAlani := FCizimAlani;
 
-  // nesnenin alt bileþen sayýsý
-  GN^.AltBilesenSayisi := 0;
+  // nesnenin alt bileÅŸen sayÄ±sÄ±
+  AltBilesenSayisi := 0;
 
-  // alt nesnelerin bellek adresi (nil = bellek oluþturulmadý)
-  GN^.AltNesneBellekAdresi := nil;
+  // alt nesnelerin bellek adresi (nil = bellek oluÅŸturulmadÄ±)
+  AltNesneBellekAdresi := nil;
 
-  // nesnenin alt nesne sayýsý
-  GN^.AltNesneSayisi := 0;
+  // nesnenin alt nesne sayÄ±sÄ±
+  AltNesneSayisi := 0;
 
-  // nesnenin üzerine gelindiðinde görüntülenecek fare göstergesi
-  GN^.FareImlecTipi := fitOK;
+  // nesnenin Ã¼zerine gelindiÄŸinde gÃ¶rÃ¼ntÃ¼lenecek fare gÃ¶stergesi
+  FareImlec := fitOK;
 
-  // nesnenin görünüm durumu
-  GN^.Gorunum := False;
+  // nesnenin gÃ¶rÃ¼nÃ¼m durumu
+  Gorunum := False;
 
-  // nesnenin baþlýk deðeri
-  GN^.FYaziHiza.Yatay := yhOrta;
-  GN^.FYaziHiza.Dikey := dhOrta;
-  GN^.Baslik := ABaslik;
+  // nesnenin baÅŸlÄ±k deÄŸeri
+  FYaziHiza.Yatay := yhOrta;
+  FYaziHiza.Dikey := dhOrta;
+  Baslik := ABaslik;
 
-  // nesnenin renk deðerleri
-  GN^.FCizimModel := ACizimModel;
-  GN^.FGovdeRenk1 := AGovdeRenk1;
-  GN^.FGovdeRenk2 := AGovdeRenk2;
-  GN^.FYaziRenk := AYaziRenk;
+  // nesnenin renk deÄŸerleri
+  FCizimModel := ACizimModel;
+  FGovdeRenk1 := AGovdeRenk1;
+  FGovdeRenk2 := AGovdeRenk2;
+  FYaziRenk := AYaziRenk;
 
-  GN^.FCiziliyor := False;
+  FYenidenCiz := False;
 
-  GN^.FEtiket := 0;
+  FEtiket := 0;
 
-  // nesne adresini geri döndür
-  Result := GN;
+  // nesne adresini geri dÃ¶ndÃ¼r
+  Result := HATA_YOK;
 end;
 
+{==============================================================================
+  gÃ¶rsel nesnenin gÃ¶rÃ¼nÃ¼m Ã¶zelliÄŸini aktifleÅŸtirir
+ ==============================================================================}
 procedure TGorselNesne.Goster;
 var
-  Pencere: PPencere;
-  GorselAnaYapi: PGorselNesne;
+  Pencere: TPencere;
 begin
 
-  // nesnenin kimlik, tip deðerlerini denetle.
-  GorselAnaYapi := PGorselNesne(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, NesneTipi));
-  if(GorselAnaYapi = nil) then Exit;
-
-  // nesne görünür durumda mý ?
-  if(GorselAnaYapi^.Gorunum = False) then
+  // nesne gÃ¶rÃ¼nÃ¼r durumda mÄ± ?
+  if(Gorunum = False) then
   begin
 
-    // görsel ana yapý nesnesinin görünürlüðünü aktifleþtir
-    GorselAnaYapi^.Gorunum := True;
+    // gÃ¶rsel ana yapÄ± nesnesinin gÃ¶rÃ¼nÃ¼rlÃ¼ÄŸÃ¼nÃ¼ aktifleÅŸtir
+    Gorunum := True;
 
-    // ata nesne görünür durumda mý?
-    if(GorselAnaYapi^.AtaNesneGorunurMu) then
+    // ata nesne gÃ¶rÃ¼nÃ¼r durumda mÄ±?
+    if(AtaNesneGorunurMu) then
     begin
 
       // nesnenin sahibi olan pencere nesnesini al
-      Pencere := EnUstPencereNesnesiniAl(GorselAnaYapi);
-      if not(Pencere = nil) then Pencere^.Guncelle;
-    end;
-  end;
-end;
-
-procedure TGorselNesne.Gizle;
-var
-  Pencere: PPencere;
-  GorselAnaYapi: PGorselNesne;
-begin
-
-  // nesnenin kimlik, tip deðerlerini denetle.
-  GorselAnaYapi := PGorselNesne(GorselNesneler0.NesneTipiniKontrolEt(Kimlik, NesneTipi));
-  if(GorselAnaYapi = nil) then Exit;
-
-  // nesne görünür durumda mý ?
-  if(GorselAnaYapi^.Gorunum = True) then
-  begin
-
-    // görsel ana yapý nesnesinin görünürlüðünü aktifleþtir
-    GorselAnaYapi^.Gorunum := False;
-
-    // ata nesne görünür durumda mý?
-    if(GorselAnaYapi^.AtaNesneGorunurMu) then
-    begin
-
-      // nesnenin sahibi olan pencere nesnesini al
-      Pencere := EnUstPencereNesnesiniAl(GorselAnaYapi);
-      if not(Pencere = nil) then Pencere^.Guncelle;
+      Pencere := GGNesneler.EnUstPencereNesnesiniAl(Self);
+      if not(Pencere = nil) then Pencere.Guncelle;
     end;
   end;
 end;
 
 {==============================================================================
-  görsel ana nesnesini çizer
+  gÃ¶rsel nesnenin gÃ¶rÃ¼nÃ¼m Ã¶zelliÄŸini pasifleÅŸtirir
+ ==============================================================================}
+procedure TGorselNesne.Gizle;
+var
+  Pencere: TPencere;
+begin
+
+  // nesne gÃ¶rÃ¼nÃ¼r durumda mÄ± ?
+  if(Gorunum = True) then
+  begin
+
+    // gÃ¶rsel ana yapÄ± nesnesinin gÃ¶rÃ¼nÃ¼rlÃ¼ÄŸÃ¼nÃ¼ aktifleÅŸtir
+    Gorunum := False;
+
+    // ata nesne gÃ¶rÃ¼nÃ¼r durumda mÄ±?
+    if(AtaNesneGorunurMu) then
+    begin
+
+      // nesnenin sahibi olan pencere nesnesini al
+      Pencere := GGNesneler.EnUstPencereNesnesiniAl(Self);
+      if not(Pencere = nil) then Pencere.Guncelle;
+    end;
+  end;
+end;
+
+{==============================================================================
+  gÃ¶rsel nesnenin ana Ã§izimlerinin gerÃ§ekleÅŸtirir
+  bilgi: ana Ã§izimden sonra gerekirse diÄŸer Ã§izimler alt nesneler tarafÄ±ndan gerÃ§ekleÅŸtirilir
  ==============================================================================}
 procedure TGorselNesne.Ciz;
 var
-  GN: PGorselNesne;
   CizimAlani: TAlan;
 begin
 
-  GN := GorselNesneler0.NesneAl(Kimlik);
-  if(GN = nil) then Exit;
+  CizimAlani := FCizimAlani;
 
-  CizimAlani := GN^.FCizimAlani;
-
-  // FCizimModel = 0 = hiçbir çizim yapma
-  if(GN^.FCizimModel > 0) then
+  // FCizimModel = 0 = hiÃ§bir Ã§izim yapma
+  if(FCizimModel > 0) then
   begin
 
-    // FCizimModel = 2 = kenarlýðý çiz ve içeriði doldur
-    if(GN^.FCizimModel = 2) then
+    // FCizimModel = 2 = kenarlÄ±ÄŸÄ± Ã§iz ve iÃ§eriÄŸi doldur
+    if(FCizimModel = 2) then
 
-      GN^.DikdortgenDoldur(GN, CizimAlani, FGovdeRenk1, FGovdeRenk2)
+      DikdortgenDoldur(Self, CizimAlani, FGovdeRenk1, FGovdeRenk2)
 
-    // FCizimModel = 3 = kenarlýðý çiz ve içeriði doldur
-    else if(GN^.FCizimModel = 3) then
+    // FCizimModel = 3 = kenarlÄ±ÄŸÄ± Ã§iz ve iÃ§eriÄŸi doldur
+    else if(FCizimModel = 3) then
 
-      GN^.DikdortgenDoldur(GN, CizimAlani.Sol, CizimAlani.Ust, CizimAlani.Sag,
+      DikdortgenDoldur(Self, CizimAlani.Sol, CizimAlani.Ust, CizimAlani.Sag,
         CizimAlani.Alt, FGovdeRenk1, FGovdeRenk2)
 
-    // FCizimModel = 4 = artan renk ile (eðimli) doldur
-    else if(GN^.FCizimModel = 4) then
-      GN^.EgimliDoldur3(GN, CizimAlani, FGovdeRenk1, FGovdeRenk2);
+    // FCizimModel = 4 = artan renk ile (eÄŸimli) doldur
+    else if(FCizimModel = 4) then
+      EgimliDoldur3(Self, CizimAlani, FGovdeRenk1, FGovdeRenk2);
 
-    // görsel ana yapý baþlýðýný yaz
-    if not(GN^.FCizimModel = 2) then
-      if(Length(GN^.Baslik) > 0) then YaziYaz(GN, GN^.FYaziHiza, CizimAlani,
+    // gÃ¶rsel ana yapÄ± baÅŸlÄ±ÄŸÄ±nÄ± yaz
+    if not(FCizimModel = 2) then
+      if(Length(Baslik) > 0) then YaziYaz(Self, FYaziHiza, CizimAlani,
         Baslik, FYaziRenk);
   end;
 end;
 
+{==============================================================================
+  gÃ¶rsel nesnenin boyutlarÄ±nÄ± Ã¼st nesneye gÃ¶re yeniden hesaplar
+ ==============================================================================}
 procedure TGorselNesne.BoyutlariYenidenHesapla;
 var
-  GorselAtaNesne, GN: PGorselNesne;
+  GorselAtaNesne, GN: TGorselNesne;
 begin
 
-  GN := GorselNesneler0.NesneAl(Kimlik);
+  GN := GGNesneler.NesneAl(Kimlik);
   if(GN = nil) then Exit;
 
-  GN^.FCizimAlani.Sol := 0;
-  GN^.FCizimAlani.Ust := 0;
-  GN^.FCizimAlani.Sag := GN^.FAtananAlan.Genislik - 1;
-  GN^.FCizimAlani.Alt := GN^.FAtananAlan.Yukseklik - 1;
+  GN.FCizimAlani.Sol := 0;
+  GN.FCizimAlani.Ust := 0;
+  GN.FCizimAlani.Sag := GN.FAtananAlan.Genislik - 1;
+  GN.FCizimAlani.Alt := GN.FAtananAlan.Yukseklik - 1;
 
-  GorselAtaNesne := GN^.AtaNesne;
+  GorselAtaNesne := GN.AtaNesne;
 
-  if(GorselAtaNesne^.NesneTipi = gntPencere) then
+  if(GorselAtaNesne.NesneTipi = gntPencere) then
   begin
 
-    GN^.FCizimBaslangic.Sol := GN^.AtaNesne^.FKalinlik.Sol + GN^.FAtananAlan.Sol;
-    GN^.FCizimBaslangic.Ust := GN^.AtaNesne^.FKalinlik.Ust + GN^.FAtananAlan.Ust;
+    GN.FCizimBaslangic.Sol := GN.AtaNesne.FKalinlik.Sol + GN.FAtananAlan.Sol;
+    GN.FCizimBaslangic.Ust := GN.AtaNesne.FKalinlik.Ust + GN.FAtananAlan.Ust;
   end
   else
   begin
 
-    GN^.FCizimBaslangic.Sol := GN^.AtaNesne^.FCizimBaslangic.Sol +
-      GN^.AtaNesne^.FKalinlik.Sol + GN^.FAtananAlan.Sol;
-    GN^.FCizimBaslangic.Ust := GN^.AtaNesne^.FCizimBaslangic.Ust +
-      GN^.AtaNesne^.FKalinlik.Ust + GN^.FAtananAlan.Ust;
+    GN.FCizimBaslangic.Sol := GN.AtaNesne.FCizimBaslangic.Sol +
+      GN.AtaNesne.FKalinlik.Sol + GN.FAtananAlan.Sol;
+    GN.FCizimBaslangic.Ust := GN.AtaNesne.FCizimBaslangic.Ust +
+      GN.AtaNesne.FKalinlik.Ust + GN.FAtananAlan.Ust;
   end;
 end;
 
 procedure TGorselNesne.HizaAlaniniSifirla;
-var
-  GN: PGorselNesne;
 begin
 
-  GN := GorselNesneler0.NesneAl(Kimlik);
-  if(GN = nil) then Exit;
-
-  GN^.FHizaAlani.Sol := GN^.FCizimAlani.Sol;
-  GN^.FHizaAlani.Ust := GN^.FCizimAlani.Ust;
-  GN^.FHizaAlani.Sag := GN^.FCizimAlani.Sag;
-  GN^.FHizaAlani.Alt := GN^.FCizimAlani.Alt;
+  FHizaAlani.Sol := FCizimAlani.Sol;
+  FHizaAlani.Ust := FCizimAlani.Ust;
+  FHizaAlani.Sag := FCizimAlani.Sag;
+  FHizaAlani.Alt := FCizimAlani.Alt;
 end;
 
+{==============================================================================
+  gÃ¶rsel nesneyi hizalandÄ±rÄ±r
+ ==============================================================================}
 procedure TGorselNesne.Hizala;
 var
-  GorselAtaNesne, GN: PGorselNesne;
+  AtaGN, GN: TGorselNesne;
 begin
 
-  GN := GorselNesneler0.NesneAl(Kimlik);
+  GN := GGNesneler.NesneAl(Kimlik);
   if(GN = nil) then Exit;
 
-  GorselAtaNesne := GN^.AtaNesne;
+  AtaGN := GN.AtaNesne;
 
-  GN^.FAtananAlan := GN^.FIlkAtananAlan;
+  GN.FAtananAlan := GN.FIlkAtananAlan;
 
-  if(GN^.FHiza = hzSol) then
+  if(GN.FHiza = hzSol) then
   begin
 
     //SISTEM_MESAJ(RENK_KIRMIZI, 'Boyut: %d', [GorselAtaNesne^.FBoyut.Yukseklik]);
 
-    // nesnenin hesaplanmasý
-    GN^.FAtananAlan.Sol := GorselAtaNesne^.FHizaAlani.Sol;
-    GN^.FAtananAlan.Ust := GorselAtaNesne^.FHizaAlani.Ust;
-    // nesnenin kendi geniþliði kullanýlacak
-    GN^.FAtananAlan.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
-    GN^.BoyutlariYenidenHesapla;
+    // nesnenin hesaplanmasÄ±
+    GN.FAtananAlan.Sol := AtaGN.FHizaAlani.Sol;
+    GN.FAtananAlan.Ust := AtaGN.FHizaAlani.Ust;
+    // nesnenin kendi geniÅŸliÄŸi kullanÄ±lacak
+    GN.FAtananAlan.Yukseklik := (AtaGN.FHizaAlani.Alt - AtaGN.FHizaAlani.Ust) + 1;
+    GN.BoyutlariYenidenHesapla;
 
-    // üst nesnenin yeniden boyutlandýrýlmasý
-    GorselAtaNesne^.FHizaAlani.Sol := GorselAtaNesne^.FHizaAlani.Sol + GN^.FAtananAlan.Genislik;
+    // Ã¼st nesnenin yeniden boyutlandÄ±rÄ±lmasÄ±
+    AtaGN.FHizaAlani.Sol := AtaGN.FHizaAlani.Sol + GN.FAtananAlan.Genislik;
   end
-  else if(GN^.FHiza = hzUst) then
+  else if(GN.FHiza = hzUst) then
   begin
 
-    GN^.FAtananAlan.Sol := GorselAtaNesne^.FHizaAlani.Sol;
-    GN^.FAtananAlan.Ust := GorselAtaNesne^.FHizaAlani.Ust;
-    GN^.FAtananAlan.Genislik := (GorselAtaNesne^.FHizaAlani.Sag - GorselAtaNesne^.FHizaAlani.Sol) + 1;
-    // nesnenin kendi yüksekliði kullanýlacak
-    GN^.BoyutlariYenidenHesapla;
+    GN.FAtananAlan.Sol := AtaGN.FHizaAlani.Sol;
+    GN.FAtananAlan.Ust := AtaGN.FHizaAlani.Ust;
+    GN.FAtananAlan.Genislik := (AtaGN.FHizaAlani.Sag - AtaGN.FHizaAlani.Sol) + 1;
+    // nesnenin kendi yÃ¼ksekliÄŸi kullanÄ±lacak
+    GN.BoyutlariYenidenHesapla;
 
-    GorselAtaNesne^.FHizaAlani.Ust := GorselAtaNesne^.FHizaAlani.Ust + GN^.FAtananAlan.Yukseklik;
+    AtaGN.FHizaAlani.Ust := AtaGN.FHizaAlani.Ust + GN.FAtananAlan.Yukseklik;
   end
-  else if(GN^.FHiza = hzSag) then
+  else if(GN.FHiza = hzSag) then
   begin
 
-    // nesnenin hesaplanmasý
-    GN^.FAtananAlan.Sol := (GorselAtaNesne^.FHizaAlani.Sag - GN^.FAtananAlan.Genislik) + 1;
-    GN^.FAtananAlan.Ust := GorselAtaNesne^.FHizaAlani.Ust;
-    // nesnenin kendi geniþliði kullanýlacak
-    GN^.FAtananAlan.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
-    GN^.BoyutlariYenidenHesapla;
+    // nesnenin hesaplanmasÄ±
+    GN.FAtananAlan.Sol := (AtaGN.FHizaAlani.Sag - GN.FAtananAlan.Genislik) + 1;
+    GN.FAtananAlan.Ust := AtaGN.FHizaAlani.Ust;
+    // nesnenin kendi geniÅŸliÄŸi kullanÄ±lacak
+    GN.FAtananAlan.Yukseklik := (AtaGN.FHizaAlani.Alt - AtaGN.FHizaAlani.Ust) + 1;
+    GN.BoyutlariYenidenHesapla;
 
-    // üst nesnenin yeniden boyutlandýrýlmasý
-    GorselAtaNesne^.FHizaAlani.Sag := GorselAtaNesne^.FHizaAlani.Sag - GN^.FAtananAlan.Genislik;
+    // Ã¼st nesnenin yeniden boyutlandÄ±rÄ±lmasÄ±
+    AtaGN.FHizaAlani.Sag := AtaGN.FHizaAlani.Sag - GN.FAtananAlan.Genislik;
   end
-  else if(GN^.FHiza = hzAlt) then
+  else if(GN.FHiza = hzAlt) then
   begin
 
-    GN^.FAtananAlan.Sol := GorselAtaNesne^.FHizaAlani.Sol;
-    GN^.FAtananAlan.Ust := (GorselAtaNesne^.FHizaAlani.Alt - GN^.FAtananAlan.Yukseklik) + 1;
-    GN^.FAtananAlan.Genislik := (GorselAtaNesne^.FHizaAlani.Sag - GorselAtaNesne^.FHizaAlani.Sol) + 1;
-    // nesnenin kendi yüksekliði kullanýlacak
-    GN^.BoyutlariYenidenHesapla;
+    GN.FAtananAlan.Sol := AtaGN.FHizaAlani.Sol;
+    GN.FAtananAlan.Ust := (AtaGN.FHizaAlani.Alt - GN.FAtananAlan.Yukseklik) + 1;
+    GN.FAtananAlan.Genislik := (AtaGN.FHizaAlani.Sag - AtaGN.FHizaAlani.Sol) + 1;
+    // nesnenin kendi yÃ¼ksekliÄŸi kullanÄ±lacak
+    GN.BoyutlariYenidenHesapla;
 
-    GorselAtaNesne^.FHizaAlani.Alt := GorselAtaNesne^.FHizaAlani.Alt - GN^.FAtananAlan.Yukseklik;
+    AtaGN.FHizaAlani.Alt := AtaGN.FHizaAlani.Alt - GN.FAtananAlan.Yukseklik;
   end
-  else if(GN^.FHiza = hzTum) then
+  else if(GN.FHiza = hzTum) then
   begin
 
-    GN^.FAtananAlan.Sol := GorselAtaNesne^.FHizaAlani.Sol;
-    GN^.FAtananAlan.Ust := GorselAtaNesne^.FHizaAlani.Ust;
-    GN^.FAtananAlan.Genislik := (GorselAtaNesne^.FHizaAlani.Sag - GorselAtaNesne^.FHizaAlani.Sol) + 1;
-    GN^.FAtananAlan.Yukseklik := (GorselAtaNesne^.FHizaAlani.Alt - GorselAtaNesne^.FHizaAlani.Ust) + 1;
-    GN^.BoyutlariYenidenHesapla;
+    GN.FAtananAlan.Sol := AtaGN.FHizaAlani.Sol;
+    GN.FAtananAlan.Ust := AtaGN.FHizaAlani.Ust;
+    GN.FAtananAlan.Genislik := (AtaGN.FHizaAlani.Sag - AtaGN.FHizaAlani.Sol) + 1;
+    GN.FAtananAlan.Yukseklik := (AtaGN.FHizaAlani.Alt - AtaGN.FHizaAlani.Ust) + 1;
+    GN.BoyutlariYenidenHesapla;
 
 //    GorselAtaNesne^.FHizaAlani.Alt := GorselAtaNesne^.FHizaAlani.Alt - GorselNesne^.FBoyut.Yukseklik;
-  end else GN^.BoyutlariYenidenHesapla;
+  end else GN.BoyutlariYenidenHesapla;
 end;
 
 {==============================================================================
-  nesnenin pencereye (0, 0 koordinatý) baðlý gerçek koordinatlarýný alýr
+  nesnenin pencereye (0, 0 koordinatÄ±) baÄŸlÄ± gerÃ§ek koordinatlarÄ±nÄ± alÄ±r
  ==============================================================================}
-function TGorselNesne.CizimAlaniniAl(AKimlik: TKimlik): TAlan;
+function TGorselNesne.CizimAlaniniAl: TAlan;
 var
-  Pencere: PPencere;
-  GN: PGorselNesne;
+  Pencere: TPencere;
+  GN: TGorselNesne;
 begin
 
-  // talepte bulunan nesnenin kimlik deðerini kontrol et
-  GN := GorselNesneler0.NesneAl(AKimlik);
+  // talepte bulunan nesnenin kimlik deÄŸerini kontrol et
+  GN := Self;
 
-  if((GN^.NesneTipi = gntMasaustu) or (GN^.NesneTipi = gntPencere) or
-    (GN^.NesneTipi = gntMenu) or (GN^.NesneTipi = gntAcilirMenu)) then
+  if((GN.NesneTipi = gntMasaustu) or (GN.NesneTipi = gntPencere) or
+    (GN.NesneTipi = gntMenu) or (GN.NesneTipi = gntAcilirMenu)) then
   begin
 
-    // geniþlik ve yükseklik deðerleri alýnýyor
-    Result.Sol := GN^.FKalinlik.Sol;
-    Result.Ust := GN^.FKalinlik.Ust;
-    Result.Sag := Result.Sol + GN^.FAtananAlan.Genislik;
-    Result.Alt := Result.Ust + GN^.FAtananAlan.Yukseklik;
+    // geniÅŸlik ve yÃ¼kseklik deÄŸerleri alÄ±nÄ±yor
+    Result.Sol := GN.FKalinlik.Sol;
+    Result.Ust := GN.FKalinlik.Ust;
+    Result.Sag := Result.Sol + GN.FAtananAlan.Genislik;
+    Result.Alt := Result.Ust + GN.FAtananAlan.Yukseklik;
   end
   else
   begin
@@ -943,7 +531,7 @@ begin
       Result.Ust := Result.Ust + GorselNesne2^.FBoyutlar.Ust2;
 
       GorselNesne2 := GorselNesne2^.AtaNesne;
-      NTip := GorselNesne2^.NesneTipi;
+      NTip := GorselNesne2^.F0.NesneTipi;
     until (NTip = gntMasaustu) or (NTip = gntPencere) or (NTip = gntMenu) or (NTip = gntAcilirMenu);
 
     Result.Sol := Result.Sol + GorselNesne2^.FAltNesneCizimAlan.Sol;
@@ -951,106 +539,106 @@ begin
     Result.Sag := Result.Sol + GorselNesne^.FBoyutlar.Genislik2;
     Result.Alt := Result.Ust + GorselNesne^.FBoyut.Yukseklik;}
 
-    Pencere := EnUstPencereNesnesiniAl(GN);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(GN);
 
-    Result.Sol := GN^.FCizimAlani.Sol - Pencere^.FCizimAlani.Sol;
-    Result.Ust := GN^.FCizimAlani.Ust - Pencere^.FCizimAlani.Ust;
-    Result.Sag := GN^.FCizimAlani.Sag - Pencere^.FCizimAlani.Sol;
-    Result.Alt := GN^.FCizimAlani.Alt - Pencere^.FCizimAlani.Ust;
+    Result.Sol := GN.FCizimAlani.Sol - Pencere.FCizimAlani.Sol;
+    Result.Ust := GN.FCizimAlani.Ust - Pencere.FCizimAlani.Ust;
+    Result.Sag := GN.FCizimAlani.Sag - Pencere.FCizimAlani.Sol;
+    Result.Alt := GN.FCizimAlani.Alt - Pencere.FCizimAlani.Ust;
   end;
 end;
 
 {==============================================================================
-  nesnenin çizilebilir alanýnýn koordinatlarýný alýr
+  nesnenin Ã§izilebilir alanÄ±nÄ±n koordinatlarÄ±nÄ± alÄ±r
  ==============================================================================}
-function TGorselNesne.CizimAlaniniAl2(AKimlik: TKimlik): TAlan;
+function TGorselNesne.CizimAlaniniAl2: TAlan;
 //var
 //  GN: PGorselNesne;
 begin
 
-  //GN := GorselNesneler0.NesneAl(AKimlik);
+  //GN := GGNesneler.NesneAl(AKimlik);
 
-  // nesnenin üst nesneye baðlý koordinatlarýný al
-  Result := CizimAlaniniAl(AKimlik);
+  // nesnenin Ã¼st nesneye baÄŸlÄ± koordinatlarÄ±nÄ± al
+  Result := CizimAlaniniAl;
 end;
 
 {==============================================================================
-  belirtilen nesneden itibaren masaüstüne kadar tüm nesnelerin görünürlüðünü
+  belirtilen nesneden itibaren masaÃ¼stÃ¼ne kadar tÃ¼m nesnelerin gÃ¶rÃ¼nÃ¼rlÃ¼ÄŸÃ¼nÃ¼
   kontrol eder. (nesnenin kendisi de dahil)
  ==============================================================================}
 function TGorselNesne.AtaNesneGorunurMu: Boolean;
 var
-  GN: PGorselNesne;
+  GN: TGorselNesne;
 begin
 
-  GN := @Self;
+  GN := Self;
 
   repeat
 
-    // nesne görünür durumdaysa AtaNesne nesnesini al
-    if(GN^.Gorunum) then
+    // nesne gÃ¶rÃ¼nÃ¼r durumdaysa AtaNesne nesnesini al
+    if(GN.Gorunum) then
 
-      GN := GN^.AtaNesne
+      GN := GN.AtaNesne
     else
     begin
 
-      // aksi durumda çýk
+      // aksi durumda Ã§Ä±k
       Result := False;
       Exit;
     end;
 
-    // tüm nesneler test edildiyse olumlu yanýt ile geri dön
+    // tÃ¼m nesneler test edildiyse olumlu yanÄ±t ile geri dÃ¶n
     if(GN = nil) then Exit(True);
 
   until (True = False);
 end;
 
 {==============================================================================
-  fare göstergesinin nesnenin olay alanýnýn içerisinde olup
-  olmadýðýný kontrol eder
+  fare gÃ¶stergesinin nesnenin olay alanÄ±nÄ±n iÃ§erisinde olup
+  olmadÄ±ÄŸÄ±nÄ± kontrol eder
  ==============================================================================}
-function TGorselNesne.FareNesneOlayAlanindaMi(AGorselNesne: PGorselNesne): Boolean;
+function TGorselNesne.FareNesneOlayAlanindaMi(AGorselNesne: TGorselNesne): Boolean;
 var
-  GN: PGorselNesne;
+  GN: TGorselNesne;
   Alan: TAlan;
 begin
 
   GN := AGorselNesne;
 
-  Alan.Sol := GN^.FCizimBaslangic.Sol;
-  Alan.Ust := GN^.FCizimBaslangic.Ust;
+  Alan.Sol := GN.FCizimBaslangic.Sol;
+  Alan.Ust := GN.FCizimBaslangic.Ust;
 
-  if(GN^.FTuvalNesne^.NesneTipi = gntPencere) or
-    (GN^.FTuvalNesne^.NesneTipi = gntMenu) or
-    (GN^.FTuvalNesne^.NesneTipi = gntAcilirMenu) then
+  if(GN.FTuvalNesne.NesneTipi = gntPencere) or
+    (GN.FTuvalNesne.NesneTipi = gntMenu) or
+    (GN.FTuvalNesne.NesneTipi = gntAcilirMenu) then
   begin
 
-    Alan.Sol := Alan.Sol + GN^.FTuvalNesne^.FAtananAlan.Sol;
-    Alan.Ust := Alan.Ust + GN^.FTuvalNesne^.FAtananAlan.Ust;
+    Alan.Sol := Alan.Sol + GN.FTuvalNesne.FAtananAlan.Sol;
+    Alan.Ust := Alan.Ust + GN.FTuvalNesne.FAtananAlan.Ust;
   end;
 
-  Alan.Sag := Alan.Sol + GN^.FCizimAlani.Sag;
-  Alan.Alt := Alan.Ust + GN^.FCizimAlani.Alt;
+  Alan.Sag := Alan.Sol + GN.FCizimAlani.Sag;
+  Alan.Alt := Alan.Ust + GN.FCizimAlani.Alt;
 
   //SISTEM_MESAJ(RENK_KIRMIZI, 'Sol %d', [Alan.Sol]);
   //SISTEM_MESAJ(RENK_KIRMIZI, 'Ust %d', [Alan.Ust]);
 
-  // öndeðer dönüþ deðeri
+  // Ã¶ndeÄŸer dÃ¶nÃ¼ÅŸ deÄŸeri
   Result := False;
 
-  // fare belirtilen koordinatlar içerisinde mi ?
+  // fare belirtilen koordinatlar iÃ§erisinde mi ?
   if(GFareSurucusu.YatayKonum < Alan.Sol) then Exit;
   if(GFareSurucusu.YatayKonum > Alan.Sag) then Exit;
   if(GFareSurucusu.DikeyKonum < Alan.Ust) then Exit;
   if(GFareSurucusu.DikeyKonum > Alan.Alt) then Exit;
 
-  //SISTEM_MESAJ(RENK_KIRMIZI, 'Ýçeride Tamam', []);
+  //SISTEM_MESAJ(RENK_KIRMIZI, 'Ä°Ã§eride Tamam', []);
 
   Result := True;
 end;
 
 {==============================================================================
-  X, Y koordinatýnýn Rect alaný içerisinde olup olmadýðýný test eder
+  x, y koordinatÄ±nÄ±n dikdÃ¶rtgensel alan iÃ§erisinde olup olmadÄ±ÄŸÄ±nÄ± kontrol eder
  ==============================================================================}
 function TGorselNesne.NoktaAlanIcerisindeMi(NoktaA1, NoktaB1: TISayi4;
   AAlan: TAlan): Boolean;
@@ -1058,7 +646,7 @@ begin
 
   Result := False;
 
-  // fare belirtilen koordinatlar içerisinde mi ?
+  // fare belirtilen koordinatlar iÃ§erisinde mi ?
   if(NoktaA1 < AAlan.Sol) then Exit;
   if(NoktaA1 > AAlan.Sag) then Exit;
   if(NoktaB1 < AAlan.Ust) then Exit;
@@ -1068,18 +656,18 @@ begin
 end;
 
 {==============================================================================
-  grafiksel koordinattaki pixeli iþaretler (boyar)
+  grafiksel koordinattaki pixeli iÅŸaretler (boyar)
  ==============================================================================}
-procedure TGorselNesne.PixelYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; ARenk: TRenk);
+procedure TGorselNesne.PixelYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4; ARenk: TRenk);
 begin
 
-  EkranKartSurucusu0.NoktaYaz(AGorselNesne, ASol, AUst, ARenk, True);
+  GEkranKartSurucusu.NoktaYaz(AGorselNesne, ASol, AUst, ARenk, True);
 end;
 
 {==============================================================================
   grafiksel ekrana karakter yazar
  ==============================================================================}
-procedure TGorselNesne.HarfYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
+procedure TGorselNesne.HarfYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4;
   AKarakter: Char; AZeminRengi, AYaziRengi: TRenk);
 var
   Karakter: TKarakter;
@@ -1089,14 +677,14 @@ var
   XS, YS: TISayi4;
 begin
 
-  // karakterler 0..255 aralýðýndadýr.
+  // karakterler 0..255 aralÄ±ÄŸÄ±ndadÄ±r.
 	Karakter := KarakterListesi[TSayi1(AKarakter)];
 
-  // eðer karakter boþluk veya çizim gerektirmeyen karakter ise çýk
+  // eÄŸer karakter boÅŸluk veya Ã§izim gerektirmeyen karakter ise Ã§Ä±k
   if(Karakter.Yukseklik = 0) or (Karakter.Genislik = 0) then Exit;
 
   // (varsa) zemini belirtilen renk ile boya
-  { TODO - aktifleþtirildiðinde kilitlenmeler oluyor }
+  { TODO - aktifleÅŸtirildiÄŸinde kilitlenmeler oluyor }
   if(AZeminRengi <> RENK_YOK) then
   begin
 
@@ -1111,21 +699,21 @@ begin
 		  for X := XB to XS - 1 do
       begin
 
-        // ilgili pixeli belirtilen renkle iþaretle (boya)
-			  EkranKartSurucusu0.NoktaYaz(AGorselNesne, X, Y, AZeminRengi, True);
+        // ilgili pixeli belirtilen renkle iÅŸaretle (boya)
+			  GEkranKartSurucusu.NoktaYaz(AGorselNesne, X, Y, AZeminRengi, True);
       end;
     end;
   end;
 
-  // karakterin yatay baþlangýç / bitiþ koordinatlarýný hesapla
+  // karakterin yatay baÅŸlangÄ±Ã§ / bitiÅŸ koordinatlarÄ±nÄ± hesapla
   XB := ASol + Karakter.YT;
   XS := XB + Karakter.Genislik;
 
-  // karakterin dikey baþlangýç / bitiþ koordinatlarýný hesapla
+  // karakterin dikey baÅŸlangÄ±Ã§ / bitiÅŸ koordinatlarÄ±nÄ± hesapla
   YB := AUst + Karakter.DT;
   YS := YB + Karakter.Yukseklik;
 
-  // karakterin pixel haritasýnýn bellek adresine konumlan
+  // karakterin pixel haritasÄ±nÄ±n bellek adresine konumlan
   KarakterAdres := Karakter.Adres;
 
   for Y := YB to YS - 1 do
@@ -1134,8 +722,8 @@ begin
 		for X := XB to XS - 1 do
     begin
 
-      // ilgili pixeli belirtilen renkle iþaretle (boya)
-			if(KarakterAdres^ = 1) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, X, Y,
+      // ilgili pixeli belirtilen renkle iÅŸaretle (boya)
+			if(KarakterAdres^ = 1) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, X, Y,
         AYaziRengi, True);
 
       // bir sonraki pixele konumlan
@@ -1145,28 +733,27 @@ begin
 end;
 
 {==============================================================================
-  grafiksel ekrana karakter katarý yazar
+  grafiksel ekrana karakter katarÄ± yazar
  ==============================================================================}
-procedure TGorselNesne.Kesme_YaziYaz(ASol, AUst: TISayi4; AKarakterDizi: string;
-  ARenk: TRenk);
+procedure TGorselNesne.Kesme_YaziYaz(ASol, AUst: TISayi4; AKarakterDizi: string; ARenk: TRenk);
 var
   Alan: TAlan;
 begin
 
-  Alan := CizimAlaniniAl2(Kimlik);
+  Alan := CizimAlaniniAl2;
   YaziYaz(FAtaNesne, Alan.Sol + ASol, Alan.Ust + AUst, AKarakterDizi, ARenk);
 end;
 
 {==============================================================================
-  grafiksel ekrana yazý yazar
+  grafiksel ekrana yazÄ± yazar
  ==============================================================================}
-procedure TGorselNesne.YaziYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4; AYazi: string;
+procedure TGorselNesne.YaziYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4; AYazi: string;
   ARenk: TRenk);
 var
   Sol, Ust, YaziU: TISayi4;
 begin
 
-  // karakter katarýnýn uzunluðunu al
+  // karakter katarÄ±nÄ±n uzunluÄŸunu al
   YaziU := Length(AYazi);
   if(YaziU = 0) then Exit;
 
@@ -1177,21 +764,21 @@ begin
     // karakteri yaz
     HarfYaz(AGorselNesne, Ust, AUst, AYazi[Sol], RENK_YOK, ARenk);
 
-    // karakter geniþliðini geniþlik deðerine ekle
+    // karakter geniÅŸliÄŸini geniÅŸlik deÄŸerine ekle
     Ust := Ust + 8;
   end;
 end;
 
 {==============================================================================
-  grafiksel ekrana hizalayarak yazý yazar
+  grafiksel ekrana hizalayarak yazÄ± yazar
  ==============================================================================}
-procedure TGorselNesne.YaziYaz(AGorselNesne: PGorselNesne; AYaziHiza: TYaziHiza;
+procedure TGorselNesne.YaziYaz(AGorselNesne: TGorselNesne; AYaziHiza: TYaziHiza;
   AAlan: TAlan; AYazi: string; ARenk: TRenk);
 var
   i, j, Sol, Ust: TISayi4;
 begin
 
-  // karakter katarýnýn uzunluðunu al
+  // karakter katarÄ±nÄ±n uzunluÄŸunu al
   j := Length(AYazi);
   if(j = 0) then Exit;
 
@@ -1215,16 +802,16 @@ begin
     // karakteri yaz
     HarfYaz(AGorselNesne, Sol, Ust, AYazi[i], RENK_YOK, ARenk);
 
-    // karakter geniþliðini geniþlik deðerine ekle
+    // karakter geniÅŸliÄŸini geniÅŸlik deÄŸerine ekle
     Sol := Sol + 8;
   end;
 end;
 
 {==============================================================================
-  dikdörtgensel (4 nokta) grafiksel ekrana karakter katarý yazar
+  dikdÃ¶rtgensel (4 nokta) grafiksel ekrana karakter katarÄ± yazar
  ==============================================================================}
-// Önemli bilgi: þu aþamada çoklu satýr iþlevi olmadýðý için Y1 -> Y2 kontrolü YAPILMAMAKTADIR
-procedure TGorselNesne.AlanaYaziYaz(AGorselNesne: PGorselNesne; AAlan: TAlan;
+// Ã–nemli bilgi: ÅŸu aÅŸamada Ã§oklu satÄ±r iÅŸlevi olmadÄ±ÄŸÄ± iÃ§in Y1 -> Y2 kontrolÃ¼ YAPILMAMAKTADIR
+procedure TGorselNesne.AlanaYaziYaz(AGorselNesne: TGorselNesne; AAlan: TAlan;
   ASol, AUst: TISayi4; AKarakterDizi: string; ARenk: TRenk);
 var
   KarakterDiziUz, i,
@@ -1232,13 +819,13 @@ var
 begin
 
   {
-      AAlan.Sol:AAlan.Ust = sol üst köþe (örn: 100, 100)
-      AAlan.Sag:AAlan.Alt = sað alt köþe (örn: 200, 200)
-      ASol = çizim AAlan.Sol'den kaç pixel uzaklýktan baþlayacak (örn: 10 = 110)
-      AUst = çizim AAlan.Ust'den kaç pixel uzaklýktan baþlayacak (örn: 12 = 112)
+      AAlan.Sol:AAlan.Ust = sol Ã¼st kÃ¶ÅŸe (Ã¶rn: 100, 100)
+      AAlan.Sag:AAlan.Alt = saÄŸ alt kÃ¶ÅŸe (Ã¶rn: 200, 200)
+      ASol = Ã§izim AAlan.Sol'den kaÃ§ pixel uzaklÄ±ktan baÅŸlayacak (Ã¶rn: 10 = 110)
+      AUst = Ã§izim AAlan.Ust'den kaÃ§ pixel uzaklÄ±ktan baÅŸlayacak (Ã¶rn: 12 = 112)
   }
 
-  // karakter katarýnýn uzunluðunu al
+  // karakter katarÄ±nÄ±n uzunluÄŸunu al
   KarakterDiziUz := Length(AKarakterDizi);
   if(KarakterDiziUz = 0) then Exit;
 
@@ -1256,29 +843,29 @@ begin
     // karakteri yaz
     HarfYaz(AGorselNesne, Sol, Ust, AKarakterDizi[i], RENK_YOK, ARenk);
 
-    // karakter geniþliðini x deðerine ekle
+    // karakter geniÅŸliÄŸini x deÄŸerine ekle
     Sol := Sol + 8;
   end;
 end;
 
 {==============================================================================
-  grafiksel ekrana integer sayý yazar
+  grafiksel ekrana integer sayÄ± yazar
  ==============================================================================}
-procedure TGorselNesne.SayiYaz10(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
+procedure TGorselNesne.SayiYaz10(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4;
   ASayi: TISayi4; ARenk: TRenk);
 var
   Deger: array[0..11] of Char;
 begin
 
-  // desimal deðeri string deðere çevir
+  // desimal deÄŸeri string deÄŸere Ã§evir
   Deger := IntToStr(ASayi);
 
-  // sayýsal deðeri ekrana yaz
+  // sayÄ±sal deÄŸeri ekrana yaz
   YaziYaz(AGorselNesne, ASol, AUst, Deger, ARenk);
 end;
 
 {==============================================================================
-  grafiksel ekrana 16lý tabanda sayý yazar
+  grafiksel ekrana 16lÄ± tabanda sayÄ± yazar
  ==============================================================================}
 procedure TGorselNesne.Kesme_SayiYaz16(ASol, AUst: TISayi4; AOnEkYaz: LongBool;
   AHaneSayisi, ADeger: TISayi4; ARenk: TRenk);
@@ -1287,37 +874,37 @@ var
   Alan: TAlan;
 begin
 
-  // hexadesimal deðeri string deðere çevir
+  // hexadesimal deÄŸeri string deÄŸere Ã§evir
   if(AOnEkYaz) then
     Deger := '0x' + hexStr(ADeger, AHaneSayisi)
   else Deger := hexStr(ADeger, AHaneSayisi);
 
-  Alan := CizimAlaniniAl2(Kimlik);
+  Alan := CizimAlaniniAl2;
 
-  // sayýsal deðeri ekrana yaz
+  // sayÄ±sal deÄŸeri ekrana yaz
   YaziYaz(FAtaNesne, Alan.Sol + ASol, Alan.Ust + AUst, Deger, ARenk);
 end;
 
 {==============================================================================
-  grafiksel ekrana hexadesimal sayý yazar
+  grafiksel ekrana hexadesimal sayÄ± yazar
  ==============================================================================}
-procedure TGorselNesne.SayiYaz16(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
+procedure TGorselNesne.SayiYaz16(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4;
   AOnEkYaz: LongBool; AHaneSayisi, ADeger: TISayi4; ARenk: TRenk);
 var
   Deger: string[10];
 begin
 
-  // hexadesimal deðeri string deðere çevir
+  // hexadesimal deÄŸeri string deÄŸere Ã§evir
   if(AOnEkYaz) then
     Deger := '0x' + hexStr(ADeger, AHaneSayisi)
   else Deger := hexStr(ADeger, AHaneSayisi);
 
-  // sayýsal deðeri ekrana yaz
+  // sayÄ±sal deÄŸeri ekrana yaz
   YaziYaz(AGorselNesne, ASol, AUst, Deger, ARenk);
 end;
 
 {==============================================================================
-  grafiksel ekrana belirtilen saat deðerini yazar
+  grafiksel ekrana belirtilen saat deÄŸerini yazar
  ==============================================================================}
 procedure TGorselNesne.Kesme_SaatYaz(ASol, AUst: TISayi4; ASaat: TSaat; ARenk: TRenk);
 var
@@ -1325,86 +912,86 @@ var
   Alan: TAlan;
 begin
 
-  // saat deðerini karakter katarýna çevir
+  // saat deÄŸerini karakter katarÄ±na Ã§evir
   Saat := TimeToStr(ASaat);
 
-  Alan := CizimAlaniniAl2(Kimlik);
+  Alan := CizimAlaniniAl2;
 
-  // saat deðerini belirtilen koordinatlara yaz
+  // saat deÄŸerini belirtilen koordinatlara yaz
   YaziYaz(FAtaNesne, Alan.Sol + ASol, Alan.Ust + AUst, Saat, ARenk);
 end;
 
 {==============================================================================
-  grafiksel ekrana belirtilen saat deðerini yazar
+  grafiksel ekrana belirtilen saat deÄŸerini yazar
  ==============================================================================}
-procedure TGorselNesne.SaatYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
-  ASaat: TSaat; ARenk: TRenk);
+procedure TGorselNesne.SaatYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4; ASaat: TSaat;
+  ARenk: TRenk);
 var
   Saat: string[8];
 begin
 
-  // saat deðerini karakter katarýna çevir
+  // saat deÄŸerini karakter katarÄ±na Ã§evir
   Saat := TimeToStr(ASaat);
 
-  // saat deðerini belirtilen koordinatlara yaz
+  // saat deÄŸerini belirtilen koordinatlara yaz
   YaziYaz(AGorselNesne, ASol, AUst, Saat, ARenk);
 end;
 
 {==============================================================================
-  grafiksel ekrana mac adres deðerini yazar
+  grafiksel ekrana mac adres deÄŸerini yazar
  ==============================================================================}
-procedure TGorselNesne.MACAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TISayi4;
+procedure TGorselNesne.MACAdresYaz(AGorselNesne: TGorselNesne; ASol, AUst: TISayi4;
   AMACAdres: TMACAdres; ARenk: TRenk);
 var
   MACAdres: string[17];
 begin
 
-  // MAC adres deðerini karakter katarýna çevir
+  // MAC adres deÄŸerini karakter katarÄ±na Ã§evir
   MACAdres := MAC_KarakterKatari(AMACAdres);
 
-  // MAC adres deðerini belirtilen koordinatlara yaz
+  // MAC adres deÄŸerini belirtilen koordinatlara yaz
   YaziYaz(AGorselNesne, ASol, AUst, MACAdres, ARenk);
 end;
 
 {==============================================================================
-  grafiksel ekrana ip adres deðerini yazar
+  grafiksel ekrana ip adres deÄŸerini yazar
  ==============================================================================}
-procedure TGorselNesne.IPAdresiYaz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
-  AIPAdres: TIP4Adres; ARenk: TRenk);
+procedure TGorselNesne.IP4AdresiYaz(AGorselNesne: TGorselNesne; ASol, AUst: TSayi4;
+  AIP4Adres: TIP4Adres; ARenk: TRenk);
 var
-  IPAdres: string[15];
+  IP4Adres: string[15];
 begin
 
-  // IP adres deðerini karakter katarýna çevir
-  IPAdres := IP_KarakterKatari4(AIPAdres);
+  // IP adres deÄŸerini karakter katarÄ±na Ã§evir
+  IP4Adres := IP_KarakterKatari4(AIP4Adres);
 
-  // ip adres deðerini belirtilen koordinatlara yaz
-  YaziYaz(AGorselNesne, ASol, AUst, IPAdres, ARenk);
+  // ip adres deÄŸerini belirtilen koordinatlara yaz
+  YaziYaz(AGorselNesne, ASol, AUst, IP4Adres, ARenk);
 end;
 
 {==============================================================================
-  nesneye belirtilen renkte dikdörtgen çizer
+  nesneye belirtilen renkte dikdÃ¶rtgen Ã§izer
  ==============================================================================}
-procedure TGorselNesne.Dikdortgen(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+procedure TGorselNesne.Dikdortgen(AGorselNesne: TGorselNesne; ACizgiTipi: TCizgiTipi;
   AAlan: TAlan; ACizgiRengi: TRenk);
 begin
 
-  // üst yatay çizgiyi çiz
+  // Ã¼st yatay Ã§izgiyi Ã§iz
   YatayCizgi(AGorselNesne, ACizgiTipi, AAlan.Sol, AAlan.Ust, AAlan.Sag, ACizgiRengi);
 
-  // sol dikey çizgiyi çiz
+  // sol dikey Ã§izgiyi Ã§iz
   DikeyCizgi(AGorselNesne, ACizgiTipi, AAlan.Sol, AAlan.Ust, AAlan.Alt, ACizgiRengi);
 
-  // alt yatay çizgiyi çiz
+  // alt yatay Ã§izgiyi Ã§iz
   YatayCizgi(AGorselNesne, ACizgiTipi, AAlan.Sag, AAlan.Alt, AAlan.Sol, ACizgiRengi);
 
-  // sað dikey çizgiyi çiz
+  // saÄŸ dikey Ã§izgiyi Ã§iz
   DikeyCizgi(AGorselNesne, ACizgiTipi, AAlan.Sag, AAlan.Alt, AAlan.Ust, ACizgiRengi);
 end;
 
 {==============================================================================
-  nesnenin dikdörtgensel olarak sýnýrlandýrýlmýþ alanýna belirtilen renkte içi
-  doldurulmuþ dikdörtgen çizer. (not: test edilecek)
+  nesnenin dikdÃ¶rtgensel olarak sÄ±nÄ±rlandÄ±rÄ±lmÄ±ÅŸ alanÄ±na belirtilen renkte iÃ§i
+  doldurulmuÅŸ dikdÃ¶rtgen Ã§izer. (not: test edilecek)
  ==============================================================================}
 procedure TGorselNesne.Doldur4(AGorselNesne: PGorselNesne; AAlan: TAlan; ASol, AUst,
   ASag, AAlt: TISayi4; ACizgiRengi, ADolguRengi: TRenk);
@@ -1413,7 +1000,7 @@ var
   i, j, Sol, Ust, Sag, Alt: TISayi4;
 begin
 
-  // çizim koordinatlarýnýnýn sýnýrlarýn içerisinde olup olmadýðýný kontrol et
+  // Ã§izim koordinatlarÄ±nÄ±nÄ±n sÄ±nÄ±rlarÄ±n iÃ§erisinde olup olmadÄ±ÄŸÄ±nÄ± kontrol et
   if(ASol < AAlan.Sol) then
     Sol := AAlan.Sol
   else Sol := ASol;
@@ -1430,14 +1017,14 @@ begin
     Alt := AAlan.Alt
   else Alt := AAlt;
 
-  // dýþ kenarlýk
+  // dÄ±ÅŸ kenarlÄ±k
   Alan.Sol := Sol;
   Alan.Ust := Ust;
   Alan.Sag := Sag;
   Alan.Alt := Alt;
-  Dikdortgen(AGorselNesne, ctDuz, Alan, ACizgiRengi);
+  Dikdortgen(AGorselNesne^, ctDuz, Alan, ACizgiRengi);
 
-  // iç kenarlýk
+  // iÃ§ kenarlÄ±k
   Inc(Sol);
   Inc(Ust);
   Dec(Sag);
@@ -1449,15 +1036,15 @@ begin
     for i := Sol to Sag do
     begin
 
-      EkranKartSurucusu0.NoktaYaz(@Self, i, j, ADolguRengi, True);
+      //GEkranKartSurucusu.NoktaYaz(@Self, i, j, ADolguRengi, True);
     end;
   end;
 end;
 
 {==============================================================================
-  nesneye belirtilen renkte içi doldurulmuþ dikdörtgen çizer
+  nesneye belirtilen renkte iÃ§i doldurulmuÅŸ dikdÃ¶rtgen Ã§izer
  ==============================================================================}
-procedure TGorselNesne.DikdortgenDoldur(AGorselNesne: PGorselNesne; ASol, AUst,
+procedure TGorselNesne.DikdortgenDoldur(AGorselNesne: TGorselNesne; ASol, AUst,
   ASag, AAlt: TISayi4; ACizgiRengi, ADolguRengi: TRenk);
 var
   Alan: TAlan;
@@ -1471,18 +1058,18 @@ begin
 end;
 
 {==============================================================================
-  nesneye belirtilen renkte içi doldurulmuþ dikdörtgen çizer
+  gÃ¶rsel nesneye belirtilen renkte iÃ§i doldurulmuÅŸ dikdÃ¶rtgen Ã§izer
  ==============================================================================}
-procedure TGorselNesne.DikdortgenDoldur(AGorselNesne: PGorselNesne; AAlan: TAlan;
+procedure TGorselNesne.DikdortgenDoldur(AGorselNesne: TGorselNesne; AAlan: TAlan;
   ACizgiRengi, ADolguRengi: TRenk);
 var
   i, j: TISayi4;
 begin
 
-  // dýþ kenarlýk
+  // dÄ±ÅŸ kenarlÄ±k
   Dikdortgen(AGorselNesne, ctDuz, AAlan, ACizgiRengi);
 
-  // iç kenarlýk
+  // iÃ§ kenarlÄ±k
   Inc(AAlan.Sol);
   Inc(AAlan.Ust);
   Dec(AAlan.Sag);
@@ -1494,24 +1081,31 @@ begin
     for i := AAlan.Sol to AAlan.Sag do
     begin
 
-      EkranKartSurucusu0.NoktaYaz(AGorselNesne, i, j, ADolguRengi, True);
+      GEkranKartSurucusu.NoktaYaz(AGorselNesne, i, j, ADolguRengi, True);
     end;
   end;
 end;
 
-procedure TGorselNesne.BMPGoruntusuCiz(AGNTip: TGNTip; AGorselNesne: PGorselNesne;
+{==============================================================================
+  gÃ¶rsel nesneye bmp resim iÃ§eriÄŸini Ã§izer
+==============================================================================}
+procedure TGorselNesne.BMPGoruntusuCiz(AGNTip: TGNTip; AGorselNesne: TGorselNesne;
   AGoruntuYapi: TGoruntuYapi);
+var
+  BMP: TBMP;
 begin
 
-  ResimCiz(AGNTip, AGorselNesne, AGoruntuYapi);
+  BMP := TBMP.Create;
+  BMP.Ciz(AGNTip, AGorselNesne, AGoruntuYapi);
+  BMP.Destroy;
 end;
 
 {==============================================================================
-  nesneye belirtilen renkte çizgi çizer
+  gÃ¶rsel nesneye belirtilen renkte Ã§izgi Ã§izer
  ==============================================================================}
 // https://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm
 // procedure drawLine (bitmap : TBitmap; xStart, yStart, xEnd, yEnd : integer; color : TAlphaColor);
-procedure TGorselNesne.Cizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+procedure TGorselNesne.Cizgi(AGorselNesne: TGorselNesne; ACizgiTipi: TCizgiTipi;
   ASol, AUst, ASag, AAlt: TISayi4; ACizgiRengi: TRenk);
 // Bresenham's Line Algorithm.  Byte, March 1988, pp. 249-253.
 // Modified from http://www.efg2.com/Lab/Library/Delphi/Graphics/Bresenham.txt and tested.
@@ -1581,7 +1175,7 @@ begin
   for i := 0 to a do
   begin                   // draw the a+1 pixels
 
-    if(Isaretle) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, x, y,
+    if(Isaretle) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, x, y,
       ACizgiRengi, True);
 
     if(ACizgiTipi = ctNokta) then
@@ -1614,7 +1208,7 @@ begin
 end;
 
 {==============================================================================
-  nesneye daire þekli çizer
+  gÃ¶rsel nesneye daire ÅŸekli Ã§izer
  ==============================================================================}
 procedure TGorselNesne.Daire(ASol, AUst, AYariCap: TISayi4; ARenk: TRenk);
 var
@@ -1638,22 +1232,22 @@ begin
       Dec(Ust);
     end;
 
-    EkranKartSurucusu0.NoktaYaz(@Self, ASol + Sol, AUst - Ust, ARenk, True); // Top
-    EkranKartSurucusu0.NoktaYaz(@Self, ASol - Sol, AUst - Ust, ARenk, True);
-    EkranKartSurucusu0.NoktaYaz(@Self, ASol + Ust, AUst - Sol, ARenk, True); // Upper middle
-    EkranKartSurucusu0.NoktaYaz(@Self, ASol - Ust, AUst - Sol, ARenk, True);
-    EkranKartSurucusu0.NoktaYaz(@Self, ASol + Ust, AUst + Sol, ARenk, True); // Lower middle
-    EkranKartSurucusu0.NoktaYaz(@Self, ASol - Ust, AUst + Sol, ARenk, True);
-    EkranKartSurucusu0.NoktaYaz(@Self, ASol + Sol, AUst + Ust, ARenk, True); // Bottom
-    EkranKartSurucusu0.NoktaYaz(@Self, ASol - Sol, AUst + Ust, ARenk, True);
+    GEkranKartSurucusu.NoktaYaz(Self, ASol + Sol, AUst - Ust, ARenk, True); // Top
+    GEkranKartSurucusu.NoktaYaz(Self, ASol - Sol, AUst - Ust, ARenk, True);
+    GEkranKartSurucusu.NoktaYaz(Self, ASol + Ust, AUst - Sol, ARenk, True); // Upper middle
+    GEkranKartSurucusu.NoktaYaz(Self, ASol - Ust, AUst - Sol, ARenk, True);
+    GEkranKartSurucusu.NoktaYaz(Self, ASol + Ust, AUst + Sol, ARenk, True); // Lower middle
+    GEkranKartSurucusu.NoktaYaz(Self, ASol - Ust, AUst + Sol, ARenk, True);
+    GEkranKartSurucusu.NoktaYaz(Self, ASol + Sol, AUst + Ust, ARenk, True); // Bottom
+    GEkranKartSurucusu.NoktaYaz(Self, ASol - Sol, AUst + Ust, ARenk, True);
     Inc(Sol);
   end;
 end;
 
 {==============================================================================
-  nesneye içi boyalý daire þekli çizer
+  gÃ¶rsel nesneye iÃ§i boyalÄ± daire ÅŸekli Ã§izer
  ==============================================================================}
-procedure TGorselNesne.DaireDoldur(AGorselNesne: PGorselNesne; ASol, AUst,
+procedure TGorselNesne.DaireDoldur(AGorselNesne: TGorselNesne; ASol, AUst,
   AYariCap: TISayi4; ARenk: TRenk);
 var
   Sol, Ust, YariCap, DX: TISayi4;
@@ -1675,16 +1269,16 @@ begin
 end;
 
 {==============================================================================
-  nesneye belirtilen renkte yatay çizgi çizer
+  gÃ¶rsel nesneye belirtilen renkte yatay Ã§izgi Ã§izer
  ==============================================================================}
-procedure TGorselNesne.YatayCizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+procedure TGorselNesne.YatayCizgi(AGorselNesne: TGorselNesne; ACizgiTipi: TCizgiTipi;
   ASol, AUst, ASag: TISayi4; ARenk: TRenk);
 var
   AdimSayisi, i: TISayi4;
   Isaretle: Boolean;
 begin
 
-  // eðer ASol > ASag ise ASag ile ASol deðerlerini yer deðiþtir.
+  // eÄŸer ASol > ASag ise ASag ile ASol deÄŸerlerini yer deÄŸiÅŸtir.
   if(ASol > ASag) then
   begin
 
@@ -1699,7 +1293,7 @@ begin
     Isaretle := True
   else Isaretle := False;
 
-  // çizgi tipine göre ilgili konumu iþaretle
+  // Ã§izgi tipine gÃ¶re ilgili konumu iÅŸaretle
   for i := ASol to ASag do
   begin
 
@@ -1715,21 +1309,21 @@ begin
       end;
     end;
 
-    if(Isaretle) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, i, AUst, ARenk, True);
+    if(Isaretle) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, i, AUst, ARenk, True);
   end;
 end;
 
 {==============================================================================
-  nesneye belirtilen renkte dikey çizgi çizer
+  gÃ¶rsel nesneye belirtilen renkte dikey Ã§izgi Ã§izer
  ==============================================================================}
-procedure TGorselNesne.DikeyCizgi(AGorselNesne: PGorselNesne; ACizgiTipi: TCizgiTipi;
+procedure TGorselNesne.DikeyCizgi(AGorselNesne: TGorselNesne; ACizgiTipi: TCizgiTipi;
   ASol, AUst, AAlt: TISayi4; ARenk: TRenk);
 var
   AdimSayisi, i: TISayi4;
   Isaretle: Boolean;
 begin
 
-  // eðer AUst > AAlt ise AAlt ile AUst deðerlerini yer deðiþtir.
+  // eÄŸer AUst > AAlt ise AAlt ile AUst deÄŸerlerini yer deÄŸiÅŸtir.
   if(AUst > AAlt) then
   begin
 
@@ -1744,7 +1338,7 @@ begin
     Isaretle := True
   else Isaretle := False;
 
-  // çizgi tipine göre ilgili konumu iþaretle
+  // Ã§izgi tipine gÃ¶re ilgili konumu iÅŸaretle
   for i := AUst to AAlt do
   begin
 
@@ -1760,12 +1354,14 @@ begin
       end;
     end;
 
-    if(Isaretle) then EkranKartSurucusu0.NoktaYaz(AGorselNesne, ASol, i, ARenk, True);
+    if(Isaretle) then GEkranKartSurucusu.NoktaYaz(AGorselNesne, ASol, i, ARenk, True);
   end;
 end;
 
-// yukarýdan aþaðýya eðimli doldurma iþlemi
-procedure TGorselNesne.EgimliDoldur(AGorselNesne: PGorselNesne; AAlan: TAlan;
+{==============================================================================
+  yukarÄ±dan aÅŸaÄŸÄ±ya eÄŸimli doldurma iÅŸlemi
+==============================================================================}
+procedure TGorselNesne.EgimliDoldur(AGorselNesne: TGorselNesne; AAlan: TAlan;
   ARenk1, ARenk2: TRenk);
 var
   Renk: TRenk;
@@ -1800,8 +1396,10 @@ begin
   end;
 end;
 
-// soldan saða eðimli doldurma iþlemi
-procedure TGorselNesne.EgimliDoldur2(AGorselNesne: PGorselNesne; AAlan: TAlan;
+{==============================================================================
+  soldan saÄŸa eÄŸimli doldurma iÅŸlemi
+==============================================================================}
+procedure TGorselNesne.EgimliDoldur2(AGorselNesne: TGorselNesne; AAlan: TAlan;
   ARenk1, ARenk2: TRenk);
 var
   Renk: TRenk;
@@ -1843,8 +1441,10 @@ begin
   end;
 end;
 
-// dikey olarak; 1. renkten 2. renge üstten ortaya kadar; 2. renkten 1. renge ortadan alta kadar
-procedure TGorselNesne.EgimliDoldur3(AGorselNesne: PGorselNesne; AAlan: TAlan;
+{==============================================================================
+  dikey olarak; 1. renkten 2. renge Ã¼stten ortaya kadar; 2. renkten 1. renge ortadan alta kadar
+==============================================================================}
+procedure TGorselNesne.EgimliDoldur3(AGorselNesne: TGorselNesne; AAlan: TAlan;
   ARenk1, ARenk2: TRenk);
 var
   Alan: TAlan;
@@ -1907,7 +1507,7 @@ begin
   end;
 end;
 
-procedure TGorselNesne.KenarlikCiz(AGorselNesne: PGorselNesne; AAlan: TAlan;
+procedure TGorselNesne.KenarlikCiz(AGorselNesne: TGorselNesne; AAlan: TAlan;
   AKalinlik: TSayi4);
 var
   i: TISayi4;
@@ -1916,11 +1516,11 @@ begin
   if(AKalinlik > 0) then
   begin
 
-    // ilk üst ve sol çizgiyi çiz
+    // ilk Ã¼st ve sol Ã§izgiyi Ã§iz
     YatayCizgi(AGorselNesne, ctDuz, AAlan.Sol, AAlan.Ust, AAlan.Sag-1, $808080);
     DikeyCizgi(AGorselNesne, ctDuz, AAlan.Sol, AAlan.Ust, AAlan.Alt-1, $808080);
 
-    // ilk alt ve sað çizgiyi çiz
+    // ilk alt ve saÄŸ Ã§izgiyi Ã§iz
     YatayCizgi(AGorselNesne, ctDuz, AAlan.Sag, AAlan.Alt, AAlan.Sol, $EFEFEF);
     DikeyCizgi(AGorselNesne, ctDuz, AAlan.Sag, AAlan.Alt, AAlan.Ust, $EFEFEF);
 
@@ -1930,11 +1530,11 @@ begin
       for i := 1 to AKalinlik - 1 do
       begin
 
-        // içe doðru diðer üst ve sol çizgiyi çiz
+        // iÃ§e doÄŸru diÄŸer Ã¼st ve sol Ã§izgiyi Ã§iz
         YatayCizgi(AGorselNesne, ctDuz, AAlan.Sol + i, AAlan.Ust + i, AAlan.Sag - i - 1, $404040);
         DikeyCizgi(AGorselNesne, ctDuz, AAlan.Sol + i, AAlan.Ust + i, AAlan.Alt - i - 1, $404040);
 
-        // içe doðru diðer alt ve sað çizgiyi çiz
+        // iÃ§e doÄŸru diÄŸer alt ve saÄŸ Ã§izgiyi Ã§iz
         YatayCizgi(AGorselNesne, ctDuz, AAlan.Sag - i, AAlan.Alt - i, AAlan.Sol + i, $D4D0C8);
         DikeyCizgi(AGorselNesne, ctDuz, AAlan.Sag - i, AAlan.Alt - i, AAlan.Ust + i, $D4D0C8);
       end;
@@ -1942,8 +1542,10 @@ begin
   end;
 end;
 
-// görsel nesneye ham resim çizer
-procedure TGorselNesne.HamResimCiz(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
+{==============================================================================
+  gÃ¶rsel nesneye ham resim Ã§izer
+==============================================================================}
+procedure TGorselNesne.HamResimCiz(AGorselNesne: TGorselNesne; ASol, AUst: TSayi4;
   AHamResimBellekAdresi: Isaretci);
 var
   Sol, Ust, Renk: TSayi4;
@@ -1958,7 +1560,7 @@ begin
     for Sol := 1 to 24 do
     begin
 
-      // yeni çizilecek cursor'ün bitmap bölgesine konumlan
+      // yeni Ã§izilecek cursor'Ã¼n bitmap bÃ¶lgesine konumlan
       Renk := BaslatMenuResimAdresi^;
 
       PixelYaz(AGorselNesne, ASol + (Sol - 1), AUst + (Ust - 1), Renk);
@@ -1968,9 +1570,11 @@ begin
   end;
 end;
 
-// görsel nesneye sistem kaynak resimlerinden resim çizer
-// bilgi: hamresim.pas dosyasýndaki resimleri çizer
-procedure TGorselNesne.KaynaktanResimCiz(AGorselNesne: PGorselNesne; AAlan: TAlan; AResimSiraNo: TISayi4);
+{==============================================================================
+  gÃ¶rsel nesneye sistem kaynak resimlerinden resim Ã§izer
+  bilgi: hamresim.pas dosyasÄ±ndaki resimleri Ã§izer
+==============================================================================}
+procedure TGorselNesne.KaynaktanResimCiz(AGorselNesne: TGorselNesne; AAlan: TAlan; AResimSiraNo: TISayi4);
 var
   Renk: TSayi4;
   ResimAdresi: PSayi4;
@@ -1982,7 +1586,7 @@ begin
   if(AResimSiraNo >= 0) and (AResimSiraNo < HAMRESIM_SAYISI) then
   begin
 
-    // HamResimler - AKaynak = 1 ve iliþkili herþey iptal edilerek
+    // HamResimler - AKaynak = 1 ve iliÅŸkili herÅŸey iptal edilerek
     RGenislik := HamResimler[AResimSiraNo].Genislik;
     RYukseklik := HamResimler[AResimSiraNo].Yukseklik;
     ResimAdresi := HamResimler[AResimSiraNo].BellekAdresi;
@@ -2016,9 +1620,11 @@ begin
   end;
 end;
 
-// görsel nesneye sistem kaynak resimlerinden resim çizer
-// bilgi: sistem.bmp dosyasýndaki resimleri çizer
-procedure TGorselNesne.KaynaktanResimCiz2(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
+{==============================================================================
+  gÃ¶rsel nesneye sistem kaynak resimlerinden resim Ã§izer
+  bilgi: sistem.bmp dosyasÄ±ndaki resimleri Ã§izer
+==============================================================================}
+procedure TGorselNesne.KaynaktanResimCiz2(AGorselNesne: TGorselNesne; ASol, AUst: TSayi4;
   AResimSiraNo: TISayi4);
 const
   RESIM_SAYISI = 17;
@@ -2030,7 +1636,7 @@ begin
   if(AResimSiraNo >= 0) and (AResimSiraNo < RESIM_SAYISI) then
   begin
 
-    BaslatMenuResimAdresi := GSistemResimler.BellekAdresi + (AResimSiraNo * 24 * 24 * 4);
+    BaslatMenuResimAdresi := GSistem.FSistemResimler.BellekAdresi + (AResimSiraNo * 24 * 24 * 4);
 
     for Ust := 0 to 23 do
     begin
@@ -2038,7 +1644,7 @@ begin
       for Sol := 0 to 23 do
       begin
 
-        // çizilecek resmin bitmap bölgesine konumlan
+        // Ã§izilecek resmin bitmap bÃ¶lgesine konumlan
         Renk := BaslatMenuResimAdresi^;
 
         PixelYaz(AGorselNesne, ASol + Sol, AUst + Ust, Renk);
@@ -2049,9 +1655,11 @@ begin
   end;
 end;
 
-// görsel nesneye sistem kaynak resimlerinden resim çizer
-// bilgi: sistem.bmp dosyasýndaki resimleri çizer
-procedure TGorselNesne.KaynaktanResimCiz21(AGorselNesne: PGorselNesne; ASol, AUst: TSayi4;
+{==============================================================================
+  gÃ¶rsel nesneye sistem kaynak resimlerinden resim Ã§izer
+  bilgi: sistem.bmp dosyasÄ±ndaki resimleri Ã§izer
+==============================================================================}
+procedure TGorselNesne.KaynaktanResimCiz21(AGorselNesne: TGorselNesne; ASol, AUst: TSayi4;
   AResimSiraNo: TISayi4);
 const
   RESIM_SAYISI = 12;
@@ -2063,7 +1671,7 @@ begin
   if(AResimSiraNo >= 0) and (AResimSiraNo < RESIM_SAYISI) then
   begin
 
-    BaslatMenuResimAdresi := GSistemResimler2.BellekAdresi + (AResimSiraNo * 24 * 24 * 4);
+    BaslatMenuResimAdresi := GSistem.FSistemResimler2.BellekAdresi + (AResimSiraNo * 24 * 24 * 4);
 
     for Ust := 0 to 23 do
     begin
@@ -2071,7 +1679,7 @@ begin
       for Sol := 0 to 23 do
       begin
 
-        // çizilecek resmin bitmap bölgesine konumlan
+        // Ã§izilecek resmin bitmap bÃ¶lgesine konumlan
         Renk := BaslatMenuResimAdresi^;
 
         PixelYaz(AGorselNesne, ASol + Sol, AUst + Ust, Renk);

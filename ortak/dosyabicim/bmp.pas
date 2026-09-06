@@ -6,7 +6,7 @@
   Dosya Adı: bmp.pas
   Dosya İşlevi: bmp dosya işlevlerini içerir
 
-  Güncelleme Tarihi: 25/06/2026
+  Güncelleme Tarihi: 05/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit bmp;
 
 interface
 
-uses dosya, paylasim, gn_pencere, gorselnesne;
+uses dosyalar, paylasim, gn_pencere, gorselnesne;
 
 type
   PBMPBicim = ^TBMPBicim;
@@ -36,15 +36,25 @@ type
     OnemliRenkSayisi: TSayi4;       // önemli renk sayısı
   end;
 
-function BMPDosyasiYukle(ADosyaTamYol: string): TGoruntuYapi;
-procedure ResimCiz(AGNTip: TGNTip; AGorselNesne: PGorselNesne; AGoruntuYapi: TGoruntuYapi);
+type
+  TBMP = class
+  public
+    constructor Create;
+    function Yukle(ADosyaYolu: string): TGoruntuYapi;
+    procedure Ciz(AGNTip: TGNTip; AGorselNesne: TGorselNesne; AGoruntuYapi: TGoruntuYapi);
+  end;
 
 implementation
 
 uses gn_masaustu, gn_resim, islevler, gn_islevler, sistemmesaj, src_vesa20;
 
+constructor TBMP.Create;
+begin
+
+end;
+
 // bmp biçimindeki dosyayı resim olarak belleğe yükler
-function BMPDosyasiYukle(ADosyaTamYol: string): TGoruntuYapi;
+function TBMP.Yukle(ADosyaYolu: string): TGoruntuYapi;
 var
   DosyaBellek: Isaretci;
   DosyaUzunlugu: TISayi4;
@@ -66,7 +76,7 @@ begin
   Result.BellekAdresi := nil;
 
   // dosyayı sürücü + Klasor + dosya parçalarına ayır
-  DosyaYolunuParcala2(ADosyaTamYol, Surucu, Klasor, DosyaAdi);
+  DosyaYolunuParcala2(ADosyaYolu, Surucu, Klasor, DosyaAdi);
 
   // dosya adının uzunluğunu al
   DosyaUzunlugu := Length(DosyaAdi);
@@ -179,12 +189,11 @@ begin
 end;
 
 // bmp biçiminde belleğe yüklenmiş resmi görsel nesneye çizer
-procedure ResimCiz(AGNTip: TGNTip; AGorselNesne: PGorselNesne;
-  AGoruntuYapi: TGoruntuYapi);
+procedure TBMP.Ciz(AGNTip: TGNTip; AGorselNesne: TGorselNesne; AGoruntuYapi: TGoruntuYapi);
 var
-  Masaustu: PMasaustu;
-  Pencere: PPencere;
-  Resim: PResim;
+  Masaustu: TMasaustu;
+  Pencere: TPencere;
+  Resim: TResim;
   Renk1, Renk2: PRenk;
   CizimAlani: TAlan;
   Yukseklik, Genislik, SatirdakiByteSayisi,
@@ -197,10 +206,10 @@ begin
   if(AGNTip = gntMasaustu) then
   begin
 
-    Masaustu := PMasaustu(AGorselNesne);
+    Masaustu := TMasaustu(AGorselNesne);
     if(Masaustu = nil) then Exit;
 
-    CizimAlani := Masaustu^.FCizimAlani;
+    CizimAlani := Masaustu.FCizimAlani;
 
     Genislik := AGoruntuYapi.Genislik;
     SatirdakiByteSayisi := Genislik * 4;
@@ -216,8 +225,8 @@ begin
       for TuvalA1 := 0 to Genislik - 1 do
       begin
 
-        EkranKartSurucusu0.NoktaYaz(Masaustu, CizimAlani.Sol + TuvalA1, CizimAlani.Ust + TuvalB1,
-          Renk1^, True);
+        GEkranKartSurucusu.NoktaYaz(Masaustu, CizimAlani.Sol + TuvalA1, CizimAlani.Ust +
+          TuvalB1, Renk1^, True);
         Inc(Renk1);
       end;
     end;
@@ -225,16 +234,16 @@ begin
   else if(AGNTip = gntResim) then
   begin
 
-    Resim := PResim(AGorselNesne);
+    Resim := TResim(AGorselNesne);
     if(Resim = nil) then Exit;
 
     // ata nesne kontrolü. ata nesne pencere değilse çık
-    Pencere := EnUstPencereNesnesiniAl(Resim);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Resim);
     if(Pencere = nil) then Exit;
 
-    CizimAlani := Resim^.FCizimAlani;
+    CizimAlani := Resim.FCizimAlani;
 
-    if(Resim^.FTuvaleSigdir) then
+    if(Resim.FTuvaleSigdir) then
     begin
 
       Genislik := AGoruntuYapi.Genislik;
@@ -268,8 +277,8 @@ begin
         Renk2 := Renk1;
         Inc(Renk2, Round(Sol));
 
-        EkranKartSurucusu0.NoktaYaz(Resim, CizimAlani.Sol + TuvalA1, CizimAlani.Ust + TuvalB1,
-          Renk2^, True);
+        GEkranKartSurucusu.NoktaYaz(Resim, CizimAlani.Sol + TuvalA1, CizimAlani.Ust +
+          TuvalB1, Renk2^, True);
       end;
     end;
   end;

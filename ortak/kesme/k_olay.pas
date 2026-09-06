@@ -49,7 +49,7 @@ begin
     end;
 
     // çalýþan proses'e ait olay var mý ?
-    if(Gorevler0.OlayAl(G^.Kimlik, O)) then
+    if(GGorevler.OlayAl(G^.Kimlik, O)) then
 
       OlayMevcut := True
     else OlayMevcut := False;
@@ -58,7 +58,7 @@ begin
     if(OlayMevcut) then
     begin
 
-      O2 := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
+      O2 := POlay(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
       O2^.Kimlik := O.Kimlik;
       O2^.Olay := O.Olay;
       O2^.Deger1 := O.Deger1;
@@ -88,7 +88,7 @@ begin
     if(G = nil) then
     begin
 
-      O2 := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
+      O2 := POlay(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
       O2^.Kimlik := -1;
       O2^.Olay := -1;
       O2^.Deger1 := -1;
@@ -103,7 +103,7 @@ begin
     // ta ki ilgili görev için olay mevcut oluncaya kadar
     repeat
 
-      if(Gorevler0.OlayAl(G^.Kimlik, O)) then
+      if(GGorevler.OlayAl(G^.Kimlik, O)) then
 
         OlayMevcut := True
       else OlayMevcut := False;
@@ -112,7 +112,7 @@ begin
     until (OlayMevcut = True);
 
     // olay deðiþkenlerini görevin yýðýn alanýna kopyala
-    O2 := POlay(PSayi4(ADegiskenler)^ + FAktifGorevBellekAdresi);
+    O2 := POlay(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
     O2^.Kimlik := O.Kimlik;
     O2^.Olay := O.Olay;
     O2^.Deger1 := O.Deger1;

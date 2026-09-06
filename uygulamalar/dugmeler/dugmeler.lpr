@@ -6,7 +6,7 @@
   Program Adý: dugmeler.lpr
   Program Ýþlevi: resim düðme test programý
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 11/08/2026
 
  ==============================================================================}
 {$mode objfpc}

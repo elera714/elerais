@@ -46,7 +46,7 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    p := PMesajKayit3(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi);
+    p := PMesajKayit3(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
     GSistemMesaj.MesajAl(PISayi4(ADegiskenler + 00)^, p);
     Result := GSistemMesaj.ToplamMesaj;
   end
@@ -55,14 +55,14 @@ begin
   begin
 
     SISTEM_MESAJ(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
-      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi))^, []);
+      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr))^, []);
   end
   // programdan karakter katarı + sayısal değer türünde gelen mesajı sistem mesajlarına ekle
   else if(IslevNo = 4) then
   begin
 
     SISTEM_MESAJ(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
-      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + FAktifGorevBellekAdresi))^,
+      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr))^,
       [PSayi4(ADegiskenler + 12)^]); //, PSayi4(ADegiskenler + 16)^);
       { TODO - üstte iptal edilen ifadeyi api işlevinden çıkar }
   end

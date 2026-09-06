@@ -44,7 +44,7 @@ begin
 
   FPencere.Gorunum := True;
 
-  FZamanlayici.Olustur(20);
+  FZamanlayici.Olustur(200);
   FZamanlayici.Baslat;
 
   i := 20;

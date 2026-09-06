@@ -6,7 +6,7 @@
   Dosya Adý: src_klavye.pas
   Dosya Ýþlevi: standart klavye sürücüsü
 
-  Güncelleme Tarihi: 20/07/2026
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -63,9 +63,23 @@ var
   TusDurumHesapAcik   : Boolean = False;        // hesap makinesi açma / kapama tuþu (num lock)
   TusDurumKaydirmaAcik: Boolean = False;        // kaydýrma açma / kapama tuþu (scroll lock)
 
-procedure Yukle;
+type
+  TKlavye = class
+  public
+    FSistemTusDurumuKontrolSol: TTusDurum;
+    FSistemTusDurumuKontrolSag: TTusDurum;
+    FSistemTusDurumuAltSol: TTusDurum;
+    FSistemTusDurumuAltSag: TTusDurum;
+    FSistemTusDurumuDegisimSol: TTusDurum;
+    FSistemTusDurumuDegisimSag: TTusDurum;
+    constructor Create;
+    function KlavyedenTusAl(var ATusDegeri: TSayi2): TTusDurum;
+  end;
+
+var
+  GKlavye: TKlavye;
+
 procedure KlavyeKesmeCagrisi;
-function KlavyedenTusAl(var ATusDegeri: TSayi2): TTusDurum;
 
 implementation
 
@@ -155,7 +169,7 @@ var
 {==============================================================================
   klavye yükleme iþlevlerini içerir
  ==============================================================================}
-procedure Yukle;
+constructor TKlavye.Create;
 begin
 
   // klavye kesme (irq) giriþini ata
@@ -197,7 +211,7 @@ var
   bilgi: ATus[15..00] -> görüntülenebilir tuþ karakterleri
          ATus[31..16] -> kontrol tuþlarýný içerir
  ==============================================================================}
-function KlavyedenTusAl(var ATusDegeri: TSayi2): TTusDurum;
+function TKlavye.KlavyedenTusAl(var ATusDegeri: TSayi2): TTusDurum;
 var
   HamTus: TSayi1;
   TusBirakildi,

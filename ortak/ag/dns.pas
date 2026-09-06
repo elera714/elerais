@@ -14,7 +14,7 @@ unit dns;
 
 interface
 
-uses paylasim, baglanti, udp;
+uses paylasim, baglantilar, udp;
 
 const
   USTSINIR_DNSBAGLANTI  = 16;
@@ -42,8 +42,23 @@ type
   end;
 
 type
+  TEthernet = class
+
+  end;
+
+type
+  TIP = class(TEthernet)
+
+  end;
+
+type
+  TUDP = class(TIP)
+
+  end;
+
+type
   PDNS = ^TDNS;
-  TDNS = class
+  TDNS = class(TUDP)
   public
     FBaglanti: TBaglanti;
     { TODO - çok önemli: bir üstteki yapı değerleri aşağıdaki değişkenlere aktarılmalı }
@@ -59,17 +74,20 @@ type
     function YeniBaglantiOlustur: PDNS;
     procedure Kapat(ADNSKimlik: TKimlik);
     procedure YokEt(ADNSKimlik: TKimlik);
+
+    procedure VerileriIsle(AUDPPaket: PUDPPaket);
+    procedure VerileriIsle0(AUDPPaket: PUDPPaket);
   end;
 
 function DNSIletisimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-procedure DNSPaketleriniIsle(AUDPPaket: PUDPPaket);
 
 var
-  GDNS0: TDNS;
+  GDNS: TDNS;
+  GDNSBaglantilari: array[0..USTSINIR_DNSBAGLANTI - 1] of PDNS;
 
 implementation
 
-uses genel, donusum, islevler, sistemmesaj, gorev, ag;
+uses donusum, islevler, sistemmesaj, gorev, ag;
 
 {==============================================================================
   dns protokol değişken / yapı ilk yükleme işlevlerini içerir
@@ -117,7 +135,7 @@ begin
 
     i := PISayi4(ADegiskenler + 00)^;
     DNS := GDNSBaglantilari[i];
-    DNS^.Sorgula(i, PKarakterKatari(PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi)^);
+    DNS^.Sorgula(i, PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr)^);
   end
   // dns sorgu durumunu al
   else if(AIslevNo = 3) then
@@ -132,7 +150,7 @@ begin
 
     DNS := GDNSBaglantilari[PISayi4(ADegiskenler + 00)^];
 
-    Hedef := PSayi4(ADegiskenler + 04)^ + FAktifGorevBellekAdresi;
+    Hedef := PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr;
 
     // dns yanıtını ve uzunluğunu (4 byte) hedef alana kopyala
     Tasi2(Isaretci(DNS^.FBellekAdresi + 2048), Isaretci(Hedef), DNS^.FYanitUzunluk + 4);
@@ -158,7 +176,7 @@ end;
 {==============================================================================
   sisteme gelen tüm DNS yanıtlarını işle ve ilgili girişlere yönlendir
  ==============================================================================}
-procedure DNSPaketleriniIsle(AUDPPaket: PUDPPaket);
+procedure TDNS.VerileriIsle(AUDPPaket: PUDPPaket);
 var
   DNS: PDNS;
   HedefPort, Uzunluk: TSayi2;
@@ -183,6 +201,35 @@ begin
 end;
 
 {==============================================================================
+  sisteme gelen tüm DNS yanıtlarını işle ve ilgili girişlere yönlendir
+ ==============================================================================}
+procedure TDNS.VerileriIsle0(AUDPPaket: PUDPPaket);
+var
+  DNS: PDNS;
+  HedefPort, Uzunluk: TSayi2;
+  B4: PSayi4;
+begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'DAAAAT', []);
+
+  {HedefPort := ntohs(AUDPPaket^.HedefPort);
+  Uzunluk := ntohs(AUDPPaket^.Uzunluk) - 8;
+
+  DNS := DNS^.DNSBaglantiAl(HedefPort);
+  if not(DNS = nil) then
+  begin
+
+    B4 := PSayi4(DNS^.FBellekAdresi + 2048);
+    B4^ := Uzunluk;
+
+    Tasi2(@AUDPPaket^.Veri, PSayi4(DNS^.FBellekAdresi + 2048 + 4), Uzunluk);
+
+    DNS^.FYanitUzunluk := Uzunluk;
+    DNS^.FBaglantiDurum := ddSorgulandi;
+  end;}
+end;
+
+{==============================================================================
   dns bağlantısı oluştur
  ==============================================================================}
 function TDNS.Olustur: PDNS;
@@ -197,7 +244,7 @@ begin
   begin
 
 
-    DNS^.FYerelPort := GBaglantilar.YerelPortAl;
+    DNS^.FYerelPort := GAgBaglantilari.YerelPortAl;
     DNS^.FBellekAdresi := GetMem(4096);
     DNS^.FYanitUzunluk := 0;
   end;
@@ -217,7 +264,7 @@ var
   K: Char;
   i, DNSAdresUzunluk, ToplamUzunluk: TSayi4;
   ParcaUzunluk: TSayi1;
-  IPAdresi: string;
+  IP4Adres: string;
 begin
 
   DNS := GDNSBaglantilari[ADNSKimlik];
@@ -276,9 +323,9 @@ begin
     Inc(B2);
     B2^ := ntohs(TSayi2(Class_IN));
 
-    IPAdresi := IP_KarakterKatari4(GAg0.DNSSunucusu);
+    IP4Adres := IP_KarakterKatari4(GAgBaglantilari.AktifBaglanti.DNSSunucusu);
 
-    DNS^.FBaglanti := GBaglantilar.BaglantiOlustur(itIP4, btBelirsiz, ptUDP, IPAdresi,
+    DNS^.FBaglanti := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ptUDP, IP4Adres,
       DNS^.FYerelPort, DNS_PORTNO);
     if not(DNS^.FBaglanti = nil) then
     begin
@@ -286,10 +333,10 @@ begin
       DNS^.FKimlik := DNS^.FBaglanti.Kimlik;
 
       { TODO - btYayin'dan btIP değerine çekilecek }
-      if(DNS^.FBaglanti.Baglan(itIP4, btIP) <> -1) then
+      if(DNS^.FBaglanti.Baglan(btIP) <> -1) then
       begin
 
-        DNS^.FBaglanti.Yaz(PROTOKOL_IP4, @DNSPaket[0], 12 + ToplamUzunluk + 4);
+        DNS^.FBaglanti.Yaz(@DNSPaket[0], 12 + ToplamUzunluk + 4);
 
         DNS^.FBaglantiDurum := ddSorgulaniyor;
       end;

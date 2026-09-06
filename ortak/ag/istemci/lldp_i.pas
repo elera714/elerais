@@ -4,10 +4,10 @@
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
   Dosya Adý: lldp_i.pas
-  Dosya Ýþlevi: baðlantý katmaný keþif protokol (link layer discovery protocol)
+  Dosya Ýþlevi: baðlantý katmaný keþif tutanak (link layer discovery protocol)
     yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 26/07/2026
+  Güncelleme Tarihi: 02/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -24,13 +24,27 @@ type
     Veri: Isaretci;
   end;
 
-procedure LLDPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
+type
+  PLLDP = ^TLLDP;
+  TLLDP = class
+  private
+    FBaglanti: TObject;
+  public
+    constructor Create(ABaglanti: TObject);
+    procedure VerileriIsle(AEthernetPaket: PEthernetPaket);
+  end;
 
 implementation
 
 uses sistemmesaj, donusum, islevler;
 
-procedure LLDPPaketleriniIsle(AEthernetPaket: PEthernetPaket);
+constructor TLLDP.Create(ABaglanti: TObject);
+begin
+
+  FBaglanti := ABaglanti;
+end;
+
+procedure TLLDP.VerileriIsle(AEthernetPaket: PEthernetPaket);
 var
   LLDPPaket: PLLDPPaket;
   VT, U: TSayi4;

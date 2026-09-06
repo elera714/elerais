@@ -14,7 +14,7 @@ unit src_e1000;
 
 interface
 
-uses paylasim, pci;
+uses paylasim, pci, aygit, ethernet;
 
 const
   REG_CTRL      = $0000;    // aygýt kontrol
@@ -125,7 +125,7 @@ type
     end;
 
 type
-  TAygit = packed record
+  TAygit0 = packed record
     Yol, Aygit,
     Islev: TSayi1;
     PortDegeri: TSayi2;
@@ -137,52 +137,52 @@ type
   end;
 
 var
-  AygitBilgisi: TAygit;
+  AygitBilgisi: TAygit0;
   EEPROMVar: Boolean;
   tx_descs : array[0..E1000_NUM_TX_DESC-1] of TE1000_tx_desc;
   rx_descs : array[0..E1000_NUM_RX_DESC-1] of PE1000_rx_desc;
   rx_buffs : array[0..E1000_NUM_RX_DESC-1] of puint8;
   GidisSiraNo, GelisSiraNo: TSayi4;
 
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(var AEthernet: TEthernet): TISayi4;
 procedure KomutGonder(AAdres, AKomut: TSayi4);
 function VeriOku(AAdres: TSayi4): TSayi4;
 procedure BitAktiflestir(AAdres, ADeger: TSayi4);
 procedure BitPasiflestir(AAdres, ADeger: TSayi4);
 function EEPROMVarMi: Boolean;
-procedure MACAdresiAl;
+procedure MACAdresAl;
 procedure KesmeAktiflestir;
 procedure BaglantiyiBaslat;
 procedure KesmeIslevi;
 procedure VeriAl1;
 procedure rxinit;
 procedure txinit;
-procedure DMAErisiminiAktiflestir(APCI: PPCI);
+procedure DMAErisiminiAktiflestir(APCI: TPCI);
 
 implementation
 
-uses port, irq, genel, sistemmesaj;
+uses port, irq, sistemmesaj;
 
 {==============================================================================
   intel e1000 að sürücü yükleme iþlevlerini içerir
  ==============================================================================}
-function Yukle(APCI: PPCI): TISayi4;
+function Yukle(var AEthernet: TEthernet): TISayi4;
 var
   i: Integer;
 begin
-
+                  exit;
   // çýkýþ öndeðeri
   Result := -1;
 
   // çekirdeðin gönderdiði pci aygýt bilgilerini hedef bölgeye kopyala
-  AygitBilgisi.Yol := APCI^.Yol;
-  AygitBilgisi.Aygit := APCI^.Aygit;
-  AygitBilgisi.Islev := APCI^.Islev;
+  AygitBilgisi.Yol := AEthernet.FPCI.FYol;
+  AygitBilgisi.Aygit := AEthernet.FPCI.FAygit;
+  AygitBilgisi.Islev := AEthernet.FPCI.FIslev;
 
   EEPROMVar := False;
 
   // aygýt port deðerini al
-  AygitBilgisi.PortDegeri := PCIAygiti0.IlkPortDegeriniAl(APCI);
+  AygitBilgisi.PortDegeri := GPCIAygitlar.IlkPortDegeriniAl(AEthernet.FPCI);
   if(AygitBilgisi.PortDegeri = 0) then
   begin
 
@@ -191,7 +191,7 @@ begin
   end;
 
   // aygýt bellek deðerini al
-  AygitBilgisi.BellekDegeri := PCIAygiti0.IlkBellekDegeriniAl(APCI);
+  AygitBilgisi.BellekDegeri := GPCIAygitlar.IlkBellekDegeriniAl(AEthernet.FPCI);
   if(AygitBilgisi.BellekDegeri = 0) then
   begin
 
@@ -200,15 +200,15 @@ begin
   end;
 
   // IRQ numarasýný al
-  AygitBilgisi.IRQNo := PCIAygiti0.IRQNoAl(APCI);
+  AygitBilgisi.IRQNo := GPCIAygitlar.IRQNoAl(AEthernet.FPCI);
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'E1000 aygýt bilgileri:', []);
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '----------------------', []);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Yol: %d', [APCI^.Yol]);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Aygýt: %d', [APCI^.Aygit]);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Ýþlev: %d', [APCI^.Islev]);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Satýcý Kimlik: $%x', [APCI^.SaticiKimlik]);
-  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Aygýt Kimlik: $%x', [APCI^.AygitKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Yol: %d', [AEthernet.FPCI.FYol]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Aygýt: %d', [AEthernet.FPCI.FAygit]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Ýþlev: %d', [AEthernet.FPCI.FIslev]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Satýcý Kimlik: $%x', [AEthernet.FPCI.FSaticiKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Aygýt Kimlik: $%x', [AEthernet.FPCI.FAygitKimlik]);
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Port: $%x', [AygitBilgisi.PortDegeri]);
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 Bellek: $%x', [AygitBilgisi.BellekDegeri]);
   SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'E1000 IRQ: %d', [AygitBilgisi.IRQNo]);
@@ -219,7 +219,7 @@ begin
   else SISTEM_MESAJ(mtBilgi, RENK_MOR, 'EEPROM yok', []);}
 
   // aygýtýn mac adresini al
-  MACAdresiAl;
+  MACAdresAl;
 
   // reset
   BitAktiflestir(REG_CTRL, 1 shl 26); //E1000_REG_CTRL_RST);
@@ -312,7 +312,7 @@ end;
 {==============================================================================
   aygýtýn mac adresini alýr
  ==============================================================================}
-procedure MACAdresiAl;
+procedure MACAdresAl;
 var
   i, j, k: TSayi4;
 begin
@@ -529,14 +529,14 @@ begin
 
 end;
 
-procedure DMAErisiminiAktiflestir(APCI: PPCI);
+procedure DMAErisiminiAktiflestir(APCI: TPCI);
 var
   Deger: TSayi2;
 begin
 
-  Deger := PCIAygiti0.Oku2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4);
+  Deger := GPCIAygitlar.Oku2(APCI.FYol, APCI.FAygit, APCI.FIslev, 4);
   if((Deger and 4) = 4) then Exit;
-  PCIAygiti0.Yaz2(APCI^.Yol, APCI^.Aygit, APCI^.Islev, 4, (Deger and 4));
+  GPCIAygitlar.Yaz2(APCI.FYol, APCI.FAygit, APCI.FIslev, 4, (Deger and 4));
 end;
 
 end.

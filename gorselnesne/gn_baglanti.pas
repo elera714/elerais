@@ -6,7 +6,7 @@
   Dosya Adı: gn_baglanti.pas
   Dosya İşlevi: bağlantı nesne yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 15/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,129 +18,143 @@ uses gorselnesne, paylasim, gn_panel;
 
 type
   PBaglanti = ^TBaglanti;
-  TBaglanti = object(TPanel)
+  TBaglanti = class(TPanel)
   public
-    function Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-      ASol, AUst: TISayi4; ANormalRenk, AOdakRenk: TRenk; ABaslik: string): PBaglanti;
-    procedure YokEt(AKimlik: TKimlik);
+    constructor Create; override;
+    destructor Destroy; override;
+    function Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+      ASol, AUst: TISayi4; ANormalRenk, AOdakRenk: TRenk; ABaslik: string): TISayi4;
     procedure Goster;
     procedure Gizle;
     procedure Hizala;
     procedure Ciz;
-    procedure OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+    procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
     property OdakMevcut: Boolean read FDurum1 write FDurum1;
   end;
 
 function BaglantiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TISayi4; ANormalRenk,
+function BaglantiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst: TISayi4; ANormalRenk,
   AOdakRenk: TRenk; ABaslik: string): TKimlik;
 
 implementation
 
-uses genel, gn_pencere, gn_islevler, temelgorselnesne, gorev;
+uses gn_pencere, gn_islevler, gorev, src_ps2;
 
 {==============================================================================
   bağlantı nesne kesme çağrılarını yönetir
  ==============================================================================}
 function BaglantiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  GN: PGorselNesne;
-  Baglanti: PBaglanti;
+  GN: TGorselNesne;
+  Baglanti: TBaglanti;
 begin
+
+  Result := HATA_ISLEV;
 
   case AIslevNo of
 
     ISLEV_OLUSTUR:
     begin
 
-      GN := GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^);
-      Result := NesneOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
+      GN := GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^);
+      Result := BaglantiGNOlustur(GN, PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^,
         PRenk(ADegiskenler + 12)^, PRenk(ADegiskenler + 16)^,
-        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + FAktifGorevBellekAdresi)^);
+        PKarakterKatari(PSayi4(ADegiskenler + 20)^ + GGorevler.FAktifGrvBelAdr)^);
     end;
 
     ISLEV_GOSTER:
     begin
 
-      Baglanti := PBaglanti(GorselNesneler0.NesneAl(PKimlik(ADegiskenler + 00)^));
-      Baglanti^.Goster;
-    end
-
-    else Result := HATA_ISLEV;
+      Baglanti := TBaglanti(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
+      Baglanti.Goster;
+    end;
   end;
 end;
 
 {==============================================================================
-  bağlantı nesnesini oluşturur
+  uygulama için bağlantı nesnesi oluşturur - api
  ==============================================================================}
-function NesneOlustur(AAtaNesne: PGorselNesne; ASol, AUst: TISayi4; ANormalRenk,
+function BaglantiGNOlustur(AAtaNesne: TGorselNesne; ASol, AUst: TISayi4; ANormalRenk,
   AOdakRenk: TRenk; ABaslik: string): TKimlik;
 var
-  Baglanti: PBaglanti;
+  Baglanti: TBaglanti;
 begin
 
-  Baglanti := Baglanti^.Olustur(ktNesne, AAtaNesne, ASol, AUst, ANormalRenk, AOdakRenk, ABaslik);
+  Baglanti := TBaglanti.Create;
 
   if(Baglanti = nil) then
 
     Result := HATA_NESNEOLUSTURMA
+  else
+  begin
 
-  else Result := Baglanti^.Kimlik;
+    Baglanti.Ozellestir(ktNesne, AAtaNesne, ASol, AUst, ANormalRenk, AOdakRenk, ABaslik);
+
+    Result := Baglanti.Kimlik;
+  end;
 end;
 
 {==============================================================================
-  bağlantı nesnesini oluşturur
+  bağlantı nesnesi oluşturur
  ==============================================================================}
-function TBaglanti.Olustur(AKullanimTipi: TKullanimTipi; AAtaNesne: PGorselNesne;
-  ASol, AUst: TISayi4; ANormalRenk, AOdakRenk: TRenk; ABaslik: string): PBaglanti;
-var
-  Baglanti: PBaglanti;
-  Genislik, Yukseklik: TSayi4;
+constructor TBaglanti.Create;
 begin
 
-  Genislik := Length(ABaslik) * 8;
-  Yukseklik := 16;
+  inherited Create;
 
-  Baglanti := PBaglanti(inherited Olustur(AKullanimTipi, AAtaNesne, ASol, AUst,
-    Genislik, Yukseklik, 1, 0, 0, ANormalRenk, ABaslik));
+  NesneTipi := gntBaglanti;
 
-  // görsel nesne tipi
-  Baglanti^.NesneTipi := gntBaglanti;
-
-  Baglanti^.Baslik := ABaslik;
-
-  Baglanti^.FTuvalNesne := AAtaNesne^.FTuvalNesne;
-
-  Baglanti^.OdakMevcut := False;
-
-  Baglanti^.Odaklanilabilir := False;
-  Baglanti^.Odaklanildi := False;
-
-  Baglanti^.OlayCagriAdresi := @OlaylariIsle;
-
-  Baglanti^.FareImlecTipi := fitEl;
-
-  Baglanti^.FYaziHiza.Yatay := yhSol;
-  Baglanti^.FYaziHiza.Dikey := dhUst;
-
-  // bilgi: normal yazı rengi ve odak rengi için alt nesnenin FGovdeRenk1,
-  // FGovdeRenk2 özellikleri kullanılmıştır
-  Baglanti^.FGovdeRenk1 := ANormalRenk;
-  Baglanti^.FGovdeRenk2 := AOdakRenk;
-  Baglanti^.FYaziRenk := ANormalRenk;
-  Baglanti^.OdakMevcut := False;
-
-  // nesne adresini geri döndür
-  Result := Baglanti;
+  GGNesneler.GorselNesne[FSiraNo] := Self;
 end;
 
 {==============================================================================
   bağlantı nesnesini yok eder
  ==============================================================================}
-procedure TBaglanti.YokEt(AKimlik: TKimlik);
+destructor TBaglanti.Destroy;
 begin
 
-  inherited YokEt(AKimlik);
+  GGNesneler.YokEt(Self);
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  düğme nesnesini özelleştirir
+ ==============================================================================}
+function TBaglanti.Ozellestir(AKullanimTipi: TKullanimTipi; AAtaNesne: TGorselNesne;
+  ASol, AUst: TISayi4; ANormalRenk, AOdakRenk: TRenk; ABaslik: string): TISayi4;
+var
+  G, Y: TSayi4;
+begin
+
+  G := Length(ABaslik) * 8;
+  Y := 16;
+
+  Yapilandir2(AKullanimTipi, Self, AAtaNesne, ASol, AUst, G, Y,
+    1, 0, 0, ANormalRenk, ABaslik);
+
+  OlayCagriAdr := @OlaylariIsle;
+
+  Baslik := ABaslik;
+
+  OdakMevcut := False;
+  Odaklanilabilir := False;
+  Odaklanildi := False;
+
+  FareImlec := fitEl;
+
+  FYaziHiza.Yatay := yhSol;
+  FYaziHiza.Dikey := dhUst;
+
+  // bilgi: normal yazı rengi ve odak rengi için alt nesnenin FGovdeRenk1,
+  // FGovdeRenk2 özellikleri kullanılmıştır
+  FGovdeRenk1 := ANormalRenk;
+  FGovdeRenk2 := AOdakRenk;
+  FYaziRenk := ANormalRenk;
+  OdakMevcut := False;
+
+  // geri dönüş değeri
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
@@ -165,12 +179,7 @@ end;
   bağlantı nesnesini hizalandırır
  ==============================================================================}
 procedure TBaglanti.Hizala;
-var
-  Baglanti: PBaglanti;
 begin
-
-  Baglanti := PBaglanti(GorselNesneler0.NesneAl(Kimlik));
-  if(Baglanti = nil) then Exit;
 
   inherited Hizala;
 end;
@@ -179,17 +188,12 @@ end;
   bağlantı nesnesini çizer
  ==============================================================================}
 procedure TBaglanti.Ciz;
-var
-  Baglanti: PBaglanti;
 begin
 
-  Baglanti := PBaglanti(GorselNesneler0.NesneAl(Kimlik));
-  if(Baglanti = nil) then Exit;
-
   // düğme başlığı
-  if(Baglanti^.OdakMevcut) then
-    Baglanti^.FYaziRenk := Baglanti^.FGovdeRenk2
-  else Baglanti^.FYaziRenk := Baglanti^.FGovdeRenk1;
+  if(OdakMevcut) then
+    FYaziRenk := FGovdeRenk2
+  else FYaziRenk := FGovdeRenk1;
 
   inherited Ciz;
 end;
@@ -197,23 +201,23 @@ end;
 {==============================================================================
   bağlantı nesne olaylarını işler
  ==============================================================================}
-procedure TBaglanti.OlaylariIsle(AGonderici: PGorselNesne; AOlay: TOlay);
+procedure TBaglanti.OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
 var
-  Pencere: PPencere;
-  Baglanti: PBaglanti;
+  Pencere: TPencere;
+  Baglanti: TBaglanti;
 begin
 
-  Baglanti := PBaglanti(AGonderici);
+  Baglanti := TBaglanti(AGonderici);
 
   // farenin sol tuşuna basım işlemi
   if(AOlay.Olay = FO_SOLTUS_BASILDI) then
   begin
 
     // bağlantı nesnesinin sahibi olan pencere en üstte mi ? kontrol et
-    Pencere := EnUstPencereNesnesiniAl(Baglanti);
+    Pencere := GGNesneler.EnUstPencereNesnesiniAl(Baglanti);
 
     // en üstte olmaması durumunda en üste getir
-    if(Pencere <> GAktifPencere) then Pencere^.EnUsteGetir(Pencere);
+    if(Pencere <> GGNesneler.AktifPencere) then Pencere.EnUsteGetir(Pencere);
 
     // ve nesneyi aktif nesne olarak işaretle
     // bilgi: şu aşamada bu nesne odaklanılabilir bir nesne değil
@@ -221,56 +225,56 @@ begin
     //Baglanti^.Odaklanildi := False;
 
     // fare olaylarını yakala
-    OlayYakalamayaBasla(Baglanti);
+    GGNesneler.OlayYakalamayaBasla(Baglanti);
 
     // uygulamaya veya efendi nesneye mesaj gönder
-    if not(Baglanti^.OlayYonlendirmeAdresi = nil) then
-      Baglanti^.OlayYonlendirmeAdresi(Baglanti, AOlay)
-    else Gorevler0.OlayEkle(Baglanti^.GorevKimlik, AOlay);
+    if not(Baglanti.OlayYonlAdr = nil) then
+      Baglanti.OlayYonlAdr(Baglanti, AOlay)
+    else GGorevler.OlayEkle(Baglanti.GrvKimlik, AOlay);
   end
   else if(AOlay.Olay = FO_SOLTUS_BIRAKILDI) then
   begin
 
     // fare olaylarını almayı bırak
-    OlayYakalamayiBirak(Baglanti);
+    GGNesneler.OlayYakalamayiBirak(Baglanti);
 
     // farenin tuş bırakma işlemi nesnenin olay alanında mı gerçekleşti ?
-    if(Baglanti^.FareNesneOlayAlanindaMi(Baglanti)) then
+    if(Baglanti.FareNesneOlayAlanindaMi(Baglanti)) then
     begin
 
       // yakalama & bırakma işlemi bu nesnede olduğu için
       // uygulamaya veya efendi nesneye FO_TIKLAMA mesajı gönder
       AOlay.Olay := FO_TIKLAMA;
-      if not(Baglanti^.OlayYonlendirmeAdresi = nil) then
-        Baglanti^.OlayYonlendirmeAdresi(Baglanti, AOlay)
-      else Gorevler0.OlayEkle(Baglanti^.GorevKimlik, AOlay);
+      if not(Baglanti.OlayYonlAdr = nil) then
+        Baglanti.OlayYonlAdr(Baglanti, AOlay)
+      else GGorevler.OlayEkle(Baglanti.GrvKimlik, AOlay);
     end;
 
     // uygulamaya veya efendi nesneye mesaj gönder
     AOlay.Olay := FO_SOLTUS_BIRAKILDI;
-    if not(Baglanti^.OlayYonlendirmeAdresi = nil) then
-      Baglanti^.OlayYonlendirmeAdresi(Baglanti, AOlay)
-    else Gorevler0.OlayEkle(Baglanti^.GorevKimlik, AOlay);
+    if not(Baglanti.OlayYonlAdr = nil) then
+      Baglanti.OlayYonlAdr(Baglanti, AOlay)
+    else GGorevler.OlayEkle(Baglanti.GrvKimlik, AOlay);
   end
   else if(AOlay.Olay = CO_ODAKKAZANILDI) then
   begin
 
-    Baglanti^.OdakMevcut := True;
+    Baglanti.OdakMevcut := True;
 
     // bağlantı nesnesini yeniden çiz
-    Baglanti^.Ciz;
+    Baglanti.Ciz;
   end
   else if(AOlay.Olay = CO_ODAKKAYBEDILDI) then
   begin
 
-    Baglanti^.OdakMevcut := False;
+    Baglanti.OdakMevcut := False;
 
     // bağlantı nesnesini yeniden çiz
-    Baglanti^.Ciz;
+    Baglanti.Ciz;
   end;
 
   // geçerli fare göstergesini güncelle
-  GecerliFareGostegeTipi := Baglanti^.FareImlecTipi;
+  GFareSurucusu.AktifFareImlec := Baglanti.FareImlec;
 end;
 
 end.

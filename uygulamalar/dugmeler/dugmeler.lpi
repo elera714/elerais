@@ -35,7 +35,8 @@
       <Unit0>
         <Filename Value="dugmeler.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="31" Y="14"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="40" Y="7"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -56,10 +57,7 @@
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="53"/>
-        <CursorPos X="8" Y="83"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit3>

@@ -6,7 +6,7 @@
   Dosya Adı: src_vesa20.pas
   Dosya İşlevi: genel vesa 2.0 grafik kartı sürücüsü
 
-  Güncelleme Tarihi: 25/06/2026
+  Güncelleme Tarihi: 21/08/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,22 +18,35 @@ interface
 uses paylasim, gorselnesne, gn_pencere, gn_masaustu;
 
 type
+  PEkranKartBilgisi = ^TEkranKartBilgisi;
+  TEkranKartBilgisi = record
+    BellekUzunlugu: TSayi2;
+    EkranMod: TSayi2;
+    YatayCozunurluk, DikeyCozunurluk: TISayi4;
+    BellekAdresi: TSayi4;
+    PixelBasinaBitSayisi: TSayi1;
+    NoktaBasinaByteSayisi: TSayi1;
+    SatirdakiByteSayisi: TSayi2;
+  end;
+
+type
   TNoktaOkuIslev = function(AYatay, ADikey: TISayi4): TRenk of object;
-  TNoktaYazIslev = procedure(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4;
+  TNoktaYazIslev = procedure(AGorselNesne: TGorselNesne; AYatay, ADikey: TISayi4;
     ARenk: TRenk; ARenkDonustur: Boolean) of object;
 
+type
   PEkranKartSurucusu = ^TEkranKartSurucusu;
-  TEkranKartSurucusu = object
+  TEkranKartSurucusu = class
   private
     FArkaBellek: Isaretci;
     function NoktaOku16(AYatay, ADikey: TISayi4): TRenk;
     function NoktaOku24(AYatay, ADikey: TISayi4): TRenk;
     function NoktaOku32(AYatay, ADikey: TISayi4): TRenk;
-    procedure NoktaYaz16(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4; ARenk: TRenk;
+    procedure NoktaYaz16(AGorselNesne: TGorselNesne; AYatay, ADikey: TISayi4; ARenk: TRenk;
       ARenkDonustur: Boolean);
-    procedure NoktaYaz24(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4; ARenk: TRenk;
+    procedure NoktaYaz24(AGorselNesne: TGorselNesne; AYatay, ADikey: TISayi4; ARenk: TRenk;
       AKullanilmiyor: Boolean);
-    procedure NoktaYaz32(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4; ARenk: TRenk;
+    procedure NoktaYaz32(AGorselNesne: TGorselNesne; AYatay, ADikey: TISayi4; ARenk: TRenk;
       AKullanilmiyor: Boolean);
     procedure GorselAnaNesneleriGuncelle;
     procedure FareGostergesiCiz;
@@ -41,34 +54,49 @@ type
     KartBilgisi: TEkranKartBilgisi;
     NoktaOkuIslev: TNoktaOkuIslev;
     NoktaYazIslev: TNoktaYazIslev;
-    procedure Yukle;
+    constructor Create;
     function NoktaOku(AYatay, ADikey: TISayi4): TRenk;
-    procedure NoktaYaz(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4; ARenk: TRenk;
+    procedure NoktaYaz(AGorselNesne: TGorselNesne; AYatay, ADikey: TISayi4; ARenk: TRenk;
       ARenkDonustur: Boolean);
     procedure EkranBelleginiGuncelle;
     property ArkaBellek: Isaretci read FArkaBellek write FArkaBellek;
   end;
 
 var
-  EkranKartSurucusu0: TEkranKartSurucusu;
+  GEkranKartSurucusu: TEkranKartSurucusu;
 
 implementation
 
-uses genel, donusum, gn_menu, gn_acilirmenu, fareimlec, gdt;
+uses donusum, gn_menu, gn_acilirmenu, fareimlec, gdt, src_ps2, gn_islevler;
 
 {==============================================================================
   vesa 2.0 grafik sürücüsünün ana yükleme işlevlerini içerir
  ==============================================================================}
-procedure TEkranKartSurucusu.Yukle;
+constructor TEkranKartSurucusu.Create;
+var
+  GMBilgi: PGMBilgi;
 begin
+
+  GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
+
+  // video bilgilerini al
+  KartBilgisi.BellekUzunlugu := GMBilgi^.GrafikBellekUzunlugu;
+  KartBilgisi.EkranMod := GMBilgi^.GrafikEkranMod;
+  KartBilgisi.YatayCozunurluk := GMBilgi^.GrafikCozunurlukX;
+  KartBilgisi.DikeyCozunurluk := GMBilgi^.GrafikCozunurlukY;
+  KartBilgisi.BellekAdresi := GMBilgi^.GrafikBellekAdresi;
+  //VIDEO_MEM_ADDR;
+  KartBilgisi.PixelBasinaBitSayisi := GMBilgi^.GrafikPxBasinaBit;
+  KartBilgisi.NoktaBasinaByteSayisi := (GMBilgi^.GrafikPxBasinaBit div 8);
+  KartBilgisi.SatirdakiByteSayisi := GMBilgi^.GrafikSatirByteUz;
 
   // grafik
   GDTRGirdisiEkle(SECICI_GRAFIK_LFB, KartBilgisi.BellekAdresi, $FFFFFF, $F2, $D0);
   //GDTRGirdisiEkle(SECICI_GRAFIK_LFB, KartBilgisi.BellekAdresi, $FFFFFF, $92, $D0);
 
   // arka plan için bellek ayır
-  ArkaBellek := GetMem(EkranKartSurucusu0.KartBilgisi.YatayCozunurluk *
-    EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk * (KartBilgisi.PixelBasinaBitSayisi div 8));
+  ArkaBellek := GetMem(KartBilgisi.YatayCozunurluk *
+    KartBilgisi.DikeyCozunurluk * (KartBilgisi.PixelBasinaBitSayisi div 8));
 
   case KartBilgisi.PixelBasinaBitSayisi of
     16: begin NoktaOkuIslev := @NoktaOku16; NoktaYazIslev := @NoktaYaz16; end;
@@ -93,10 +121,10 @@ end;
 {==============================================================================
   nokta işaretleme işlevi
  ==============================================================================}
-procedure TEkranKartSurucusu.NoktaYaz(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4;
+procedure TEkranKartSurucusu.NoktaYaz(AGorselNesne: TGorselNesne; AYatay, ADikey: TISayi4;
   ARenk: TRenk; ARenkDonustur: Boolean);
 var
-  TuvalNesne: PGorselNesne;
+  TuvalNesne: TGorselNesne;
   Sol, Ust: TISayi4;
 begin
 
@@ -105,14 +133,14 @@ begin
   if not(AGorselNesne = nil) then
   begin
 
-    if(AYatay < 0) or (AYatay > AGorselNesne^.FAtananAlan.Genislik) then Exit;
-    if(ADikey < 0) or (ADikey > AGorselNesne^.FAtananAlan.Yukseklik) then Exit;
+    if(AYatay < 0) or (AYatay > AGorselNesne.FAtananAlan.Genislik) then Exit;
+    if(ADikey < 0) or (ADikey > AGorselNesne.FAtananAlan.Yukseklik) then Exit;
   end;
 
-  Sol := AGorselNesne^.FCizimBaslangic.Sol + AYatay;
-  Ust := AGorselNesne^.FCizimBaslangic.Ust + ADikey;
+  Sol := AGorselNesne.FCizimBaslangic.Sol + AYatay;
+  Ust := AGorselNesne.FCizimBaslangic.Ust + ADikey;
 
-  TuvalNesne := AGorselNesne^.FTuvalNesne;
+  TuvalNesne := AGorselNesne.FTuvalNesne;
 
   NoktaYazIslev(TuvalNesne, Sol, Ust, ARenk, ARenkDonustur);
 end;
@@ -136,7 +164,7 @@ end;
 {==============================================================================
   belirtilen koordinattaki noktayı 16 bitlik renk değeri ile işaretler
  ==============================================================================}
-procedure TEkranKartSurucusu.NoktaYaz16(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4;
+procedure TEkranKartSurucusu.NoktaYaz16(AGorselNesne: TGorselNesne; AYatay, ADikey: TISayi4;
   ARenk: TRenk; ARenkDonustur: Boolean);
 var
   BellekAdresi: TSayi4;
@@ -145,15 +173,15 @@ var
   Renk16: TSayi2;
 begin
 
-  if(AGorselNesne = nil) or (AGorselNesne^.NesneTipi = gntMasaustu) then
+  if(AGorselNesne = nil) or (AGorselNesne.NesneTipi = gntMasaustu) then
     SatirBasinaBitSayisi := KartBilgisi.SatirdakiByteSayisi
-  else SatirBasinaBitSayisi := AGorselNesne^.FAtananAlan.Genislik * 2;
+  else SatirBasinaBitSayisi := AGorselNesne.FAtananAlan.Genislik * 2;
 
   // belirtilen koordinata konumlan
   BellekAdresi := (ADikey * SatirBasinaBitSayisi) + (AYatay * 2);
   if(AGorselNesne = nil) then
     BellekAdresi := BellekAdresi + TSayi4(ArkaBellek)
-  else BellekAdresi := BellekAdresi + TSayi4(AGorselNesne^.FCizimBellekAdresi);
+  else BellekAdresi := BellekAdresi + TSayi4(AGorselNesne.FCizimBellekAdresi);
 
   // eğer dönüşüm isteniyorsa 24 / 32 bitlik renk değerini
   // 16 bitlik renk değerine çevir
@@ -186,7 +214,7 @@ end;
 {==============================================================================
   belirtilen koordinattaki noktayı 24 bitlik renk değeri ile işaretler
  ==============================================================================}
-procedure TEkranKartSurucusu.NoktaYaz24(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4;
+procedure TEkranKartSurucusu.NoktaYaz24(AGorselNesne: TGorselNesne; AYatay, ADikey: TISayi4;
   ARenk: TRenk; AKullanilmiyor: Boolean);
 var
   BellekAdresi, SatirBasinaBitSayisi: TISayi4;
@@ -194,15 +222,15 @@ var
   RGB24: PRGB24Bit;
 begin
 
-  if(AGorselNesne = nil) or (AGorselNesne^.NesneTipi = gntMasaustu) then
+  if(AGorselNesne = nil) or (AGorselNesne.NesneTipi = gntMasaustu) then
     SatirBasinaBitSayisi := KartBilgisi.SatirdakiByteSayisi
-  else SatirBasinaBitSayisi := AGorselNesne^.FAtananAlan.Genislik * 3;
+  else SatirBasinaBitSayisi := AGorselNesne.FAtananAlan.Genislik * 3;
 
   // belirtilen koordinata konumlan
   BellekAdresi := (ADikey * SatirBasinaBitSayisi) + (AYatay * 3);
   if(AGorselNesne = nil) then
     BellekAdresi := BellekAdresi + TSayi4(ArkaBellek)
-  else BellekAdresi := BellekAdresi + TSayi4(AGorselNesne^.FCizimBellekAdresi);
+  else BellekAdresi := BellekAdresi + TSayi4(AGorselNesne.FCizimBellekAdresi);
 
   // noktayı belirtilen renk ile işaretle
   PAdres8 := PByte(BellekAdresi);
@@ -231,19 +259,19 @@ end;
 {==============================================================================
   belirtilen koordinattaki noktayı 32 bitlik renk değeri ile işaretler
  ==============================================================================}
-procedure TEkranKartSurucusu.NoktaYaz32(AGorselNesne: PGorselNesne; AYatay, ADikey: TISayi4;
+procedure TEkranKartSurucusu.NoktaYaz32(AGorselNesne: TGorselNesne; AYatay, ADikey: TISayi4;
   ARenk: TRenk; AKullanilmiyor: Boolean);
 var
   BellekAdresi, SatirBasinaBitSayisi: TSayi4;
 begin
 
-  if(AGorselNesne = nil) or (AGorselNesne^.NesneTipi = gntMasaustu) then
+  if(AGorselNesne = nil) or (AGorselNesne.NesneTipi = gntMasaustu) then
     SatirBasinaBitSayisi := KartBilgisi.SatirdakiByteSayisi
-  else SatirBasinaBitSayisi := AGorselNesne^.FAtananAlan.Genislik * 4;
+  else SatirBasinaBitSayisi := AGorselNesne.FAtananAlan.Genislik * 4;
 
   // belirtilen koordinata konumlan
   BellekAdresi := (ADikey * SatirBasinaBitSayisi) + (AYatay * 4);
-  BellekAdresi := BellekAdresi + TSayi4(AGorselNesne^.FCizimBellekAdresi);
+  BellekAdresi := BellekAdresi + TSayi4(AGorselNesne.FCizimBellekAdresi);
 
   // noktayı belirtilen renk ile işaretle
   BellekAdresi := ARenk;
@@ -252,6 +280,7 @@ end;
 // arka plana çizilen görsel nesne çizimlerini ekran belleğine (grafik kart) çizer
 procedure TEkranKartSurucusu.EkranBelleginiGuncelle;
 var
+  p: Isaretci;
   i: TSayi4;
 begin
 
@@ -267,6 +296,8 @@ begin
   i := KartBilgisi.YatayCozunurluk * KartBilgisi.DikeyCozunurluk *
     KartBilgisi.NoktaBasinaByteSayisi;
 
+  p := GEkranKartSurucusu.ArkaBellek;
+
   asm
     cli
     pushad
@@ -275,7 +306,8 @@ begin
 
     mov ax,SECICI_SISTEM_VERI * 8
     mov ds,ax
-    mov esi,EkranKartSurucusu0.ArkaBellek
+
+    mov esi,p
     mov ax,SECICI_GRAFIK_LFB * 8
     mov es,ax
     mov edi,0
@@ -298,12 +330,12 @@ end;
 //  çizim işlemini gerçekleştirir
 procedure TEkranKartSurucusu.GorselAnaNesneleriGuncelle;
 var
-  Masaustu: PMasaustu;
-  Pencere: PPencere;
-  BaslatMenu: PMenu;
-  GN: PGorselNesne;
-  MasaustuMenu: PAcilirMenu;
-  GNBellekAdresi: PPGorselNesne;
+  Masaustu: TMasaustu;
+  Pencere: TPencere;
+  BaslatMenu: TMenu;
+  GN: TGorselNesne;
+  MasaustuMenu: TAcilirMenu;
+  GNBellekAdresi: PGorselNesne;
   KaynakBellek, HedefBellek, CizimBellekAdresi: Isaretci;
   Sol, KaynakA2,            // nesnelerin taşınması için
   Ust, KaynakB2,            // nesnelerin taşınması için
@@ -316,11 +348,11 @@ var
 begin
 
   // geçerli masaüstü yok ise çık
-  Masaustu := GAktifMasaustu;
+  Masaustu := GGNesneler.AktifMasaustu;
   if(Masaustu = nil) then Exit;
 
-  Genislik := Masaustu^.FAtananAlan.Genislik;        // sütundaki toplam pixel sayısı
-  Yukseklik := Masaustu^.FAtananAlan.Yukseklik;      // satırdaki toplam pixel sayısı
+  Genislik := Masaustu.FAtananAlan.Genislik;        // sütundaki toplam pixel sayısı
+  Yukseklik := Masaustu.FAtananAlan.Yukseklik;      // satırdaki toplam pixel sayısı
 
   NoktaBasinaByteSayisi := KartBilgisi.NoktaBasinaByteSayisi;
   HedefSatirdakiByteSayisi := KartBilgisi.SatirdakiByteSayisi;
@@ -332,7 +364,7 @@ begin
   for i := 0 to Yukseklik - 1 do
   begin
 
-    KaynakBellek := (i * KaynakSatirdakiByteSayisi) + Masaustu^.FCizimBellekAdresi;
+    KaynakBellek := (i * KaynakSatirdakiByteSayisi) + Masaustu.FCizimBellekAdresi;
     HedefBellek := (i * HedefSatirdakiByteSayisi) + ArkaBellek;
     asm
       pushad
@@ -347,91 +379,92 @@ begin
   end;
 
   // 2. pencere ve alt nesnelerin arka belleğe çizilmesi
-  if(Masaustu^.AltNesneSayisi > 0) then
+  if(Masaustu.AltNesneSayisi > 0) then
   begin
 
-    GNBellekAdresi := Masaustu^.AltNesneBellekAdresi;
+    GNBellekAdresi := Masaustu.AltNesneBellekAdresi;
 
-    for i := 0 to Masaustu^.AltNesneSayisi - 1 do
+    for i := 0 to Masaustu.AltNesneSayisi - 1 do
     begin
 
       GN := GNBellekAdresi[i];
-      if not(GN = nil) and (GN^.NesneTipi = gntPencere) then
+
+      if not(GN = nil) and (GN.NesneTipi = gntPencere) then
       begin
 
-        Pencere := PPencere(GN);
-        if(Pencere^.Gorunum) and not(Pencere^.FPencereDurum = pdKucultuldu) then
+        Pencere := TPencere(GN);
+        if(Pencere.Gorunum) and not(Pencere.FPencereDurum = pdKucultuldu) then
         begin
 
           // sol sınır kontrol
-          if(Pencere^.FAtananAlan.Sol < 0) then
+          if(Pencere.FAtananAlan.Sol < 0) then
           begin
 
-            Sol := Abs(Pencere^.FAtananAlan.Sol);
-            KaynakA2 := Pencere^.FAtananAlan.Genislik - Sol;
+            Sol := Abs(Pencere.FAtananAlan.Sol);
+            KaynakA2 := Pencere.FAtananAlan.Genislik - Sol;
             HedefA1 := 0;
           end
           else
           begin
 
             Sol := 0;
-            KaynakA2 := Pencere^.FAtananAlan.Genislik;
-            HedefA1 := Pencere^.FAtananAlan.Sol;
+            KaynakA2 := Pencere.FAtananAlan.Genislik;
+            HedefA1 := Pencere.FAtananAlan.Sol;
           end;
 
           // sağ sınır kontrol
-          if((Pencere^.FAtananAlan.Sol + Pencere^.FAtananAlan.Genislik) >
-            Masaustu^.FAtananAlan.Genislik - 1) then
+          if((Pencere.FAtananAlan.Sol + Pencere.FAtananAlan.Genislik) >
+            Masaustu.FAtananAlan.Genislik - 1) then
           begin
 
-            KaynakA2 := Pencere^.FAtananAlan.Genislik -
-              ((Pencere^.FAtananAlan.Sol + Pencere^.FAtananAlan.Genislik) - (Masaustu^.FAtananAlan.Genislik - 1))
+            KaynakA2 := Pencere.FAtananAlan.Genislik -
+              ((Pencere.FAtananAlan.Sol + Pencere.FAtananAlan.Genislik) - (Masaustu.FAtananAlan.Genislik - 1))
           end
           else
           begin
 
-            if(Pencere^.FAtananAlan.Sol >= 0) then KaynakA2 := Pencere^.FAtananAlan.Genislik;
+            if(Pencere.FAtananAlan.Sol >= 0) then KaynakA2 := Pencere.FAtananAlan.Genislik;
           end;
 
           // üst sınır kontrol
-          if(Pencere^.FAtananAlan.Ust < 0) then
+          if(Pencere.FAtananAlan.Ust < 0) then
           begin
 
-            Ust := Abs(Pencere^.FAtananAlan.Ust);
-            KaynakB2 := Pencere^.FAtananAlan.Yukseklik;
+            Ust := Abs(Pencere.FAtananAlan.Ust);
+            KaynakB2 := Pencere.FAtananAlan.Yukseklik;
             HedefB1 := 0;
           end
           else
           begin
 
             Ust := 0;
-            KaynakB2 := Pencere^.FAtananAlan.Yukseklik;
-            HedefB1 := Pencere^.FAtananAlan.Ust;
+            KaynakB2 := Pencere.FAtananAlan.Yukseklik;
+            HedefB1 := Pencere.FAtananAlan.Ust;
           end;
 
           // alt sınır kontrol
-          if((Pencere^.FAtananAlan.Ust + Pencere^.FAtananAlan.Yukseklik) >
-            Masaustu^.FAtananAlan.Yukseklik - 1) then
+          if((Pencere.FAtananAlan.Ust + Pencere.FAtananAlan.Yukseklik) >
+            Masaustu.FAtananAlan.Yukseklik - 1) then
           begin
 
-            KaynakB2 := Pencere^.FAtananAlan.Yukseklik -
-              ((Pencere^.FAtananAlan.Ust + Pencere^.FAtananAlan.Yukseklik) - (Masaustu^.FAtananAlan.Yukseklik - 1))
+            KaynakB2 := Pencere.FAtananAlan.Yukseklik -
+              ((Pencere.FAtananAlan.Ust + Pencere.FAtananAlan.Yukseklik) - (Masaustu.FAtananAlan.Yukseklik - 1))
           end
           else
           begin
 
-            if(Pencere^.FAtananAlan.Ust >= 0) then KaynakB2 := Pencere^.FAtananAlan.Yukseklik;
+            if(Pencere.FAtananAlan.Ust >= 0) then KaynakB2 := Pencere.FAtananAlan.Yukseklik;
           end;
 
-          KaynakSatirdakiByteSayisi := Pencere^.FAtananAlan.Genislik * NoktaBasinaByteSayisi;
+          KaynakSatirdakiByteSayisi := Pencere.FAtananAlan.Genislik * NoktaBasinaByteSayisi;
           HedefSatirdakiByteSayisi := KartBilgisi.SatirdakiByteSayisi;
 
           for i2 := Ust to KaynakB2 - 1 do
           begin
 
             KaynakBellek := (i2 * KaynakSatirdakiByteSayisi) +
-              (Sol * NoktaBasinaByteSayisi) + Pencere^.FCizimBellekAdresi;
-            HedefBellek := ((Pencere^.FAtananAlan.Ust + i2) * (HedefSatirdakiByteSayisi)) +
+              (Sol * NoktaBasinaByteSayisi) + Pencere.FCizimBellekAdresi;
+            HedefBellek := ((Pencere.FAtananAlan.Ust + i2) * (HedefSatirdakiByteSayisi)) +
               (HedefA1 * NoktaBasinaByteSayisi) + ArkaBellek;
 
             j := KaynakA2 * NoktaBasinaByteSayisi;
@@ -453,42 +486,42 @@ begin
 
   // 3. başlat menü veya açılır menünün arka belleğe çizilmesi
   MenuCiz := False;
-  if(GAktifMenu^.NesneTipi = gntMenu) then
+  if(GGNesneler.AktifMenu.NesneTipi = gntMenu) then
   begin
 
-    BaslatMenu := PMenu(GAktifMenu);
+    BaslatMenu := TMenu(GGNesneler.AktifMenu);
 
-    Sol := BaslatMenu^.FAtananAlan.Sol;
-    Ust := BaslatMenu^.FAtananAlan.Ust;
-    Genislik := BaslatMenu^.FAtananAlan.Genislik;      // sütundaki toplam pixel sayısı
-    Yukseklik := BaslatMenu^.FAtananAlan.Yukseklik;    // satırdaki toplam pixel sayısı
+    Sol := BaslatMenu.FAtananAlan.Sol;
+    Ust := BaslatMenu.FAtananAlan.Ust;
+    Genislik := BaslatMenu.FAtananAlan.Genislik;      // sütundaki toplam pixel sayısı
+    Yukseklik := BaslatMenu.FAtananAlan.Yukseklik;    // satırdaki toplam pixel sayısı
 
-    CizimBellekAdresi := BaslatMenu^.FCizimBellekAdresi;
+    CizimBellekAdresi := BaslatMenu.FCizimBellekAdresi;
 
-    if(BaslatMenu^.Gorunum) then
+    if(BaslatMenu.Gorunum) then
     begin
 
       MenuCiz := True;
-      BaslatMenu^.Ciz;
+      BaslatMenu.Ciz;
     end;
   end
   else
   begin
 
-    MasaustuMenu := PAcilirMenu(GAktifMenu);
+    MasaustuMenu := TAcilirMenu(GGNesneler.AktifMenu);
 
-    Sol := MasaustuMenu^.FAtananAlan.Sol;
-    Ust := MasaustuMenu^.FAtananAlan.Ust;
-    Genislik := MasaustuMenu^.FAtananAlan.Genislik;      // sütundaki toplam pixel sayısı
-    Yukseklik := MasaustuMenu^.FAtananAlan.Yukseklik;    // satırdaki toplam pixel sayısı
+    Sol := MasaustuMenu.FAtananAlan.Sol;
+    Ust := MasaustuMenu.FAtananAlan.Ust;
+    Genislik := MasaustuMenu.FAtananAlan.Genislik;      // sütundaki toplam pixel sayısı
+    Yukseklik := MasaustuMenu.FAtananAlan.Yukseklik;    // satırdaki toplam pixel sayısı
 
-    CizimBellekAdresi := MasaustuMenu^.FCizimBellekAdresi;
+    CizimBellekAdresi := MasaustuMenu.FCizimBellekAdresi;
 
-    if(MasaustuMenu^.Gorunum) then
+    if(MasaustuMenu.Gorunum) then
     begin
 
       MenuCiz := True;
-      MasaustuMenu^.Ciz;
+      MasaustuMenu.Ciz;
     end;
   end;
 
@@ -534,7 +567,7 @@ var
 begin
 
   // geçerli fare gösterge bilgilerini al
-  FareImlec := FareImlecleri[Ord(GecerliFareGostegeTipi)];
+  FareImlec := GFareImlecleri[Ord(GFareSurucusu.AktifFareImlec)];
 
   // fare yatay başlangıç ve imleç yatay başlangıç değerlerinin hesaplanması
   FareYatayBaslangic := GFareSurucusu.YatayKonum - FareImlec.YatayOdak;
@@ -544,8 +577,8 @@ begin
 
   // imleç yatay bitiş değerlerinin hesaplanması
   Deger := GFareSurucusu.YatayKonum + (FareImlec.Genislik - FareImlec.YatayOdak);
-  if(Deger > EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1) then
-    ImlecYatayBitis := FareImlec.Genislik - (Deger - EkranKartSurucusu0.KartBilgisi.YatayCozunurluk - 1)
+  if(Deger > GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1) then
+    ImlecYatayBitis := FareImlec.Genislik - (Deger - GEkranKartSurucusu.KartBilgisi.YatayCozunurluk - 1)
   else ImlecYatayBitis := FareImlec.Genislik - 1;
 
   // fare dikey başlangıç ve imleç dikey başlangıç değerlerinin hesaplanması
@@ -556,8 +589,8 @@ begin
 
   // imleç dikey bitiş değerlerinin hesaplanması
   Deger := GFareSurucusu.DikeyKonum + (FareImlec.Yukseklik - FareImlec.DikeyOdak);
-  if(Deger > EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1) then
-    ImlecDikeyBitis := FareImlec.Yukseklik - (Deger - EkranKartSurucusu0.KartBilgisi.DikeyCozunurluk - 1)
+  if(Deger > GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1) then
+    ImlecDikeyBitis := FareImlec.Yukseklik - (Deger - GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1)
   else ImlecDikeyBitis := FareImlec.Yukseklik - 1;
 
   for Dikey := ImlecDikeyBaslangic to ImlecDikeyBitis do
@@ -570,10 +603,10 @@ begin
       ImlecBellekAdresi := FareImlec.BellekAdresi + (Dikey * FareImlec.Genislik) + Yatay;
 
       if(ImlecBellekAdresi^ = 1) then
-        EkranKartSurucusu0.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
+        GEkranKartSurucusu.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
           RENK_SIYAH, True)
       else if(ImlecBellekAdresi^ = 2) then
-        EkranKartSurucusu0.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
+        GEkranKartSurucusu.NoktaYaz(nil, FareYatayBaslangic + Yatay, FareDikeyBaslangic + Dikey,
           RENK_BEYAZ, True);
     end;
   end;

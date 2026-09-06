@@ -6,7 +6,7 @@
   Dosya Adı: pic.pas
   Dosya İşlevi: pic yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 06/10/2024
+  Güncelleme Tarihi: 14/08/2026
 
  ==============================================================================}
 {$mode objfpc}{$H+}
@@ -79,6 +79,7 @@ asm
   mov al,0
   out PIC1_VERI,al
   out PIC2_VERI,al
+
   sti
 end;
 
@@ -89,6 +90,7 @@ procedure TumKanallariPasiflestir; nostackframe; assembler;
 asm
 
   cli
+
   mov al,$FF
   out PIC1_VERI,al
   out PIC2_VERI,al
@@ -106,9 +108,11 @@ begin
   IRQNo := AIRQNo;
 
   if(AIRQNo < 8) then
+
     Port := PIC1_VERI
   else
   begin
+
     Port := PIC2_VERI;
     IRQNo := AIRQNo - 8;
   end;
@@ -138,9 +142,11 @@ begin
   IRQNo := AIRQNo;
 
   if(AIRQNo < 8) then
+
     Port := PIC1_VERI
   else
   begin
+
     Port := PIC2_VERI;
     IRQNo := AIRQNo - 8;
   end;
