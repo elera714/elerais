@@ -6,7 +6,7 @@
   Dosya Adý: src_sb.pas
   Dosya Ýþlevi: sound blaster ses kartý sürücüsü
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 06/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -29,16 +29,16 @@ procedure DMAAkis(ADosyaBellek: Isaretci; ADosyaUzunluk: TSayi4);
 
 implementation
 
-uses zamanlayici, sistemmesaj, port, dosya, genel;
+uses zamanlayici, sistemmesaj, port, dosyalar;
 
 {==============================================================================
   sound blaster ses kartý yükleme kýsmý
  ==============================================================================}
 procedure Yukle;
 var
-  _TemelAdres: TSayi2;
-  _AygitAdi: string;
-  i: TSayi1;
+  TemelAdres: TSayi2;
+  AygitAdi: string;
+  i: TSayi4;
 begin
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Ses aygýtlarý yükleniyor...', []);
@@ -50,21 +50,21 @@ begin
     if(DSPSifirla($200 + (i shl 4))) then
     begin
 
-      _TemelAdres := $200 + (i shl 4);
+      TemelAdres := $200 + (i shl 4);
 
-      if(DSPSurumAl(_TemelAdres) = $100) then
-        _AygitAdi := 'Sound Blaster'
-      else if(DSPSurumAl(_TemelAdres) = $105) then
-        _AygitAdi := 'Sound Blaster 1.5'
-      else if(DSPSurumAl(_TemelAdres) = $200) then
-        _AygitAdi := 'Sound Blaster Pro 2'
-      else if(DSPSurumAl(_TemelAdres) = $300) then
-        _AygitAdi := 'Sound Blaster Pro 3'
-      else if(Hi(DSPSurumAl(_TemelAdres)) >= 4) then
-        _AygitAdi := 'Sound Blaster 16/ASP/AWE 32/AWE 64'
-      else _AygitAdi := 'Bilinmeyen ses kartý';
+      if(DSPSurumAl(TemelAdres) = $100) then
+        AygitAdi := 'Sound Blaster'
+      else if(DSPSurumAl(TemelAdres) = $105) then
+        AygitAdi := 'Sound Blaster 1.5'
+      else if(DSPSurumAl(TemelAdres) = $200) then
+        AygitAdi := 'Sound Blaster Pro 2'
+      else if(DSPSurumAl(TemelAdres) = $300) then
+        AygitAdi := 'Sound Blaster Pro 3'
+      else if(Hi(DSPSurumAl(TemelAdres)) >= 4) then
+        AygitAdi := 'Sound Blaster 16/ASP/AWE 32/AWE 64'
+      else AygitAdi := 'Bilinmeyen ses kartý';
 
-      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, '  +-> Bulunan ses kartý: ' + _AygitAdi, []);
+      SISTEM_MESAJ(mtBilgi, RENK_SIYAH, '  +-> Bulunan ses kartý: %s', [AygitAdi]);
 
       Exit;
     end;
@@ -78,14 +78,15 @@ function DSPSifirla(APortNo: TSayi2): Boolean;
 begin
 
   PortYaz1(APortNo + $6, 1);
-  BekleMS(10);
+  GZamanlayicilar.BekleMS(10);
   PortYaz1(APortNo + $6, 0);
-  BekleMS(10);
+  GZamanlayicilar.BekleMS(10);
 
   // aygýt resetlendi mi ?
   if(PortAl1(APortNo + $E) and $80 = $80) and (PortAl1(APortNo + $A) = $AA) then
 
     DSPSifirla := True
+
   else DSPSifirla := False;
 end;
 
@@ -114,12 +115,12 @@ end;
  ==============================================================================}
 function DSPSurumAl(APortNo: TSayi2): TSayi2;
 var
-  _Surum: TSayi2;
+  Surum: TSayi2;
 begin
 
   DSPYaz(APortNo, $E1);
-  _Surum := DSPOku(APortNo);
-  Result := DSPOku(APortNo) + (_Surum shl 8);
+  Surum := DSPOku(APortNo);
+  Result := DSPOku(APortNo) + (Surum shl 8);
 end;
 
 procedure SesDosyasiOynat;
@@ -198,33 +199,33 @@ const
   UZUNLUK = $03;
   FREKANS = 11000; { max. 29999 }
 var
-  _Sayfa, _Uzunluk: TSayi2;
-  _Bellek: TSayi4;
+  iSayfa, iUzunluk: TSayi2;
+  iBellek: TSayi4;
 begin
 
-  _Uzunluk := ADosyaUzunluk - 1;
-  _Sayfa := 0;
-  _Bellek := TSayi4(ADosyaBellek);
+  iUzunluk := ADosyaUzunluk - 1;
+  iSayfa := 0;
+  iBellek := TSayi4(ADosyaBellek);
 
   PortYaz1($A, $4 + KANAL);
   PortYaz1($C, $0);
   PortYaz1($B, MODYAZMAC);
-  PortYaz1(EKLE, _Bellek and $FF);
-  PortYaz1(EKLE, (_Bellek and $FFFF) Div $100);
-  If (_Bellek and 65536) > 0  then _Sayfa := _Sayfa + 1;
-  If (_Bellek and 131072) > 0 then _Sayfa := _Sayfa + 2;
-  If (_Bellek and 262144) > 0 then _Sayfa := _Sayfa + 4;
-  If (_Bellek and 524288) > 0 then _Sayfa := _Sayfa + 8;
-  PortYaz1(SAYFA, _Sayfa);
-  PortYaz1(UZUNLUK, _Uzunluk And $FF);
-  PortYaz1(UZUNLUK, (_Uzunluk And $FFFF) div $100);
+  PortYaz1(EKLE, iBellek and $FF);
+  PortYaz1(EKLE, (iBellek and $FFFF) Div $100);
+  If (iBellek and 65536) > 0  then iSayfa := iSayfa + 1;
+  If (iBellek and 131072) > 0 then iSayfa := iSayfa + 2;
+  If (iBellek and 262144) > 0 then iSayfa := iSayfa + 4;
+  If (iBellek and 524288) > 0 then iSayfa := iSayfa + 8;
+  PortYaz1(SAYFA, iSayfa);
+  PortYaz1(UZUNLUK, iUzunluk And $FF);
+  PortYaz1(UZUNLUK, (iUzunluk And $FFFF) div $100);
   PortYaz1($A, KANAL);
 
   DSPYaz($220, $40);
   DSPYaz($220, 256 - (1000000 Div FREKANS));
   DSPYaz($220, $14);
-  DSPYaz($220, _Uzunluk and $FF);
-  DSPYaz($220, (_Uzunluk and $FFFF) div $100);
+  DSPYaz($220, iUzunluk and $FF);
+  DSPYaz($220, (iUzunluk and $FFFF) div $100);
 end;
 
 end.

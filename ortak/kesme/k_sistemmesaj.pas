@@ -6,7 +6,7 @@
   Dosya Adı: k_sistemmesaj.pas
   Dosya İşlevi: hata ayıklama (debug) amaçlı mesaj yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 23/07/2026
+  Güncelleme Tarihi: 06/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -71,7 +71,7 @@ begin
   begin
 
     GSistemMesaj.Temizle;
-  end
+  end;
 end;
 
 end.

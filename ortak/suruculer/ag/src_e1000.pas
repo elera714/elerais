@@ -6,7 +6,7 @@
   Dosya Adý: src_e1000.pas
   Dosya Ýþlevi: intel e1000 að (network) sürücüsü
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 06/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,14 +17,14 @@ interface
 uses paylasim, pci, aygit, ethernet;
 
 const
-  REG_CTRL      = $0000;    // aygýt kontrol
-  REG_STATUS          = $0008;    // aygýt durumu
-  REG_EEPROM   = $0014;    // eeprom okuma
-  REG_IMASK = $00D0;    // kesme maskesi okuma / yazma
-  REG_ICR   = $00C0;    // kesme okuma
-  REG_RXDESCTAIL      = $2818;
+  REG_CTRL        = $0000;    // aygýt kontrol
+  REG_STATUS      = $0008;    // aygýt durumu
+  REG_EEPROM      = $0014;    // eeprom okuma
+  REG_IMASK       = $00D0;    // kesme maskesi okuma / yazma
+  REG_ICR         = $00C0;    // kesme okuma
+  REG_RXDESCTAIL  = $2818;
 
-  ECTRL_SLU     = $40;      // baðlantýyý baþlat
+  ECTRL_SLU       = $40;      // baðlantýyý baþlat
 
   E1000_NUM_TX_DESC       =       8;
   E1000_NUM_RX_DESC       =       32;
@@ -104,25 +104,25 @@ const
 type
   PE1000_tx_desc = ^TE1000_tx_desc;
   TE1000_tx_desc = bitpacked record
-      address : uint64;
-      length  : uint16;
-      cso     : uint8;
-      cmd     : uint8;
-      status  : uint8;
-      css     : uint8;
-      special : uint16;
+    address : uint64;
+    length  : uint16;
+    cso     : uint8;
+    cmd     : uint8;
+    status  : uint8;
+    css     : uint8;
+    special : uint16;
   end;
 
 type
-    PE1000_rx_desc = ^TE1000_rx_desc;
-    TE1000_rx_desc = packed record
-        address  : uint64;
-        length   : uint16;
-        checksum : uint16;
-        status   : uint8;
-        errors   : uint8;
-        special  : uint16;
-    end;
+  PE1000_rx_desc = ^TE1000_rx_desc;
+  TE1000_rx_desc = packed record
+    address  : uint64;
+    length   : uint16;
+    checksum : uint16;
+    status   : uint8;
+    errors   : uint8;
+    special  : uint16;
+  end;
 
 type
   TAygit0 = packed record
@@ -256,8 +256,6 @@ begin
 
   // kesmeyi aktifleþtir
   KesmeAktiflestir;
-
-
 end;
 
 procedure KomutGonder(AAdres, AKomut: TSayi4);
@@ -369,8 +367,7 @@ end;
 procedure KesmeIslevi;
 var
   Durum: TSayi4;
-    data     : uint32;
-
+  data     : uint32;
 begin
 
   KomutGonder($00D0, 1);

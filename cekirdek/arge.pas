@@ -6,7 +6,7 @@
   Dosya Adý: arge.pas
   Dosya Ýþlevi: sistem ar-ge çalýþmalarýný içerir
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 06/09/2026
 
  ==============================================================================}
 {$mode objfpc}

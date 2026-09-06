@@ -6,7 +6,7 @@
   Dosya Adý: fdepolama.pas
   Dosya Ýþlevi: fiziksel depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 29/07/2025
+  Güncelleme Tarihi: 06/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,8 +17,8 @@ interface
 uses paylasim, aygit;
 
 const
-  USTSINIR_FD = 6;              // desteklenen fiziksel depolama aygýt sayýsý
-  ILKDEGER_FDKIMLIK = $1000;    // fiziksel depolama kimlik sayacý
+  USTSINIR_FD       = 6;          // desteklenen fiziksel depolama aygýt sayýsý
+  ILKDEGER_FDKIMLIK = $1000;      // fiziksel depolama kimlik sayacý
 
 type
   TFizikselDepolama = class
@@ -33,10 +33,10 @@ type
     function AygitOlustur(AAygitTipi: TSayi4): TFDAygiti;
     function SurucuAl(ASiraNo: TISayi4): TFDAygiti;
     function SurucuAl2(AKimlik: TKimlik): TFDAygiti;
-    function VeriOku(AFDAygiti: TFDAygiti; ASektorNo, ASektorSayisi: TSayi4;
-      ABellek: Isaretci): TISayi4;
-    function VeriYaz(AFDAygiti: TFDAygiti; ASektorNo, ASektorSayisi: TSayi4;
-      ABellek: Isaretci): TISayi4;
+    function VeriOku(AFDAygiti: TFDAygiti; ASektorNo,
+      ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+    function VeriYaz(AFDAygiti: TFDAygiti; ASektorNo,
+      ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
     property AygitSayisi: TSayi4 read FAygitSayisi;
     property Aygit[ASiraNo: TISayi4]: TFDAygiti read Al write Yaz;
   end;
@@ -66,7 +66,7 @@ begin
 
   for i := 0 to USTSINIR_FD - 1 do Aygit[i] := nil;
 
-  // floppy aygýtlarýný yükle
+  // disket aygýtlarýný yükle
   GDisketAygitlari := GDisketAygitlari.Create;
   GDisketAygitlari.VeritabaniOlustur;
 
@@ -78,7 +78,6 @@ end;
 function TFizikselDepolama.Al(ASiraNo: TISayi4): TFDAygiti;
 begin
 
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FD) then
     Result := FAygitListesi[ASiraNo]
   else Result := nil;
@@ -87,7 +86,6 @@ end;
 procedure TFizikselDepolama.Yaz(ASiraNo: TISayi4; AFDAygiti: TFDAygiti);
 begin
 
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
   if(ASiraNo >= 0) and (ASiraNo < USTSINIR_FD) then
     FAygitListesi[ASiraNo] := AFDAygiti;
 end;
@@ -143,7 +141,7 @@ begin
 end;
 
 {==============================================================================
-  sýra numarasýna göre fiziksel depolama aygýtýnýn veri yapýsýný geri döndürür
+  0 bazlý sýra numarasýna göre fiziksel depolama aygýtýnýn veri yapýsýný geri döndürür
  ==============================================================================}
 function TFizikselDepolama.SurucuAl(ASiraNo: TISayi4): TFDAygiti;
 var
@@ -191,8 +189,8 @@ end;
 {==============================================================================
   fiziksel depolama aygýtýndan veri oku
  ==============================================================================}
-function TFizikselDepolama.VeriOku(AFDAygiti: TFDAygiti; ASektorNo, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
+function TFizikselDepolama.VeriOku(AFDAygiti: TFDAygiti; ASektorNo,
+  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 begin
 
 {  SISTEM_MESAJ(RENK_MAVI, 'Depolama Kimlik: %d', [AFizikselDepolama^.FD3.Kimlik]);
@@ -207,8 +205,8 @@ end;
 {==============================================================================
   fiziksel depolama aygýtýna veri yaz
  ==============================================================================}
-function TFizikselDepolama.VeriYaz(AFDAygiti: TFDAygiti; ASektorNo, ASektorSayisi: TSayi4;
-  ABellek: Isaretci): TISayi4;
+function TFizikselDepolama.VeriYaz(AFDAygiti: TFDAygiti; ASektorNo,
+  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
 begin
 
   Result := AFDAygiti.FYaz(ASektorNo, ASektorSayisi, ABellek);

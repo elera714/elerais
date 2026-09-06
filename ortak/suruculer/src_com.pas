@@ -6,7 +6,7 @@
   Dosya Adı: src_com.pas
   Dosya İşlevi: COM iletişim sürücüsü
 
-  Güncelleme Tarihi: 25/12/2024
+  Güncelleme Tarihi: 06/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -79,14 +79,14 @@ end;
  ==============================================================================}
 function COMIletisimAygitiVarMi(ACOMIletisim: TCOMIletisim): Boolean;
 var
-  _Deger: TSayi1;
+  Deger: TSayi1;
 begin
 
-  _Deger := PortAl1(ACOMIletisim.PortNo + 4);
+  Deger := PortAl1(ACOMIletisim.PortNo + 4);
   PortYaz1(ACOMIletisim.PortNo + 4, $10);
-  _Deger := PortAl1(ACOMIletisim.PortNo + 6);
+  Deger := PortAl1(ACOMIletisim.PortNo + 6);
 
-  if((_Deger and $F0) = 0) then
+  if((Deger and $F0) = 0) then
 
     Result := True
   else Result := False;
@@ -121,7 +121,7 @@ end;
 procedure Yaz(APortNo: TISayi4; AVeri: string);
 var
   VeriUzunluk, i: TSayi4;
-  _Deger: TSayi1;
+  Deger: TSayi1;
 begin
 
   // port aralık kontrolü
@@ -140,8 +140,8 @@ begin
     // LSR bit 5 = 1 oluncaya kadar bekle (Empty Transmitter Holding Register)
     repeat
 
-      _Deger := PortAl1(GCOMIletisimListesi[APortNo].PortNo + 5);
-    until ((_Deger and $20) <> 0);
+      Deger := PortAl1(GCOMIletisimListesi[APortNo].PortNo + 5);
+    until ((Deger and $20) <> 0);
 
     // veriyi port'a gönder
     PortYaz1(GCOMIletisimListesi[APortNo].PortNo, Byte(AVeri[i]));
@@ -154,7 +154,7 @@ end;
 procedure Yaz(APortNo: TISayi4; ABellekAdresi: PChar; AUzunluk: TSayi4);
 var
   i: TSayi4;
-  _Deger: TSayi1;
+  Deger: TSayi1;
   p: PChar;
 begin
 
@@ -175,8 +175,8 @@ begin
     // LSR bit 5 = 1 oluncaya kadar bekle (Empty Transmitter Holding Register)
     repeat
 
-      _Deger := PortAl1(GCOMIletisimListesi[APortNo].PortNo + 5);
-    until ((_Deger and $20) <> 0);
+      Deger := PortAl1(GCOMIletisimListesi[APortNo].PortNo + 5);
+    until ((Deger and $20) <> 0);
 
     // veriyi port'a gönder
     PortYaz1(GCOMIletisimListesi[APortNo].PortNo, TSayi1(p^));

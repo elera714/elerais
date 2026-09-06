@@ -6,7 +6,7 @@
   Dosya Adý: uhci.pas
   Dosya Ýþlevi: usb uhci yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 06/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -99,8 +99,8 @@ end;
 
 procedure UHCIAygitBilgileriniGoster;
 var
-  _Deger4, i: TSayi4;
-  _CerceveAdresi: PSayi4;
+  Deger4, i: TSayi4;
+  CerceveAdresi: PSayi4;
 begin
 
   if not(UHCIAygit = nil) then
@@ -111,16 +111,16 @@ begin
     PortNo := GPCIAygitlar.Oku4(UHCIAygit.FYol, UHCIAygit.FAygit, UHCIAygit.FIslev, $20) and $FFFC;
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Giriþ/Çýkýþ Port No: $%.2x', [PortNo]);
 
-    _Deger4 := GPCIAygitlar.Oku4(UHCIAygit.FYol, UHCIAygit.FAygit, UHCIAygit.FIslev, 4);
-    _Deger4 := _Deger4 or $405;
-    GPCIAygitlar.Yaz4(UHCIAygit.FYol, UHCIAygit.FAygit, UHCIAygit.FIslev, 4, _Deger4);
+    Deger4 := GPCIAygitlar.Oku4(UHCIAygit.FYol, UHCIAygit.FAygit, UHCIAygit.FIslev, 4);
+    Deger4 := Deger4 or $405;
+    GPCIAygitlar.Yaz4(UHCIAygit.FYol, UHCIAygit.FAygit, UHCIAygit.FIslev, 4, Deger4);
 
-    _CerceveAdresi := PSayi4(UHCI_CERCEVE_ADRESI);
+    CerceveAdresi := PSayi4(UHCI_CERCEVE_ADRESI);
     for i := 0 to 1023 do
     begin
 
-      _CerceveAdresi^ := 1;
-      Inc(_CerceveAdresi);
+      CerceveAdresi^ := 1;
+      Inc(CerceveAdresi);
     end;
 
     USBSifirla;
@@ -131,18 +131,18 @@ end;
 
 procedure USBSifirla;
 var
-  _Durum: TSayi2;
+  Durum: TSayi2;
 begin
 
 	// uhci aygýtýný kapat
   PortYaz2(PortNo, 0);
 
-  _Durum := 0;
-  while _Durum = 0 do
+  Durum := 0;
+  while Durum = 0 do
   begin
 
-    _Durum := PortAl2(PortNo + UHCI_YAZMAC_DURUM);
-    _Durum := _Durum and UHCI_DURUM_DURDU;
+    Durum := PortAl2(PortNo + UHCI_YAZMAC_DURUM);
+    Durum := Durum and UHCI_DURUM_DURDU;
   end;
 
   PortYaz2(PortNo, UHCI_KOMUT_GENELSIFIRLA);
@@ -190,7 +190,7 @@ end;
 procedure PaketGonder;
 var
   USBPaket: TUSBPaket;
-  _Durum: TSayi2;
+  Durum: TSayi2;
   TamHiz: Boolean;    // full speed
 begin
 
@@ -207,8 +207,8 @@ begin
 	//mov eax, 5
 	//call pit_sleep
 
-  _Durum := PortAl2(PortNo + UHCI_YAZMAC__PORT1);
-  if((_Durum and UHCI_PORT_BAGLAN) = 0) then
+  Durum := PortAl2(PortNo + UHCI_YAZMAC__PORT1);
+  if((Durum and UHCI_PORT_BAGLAN) = 0) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Baðlantý yok', []);
@@ -216,7 +216,7 @@ begin
   else
   begin
 
-    if((_Durum and UHCI_PORT_AYGITHIZI) = 0) then
+    if((Durum and UHCI_PORT_AYGITHIZI) = 0) then
     begin
 
       TamHiz := True;

@@ -6,7 +6,7 @@
   Dosya Adı: irq.pas
   Dosya İşlevi: donanım (irq) kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 18/08/2026
+  Güncelleme Tarihi: 06/09/2026
 
  ==============================================================================}
 {$mode objfpc}

@@ -6,7 +6,7 @@
   Dosya Adý: acpi.pas
   Dosya Ýþlevi: geliþmiþ ayar ve güç arabirim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 25/05/2026
+  Güncelleme Tarihi: 06/09/2026
 
   https://wiki.osdev.org/RSDP
 
@@ -49,8 +49,8 @@ const
   ACPI_IMZA: PChar = 'RSD PTR ';
 
 var
-  _RSDP: PRSDPTanimlayici = nil;
-  _RSDT: PRSDTTanimlayici;
+  RSDP: PRSDPTanimlayici = nil;
+  RSDT: PRSDTTanimlayici;
   RSDPTanimlayici: TRSDPTanimlayici;
   RSDTSayisi: TSayi4;
 
@@ -83,16 +83,16 @@ begin
     begin
 
       // RSDP yapý bilgileri
-      _RSDP := Isaretci(ACPI_BELLEK);
-      RSDPTanimlayici.Imza := Copy(_RSDP^.Imza, 0, 8);
-      RSDPTanimlayici.Kontrol := _RSDP^.Kontrol;
-      RSDPTanimlayici.OEMKimlik := Copy(_RSDP^.OEMKimlik, 0, 8);
-      RSDPTanimlayici.Degisim := _RSDP^.Degisim;
-      RSDPTanimlayici.RSDTAdres := _RSDP^.RSDTAdres;
+      RSDP := Isaretci(ACPI_BELLEK);
+      RSDPTanimlayici.Imza := Copy(RSDP^.Imza, 0, 8);
+      RSDPTanimlayici.Kontrol := RSDP^.Kontrol;
+      RSDPTanimlayici.OEMKimlik := Copy(RSDP^.OEMKimlik, 0, 8);
+      RSDPTanimlayici.Degisim := RSDP^.Degisim;
+      RSDPTanimlayici.RSDTAdres := RSDP^.RSDTAdres;
 
       // RSDT yapý bilgileri
-      _RSDT := PRSDTTanimlayici(RSDPTanimlayici.RSDTAdres);
-      RSDTSayisi := (_RSDT^.Uzunluk - SizeOf(TRSDTTanimlayici)) div 4;
+      RSDT := PRSDTTanimlayici(RSDPTanimlayici.RSDTAdres);
+      RSDTSayisi := (RSDT^.Uzunluk - SizeOf(TRSDTTanimlayici)) div 4;
 
       //Goruntule;
       Exit;
@@ -112,7 +112,7 @@ begin
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'ACPI Donaným Bilgileri:', []);
-    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Adres: $%.8x', [TSayi4(_RSDP)]);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Adres: $%.8x', [TSayi4(RSDP)]);
     SISTEM_MESAJ_YAZI(mtBilgi, RENK_SIYAH, PChar('Ýmza: '), 5, PChar(RSDPTanimlayici.Imza), 8);
     SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Kontrol: $%x', [RSDPTanimlayici.Kontrol]);
     SISTEM_MESAJ_YAZI(mtBilgi, RENK_SIYAH, PChar('Kimlik: '), 8, PChar(RSDPTanimlayici.OEMKimlik), 6);
