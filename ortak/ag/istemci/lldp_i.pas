@@ -7,7 +7,7 @@
   Dosya Ýþlevi: baðlantý katmaný keþif tutanak (link layer discovery protocol)
     yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 02/08/2026
+  Güncelleme Tarihi: 17/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -72,21 +72,21 @@ begin
 
     if(VT = 1) then
 
-      SISTEM_MESAJ_MAC(mtBilgi, RENK_TURKUAZ, '  - MAC: ', PMACAdres(@LLDPPaket^.Veri + 1)^)
+      SISTEM_MESAJ_MAC(mtBilgi, RENK_TURKUAZ, '  -> MAC: ', PMACAdres(@LLDPPaket^.Veri + 1)^)
 
     else if(VT = 5) then
     begin
 
       Tasi2(@LLDPPaket^.Veri, @s[1], U);
       SetLength(s, U);
-      SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Sistem Adý: %s', [s]);
+      SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  -> Sistem Adý: %s', [s]);
     end
     else if(VT = 6) then
     begin
 
       Tasi2(@LLDPPaket^.Veri, @s[1], U);
       SetLength(s, U);
-      SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Sistem Açýklama: %s', [s]);
+      SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  -> Sistem Açýklama: %s', [s]);
     end;
 
     p := Isaretci(LLDPPaket);

@@ -6,7 +6,7 @@
   Dosya Adý: icmp4.pas
   Dosya Ýþlevi: ICMP v4 tutanak (protokol) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 17/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,7 +15,7 @@ unit icmp4;
 
 interface
 
-uses paylasim;
+uses paylasim, ethernet, ip4;
 
 const
   ICMP4_BASLIK_UZUNLUGU = 8;
@@ -37,18 +37,17 @@ type
   TICMP4 = class
   private
     FBaglanti: TObject;
-    FICMP4PaketSayisi: TSayi4;
+    FICMP4GelenPaketSayisi: TSayi4;
   public
     constructor Create(ABaglanti: TObject);
-    procedure PaketleVeGonder(AHedefMACAdres: TMACAdres; AHedefIP4Adres: TIP4Adres;
-      AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4);
+    procedure PaketleVeGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4);
     procedure VerileriIsle(AEthernetPaket: PEthernetPaket);
-    property ICMP4PaketSayisi: TSayi4 read FICMP4PaketSayisi write FICMP4PaketSayisi;
+    property ICMP4GelenPaketSayisi: TSayi4 read FICMP4GelenPaketSayisi write FICMP4GelenPaketSayisi;
   end;
 
 implementation
 
-uses islevler, sistemmesaj, baglantilar, donusum, ip4;
+uses islevler, sistemmesaj, donusum, baglantilar;
 
 {==============================================================================
   icmp v4 tutanak (protokol) ana yükleme iþlevlerini içerir
@@ -58,7 +57,7 @@ begin
 
   FBaglanti := ABaglanti;
 
-  FICMP4PaketSayisi := 0;
+  FICMP4GelenPaketSayisi := 0;
 end;
 
 {==============================================================================
@@ -66,6 +65,7 @@ end;
  ==============================================================================}
 procedure TICMP4.VerileriIsle(AEthernetPaket: PEthernetPaket);
 var
+  B: TBaglanti;
   IP4Paket: PIP4Paket;
   ICMP4Paket: PICMP4Paket;
   U: TSayi4;
@@ -86,10 +86,19 @@ begin
   if(ICMP4Paket^.MesajTipi = ICMP4_YANKI_ISTEK) then
   begin
 
-    // yanýt gönder
-    PaketleVeGonder(AEthernetPaket^.KaynakMACAdres, IP4Paket^.KaynakIP4Adres, ICMP4Paket, U);
+    B := TBaglanti(FBaglanti);
 
-    Inc(FICMP4PaketSayisi);
+    // ip4 katman bilgileri
+    B.FIP4.FKaynakIP4Adres := IP4Paket^.KaynakIP4Adres;
+    B.FIP4.FHedefIP4Adres := IP4Paket^.HedefIP4Adres;
+
+    // ethernet katman bilgileri
+    B.FEthernet.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+
+    // yanýt gönder
+    PaketleVeGonder(ICMP4Paket, U);
+
+    Inc(FICMP4GelenPaketSayisi);
 
   end else SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'ICMP4.PAS: bilinmeyen mesaj tipi: $%.2x',
     [ICMP4Paket^.MesajTipi]);
@@ -98,8 +107,7 @@ end;
 {==============================================================================
   icmp v4 tutanak paketi hazýrlayýp gönderme iþlevini gerçekleþtirir
  ==============================================================================}
-procedure TICMP4.PaketleVeGonder(AHedefMACAdres: TMACAdres; AHedefIP4Adres: TIP4Adres;
-  AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4);
+procedure TICMP4.PaketleVeGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4);
 var
   ICMP4Paket: PICMP4Paket;
   s: array[0..128] of TSayi1;
@@ -129,12 +137,7 @@ begin
   ICMP4Paket^.SaglamaToplami := SaglamaToplami;
 
   // sisteme gelen icmp isteðine icmp yanýtý (paket) gönder
-  TBaglanti(FBaglanti).FIP4.Ozellestir(TBaglanti(FBaglanti).IP4Adres, AHedefIP4Adres);
-  TBaglanti(FBaglanti).FIP4.PaketleVeGonder(AHedefMACAdres, ptICMP4, 0, ICMP4Paket, APaketUzunlugu);
-
-  {$IFDEF ICMP4_HATAAYIKLA}
-  SISTEM_MESAJ_IP4(mtBilgi, RENK_MOR, 'ICMP4 yanýtý gönderilen IP: ', AHedefIP4Adres);
-  {$ENDIF}
+  TBaglanti(FBaglanti).FIP4.PaketleVeGonder(ptICMP4, 0, ICMP4Paket, APaketUzunlugu);
 
   // belleði yok et
   FreeMem(ICMP4Paket, 4096);

@@ -6,7 +6,7 @@
   Dosya Adı: islevler.pas
   Dosya İşlevi: genel işlevleri içerir
 
-  Güncelleme Tarihi: 02/05/2025
+  Güncelleme Tarihi: 17/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -464,7 +464,7 @@ begin
 
   Result := False;
 
-  for i := 0 to 2 do if(AGonderenIP4[i] <> GAgBaglantilari.AktifBaglanti.IP4Adres[i]) then Exit;
+  for i := 0 to 2 do if(AGonderenIP4[i] <> GAgBaglantilari.AktifBaglanti.IP4Adresim[i]) then Exit;
 
   Result := True;
 end;

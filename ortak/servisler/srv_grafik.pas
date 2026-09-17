@@ -107,7 +107,7 @@ begin
 
     igDisk := TIslemGostergesi.Create;
     igDisk.Ozellestir(ktNesne, SDPencere, 60, 85, 105, 16);
-    igDisk.DegerleriBelirle(0, (64 * 1024 * 1024) div 512);
+    igDisk.DegerleriBelirle(0, (320 * 1024 * 1024) div 512);
     igDisk.MevcutDegerYaz(0);
     igDisk.Goster;
 

@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 28/07/2026
+  Güncelleme Tarihi: 17/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit arp;
  
 interface
 
-uses paylasim;
+uses paylasim, ethernet;
 
 const
   AZAMI_ARPKAYITSAYISI    = 64;
@@ -97,19 +97,19 @@ type
 function ArpCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 var
-  GARPTablosu: TARPTablosu = nil;
-  ARPTabloKilit: TSayi4 = 0;
+  GARPTablosu: TARPTablosu;
+  ARPTabloKilit: TSayi4;
 
 implementation
 
-uses islevler, zamanlayici, donusum, gorev, ethernet, baglantilar;
+uses islevler, zamanlayici, donusum, gorev, baglantilar, sistemmesaj;
 
 {==============================================================================
   arp kesme çaðrýlarýný yönetir
  ==============================================================================}
 function ArpCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  A: PARPKayit3;
+  AK: PARPKayit3;
   IslevNo,
   SiraNo: TISayi4;
 begin
@@ -132,8 +132,8 @@ begin
 
     SiraNo := PISayi4(ADegiskenler + 00)^;
 
-    A := PARPKayit3(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
-    Result := GARPTablosu.ARPKaydiAl(SiraNo, A);
+    AK := PARPKayit3(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
+    Result := GARPTablosu.ARPKaydiAl(SiraNo, AK);
   end;
 end;
 
@@ -188,7 +188,7 @@ begin
   APaket := @EPaket^.Veri;
 
   // ARP paketi ip adresime gönderilmiþ ise
-  if(IPKarsilastir(APaket^.HedefIP4Adres, TBaglanti(FBaglanti).IP4Adres)) then
+  if(IPKarsilastir(APaket^.HedefIP4Adres, TBaglanti(FBaglanti).IP4Adresim)) then
   begin
 
     // 1. gönderilen paket benim mesajýma yanýt ise, tabloya ekle
@@ -224,8 +224,8 @@ begin
   if(AARPIslem = arpIstek) then
     APaket.Islem := ntohs(ARPISLEM_ISTEK)
   else APaket.Islem := ntohs(ARPISLEM_YANIT);
-  APaket.GonderenMACAdres := TBaglanti(FBaglanti).FEthernet.MACAdres;
-  APaket.GonderenIP4Adres := TBaglanti(FBaglanti).IP4Adres;
+  APaket.GonderenMACAdres := TBaglanti(FBaglanti).FEthernet.MACAdresim;
+  APaket.GonderenIP4Adres := TBaglanti(FBaglanti).IP4Adresim;
 
   if(AARPIslem = arpIstek) then
     APaket.HedefMACAdres := MACAdres0
@@ -235,8 +235,17 @@ begin
   APaket.HedefIP4Adres := AHedefIP4Adres^;
 
   if(AARPIslem = arpIstek) then
-    TBaglanti(FBaglanti).FEthernet.Gonder(MACAdres255, ptARP, @APaket, 28)
-  else TBaglanti(FBaglanti).FEthernet.Gonder(AHedefMACAdres^, ptARP, @APaket, 28);
+  begin
+
+    TBaglanti(FBaglanti).FEthernet.FHedefMACAdres := MACAdres255;
+    TBaglanti(FBaglanti).FEthernet.Gonder(ptARP, @APaket, 28)
+  end
+  else
+  begin
+
+    TBaglanti(FBaglanti).FEthernet.FHedefMACAdres := AHedefMACAdres^;
+    TBaglanti(FBaglanti).FEthernet.Gonder(ptARP, @APaket, 28);
+  end;
 end;
 
 {==============================================================================
@@ -245,7 +254,7 @@ end;
  ==============================================================================}
 procedure TARPTablosu.ARPTablosunuGuncelle;
 var
-  AKayit1, AKayit2: TARPKayit;
+  AK1, AK2: TARPKayit;
   YasamSuresi: TSayi4;
   i, j: TSayi4;
   KayitSilindi: Boolean;
@@ -254,7 +263,7 @@ begin
   while True do
   begin
 
-    GZamanlayicilar.BekleMS(CALISMA_FREKANSI);
+    GZamanlayicilar.BekleMS(1 * CALISMA_FREKANSI);
 
 //    while KritikBolgeyeGir(ARPTabloKilit) = False do;
 
@@ -267,19 +276,19 @@ begin
       for i := 0 to GARPTablosu.ToplamKayit - 1 do
       begin
 
-        AKayit1 := GARPTablosu.ARPKayit[i];
-        if not(AKayit1 = nil) then
+        AK1 := GARPTablosu.ARPKayit[i];
+        if not(AK1 = nil) then
         begin
 
-          YasamSuresi := AKayit1.YasamSuresi;
+          YasamSuresi := AK1.YasamSuresi;
           Dec(YasamSuresi);
-          AKayit1.YasamSuresi := YasamSuresi;
+          AK1.YasamSuresi := YasamSuresi;
 
           // yaþam süresi 0 olduðunda kaydý sil ve listeden çýkar
           if(YasamSuresi = 0) then
           begin
 
-            AKayit1.Destroy;
+            AK1.Destroy;
             GARPTablosu.ARPKayit[i] := nil;
 
             KayitSilindi := True;
@@ -300,18 +309,18 @@ begin
       for i := 1 to AZAMI_ARPKAYITSAYISI - 1 do
       begin
 
-        AKayit1 := GARPTablosu.ARPKayit[i];
-        if not(AKayit1 = nil) then
+        AK1 := GARPTablosu.ARPKayit[i];
+        if not(AK1 = nil) then
         begin
 
           for j := 0 to i - 1 do
           begin
 
-            AKayit2 := GARPTablosu.ARPKayit[j];
-            if(AKayit2 = nil) then
+            AK2 := GARPTablosu.ARPKayit[j];
+            if(AK2 = nil) then
             begin
 
-              GARPTablosu.ARPKayit[j] := AKayit1;
+              GARPTablosu.ARPKayit[j] := AK1;
               Break;
             end;
           end;
@@ -324,11 +333,12 @@ begin
 end;
 
 {==============================================================================
-  ARP tablosunu her 1 saniyede bir günceller
+  ayný að kýsmýnda bulunan bilgisayarlara arp sorgusu gönderir
   bilgi: iþlev, çekirdeðe baðlý ayrý bir görev olarak çalýþmaktadýr
  ==============================================================================}
 procedure TARPTablosu.CihazlaraARPMesajiGonder;
 var
+  A: TARP;
   IP4Adres: TIP4Adres;
   i: TSayi4;
 begin
@@ -337,17 +347,18 @@ begin
   GZamanlayicilar.BekleMS(5 * CALISMA_FREKANSI);
 
   // bilgisayarýn ip adresi
-  IP4Adres := GAgBaglantilari.AktifBaglanti.IP4Adres;
+  IP4Adres := GAgBaglantilari.AktifBaglanti.IP4Adresim;
+
+  A := TARP.Create(FBaglanti);
 
   i := 0;
 
   while True do
   begin
 
-    GZamanlayicilar.BekleMS(CALISMA_FREKANSI);
+    GZamanlayicilar.BekleMS(1 * CALISMA_FREKANSI);
 
-    { geçici olarak kapatýldý, aktifleþtirilebilir }
-    {if(AgYuklendi) and (GAgBilgisi.IP4AdresiAlindi) then
+    if(GAgBaglantilari.AktifBaglanti.IP4AdresiAlindi) then
     begin
 
       if(i = 0) then
@@ -356,14 +367,16 @@ begin
       IP4Adres[3] := i;
 
       // kendi ip adresimin haricinde tüm cihazlara arp istek mesajý gönder
-      if not(IPKarsilastir(GAgBilgisi.IP4Adres, IP4Adres)) then
-        ARPKayitlar0.ARPIstegiGonder(arpIstek, nil, @IP4Adres);
+      if not(IPKarsilastir(GAgBaglantilari.AktifBaglanti.IP4Adresim, IP4Adres)) then
+        A.IstekGonder(arpIstek, nil, @IP4Adres);
 
       Inc(i);
 
       if(i > 255) then i := 0;
-    end;}
+    end;
   end;
+
+  A.Destroy;
 end;
 
 {==============================================================================
@@ -431,7 +444,7 @@ end;
 function TARPTablosu.MACAdresAl(AIP4Adres: TIP4Adres): TMACAdres;
 var
   A: TARP;
-  ARP0: TARPKayit;
+  AK: TARPKayit;
   i, j: TSayi4;
 begin
 
@@ -442,11 +455,11 @@ begin
     for i := 0 to AZAMI_ARPKAYITSAYISI - 1 do
     begin
 
-      ARP0 := ARPKayit[i];
+      AK := ARPKayit[i];
 
       // ARP kaydý mevcut ise çaðýran iþleve geri döndür
-      if not(ARP0 = nil) then
-        if(IPKarsilastir(ARP0.IP4Adres, AIP4Adres)) then Exit(ARP0.MACAdres);
+      if not(AK = nil) then
+        if(IPKarsilastir(AK.IP4Adres, AIP4Adres)) then Exit(AK.MACAdres);
     end;
   end;
 
@@ -455,12 +468,13 @@ begin
   begin
 
     // ip adresinin mac adresi tabloda bulunamadýðý için istek gönder
-    {A := TARP.Create(FBaglanti);
-    A.ARPIstegiGonder(arpIstek, nil, @AIP4Adres);
-    A.Destroy;}
+    A := TARP.Create(FBaglanti);
+    A.IstekGonder(arpIstek, nil, @AIP4Adres);
+    A.Destroy;
 
-    // 0.5 saniye bekle
-    //BekleMS(50);
+    // 1 saniye bekle
+    GZamanlayicilar.BekleMS(1 * CALISMA_FREKANSI);
+
     ElleGorevDegistir;
 
     // yeniden tabloyu kontrol et
@@ -470,10 +484,11 @@ begin
       for j := 0 to AZAMI_ARPKAYITSAYISI - 1 do
       begin
 
-        ARP0 := ARPKayit[j];
+        AK := ARPKayit[j];
 
         // ARP kaydý mevcut ise çaðýran iþleve geri döndür
-        if not(ARP0 = nil) then if(IPKarsilastir(ARP0.IP4Adres, AIP4Adres)) then Exit(ARP0.MACAdres);
+        if not(AK = nil) then if(IPKarsilastir(AK.IP4Adres, AIP4Adres)) then
+          Exit(AK.MACAdres);
       end;
     end;
   end;
@@ -486,7 +501,7 @@ end;
  ==============================================================================}
 function TARPTablosu.ARPKaydiAl(ASiraNo: TISayi4; AHedefBellek: PARPKayit3): TISayi4;
 var
-  ARP0: TARPKayit;
+  AK: TARPKayit;
 begin
 
 //  while KritikBolgeyeGir(ARPTabloKilit) = False do;
@@ -497,13 +512,13 @@ begin
   if(ASiraNo >= 0) and (ASiraNo < ToplamKayit) then
   begin
 
-    ARP0 := ARPKayit[ASiraNo];
-    if not(ARP0 = nil) then
+    AK := ARPKayit[ASiraNo];
+    if not(AK = nil) then
     begin
 
-      AHedefBellek^.IP4Adres := ARP0.IP4Adres;
-      AHedefBellek^.MACAdres := ARP0.MACAdres;
-      AHedefBellek^.YasamSuresi := ARP0.YasamSuresi;
+      AHedefBellek^.IP4Adres := AK.IP4Adres;
+      AHedefBellek^.MACAdres := AK.MACAdres;
+      AHedefBellek^.YasamSuresi := AK.YasamSuresi;
 
       Result := HATA_YOK;
 

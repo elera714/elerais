@@ -6,7 +6,7 @@
   Dosya Adý: src_pcnet32.pas
   Dosya Ýþlevi: PCNET32 að (network) kartý sürücüsü
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 17/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -382,7 +382,7 @@ begin
   MACAdresiAl;
 
   // ethernet kartýnýn mac adresi aygýt bilgisine ekleniyor
-  AEthernet.MACAdres := KartBilgileri.MACAdres;
+  AEthernet.MACAdresim := KartBilgileri.MACAdres;
 
   KartBilgileri.Secenekler := PCNET32_PORT_ASEL;
   KartBilgileri.FullDuplex := 1;
