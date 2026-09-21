@@ -6,7 +6,7 @@
   Dosya Adı: ethernet.pas
   Dosya İşlevi: ethernet ağ (network) kartı yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 21/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,24 +32,27 @@ const
 type
   TEthernet = class(TAgAygiti)
   private
-    // True olması durumunda, ethernet kartı ve YerelMACAdresListesi haricinde
-    // gelen tüm paketler işlenir, aksi halde ilgili mac adreslerine gelen paketler işlenir
+    // True olması durumunda, ethernet kartına gelen tüm paketler işlenir,
+    // False olması durumunda ise SADECE ethernet kartı adresine ve
+    // YerelMACAdresListesi'ne gönderilen paketler işlenir
     FTumPaketleriIsle: Boolean;
     // ethernet kartının mac adresi
-    FMACAdres: TMACAdres;
+    FMACAdresim: TMACAdres;
     // paket başlıkları da dahil olmak üzere tüm veri toplamlarını içerir.
     FGelenByte, FGidenByte: TSayi4;
   public
+    // paketin gönderileceği cihazın mac adresi
+    FHedefMACAdres: TMACAdres;
+
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure Gonder(AHedefMACAdr: TMACAdres; AProtokolTipi: TProtokolTipi;
-      AVeri: Isaretci; AVeriU: TSayi4);
+    procedure Gonder(AProtokolTipi: TProtokolTipi; AVeri: Isaretci; AVeriU: TSayi4);
     function Al(AHedefBellekAdresi: Isaretci): TSayi4;
 
     function MACAdresiKabulEdilsinMi(AHedefMACAdres: TMACAdres): Boolean;
 
-    property MACAdres: TMACAdres read FMACAdres write FMACAdres;
+    property MACAdresim: TMACAdres read FMACAdresim write FMACAdresim;
     property GelenByte: TSayi4 read FGelenByte write FGelenByte;
     property GidenByte: TSayi4 read FGidenByte write FGidenByte;
   end;
@@ -84,51 +87,51 @@ end;
 {==============================================================================
   ethernet kartı üzerinden veri gönderir
  ==============================================================================}
-procedure TEthernet.Gonder(AHedefMACAdr: TMACAdres; AProtokolTipi: TProtokolTipi;
-  AVeri: Isaretci; AVeriU: TSayi4);
+procedure TEthernet.Gonder(AProtokolTipi: TProtokolTipi; AVeri: Isaretci; AVeriU: TSayi4);
 var
-  EthPaket: PEthernetPaket;
+  EPaket: PEthernetPaket;
   Bellek: Isaretci;
 begin
 
-  // aygıt akitf ise veri gönder
+  // aygıt akitf ise veriyi gönder
   if(Aktif) then
   begin
 
     // veri paketi için bellekte yer ayır
-    EthPaket := GetMem(AVeriU + ETHERNET_BASLIKU);
+    EPaket := GetMem(AVeriU + ETHERNET_BASLIKU);
 
-    EthPaket^.HedefMACAdres := AHedefMACAdr;
-    EthPaket^.KaynakMACAdres := MACAdres;
+    EPaket^.HedefMACAdres := FHedefMACAdres;
+    EPaket^.KaynakMACAdres := MACAdresim;
 
     // paketin tutanak tipi
     case AProtokolTipi of
-      ptIP4   : EthPaket^.PaketTipi := ntohs(PROTOKOL_IP4);
-      ptIP6   : EthPaket^.PaketTipi := ntohs(PROTOKOL_IP6);
-      ptTCP   : EthPaket^.PaketTipi := PROTOKOL_TCP;
-      ptUDP   : EthPaket^.PaketTipi := PROTOKOL_UDP;
-      ptARP   : EthPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
-      ptICMP4 : EthPaket^.PaketTipi := PROTOKOL_ICMP4;
+      ptIP4   : EPaket^.PaketTipi := ntohs(PROTOKOL_IP4);
+      ptIP6   : EPaket^.PaketTipi := ntohs(PROTOKOL_IP6);
+      ptTCP   : EPaket^.PaketTipi := PROTOKOL_TCP;
+      ptUDP   : EPaket^.PaketTipi := PROTOKOL_UDP;
+      ptARP   : EPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
+      ptICMP4 : EPaket^.PaketTipi := PROTOKOL_ICMP4;
     end;
-{
-    SISTEM_MESAJ(mtBilgi, RENK_MOR, 'ETH', []);
+
+    {SISTEM_MESAJ(mtBilgi, RENK_MOR, 'ETH', []);
     SISTEM_MESAJ_MAC(mtBilgi, RENK_LACIVERT, 'ETH: Kaynak MAC: ', EthPaket^.KaynakMACAdres);
     SISTEM_MESAJ_MAC(mtBilgi, RENK_LACIVERT, 'ETH: Hedef MAC: ', EthPaket^.HedefMACAdres);
     SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'ETH: PaketTip: %.4x', [EthPaket^.PaketTipi]);
-}
-    Bellek := @EthPaket^.Veri;
+    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'ETH: VeriU: %d', [AVeriU]);}
+
+    Bellek := @EPaket^.Veri;
     Tasi2(AVeri, Bellek, AVeriU);
 
     if(Assigned(FVeriGonder)) then
     begin
 
-      FVeriGonder(EthPaket, AVeriU + ETHERNET_BASLIKU);
+      FVeriGonder(EPaket, AVeriU + ETHERNET_BASLIKU);
 
       Inc(FGidenByte, AVeriU + ETHERNET_BASLIKU);
     end;
 
     // ayrılan belleği serbest bırak
-    FreeMem(EthPaket, AVeriU + ETHERNET_BASLIKU);
+    FreeMem(EPaket, AVeriU + ETHERNET_BASLIKU);
   end;
 end;
 
@@ -137,7 +140,7 @@ end;
  ==============================================================================}
 function TEthernet.Al(AHedefBellekAdresi: Isaretci): TSayi4;
 var
-  EthPaket: PEthernetPaket;
+  EPaket: PEthernetPaket;
   Bellek: array[0..$FFF] of TSayi1;
   PaketleriIsle: Boolean;
   i: TSayi4;
@@ -155,13 +158,13 @@ begin
   if(i > 0) then
   begin
 
-    EthPaket := @Bellek[0];
+    EPaket := @Bellek[0];
 
     PaketleriIsle := False;
 
     if(FTumPaketleriIsle) then
       PaketleriIsle := True
-    else PaketleriIsle := MACAdresiKabulEdilsinMi(EthPaket^.HedefMACAdres);
+    else PaketleriIsle := MACAdresiKabulEdilsinMi(EPaket^.HedefMACAdres);
 
     if(PaketleriIsle) then
     begin
@@ -173,7 +176,8 @@ begin
     else
     begin
 
-      SISTEM_MESAJ_MAC(mtBilgi, RENK_GRI, 'ETHERNET.PAS->Hedef MAC Adres Farklı: ', EthPaket^.HedefMACAdres);
+      SISTEM_MESAJ_MAC(mtBilgi, RENK_GRI, 'ETHERNET.PAS->Hedef MAC Adres Farklı: ',
+        EPaket^.HedefMACAdres);
     end;
   end;
 end;
@@ -189,7 +193,7 @@ begin
   Result := False;
 
   // 1. ethernet aygıtı mac adresi kontrolü
-  if(MACKarsilastir(AHedefMACAdres, MACAdres)) then Exit(True);
+  if(MACKarsilastir(AHedefMACAdres, MACAdresim)) then Exit(True);
 
   // 2. yerel mac adres kayıt kontrolü
   if(KE_MAC_ADRESSAYISI > 0) then
