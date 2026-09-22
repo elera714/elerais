@@ -19,6 +19,7 @@ uses paylasim, tcp;
 type
   TSunucuServis = class
   public
+    procedure OIstemciBaglandi(ATCP: TTCP); virtual; abstract;
     procedure OVeriGeldi(ATCP: TTCP); virtual; abstract;
     procedure OVeriGonderildi(ATCP: TTCP); virtual; abstract;
   end;

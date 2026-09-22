@@ -6,7 +6,7 @@
   Dosya Adý: k_olay.pas
   Dosya Ýþlevi: olay (event) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 23/07/2025
+  Güncelleme Tarihi: 22/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -34,6 +34,8 @@ var
   OlayMevcut: Boolean;
 begin
 
+  Result := HATA_ISLEV;
+
   IslevNo := (AIslevNo and $FF);
 
   // görev için olay olsun (olayla) veya olmasýn (olaysýz) göreve geri döner
@@ -48,13 +50,12 @@ begin
       Exit(0);
     end;
 
-    // çalýþan proses'e ait olay var mý ?
+    // çalýþan iþleme ait olay var mý ?
     if(GGorevler.OlayAl(G^.Kimlik, O)) then
-
       OlayMevcut := True
     else OlayMevcut := False;
 
-    // olay deðiþkenlerini görevin yýðýn alanýna kopyala
+    // olay deðerlerini deðiþkenlere aktar
     if(OlayMevcut) then
     begin
 
@@ -66,9 +67,7 @@ begin
 
       Result := G^.OlaySayisi;
     end
-
-    // olay yok ise tek bir görev deðiþikliði yap ve görevi istekte bulunan devret.
-    // aksi durumda kaynaklarýn hemen hemen hepsini kendisi kullanýr
+    // olay yok ise tek bir görev deðiþikliði yap ve görevi istekte bulunan göreve devret.
     else
     begin
 
@@ -77,7 +76,7 @@ begin
     end;
   end
 
-  // istekte bulunan görev için olay mevcut oluncaya kadar bekle ve olayý geri döndür
+  // istekte bulunan görev için olay mevcut oluncaya kadar bekle ve olayý iþleme geri döndür
   else if(IslevNo = 2) then
   begin
 
@@ -99,7 +98,7 @@ begin
     end;
 
     // uygulama için olay üretilinceye kadar bekle
-    // olay olmamasý durumda bir sonraki göreve geç (mevcut görev olay bekliyor)
+    // olay olmamasý durumunda bir sonraki göreve geç (mevcut görev olay bekliyor)
     // ta ki ilgili görev için olay mevcut oluncaya kadar
     repeat
 

@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: http sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 21/09/2026
+  Güncelleme Tarihi: 22/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -67,6 +67,7 @@ type
     FIstenenSayfa: string;
   public
     constructor Create;
+    procedure OIstemciBaglandi(ATCP: TTCP); override;
     procedure OVeriGeldi(ATCP: TTCP); override;
     procedure OVeriGonderildi(ATCP: TTCP); override;
     function IstenenSayfaDegeriniAl(ABellek: Isaretci; AVeriU: TSayi4): string;
@@ -92,6 +93,14 @@ begin
 end;
 
 {==============================================================================
+  istemci baðlandýðýnda tetiklenen olay
+ ==============================================================================}
+procedure THTTPSunucu.OIstemciBaglandi(ATCP: TTCP);
+begin
+
+end;
+
+{==============================================================================
   istemcilerden veri geldiðinde tetiklenen olay
  ==============================================================================}
 procedure THTTPSunucu.OVeriGeldi(ATCP: TTCP);
@@ -113,7 +122,7 @@ begin
 end;
 
 {==============================================================================
-  bu sunucunun istemciye veri gönderildiðinde tetiklenen olay
+  bu sunucu istemciye veri gönderdiðinde (ve onaylandýðýnda) tetiklenen olay
  ==============================================================================}
 procedure THTTPSunucu.OVeriGonderildi(ATCP: TTCP);
 begin
