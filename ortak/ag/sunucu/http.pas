@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: http sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 22/09/2026
+  Güncelleme Tarihi: 23/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -130,8 +130,6 @@ begin
   if(SayfaGonderildi) then
   begin
 
-    ATCP.BaglantiyiKapat;
-
     SayfaGonderildi := False;
   end
   else
@@ -140,6 +138,8 @@ begin
     if(FIstenenSayfa = '/') then
       ATCP.VeriGonder(WebSiteIcerik, Length(WebSiteIcerik))
     else ATCP.VeriGonder(AnaSayfaHataIcerik, Length(AnaSayfaHataIcerik));
+
+    ATCP.BaglantiKapatmaMesajiGonder;
 
     SayfaGonderildi := True;
   end;

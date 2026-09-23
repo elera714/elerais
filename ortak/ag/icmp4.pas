@@ -89,8 +89,8 @@ begin
     B := TBaglanti(FBaglanti);
 
     // ip4 katman bilgileri
-    B.FIP4.FKaynakIP4Adres := IP4Paket^.KaynakIP4Adres;
-    B.FIP4.FHedefIP4Adres := IP4Paket^.HedefIP4Adres;
+    B.FIP4.FKaynakIPAdres := IP4Paket^.KaynakIPAdres;
+    B.FIP4.FHedefIPAdres := IP4Paket^.HedefIPAdres;
 
     // ethernet katman bilgileri
     B.FEthernet.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;

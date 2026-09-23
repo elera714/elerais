@@ -6,7 +6,7 @@
   Dosya Adı: k_bellek.pas
   Dosya İşlevi: bellek kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 07/02/2025
+  Güncelleme Tarihi: 23/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,6 +32,8 @@ var
   p: PSayi4;
 begin
 
+  Result := HATA_ISLEV;
+
   IslevNo := (AIslevNo and $FF);
 
   // çekirdek bellek kullanım bilgilerini al
@@ -45,7 +47,7 @@ begin
     p := PSayi4(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr);
     p^ := CekirdekUzunlugu;
 
-    Result := 1;
+    Result := HATA_YOK;
   end
 
   // genel bellek kullanım bilgilerini al
@@ -53,17 +55,17 @@ begin
   begin
 
     p := PSayi4(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr);
-    p^ := GercekBellek0.ToplamBlok;
+    p^ := GGercekBellek.ToplamBlok;
     p := PSayi4(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
-    p^ := GercekBellek0.AyrilmisBlok;
+    p^ := GGercekBellek.AyrilmisBlok;
     p := PSayi4(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr);
-    p^ := GercekBellek0.KullanilmisBlok;
+    p^ := GGercekBellek.KullanilmisBlok;
     p := PSayi4(PSayi4(ADegiskenler + 12)^ + GGorevler.FAktifGrvBelAdr);
-    p^ := GercekBellek0.ToplamBlok - GercekBellek0.KullanilmisBlok;
+    p^ := GGercekBellek.ToplamBlok - GGercekBellek.KullanilmisBlok;
     p := PSayi4(PSayi4(ADegiskenler + 16)^ + GGorevler.FAktifGrvBelAdr);
     p^ := 4096;
 
-    Result := 1;
+    Result := HATA_YOK;
   end
 
   // bellek adres içeriğini oku
@@ -73,18 +75,16 @@ begin
     Kaynak := PSayi4(ADegiskenler + 00)^;
     Hedef := PSayi4(ADegiskenler + 04)^;
     Uzunluk := PSayi4(ADegiskenler + 08)^;
-    {if(Kaynak + Uzunluk > GGercekBellek.ToplamRAM) then
+    if(Kaynak + Uzunluk > GGercekBellek.ToplamRAM) then
 
       Result := HATA_BELLEKOKUMA
-    else}
+    else
     begin
 
       Tasi2(Isaretci(Kaynak), Isaretci(Hedef + GGorevler.FAktifGrvBelAdr), Uzunluk);
-      Result := 1;
+      Result := HATA_YOK;
     end;
-  end
-
-  else Result := HATA_ISLEV;
+  end;
 end;
 
 end.

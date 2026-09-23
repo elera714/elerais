@@ -6,7 +6,7 @@
   Dosya Adý: srv_grafik.pas
   Dosya Ýþlevi: dahili servis: çekirdek içi grafiksel bilgilendirme
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 23/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -97,7 +97,7 @@ begin
 
     igBellek := TIslemGostergesi.Create;
     igBellek.Ozellestir(ktNesne, SDPencere, 60, 65, 105, 16);
-    igBellek.DegerleriBelirle(0, GercekBellek0.ToplamBlok);
+    igBellek.DegerleriBelirle(0, GGercekBellek.ToplamBlok);
     igBellek.MevcutDegerYaz(0);
     igBellek.Goster;
 
@@ -133,7 +133,7 @@ begin
   if(BellekSayac = 100) then
   begin
 
-    igBellek.MevcutDegerYaz(GercekBellek0.KullanilmisBlok);
+    igBellek.MevcutDegerYaz(GGercekBellek.KullanilmisBlok);
     BellekSayac := 0;
   end;
 

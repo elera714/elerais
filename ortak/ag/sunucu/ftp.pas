@@ -6,7 +6,7 @@
   Dosya Adý: ftp.pas
   Dosya Ýþlevi: FTP (dosya) sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 22/09/2026
+  Güncelleme Tarihi: 23/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -100,6 +100,8 @@ begin
   begin
 
     ATCP.VeriGonder(BaglantiKapatiliyor, Length(BaglantiKapatiliyor));
+
+    ATCP.BaglantiKapatmaMesajiGonder;
   end;
 
   //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Gelen Veri: [%s]', [s]);
