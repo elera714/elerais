@@ -6,7 +6,7 @@
   Dosya Adý: icmp4.pas
   Dosya Ýþlevi: ICMP v4 tutanak (protokol) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 17/09/2026
+  Güncelleme Tarihi: 24/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,7 +15,7 @@ unit icmp4;
 
 interface
 
-uses paylasim, ethernet, ip4;
+uses paylasim, ip4;
 
 const
   ICMP4_BASLIK_UZUNLUGU = 8;
@@ -88,12 +88,12 @@ begin
 
     B := TBaglanti(FBaglanti);
 
+    // ethernet katman bilgileri
+    B.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+
     // ip4 katman bilgileri
     B.FIP4.FKaynakIPAdres := IP4Paket^.KaynakIPAdres;
     B.FIP4.FHedefIPAdres := IP4Paket^.HedefIPAdres;
-
-    // ethernet katman bilgileri
-    B.FEthernet.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
 
     // yanýt gönder
     PaketleVeGonder(ICMP4Paket, U);

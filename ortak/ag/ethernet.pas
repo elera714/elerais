@@ -6,7 +6,7 @@
   Dosya Adı: ethernet.pas
   Dosya İşlevi: ethernet ağ (network) kartı yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 21/09/2026
+  Güncelleme Tarihi: 24/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -41,13 +41,11 @@ type
     // paket başlıkları da dahil olmak üzere tüm veri toplamlarını içerir.
     FGelenByte, FGidenByte: TSayi4;
   public
-    // paketin gönderileceği cihazın mac adresi
-    FHedefMACAdres: TMACAdres;
-
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure Gonder(AProtokolTipi: TProtokolTipi; AVeri: Isaretci; AVeriU: TSayi4);
+    procedure Gonder(AProtokolTipi: TProtokolTipi; AHedefMACAdres: TMACAdres;
+      AVeri: Isaretci; AVeriU: TSayi4);
     function Al(AHedefBellekAdresi: Isaretci): TSayi4;
 
     function MACAdresiKabulEdilsinMi(AHedefMACAdres: TMACAdres): Boolean;
@@ -87,7 +85,8 @@ end;
 {==============================================================================
   ethernet kartı üzerinden veri gönderir
  ==============================================================================}
-procedure TEthernet.Gonder(AProtokolTipi: TProtokolTipi; AVeri: Isaretci; AVeriU: TSayi4);
+procedure TEthernet.Gonder(AProtokolTipi: TProtokolTipi; AHedefMACAdres: TMACAdres;
+  AVeri: Isaretci; AVeriU: TSayi4);
 var
   EPaket: PEthernetPaket;
   Bellek: Isaretci;
@@ -100,7 +99,7 @@ begin
     // veri paketi için bellekte yer ayır
     EPaket := GetMem(AVeriU + ETHERNET_BASLIKU);
 
-    EPaket^.HedefMACAdres := FHedefMACAdres;
+    EPaket^.HedefMACAdres := AHedefMACAdres;
     EPaket^.KaynakMACAdres := MACAdresim;
 
     // paketin tutanak tipi

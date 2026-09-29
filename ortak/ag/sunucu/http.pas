@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: http sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 23/09/2026
+  Güncelleme Tarihi: 29/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -105,20 +105,23 @@ end;
  ==============================================================================}
 procedure THTTPSunucu.OVeriGeldi(ATCP: TTCP);
 var
-  Veri: array[0..(4 * 4096) - 1] of Char;
+  Veri: Isaretci;
   VeriU: TSayi4;
 begin
 
-  VeriU := 0;
+  Veri := GetMem(4 * 4096);
 
-  Veri := ATCP.GelenVeriyiAl(VeriU);
+  VeriU := ATCP.GelenVeriyiAl(Veri);
+  if(VeriU = 0) then Exit;
 
-  FIstenenSayfa := IstenenSayfaDegeriniAl(@Veri, VeriU);
+  FIstenenSayfa := IstenenSayfaDegeriniAl(Veri, VeriU);
   //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Sayfa: [%s]', [FIstenenSayfa]);
 
   if(FIstenenSayfa = '/') then
     ATCP.VeriGonder(WebSiteBaslik, Length(WebSiteBaslik))
   else ATCP.VeriGonder(AnaSayfaHataBaslik, Length(AnaSayfaHataBaslik));
+
+  FreeMem(Veri, 4 * 4096);
 end;
 
 {==============================================================================

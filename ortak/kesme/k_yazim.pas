@@ -6,7 +6,7 @@
   Dosya Adı: k_yazim.pas
   Dosya İşlevi: grafiksel ekrana yazım kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 05/09/2026
+  Güncelleme Tarihi: 29/09/2026
 
  ==============================================================================}
 {$mode objfpc}

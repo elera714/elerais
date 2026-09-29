@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 17/09/2026
+  Güncelleme Tarihi: 24/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -235,17 +235,8 @@ begin
   APaket.HedefIP4Adres := AHedefIP4Adres^;
 
   if(AARPIslem = arpIstek) then
-  begin
-
-    TBaglanti(FBaglanti).FEthernet.FHedefMACAdres := MACAdres255;
-    TBaglanti(FBaglanti).FEthernet.Gonder(ptARP, @APaket, 28)
-  end
-  else
-  begin
-
-    TBaglanti(FBaglanti).FEthernet.FHedefMACAdres := AHedefMACAdres^;
-    TBaglanti(FBaglanti).FEthernet.Gonder(ptARP, @APaket, 28);
-  end;
+    TBaglanti(FBaglanti).FEthernet.Gonder(ptARP, MACAdres255, @APaket, 28)
+  else TBaglanti(FBaglanti).FEthernet.Gonder(ptARP, AHedefMACAdres^, @APaket, 28);
 end;
 
 {==============================================================================

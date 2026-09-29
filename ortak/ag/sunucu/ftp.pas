@@ -6,7 +6,7 @@
   Dosya Adý: ftp.pas
   Dosya Ýþlevi: FTP (dosya) sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 23/09/2026
+  Güncelleme Tarihi: 29/09/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -48,8 +48,6 @@ var
 
 implementation
 
-uses sistemmesaj;
-
 {==============================================================================
   ftp sunucusu ana yükleme iþlevlerini içerir
  ==============================================================================}
@@ -72,16 +70,17 @@ end;
  ==============================================================================}
 procedure TFTPSunucu.OVeriGeldi(ATCP: TTCP);
 var
-  Veri: array[0..(4 * 4096) - 1] of Char;
+  Veri: Isaretci;
   VeriU: TSayi4;
   s, Komut: string;
 begin
 
-  VeriU := 0;
+  Veri := GetMem(4 * 4096);
 
-  Veri := ATCP.GelenVeriyiAl(VeriU);
+  VeriU := ATCP.GelenVeriyiAl(Veri);
+  if(VeriU = 0) then Exit;
 
-  s := KomutDegeriniAl(@Veri, VeriU);
+  s := KomutDegeriniAl(Veri, VeriU);
 
   Komut := Copy(s, 1, 4);
 
@@ -103,6 +102,8 @@ begin
 
     ATCP.BaglantiKapatmaMesajiGonder;
   end;
+
+  FreeMem(Veri, 4 * 4096);
 
   //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Gelen Veri: [%s]', [s]);
 end;

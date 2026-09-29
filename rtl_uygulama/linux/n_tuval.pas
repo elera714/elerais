@@ -169,10 +169,10 @@ begin
   _Daire(FKimlik, ASol, AUst, AYariCap, ARenk, ADoldur);
 end;
 
+//                 eax               edx   ecx
 procedure _HarfYaz(AKimlik: TKimlik; ASol, AUst: TISayi4; ARenk: TRenk; AKarakter: Char);
 asm
-  movzx eax,AKarakter
-  push  eax
+  push  DWORD AKarakter
   push  DWORD ARenk
   push  DWORD AUst
   push  DWORD ASol
