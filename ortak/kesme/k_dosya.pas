@@ -6,7 +6,7 @@
   Dosya Adý: k_dosya.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 03/07/2026
+  Güncelleme Tarihi: 05/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -86,7 +86,7 @@ begin
     8:
     begin
 
-      Result := Integer(EOF(PKimlik(ADegiskenler + 00)^));
+      Result := TISayi4(EOF(PKimlik(ADegiskenler + 00)^));
     end;
 
     // dosya uzunluðunu al
@@ -111,7 +111,7 @@ begin
       CloseFile(PKimlik(ADegiskenler + 00)^);
     end;
 
-    // dosyayý sil
+    // dosya sil
     12:
     begin
 
