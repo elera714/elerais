@@ -4,9 +4,9 @@
   Telif Bilgisi: haklar.txt dosyasına bakınız
 
   Dosya Adı: dosya.pas
-  Dosya İşlevi: dosya (file) yönetim işlevlerini içerir
+  Dosya İşlevi: dosya sistemleri ana yapısını içerir
 
-  Güncelleme Tarihi: 30/01/2025
+  Güncelleme Tarihi: 07/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,67 +17,141 @@ interface
 
 uses paylasim, gorev, mdepolama;
 
-// tüm dosya işlevleri için gereken yapı
 type
+  // dosya durumları
   TDosyaDurumu = (ddKapali, ddOkumaIcinAcik, ddYazmaIcinAcik);
+
+type
+  // Dosya Sistemi İşlem değişkenleri
+  TDSIslem = record
+    SektorKumeNo,               // işlem yapılan Sektör / Küme numarası
+    ZincirNo,                   // işlem yapılan zincir no
+    SIKonum,                    // işlem yapılan sektörün iç konum değeri
+    SonrakiSIKonum: TISayi4;    // işlem yapılan sektörün bir sonraki iç konum değeri
+    Uzunluk: TSayi4;            // işlem yapılan dosyanın uzunluğu
+  end;
+
 
 type
   PDosya = ^TDosya;
   TDosya = class
   public
-    DST: TSayi4;                      // dosya sistem tipi
-    Kimlik: TKimlik;                  // dosya işlemi kimliği
-    DosyaDurumu: TDosyaDurumu;        // dosyanın durumu
+    FKimlik: TKimlik;               // dosya işlemi kimliği
+    FMD: TMDNesne;
+
+    FDosyaDurumu: TDosyaDurumu;     // dosyanın durumu
+
+    FKlasorDerinlik: TISayi4;       // 0 = kök dizin, 1 = alt dizin, 2 = alt dizinin alt dizini ...
+
+    // arama değişkenleri
+    FArama: TDSIslem;
+    FIslem: TDSIslem;
+    FSilinen: TDSIslem;
+
+    FBellekSHT: Isaretci;           // sektör harita tablosunu (fat) yüklemek için kullanılacak
+
+    FGorev: PGorev;                 // dosya işlemini gerçekleştiren görev
 
     // dizin / dosya girişinin Tek Sektörlük Içeriği. (işlevler arası veri alışverişi için)
-    TSI: Isaretci;
+    FTSI: Isaretci;
 
-    MD: TMDNesne;
-    Klasor, DosyaAdi: string;
+    FAramaSuzgec,                   // arama yapılan süzgeç değeri: disket1:\klasör1\*.* gibi
+    FKlasor, FDosyaAdi: string;     // arama yapılan klasör ve dosya adı
 
-    KlasorDerinlik: TISayi4;          // 0 = kök dizin, 1 = alt dizin, 2 = alt dizinin alt dizini ...
-
-    // işlevler için kullanılacak genel bellek işaretçileri
-    BellekSHT,                        // sektör harita tablosunu (fat) yüklemek için kullanılacak
-    Bellek2: Isaretci;
-    BellekSHTDurum,
-    Durum2: Boolean;                  // bellek durumlarını tutan değişkenler (genel kullanım için)
-
-    Gorev: PGorev;            // dosya işlemini gerçekleştiren görev
-
-    { SektorIcıKonum değeri 512 byte'lık sektörün içerisinde 0,32,64 olarak artış gösteren imleç değeridir.
-      512 olduğunda bir sonraki sektör yüklenir.
-      KayitSN değeri yok edilerek SektorIcıKonum değeri ikame edilecek }
-    SektorIciKonum,
-
-    SektorKumeNo: TISayi4;            // fat12 / fat16 kök dizin için sektör no, diğer durumlarda küme no
-    ZincirNo: TSayi4;
-
-    // silinmiş ilk girdi değişkenleri
-    SilinenKumeNo,
-    SilinenZincirNo,
-    SilinenKayitSN: TISayi4;
-
-    Aranan: string;
-
-    constructor Create(AKimlikNo: TISayi4; FDST: TSayi4); virtual;
+    constructor Create(AKimlik: TKimlik; AMDNesne: TMDNesne); virtual;
+    destructor Destroy; override;
 
     procedure Append; virtual; abstract;
+    procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string); virtual; abstract;
+    procedure CloseFile; virtual; abstract;
     function CreateDir: Boolean; virtual; abstract;
+    function DeleteFile: Boolean; virtual; abstract;
+    function EOF: Boolean; virtual; abstract;
+    function FileSize: TSayi4; virtual; abstract;
+    function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
+      var ADosyaArama: TDosyaArama): TSayi4; virtual; abstract;
+    function FindNext(var ADosyaArama: TDosyaArama): TSayi4; virtual; abstract;
+    function FindClose(var ADosyaArama: TDosyaArama): TSayi4; virtual; abstract;
+    function IOResult: TSayi4; virtual; abstract;
     procedure Read(AHedefBellek: Isaretci); virtual; abstract;
+    function RemoveDir: Boolean; virtual; abstract;
+    procedure Reset; virtual; abstract;
     procedure ReWrite; virtual; abstract;
+    procedure Write(AVeri: string); virtual; abstract;
+    procedure WriteLn(AVeri: string); virtual; abstract;
+
+    procedure DosyaDegerleriniBelirle(ADosyaTamYol: string);
   end;
 
 implementation
 
-constructor TDosya.Create(AKimlikNo: TISayi4; FDST: TSayi4);
+uses islevler;
+
+{==============================================================================
+  dosya sistemi nesne ön değer yükleme işlevi
+ ==============================================================================}
+constructor TDosya.Create(AKimlik: TISayi4; AMDNesne: TMDNesne);
 begin
 
-  // ilk değer atamalarını gerçekleştir
-  DST := FDST;
-  Kimlik := AKimlikNo;
-  DosyaDurumu := ddKapali;
-  TSI := GetMem(512);
+  // ilk değer atamaları
+  FKimlik := AKimlik;
+
+  FMD := AMDNesne;
+
+  FDosyaDurumu := ddKapali;
+  FKlasorDerinlik := 0;
+
+  FArama.SektorKumeNo := 0;
+  FArama.ZincirNo := 0;
+  FArama.SIKonum := 0;
+  FArama.SonrakiSIKonum := 0;
+  FArama.Uzunluk := 0;
+
+  FIslem.SektorKumeNo := -1;
+  FIslem.ZincirNo := -1;
+  FIslem.SIKonum := -1;
+  FIslem.SonrakiSIKonum := -1;
+  FIslem.Uzunluk := 0;
+
+  FSilinen.SektorKumeNo := -1;
+  FSilinen.ZincirNo := -1;
+  FSilinen.SIKonum := -1;
+  FSilinen.SonrakiSIKonum := -1;
+  FSilinen.Uzunluk := 0;
+
+  FBellekSHT := nil;
+  FGorev := nil;
+
+  FTSI := GetMem(512);
+end;
+
+{==============================================================================
+  dosya sistemi nesne yok etme işlevi
+ ==============================================================================}
+destructor TDosya.Destroy;
+begin
+
+  FreeMem(FTSI, 512);
+
+  if not(FBellekSHT = nil) then FreeMem(FBellekSHT, 512);
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  dosya tam yolunu parçalar ayırır
+ ==============================================================================}
+procedure TDosya.DosyaDegerleriniBelirle(ADosyaTamYol: string);
+var
+  S, K, D: string;
+begin
+
+  // dosya yolunu ayrıştır
+  DosyaYolunuParcala2(ADosyaTamYol, S, K, D);
+
+  // klasör ve dosya adı
+  FKlasor := K;
+  FDosyaAdi := D;
 end;
 
 end.
