@@ -6,7 +6,7 @@
   Dosya Adý: srv_grafik.pas
   Dosya Ýþlevi: dahili servis: çekirdek içi grafiksel bilgilendirme
 
-  Güncelleme Tarihi: 23/09/2026
+  Güncelleme Tarihi: 09/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,7 +32,7 @@ type
 implementation
 
 uses gn_etiket, mdepolama, elr1, sistemmesaj, gorselnesne, gercekbellek, sistem,
-  src_vesa20, gn_islevler, zamanlayici;
+  src_vesa20, gn_islevler, zamanlayici, dosyalar;
 
 var
   SDPencere: TPencere;
@@ -176,7 +176,7 @@ begin
     GZamanlayicilar.FZamanlayiciSayaci div CALISMA_FREKANSI, RENK_MOR);
   SDPencere.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'Nesne:', RENK_KIRMIZI);
   SDPencere.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40,
-    GGNesneler.FToplamGorselNesne, RENK_KIRMIZI);
+    GDosyalar.DosyaIslemSayisi, RENK_KIRMIZI);
 end;
 
 end.

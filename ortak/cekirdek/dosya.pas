@@ -6,7 +6,7 @@
   Dosya Adı: dosya.pas
   Dosya İşlevi: dosya sistemleri ana yapısını içerir
 
-  Güncelleme Tarihi: 07/10/2026
+  Güncelleme Tarihi: 09/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -24,11 +24,10 @@ type
 type
   // Dosya Sistemi İşlem değişkenleri
   TDSIslem = record
-    SektorKumeNo,               // işlem yapılan Sektör / Küme numarası
-    ZincirNo,                   // işlem yapılan zincir no
-    SIKonum,                    // işlem yapılan sektörün iç konum değeri
-    SonrakiSIKonum: TISayi4;    // işlem yapılan sektörün bir sonraki iç konum değeri
-    Uzunluk: TSayi4;            // işlem yapılan dosyanın uzunluğu
+    FSektorKumeNo,               // işlem yapılan Sektör / Küme numarası
+    FZincirNo,                   // işlem yapılan zincir no
+    FSIKonum,                    // işlem yapılan sektörün iç konum değeri
+    FSonrakiSIKonum: TSayi4;     // işlem yapılan sektörün bir sonraki iç konum değeri
   end;
 
 
@@ -42,6 +41,8 @@ type
     FDosyaDurumu: TDosyaDurumu;     // dosyanın durumu
 
     FKlasorDerinlik: TISayi4;       // 0 = kök dizin, 1 = alt dizin, 2 = alt dizinin alt dizini ...
+
+    FUzunluk: TSayi4;               // işlem yapılan dosyanın uzunluğu
 
     // arama değişkenleri
     FArama: TDSIslem;
@@ -68,10 +69,12 @@ type
     function DeleteFile: Boolean; virtual; abstract;
     function EOF: Boolean; virtual; abstract;
     function FileSize: TSayi4; virtual; abstract;
+
     function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
       var ADosyaArama: TDosyaArama): TSayi4; virtual; abstract;
     function FindNext(var ADosyaArama: TDosyaArama): TSayi4; virtual; abstract;
     function FindClose(var ADosyaArama: TDosyaArama): TSayi4; virtual; abstract;
+
     function IOResult: TSayi4; virtual; abstract;
     procedure Read(AHedefBellek: Isaretci); virtual; abstract;
     function RemoveDir: Boolean; virtual; abstract;
@@ -100,24 +103,22 @@ begin
 
   FDosyaDurumu := ddKapali;
   FKlasorDerinlik := 0;
+  FUzunluk := 0;
 
-  FArama.SektorKumeNo := 0;
-  FArama.ZincirNo := 0;
-  FArama.SIKonum := 0;
-  FArama.SonrakiSIKonum := 0;
-  FArama.Uzunluk := 0;
+  FArama.FSektorKumeNo := 0;
+  FArama.FZincirNo := 0;
+  FArama.FSIKonum := 0;
+  FArama.FSonrakiSIKonum := 0;
 
-  FIslem.SektorKumeNo := -1;
-  FIslem.ZincirNo := -1;
-  FIslem.SIKonum := -1;
-  FIslem.SonrakiSIKonum := -1;
-  FIslem.Uzunluk := 0;
+  FIslem.FSektorKumeNo := $FFFFFFFF;
+  FIslem.FZincirNo := $FFFFFFFF;
+  FIslem.FSIKonum := $FFFFFFFF;
+  FIslem.FSonrakiSIKonum := $FFFFFFFF;
 
-  FSilinen.SektorKumeNo := -1;
-  FSilinen.ZincirNo := -1;
-  FSilinen.SIKonum := -1;
-  FSilinen.SonrakiSIKonum := -1;
-  FSilinen.Uzunluk := 0;
+  FSilinen.FSektorKumeNo := $FFFFFFFF;
+  FSilinen.FZincirNo := $FFFFFFFF;
+  FSilinen.FSIKonum := $FFFFFFFF;
+  FSilinen.FSonrakiSIKonum := $FFFFFFFF;
 
   FBellekSHT := nil;
   FGorev := nil;

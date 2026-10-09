@@ -6,7 +6,7 @@
   Dosya Adı: aygit.pas
   Dosya İşlevi: sistemde mevcut tüm aygıtların temel sınıflarını içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 09/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -42,7 +42,7 @@ type
 
 type
   TFDAOkuYaz = function(AIlkSektor, ASektorSayisi: TSayi4;
-    ABellek: Isaretci): TISayi4 of object;
+    ABellek: Isaretci): TSayi4 of object;
 
 type
   // Fiziksel Depolama Aygıtı (disk, disket vb.)

@@ -6,7 +6,7 @@
   Dosya Adı: bmp.pas
   Dosya İşlevi: bmp dosya işlevlerini içerir
 
-  Güncelleme Tarihi: 05/09/2026
+  Güncelleme Tarihi: 09/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -94,7 +94,7 @@ begin
 
     AssignFile(DosyaKimlik, DosyaTamYol);
     Reset(DosyaKimlik);
-    if(IOResult = HATA_DOSYA_ISLEM_BASARILI) then
+    if(IOResult = HATA_YOK) then
     begin
 
       // dosya uzunluğunu al

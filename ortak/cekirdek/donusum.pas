@@ -6,7 +6,7 @@
   Dosya Adı: donusum.pas
   Dosya İşlevi: değer dönüşüm (convert) işlevlerini içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 09/10/2026
 
  ==============================================================================}
 {$mode objfpc}
