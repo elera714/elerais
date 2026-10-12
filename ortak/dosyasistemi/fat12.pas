@@ -6,7 +6,7 @@
   Dosya Adý: fat12.pas
   Dosya Ýþlevi: fat12 dosya sistem yönetim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 09/10/2026
+  Güncelleme Tarihi: 12/10/2026
 
   Bilgi: TFAT12 nesne içeriðindeki iþlevler dosyalar.pas dosyasýnýn içeriðindeki
     iþlevler ile kullanýlmalýdýr
@@ -286,7 +286,7 @@ var
   Bellek: Isaretci;
 begin
 
-  // en son iþlem hatalý ise çýk
+  // en son iþlem hatalý deðil ise
   if(FGorev^.DosyaSonIslemDurum = HATA_YOK) then
   begin
 
@@ -482,7 +482,7 @@ begin
       FArama.FSonrakiSIKonum := 0;
     end;
 
-    // FArama.FSIKonum deðeri her 0 olduðunda bir sonraki sektörü oku
+    // FArama.FSIKonum deðeri her 0 olduðunda zincirin belirlenen sektörünü oku
     if(FArama.FSIKonum = 0) then
     begin
 
@@ -644,6 +644,7 @@ begin
       end;
     end;
 
+    // FArama.FSIKonum deðeri her 0 olduðunda zincirin belirlenen sektörünü oku
     if(FArama.FSIKonum = 0) then
     begin
 
@@ -662,7 +663,6 @@ begin
     if(DizinGirdisi^.DosyaAdi[0] = #00) then
     begin
 
-      // Result = 1 = dosya - dizin girdisi okunamadý, mevcut deðil, tamamlandý
       Result := HATA_DK_MEVCUTDEGIL;
       TumGirislerOkundu := True;
     end
