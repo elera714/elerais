@@ -333,6 +333,8 @@ begin
     // eðer 0x0FF8..0x0FFF aralýðýndaysa bu dosyanýn en son zinciridir
     until (FIslem.FSektorKumeNo >= $0FF8) or (Sonuc <> HATA_YOK) or (OkunacakVeriU = 0);
 
+    if(Sonuc <> HATA_YOK) then FGorev^.DosyaSonIslemDurum := HATA_AYGITOKUMA;
+
     // kullanýlan bellekleri serbest býrak
     FreeMem(Bellek, KBS * 512);
   end;
