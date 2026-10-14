@@ -6,7 +6,7 @@
   Dosya Adı: src_ps2.pas
   Dosya İşlevi: ps/2 fare sürücüsü
 
-  Güncelleme Tarihi: 16/07/2026
+  Güncelleme Tarihi: 14/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,7 +15,7 @@ unit src_ps2;
 
 interface
 
-uses paylasim, sistemmesaj;
+uses paylasim;
 
 const
   TEKERLEK_CARPAN_DEGERI = TSayi4(10);
@@ -32,13 +32,15 @@ type
   TFareSurucusu = class
   private
     // -> yazılımsal hızlandırma amaçlı değişkenler
-    FYatayKonum, FDikeyKonum: TISayi4;
+    FKonumDegisti: Boolean;
+    FYatayKonum, FDikeyKonum,
+    FYeniYatayKonum, FYeniDikeyKonum: TISayi4;
     FHiz: Double;
     FFareDugmeleri: TSayi1;
     FKaydirmaDegeri: TISayi4;
     FAygitPaketUzunlugu: TSayi4;
     FAktifFareImlec: TFareImlecTipi;
-    procedure KlavyeKontrolcuyeYaz(AKomut: Byte);
+    procedure KlavyeKontrolcuyeYaz(AKomut: TSayi1);
     function AygitCikisiDoluMu: Boolean;
     function AygitGirisiBosMu: Boolean;
     function ACKVerisiGeldiMi: boolean;
@@ -47,10 +49,11 @@ type
   public
     constructor Create;
     function OlaylariAl(AFareOlay: PFareOlay): Boolean;
+    procedure KonumDegistir(AYatayKonum, ADikeyKonum: TISayi4);
   published
-    property YatayKonum: Integer read FYatayKonum;
-    property DikeyKonum: Integer read FDikeyKonum;
-    property FareDugmeleri: Byte read FFareDugmeleri;
+    property YatayKonum: TISayi4 read FYatayKonum;
+    property DikeyKonum: TISayi4 read FDikeyKonum;
+    property FareDugmeleri: TSayi1 read FFareDugmeleri;
     property KaydirmaDegeri: TISayi4 read FKaydirmaDegeri;
     property AktifFareImlec: TFareImlecTipi read FAktifFareImlec write FAktifFareImlec;
   end;
@@ -65,11 +68,11 @@ implementation
 uses irq, port, src_vesa20, src_klavye;
 
 const
-  KLAVYE_VERI_PORT    = $60;        // okunabilir / yazılabilir
-  KLAVYE_DURUM_PORT   = $64;        // okunabilir
-  KLAVYE_KOMUT_PORT   = $64;        // yazılabilir
+  KLAVYE_VERI_PORT      = $60;        // okunabilir / yazılabilir
+  KLAVYE_DURUM_PORT     = $64;        // okunabilir
+  KLAVYE_KOMUT_PORT     = $64;        // yazılabilir
 
-  FARE_BELLEK_UZUNLUGU = 128;
+  FARE_BELLEK_UZUNLUGU  = 128;
 
 var
   // aygıttan alınarak belleğe aktarılan veri uzunluğu
@@ -86,6 +89,8 @@ begin
 
   // kesmeleri durdur
   cli;
+
+  FKonumDegisti := False;
 
   FAygitPaketUzunlugu := 3;
 
@@ -273,14 +278,36 @@ begin
     Result := True;
   end else Result := False;
 
+  if(FKonumDegisti) then
+  begin
+
+    FYatayKonum := FYeniYatayKonum;
+    FDikeyKonum := FYeniDikeyKonum;
+
+    AFareOlay^.Yatay := FYatayKonum;
+    AFareOlay^.Dikey := FDikeyKonum;
+    FKonumDegisti := False;
+  end;
+
   // kesmeleri aktifleştir & çık
   sti;
 end;
 
 {==============================================================================
+  fare konumunu değiştirir ve durum değişikliğini tetikler
+ ==============================================================================}
+procedure TFareSurucusu.KonumDegistir(AYatayKonum, ADikeyKonum: TISayi4);
+begin
+
+  FYeniYatayKonum := AYatayKonum;
+  FYeniDikeyKonum := ADikeyKonum;
+  FKonumDegisti := True;
+end;
+
+{==============================================================================
   klavye kontrolcüsüne komut gönderir
  ==============================================================================}
-procedure TFareSurucusu.KlavyeKontrolcuyeYaz(AKomut: Byte);
+procedure TFareSurucusu.KlavyeKontrolcuyeYaz(AKomut: TSayi1);
 begin
 
   AygitGirisiBosMu;

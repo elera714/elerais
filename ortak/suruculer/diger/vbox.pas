@@ -6,7 +6,7 @@
   Dosya Adý: vbox.pas
   Dosya Ýþlevi: virtualbox sanal aygýt yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 10/05/2025
+  Güncelleme Tarihi: 14/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,32 +17,24 @@ interface
 
 uses paylasim, sistemmesaj, pci;
 
-function Yukle(APCI: TPCI): TISayi4;
-procedure Listele;
-procedure IcerigiGoruntule;
-procedure VBoxKesmeCagrisi;
-
-implementation
-
-uses irq, port;
-
 const
-  VMMDEV_SURUM                = $00010003;
-  VBOX_ISTEK_BASLIK_SURUM     = $00010001;
+  VB_SURUM                  = $00010003;
+  VB_ISTEK_BASLIK_SURUM     = $00010001;
 
-  VMM_FARE_DURUMAL            = 1;
-  VMM_FARE_DURUMYAZ           = 2;
-//  #define VMM_SetPointerShape 3
-//  #define VMM_AcknowledgeEvents 41
-  VMM_GUEST_BILGIAL           = 50;
-  VMM_KONUK_GORUNTU_DEGISIM   = 51;
-  VMM_KONUK_ONAY_OLAY         = 41;
-  VMM_GUEST_YETENEKAL         = 55;
-//  #define VMM_VideoSetVisibleRegion 72
+  VB_FARE_DURUMAL           = 1;
+  VB_FARE_DURUMYAZ          = 2;
+  VB_FARE_AKTIF             = (1 shl 0) or (1 shl 4);
+  VB_FARE_PASIF             = 0;
+
+  VB_KONUK_BILGI            = 50;
+  VB_KONUK_GORUNTU_DEGISIM  = 51;
+  VB_KONUK_ONAY_OLAY        = 41;
+  VB_KONUK_YETENEK          = 55;
 
 type
-  PVBoxBaslik = ^TVBoxBaslik;
-  TVBoxBaslik = record
+  // vb_header
+  PVBBaslik = ^TVBBaslik;
+  TVBBaslik = record
     Uzunluk: TSayi4;
   	Surum: TSayi4;
   	IstekTipi: TSayi4;
@@ -51,197 +43,288 @@ type
   	Ayrildi2: TSayi4;
   end;
 
-  PVBoxGuestBilgi = ^TVBoxGuestBilgi;
-  TVBoxGuestBilgi = record
-    Baslik: TVBoxBaslik;
+  // vb_guest_info
+  PVBMISBilgi = ^TVBMISBilgi;
+  TVBMISBilgi = record      // Misafir Ýþletim Sistemi
+    Baslik: TVBBaslik;
   	Surum: TSayi4;
-  	ISType: TSayi4;     // Ýþletim Sistemi tipi
+  	ISType: TSayi4;         // Ýþletim Sistemi tipi
   end;
 
-  PVBoxFare = ^TVBoxFare;
-  TVBoxFare = record
-    Baslik: TVBoxBaslik;
+  // vb_mouse
+  PVBFare = ^TVBFare;
+  TVBFare = record
+    Baslik: TVBBaslik;
   	Ozellikler: TSayi4;
   	X: TISayi4;
   	Y: TISayi4;
   end;
 
-  PVBoxGuestYetenek = ^TVBoxGuestYetenek;
-  TVBoxGuestYetenek = record
-    Baslik: TVBoxBaslik;
+  // vb_guest_caps
+  PVBMISYetenek = ^TVBMISYetenek;
+  TVBMISYetenek = record
+    Baslik: TVBBaslik;
   	Yetenek: TSayi4;
   end;
 
-  PVBoxOnayOlay = ^TVBoxOnayOlay;
-  TVBoxOnayOlay = record
-    Baslik: TVBoxBaslik;
+  // vb_ack_events
+  PVBOnayOlay = ^TVBOnayOlay;
+  TVBOnayOlay = record
+    Baslik: TVBBaslik;
   	Olaylar: TSayi4;
   end;
 
-  PVBoxGoruntuDegisim = ^TVBoxGoruntuDegisim;
-  TVBoxGoruntuDegisim = record
-    Baslik: TVBoxBaslik;
+  // vb_display_change
+  PVBGoruntuDegisim = ^TVBGoruntuDegisim;
+  TVBGoruntuDegisim = record
+    Baslik: TVBBaslik;
   	XCozunurluk,
     YCozunurluk: TSayi4;
     BPP, OlayOnay: TSayi4;
   end;
 
-var
-  PCIAygit: TPCI;
-  VBPort: TSayi4;
-  VBBellek: TSayi4;
-  VBKesmeNo: TSayi1;
+  // vbox_version
+  PVBSurum = ^TVBSurum;
+  TVBSurum = record
+    Baslik: TVBBaslik;
+    SurumX: TSayi2;
+    SurumY: TSayi2;
+    Yapim: TSayi4;
+    Degisim: TSayi4;
+    Ozellik: TSayi4;
+  end;
 
-  {$CODEALIGN PROC=4}
-  VBoxGuestBilgi: TVBoxGuestBilgi;
-  {$CODEALIGN PROC=4}
-  VBoxGuestYetenek: TVBoxGuestYetenek;
-  {$CODEALIGN PROC=4}
-  VBoxOnayOlay: TVBoxOnayOlay;
-  {$CODEALIGN PROC=4}
-  VBoxGoruntuDegisim: TVBoxGoruntuDegisim;
-  {$CODEALIGN PROC=4}
-  VBoxFare: TVBoxFare;
+type
+  TVirtualBox = class
+  private
+    FPCIAygit: TPCI;
+    FPort: TSayi4;
+    FBellek: TSayi4;
+    FKesmeNo: TSayi1;
+    FFareYuklendi: Boolean;
+  public
+    constructor Create(APCI: TPCI);
+    procedure Yukle;
+    procedure FareDurumDegistir(AAktiflestir: Boolean);
+    procedure FareKonumDegerleriniAl;
+    procedure SurumDegeriniAl;
+  end;
+
+var
+  GVirtualBox: TVirtualBox;
+
+procedure VBoxKesmeCagrisi;
+
+implementation
+
+uses port, src_ps2;
 
 {==============================================================================
-  að ilk deðer yüklemelerini gerçekleþtirir
+  nesne ana yükleme iþlevlerini gerçekleþtirir
  ==============================================================================}
-function Yukle(APCI: TPCI): TISayi4;
+constructor TVirtualBox.Create(APCI: TPCI);
 begin
 
-  PCIAygit := APCI;
-  Result := -1;
+  FPCIAygit := APCI;
+
+  FFareYuklendi := False;
+
+  Yukle;
 end;
 
-procedure Listele;
+{==============================================================================
+  virtualbox sanal sürücü yükleme iþlevlerini gerçekleþtirir
+ ==============================================================================}
+procedure TVirtualBox.Yukle;
 var
   KesmeAktif: TSayi2;
+  MISBilgi: TVBMISBilgi;
+  MISYetenek: TVBMISYetenek;
+  OnayOlay: TVBOnayOlay;
+  GoruntuDegisim: TVBGoruntuDegisim;
+  Fare: TVBFare;
 begin
 
-  VBPort := GPCIAygitlar.Oku4(PCIAygit.FYol, PCIAygit.FAygit, PCIAygit.FIslev, PCI_BAR0);
-  VBBellek := GPCIAygitlar.Oku4(PCIAygit.FYol, PCIAygit.FAygit, PCIAygit.FIslev, PCI_BAR1) and $FFFFFFF0;
-  KesmeAktif := GPCIAygitlar.Oku2(PCIAygit.FYol, PCIAygit.FAygit, PCIAygit.FIslev, PCI_KOMUT);
-  VBKesmeNo := GPCIAygitlar.Oku1(PCIAygit.FYol, PCIAygit.FAygit, PCIAygit.FIslev, PCI_KESME_NO);
+  FPort := GPCIAygitlar.Oku4(FPCIAygit.FYol, FPCIAygit.FAygit, FPCIAygit.FIslev,
+    PCI_BAR0) and $FFFFFFFC;
+  FBellek := GPCIAygitlar.Oku4(FPCIAygit.FYol, FPCIAygit.FAygit, FPCIAygit.FIslev,
+    PCI_BAR1) and $FFFFFFF0;
+  KesmeAktif := GPCIAygitlar.Oku2(FPCIAygit.FYol, FPCIAygit.FAygit, FPCIAygit.FIslev,
+    PCI_KOMUT);
+  FKesmeNo := GPCIAygitlar.Oku1(FPCIAygit.FYol, FPCIAygit.FAygit, FPCIAygit.FIslev,
+    PCI_KESME_NO);
 
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Yol: %d', [PCIAygit.FYol]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt: %d', [PCIAygit.FAygit]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Ýþlev: %d', [PCIAygit.FIslev]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Satýcý Kimlik: $%.4x', [PCIAygit.FSaticiKimlik]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Aygýt Kimlik: $%.4x', [PCIAygit.FAygitKimlik]);
-
-  if((VBPort and 1) = 1) then
-    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Port: $%.4x', [VBPort and $FFFFFFFC])
-  else SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Bellek: $%.8x', [VBPort and $FFFFFFFC]);
+  {SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'VirtualBox.........:', []);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Yol: %d', [FPCIAygit.FYol]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Aygýt: %d', [FPCIAygit.FAygit]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Ýþlev: %d', [FPCIAygit.FIslev]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Satýcý Kimlik: $%.4x', [FPCIAygit.FSaticiKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Aygýt Kimlik: $%.4x', [FPCIAygit.FAygitKimlik]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Port: $%.4x', [FPort]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Bellek: $%.8x', [FBellek]);
+  SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - Kesme No: %d', [FKesmeNo]);
 
   // 10. bitin 1 olmasý kesmenin pasif olduðu anlamýna gelir
   if(KesmeAktif and (1 shl 10) = 0) then
-    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'INT Aktif', [])
-  else SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'INT Pasif', []);
-
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'Kesme No: %d', [VBKesmeNo]);
+    SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - INT Aktif', [])
+  else SISTEM_MESAJ(mtBilgi, RENK_TURKUAZ, '  - INT Pasif', []);}
 
   // vbox kesmesini aktifleþtir
-  IRQIsleviAta(VBKesmeNo, @VBoxKesmeCagrisi);
+  //IRQIsleviAta(FKesmeNo, @VBoxKesmeCagrisi);
   //IRQEtkinlestir(VBKesmeNo);
 
-{	VBoxGuestBilgi.Baslik.Uzunluk := SizeOf(TVBoxGuestBilgi);
-	VBoxGuestBilgi.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
-	VBoxGuestBilgi.Baslik.IstekTipi := VMM_GUEST_BILGIAL;
-	VBoxGuestBilgi.Baslik.RC := 0;
-	VBoxGuestBilgi.Baslik.Ayrildi1 := 0;
-	VBoxGuestBilgi.Baslik.Ayrildi2 := 0;
-	VBoxGuestBilgi.Surum := VMMDEV_SURUM;
-	VBoxGuestBilgi.ISType := $00100;
-	PortYaz4(VBPort, TSayi4(@VBoxGuestBilgi));
-}
-{	VBoxGuestYetenek.Baslik.Uzunluk := SizeOf(TVBoxGuestYetenek);
-	VBoxGuestYetenek.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
-	VBoxGuestYetenek.Baslik.IstekTipi := VMM_GUEST_YETENEKAL;
-	VBoxGuestYetenek.Baslik.RC := 0;
-	VBoxGuestYetenek.Baslik.Ayrildi1 := 0;
-	VBoxGuestYetenek.Baslik.Ayrildi2 := 0;
-	VBoxGuestYetenek.Yetenek := 1 shl 0;
-	PortYaz4(VBPort, TSayi4(@VBoxGuestYetenek));
+	MISBilgi.Baslik.Uzunluk := SizeOf(TVBMISBilgi);
+	MISBilgi.Baslik.Surum := VB_ISTEK_BASLIK_SURUM;
+	MISBilgi.Baslik.IstekTipi := VB_KONUK_BILGI;
+	MISBilgi.Baslik.RC := 0;
+	MISBilgi.Baslik.Ayrildi1 := 0;
+	MISBilgi.Baslik.Ayrildi2 := 0;
+	MISBilgi.Surum := VB_SURUM;
+	MISBilgi.ISType := 0;
+	PortYaz4(FPort, TSayi4(@MISBilgi));
 
-	VBoxOnayOlay.Baslik.Uzunluk := SizeOf(TVBoxOnayOlay);
-	VBoxOnayOlay.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
-	VBoxOnayOlay.Baslik.IstekTipi := VMM_KONUK_ONAY_OLAY;
-	VBoxOnayOlay.Baslik.RC := 0;
-	VBoxOnayOlay.Baslik.Ayrildi1 := 0;
-	VBoxOnayOlay.Baslik.Ayrildi2 := 0;
-	VBoxOnayOlay.Olaylar := 0;
-	//PortYaz4(VBPort, TSayi4(@VBoxOnayOlay));
+{	MISYetenek.Baslik.Uzunluk := SizeOf(TVBMISYetenek);
+	MISYetenek.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
+	MISYetenek.Baslik.IstekTipi := VB_KONUK_YETENEK;
+	MISYetenek.Baslik.RC := 0;
+	MISYetenek.Baslik.Ayrildi1 := 0;
+	MISYetenek.Baslik.Ayrildi2 := 0;
+	MISYetenek.Yetenek := 1 shl 0;
+	PortYaz4(VBPort, TSayi4(@MISYetenek));
 
-	VBoxGoruntuDegisim.Baslik.Uzunluk := SizeOf(TVBoxGoruntuDegisim);
-	VBoxGoruntuDegisim.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
-	VBoxGoruntuDegisim.Baslik.IstekTipi := VMM_KONUK_GORUNTU_DEGISIM;
-	VBoxGoruntuDegisim.Baslik.RC := 0;
-	VBoxGoruntuDegisim.Baslik.Ayrildi1 := 0;
-	VBoxGoruntuDegisim.Baslik.Ayrildi2 := 0;
-	VBoxGoruntuDegisim.XCozunurluk := 0;
-	VBoxGoruntuDegisim.YCozunurluk := 0;
-	VBoxGoruntuDegisim.BPP := 0;
-	VBoxGoruntuDegisim.OlayOnay := 1;
-	//PortYaz4(VBPort, TSayi4(@VBoxGoruntuDegisim));
+	OnayOlay.Baslik.Uzunluk := SizeOf(TVBOnayOlay);
+	OnayOlay.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
+	OnayOlay.Baslik.IstekTipi := VB_KONUK_ONAY_OLAY;
+	OnayOlay.Baslik.RC := 0;
+	OnayOlay.Baslik.Ayrildi1 := 0;
+	OnayOlay.Baslik.Ayrildi2 := 0;
+	OnayOlay.Olaylar := 0;
+	//PortYaz4(VBPort, TSayi4(@OnayOlay));
+
+	GoruntuDegisim.Baslik.Uzunluk := SizeOf(TVBGoruntuDegisim);
+	GoruntuDegisim.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
+	GoruntuDegisim.Baslik.IstekTipi := VB_KONUK_GORUNTU_DEGISIM;
+	GoruntuDegisim.Baslik.RC := 0;
+	GoruntuDegisim.Baslik.Ayrildi1 := 0;
+	GoruntuDegisim.Baslik.Ayrildi2 := 0;
+	GoruntuDegisim.XCozunurluk := 0;
+	GoruntuDegisim.YCozunurluk := 0;
+	GoruntuDegisim.BPP := 0;
+	GoruntuDegisim.OlayOnay := 1;
+	//PortYaz4(VBPort, TSayi4(@GoruntuDegisim));
 
   //PSayi4(Isaretci(VBBellek) + 04)^ := $FFFFFFFF;
   //PSayi4(Isaretci(VBBellek) + 08)^ := $FFFFFFFF;
   PSayi4(Isaretci(VBBellek + 12))^ := $FFFFFFFF;
 
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'VBoxGuestBilgi: %x', [TSayi4(@VBoxGuestBilgi)]);
-                               }
-{  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 8)^]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
-}
-//  asm int $25 end;
-
-
-  VBoxFare.Baslik.Uzunluk := SizeOf(TVBoxFare);
-  VBoxFare.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
-  VBoxFare.Baslik.IstekTipi := VMM_FARE_DURUMYAZ;
-  VBoxFare.Baslik.RC := 0;
-  VBoxFare.Baslik.Ayrildi1 := 0;
-  VBoxFare.Baslik.Ayrildi2 := 0;
-  VBoxFare.Ozellikler := (1 shl 0) or (1 shl 4);  // on, off = 0
-  VBoxFare.X := 0;
-  VBoxFare.Y := 0;
-  PortYaz4(VBPort, TSayi4(@VBoxFare));
-
-
-  PSayi4(VBBellek + 12)^ := $FFFFFFFF;
-end;
-
-procedure IcerigiGoruntule;
-begin
-
-
-	VBoxFare.Baslik.Uzunluk := SizeOf(TVBoxFare);
-	VBoxFare.Baslik.Surum := VBOX_ISTEK_BASLIK_SURUM;
-	VBoxFare.Baslik.IstekTipi := VMM_FARE_DURUMAL;
-	VBoxFare.Baslik.RC := 0;
-	VBoxFare.Baslik.Ayrildi1 := 0;
-	VBoxFare.Baslik.Ayrildi2 := 0;
-	VBoxFare.Ozellikler := (1 shl 0) or (1 shl 4);  // on, off = 0
-	VBoxFare.X := 0;
-	VBoxFare.Y := 0;
-	PortYaz4(VBPort, TSayi4(@VBoxFare));
-
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox X: %d', [VBoxFare.X]);
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Y: %d', [VBoxFare.Y]);
 
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 8)^]);
   SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
+
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 0)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 4)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 8)^]);
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Deðer: %x', [PSayi4(Isaretci(VBBellek) + 12)^]);
+
+  PSayi4(VBBellek + 12)^ := $FFFFFFFF; }
 end;
 
-procedure VBoxKesmeCagrisi; nostackframe; assembler;
-asm
+{==============================================================================
+  sanal fare sürücüsünü aktifleþtirir / pasifleþtirir
+ ==============================================================================}
+procedure TVirtualBox.FareDurumDegistir(AAktiflestir: Boolean);
+var
+  Fare: TVBFare;
+begin
 
-  int 3;
-  //SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Kesme Çaðrýsý: ', []);
+  Fare.Baslik.Uzunluk := SizeOf(TVBFare);
+  Fare.Baslik.Surum := VB_ISTEK_BASLIK_SURUM;
+  Fare.Baslik.IstekTipi := VB_FARE_DURUMYAZ;
+  Fare.Baslik.RC := 0;
+  Fare.Baslik.Ayrildi1 := 0;
+  Fare.Baslik.Ayrildi2 := 0;
+
+  if(AAktiflestir) then
+  begin
+
+    Fare.Ozellikler := VB_FARE_AKTIF;
+    FFareYuklendi := True;
+  end
+  else
+  begin
+
+    Fare.Ozellikler := VB_FARE_PASIF;
+    FFareYuklendi := False;
+  end;
+
+  Fare.X := 0;
+  Fare.Y := 0;
+  PortYaz4(FPort, TSayi4(@Fare));
+end;
+
+{==============================================================================
+  sanal fare sürücü deðerlerini alýr ve bu deðerlerle fare koordinatlarýný günceller
+  bilgi: fare sürücüsü sadece fare koordinatlarýný verir, düðme iþlevlerini içermez
+ ==============================================================================}
+procedure TVirtualBox.FareKonumDegerleriniAl;
+var
+  Fare: TVBFare;
+begin
+
+  if(FFareYuklendi) then
+  begin
+
+	  Fare.Baslik.Uzunluk := SizeOf(TVBFare);
+	  Fare.Baslik.Surum := VB_ISTEK_BASLIK_SURUM;
+	  Fare.Baslik.IstekTipi := VB_FARE_DURUMAL;
+	  Fare.Baslik.RC := 0;
+	  Fare.Baslik.Ayrildi1 := 0;
+	  Fare.Baslik.Ayrildi2 := 0;
+	  PortYaz4(FPort, TSayi4(@Fare));
+
+    {SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox RC: %d', [Fare.Baslik.RC]);
+    SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox O: %d', [Fare.Ozellikler]);}
+
+    GFareSurucusu.KonumDegistir((Fare.X * 1024) div 65535, (Fare.Y * 768) div 65535);
+  end;
+end;
+
+{==============================================================================
+  sürücü kesmesi (irq)
+ ==============================================================================}
+procedure VBoxKesmeCagrisi;
+begin
+
+  //int 3;
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VBox Kesme Çaðrýsý: ', []);
+end;
+
+{==============================================================================
+  sanal makine sürüm deðerlerini alýr
+ ==============================================================================}
+procedure TVirtualBox.SurumDegeriniAl;
+var
+  Surum: TVBSurum;
+begin
+
+  Surum.Baslik.Uzunluk := SizeOf(TVBSurum);
+  Surum.Baslik.Surum := VB_ISTEK_BASLIK_SURUM;
+  Surum.Baslik.IstekTipi := 4;
+  Surum.Baslik.RC := 0;
+  Surum.Baslik.Ayrildi1 := 0;
+  Surum.Baslik.Ayrildi2 := 0;
+  Surum.SurumX := 0;
+  Surum.SurumY := 0;
+  Surum.Yapim := 0;
+  Surum.Degisim := 0;
+  Surum.Ozellik := 0;
+  PortYaz4(FPort, TSayi4(@Surum));
+
+  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'VB Sürüm: %d.%d, Yapim:: %d',
+    [Surum.SurumX, Surum.SurumY, Surum.Yapim]);
 end;
 
 end.

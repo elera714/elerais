@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 14/10/2026
 
  ==============================================================================}
 {$mode objfpc}

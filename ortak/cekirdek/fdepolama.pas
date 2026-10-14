@@ -6,7 +6,7 @@
   Dosya Adý: fdepolama.pas
   Dosya Ýþlevi: fiziksel depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 14/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -34,7 +34,7 @@ type
     function SurucuAl(ASiraNo: TISayi4): TFDAygiti;
     function SurucuAl2(AKimlik: TKimlik): TFDAygiti;
     function VeriOku(AFDAygiti: TFDAygiti; ASektorNo,
-      ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+      ASektorSayisi: TSayi4; ABellek: Isaretci): TSayi4;
     function VeriYaz(AFDAygiti: TFDAygiti; ASektorNo,
       ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
     property AygitSayisi: TSayi4 read FAygitSayisi;
@@ -190,7 +190,7 @@ end;
   fiziksel depolama aygýtýndan veri oku
  ==============================================================================}
 function TFizikselDepolama.VeriOku(AFDAygiti: TFDAygiti; ASektorNo,
-  ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4;
+  ASektorSayisi: TSayi4; ABellek: Isaretci): TSayi4;
 begin
 
 {  SISTEM_MESAJ(RENK_MAVI, 'Depolama Kimlik: %d', [AFizikselDepolama^.FD3.Kimlik]);
