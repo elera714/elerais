@@ -6,7 +6,7 @@
   Dosya Adı: fat16.pas
   Dosya İşlevi: fat16 dosya sistem yönetim işlevlerini yönetir
 
-  Güncelleme Tarihi: 12/10/2026
+  Güncelleme Tarihi: 15/10/2026
 
   Bilgi: TFAT16 nesne içeriğindeki işlevler dosyalar.pas dosyasının içeriğindeki
     işlevler ile kullanılmalıdır
@@ -50,7 +50,9 @@ type
     function KokGirdisiListele16(var ADosyaArama: TDosyaArama): TSayi4;
     function DizinGirdisindeAra16(AAranacakDeger: string): TSayi4;
     function DizinGirdisiListele16(var ADosyaArama: TDosyaArama): TSayi4;
+
     function BirSonrakiKumeyiAl(var AKumeNo: TSayi4): Boolean;
+    function SHTBellegeYukle(ASektorNo: TSayi4): TSayi4;
   end;
 
 implementation
@@ -154,6 +156,9 @@ var
 begin
 
   Result := HATA_YOK;
+
+  UzunDosyaAdi[0] := #0;
+  UzunDosyaAdi[1] := #0;
 
   // AAramaSuzgec -> örnek: disk2:\klasör1\*.*
 
@@ -476,11 +481,11 @@ begin
     if(FArama.FSIKonum >= 512) then
     begin
 
-      Inc(FArama.FZincirNo);
-      if(FArama.FZincirNo >= DizinToplamSektor) then Exit(HATA_DK_MEVCUTDEGIL);
-
       FArama.FSIKonum := 0;
       FArama.FSonrakiSIKonum := 0;
+
+      Inc(FArama.FZincirNo);
+      if(FArama.FZincirNo >= DizinToplamSektor) then Exit(HATA_DK_MEVCUTDEGIL);
     end;
 
     // FArama.FSIKonum değeri her 0 olduğunda zincirin belirlenen sektörünü oku
@@ -510,7 +515,7 @@ begin
       // bir sonraki girişle devam et
       FArama.FSonrakiSIKonum := 32;
     end
-    // mantıksal depolama aygıtı etiketi (volume label)
+    // mantıksal depolama aygıt etiketi (volume label)
     else if(DizinGirdisi^.Ozellikler = $08) then
     begin
 
@@ -608,8 +613,7 @@ var
   DizinGirdisi: PDizinGirdisi;
   TumGirislerOkundu,
   UzunDosyaAdiBulundu: Boolean;
-  Sonuc, i,
-  KBS: TSayi4;
+  Sonuc, i, KBS: TSayi4;
 begin
 
   Result := HATA_YOK;
@@ -650,7 +654,7 @@ begin
     begin
 
       // bir sonraki dizin giriş sektörünü oku
-      i := (FArama.FSektorKumeNo - 2) * FMD.Acilis.DosyaAyirmaTablosu.KBS;
+      i := (FArama.FSektorKumeNo - 2) * KBS;
       i := i + FMD.Acilis.DizinGirisi.IlkSektor + FMD.Acilis.DizinGirisi.ToplamSektor +
         FArama.FZincirNo;
       Sonuc := FMD.FD.FOku(i, 1, FTSI);
@@ -674,7 +678,7 @@ begin
       // bir sonraki girişle devam et
       FArama.FSonrakiSIKonum := 32;
     end
-    // mantıksal depolama aygıtı etiketi (volume label)
+    // mantıksal depolama aygıt etiketi (volume label)
     else if(DizinGirdisi^.Ozellikler = $08) then
     begin
 
@@ -750,32 +754,33 @@ begin
   Result := False;
 
   // fat'in 1. kopyasının ilgili sektörünü belleğe yükle
-  if(FBellekSHT = nil) then
-  begin
+  i := (AKumeNo * 2) div 512;
+  i := i + FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
 
-    GetMem(FBellekSHT, 512);
+  Sonuc := SHTBellegeYukle(i);
+  if(Sonuc <> HATA_YOK) then Exit;
 
-    i := (AKumeNo * 2) div 512;
-    i := i + FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
+  // zincir değerini 2 ile çarp ve bir sonraki zincir değerini al
+  i := (AKumeNo * 2) mod 512;
+  AKumeNo := PSayi2(FSHTBellek + i)^;
 
-    Sonuc := FMD.FD.FOku(i, 1, FBellekSHT);
-    if(Sonuc <> HATA_YOK) then
-    begin
+  Result := True;
+end;
 
-      FreeMem(FBellekSHT, 512);
-      FBellekSHT := nil;
-      Exit;
-    end;
+{==============================================================================
+  Sektör Harita Tablosunun ilgili sektörünü belleğe yükler
+ ==============================================================================}
+function TFAT16.SHTBellegeYukle(ASektorNo: TSayi4): TSayi4;
+begin
 
-    // zincir değerini 2 ile çarp ve bir sonraki zincir değerini al
-    i := (AKumeNo * 2) mod 512;
-    AKumeNo := PSayi2(FBellekSHT + i)^;
+  // fat'in 1. kopyasının ilgili sektörü zaten bellekteyse çık
+  if(ASektorNo = FSHTSektorNo) then Exit(HATA_YOK);
 
-    FreeMem(FBellekSHT, 512);
-    FBellekSHT := nil;
+  Result := FMD.FD.FOku(ASektorNo, 1, FSHTBellek);
 
-    Result := True;
-  end;
+  if(Result = HATA_YOK) then
+    FSHTSektorNo := ASektorNo
+  else FSHTSektorNo := $FFFFFFFF;
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adı: dosya.pas
   Dosya İşlevi: dosya sistemleri ana yapısını içerir
 
-  Güncelleme Tarihi: 09/10/2026
+  Güncelleme Tarihi: 15/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -49,7 +49,9 @@ type
     FIslem: TDSIslem;
     FSilinen: TDSIslem;
 
-    FBellekSHT: Isaretci;           // sektör harita tablosunu (fat) yüklemek için kullanılacak
+    FSHTSektorNo,                   // FSHTBellek adresine yüklenen ilk sektörün numarası
+    FSHTSektorSayisi: TSayi4;       // FSHTBellek bellek bölgesine yüklenen sektör sayısı
+    FSHTBellek: Isaretci;           // sektör harita tablosunu (fat) yüklemek için kullanılacak
 
     FGorev: PGorev;                 // dosya işlemini gerçekleştiren görev
 
@@ -120,7 +122,10 @@ begin
   FSilinen.FSIKonum := $FFFFFFFF;
   FSilinen.FSonrakiSIKonum := $FFFFFFFF;
 
-  FBellekSHT := nil;
+  FSHTSektorNo := $FFFFFFFF;    // = sektör yüklenmesi
+  FSHTSektorSayisi := 1;
+  FSHTBellek := GetMem(FSHTSektorSayisi * 512);
+
   FGorev := nil;
 
   FTSI := GetMem(512);
@@ -134,7 +139,7 @@ begin
 
   FreeMem(FTSI, 512);
 
-  if not(FBellekSHT = nil) then FreeMem(FBellekSHT, 512);
+  if not(FSHTBellek = nil) then FreeMem(FSHTBellek, FSHTSektorSayisi * 512);
 
   inherited Destroy;
 end;

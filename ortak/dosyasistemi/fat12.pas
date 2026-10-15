@@ -6,7 +6,7 @@
   Dosya Adý: fat12.pas
   Dosya Ýþlevi: fat12 dosya sistem yönetim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 12/10/2026
+  Güncelleme Tarihi: 15/10/2026
 
   Bilgi: TFAT12 nesne içeriðindeki iþlevler dosyalar.pas dosyasýnýn içeriðindeki
     iþlevler ile kullanýlmalýdýr
@@ -52,6 +52,7 @@ type
     function DizinGirdisiListele12(var ADosyaArama: TDosyaArama): TSayi4;
 
     function BirSonrakiKumeyiAl(var AKumeNo: TSayi4): Boolean;
+    function SHTBellegeYukle: TSayi4;
   end;
 
 implementation
@@ -65,6 +66,11 @@ constructor TFAT12.Create(AKimlik: TKimlik; AMDNesne: TMDNesne);
 begin
 
   inherited Create(AKimlik, AMDNesne);
+
+  // FSHTBellek için ayrýlan öndeðerli bellek bölgesini iptal et
+  // bilgi: öndeðer olarak 1 sektör için ayrýlan bellek bölgesi fat12 için tüm
+  // sektörler için ayrýlacak
+  FreeMem(FSHTBellek, FSHTSektorSayisi * 512);
 end;
 
 {==============================================================================
@@ -155,6 +161,9 @@ var
 begin
 
   Result := HATA_YOK;
+
+  UzunDosyaAdi[0] := #0;
+  UzunDosyaAdi[1] := #0;
 
   // AAramaSuzgec -> örnek: disk2:\klasör1\*.*
 
@@ -477,11 +486,11 @@ begin
     if(FArama.FSIKonum >= 512) then
     begin
 
-      Inc(FArama.FZincirNo);
-      if(FArama.FZincirNo >= DizinToplamSektor) then Exit(HATA_DK_MEVCUTDEGIL);
-
       FArama.FSIKonum := 0;
       FArama.FSonrakiSIKonum := 0;
+
+      Inc(FArama.FZincirNo);
+      if(FArama.FZincirNo >= DizinToplamSektor) then Exit(HATA_DK_MEVCUTDEGIL);
     end;
 
     // FArama.FSIKonum deðeri her 0 olduðunda zincirin belirlenen sektörünü oku
@@ -511,7 +520,7 @@ begin
       // bir sonraki giriþle devam et
       FArama.FSonrakiSIKonum := 32;
     end
-    // mantýksal depolama aygýtý etiketi (volume label)
+    // mantýksal depolama aygýt etiketi (volume label)
     else if(DizinGirdisi^.Ozellikler = $08) then
     begin
 
@@ -609,8 +618,7 @@ var
   DizinGirdisi: PDizinGirdisi;
   TumGirislerOkundu,
   UzunDosyaAdiBulundu: Boolean;
-  Sonuc, i,
-  KBS: TSayi4;
+  Sonuc, i, KBS: TSayi4;
 begin
 
   Result := HATA_YOK;
@@ -651,7 +659,7 @@ begin
     begin
 
       // bir sonraki dizin giriþ sektörünü oku
-      i := (FArama.FSektorKumeNo - 2) * FMD.Acilis.DosyaAyirmaTablosu.KBS;
+      i := (FArama.FSektorKumeNo - 2) * KBS;
       i := i + FMD.Acilis.DizinGirisi.IlkSektor + FMD.Acilis.DizinGirisi.ToplamSektor +
         FArama.FZincirNo;
       Sonuc := FMD.FD.FOku(i, 1, FTSI);
@@ -675,7 +683,7 @@ begin
       // bir sonraki giriþle devam et
       FArama.FSonrakiSIKonum := 32;
     end
-    // mantýksal depolama aygýtý etiketi (volume label)
+    // mantýksal depolama aygýt etiketi (volume label)
     else if(DizinGirdisi^.Ozellikler = $08) then
     begin
 
@@ -751,37 +759,49 @@ begin
 
   Result := False;
 
+  Sonuc := SHTBellegeYukle;
+  if(Sonuc <> HATA_YOK) then Exit;
+
+  // zincir deðerini 1.5 ile çarp ve bir sonraki zincir deðerini al
+  BellekSN := (AKumeNo shr 1) + AKumeNo + TSayi4(FSHTBellek);
+  i := PSayi2(BellekSN)^;
+
+  if((AKumeNo and 1) = 1) then
+    i := i shr 4
+  else i := i and $FFF;
+
+  AKumeNo := i;
+
+  Result := True;
+end;
+
+{==============================================================================
+  Sektör Harita Tablosunun tüm sektörlerini belleðe yükler
+ ==============================================================================}
+function TFAT12.SHTBellegeYukle: TSayi4;
+var
+  Sonuc: TSayi4;
+begin
+
+  Result := HATA_YOK;
+
   // fat'in 1. kopyasý belleðe yüklenmemiþse ilk FAT kopyasýnýn tümünü belleðe yükle
-  if(FBellekSHT = nil) then
+  if(FSHTSektorNo = $FFFFFFFF) then
   begin
 
-    GetMem(FBellekSHT, FMD.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
+    FSHTSektorSayisi := FMD.Acilis.DosyaAyirmaTablosu.ToplamSektor;
+    GetMem(FSHTBellek, FSHTSektorSayisi * 512);
 
     Sonuc := FMD.FD.FOku(FMD.Acilis.DosyaAyirmaTablosu.IlkSektor,
-      FMD.Acilis.DosyaAyirmaTablosu.ToplamSektor, FBellekSHT);
+      FSHTSektorSayisi, FSHTBellek);
 
     if(Sonuc <> HATA_YOK) then
     begin
 
-      FreeMem(FBellekSHT, FMD.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
-      FBellekSHT := nil;
-      Exit;
-    end;
-
-    // zincir deðerini 1.5 ile çarp ve bir sonraki zincir deðerini al
-    BellekSN := (AKumeNo shr 1) + AKumeNo + TSayi4(FBellekSHT);
-    i := PSayi2(BellekSN)^;
-
-    if((AKumeNo and 1) = 1) then
-      i := i shr 4
-    else i := i and $FFF;
-
-    AKumeNo := i;
-
-    FreeMem(FBellekSHT, FMD.Acilis.DosyaAyirmaTablosu.ToplamSektor * 512);
-    FBellekSHT := nil;
-
-    Result := True;
+      FreeMem(FSHTBellek, FSHTSektorSayisi * 512);
+      FSHTBellek := nil;
+      Exit(Sonuc);
+    end else FSHTSektorNo := FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
   end;
 end;
 
