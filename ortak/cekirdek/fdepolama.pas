@@ -6,7 +6,7 @@
   Dosya Adý: fdepolama.pas
   Dosya Ýþlevi: fiziksel depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 14/10/2026
+  Güncelleme Tarihi: 16/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -71,8 +71,7 @@ begin
   GDisketAygitlari.VeritabaniOlustur;
 
   // ide disk aygýtlarýný yükle
-  GDiskAygitlari := TDiskAygitlari.Create;
-  GDiskAygitlari.VeritabaniOlustur;
+  GIDEAygitListesi := TIDEAygitListesi.Create;
 end;
 
 function TFizikselDepolama.Al(ASiraNo: TISayi4): TFDAygiti;
@@ -96,7 +95,7 @@ end;
 function TFizikselDepolama.AygitOlustur(AAygitTipi: TSayi4): TFDAygiti;
 var
   FD: TFDAygiti;
-  Disk: TIDEDisk;
+  IDEAygiti: TIDEAygiti;
   Disket: TDisket;
   i: TSayi4;
 begin
@@ -111,9 +110,9 @@ begin
       if(AAygitTipi = SURUCUTIP_DISK) then
       begin
 
-        Disk := TIDEDisk.Create;
-        Aygit[i] := Disk;
-        FD := Disk;
+        IDEAygiti := TIDEAygiti.Create;
+        Aygit[i] := IDEAygiti;
+        FD := IDEAygiti;
       end
       else
       begin
