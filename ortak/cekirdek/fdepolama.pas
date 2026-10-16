@@ -29,7 +29,8 @@ type
     function Al(ASiraNo: TISayi4): TFDAygiti;
     procedure Yaz(ASiraNo: TISayi4; AFDAygiti: TFDAygiti);
   public
-    procedure Create;
+    constructor Create;
+    procedure Yukle;
     function AygitOlustur(AAygitTipi: TSayi4): TFDAygiti;
     function SurucuAl(ASiraNo: TISayi4): TFDAygiti;
     function SurucuAl2(AKimlik: TKimlik): TFDAygiti;
@@ -51,9 +52,9 @@ implementation
 uses donusum, src_disket, src_ide;
 
 {==============================================================================
-  sistemdeki fiziksel depolama aygýtlarýný yükler
+  fiziksel depolama nesne yükleme iþlevlerini gerçekleþtirir
  ==============================================================================}
-procedure TFizikselDepolama.Create;
+constructor TFizikselDepolama.Create;
 var
   i: TSayi4;
 begin
@@ -65,6 +66,13 @@ begin
   FAygitSayisi := 0;
 
   for i := 0 to USTSINIR_FD - 1 do Aygit[i] := nil;
+end;
+
+{==============================================================================
+  sistemdeki fiziksel depolama aygýtlarýný yükler
+ ==============================================================================}
+procedure TFizikselDepolama.Yukle;
+begin
 
   // disket aygýtlarýný yükle
   GDisketAygitlari := GDisketAygitlari.Create;
