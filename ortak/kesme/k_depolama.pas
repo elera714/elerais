@@ -6,7 +6,7 @@
   Dosya Adý: k_depolama.pas
   Dosya Ýþlevi: depolama aygýt kesme çaðrýlarýný yönetir
 
-  Güncelleme Tarihi: 29/07/2025
+  Güncelleme Tarihi: 17/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -78,6 +78,7 @@ begin
       PMDNesne3(p)^.BolumToplamSektor := MD.FBolumToplamSektor;
 
       Result := SizeOf(TMDNesne3);
+
     end else Result := 0;
   end
 
@@ -92,6 +93,7 @@ begin
       p := Isaretci(PSayi4(ADegiskenler + 12)^ + GGorevler.FAktifGrvBelAdr);
       Result := GMantiksalDepolama.VeriOku(MD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
+
     end else Result := 1;
   end;
 
@@ -137,8 +139,12 @@ begin
       p := Isaretci(PSayi4(ADegiskenler + 12)^ + GGorevler.FAktifGrvBelAdr);
       Result := GFizikselDepolama.VeriOku(FD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
+
+      Result := HATA_YOK;
+
     end else Result := 1;
   end
+
   // fiziksel depolama aygýtýna veri yaz
   else if(IslevNo = $74) then
   begin
@@ -150,6 +156,8 @@ begin
       p := Isaretci(PSayi4(ADegiskenler + 12)^ + GGorevler.FAktifGrvBelAdr);
       Result := GFizikselDepolama.VeriYaz(FD, PSayi4(ADegiskenler + 04)^,
         PSayi4(ADegiskenler + 08)^, p);
+
+      Result := HATA_YOK;
     end;
   end;
 end;
