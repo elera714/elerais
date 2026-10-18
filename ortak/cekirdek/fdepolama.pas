@@ -6,7 +6,7 @@
   Dosya Adý: fdepolama.pas
   Dosya Ýþlevi: fiziksel depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 16/10/2026
+  Güncelleme Tarihi: 18/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -76,7 +76,7 @@ begin
 
   // disket aygýtlarýný yükle
   GDisketAygitlari := GDisketAygitlari.Create;
-  GDisketAygitlari.VeritabaniOlustur;
+  GDisketAygitlari.Yukle;
 
   // ide disk aygýtlarýný yükle
   GIDEAygitListesi := TIDEAygitListesi.Create;
