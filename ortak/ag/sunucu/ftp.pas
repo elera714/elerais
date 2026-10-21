@@ -6,7 +6,7 @@
   Dosya Adý: ftp.pas
   Dosya Ýþlevi: FTP (dosya) sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 29/09/2026
+  Güncelleme Tarihi: 18/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -33,7 +33,7 @@ const
   GirisHatali         : PChar = '530 Kullanýcý adý veya þifre hatalý' + #13 + #10;
 
 type
-  TFTPSunucu = class(TSunucuServis)
+  TFTPSunucu = class(TTCPSunucu)
   private
   public
     constructor Create;

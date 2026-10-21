@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: http sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 29/09/2026
+  Güncelleme Tarihi: 18/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -62,7 +62,7 @@ const
     '</html>';
 
 type
-  THTTPSunucu = class(TSunucuServis)
+  THTTPSunucu = class(TTCPSunucu)
   private
     FIstenenSayfa: string;
   public
