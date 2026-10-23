@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 24/09/2026
+  Güncelleme Tarihi: 234/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -338,7 +338,7 @@ begin
   GZamanlayicilar.BekleMS(5 * CALISMA_FREKANSI);
 
   // bilgisayarýn ip adresi
-  IP4Adres := GAgBaglantilari.AktifBaglanti.IP4Adresim;
+  IP4Adres := GAgBaglantilari.AB.IP4Adresim;
 
   A := TARP.Create(FBaglanti);
 
@@ -349,7 +349,7 @@ begin
 
     GZamanlayicilar.BekleMS(1 * CALISMA_FREKANSI);
 
-    if(GAgBaglantilari.AktifBaglanti.IP4AdresiAlindi) then
+    if(GAgBaglantilari.AB.IP4AdresiAlindi) then
     begin
 
       if(i = 0) then
@@ -358,7 +358,7 @@ begin
       IP4Adres[3] := i;
 
       // kendi ip adresimin haricinde tüm cihazlara arp istek mesajý gönder
-      if not(IPKarsilastir(GAgBaglantilari.AktifBaglanti.IP4Adresim, IP4Adres)) then
+      if not(IPKarsilastir(GAgBaglantilari.AB.IP4Adresim, IP4Adres)) then
         A.IstekGonder(arpIstek, nil, @IP4Adres);
 
       Inc(i);

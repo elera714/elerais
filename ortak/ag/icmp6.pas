@@ -6,7 +6,7 @@
   Dosya Adý: icmp6.pas
   Dosya Ýþlevi: ICMP v6 tutanak (protokol) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 13/10/2026
+  Güncelleme Tarihi: 23/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -169,7 +169,7 @@ begin
     begin
 
       PaketleVeGonder(ICMP6_KOMSU_ILAN, IP6Paket^.KaynakIP,
-        PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres, GAgBaglantilari.AktifBaglanti.IP6Adresim);
+        PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres, GAgBaglantilari.AB.IP6Adresim);
     end
   end
   // bana gelen pimg isteðine yanýt veriliyor
@@ -223,7 +223,7 @@ begin
 
   // ip6 katman bilgileri
   TBaglanti(FBaglanti).FIP6.FKaynakIPAdres := HedefIP6Adres;
-  TBaglanti(FBaglanti).FIP6.FHedefIPAdres := GAgBaglantilari.AktifBaglanti.IP6Adresim;
+  TBaglanti(FBaglanti).FIP6.FHedefIPAdres := GAgBaglantilari.AB.IP6Adresim;
 
   PaketleVeGonder(ICMP6_KOMSU_ISTEK, HedefIP6Adres, HedefMACAdres, AIP6Adres);
 end;
@@ -251,7 +251,7 @@ begin
   Tasi2(AVeri, @PingPaket^.Veri, AVeriU);
 
   // saðlama toplamý için ek baþlýðý hazýrla
-  EKBaslik.KaynakIP6 := GAgBaglantilari.AktifBaglanti.IP6Adresim;
+  EKBaslik.KaynakIP6 := GAgBaglantilari.AB.IP6Adresim;
   EKBaslik.HedefIP6 := AHedefIP6Adres;
   EKBaslik.Uzunluk := htons(TSayi4(40));
   EKBaslik.Sifir[0] := 0;
@@ -337,7 +337,7 @@ begin
   end;
 
   // saðlama toplamý için ek baþlýðý hazýrla
-  EKBaslik.KaynakIP6 := GAgBaglantilari.AktifBaglanti.IP6Adresim;
+  EKBaslik.KaynakIP6 := GAgBaglantilari.AB.IP6Adresim;
   EKBaslik.HedefIP6 := AHedefIP6Adres;
   EKBaslik.Uzunluk := htons(TSayi4(PaketU));
   EKBaslik.Sifir[0] := 0;
