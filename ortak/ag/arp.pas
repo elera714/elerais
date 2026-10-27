@@ -6,7 +6,7 @@
   Dosya Adý: arp.pas
   Dosya Ýþlevi: ARP protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 234/10/2026
+  Güncelleme Tarihi: 24/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -188,7 +188,7 @@ begin
   APaket := @EPaket^.Veri;
 
   // ARP paketi ip adresime gönderilmiþ ise
-  if(IPKarsilastir(APaket^.HedefIP4Adres, TBaglanti(FBaglanti).IP4Adresim)) then
+  if(IPKarsilastir(APaket^.HedefIP4Adres, GAgBaglantilari.AB.IP4Adresim)) then
   begin
 
     // 1. gönderilen paket benim mesajýma yanýt ise, tabloya ekle
@@ -224,8 +224,8 @@ begin
   if(AARPIslem = arpIstek) then
     APaket.Islem := ntohs(ARPISLEM_ISTEK)
   else APaket.Islem := ntohs(ARPISLEM_YANIT);
-  APaket.GonderenMACAdres := TBaglanti(FBaglanti).FEthernet.MACAdresim;
-  APaket.GonderenIP4Adres := TBaglanti(FBaglanti).IP4Adresim;
+  APaket.GonderenMACAdres := TBaglanti(FBaglanti).FAB.FEthernet.MACAdresim;
+  APaket.GonderenIP4Adres := GAgBaglantilari.AB.IP4Adresim;
 
   if(AARPIslem = arpIstek) then
     APaket.HedefMACAdres := MACAdres0
@@ -235,8 +235,8 @@ begin
   APaket.HedefIP4Adres := AHedefIP4Adres^;
 
   if(AARPIslem = arpIstek) then
-    TBaglanti(FBaglanti).FEthernet.Gonder(ptARP, MACAdres255, @APaket, 28)
-  else TBaglanti(FBaglanti).FEthernet.Gonder(ptARP, AHedefMACAdres^, @APaket, 28);
+    TBaglanti(FBaglanti).FAB.FEthernet.Gonder(ptARP, MACAdres255, @APaket, 28)
+  else TBaglanti(FBaglanti).FAB.FEthernet.Gonder(ptARP, AHedefMACAdres^, @APaket, 28);
 end;
 
 {==============================================================================

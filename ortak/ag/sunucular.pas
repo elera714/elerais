@@ -35,6 +35,12 @@ type
     procedure OVeriGeldi(AUDP: TUDP); virtual; abstract;
   end;
 
+type
+  TUDPIstemci = class(TTemelSunucu)
+  public
+    procedure OVeriGeldi(AVeri: Isaretci; AVeriU: TSayi4); virtual; abstract;
+  end;
+
 const
   USTSINIR_SUNUCUSAYISI = 16;
 

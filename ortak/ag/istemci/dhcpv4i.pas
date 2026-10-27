@@ -4,9 +4,9 @@
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
   Dosya Adý: dhcpv4i.pas
-  Dosya Ýþlevi: DHCP v4 istemci protokol iþlevlerini yönetir
+  Dosya Ýþlevi: DHCP v4 istemci tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 26/08/20256
+  Güncelleme Tarihi: 27/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,37 +14,51 @@ unit dhcpv4i;
 
 interface
 
-uses paylasim, baglantilar, dhcpv4;
+uses paylasim, dhcpv4, sunucular, udp;
 
 type
-  TDHCPv4i = class(TDHCPv4)
-  public
+  TDHCPv4i = class(TUDPIstemci)
+  private
+    FBaglanti: TObject;
+    FUDP: TUDP;
+    // bilgi (inform) mesajýnýn sunucuya gönderilip gönderilmediði
+    FBilgiMesajiGonderildi: Boolean;
+    // sunucudan gelen deðerlerin yerleþtirileceði deðiþkenler
     FYanitIP4Adres, FYanitAltAgMaskesi,
     FYanitAgGecitAdresi, FYanitDNSSunucusu,
     FYanitDHCPSunucusu, FTeklifEdilenIP4Adresi: TIP4Adres;
     FYanitIP4KiraSuresi: TSayi4;
-    constructor Create;
-    procedure IpAdresiAl;
+  public
+    constructor Create(ABaglanti: TObject);
+    destructor Destroy; override;
+    procedure OVeriGeldi(AVeri: Isaretci; AVeriU: TSayi4); override;
+    procedure OtomatikIpAdresiAl;
+    { Discover }
+    procedure DHCPKesifMesajiGonder;
+    { Request }
+    procedure DHCPIstekMesajiGonder(ADHCPSunucuIP4Adres, AIstenenIP4Adres: TIP4Adres);
+    { Inform }
+    procedure DHCPBilgilendirmeMesajiGonder(AIstemciIP4Adres: TIP4Adres);
   end;
-
-var
-  GDHCPv4i: TDHCPv4i;
-
-procedure IslevDHCPv4i(AIletisimTipi: TIletisimTipi; ABaglanti: TBaglanti;
-  ADHCP4Yapi: PDHCP4Yapi);
 
 implementation
 
-uses donusum, istemciler;
+uses donusum, aygityonetimi, islevler, baglantilar;
 
 {==============================================================================
-  dhcp istemcisi ana yükleme iþlevlerini içerir
+  dhcp istemcisi nesnesi yükleme iþlevlerini içerir
  ==============================================================================}
-constructor TDHCPv4i.Create;
+constructor TDHCPv4i.Create(ABaglanti: TObject);
 begin
 
-  inherited;
+  FBaglanti := ABaglanti;
 
+  // iletiþim udp tutanaðý üzerinden gerçekleþeceði için 1 adet udp
+  // nesnesi oluþturuluyor
+  FUDP := TUDP.Create(nil, FBaglanti, itIP4, MACAdres0);
+
+  // öndeðerler
+  FBilgiMesajiGonderildi := False;
   FYanitIP4Adres := IP4Adres0;
   FYanitAltAgMaskesi := IP4Adres0;
   FYanitAgGecitAdresi := IP4Adres0;
@@ -55,42 +69,46 @@ begin
 end;
 
 {==============================================================================
-  DHCP sunucularýna keþif mesajý gönderir
+  dhcp istemcisi nesnesi yok etme iþlevlerini içerir
  ==============================================================================}
-procedure TDHCPv4i.IpAdresiAl;
+destructor TDHCPv4i.Destroy;
 begin
 
-  DHCPKesifMesajiGonder;
+  FUDP.Destroy;
+
+  inherited Destroy;
 end;
 
 {==============================================================================
   dhcp istemcisine gelen paketleri iþler
  ==============================================================================}
-procedure IslevDHCPv4i(AIletisimTipi: TIletisimTipi; ABaglanti: TBaglanti;
-  ADHCP4Yapi: PDHCP4Yapi);
+procedure TDHCPv4i.OVeriGeldi(AVeri: Isaretci; AVeriU: TSayi4);
 var
+  DHCP4Yapi: PDHCP4Yapi;
   DHCPMesaj: PDHCPMesaj;
   AnaMT, MT, i: TSayi1;
   p1: PByte;
 begin
 
+  DHCP4Yapi := PDHCP4Yapi(AVeri);
+
   // gelen mesajýn DHCP_SECIM_MESAJ_TIP deðeri
   AnaMT := 0;
 
   // alýnan SihirliCerez deðeri gönderdiðimiz deðer mi?
-  if(htons(ADHCP4Yapi^.SihirliCerez) = DHCP_SIHIRLI_CEREZ) then
+  if(htons(DHCP4Yapi^.SihirliCerez) = DHCP_SIHIRLI_CEREZ) then
   begin
 
     // alýnan GonderenKimlik deðeri gönderdiðimiz deðer mi?
-    if(ntohs(ADHCP4Yapi^.GonderenKimlik) = DHCP_GONDEREN_KIMLIK) then
+    if(ntohs(DHCP4Yapi^.GonderenKimlik) = DHCP_GONDEREN_KIMLIK) then
     begin
 
       // alýnan mesaj bir yanýt mesajý mý?
-      if(ADHCP4Yapi^.Islem = DHCP_BOOT_MTIP_YANIT) then
+      if(DHCP4Yapi^.Islem = DHCP_BOOT_MTIP_YANIT) then
       begin
 
         // seçenek olarak alýnan yapýyý döngü içerisinde irdele
-        DHCPMesaj := @ADHCP4Yapi^.DigerSecenekler;
+        DHCPMesaj := @DHCP4Yapi^.DigerSecenekler;
         MT := DHCPMesaj^.Tip;
         i := DHCPMesaj^.Uzunluk;
 
@@ -100,23 +118,23 @@ begin
 
           if(MT = DHCP_SECIM_ALTAG_MASKESI) and (i = 4) then
 
-            GDHCPv4i.FYanitAltAgMaskesi := PIP4Adres(@DHCPMesaj^.Mesaj)^
+            FYanitAltAgMaskesi := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_YONLENDIRICI) and (i = 4) then
 
-            GDHCPv4i.FYanitAgGecitAdresi := PIP4Adres(@DHCPMesaj^.Mesaj)^
+            FYanitAgGecitAdresi := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_DNS) and (i = 4) then
 
-            GDHCPv4i.FYanitDNSSunucusu := PIP4Adres(@DHCPMesaj^.Mesaj)^
+            FYanitDNSSunucusu := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_SUNUCU_TANIMLAYICI) then
 
-            GDHCPv4i.FYanitDHCPSunucusu := PIP4Adres(@DHCPMesaj^.Mesaj)^
+            FYanitDHCPSunucusu := PIP4Adres(@DHCPMesaj^.Mesaj)^
 
           else if(MT = DHCP_SECIM_IP_KIRALAMA_SURESI) then
 
-            GDHCPv4i.FYanitIP4KiraSuresi := ntohs(PLongWord(@DHCPMesaj^.Mesaj)^)
+            FYanitIP4KiraSuresi := ntohs(PLongWord(@DHCPMesaj^.Mesaj)^)
 
           else if(MT = DHCP_SECIM_MESAJ_TIP) then
           begin
@@ -125,12 +143,12 @@ begin
             if(AnaMT = DHCP_MTIP_ONAY) then
             begin
 
-              GDHCPv4i.FYanitIP4Adres := ADHCP4Yapi^.IstemciyeAtanacakIP4Adres;
+              FYanitIP4Adres := DHCP4Yapi^.IstemciyeAtanacakIP4Adres;
             end
             else if(AnaMT = DHCP_MTIP_TEKLIF) then
             begin
 
-              GDHCPv4i.FTeklifEdilenIP4Adresi := ADHCP4Yapi^.IstemciyeAtanacakIP4Adres;
+              FTeklifEdilenIP4Adresi := DHCP4Yapi^.IstemciyeAtanacakIP4Adres;
             end;
           end;
 
@@ -145,32 +163,458 @@ begin
         // dhcp sunucusu tarafýndan teklif edilen ip adresini kabul et
         if(AnaMT = DHCP_MTIP_TEKLIF) then
 
-          GDHCPv4i.DHCPIstekMesajiGonder(GDHCPv4i.FYanitDHCPSunucusu, GDHCPv4i.FTeklifEdilenIP4Adresi)
+          DHCPIstekMesajiGonder(FYanitDHCPSunucusu, FTeklifEdilenIP4Adresi)
 
         // onay mesajýnýn gelmesi durumunda toplanan tüm verileri ana deðiþkenlere ata
         else if(AnaMT = DHCP_MTIP_ONAY) then
         begin
 
-          if(BilgiMesajiGonderildi = False) then
+          if(FBilgiMesajiGonderildi = False) then
           begin
 
-            ABaglanti.IP4Adres := GDHCPv4i.FYanitIP4Adres;
-            ABaglanti.AltAgMaskesi := GDHCPv4i.FYanitAltAgMaskesi;
-            ABaglanti.AgGecitAdresi := GDHCPv4i.FYanitAgGecitAdresi;
-            ABaglanti.DNSSunucusu := GDHCPv4i.FYanitDNSSunucusu;
-            ABaglanti.DHCPSunucusu := GDHCPv4i.FYanitDHCPSunucusu;
-            ABaglanti.IPKiraSuresi := GDHCPv4i.FYanitIP4KiraSuresi;
-            ABaglanti.IP4AdresiAlindi := True;
+            GAgBaglantilari.AB.IP4Adresim := FYanitIP4Adres;
+            GAgBaglantilari.AB.AltAgMaskesi := FYanitAltAgMaskesi;
+            GAgBaglantilari.AB.AgGecitAdresi := FYanitAgGecitAdresi;
+            GAgBaglantilari.AB.DNSSunucusu := FYanitDNSSunucusu;
+            GAgBaglantilari.AB.DHCPSunucusu := FYanitDHCPSunucusu;
+            GAgBaglantilari.AB.IPKiraSuresi := FYanitIP4KiraSuresi;
+            GAgBaglantilari.AB.IP4AdresiAlindi := True;
 
-            GDHCPv4i.DHCPBilgilendirmeMesajiGonder(GDHCPv4i.FYanitIP4Adres);
-            BilgiMesajiGonderildi := True;
+            DHCPBilgilendirmeMesajiGonder(FYanitIP4Adres);
+            FBilgiMesajiGonderildi := True;
 
-            GIstemciler.Cikar(ptUDP, DHCP_ISTEMCI_PORT, DHCP_SUNUCU_PORT);
+            // bu nesneyi oluþturulan baðlantýyý tüm bileþenleriyle (bu nesne de dahil) yok et
+            TBaglanti(FBaglanti).FAB.BaglantiyiYoket(TBaglanti(FBaglanti));
           end;
         end;
       end;
     end;
   end;
+end;
+
+{==============================================================================
+  DHCP sunucusundan otomatik ip adresi alýr
+ ==============================================================================}
+procedure TDHCPv4i.OtomatikIpAdresiAl;
+begin
+
+  DHCPKesifMesajiGonder;
+end;
+
+{==============================================================================
+  DHCP sunucusuna keþif mesajý gönderir
+ ==============================================================================}
+procedure TDHCPv4i.DHCPKesifMesajiGonder;
+var
+  B: TBaglanti;
+  DHCPYapi: PDHCP4Yapi;
+  MACAdres: PMACAdres;
+  i: TSayi1;
+  p1: PSayi1;
+  pc: PChar;
+  DHCPYapiUzunlugu: TSayi4;
+begin
+
+  DHCPYapi := GetMem(4096);
+
+	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
+	DHCPYapi^.DonanimTip := 1;		      // ethernet
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.RelayIcin := 0;
+	DHCPYapi^.GonderenKimlik := ntohs(DHCP_GONDEREN_KIMLIK);
+	DHCPYapi^.Sure := 0;
+	DHCPYapi^.Bayraklar := 0;
+	DHCPYapi^.IstemciIP4Adres := IP4Adres0;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := IP4Adres0;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
+
+  // IstemciMACAdres 6 + 10 = 16 byte
+  DHCPYapi^.IstemciMACAdres := GAygitlar.AktifEthernet.MACAdresim;
+	DHCPYapi^.AYRLDI1 := 0;
+	DHCPYapi^.AYRLDI2 := 0;
+	DHCPYapi^.AYRLDI3 := 0;
+
+  FillChar(DHCPYapi^.SunucuEvSahibiAdi, 64, #0);
+  FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
+	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
+
+  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
+
+  // diðer seçenekler
+  p1 := @DHCPYapi^.DigerSecenekler;
+
+  // dhcp mesaj kodlamasý
+  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+
+  // dhcp mesaj tipi
+  p1^ := DHCP_SECIM_MESAJ_TIP;
+  Inc(p1);
+  p1^ := 1;
+  Inc(p1);
+  p1^ := DHCP_MTIP_KESIF;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1;
+
+  Inc(p1);
+
+  p1^ := DHCP_SECIM_ISTEMCI_KIMLIK;
+  Inc(p1);
+  p1^ := 7;                               // uzunluk
+  Inc(p1);
+  p1^ := 1;
+  Inc(p1);                                // donaným tipi = 1 (ethernet)
+  MACAdres := PMACAdres(p1);
+  MACAdres^ := GAygitlar.AktifEthernet.MACAdresim;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
+
+  Inc(p1, 6);
+
+  // bilgisayar adý
+  i := Length(GTamBilgisayarAdi);
+  p1^ := DHCP_SECIM_YEREL_AD;
+  Inc(p1);
+  PByte(p1)^ := i;
+  Inc(p1);
+  pc := Isaretci(p1);
+  Tasi2(@GTamBilgisayarAdi[1], pc, i);
+  Inc(pc, i);
+  p1 := Isaretci(pc);
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + i;
+
+  // parametre istek listesi - 2 + 12 byte
+  p1^ := DHCP_SECIM_DEGISKEN_ISTEK_LISTESI;
+  Inc(p1);
+  p1^ := 12;                              // uzunluk
+  Inc(p1);
+  p1^ := DHCP_SECIM_ALTAG_MASKESI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_YONLENDIRICI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_DNS;
+  Inc(p1);
+  p1^ := DHCP_SECIM_YONLENDIRICI_KESIF_UYGULA;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SABIT_YONLENDIRME_TABLOSU;
+  Inc(p1);
+  p1^ := DHCP_SECIM_ALAN_ADI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SATICI_OZEL_BILGI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NETBIOS_TCP_NS_ILE;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NETBIOS_TCP_DUGUM_TIP_ILE;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NETBIOS_TCP_KAPSAM_ILE;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SINIFDISI_YONLENDIRME;
+  Inc(p1);
+  p1^ := DHCP_SECIM_OZEL_SINIFSIZ_YONLENDIRME;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 12;
+
+  Inc(p1);
+
+  p1^ := DHCP_SECIM_SON;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
+
+  B := TBaglanti(FBaglanti);
+  B.FDHCPv4i.FUDP.FIP4.FHedefMACAdres := MACAdres255;
+  B.FDHCPv4i.FUDP.FIP4.FKaynakIPAdres := IP4Adres0;
+  B.FDHCPv4i.FUDP.FIP4.FHedefIPAdres := IP4Adres255;
+  B.FDHCPv4i.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
+
+  FreeMem(DHCPYapi, 4096);
+end;
+
+{==============================================================================
+  DHCP sunucusuna istek mesajý gönderir
+ ==============================================================================}
+procedure TDHCPv4i.DHCPIstekMesajiGonder(ADHCPSunucuIP4Adres, AIstenenIP4Adres: TIP4Adres);
+var
+  B: TBaglanti;
+  DHCPYapi: PDHCP4Yapi;
+  IP4Adres: PIP4Adres;
+  MACAdres: PMACAdres;
+  i: TSayi1;
+  p1: PSayi1;
+  pc: PChar;
+  DHCPYapiUzunlugu: TSayi4;
+begin
+
+  DHCPYapi := GetMem(4096);
+
+	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
+	DHCPYapi^.DonanimTip := 1;		      // ethernet
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.RelayIcin := 0;
+	DHCPYapi^.GonderenKimlik := ntohs(DHCP_GONDEREN_KIMLIK);
+	DHCPYapi^.Sure := 0;
+	DHCPYapi^.Bayraklar := 0;
+	DHCPYapi^.IstemciIP4Adres := IP4Adres0;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := IP4Adres0;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
+
+  // IstemciMACAdres 6 + 10 = 16 byte
+  DHCPYapi^.IstemciMACAdres := GAygitlar.AktifEthernet.MACAdresim;
+	DHCPYapi^.AYRLDI1 := 0;
+	DHCPYapi^.AYRLDI2 := 0;
+	DHCPYapi^.AYRLDI3 := 0;
+
+  FillChar(DHCPYapi^.SunucuEvSahibiAdi, 64, #0);
+  FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
+	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
+
+  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
+
+  // diðer seçenekler
+  p1 := @DHCPYapi^.DigerSecenekler;
+
+  // dhcp mesaj kodlamasý
+  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+
+  // dhcp mesaj tipi
+  p1^ := DHCP_SECIM_MESAJ_TIP;
+  Inc(p1);
+  p1^ := 1;
+  Inc(p1);
+  p1^ := DHCP_MTIP_ISTEK;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1;
+
+  Inc(p1);
+
+  p1^ := DHCP_SECIM_ISTEMCI_KIMLIK;
+  Inc(p1);
+  p1^ := 7;                               // uzunluk
+  Inc(p1);
+  p1^ := 1;
+  Inc(p1);                                // donaným tipi = 1 (ethernet)
+  MACAdres := PMACAdres(p1);
+  MACAdres^ := GAygitlar.AktifEthernet.MACAdresim;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
+
+  Inc(p1, 6);
+
+  // istenen ip adresi - 2 + 4 byte
+  p1^ := DHCP_SECIM_ISTEK_IP_ADRES;
+  Inc(p1);
+  p1^ := 4;
+  Inc(p1);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := AIstenenIP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
+
+  // istenen ip adresi - 2 + 4 byte
+  p1^ := DHCP_SECIM_SUNUCU_TANIMLAYICI;
+  Inc(p1);
+  p1^ := 4;
+  Inc(p1);
+  IP4Adres := Isaretci(p1);
+  IP4Adres^ := ADHCPSunucuIP4Adres;
+  Inc(IP4Adres);
+  p1 := Isaretci(IP4Adres);
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
+
+  // bilgisayar adý
+  i := Length(GTamBilgisayarAdi);
+  p1^ := DHCP_SECIM_YEREL_AD;
+  Inc(p1);
+  PByte(p1)^ := i;
+  Inc(p1);
+  pc := Isaretci(p1);
+  Tasi2(@GTamBilgisayarAdi[1], pc, i);
+  Inc(pc, i);
+  p1 := Isaretci(pc);
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + i;
+
+  // tam bilgisayar adý - (domain adý dahil)
+  i := Length(GTamBilgisayarAdi);
+  p1^ := DHCP_SECIM_TAM_ISTEMCI_ADI;
+  Inc(p1);
+  PByte(p1)^ := 3 + i;
+  Inc(p1);
+  PByte(p1)^ := 0;
+  Inc(p1);
+  PByte(p1)^ := 0;
+  Inc(p1);
+  PByte(p1)^ := 0;
+  Inc(p1);
+  pc := Isaretci(p1);
+  Tasi2(@GTamBilgisayarAdi[1], pc, i);
+  Inc(pc, i);
+  p1 := Isaretci(pc);
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 3 + i;
+
+  // parametre istek listesi - 2 + 12 byte
+  p1^ := DHCP_SECIM_DEGISKEN_ISTEK_LISTESI;
+  Inc(p1);
+  p1^ := 12;                              // uzunluk
+  Inc(p1);
+  p1^ := DHCP_SECIM_ALTAG_MASKESI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_YONLENDIRICI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_DNS;
+  Inc(p1);
+  p1^ := DHCP_SECIM_ALAN_ADI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_YONLENDIRICI_KESIF_UYGULA;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SABIT_YONLENDIRME_TABLOSU;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SATICI_OZEL_BILGI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NETBIOS_TCP_NS_ILE;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NETBIOS_TCP_DUGUM_TIP_ILE;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NETBIOS_TCP_KAPSAM_ILE;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SINIFDISI_YONLENDIRME;
+  Inc(p1);
+  p1^ := DHCP_SECIM_OZEL_SINIFSIZ_YONLENDIRME;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 12;
+
+  Inc(p1);
+
+  p1^ := DHCP_SECIM_SON;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
+
+  B := TBaglanti(FBaglanti);
+  B.FDHCPv4i.FUDP.FIP4.FHedefMACAdres := MACAdres255;
+  B.FDHCPv4i.FUDP.FIP4.FKaynakIPAdres := IP4Adres0;
+  B.FDHCPv4i.FUDP.FIP4.FHedefIPAdres := IP4Adres255;
+  B.FDHCPv4i.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
+
+  FreeMem(DHCPYapi, 4096);
+end;
+
+{==============================================================================
+  DHCP sunucusuna bilgilendirme mesajý gönderir
+ ==============================================================================}
+procedure TDHCPv4i.DHCPBilgilendirmeMesajiGonder(AIstemciIP4Adres: TIP4Adres);
+var
+  B: TBaglanti;
+  DHCPYapi: PDHCP4Yapi;
+  MACAdres: PMACAdres;
+  i: TSayi1;
+  p1: PSayi1;
+  pc: PChar;
+  DHCPYapiUzunlugu: TSayi4;
+begin
+
+  DHCPYapi := GetMem(4096);
+
+	DHCPYapi^.Islem := DHCP_BOOT_MTIP_ISTEK;
+	DHCPYapi^.DonanimTip := 1;		      // ethernet
+	DHCPYapi^.DonanimUz := 6;		        // mac uzunluðu
+	DHCPYapi^.RelayIcin := 0;
+	DHCPYapi^.GonderenKimlik := ntohs(DHCP_GONDEREN_KIMLIK);
+	DHCPYapi^.Sure := 0;
+	DHCPYapi^.Bayraklar := 0;
+	DHCPYapi^.IstemciIP4Adres := AIstemciIP4Adres;
+	DHCPYapi^.IstemciyeAtanacakIP4Adres := IP4Adres0;
+	DHCPYapi^.SunucuIP4Adres := IP4Adres0;
+	DHCPYapi^.AgGecidiIP4Adres := IP4Adres0;
+
+  // IstemciMACAdres 6 + 10 = 16 byte
+  DHCPYapi^.IstemciMACAdres := GAygitlar.AktifEthernet.MACAdresim;
+	DHCPYapi^.AYRLDI1 := 0;
+	DHCPYapi^.AYRLDI2 := 0;
+	DHCPYapi^.AYRLDI3 := 0;
+
+  FillChar(DHCPYapi^.SunucuEvSahibiAdi, 64, #0);
+  FillChar(DHCPYapi^.AcilisDosyaAdi, 128, #0);
+	DHCPYapi^.SihirliCerez := ntohs(DHCP_SIHIRLI_CEREZ);
+
+  // en sondaki iþaretçi hariç (DigerSecenekler) yapý uzunluðu
+  DHCPYapiUzunlugu := SizeOf(TDHCP4Yapi) - 4;
+
+  // diðer seçenekler
+  p1 := @DHCPYapi^.DigerSecenekler;
+
+  // dhcp mesaj kodlamasý
+  // 1. byte = mesaj tip, 2. byte = mesajýn uzunluðu, 3. byte = mesajýn kendisi
+
+  // dhcp mesaj tipi
+  p1^ := DHCP_SECIM_MESAJ_TIP;
+  Inc(p1);
+  p1^ := 1;
+  Inc(p1);
+  p1^ := DHCP_BILGILENDIRME;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1;
+
+  Inc(p1);
+
+  p1^ := DHCP_SECIM_ISTEMCI_KIMLIK;
+  Inc(p1);
+  p1^ := 7;                               // uzunluk
+  Inc(p1);
+  p1^ := 1;
+  Inc(p1);                                // donaným tipi = 1 (ethernet)
+  MACAdres := PMACAdres(p1);
+  MACAdres^ := GAygitlar.AktifEthernet.MACAdresim;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 1 + 6;
+
+  Inc(p1, 6);
+
+  // bilgisayar adý
+  i := Length(GTamBilgisayarAdi);
+  p1^ := DHCP_SECIM_YEREL_AD;
+  Inc(p1);
+  PByte(p1)^ := i;
+  Inc(p1);
+  pc := Isaretci(p1);
+  Tasi2(@GTamBilgisayarAdi[1], pc, i);
+  Inc(pc, i);
+  p1 := Isaretci(pc);
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + i;
+
+  // parametre istek listesi - 2 + 12 byte
+  p1^ := DHCP_SECIM_DEGISKEN_ISTEK_LISTESI;
+  Inc(p1);
+  p1^ := 12;                              // uzunluk
+  Inc(p1);
+  p1^ := DHCP_SECIM_ALTAG_MASKESI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_YONLENDIRICI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_DNS;
+  Inc(p1);
+  p1^ := DHCP_SECIM_ALAN_ADI;
+  Inc(p1);
+  p1^ := DHCP_SECIM_YONLENDIRICI_KESIF_UYGULA;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SABIT_YONLENDIRME_TABLOSU;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NETBIOS_TCP_NS_ILE;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NETBIOS_TCP_DUGUM_TIP_ILE;
+  Inc(p1);
+  p1^ := DHCP_SECIM_NETBIOS_TCP_KAPSAM_ILE;
+  Inc(p1);
+  p1^ := DHCP_SECIM_SINIFDISI_YONLENDIRME;
+  Inc(p1);
+  p1^ := DHCP_SECIM_OZEL_SINIFSIZ_YONLENDIRME;
+  Inc(p1);
+  p1^ := DHCP_SECIM_OZEL_PROXY_OTOKESIF;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 12;
+
+  Inc(p1);
+
+  p1^ := DHCP_SECIM_SON;
+  DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
+
+  B := TBaglanti(FBaglanti);
+  B.FDHCPv4i.FUDP.FIP4.FHedefMACAdres := MACAdres255;
+  B.FDHCPv4i.FUDP.FIP4.FKaynakIPAdres := IP4Adres0;
+  B.FDHCPv4i.FUDP.FIP4.FHedefIPAdres := IP4Adres255;
+  B.FDHCPv4i.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
+
+  FreeMem(DHCPYapi, 4096);
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adı: ethernet.pas
   Dosya İşlevi: ethernet ağ (network) kartı yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 24/09/2026
+  Güncelleme Tarihi: 25/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -113,9 +113,9 @@ begin
     end;
 
     {SISTEM_MESAJ(mtBilgi, RENK_MOR, 'ETH', []);
-    SISTEM_MESAJ_MAC(mtBilgi, RENK_LACIVERT, 'ETH: Kaynak MAC: ', EthPaket^.KaynakMACAdres);
-    SISTEM_MESAJ_MAC(mtBilgi, RENK_LACIVERT, 'ETH: Hedef MAC: ', EthPaket^.HedefMACAdres);
-    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'ETH: PaketTip: %.4x', [EthPaket^.PaketTipi]);
+    SISTEM_MESAJ_MAC(mtBilgi, RENK_LACIVERT, 'ETH: Kaynak MAC: ', EPaket^.KaynakMACAdres);
+    SISTEM_MESAJ_MAC(mtBilgi, RENK_LACIVERT, 'ETH: Hedef MAC: ', EPaket^.HedefMACAdres);
+    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'ETH: PaketTip: %.4x', [EPaket^.PaketTipi]);
     SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'ETH: VeriU: %d', [AVeriU]);}
 
     Bellek := @EPaket^.Veri;

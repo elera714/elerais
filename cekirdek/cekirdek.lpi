@@ -37,34 +37,37 @@
         </Mode0>
       </Modes>
     </RunParams>
-    <Units Count="149">
+    <Units Count="139">
       <Unit0>
         <Filename Value="cekirdek.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="17" Y="28"/>
+        <TopLine Value="7"/>
+        <CursorPos X="31" Y="77"/>
         <UsageCount Value="260"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="yonetim.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="16"/>
-        <CursorPos X="79" Y="38"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="212"/>
+        <CursorPos X="63" Y="228"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="yukleyici.pas"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="83" Y="37"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="74"/>
+        <CursorPos X="50" Y="94"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\surumbil.txt"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="43"/>
+        <EditorIndex Value="29"/>
         <CursorPos X="68" Y="22"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -73,7 +76,7 @@
       <Unit4>
         <Filename Value="..\bellek.txt"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="42"/>
+        <EditorIndex Value="28"/>
         <CursorPos X="14" Y="4"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -82,7 +85,8 @@
       <Unit5>
         <Filename Value="planlama.txt"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="41"/>
+        <EditorIndex Value="27"/>
+        <CursorPos X="31" Y="19"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -111,8 +115,7 @@
         <Filename Value="..\ortak\donanim\port.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="21"/>
-        <CursorPos X="11" Y="38"/>
+        <CursorPos X="11" Y="21"/>
         <UsageCount Value="224"/>
       </Unit9>
       <Unit10>
@@ -122,1050 +125,995 @@
         <UsageCount Value="224"/>
       </Unit10>
       <Unit11>
-        <Filename Value="..\ortak\cekirdek\genel.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="48" Y="20"/>
-        <UsageCount Value="151"/>
-      </Unit11>
-      <Unit12>
         <Filename Value="..\ortak\cekirdek\gn_islevler.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="630"/>
+        <CursorPos X="3" Y="639"/>
         <UsageCount Value="224"/>
-      </Unit12>
-      <Unit13>
+      </Unit11>
+      <Unit12>
         <Filename Value="..\ortak\cekirdek\idt.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="17" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="..\ortak\cekirdek\irq.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="17" Y="6"/>
+        <CursorPos X="11" Y="27"/>
+        <UsageCount Value="224"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\ortak\cekirdek\sistemmesaj.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3"/>
+        <CursorPos X="17" Y="27"/>
         <UsageCount Value="224"/>
       </Unit14>
       <Unit15>
-        <Filename Value="..\ortak\cekirdek\sistemmesaj.pas"/>
+        <Filename Value="..\ortak\cekirdek\olayyonetim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit15>
       <Unit16>
-        <Filename Value="..\ortak\cekirdek\olayyonetim.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="25" Y="6"/>
-        <UsageCount Value="224"/>
-      </Unit16>
-      <Unit17>
         <Filename Value="..\ortak\cekirdek\mdepolama.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="12"/>
-        <TopLine Value="100"/>
-        <CursorPos X="16" Y="118"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="439"/>
+        <CursorPos X="35" Y="116"/>
+        <UsageCount Value="224"/>
+        <Loaded Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="54"/>
+        <CursorPos X="38" Y="75"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit17>
       <Unit18>
-        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="16"/>
-        <TopLine Value="212"/>
-        <CursorPos X="3" Y="230"/>
-        <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit18>
-      <Unit19>
         <Filename Value="..\ortak\cekirdek\pci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="5" Y="67"/>
         <UsageCount Value="224"/>
-      </Unit19>
-      <Unit20>
+      </Unit18>
+      <Unit19>
         <Filename Value="..\ortak\cekirdek\gercekbellek.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="16"/>
-        <CursorPos X="64" Y="376"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="350"/>
+        <CursorPos X="3" Y="82"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
-      </Unit20>
-      <Unit21>
+      </Unit19>
+      <Unit20>
         <Filename Value="..\ortak\cekirdek\fdepolama.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-      </Unit21>
-      <Unit22>
+      </Unit20>
+      <Unit21>
         <Filename Value="..\ortak\cekirdek\sanalbellek.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit22>
-      <Unit23>
+      </Unit21>
+      <Unit22>
         <Filename Value="..\ortak\cekirdek\donusum.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-      </Unit23>
-      <Unit24>
+      </Unit22>
+      <Unit23>
         <Filename Value="..\ortak\cekirdek\aygityonetimi.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="19"/>
-        <TopLine Value="62"/>
-        <CursorPos X="29" Y="220"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="28"/>
+        <CursorPos X="67" Y="47"/>
+        <UsageCount Value="224"/>
+        <Loaded Value="True"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="..\ortak\cekirdek\dosyalar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="829"/>
+        <CursorPos X="45" Y="845"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit24>
       <Unit25>
-        <Filename Value="..\ortak\cekirdek\dosyalar.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="892"/>
-        <CursorPos X="3" Y="898"/>
-        <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit25>
-      <Unit26>
         <Filename Value="..\ortak\cekirdek\gdt.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="42" Y="8"/>
         <UsageCount Value="224"/>
-      </Unit26>
-      <Unit27>
+      </Unit25>
+      <Unit26>
         <Filename Value="..\ortak\suruculer\src_ide.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="14"/>
-        <TopLine Value="190"/>
-        <CursorPos X="16" Y="208"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="620"/>
+        <CursorPos X="5" Y="654"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit27>
-      <Unit28>
+      </Unit26>
+      <Unit27>
         <Filename Value="..\ortak\suruculer\src_klavye.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="24" Y="6"/>
+        <TopLine Value="49"/>
         <UsageCount Value="224"/>
-      </Unit28>
-      <Unit29>
+      </Unit27>
+      <Unit28>
         <Filename Value="..\ortak\suruculer\src_sb.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-      </Unit29>
-      <Unit30>
+      </Unit28>
+      <Unit29>
         <Filename Value="..\ortak\suruculer\src_com.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="38" Y="175"/>
         <UsageCount Value="224"/>
-      </Unit30>
-      <Unit31>
+      </Unit29>
+      <Unit30>
         <Filename Value="..\ortak\suruculer\src_disket.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="13"/>
-        <TopLine Value="313"/>
-        <CursorPos X="38" Y="463"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit31>
-      <Unit32>
+      </Unit30>
+      <Unit31>
         <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="294"/>
         <CursorPos X="5" Y="302"/>
         <UsageCount Value="224"/>
-      </Unit32>
-      <Unit33>
+      </Unit31>
+      <Unit32>
         <Filename Value="..\ortak\suruculer\fare\src_ps2.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="70"/>
-        <CursorPos X="53" Y="85"/>
         <UsageCount Value="224"/>
-      </Unit33>
-      <Unit34>
+      </Unit32>
+      <Unit33>
         <Filename Value="..\ortak\suruculer\ag\src_pcnet32.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="25" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit34>
-      <Unit35>
+      </Unit33>
+      <Unit34>
         <Filename Value="..\ortak\diger\fareimlec.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="23" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit35>
-      <Unit36>
+      </Unit34>
+      <Unit35>
         <Filename Value="..\ortak\dosyabicim\bmp.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="17" Y="6"/>
+        <TopLine Value="194"/>
+        <CursorPos X="26" Y="109"/>
+        <UsageCount Value="224"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="..\ortak\karakter\genel8x16.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit36>
       <Unit37>
-        <Filename Value="..\ortak\karakter\genel8x16.pas"/>
+        <Filename Value="..\ortak\dosyasistemi\fat16.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit37>
       <Unit38>
-        <Filename Value="..\ortak\dosyasistemi\fat16.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="10"/>
-        <CursorPos X="5" Y="23"/>
-        <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit38>
-      <Unit39>
         <Filename Value="..\ortak\dosyasistemi\fat32.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="660"/>
-        <CursorPos X="28" Y="675"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit39>
-      <Unit40>
+      </Unit38>
+      <Unit39>
         <Filename Value="..\ortak\dosyasistemi\fat12.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="55"/>
-        <CursorPos X="3" Y="64"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="224"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="..\ortak\ag\dnsi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="21"/>
+        <TopLine Value="189"/>
+        <CursorPos X="18" Y="206"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit40>
       <Unit41>
-        <Filename Value="..\ortak\ag\dns.pas"/>
+        <Filename Value="..\ortak\ag\icmp4.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="34"/>
-        <TopLine Value="389"/>
-        <CursorPos X="29" Y="206"/>
+        <EditorIndex Value="15"/>
+        <TopLine Value="66"/>
+        <CursorPos X="3" Y="73"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit41>
       <Unit42>
-        <Filename Value="..\ortak\ag\icmp4.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="224"/>
-      </Unit42>
-      <Unit43>
         <Filename Value="..\ortak\ag\ip4.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="31"/>
-        <TopLine Value="146"/>
-        <CursorPos X="48" Y="167"/>
+        <EditorIndex Value="23"/>
+        <TopLine Value="155"/>
+        <CursorPos X="3" Y="165"/>
+        <UsageCount Value="224"/>
+        <Loaded Value="True"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="12"/>
+        <TopLine Value="116"/>
+        <CursorPos X="14" Y="138"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit43>
       <Unit44>
-        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Filename Value="..\ortak\ag\tcp.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="21"/>
-        <TopLine Value="424"/>
-        <CursorPos X="41" Y="436"/>
+        <EditorIndex Value="13"/>
+        <TopLine Value="465"/>
+        <CursorPos X="83" Y="482"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit44>
       <Unit45>
-        <Filename Value="..\ortak\ag\tcp.pas"/>
+        <Filename Value="..\ortak\ag\udp.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="11"/>
-        <TopLine Value="340"/>
-        <CursorPos X="32" Y="357"/>
+        <EditorIndex Value="14"/>
+        <TopLine Value="190"/>
+        <CursorPos X="3" Y="204"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit45>
       <Unit46>
-        <Filename Value="..\ortak\ag\udp.pas"/>
+        <Filename Value="..\ortak\ag\ag.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="10"/>
-        <TopLine Value="94"/>
-        <CursorPos X="37" Y="116"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="157"/>
+        <CursorPos X="44" Y="174"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit46>
       <Unit47>
-        <Filename Value="..\ortak\ag\ag.pas"/>
+        <Filename Value="..\ortak\ag\arp.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="20"/>
-        <TopLine Value="70"/>
-        <CursorPos X="33" Y="84"/>
+        <EditorIndex Value="17"/>
+        <TopLine Value="178"/>
+        <CursorPos X="3" Y="186"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit47>
       <Unit48>
-        <Filename Value="..\ortak\ag\arp.pas"/>
+        <Filename Value="..\ortak\nesne\n_yazilistesi.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="26"/>
-        <TopLine Value="179"/>
-        <CursorPos X="41" Y="192"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
       </Unit48>
       <Unit49>
-        <Filename Value="..\ortak\nesne\n_yazilistesi.pas"/>
+        <Filename Value="..\ortak\nesne\n_sayilistesi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit49>
       <Unit50>
-        <Filename Value="..\ortak\nesne\n_sayilistesi.pas"/>
+        <Filename Value="..\ortak\kesme\k_cizim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit50>
       <Unit51>
-        <Filename Value="..\ortak\kesme\k_cizim.pas"/>
+        <Filename Value="..\ortak\kesme\k_fare.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit51>
       <Unit52>
-        <Filename Value="..\ortak\kesme\k_fare.pas"/>
+        <Filename Value="..\ortak\kesme\k_yazim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit52>
       <Unit53>
-        <Filename Value="..\ortak\kesme\k_yazim.pas"/>
+        <Filename Value="..\ortak\kesme\k_zamanlayici.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit53>
       <Unit54>
-        <Filename Value="..\ortak\kesme\k_zamanlayici.pas"/>
+        <Filename Value="..\ortak\kesme\k_ag.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit54>
       <Unit55>
-        <Filename Value="..\ortak\kesme\k_ag.pas"/>
+        <Filename Value="..\ortak\kesme\k_gorselnesne.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit55>
       <Unit56>
-        <Filename Value="..\ortak\kesme\k_gorselnesne.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="224"/>
-      </Unit56>
-      <Unit57>
         <Filename Value="..\ortak\kesme\k_sayac.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="21" Y="6"/>
+        <CursorPos X="10" Y="19"/>
+        <UsageCount Value="224"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="..\ortak\kesme\k_olay.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit57>
       <Unit58>
-        <Filename Value="..\ortak\kesme\k_olay.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="38"/>
-        <TopLine Value="68"/>
-        <CursorPos X="66" Y="115"/>
-        <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit58>
-      <Unit59>
         <Filename Value="..\ortak\kesme\k_dosya.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="39"/>
-        <TopLine Value="6"/>
-        <CursorPos X="14" Y="23"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit59>
-      <Unit60>
+      </Unit58>
+      <Unit59>
         <Filename Value="..\ortak\kesme\k_bellek.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="40"/>
-        <TopLine Value="55"/>
-        <CursorPos X="6" Y="23"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit60>
-      <Unit61>
+      </Unit59>
+      <Unit60>
         <Filename Value="..\ortak\kesme\k_sistemmesaj.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="58" Y="32"/>
         <UsageCount Value="224"/>
-      </Unit61>
-      <Unit62>
+      </Unit60>
+      <Unit61>
         <Filename Value="..\ortak\kesme\k_diger.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="21" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit62>
-      <Unit63>
+      </Unit61>
+      <Unit62>
         <Filename Value="..\ortak\kesme\k_pci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-      </Unit63>
-      <Unit64>
+      </Unit62>
+      <Unit63>
         <Filename Value="..\ortak\kesme\k_gorev.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="17"/>
-        <TopLine Value="83"/>
-        <CursorPos X="21" Y="92"/>
+        <EditorIndex Value="8"/>
+        <CursorPos X="55" Y="13"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
-      </Unit64>
-      <Unit65>
+      </Unit63>
+      <Unit64>
         <Filename Value="..\ortak\kesme\k_ekran.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="21" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit65>
-      <Unit66>
+      </Unit64>
+      <Unit65>
         <Filename Value="..\ortak\kesme\k_baglantilar.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="27"/>
-        <TopLine Value="129"/>
-        <CursorPos X="34" Y="136"/>
+        <EditorIndex Value="22"/>
+        <TopLine Value="51"/>
+        <CursorPos X="109" Y="67"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
-      </Unit66>
-      <Unit67>
+      </Unit65>
+      <Unit66>
         <Filename Value="..\ortak\kesme\k_depolama.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="15"/>
-        <TopLine Value="89"/>
-        <CursorPos X="48" Y="39"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
-      </Unit67>
-      <Unit68>
+      </Unit66>
+      <Unit67>
         <Filename Value="..\ortak\kesme\k_sistem.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
+      </Unit67>
+      <Unit68>
+        <Filename Value="..\ortak\kesme\kesme34.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="66"/>
+        <CursorPos X="61" Y="93"/>
+        <UsageCount Value="224"/>
       </Unit68>
       <Unit69>
-        <Filename Value="..\ortak\kesme\kesme34.pas"/>
+        <Filename Value="..\ortak\diger\giysi_normal.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit69>
       <Unit70>
-        <Filename Value="..\ortak\diger\giysi_normal.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="224"/>
-      </Unit70>
-      <Unit71>
         <Filename Value="..\ortak\usb\uhci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="18" Y="6"/>
         <UsageCount Value="224"/>
+      </Unit70>
+      <Unit71>
+        <Filename Value="..\ortak\usb\usb.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="224"/>
       </Unit71>
       <Unit72>
-        <Filename Value="..\ortak\usb\usb.pas"/>
+        <Filename Value="..\ortak\usb\ehci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
       </Unit72>
       <Unit73>
-        <Filename Value="..\ortak\usb\ehci.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="224"/>
-      </Unit73>
-      <Unit74>
         <Filename Value="..\ortak\usb\ohci.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="35" Y="133"/>
         <UsageCount Value="224"/>
-      </Unit74>
-      <Unit75>
+      </Unit73>
+      <Unit74>
         <Filename Value="..\gorselnesne\gn_pencere.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-      </Unit75>
-      <Unit76>
+      </Unit74>
+      <Unit75>
         <Filename Value="..\gorselnesne\gn_resim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="22" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit76>
-      <Unit77>
+      </Unit75>
+      <Unit76>
         <Filename Value="..\gorselnesne\gn_secimdugmesi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="29" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit77>
-      <Unit78>
+      </Unit76>
+      <Unit77>
         <Filename Value="..\gorselnesne\gorselnesne.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="25" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit78>
-      <Unit79>
+      </Unit77>
+      <Unit78>
         <Filename Value="..\gorselnesne\anagorselnesne.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="28" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit79>
-      <Unit80>
+      </Unit78>
+      <Unit79>
         <Filename Value="..\gorselnesne\gn_baglanti.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit80>
-      <Unit81>
+      </Unit79>
+      <Unit80>
         <Filename Value="..\gorselnesne\gn_defter.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="30" Y="8"/>
         <UsageCount Value="224"/>
-      </Unit81>
-      <Unit82>
+      </Unit80>
+      <Unit81>
         <Filename Value="..\gorselnesne\gn_degerdugmesi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="29" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit82>
-      <Unit83>
+      </Unit81>
+      <Unit82>
         <Filename Value="..\gorselnesne\gn_dugme.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="22" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit83>
-      <Unit84>
+      </Unit82>
+      <Unit83>
         <Filename Value="..\gorselnesne\gn_durumcubugu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="28" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit84>
-      <Unit85>
+      </Unit83>
+      <Unit84>
         <Filename Value="..\gorselnesne\gn_etiket.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="23" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit85>
-      <Unit86>
+      </Unit84>
+      <Unit85>
         <Filename Value="..\gorselnesne\gn_giriskutusu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="28" Y="6"/>
         <UsageCount Value="224"/>
+      </Unit85>
+      <Unit86>
+        <Filename Value="..\gorselnesne\gn_gucdugmesi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="27" Y="6"/>
+        <UsageCount Value="224"/>
       </Unit86>
       <Unit87>
-        <Filename Value="..\gorselnesne\gn_gucdugmesi.pas"/>
+        <Filename Value="..\gorselnesne\gn_onaykutusu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="27" Y="6"/>
         <UsageCount Value="224"/>
       </Unit87>
       <Unit88>
-        <Filename Value="..\gorselnesne\gn_onaykutusu.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="27" Y="6"/>
-        <UsageCount Value="224"/>
-      </Unit88>
-      <Unit89>
         <Filename Value="..\gorselnesne\gn_islemgostergesi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="24" Y="13"/>
         <UsageCount Value="224"/>
-      </Unit89>
-      <Unit90>
+      </Unit88>
+      <Unit89>
         <Filename Value="..\gorselnesne\gn_listegorunum.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="29" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit90>
-      <Unit91>
+      </Unit89>
+      <Unit90>
         <Filename Value="..\gorselnesne\gn_listekutusu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="24" Y="9"/>
         <UsageCount Value="224"/>
-      </Unit91>
-      <Unit92>
+      </Unit90>
+      <Unit91>
         <Filename Value="..\gorselnesne\gn_masaustu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-      </Unit92>
-      <Unit93>
+      </Unit91>
+      <Unit92>
         <Filename Value="..\gorselnesne\gn_menu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="21" Y="6"/>
         <UsageCount Value="224"/>
-      </Unit93>
-      <Unit94>
+      </Unit92>
+      <Unit93>
         <Filename Value="..\ortak\diger\hamresim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="36" Y="9"/>
         <UsageCount Value="210"/>
-      </Unit94>
-      <Unit95>
+      </Unit93>
+      <Unit94>
         <Filename Value="..\ortak\diger\islevler.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="36"/>
-        <TopLine Value="458"/>
-        <CursorPos X="13" Y="460"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="227"/>
-        <Loaded Value="True"/>
-      </Unit95>
-      <Unit96>
-        <Filename Value="..\oz\g\zamanlayici.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="373"/>
-        <CursorPos X="25" Y="391"/>
-        <UsageCount Value="81"/>
-      </Unit96>
-      <Unit97>
-        <Filename Value="..\oz\g\gorev.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="738"/>
-        <CursorPos X="18" Y="757"/>
-        <UsageCount Value="81"/>
-      </Unit97>
-      <Unit98>
+      </Unit94>
+      <Unit95>
         <Filename Value="..\gorselnesne\gn_panel.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="22" Y="6"/>
         <UsageCount Value="200"/>
-      </Unit98>
-      <Unit99>
+      </Unit95>
+      <Unit96>
         <Filename Value="..\gorselnesne\gn_resimdugmesi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="29" Y="6"/>
         <UsageCount Value="200"/>
-      </Unit99>
-      <Unit100>
+      </Unit96>
+      <Unit97>
         <Filename Value="..\ortak\donanim\acpi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="18" Y="6"/>
         <UsageCount Value="223"/>
-      </Unit100>
-      <Unit101>
+      </Unit97>
+      <Unit98>
         <Filename Value="..\gorselnesne\gn_kaydirmacubugu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="24" Y="9"/>
         <UsageCount Value="203"/>
-      </Unit101>
-      <Unit102>
+      </Unit98>
+      <Unit99>
         <Filename Value="..\gorselnesne\gn_karmaliste.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="200"/>
-      </Unit102>
-      <Unit103>
+      </Unit99>
+      <Unit100>
         <Filename Value="..\gorselnesne\gn_acilirmenu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="27" Y="6"/>
         <UsageCount Value="200"/>
-      </Unit103>
-      <Unit104>
+      </Unit100>
+      <Unit101>
         <Filename Value="..\gorselnesne\gn_degerlistesi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="213"/>
-      </Unit104>
-      <Unit105>
+      </Unit101>
+      <Unit102>
         <Filename Value="..\gorselnesne\gn_izgara.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="23" Y="6"/>
         <UsageCount Value="206"/>
-      </Unit105>
-      <Unit106>
+      </Unit102>
+      <Unit103>
         <Filename Value="..\ortak\diger\giysi_mac.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="206"/>
-      </Unit106>
-      <Unit107>
+      </Unit103>
+      <Unit104>
         <Filename Value="..\gorselnesne\gn_araccubugu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="27" Y="6"/>
         <UsageCount Value="227"/>
-      </Unit107>
-      <Unit108>
+      </Unit104>
+      <Unit105>
         <Filename Value="..\gorselnesne\gn_renksecici.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="24" Y="9"/>
         <UsageCount Value="218"/>
-      </Unit108>
-      <Unit109>
+      </Unit105>
+      <Unit106>
         <Filename Value="..\gorselnesne\gn_sayfakontrol.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="13"/>
         <UsageCount Value="201"/>
-      </Unit109>
-      <Unit110>
+      </Unit106>
+      <Unit107>
         <Filename Value="..\ortak\kesme\k_giysi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="21" Y="6"/>
         <UsageCount Value="212"/>
-      </Unit110>
-      <Unit111>
+      </Unit107>
+      <Unit108>
         <Filename Value="..\ortak\suruculer\diger\vbox.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="10"/>
-        <CursorPos X="32" Y="9"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="202"/>
-        <Loaded Value="True"/>
-      </Unit111>
-      <Unit112>
+      </Unit108>
+      <Unit109>
         <Filename Value="..\ortak\ag\netbios.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="37"/>
-        <TopLine Value="4"/>
-        <CursorPos X="57" Y="15"/>
+        <EditorIndex Value="26"/>
+        <TopLine Value="221"/>
+        <CursorPos X="10" Y="249"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
-      </Unit112>
-      <Unit113>
-        <Filename Value="..\ortak\ag\bagdastirici.pas"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="81"/>
-      </Unit113>
-      <Unit114>
+      </Unit109>
+      <Unit110>
         <Filename Value="sistem.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="20" Y="6"/>
+        <CursorPos X="28" Y="56"/>
         <UsageCount Value="225"/>
-      </Unit114>
-      <Unit115>
-        <Filename Value="..\ortak\program\prg_grafik.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="25"/>
-        <CursorPos X="58" Y="33"/>
-        <UsageCount Value="154"/>
-      </Unit115>
-      <Unit116>
-        <Filename Value="..\ortak\program\prg_kontrol.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="79"/>
-        <CursorPos X="45" Y="94"/>
-        <UsageCount Value="154"/>
-      </Unit116>
-      <Unit117>
+      </Unit110>
+      <Unit111>
         <Filename Value="..\ortak\dosyasistemi\elr1.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="87"/>
-        <CursorPos X="8" Y="105"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="48"/>
+        <CursorPos X="15" Y="64"/>
         <UsageCount Value="246"/>
         <Loaded Value="True"/>
-      </Unit117>
-      <Unit118>
-        <Filename Value="..\ortak\ag\dhcp_i.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="18" Y="17"/>
-        <UsageCount Value="166"/>
-      </Unit118>
-      <Unit119>
-        <Filename Value="..\ortak\cekirdek\izleme.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos Y="8"/>
-        <UsageCount Value="80"/>
-      </Unit119>
-      <Unit120>
+      </Unit111>
+      <Unit112>
         <Filename Value="..\ortak\suruculer\ag\src_e1000.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="200"/>
-      </Unit120>
-      <Unit121>
+      </Unit112>
+      <Unit113>
         <Filename Value="arge.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="18" Y="6"/>
         <UsageCount Value="205"/>
-      </Unit121>
-      <Unit122>
+      </Unit113>
+      <Unit114>
         <Filename Value="..\ortak\fpc\thread.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="3" Y="21"/>
+        <CursorPos X="3" Y="46"/>
         <UsageCount Value="200"/>
-      </Unit122>
-      <Unit123>
+      </Unit114>
+      <Unit115>
         <Filename Value="..\ortak\diger\giysi_elera.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="215"/>
-      </Unit123>
-      <Unit124>
+      </Unit115>
+      <Unit116>
         <Filename Value="..\ortak\diger\giysi.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <UsageCount Value="209"/>
-      </Unit124>
-      <Unit125>
+      </Unit116>
+      <Unit117>
         <Filename Value="..\ortak\ag\sunucu\http.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="28"/>
-        <TopLine Value="248"/>
-        <CursorPos X="49" Y="263"/>
+        <EditorIndex Value="18"/>
+        <TopLine Value="34"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit117>
+      <Unit118>
+        <Filename Value="..\ortak\ag\sunucu\ftp.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="19"/>
+        <UsageCount Value="220"/>
+        <Loaded Value="True"/>
+      </Unit118>
+      <Unit119>
+        <Filename Value="..\ortak\ag\sunucu\dhcp6.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="25"/>
+        <CursorPos X="41" Y="19"/>
+        <UsageCount Value="238"/>
+        <Loaded Value="True"/>
+      </Unit119>
+      <Unit120>
+        <Filename Value="..\ortak\ag\icmp6.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="16"/>
+        <TopLine Value="129"/>
+        <CursorPos X="5" Y="146"/>
+        <UsageCount Value="235"/>
+        <Loaded Value="True"/>
+      </Unit120>
+      <Unit121>
+        <Filename Value="..\ortak\ag\ip6.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="24"/>
+        <TopLine Value="51"/>
+        <CursorPos X="29" Y="58"/>
+        <UsageCount Value="211"/>
+        <Loaded Value="True"/>
+      </Unit121>
+      <Unit122>
+        <Filename Value="..\ortak\ag\istemci\dhcpv4i.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="221"/>
+      </Unit122>
+      <Unit123>
+        <Filename Value="..\ortak\ag\istemci\lldp_i.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="201"/>
+      </Unit123>
+      <Unit124>
+        <Filename Value="..\ortak\ag\sunucu\dhcpv4s.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="29"/>
+        <CursorPos X="3" Y="37"/>
+        <UsageCount Value="226"/>
+      </Unit124>
+      <Unit125>
+        <Filename Value="..\oz\gorev.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="247"/>
+        <CursorPos X="69" Y="252"/>
+        <UsageCount Value="204"/>
         <Loaded Value="True"/>
       </Unit125>
       <Unit126>
-        <Filename Value="..\ortak\ag\sunucu\ftp.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="29"/>
-        <TopLine Value="48"/>
-        <CursorPos Y="65"/>
-        <UsageCount Value="220"/>
-        <Loaded Value="True"/>
-      </Unit126>
-      <Unit127>
-        <Filename Value="..\ortak\ag\sunucu\dhcp6.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="35"/>
-        <TopLine Value="326"/>
-        <CursorPos X="25" Y="416"/>
-        <UsageCount Value="238"/>
-        <Loaded Value="True"/>
-      </Unit127>
-      <Unit128>
-        <Filename Value="..\ortak\ag\icmp6.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="30"/>
-        <CursorPos X="13" Y="46"/>
-        <UsageCount Value="235"/>
-        <Loaded Value="True"/>
-      </Unit128>
-      <Unit129>
-        <Filename Value="..\ortak\ag\ip6.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="33"/>
-        <UsageCount Value="211"/>
-        <Loaded Value="True"/>
-      </Unit129>
-      <Unit130>
-        <Filename Value="..\ortak\ag\istemci\dhcpv4i.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="22"/>
-        <CursorPos X="22" Y="152"/>
-        <UsageCount Value="221"/>
-        <Loaded Value="True"/>
-      </Unit130>
-      <Unit131>
-        <Filename Value="..\ortak\ag\istemci\lldp_i.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="32"/>
-        <CursorPos X="48" Y="17"/>
-        <UsageCount Value="201"/>
-        <Loaded Value="True"/>
-      </Unit131>
-      <Unit132>
-        <Filename Value="siniflar.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos Y="20"/>
-        <UsageCount Value="95"/>
-      </Unit132>
-      <Unit133>
-        <Filename Value="..\ortak\ag\sunucu\dhcpv4s.pas"/>
-        <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="24"/>
-        <TopLine Value="247"/>
-        <CursorPos X="2" Y="277"/>
-        <UsageCount Value="226"/>
-        <Loaded Value="True"/>
-      </Unit133>
-      <Unit134>
-        <Filename Value="..\oz\gorev.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="18"/>
-        <TopLine Value="412"/>
-        <CursorPos X="28" Y="429"/>
-        <UsageCount Value="204"/>
-        <Loaded Value="True"/>
-      </Unit134>
-      <Unit135>
         <Filename Value="..\oz\zamanlayici.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="25" Y="6"/>
         <UsageCount Value="204"/>
-      </Unit135>
-      <Unit136>
+      </Unit126>
+      <Unit127>
         <Filename Value="..\ortak\servisler\srv_grafik.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="147"/>
         <CursorPos X="24" Y="6"/>
         <UsageCount Value="212"/>
-      </Unit136>
-      <Unit137>
+      </Unit127>
+      <Unit128>
         <Filename Value="..\ortak\ag\sunucular.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="23" Y="6"/>
+        <EditorIndex Value="20"/>
+        <TopLine Value="22"/>
+        <CursorPos X="3" Y="39"/>
         <UsageCount Value="209"/>
-      </Unit137>
-      <Unit138>
+        <Loaded Value="True"/>
+      </Unit128>
+      <Unit129>
         <Filename Value="..\ortak\servisler\srv_kontrol.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="85"/>
         <CursorPos X="56" Y="17"/>
         <UsageCount Value="203"/>
-      </Unit138>
-      <Unit139>
+      </Unit129>
+      <Unit130>
         <Filename Value="..\ortak\servisler\srv_test.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="22" Y="6"/>
         <UsageCount Value="203"/>
-      </Unit139>
-      <Unit140>
+      </Unit130>
+      <Unit131>
         <Filename Value="..\ortak\servisler\srv_arp.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="21" Y="6"/>
         <UsageCount Value="203"/>
-      </Unit140>
-      <Unit141>
+      </Unit131>
+      <Unit132>
         <Filename Value="..\ortak\ag\ethernet.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="22" Y="6"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="200"/>
-      </Unit141>
-      <Unit142>
+      </Unit132>
+      <Unit133>
         <Filename Value="..\ortak\ag\ip.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="156"/>
-      </Unit142>
-      <Unit143>
+        <TopLine Value="6"/>
+        <CursorPos X="3" Y="20"/>
+        <UsageCount Value="300"/>
+      </Unit133>
+      <Unit134>
         <Filename Value="..\ortak\cekirdek\aygit.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="58"/>
-        <CursorPos X="3" Y="76"/>
+        <TopLine Value="62"/>
+        <CursorPos X="3" Y="70"/>
         <UsageCount Value="206"/>
-      </Unit143>
-      <Unit144>
+      </Unit134>
+      <Unit135>
         <Filename Value="..\ortak\ag\istemciler.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="25"/>
-        <CursorPos X="51" Y="17"/>
-        <UsageCount Value="246"/>
-        <Loaded Value="True"/>
-      </Unit144>
-      <Unit145>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="168"/>
+        <CursorPos X="3" Y="59"/>
+        <UsageCount Value="242"/>
+      </Unit135>
+      <Unit136>
         <Filename Value="..\ortak\ag\dhcpv4.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="23"/>
-        <TopLine Value="532"/>
-        <CursorPos X="50" Y="551"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="236"/>
-        <Loaded Value="True"/>
-      </Unit145>
-      <Unit146>
+      </Unit136>
+      <Unit137>
         <Filename Value="..\ortak\cekirdek\dosya.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="10"/>
-        <CursorPos X="23" Y="57"/>
-        <UsageCount Value="72"/>
-        <Loaded Value="True"/>
-      </Unit146>
-      <Unit147>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="216"/>
+      </Unit137>
+      <Unit138>
         <Filename Value="..\rtl_cekirdek\inc\objpash.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="176"/>
-        <CursorPos X="23" Y="194"/>
-        <UsageCount Value="4"/>
-      </Unit147>
-      <Unit148>
-        <Filename Value="..\rtl_cekirdek\inc\systemh.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1229"/>
-        <CursorPos X="11" Y="1247"/>
+        <TopLine Value="177"/>
+        <CursorPos X="22" Y="196"/>
         <UsageCount Value="10"/>
-      </Unit148>
+      </Unit138>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="SISTEM_SUNUCU}"/>
     </OtherDefines>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="20" HistoryIndex="19">
       <Position1>
         <Filename Value="..\ortak\ag\baglantilar.pas"/>
-        <Caret Line="142" Column="14" TopLine="127"/>
+        <Caret Line="622" Column="37" TopLine="602"/>
       </Position1>
       <Position2>
-        <Filename Value="..\ortak\ag\ip4.pas"/>
-        <Caret Line="167" Column="48" TopLine="146"/>
+        <Filename Value="..\ortak\ag\ag.pas"/>
+        <Caret Line="175" Column="36" TopLine="158"/>
       </Position2>
       <Position3>
-        <Filename Value="..\ortak\ag\udp.pas"/>
-        <Caret Line="116" Column="37" TopLine="94"/>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="166" Column="50" TopLine="147"/>
       </Position3>
       <Position4>
-        <Filename Value="..\ortak\ag\sunucu\http.pas"/>
-        <Caret Line="85" Column="29" TopLine="69"/>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="591" Column="3" TopLine="587"/>
       </Position4>
       <Position5>
-        <Filename Value="..\ortak\kesme\k_depolama.pas"/>
-        <Caret Line="112" Column="56" TopLine="93"/>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="103" Column="53" TopLine="88"/>
       </Position5>
       <Position6>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="463" Column="41" TopLine="449"/>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="43" TopLine="26"/>
       </Position6>
       <Position7>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="38" Column="78" TopLine="16"/>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="101" Column="36" TopLine="85"/>
       </Position7>
       <Position8>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="38" Column="79" TopLine="16"/>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="390" Column="32" TopLine="383"/>
       </Position8>
+      <Position9>
+        <Filename Value="..\ortak\ag\dnsi.pas"/>
+        <Caret Line="206" Column="18" TopLine="189"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\ortak\ag\ag.pas"/>
+        <Caret Line="174" Column="44" TopLine="157"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\ortak\ag\tcp.pas"/>
+        <Caret Line="482" Column="83" TopLine="465"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\ortak\kesme\k_baglantilar.pas"/>
+        <Caret Line="67" Column="109" TopLine="51"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\ortak\ag\udp.pas"/>
+        <Caret Line="60" Column="15" TopLine="44"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\ortak\ag\udp.pas"/>
+        <Caret Line="204" Column="3" TopLine="190"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\ortak\ag\ip4.pas"/>
+        <Caret Line="29" Column="15" TopLine="12"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="397" Column="48" TopLine="374"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="99" Column="14" TopLine="85"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="407" Column="31" TopLine="383"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="99" Column="14" TopLine="85"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\ortak\ag\baglantilar.pas"/>
+        <Caret Line="399" Column="3" TopLine="383"/>
+      </Position20>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -1189,9 +1137,6 @@
     <CodeGeneration>
       <TargetCPU Value="i386"/>
       <TargetOS Value="linux"/>
-      <Optimizations>
-        <OptimizationLevel Value="3"/>
-      </Optimizations>
       <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
