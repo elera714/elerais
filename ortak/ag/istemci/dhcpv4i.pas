@@ -31,7 +31,7 @@ type
   public
     constructor Create(ABaglanti: TObject);
     destructor Destroy; override;
-    procedure OVeriGeldi(AVeri: Isaretci; AVeriU: TSayi4); override;
+    procedure OVeriGeldi(AEthernetPaket: PEthernetPaket); override;
     procedure OtomatikIpAdresiAl;
     { Discover }
     procedure DHCPKesifMesajiGonder;
@@ -46,7 +46,7 @@ implementation
 uses donusum, aygityonetimi, islevler, baglantilar;
 
 {==============================================================================
-  dhcp istemcisi nesnesi yükleme iþlevlerini içerir
+  dhcp istemci nesnesi ana yükleme iþlevlerini içerir
  ==============================================================================}
 constructor TDHCPv4i.Create(ABaglanti: TObject);
 begin
@@ -69,7 +69,7 @@ begin
 end;
 
 {==============================================================================
-  dhcp istemcisi nesnesi yok etme iþlevlerini içerir
+  dhcp istemci nesnesi ana yok etme iþlevlerini içerir
  ==============================================================================}
 destructor TDHCPv4i.Destroy;
 begin
@@ -82,15 +82,19 @@ end;
 {==============================================================================
   dhcp istemcisine gelen paketleri iþler
  ==============================================================================}
-procedure TDHCPv4i.OVeriGeldi(AVeri: Isaretci; AVeriU: TSayi4);
+procedure TDHCPv4i.OVeriGeldi(AEthernetPaket: PEthernetPaket);
 var
+  IP4Paket: PIP4Paket;
+  UDPPaket: PUDPPaket;
   DHCP4Yapi: PDHCP4Yapi;
   DHCPMesaj: PDHCPMesaj;
   AnaMT, MT, i: TSayi1;
   p1: PByte;
 begin
 
-  DHCP4Yapi := PDHCP4Yapi(AVeri);
+  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
+  UDPPaket := PUDPPaket(@IP4Paket^.Veri);
+  DHCP4Yapi := PDHCP4Yapi(@UDPPaket^.Veri);
 
   // gelen mesajýn DHCP_SECIM_MESAJ_TIP deðeri
   AnaMT := 0;

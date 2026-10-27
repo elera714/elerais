@@ -6,7 +6,7 @@
   Dosya Adı: ethernet.pas
   Dosya İşlevi: ethernet ağ (network) kartı yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 25/10/2026
+  Güncelleme Tarihi: 27/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -44,7 +44,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure Gonder(AProtokolTipi: TProtokolTipi; AHedefMACAdres: TMACAdres;
+    procedure Gonder(ATutanakTipi: TTutanakTipi; AHedefMACAdres: TMACAdres;
       AVeri: Isaretci; AVeriU: TSayi4);
     function Al(AHedefBellekAdresi: Isaretci): TSayi4;
 
@@ -85,7 +85,7 @@ end;
 {==============================================================================
   ethernet kartı üzerinden veri gönderir
  ==============================================================================}
-procedure TEthernet.Gonder(AProtokolTipi: TProtokolTipi; AHedefMACAdres: TMACAdres;
+procedure TEthernet.Gonder(ATutanakTipi: TTutanakTipi; AHedefMACAdres: TMACAdres;
   AVeri: Isaretci; AVeriU: TSayi4);
 var
   EPaket: PEthernetPaket;
@@ -103,13 +103,13 @@ begin
     EPaket^.KaynakMACAdres := MACAdresim;
 
     // paketin tutanak tipi
-    case AProtokolTipi of
-      ptIP4   : EPaket^.PaketTipi := ntohs(PROTOKOL_IP4);
-      ptIP6   : EPaket^.PaketTipi := ntohs(PROTOKOL_IP6);
-      ptTCP   : EPaket^.PaketTipi := PROTOKOL_TCP;
-      ptUDP   : EPaket^.PaketTipi := PROTOKOL_UDP;
-      ptARP   : EPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
-      ptICMP4 : EPaket^.PaketTipi := PROTOKOL_ICMP4;
+    case ATutanakTipi of
+      ttIP4   : EPaket^.PaketTipi := ntohs(PROTOKOL_IP4);
+      ttIP6   : EPaket^.PaketTipi := ntohs(PROTOKOL_IP6);
+      ttTCP   : EPaket^.PaketTipi := PROTOKOL_TCP;
+      ttUDP   : EPaket^.PaketTipi := PROTOKOL_UDP;
+      ttARP   : EPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
+      ttICMP4 : EPaket^.PaketTipi := PROTOKOL_ICMP4;
     end;
 
     {SISTEM_MESAJ(mtBilgi, RENK_MOR, 'ETH', []);

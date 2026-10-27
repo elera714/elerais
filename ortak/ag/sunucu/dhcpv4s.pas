@@ -6,7 +6,7 @@
   Dosya Adý: dhcpv4s.pas
   Dosya Ýþlevi: DHCP v4 sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 21/10/2026
+  Güncelleme Tarihi: 27/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -34,48 +34,48 @@ type
   end;
 
 type
-  TDHCPv4Sunucu = class(TUDPSunucu)
+  TDHCPv4s = class(TUDPSunucu)
   private
+    FBaglanti: TObject;
+    FUDP: TUDP;
     FIstemciListesi: array[0..USTSINIR_DHCPKAYIT - 1] of PIstemciKayit;
     function Al(ASiraNo: TISayi4): PIstemciKayit;
     procedure Yaz(ASiraNo: TISayi4; AIstemciKayit: PIstemciKayit);
   public
-    constructor Create;
-    procedure OVeriGeldi(AUDP: TUDP); override;
+    constructor Create(ABaglanti: TObject);
+    destructor Destroy; override;
+    procedure OVeriGeldi(AEthernetPaket: PEthernetPaket); override;
     property IstemciListesi[ASiraNo: TISayi4]: PIstemciKayit read Al write Yaz;
-
-    procedure VerileriIsle(AUDP: TUDP; ADHCPYapi: PDHCP4Yapi);
     function HavuzdanIPAdresiAl(AMACAdres: TMACAdresIslev): TIP4AdresIslev;
     function IPAdresiVerilsinMi(AIstenenIP4Adres: TIP4AdresIslev;
       AMACAdres: TMACAdresIslev): Boolean;
-
     { Offer }
-    procedure DHCPTeklifMesajiGonder(AUDP: TUDP; AGonderenKimlik: TSayi4;
-      ATeklifEdilenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdres);
+    procedure DHCPTeklifMesajiGonder(AEthernetPaket: PEthernetPaket;
+      AGonderenKimlik: TSayi4; ATeklifEdilenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdres);
     { Request -> Ack }
-    procedure DHCPIstegeOnayMesajiGonder(AUDP: TUDP; AGonderenKimlik: TSayi4;
-      AIstenenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
+    procedure DHCPIstegeOnayMesajiGonder(AEthernetPaket: PEthernetPaket;
+      AGonderenKimlik: TSayi4; AIstenenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
     { NAck }
-    procedure DHCPIstegeRetMesajiGonder(AUDP: TUDP; AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
+    procedure DHCPIstegeRetMesajiGonder(AEthernetPaket: PEthernetPaket;
+        AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
     { Inform -> Ack }
-    procedure DHCPBilgilendirmeyeOnayMesajiGonder(AUDP: TUDP;
-      AGonderenKimlik: TSayi4; AIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
+    procedure DHCPBilgilendirmeyeOnayMesajiGonder(AEthernetPaket: PEthernetPaket;
+        AGonderenKimlik: TSayi4; AIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
   end;
-
-var
-  GDHCPv4Sunucu: TDHCPv4Sunucu;
 
 implementation
 
 uses sistemmesaj, baglantilar, donusum, islevler;
 
 {==============================================================================
-  dhcp sunucusu ana yükleme iþlevlerini içerir
+  dhcp sunucu nesnesi ana yükleme iþlevlerini içerir
  ==============================================================================}
-constructor TDHCPv4Sunucu.Create;
+constructor TDHCPv4s.Create(ABaglanti: TObject);
 var
   i: TSayi4;
 begin
+
+  FBaglanti := ABaglanti;
 
   for i := 0 to USTSINIR_DHCPKAYIT - 1 do IstemciListesi[i] := nil;
 
@@ -88,49 +88,47 @@ begin
     IstemciListesi[i] := GetMem(SizeOf(TIstemciKayit));
     IstemciListesi[i]^.Durum := kdAyrildi;
   end;
+
+  // iletiþim udp tutanaðý üzerinden gerçekleþeceði için 1 adet udp
+  // nesnesi oluþturuluyor
+  FUDP := TUDP.Create(nil, FBaglanti, itIP4, MACAdres0);
 end;
 
 {==============================================================================
-  istemcilerden veri geldiðinde tetiklenen olay
+  dhcp sunucu nesnesi ana yok etme iþlevlerini içerir
  ==============================================================================}
-procedure TDHCPv4Sunucu.OVeriGeldi(AUDP: TUDP);
+destructor TDHCPv4s.Destroy;
 var
-  Veri: Isaretci;
-  VeriU: TSayi4;
+  IK: PIstemciKayit;
+  i: TSayi4;
 begin
 
-  Veri := GetMem(4 * 4096);
+  // ayrýlan bellek bölgesini serbest býrak
+  for i := 0 to USTSINIR_DHCPKAYIT - 1 do
+  begin
 
-  VeriU := AUDP.GelenVeriyiAl(Veri);
-  if(VeriU = 0) then Exit;
+    IK := IstemciListesi[i];
+    if not(IK = nil) then
+    begin
 
-  VerileriIsle(AUDP, Veri);
+      FreeMem(IK, SizeOf(TIstemciKayit));
+      IstemciListesi[i] := nil
+    end;
+  end;
 
-  FreeMem(Veri, 4 * 4096);
-end;
+  FUDP.Destroy;
 
-function TDHCPv4Sunucu.Al(ASiraNo: TISayi4): PIstemciKayit;
-begin
-
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DHCPKAYIT) then
-    Result := FIstemciListesi[ASiraNo]
-  else Result := nil;
-end;
-
-procedure TDHCPv4Sunucu.Yaz(ASiraNo: TISayi4; AIstemciKayit: PIstemciKayit);
-begin
-
-  // istenen verinin belirtilen aralýkta olup olmadýðýný kontrol et
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DHCPKAYIT) then
-    FIstemciListesi[ASiraNo] := AIstemciKayit;
+  inherited Destroy;
 end;
 
 {==============================================================================
-  DHCP v4 sunucusuna gelen paketlerini iþler
+  dhcp sunucusuna gelen paketleri iþler
  ==============================================================================}
-procedure TDHCPv4Sunucu.VerileriIsle(AUDP: TUDP; ADHCPYapi: PDHCP4Yapi);
+procedure TDHCPv4s.OVeriGeldi(AEthernetPaket: PEthernetPaket);
 var
+  IP4Paket: PIP4Paket;
+  UDPPaket: PUDPPaket;
+  DHCP4Yapi: PDHCP4Yapi;
   DHCPMesaj: PDHCPMesaj;
   AnaMT, MT, DonanimTipi, i: TSayi1;
   IstemciIP4, DHCPSunucuIP4Adresi,
@@ -140,17 +138,21 @@ var
   IstemciAdi, SaticiSTanitici: string;
 begin
 
+  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
+  UDPPaket := PUDPPaket(@IP4Paket^.Veri);
+  DHCP4Yapi := PDHCP4Yapi(@UDPPaket^.Veri);
+
   IstenenIP4Adres.Sifirla;
   MACAdres.Sifirla;
 
   // gelen mesajýn DHCP_SECIM_MESAJ_TIP deðeri
   AnaMT := 0;
 
-  IstemciIP4.IP4Adres := ADHCPYapi^.IstemciIP4Adres;
-  IstemciMACAdres.MACAdres := ADHCPYapi^.IstemciMACAdres;
+  IstemciIP4.IP4Adres := DHCP4Yapi^.IstemciIP4Adres;
+  IstemciMACAdres.MACAdres := DHCP4Yapi^.IstemciMACAdres;
 
   // seçenek olarak alýnan yapýyý döngü içerisinde irdele
-  DHCPMesaj := @ADHCPYapi^.DigerSecenekler;
+  DHCPMesaj := @DHCP4Yapi^.DigerSecenekler;
   MT := DHCPMesaj^.Tip;
   i := DHCPMesaj^.Uzunluk;
 
@@ -205,7 +207,7 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_MOR, 'DHCPv4-SaticiSTanitici: %s', [SaticiSTanitici]);}
 
   // alýnan mesaj bir yanýt mesajý mý?
-  if(ADHCPYapi^.Islem = DHCP_BOOT_MTIP_ISTEK) then
+  if(DHCP4Yapi^.Islem = DHCP_BOOT_MTIP_ISTEK) then
   begin
 
     if(AnaMT = DHCP_MTIP_KESIF) then
@@ -213,35 +215,51 @@ begin
 
       IP4Adres := HavuzdanIPAdresiAl(IstemciMACAdres);
       if(IP4Adres.IPAdres0Mi = False) then
-        DHCPTeklifMesajiGonder(AUDP, htons(ADHCPYapi^.GonderenKimlik), IP4Adres, IstemciMACAdres.MACAdres)
+        DHCPTeklifMesajiGonder(AEthernetPaket, htons(DHCP4Yapi^.GonderenKimlik), IP4Adres, IstemciMACAdres.MACAdres)
     end
     else if(AnaMT = DHCP_MTIP_ISTEK) then
     begin
 
       if(IPAdresiVerilsinMi(IstenenIP4Adres, IstemciMACAdres)) then
 
-        DHCPIstegeOnayMesajiGonder(AUDP, htons(ADHCPYapi^.GonderenKimlik), IstenenIP4Adres, MACAdres)
-      else DHCPIstegeRetMesajiGonder(AUDP, htons(ADHCPYapi^.GonderenKimlik), MACAdres);
+        DHCPIstegeOnayMesajiGonder(AEthernetPaket, htons(DHCP4Yapi^.GonderenKimlik),
+          IstenenIP4Adres, MACAdres)
+      else DHCPIstegeRetMesajiGonder(AEthernetPaket, htons(DHCP4Yapi^.GonderenKimlik), MACAdres);
     end
     else if(AnaMT = DHCP_BILGILENDIRME) then
     begin
 
-      DHCPBilgilendirmeyeOnayMesajiGonder(AUDP, htons(ADHCPYapi^.GonderenKimlik), IstemciIP4, MACAdres);
+      DHCPBilgilendirmeyeOnayMesajiGonder(AEthernetPaket, htons(DHCP4Yapi^.GonderenKimlik), IstemciIP4, MACAdres);
     end;
   end;
+end;
+
+function TDHCPv4s.Al(ASiraNo: TISayi4): PIstemciKayit;
+begin
+
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DHCPKAYIT) then
+    Result := FIstemciListesi[ASiraNo]
+  else Result := nil;
+end;
+
+procedure TDHCPv4s.Yaz(ASiraNo: TISayi4; AIstemciKayit: PIstemciKayit);
+begin
+
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_DHCPKAYIT) then
+    FIstemciListesi[ASiraNo] := AIstemciKayit;
 end;
 
 {==============================================================================
   istemci için havuzdan kullanýlabilir ip adresi alýr
  ==============================================================================}
-function TDHCPv4Sunucu.HavuzdanIPAdresiAl(AMACAdres: TMACAdresIslev): TIP4AdresIslev;
+function TDHCPv4s.HavuzdanIPAdresiAl(AMACAdres: TMACAdresIslev): TIP4AdresIslev;
 var
   IK: PIstemciKayit;
   KullanilabilirIP: TIP4AdresIslev;
   i: TSayi4;
 begin
 
-  KullanilabilirIP.IP4Adres := GAgBaglantilari.AktifBaglanti.IP4Adresim;
+  KullanilabilirIP.IP4Adres := GAgBaglantilari.AB.IP4Adresim;
 
   for i := AYRILMIS_IPSAYISI to USTSINIR_DHCPKAYIT - 1 do
   begin
@@ -271,7 +289,7 @@ end;
 {==============================================================================
   istenen ip adresinin istemciye verilip verilmeyeceðine karar verir
  ==============================================================================}
-function TDHCPv4Sunucu.IPAdresiVerilsinMi(AIstenenIP4Adres: TIP4AdresIslev;
+function TDHCPv4s.IPAdresiVerilsinMi(AIstenenIP4Adres: TIP4AdresIslev;
   AMACAdres: TMACAdresIslev): Boolean;
 var
   IK: PIstemciKayit;
@@ -282,7 +300,7 @@ begin
 
   IP4Adres := AIstenenIP4Adres;
 
-  AyniAgda := IP4Adres.IPAgAraligiIcinde(GAgBaglantilari.AktifBaglanti.IP4Adresim);
+  AyniAgda := IP4Adres.IPAgAraligiIcinde(GAgBaglantilari.AB.IP4Adresim);
   if not(AyniAgda) then Exit(False);
 
   for i := AYRILMIS_IPSAYISI to USTSINIR_DHCPKAYIT - 1 do
@@ -308,9 +326,10 @@ end;
 {==============================================================================
   DHCP istemcisine teklif mesajý gönderir
  ==============================================================================}
-procedure TDHCPv4Sunucu.DHCPTeklifMesajiGonder(AUDP: TUDP; AGonderenKimlik: TSayi4;
-  ATeklifEdilenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdres);
+procedure TDHCPv4s.DHCPTeklifMesajiGonder(AEthernetPaket: PEthernetPaket;
+  AGonderenKimlik: TSayi4; ATeklifEdilenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdres);
 var
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IP4Adres: PIP4Adres;
   p1: PSayi1;
@@ -367,7 +386,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IP4Adres := Isaretci(p1);
-  IP4Adres^ := GAgBaglantilari.AktifBaglanti.IP4Adresim;
+  IP4Adres^ := GAgBaglantilari.AB.IP4Adresim;
   Inc(IP4Adres);
   p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -408,7 +427,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IP4Adres := Isaretci(p1);
-  IP4Adres^ := GAgBaglantilari.AktifBaglanti.AltAgMaskesi;
+  IP4Adres^ := GAgBaglantilari.AB.AltAgMaskesi;
   Inc(IP4Adres);
   p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -438,11 +457,11 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  AUDP.FIP4.FHedefMACAdres := AUDP.FKaynakMACAdres;
-  AUDP.FIP4.FKaynakIPAdres := ATeklifEdilenIP4Adres.IP4Adres;
-  AUDP.FIP4.FHedefIPAdres := GAgBaglantilari.AktifBaglanti.IP4Adresim;
-
-  AUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
+  B := TBaglanti(FBaglanti);
+  B.FDHCPv4s.FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+  B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := ATeklifEdilenIP4Adres.IP4Adres;
+  B.FDHCPv4s.FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
+  B.FDHCPv4s.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
 
   FreeMem(DHCPYapi, 4096);
 end;
@@ -450,9 +469,10 @@ end;
 {==============================================================================
   DHCP istemcisinin istek mesajýna onay yanýtý gönderir
  ==============================================================================}
-procedure TDHCPv4Sunucu.DHCPIstegeOnayMesajiGonder(AUDP: TUDP; AGonderenKimlik: TSayi4;
-  AIstenenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
+procedure TDHCPv4s.DHCPIstegeOnayMesajiGonder(AEthernetPaket: PEthernetPaket;
+  AGonderenKimlik: TSayi4; AIstenenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
 var
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IP4Adres: PIP4Adres;
   i: TSayi1;
@@ -511,7 +531,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IP4Adres := Isaretci(p1);
-  IP4Adres^ := GAgBaglantilari.AktifBaglanti.IP4Adresim;
+  IP4Adres^ := GAgBaglantilari.AB.IP4Adresim;
   Inc(IP4Adres);
   p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -552,7 +572,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IP4Adres := Isaretci(p1);
-  IP4Adres^ := GAgBaglantilari.AktifBaglanti.AltAgMaskesi;
+  IP4Adres^ := GAgBaglantilari.AB.AltAgMaskesi;
   Inc(IP4Adres);
   p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -596,13 +616,13 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  AUDP.FIP4.FHedefMACAdres := AUDP.FKaynakMACAdres;
-  AUDP.FIP4.FKaynakIPAdres := AIstenenIP4Adres.IP4Adres;
-  AUDP.FIP4.FHedefIPAdres := GAgBaglantilari.AktifBaglanti.IP4Adresim;
+  B := TBaglanti(FBaglanti);
+  B.FDHCPv4s.FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+  B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := AIstenenIP4Adres.IP4Adres;
+  B.FDHCPv4s.FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
+  B.FDHCPv4s.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
 
   SISTEM_MESAJ_IP4(mtUyari, RENK_PEMBE, 'DHCPv4-Sunucu: Tahsis edilen IP: ', AIstenenIP4Adres.IP4Adres);
-
-  AUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
 
   FreeMem(DHCPYapi, 4096);
 end;
@@ -610,14 +630,18 @@ end;
 {==============================================================================
   DHCP istemcisine ret mesajý gönderir
  ==============================================================================}
-procedure TDHCPv4Sunucu.DHCPIstegeRetMesajiGonder(AUDP: TUDP; AGonderenKimlik: TSayi4;
-  AMACAdres: TMACAdresIslev);
+procedure TDHCPv4s.DHCPIstegeRetMesajiGonder(AEthernetPaket: PEthernetPaket;
+  AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
 var
+  B: TBaglanti;
+  IP4Paket: PIP4Paket;
   DHCPYapi: PDHCP4Yapi;
   IP4Adres: PIP4Adres;
   p1: PSayi1;
   DHCPYapiUzunlugu: TSayi4;
 begin
+
+  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
 
   DHCPYapi := GetMem(4096);
 
@@ -668,7 +692,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IP4Adres := Isaretci(p1);
-  IP4Adres^ := GAgBaglantilari.AktifBaglanti.IP4Adresim;
+  IP4Adres^ := GAgBaglantilari.AB.IP4Adresim;
   Inc(IP4Adres);
   p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -676,15 +700,16 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  AUDP.FIP4.FHedefMACAdres := AUDP.FKaynakMACAdres;
+  B := TBaglanti(FBaglanti);
+  B.FDHCPv4s.FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
 
   // gönderen ip adresi 0.0.0.0 ise hedef adresi 255.255.255.255 olarak belirle
-  if(IP4Karsilastir(AUDP.FKaynakIPAdres, IP4Adres0)) then
-    AUDP.FIP4.FKaynakIPAdres := IPAdres255
-  else AUDP.FIP4.FKaynakIPAdres := AUDP.FKaynakIPAdres;
-  AUDP.FIP4.FHedefIPAdres := GAgBaglantilari.AktifBaglanti.IP4Adresim;
+  if(IP4Karsilastir(IP4Paket^.KaynakIPAdres, IP4Adres0)) then
+    B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := IP4Adres255
+  else B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := IP4Paket^.KaynakIPAdres;
+  B.FDHCPv4s.FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
 
-  AUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
+  B.FDHCPv4s.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
 
   FreeMem(DHCPYapi, 4096);
 end;
@@ -692,9 +717,10 @@ end;
 {==============================================================================
   DHCP istemcisinin bilgilendirme mesajýna onay yanýtý gönderir
  ==============================================================================}
-procedure TDHCPv4Sunucu.DHCPBilgilendirmeyeOnayMesajiGonder(AUDP: TUDP;
+procedure TDHCPv4s.DHCPBilgilendirmeyeOnayMesajiGonder(AEthernetPaket: PEthernetPaket;
   AGonderenKimlik: TSayi4; AIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
 var
+  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IP4Adres: PIP4Adres;
   p1: PSayi1;
@@ -750,7 +776,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IP4Adres := Isaretci(p1);
-  IP4Adres^ := GAgBaglantilari.AktifBaglanti.IP4Adresim;
+  IP4Adres^ := GAgBaglantilari.AB.IP4Adresim;
   Inc(IP4Adres);
   p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -761,7 +787,7 @@ begin
   p1^ := 4;
   Inc(p1);
   IP4Adres := Isaretci(p1);
-  IP4Adres^ := GAgBaglantilari.AktifBaglanti.AltAgMaskesi;
+  IP4Adres^ := GAgBaglantilari.AB.AltAgMaskesi;
   Inc(IP4Adres);
   p1 := Isaretci(IP4Adres);
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 2 + 4;
@@ -800,11 +826,11 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  AUDP.FIP4.FHedefMACAdres := AUDP.FKaynakMACAdres;
-  AUDP.FIP4.FKaynakIPAdres := AIP4Adres.IP4Adres;
-  AUDP.FIP4.FHedefIPAdres := GAgBaglantilari.AktifBaglanti.IP4Adresim;
-
-  AUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
+  B := TBaglanti(FBaglanti);
+  B.FDHCPv4s.FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+  B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := AIP4Adres.IP4Adres;
+  B.FDHCPv4s.FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
+  B.FDHCPv4s.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
 
   FreeMem(DHCPYapi, 4096);
 end;

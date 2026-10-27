@@ -6,7 +6,7 @@
   Dosya Adý: icmp6.pas
   Dosya Ýþlevi: ICMP v6 tutanak (protokol) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 23/10/2026
+  Güncelleme Tarihi: 27/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -268,7 +268,7 @@ begin
   TBaglanti(FBaglanti).FIP6.FHedefMACAdres := AHedefMACAdres;
 
   // paketi ip katmanýna gönder
-  TBaglanti(FBaglanti).FIP6.PaketleVeGonder(ptICMP6, $80, PingPaket, 8 + 32);
+  TBaglanti(FBaglanti).FIP6.PaketleVeGonder(ttICMP6, $80, PingPaket, 8 + 32);
 
   // ayrýlan belleði serbest býrak
   FreeMem(PingPaket, 4096);
@@ -354,7 +354,7 @@ begin
   TBaglanti(FBaglanti).FIP6.FHedefMACAdres := AHedefMACAdres;
 
   // paketi ip katmanýna gönder
-  TBaglanti(FBaglanti).FIP6.PaketleVeGonder(ptICMP6, $FF, ICMPPaket, PaketU);
+  TBaglanti(FBaglanti).FIP6.PaketleVeGonder(ttICMP6, $FF, ICMPPaket, PaketU);
 
   // ayrýlan belleði serbest býrak
   FreeMem(ICMPPaket, 4096);

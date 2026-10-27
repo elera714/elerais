@@ -6,7 +6,7 @@
   Dosya Adı: sunucular.pas
   Dosya İşlevi: çekirdek içerisinde çalışan sunucuları yönetir
 
-  Güncelleme Tarihi: 21/10/2026
+  Güncelleme Tarihi: 27/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,13 +32,13 @@ type
 type
   TUDPSunucu = class(TTemelSunucu)
   public
-    procedure OVeriGeldi(AUDP: TUDP); virtual; abstract;
+    procedure OVeriGeldi(AEthernetPaket: PEthernetPaket); virtual; abstract;
   end;
 
 type
   TUDPIstemci = class(TTemelSunucu)
   public
-    procedure OVeriGeldi(AVeri: Isaretci; AVeriU: TSayi4); virtual; abstract;
+    procedure OVeriGeldi(AEthernetPaket: PEthernetPaket); virtual; abstract;
   end;
 
 const
@@ -50,7 +50,7 @@ type
     // nesnenin kimliği / sıra numarası
     FKimlik: TKimlik;
     // sunucunun hangi iletişim tipi ile iletişim kuracağı (tcp veya udp)
-    FProtokol: TProtokolTipi;
+    FTutanakTipi: TTutanakTipi;
     // sunucunun dinleme yapacağı port numarası (http -> 80 gibi)
     FPortNo: TSayi4;
     // porta gelen istekleri işleyecek olan sunucu servis sınıfı
@@ -68,12 +68,12 @@ type
   public
     constructor Create;
     property Sunucular[ASiraNo: TISayi4]: TSunucu read Al write Yaz;
-    function Ekle(AProtokol: TProtokolTipi; APortNo: TSayi4;
+    function Ekle(ATutanakTipi: TTutanakTipi; APortNo: TSayi4;
       ATemelSunucu: TTemelSunucu): TISayi4;
     property ToplamSunucuSayisi: TSayi4 read FToplamSunucuSayisi;
   end;
 
-function SunucuBul(AProtokol: TProtokolTipi; APortNo: TSayi4): TTemelSunucu;
+function SunucuBul(ATutanakTipi: TTutanakTipi; APortNo: TSayi4): TTemelSunucu;
 
 var
   GSunucular: TSunucular;
@@ -111,7 +111,7 @@ end;
 {==============================================================================
   sunucu listesine sunucuyu ekler
  ==============================================================================}
-function TSunucular.Ekle(AProtokol: TProtokolTipi; APortNo: TSayi4;
+function TSunucular.Ekle(ATutanakTipi: TTutanakTipi; APortNo: TSayi4;
   ATemelSunucu: TTemelSunucu): TISayi4;
 var
   S: TSunucu;
@@ -120,7 +120,7 @@ begin
 
   Result := -1;
 
-  if(AProtokol = ptTCP) or (AProtokol = ptUDP) then
+  if(ATutanakTipi = ttTCP) or (ATutanakTipi = ttUDP) then
   begin
 
     i := KimlikNoAl;
@@ -128,7 +128,7 @@ begin
 
     S := TSunucu.Create;
     S.FKimlik := i;
-    S.FProtokol := AProtokol;
+    S.FTutanakTipi := ATutanakTipi;
     S.FPortNo := APortNo;
     S.FSunucu := ATemelSunucu;
 
@@ -163,7 +163,7 @@ end;
 {==============================================================================
   belirtilen sunucuyu listeden bularak çağrılacak işlevi geri döndürür
  ==============================================================================}
-function SunucuBul(AProtokol: TProtokolTipi; APortNo: TSayi4): TTemelSunucu;
+function SunucuBul(ATutanakTipi: TTutanakTipi; APortNo: TSayi4): TTemelSunucu;
 var
   S: TSunucu;
   i: TSayi4;
@@ -180,7 +180,7 @@ begin
       S := GSunucular.Sunucular[i];
       if(S = nil) then Continue;
 
-      if(S.FProtokol = AProtokol) and (S.FPortNo = APortNo) then Exit(S.FSunucu);
+      if(S.FTutanakTipi = ATutanakTipi) and (S.FPortNo = APortNo) then Exit(S.FSunucu);
     end;
   end;
 end;

@@ -6,7 +6,7 @@
   Dosya Adý: icmp4.pas
   Dosya Ýþlevi: ICMP v4 tutanak (protokol) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 24/09/2026
+  Güncelleme Tarihi: 27/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -137,7 +137,7 @@ begin
   ICMP4Paket^.SaglamaToplami := SaglamaToplami;
 
   // sisteme gelen icmp isteðine icmp yanýtý (paket) gönder
-  TBaglanti(FBaglanti).FIP4.PaketleVeGonder(ptICMP4, 0, ICMP4Paket, APaketUzunlugu);
+  TBaglanti(FBaglanti).FIP4.PaketleVeGonder(ttICMP4, 0, ICMP4Paket, APaketUzunlugu);
 
   // belleði yok et
   FreeMem(ICMP4Paket, 4096);
