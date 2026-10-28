@@ -7,7 +7,7 @@
   Dosya Ýþlevi: baðlantý katmaný keþif tutanak (link layer discovery protocol)
     yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 17/09/2026
+  Güncelleme Tarihi: 28/10/2026
 
  ==============================================================================}
 {$mode objfpc}
