@@ -6,7 +6,7 @@
   Dosya Adı: dnsi.pas
   Dosya İşlevi: dns istemci tutanak işlevlerini yönetir
 
-  Güncelleme Tarihi: 22/06/2026
+  Güncelleme Tarihi: 31/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit dnsi;
 
 interface
 
-uses paylasim, baglantilar, udp;
+uses paylasim, udp, sunucular;
 
 const
   DNS_PORTNO            = 53;
@@ -24,6 +24,9 @@ const
   TypeCode_A            = 1;
 
   Class_IN              = 1;
+
+type
+  TDNSDurum = (ddOlusturuldu, ddHazir, ddSorgulaniyor, ddSorgulandi);
 
 type
   PDNSPaket = ^TDNSPaket;
@@ -38,39 +41,29 @@ type
   end;
 
 type
-  PDNSIServis = ^TDNSIServis;
-  TDNSIServis = class
+  PDNSi = ^TDNSi;
+  TDNSi = class(TUDPIstemci)
+  private
+    FBaglanti: TObject;
+    FUDP: TUDP;
+    FDurum: TDNSDurum;      // dns sorgu durumu
+    FVeriU: TSayi4;         // yanıt olarak dönen dns veri uzunluğu
   public
-    FKimlik: TKimlik;
-    FYerelPort: TSayi4;
-    FYanitUzunluk: TSayi4;
-    FBellekAdresi: Isaretci;
-    constructor Create;
-    function YeniBaglantiOlustur: TBaglanti;
-    procedure Sorgula(ABKimlik: TKimlik; ADNSAdresi: string);
-    function DNSBaglantiAl(AYerelPort: TSayi2): PDNSIServis;
-    procedure Kapat(ADNSKimlik: TKimlik);
-    procedure YokEt(ADNSKimlik: TKimlik);
-
-    procedure VerileriIsle(AUDPPaket: PUDPPaket);
-    procedure VerileriIsle0(AUDPPaket: PUDPPaket);
+    constructor Create(ABaglanti: TObject);
+    destructor Destroy; override;
+    procedure OVeriGeldi(AEthernetPaket: PEthernetPaket); override;
+    procedure AdSorgula(ADNSAdresi: string);
+    procedure Kapat;
+    procedure YokEt;
+    procedure IcerikGoruntule(ADNSPaket: PDNSPaket);
   end;
 
 function DNSIletisimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
-
-var
-  GDNSIServis: TDNSIServis;
+function DNSBaglantisiOlustur: TObject;
 
 implementation
 
-uses donusum, islevler, sistemmesaj, gorev;
-
-{==============================================================================
-  dns protokol değişken / yapı ilk yükleme işlevlerini içerir
- ==============================================================================}
-constructor TDNSIServis.Create;
-begin
-end;
+uses donusum, islevler, sistemmesaj, baglantilar, gorev;
 
 {==============================================================================
   dns yönetim işlevlerini içerir
@@ -78,163 +71,169 @@ end;
 function DNSIletisimCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
   B: TBaglanti;
-  DNS: PDNSIServis;
-  Hedef, i: TSayi4;
+  Hedef,
+  i: TSayi4;
 begin
+
+  Result := HATA_ISLEV;
 
   // dns bağlantısı oluştur
   if(AIslevNo = 1) then
   begin
 
-    B := GDNSIServis.YeniBaglantiOlustur;
+    B := TBaglanti(DNSBaglantisiOlustur);
     if(B = nil) then
       Result := HATA_KIMLIK
     else Result := B.FKimlik;
   end
+
   // dns adı sorgula
   else if(AIslevNo = 2) then
   begin
 
-    i := PISayi4(ADegiskenler + 00)^;
-    GDNSIServis.Sorgula(i, PKarakterKatari(PSayi4(ADegiskenler + 04)^ +
+    i := PSayi4(ADegiskenler + 00)^;
+    B := GAgBaglantilari.AB.Baglanti[i];
+    if not(B = nil) then B.FDNSi.AdSorgula(PKarakterKatari(PSayi4(ADegiskenler + 04)^ +
       GGorevler.FAktifGrvBelAdr)^);
   end
+
   // dns sorgu durumunu al
   else if(AIslevNo = 3) then
   begin
 
-    //DNS := FDNSBaglantilari[PISayi4(ADegiskenler + 00)^];
-    Result := 0; // TSayi4(DNS^.FBaglantiDurum);
+    i := PSayi4(ADegiskenler + 00)^;
+    B := GAgBaglantilari.AB.Baglanti[i];
+    if not(B = nil) then Result := Ord(B.FDNSi.FDurum);
   end
+
   // dns sorgu içeriğini al
   else if(AIslevNo = 4) then
   begin
 
-    //DNS := FDNSBaglantilari[PISayi4(ADegiskenler + 00)^];
+    i := PSayi4(ADegiskenler + 00)^;
+    B := GAgBaglantilari.AB.Baglanti[i];
+    if not(B = nil) then
+    begin
 
-    //Hedef := PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr;
-
-    // dns yanıtını ve uzunluğunu (4 byte) hedef alana kopyala
-    //Tasi2(Isaretci(DNS^.FBellekAdresi + 2048), Isaretci(Hedef), DNS^.FYanitUzunluk + 4);
+      // dns yanıtını hedef alana kopyala
+      Hedef := PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr;
+      Tasi2(@B.FBellek, Isaretci(Hedef), B.FDNSi.FVeriU);
+    end;
   end
+
   // bağlantıyı kapat
   else if(AIslevNo = 5) then
   begin
 
-    //DNS := FDNSBaglantilari[PISayi4(ADegiskenler + 00)^];
-    //DNS^.Kapat(DNS^.FKimlik);
+    i := PSayi4(ADegiskenler + 00)^;
+    B := GAgBaglantilari.AB.Baglanti[i];
+    if not(B = nil) then B.FDNSi.Kapat;
   end
+
   // bağlantıyı yok et
   else if(AIslevNo = 6) then
   begin
 
-    //DNS := FDNSBaglantilari[PISayi4(ADegiskenler + 00)^];
-    //DNS^.YokEt(DNS^.FKimlik);
-  end
-
-  else Result := HATA_ISLEV;
-end;
-
-{==============================================================================
-  sisteme gelen tüm DNS yanıtlarını işle ve ilgili girişlere yönlendir
- ==============================================================================}
-procedure TDNSIServis.VerileriIsle(AUDPPaket: PUDPPaket);
-var
-  DNS: PDNSIServis;
-  HedefPort, Uzunluk: TSayi2;
-  B4: PSayi4;
-begin
-
-  HedefPort := ntohs(AUDPPaket^.UzakPort);
-  Uzunluk := ntohs(AUDPPaket^.Uzunluk) - 8;
-
-  DNS := DNS^.DNSBaglantiAl(HedefPort);
-  if not(DNS = nil) then
-  begin
-
-    B4 := PSayi4(DNS^.FBellekAdresi + 2048);
-    B4^ := Uzunluk;
-
-    Tasi2(@AUDPPaket^.Veri, PSayi4(DNS^.FBellekAdresi + 2048 + 4), Uzunluk);
-
-    DNS^.FYanitUzunluk := Uzunluk;
-    //DNS^.FBaglantiDurum := ddSorgulandi;
-    //B.FGDeger1
+    i := PSayi4(ADegiskenler + 00)^;
+    B := GAgBaglantilari.AB.Baglanti[i];
+    if not(B = nil) then B.FDNSi.YokEt;
   end;
 end;
 
 {==============================================================================
-  sisteme gelen tüm DNS yanıtlarını işle ve ilgili girişlere yönlendir
+  yeni dns bağlantısı oluştur
  ==============================================================================}
-procedure TDNSIServis.VerileriIsle0(AUDPPaket: PUDPPaket);
+function DNSBaglantisiOlustur: TObject;
 var
-  DNS: PDNSIServis;
-  HedefPort, Uzunluk: TSayi2;
-  B4: PSayi4;
+  PortNo: TSayi4;
 begin
 
-  SISTEM_MESAJ(mtBilgi, RENK_MOR, 'DAAAAT', []);
+  PortNo := GAgBaglantilari.YerelPortOlustur;
 
-  {HedefPort := ntohs(AUDPPaket^.HedefPort);
-  Uzunluk := ntohs(AUDPPaket^.Uzunluk) - 8;
+  Result := GAgBaglantilari.AB.BaglantiOlustur(bnDNSi, itIP4, btAktif, ttUDP,
+    '', PortNo, DNS_PORTNO);
 
-  DNS := DNS^.DNSBaglantiAl(HedefPort);
-  if not(DNS = nil) then
-  begin
-
-    B4 := PSayi4(DNS^.FBellekAdresi + 2048);
-    B4^ := Uzunluk;
-
-    Tasi2(@AUDPPaket^.Veri, PSayi4(DNS^.FBellekAdresi + 2048 + 4), Uzunluk);
-
-    DNS^.FYanitUzunluk := Uzunluk;
-    DNS^.FBaglantiDurum := ddSorgulandi;
-  end;}
+  if not(Result = nil) then TBaglanti(Result).FDNSi.FDurum := ddHazir;
 end;
 
 {==============================================================================
-  dns bağlantısı oluştur
+  dns tutanak nesne ilk yükleme işlevlerini içerir
  ==============================================================================}
-function TDNSIServis.YeniBaglantiOlustur: TBaglanti;
-var
-  i: TSayi4;
+constructor TDNSi.Create(ABaglanti: TObject);
 begin
 
-  i := GAgBaglantilari.YerelPortOlustur;
+  FBaglanti := ABaglanti;
 
-  Result := GAgBaglantilari.AB.BaglantiOlustur(bnDNSi, itIP4, btAktif, ptUDP, '',
-    i, DNS_PORTNO);
+  // iletişim udp tutanağı üzerinden gerçekleşeceği için 1 adet udp
+  // nesnesi oluşturuluyor
+  FUDP := TUDP.Create(nil, FBaglanti, itIP4, MACAdres0);
+
+  FDurum := ddOlusturuldu;
 end;
 
 {==============================================================================
-  DNS sunucusuna sorgu gönder
+  dns tutanak nesne yok etme işlevlerini içerir
  ==============================================================================}
-procedure TDNSIServis.Sorgula(ABKimlik: TKimlik; ADNSAdresi: string);
-const
-  IP4Adres2: TIP4Adres = (8, 8, 8, 8);
-  //IP4Adres2: TIP4Adres = (192, 168, 1, 1);
-  P: TMACAdres = ($50, $ff, $20, $6c, $8f, $e1);
-  //P: TMACAdres = ($08, $00, $ab, $cd, $ef, $02);
+destructor TDNSi.Destroy;
+begin
+
+  FUDP.Destroy;
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  dns istemcisine gelen paketleri işler
+ ==============================================================================}
+procedure TDNSi.OVeriGeldi(AEthernetPaket: PEthernetPaket);
 var
+  B: TBaglanti;
+  IP4Paket: PIP4Paket;
+  UDPPaket: PUDPPaket;
+begin
+
+  B := TBaglanti(FBaglanti);
+  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
+  UDPPaket := PUDPPaket(@IP4Paket^.Veri);
+
+  // dns verisinin uzunluğu
+  FVeriU := ntohs(UDPPaket^.Uzunluk) - 8;
+
+  // gelen veriyi nesne belleğine taşı
+  Tasi2(@UDPPaket^.Veri, @B.FBellek, FVeriU);
+
+  // dns sorgusuna yanıtın geldiğini bildir
+  B.FDNSi.FDurum := ddSorgulandi;
+
+  // paket verilerinin içeriğini görüntülemek için etkinleştir
+  //IcerikGoruntule(@UDPPaket^.Veri);
+end;
+
+{==============================================================================
+  dns sunucusuna sorgulanacak adı gönderir
+ ==============================================================================}
+procedure TDNSi.AdSorgula(ADNSAdresi: string);
+var
+  B: TBaglanti;
   DNSPaket: PDNSPaket;
+  MACAdres: TMACAdres;
   B1, ParcaUzunlukBellek: PSayi1;
   B2: PSayi2;
   K: Char;
-  i, DNSAdresUzunluk, ToplamUzunluk: TSayi4;
+  i, DNSAdresUzunluk,
+  ToplamUzunluk: TSayi4;
   ParcaUzunluk: TSayi1;
-  IP4Adres: string;
-  B: TBaglanti;
 begin
 
-  B := GAgBaglantilari.AB.Baglanti[ABKimlik];
+  B := TBaglanti(FBaglanti);
 
-  if(B.FGDeger1 = 0) then
+  if(FDurum = ddHazir) then
   begin
 
-    DNSPaket := PDNSPaket(FBellekAdresi);
+    DNSPaket := PDNSPaket(B.FBellek);
 
     // 12 bytelık veri
-	  DNSPaket^.Tanimlayici := ntohs(TSayi2($1234 + FKimlik));
+	  DNSPaket^.Tanimlayici := ntohs(TSayi2($1234 + B.FKimlik));
     DNSPaket^.Bayrak := ntohs(TSayi2($0100));       // standard sorgu, recursion
     DNSPaket^.SorguSayisi := ntohs(TSayi2(1));      // sorgu sayısı = 1
     DNSPaket^.YanitSayisi := ntohs(TSayi2(0));
@@ -282,82 +281,130 @@ begin
     Inc(B2);
     B2^ := ntohs(TSayi2(Class_IN));
 
-    //IP4Adres := IP_KarakterKatari4(GAgBaglantilari.AB.DNSSunucusu);
+    // ağ geçidinin mac adresini al
+    MACAdres := GAgBaglantilari.AB.FARP.MACAdresAl(GAgBaglantilari.AB.AgGecitAdresi);
 
-    {DNS^.FBaglanti := GAgBaglantilari.AB.BaglantiOlustur(itIP4, btAktif, ptUDP, IP4Adres,
-      DNS^.FYerelPort, DNS_PORTNO);}
-
-    //SISTEM_MESAJ(mtHata, RENK_SIYAH, 'B: %d', [DNS^.FKimlik]);
-
-    //if not(DNS^.FBaglanti = nil) then
+    // dns adresi tanımlandıysa, sorguyu dns sunucusuna gönder
+    if not(IPKarsilastir(GAgBaglantilari.AB.DNSSunucusu, IP4Adres0)) then
     begin
 
-      //DNS^.FKimlik := DNS^.FBaglanti.Kimlik;
+      FUDP.FIP4.FHedefMACAdres := MACAdres;
+      FUDP.FIP4.FKaynakIPAdres := B.FAB.IP4Adresim;
+      FUDP.FIP4.FHedefIPAdres := GAgBaglantilari.AB.DNSSunucusu;
+      FUDP.PaketleVeGonder(DNSPaket, 12 + ToplamUzunluk + 4);
 
-      { TODO - btYayin'dan btIP değerine çekilecek }
-      //if(DNS^.FBaglanti.Baglan(btIP) <> -1) then
-      //begin
-
-      //SISTEM_MESAJ_IP4(mtBilgi, RENK_KIRMIZI, 'I: ', B.FAB.IP4Adresim);
-
-      {B.FUDP.FIP4.FHedefMACAdres := P;
-      B.FUDP.FIP4.FKaynakIPAdres := B.FAB.IP4Adresim;
-      B.FUDP.FIP4.FHedefIPAdres := IP4Adres2;
-      B.FUDP.PaketleVeGonder(DNSPaket, 12 + ToplamUzunluk + 4);}
-
-        //FBaglantiDurum := ddSorgulaniyor;
-      //end;
+      FDurum := ddSorgulaniyor;
     end;
   end;
 end;
 
 {==============================================================================
-  DNS bağlantısını kapat
+  dns bağlantısını kapatır
  ==============================================================================}
-procedure TDNSIServis.Kapat(ADNSKimlik: TKimlik);
-var
-  DNS: PDNSIServis;
+procedure TDNSi.Kapat;
 begin
 
-  //DNS := FDNSBaglantilari[ADNSKimlik];
-
-  //DNS^.FBaglantiDurum := ddHazir;
+  FDurum := ddHazir;
 end;
 
 {==============================================================================
-  DNS bağlantısını yok et
+  dns bağlantısını yok eder
  ==============================================================================}
-procedure TDNSIServis.YokEt(ADNSKimlik: TKimlik);
-var
-  DNS: PDNSIServis;
+procedure TDNSi.YokEt;
 begin
 
-  {DNS := FDNSBaglantilari[ADNSKimlik];
-
-  DNS^.FBaglantiDurum := ddOlusturuldu;
-  DNS^.FBaglanti.BaglantiyiKes;
-
-  FreeMem(DNS^.FBellekAdresi, 4096);}
+  GAgBaglantilari.AB.BaglantiyiYoket(TBaglanti(FBaglanti));
 end;
 
-{==============================================================================
-  yerel portun sahibi olan DNS bağlantısını alır
- ==============================================================================}
-function TDNSIServis.DNSBaglantiAl(AYerelPort: TSayi2): PDNSIServis;
+procedure TDNSi.IcerikGoruntule(ADNSPaket: PDNSPaket);
 var
-  DNS: PDNSIServis;
-  i: TSayi4;
+  FQDCount,                 // sorgu sayısı
+  FANCount,                 // yanıt sayısı
+  FNSCount,                 // yetki sayısı - authority
+  FARCount: TSayi2;         // diğer sayısı - additional
+  FName: string;            // dns adı
+  FRecType,                 // kayıt tipi
+  FRecClass: TSayi2;        // kayıt sınıfı
+  FTTL: TSayi4;             // yaşam ömrü
+  FRData: TIP4Adres;        // ip adres
+
+  DNSBolum: TSayi4;
+  Veri1: PByte;
+  Veri1U, i: TSayi1;
+  Veri2: PSayi2;
+  Veri4: PSayi4;
 begin
 
-  // tüm işlem girişlerini incele
-  {for i := 0 to USTSINIR_DNSBAGLANTI - 1 do
+  FQDCount := ntohs(ADNSPaket^.SorguSayisi);
+  FANCount := ntohs(ADNSPaket^.YanitSayisi);
+  FNSCount := ntohs(ADNSPaket^.YetkiSayisi);
+  FARCount := ntohs(ADNSPaket^.DigerSayisi);
+
+  DNSBolum := 0;        // dns adresindeki her bir bölüm
+  FName := '';
+
+  // örnek dns adres verisi: [6]google[3]com[0]
+  // bilgi: [] arasındaki veri sayısal byte türünde veridir.
+
+  Veri1 := @ADNSPaket^.Veriler;
+  while Veri1^ <> 0 do
   begin
 
-    DNS := FDNSBaglantilari[i];
-    if(DNS^.FYerelPort = AYerelPort) then Exit(DNS);
-  end;}
+    if(DNSBolum > 0) then FName := FName + '.';
 
-  Result := nil;
+    Veri1U := Veri1^;     // kaydın uzunluğu
+    Inc(Veri1);
+    i := 0;
+    while i < Veri1U do
+    begin
+
+      FName := FName + Char(Veri1^);
+      Inc(Veri1);
+      Inc(i);
+      Inc(DNSBolum);
+    end;
+  end;
+  Inc(Veri1);
+
+  Veri2 := PSayi2(Veri1);
+  Inc(Veri2);
+  Inc(Veri2);
+  Inc(Veri2);
+
+  FRecType := ntohs(Veri2^);
+  Inc(Veri2);
+  FRecClass := ntohs(Veri2^);
+  Inc(Veri2);
+
+  Veri4 := PSayi4(Veri2);
+  FTTL := ntohs(PSayi4(Veri4)^);
+  Inc(Veri4);
+
+  Veri2 := PSayi2(Veri4);
+  // uzunluk verisi - gözardı ediliyor
+  Inc(Veri2);
+
+  Veri1 := PSayi1(Veri2);
+
+  FRData[0] := Veri1^;
+  Inc(Veri1);
+  FRData[1] := Veri1^;
+  Inc(Veri1);
+  FRData[2] := Veri1^;
+  Inc(Veri1);
+  FRData[3] := Veri1^;
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FQDCount: %d', [FQDCount]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FANCount: %d', [FANCount]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FNSCount: %d', [FNSCount]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FARCount: %d', [FARCount]);
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FRecType: %d', [FRecType]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FRecClass: %d', [FRecClass]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FTTL: %d', [FTTL]);
+
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'FName: %s', [FName]);
+  SISTEM_MESAJ_IP4(mtBilgi, RENK_KIRMIZI, 'IP: ', FRData);
 end;
 
 end.
