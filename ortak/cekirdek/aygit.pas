@@ -6,7 +6,7 @@
   Dosya Adı: aygit.pas
   Dosya İşlevi: sistemde mevcut tüm aygıtların temel sınıflarını içerir
 
-  Güncelleme Tarihi: 09/10/2026
+  Güncelleme Tarihi: 31/10/2026
 
  ==============================================================================}
 {$mode objfpc}

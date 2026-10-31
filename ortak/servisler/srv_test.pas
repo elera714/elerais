@@ -6,7 +6,7 @@
   Dosya Adý: srv_test.pas
   Dosya Ýþlevi: dahili servis: test amaçlý
 
-  Güncelleme Tarihi: 17/08/2026
+  Güncelleme Tarihi: 31/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -38,7 +38,7 @@ begin
 
   repeat
 
-    GZamanlayicilar.BekleMS(30 * CALISMA_FREKANSI);
+    GZamanlayicilar.BekleMS(1 * CALISMA_FREKANSI);
 
     SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'test servis kontrol...', []);
 

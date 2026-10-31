@@ -6,7 +6,7 @@
   Dosya Adı: gn_defter.pas
   Dosya İşlevi: defter nesnesi (TMemo) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 17/08/2026
+  Güncelleme Tarihi: 28/10/2026
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     10K ve çekirdek bölümüne eklenen 10K bellek kullanmaktadır.
@@ -266,7 +266,7 @@ begin
   ImlecY := 0;
 
   // kodlama = utf-8
-  Kodlama := 0;
+  Kodlama := 1;
 
   FareImlec := fitGiris;
 

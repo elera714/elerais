@@ -6,7 +6,7 @@
   Dosya Adý: fdepolama.pas
   Dosya Ýþlevi: fiziksel depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 18/10/2026
+  Güncelleme Tarihi: 30/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -34,6 +34,7 @@ type
     function AygitOlustur(AAygitTipi: TSayi4): TFDAygiti;
     function SurucuAl(ASiraNo: TISayi4): TFDAygiti;
     function SurucuAl2(AKimlik: TKimlik): TFDAygiti;
+    function SurucuAl3(AAygitAdi: string): TFDAygiti;
     function VeriOku(AFDAygiti: TFDAygiti; ASektorNo,
       ASektorSayisi: TSayi4; ABellek: Isaretci): TSayi4;
     function VeriYaz(AFDAygiti: TFDAygiti; ASektorNo,
@@ -188,6 +189,25 @@ begin
 
     FD := Aygit[i];
     if not(FD = nil) and (FD.Kimlik = AKimlik) then Exit(FD);
+  end;
+
+  Result := nil;
+end;
+
+{==============================================================================
+  aygýt adýna (örnek: disk2) göre fiziksel depolama aygýtýnýn nesnesini geri döndürür
+ ==============================================================================}
+function TFizikselDepolama.SurucuAl3(AAygitAdi: string): TFDAygiti;
+var
+  FD: TFDAygiti;
+  i: TSayi4;
+begin
+
+  for i := 0 to USTSINIR_FD - 1 do
+  begin
+
+    FD := Aygit[i];
+    if not(FD = nil) and (FD.FAygitAdi = AAygitAdi) then Exit(FD);
   end;
 
   Result := nil;

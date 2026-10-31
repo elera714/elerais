@@ -133,7 +133,7 @@ begin
     Durum := _DurumAl(FKimlik);
     if(Durum = ddSorgulandi) then Exit(True);
 
-    FGenel.Bekle(30);
+    FGenel.Bekle(500);
   end;
 
   Result := False;
@@ -152,8 +152,7 @@ begin
 
   _IcerikAl(FKimlik, @Veriler);
 
-  // ilk 4 byte dns yanıt verisinin uzunluğunu içerir
-  DNSPaket := PDNSPaket(@Veriler[4]);
+  DNSPaket := PDNSPaket(@Veriler[0]);
 
   // girdi sayılarının alınması
   FQDCount := ntohs(DNSPaket^.SorguSayisi);

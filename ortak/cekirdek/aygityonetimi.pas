@@ -6,7 +6,7 @@
   Dosya Adý: aygityonetimi.pas
   Dosya Ýþlevi: aygýt (device) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 28/07/2026
+  Güncelleme Tarihi: 31/10/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -55,7 +55,7 @@ type
     constructor Create;
     destructor Destroy; override;
     property AktifEthernet: TEthernet read FAktifEthernet;
-    procedure VeritabaniOlustur;
+    procedure Yukle;
     procedure AgAygitlariniYukle;
     procedure EthernetAygitiEkle(APCI: TPCI);
     function SiraNoAl: TISayi4;
@@ -119,7 +119,7 @@ end;
 {==============================================================================
   yüklenecek aygýt listesine belirtilen aygýtý ekler
  ==============================================================================}
-procedure TAygitlar.VeritabaniOlustur;
+procedure TAygitlar.Yukle;
 var
   AygitTipi: TSayi4;
   i: TSayi4;
@@ -143,7 +143,8 @@ begin
     // virtualbox sanal sürücüyü yükle
     else if(AygitTipi = PCIAYGIT_CEVREBIRIM_DIGER) then
 
-      if(P.FSaticiKimlik = $80EE) and (P.FAygitKimlik = $CAFE) then vbox.Yukle(P);
+      if(P.FSaticiKimlik = $80EE) and (P.FAygitKimlik = $CAFE) then
+        GVirtualBox := TVirtualBox.Create(P);
   end;
 end;
 

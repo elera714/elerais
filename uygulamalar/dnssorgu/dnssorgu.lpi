@@ -31,10 +31,12 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <Units Count="9">
+    <Units Count="4">
       <Unit0>
         <Filename Value="dnssorgu.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="24" Y="10"/>
         <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -55,52 +57,12 @@
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="122"/>
-        <CursorPos X="59" Y="140"/>
+        <TopLine Value="107"/>
+        <CursorPos X="17" Y="111"/>
         <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit3>
-      <Unit4>
-        <Filename Value="..\..\rtl_uygulama\linux\n_dns.pas"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="196"/>
-        <CursorPos X="49" Y="210"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\..\rtl_uygulama\linux\elera.inc"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="323"/>
-        <CursorPos X="5" Y="345"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="..\..\rtl_uygulama\linux\n_genel.pas"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="4"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="..\..\rtl_uygulama\linux\system.pp"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="18"/>
-        <CursorPos X="40" Y="51"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="..\..\rtl_uygulama\linux\paylasim.inc"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="361"/>
-        <CursorPos X="3" Y="379"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
