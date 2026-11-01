@@ -6,7 +6,7 @@
   Dosya Adý: icmp4.pas
   Dosya Ýþlevi: ICMP v4 tutanak (protokol) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 28/10/2026
+  Güncelleme Tarihi: 01/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -41,14 +41,14 @@ type
     FICMP4GelenPaketSayisi: TSayi4;
   public
     constructor Create(AAgBaglantisi: TObject);
-    procedure PaketleVeGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4);
     procedure VerileriIsle(AEthernetPaket: PEthernetPaket);
+    procedure PaketleVeGonder(AICMPPaket: PICMP4Paket; APaketUzunlugu: TSayi4);
     property ICMP4GelenPaketSayisi: TSayi4 read FICMP4GelenPaketSayisi write FICMP4GelenPaketSayisi;
   end;
 
 implementation
 
-uses islevler, sistemmesaj, donusum, baglantilar;
+uses islevler, sistemmesaj, donusum;
 
 {==============================================================================
   icmp v4 tutanak (protokol) ana yükleme iþlevlerini içerir

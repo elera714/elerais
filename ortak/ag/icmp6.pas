@@ -6,7 +6,7 @@
   Dosya Adý: icmp6.pas
   Dosya Ýþlevi: ICMP v6 tutanak (protokol) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 27/10/2026
+  Güncelleme Tarihi: 01/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,7 +15,7 @@ unit icmp6;
 
 interface
 
-uses paylasim;
+uses paylasim, ip6;
 
 const
   ICMP6_BASLIK_UZUNLUGU   = 32;
@@ -93,43 +93,49 @@ type
     HedefIP6: TIP6Adres;
     Uzunluk: TSayi4;                // icmp v6 paket ve içeriði
     Sifir: array[0..2] of TSayi1;
-    Protokol: TSayi1;               // PROTOKOL_ICMP6 deðeri ($3A)
+    Tutanak: TSayi1;                // PROTOKOL_ICMP6 deðeri ($3A)
   end;
 
 type
   TICMP6 = class
-  private
-    FBaglanti: TObject;
+  public
+    FAgBaglantisi: TObject;
+    FIP6: TIP6;
     FICMP6GelenPaketSayisi: TSayi4;
   public
-    constructor Create(ABaglanti: TObject);
+    constructor Create(AAgBaglantisi: TObject);
+    procedure VerileriIsle(AEthernetPaket: PEthernetPaket);
+    procedure PaketleVeGonder(AMesajTipi: TSayi4; AHedefIP6Adres: TIP6Adres;
+      AHedefMACAdres: TMACAdres; ASorguYanitIP6Adres: TIP6Adres);
     procedure KomsuIstegiGonder(AIP6Adres: TIP6Adres);
     procedure PingMesajiGonder(AMesajTipi: TSayi4; AHedefIP6Adres: TIP6Adres;
       AHedefMACAdres: TMACAdres; ASiraNo: TSayi4; AVeri: Isaretci; AVeriU: TSayi4);
-    procedure PaketleVeGonder(AMesajTipi: TSayi4; AHedefIP6Adres: TIP6Adres;
-      AHedefMACAdres: TMACAdres; ASorguYanitIP6Adres: TIP6Adres);
-    procedure VerileriIsle(AEthernetPaket: PEthernetPaket);
   end;
 
 implementation
 
-uses ip6, sistemmesaj, donusum, islevler, ethernet, aygityonetimi, ag, baglantilar;
+uses sistemmesaj, donusum, islevler, ethernet, aygityonetimi, baglantilar;
 
-constructor TICMP6.Create(ABaglanti: TObject);
+{==============================================================================
+  icmp v6 tutanak (protokol) ana yükleme iþlevlerini içerir
+ ==============================================================================}
+constructor TICMP6.Create(AAgBaglantisi: TObject);
 begin
 
-  FBaglanti := ABaglanti;
+  FAgBaglantisi := AAgBaglantisi;
+
+  // iletiþim ip6 tutanaðý üzerinden gerçekleþeceði için 1 adet ip6
+  // nesnesi oluþturuluyor
+  FIP6 := TIP6.Create(AAgBaglantisi, MACAdres0);
 
   FICMP6GelenPaketSayisi := 0;
 end;
 
-// icmp protokolü üzerinden gelen paketleri iþler
+{==============================================================================
+  icmp v6 tutanaðý üzerinden gelen paketleri iþler
+ ==============================================================================}
 procedure TICMP6.VerileriIsle(AEthernetPaket: PEthernetPaket);
-const
-  PingHedefIP6Adres: TIP6Adres = (
-    $FF, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01);
 var
-  B: TBaglanti;
   IP6Paket: PIP6Paket;
   ICMPPaket: PICMP6Paket;
   PingPaket: PPingPaket;
@@ -140,11 +146,8 @@ begin
   ICMPPaket := PICMP6Paket(@IP6Paket^.Veri);
   PingPaket := PPingPaket(@IP6Paket^.Veri);
 
-  B := TBaglanti(FBaglanti);
-
-  // ip6 katman bilgileri
-  B.FIP6.FKaynakIPAdres := IP6Paket^.KaynakIP;
-  B.FIP6.FHedefIPAdres := IP6Paket^.HedefIP;
+  // ip6 katman bilgileri - kaynak ip adresi ortak
+  FIP6.FKaynakIPAdres := GAgBaglantilari.AB.IP6Adresim;
 
   // icmp yönlendirici talebine yanýt veriliyor
   if(ICMPPaket^.MesajTipi = ICMP6_YONLENDIRICI_ISTEK) then
@@ -154,9 +157,10 @@ begin
     if(MACKarsilastir(AEthernetPaket^.HedefMACAdres, MAC333300000002)) then
     begin
 
-      B.FIP6.FKaynakIPAdres := IP6AdresFF02_0001;
+      // ip4 katman bilgileri
+      FIP6.FHedefIPAdres := IP6AdresFF02_0001;
 
-      PaketleVeGonder(ICMP6_YONLENDIRICI_ILAN, PingHedefIP6Adres,
+      PaketleVeGonder(ICMP6_YONLENDIRICI_ILAN, IP6AdresFF02_0001,
         MAC333300000001, IP6AdresFF02_0001);
     end
   end
@@ -165,28 +169,32 @@ begin
   begin
 
     // mesaj, yayýn adresine mi gönderildi? (neighbor solicitation)
-    if(IP6Karsilastir(IP6Paket^.HedefIP, YayinIP6Adres)) then
+    if(IP6Karsilastir(IP6Paket^.HedefIPAdres, YayinIP6Adres)) then
     begin
 
-      PaketleVeGonder(ICMP6_KOMSU_ILAN, IP6Paket^.KaynakIP,
+      // ip4 katman bilgileri
+      FIP6.FHedefIPAdres := IP6Paket^.KaynakIPAdres;
+
+      // bu ip adresinin mac adres: 33:33:ff:cd:ef:01
+      PaketleVeGonder(ICMP6_KOMSU_ILAN, IP6Paket^.KaynakIPAdres,
         PKomsuPaket(@ICMPPaket^.Veri)^.Secenekler.Adres, GAgBaglantilari.AB.IP6Adresim);
     end
   end
-  // bana gelen pimg isteðine yanýt veriliyor
+  // bana gelen ping isteðine yanýt veriliyor
   else if(ICMPPaket^.MesajTipi = ICMP6_PING_ISTEK) then
   begin
 
     i := ntohs(TSayi2(PingPaket^.SiraNo));
-    PingMesajiGonder(ICMP6_PING_YANIT, IP6Paket^.KaynakIP,
+    PingMesajiGonder(ICMP6_PING_YANIT, IP6Paket^.KaynakIPAdres,
       AEthernetPaket^.KaynakMACAdres, i, @PingPaket^.Veri, 32);
   end
-  // benim gönderdiðim pimg isteðime yanýt veriliyor
+  // benim gönderdiðim ping isteðime gelen yanýt
   else if(ICMPPaket^.MesajTipi = ICMP6_PING_YANIT) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'ICMPv6 ping yanýtý geldi.', []);
   end
-  // komþu bilgisayar benim isteðime icmp yanýtý veriyor
+  // komþu bilgisayarýn benim isteðime verdiði icmp yanýtý
   else if(ICMPPaket^.MesajTipi = ICMP6_KOMSU_ILAN) then
   begin
 
@@ -197,81 +205,6 @@ begin
   end
   else SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'ICMP6.PAS: bilinmeyen mesaj tipi: $%.2x',
     [ICMPPaket^.MesajTipi]);
-end;
-
-{==============================================================================
-  belirtilen ip v6 adresine komþu isteði gönderir
- ==============================================================================}
-procedure TICMP6.KomsuIstegiGonder(AIP6Adres: TIP6Adres);
-var
-  HedefIP6Adres: TIP6Adres;
-  HedefMACAdres: TMACAdres;
-begin
-
-  // ip katmaný - ip adresini hazýrla
-  HedefIP6Adres := TalepDugumIP6Adresi;
-  HedefIP6Adres[13] := AIP6Adres[13];
-  HedefIP6Adres[14] := AIP6Adres[14];
-  HedefIP6Adres[15] := AIP6Adres[15];
-
-  // ethernet katmaný - mac adresini hazýrla
-  HedefMACAdres := COKLUYAYIN_MACADRES;
-  HedefMACAdres[2] := HedefIP6Adres[12];
-  HedefMACAdres[3] := HedefIP6Adres[13];
-  HedefMACAdres[4] := HedefIP6Adres[14];
-  HedefMACAdres[5] := HedefIP6Adres[15];
-
-  // ip6 katman bilgileri
-  TBaglanti(FBaglanti).FIP6.FKaynakIPAdres := HedefIP6Adres;
-  TBaglanti(FBaglanti).FIP6.FHedefIPAdres := GAgBaglantilari.AB.IP6Adresim;
-
-  PaketleVeGonder(ICMP6_KOMSU_ISTEK, HedefIP6Adres, HedefMACAdres, AIP6Adres);
-end;
-
-{==============================================================================
-  ping mesajý (istek / yanýt) gönderir
- ==============================================================================}
-procedure TICMP6.PingMesajiGonder(AMesajTipi: TSayi4; AHedefIP6Adres: TIP6Adres;
-  AHedefMACAdres: TMACAdres; ASiraNo: TSayi4; AVeri: Isaretci; AVeriU: TSayi4);
-var
-  PingPaket: PPingPaket;
-  EKBaslik: TEkBaslik;
-  SaglamaToplami: TSayi2;
-begin
-
-  // protokol verisi için bellekte yer ayýr
-  PingPaket := GetMem(4096);
-
-  // icmp v6 veri içeriðini hazýrla
-  PingPaket^.MesajTipi := AMesajTipi;
-  PingPaket^.Kod := $00;
-  PingPaket^.SaglamaToplami := $0000;
-  PingPaket^.Tanimlayici := htons(TSayi2(1));
-  PingPaket^.SiraNo := htons(TSayi2(ASiraNo));
-  Tasi2(AVeri, @PingPaket^.Veri, AVeriU);
-
-  // saðlama toplamý için ek baþlýðý hazýrla
-  EKBaslik.KaynakIP6 := GAgBaglantilari.AB.IP6Adresim;
-  EKBaslik.HedefIP6 := AHedefIP6Adres;
-  EKBaslik.Uzunluk := htons(TSayi4(40));
-  EKBaslik.Sifir[0] := 0;
-  EKBaslik.Sifir[1] := 0;
-  EKBaslik.Sifir[2] := 0;
-  EKBaslik.Protokol := PROTOKOL_ICMP6;
-
-  // saðlama toplamý hesaplama
-  PingPaket^.SaglamaToplami := 0;
-  SaglamaToplami := SaglamaToplamiOlustur(PingPaket, 8 + 32, @EKBaslik, ICMP6_EKBASLIK_UZUNLUGU);
-  PingPaket^.SaglamaToplami := SaglamaToplami;
-
-  // verinin gönderileceði ethernet adresi
-  TBaglanti(FBaglanti).FIP6.FHedefMACAdres := AHedefMACAdres;
-
-  // paketi ip katmanýna gönder
-  TBaglanti(FBaglanti).FIP6.PaketleVeGonder(ttICMP6, $80, PingPaket, 8 + 32);
-
-  // ayrýlan belleði serbest býrak
-  FreeMem(PingPaket, 4096);
 end;
 
 {==============================================================================
@@ -289,7 +222,7 @@ var
   PaketU: TSayi4;
 begin
 
-  // protokol verisi için bellekte yer ayýr
+  // tutanak verisi için bellekte yer ayýr
   ICMPPaket := GetMem(4096);
 
   // icmp v6 veri içeriðini hazýrla
@@ -343,7 +276,7 @@ begin
   EKBaslik.Sifir[0] := 0;
   EKBaslik.Sifir[1] := 0;
   EKBaslik.Sifir[2] := 0;
-  EKBaslik.Protokol := PROTOKOL_ICMP6;
+  EKBaslik.Tutanak := TUTANAK_ICMP6;
 
   // saðlama toplamý hesaplama
   ICMPPaket^.SaglamaToplami := 0;
@@ -351,13 +284,92 @@ begin
     @EKBaslik, TSayi2(ICMP6_EKBASLIK_UZUNLUGU));
   ICMPPaket^.SaglamaToplami := SaglamaToplami;
 
-  TBaglanti(FBaglanti).FIP6.FHedefMACAdres := AHedefMACAdres;
+  FIP6.FHedefMACAdres := AHedefMACAdres;
 
   // paketi ip katmanýna gönder
-  TBaglanti(FBaglanti).FIP6.PaketleVeGonder(ttICMP6, $FF, ICMPPaket, PaketU);
+  FIP6.PaketleVeGonder(ttICMP6, $FF, ICMPPaket, PaketU);
 
   // ayrýlan belleði serbest býrak
   FreeMem(ICMPPaket, 4096);
+end;
+
+{==============================================================================
+  belirtilen ip v6 adresine komþu isteði gönderir
+ ==============================================================================}
+procedure TICMP6.KomsuIstegiGonder(AIP6Adres: TIP6Adres);
+var
+  HedefIP6Adres: TIP6Adres;
+  HedefMACAdres: TMACAdres;
+begin
+
+  // ip6 katman bilgileri
+  FIP6.FKaynakIPAdres := GAgBaglantilari.AB.IP6Adresim;
+  FIP6.FHedefIPAdres := HedefIP6Adres;
+
+  // ip katmaný - ip adresini hazýrla
+  HedefIP6Adres := TalepDugumIP6Adresi;
+  HedefIP6Adres[13] := AIP6Adres[13];
+  HedefIP6Adres[14] := AIP6Adres[14];
+  HedefIP6Adres[15] := AIP6Adres[15];
+
+  // ethernet katmaný - mac adresini hazýrla
+  HedefMACAdres := COKLUYAYIN_MACADRES;
+  HedefMACAdres[2] := HedefIP6Adres[12];
+  HedefMACAdres[3] := HedefIP6Adres[13];
+  HedefMACAdres[4] := HedefIP6Adres[14];
+  HedefMACAdres[5] := HedefIP6Adres[15];
+
+  PaketleVeGonder(ICMP6_KOMSU_ISTEK, HedefIP6Adres, HedefMACAdres, AIP6Adres);
+end;
+
+{==============================================================================
+  ping mesajý (istek / yanýt) gönderir
+ ==============================================================================}
+procedure TICMP6.PingMesajiGonder(AMesajTipi: TSayi4; AHedefIP6Adres: TIP6Adres;
+  AHedefMACAdres: TMACAdres; ASiraNo: TSayi4; AVeri: Isaretci; AVeriU: TSayi4);
+var
+  PingPaket: PPingPaket;
+  EKBaslik: TEkBaslik;
+  SaglamaToplami: TSayi2;
+begin
+
+  // ip4 katman bilgileri
+  FIP6.FKaynakIPAdres := GAgBaglantilari.AB.IP6Adresim;
+  FIP6.FHedefIPAdres := AHedefIP6Adres;
+
+  // tutanak verisi için bellekte yer ayýr
+  PingPaket := GetMem(4096);
+
+  // icmp v6 veri içeriðini hazýrla
+  PingPaket^.MesajTipi := AMesajTipi;
+  PingPaket^.Kod := $00;
+  PingPaket^.SaglamaToplami := $0000;
+  PingPaket^.Tanimlayici := htons(TSayi2(1));
+  PingPaket^.SiraNo := htons(TSayi2(ASiraNo));
+  Tasi2(AVeri, @PingPaket^.Veri, AVeriU);
+
+  // saðlama toplamý için ek baþlýðý hazýrla
+  EKBaslik.KaynakIP6 := GAgBaglantilari.AB.IP6Adresim;
+  EKBaslik.HedefIP6 := AHedefIP6Adres;
+  EKBaslik.Uzunluk := htons(TSayi4(40));
+  EKBaslik.Sifir[0] := 0;
+  EKBaslik.Sifir[1] := 0;
+  EKBaslik.Sifir[2] := 0;
+  EKBaslik.Tutanak := TUTANAK_ICMP6;
+
+  // saðlama toplamý hesaplama
+  PingPaket^.SaglamaToplami := 0;
+  SaglamaToplami := SaglamaToplamiOlustur(PingPaket, 8 + 32, @EKBaslik, ICMP6_EKBASLIK_UZUNLUGU);
+  PingPaket^.SaglamaToplami := SaglamaToplami;
+
+  // verinin gönderileceði ethernet adresi
+  FIP6.FHedefMACAdres := AHedefMACAdres;
+
+  // paketi ip katmanýna gönder
+  FIP6.PaketleVeGonder(ttICMP6, $80, PingPaket, 8 + 32);
+
+  // ayrýlan belleði serbest býrak
+  FreeMem(PingPaket, 4096);
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adı: ethernet.pas
   Dosya İşlevi: ethernet ağ (network) kartı yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 27/10/2026
+  Güncelleme Tarihi: 01/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -104,12 +104,12 @@ begin
 
     // paketin tutanak tipi
     case ATutanakTipi of
-      ttIP4   : EPaket^.PaketTipi := ntohs(PROTOKOL_IP4);
-      ttIP6   : EPaket^.PaketTipi := ntohs(PROTOKOL_IP6);
-      ttTCP   : EPaket^.PaketTipi := PROTOKOL_TCP;
-      ttUDP   : EPaket^.PaketTipi := PROTOKOL_UDP;
-      ttARP   : EPaket^.PaketTipi := ntohs(PROTOKOL_ARP);
-      ttICMP4 : EPaket^.PaketTipi := PROTOKOL_ICMP4;
+      ttIP4   : EPaket^.PaketTipi := ntohs(TUTANAK_IP4);
+      ttIP6   : EPaket^.PaketTipi := ntohs(TUTANAK_IP6);
+      ttTCP   : EPaket^.PaketTipi := TUTANAK_TCP;
+      ttUDP   : EPaket^.PaketTipi := TUTANAK_UDP;
+      ttARP   : EPaket^.PaketTipi := ntohs(TUTANAK_ARP);
+      ttICMP4 : EPaket^.PaketTipi := TUTANAK_ICMP4;
     end;
 
     {SISTEM_MESAJ(mtBilgi, RENK_MOR, 'ETH', []);
