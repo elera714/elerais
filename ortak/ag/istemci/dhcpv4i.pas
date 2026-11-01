@@ -6,7 +6,7 @@
   Dosya Adý: dhcpv4i.pas
   Dosya Ýþlevi: DHCP v4 istemci tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 27/10/2026
+  Güncelleme Tarihi: 01/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -51,6 +51,8 @@ uses donusum, aygityonetimi, islevler, baglantilar;
 constructor TDHCPv4i.Create(ABaglanti: TObject);
 begin
 
+  inherited Create;
+
   FBaglanti := ABaglanti;
 
   // iletiþim udp tutanaðý üzerinden gerçekleþeceði için 1 adet udp
@@ -76,7 +78,7 @@ begin
 
   FUDP.Destroy;
 
-  inherited Destroy;
+  inherited;
 end;
 
 {==============================================================================

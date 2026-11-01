@@ -162,6 +162,8 @@ end;
 constructor TDNSi.Create(ABaglanti: TObject);
 begin
 
+  inherited Create;
+
   FBaglanti := ABaglanti;
 
   // iletişim udp tutanağı üzerinden gerçekleşeceği için 1 adet udp
@@ -179,7 +181,7 @@ begin
 
   FUDP.Destroy;
 
-  inherited Destroy;
+  inherited;
 end;
 
 {==============================================================================

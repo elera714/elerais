@@ -6,7 +6,7 @@
   Dosya Adý: dhcpv4s.pas
   Dosya Ýþlevi: DHCP v4 sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 27/10/2026
+  Güncelleme Tarihi: 01/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -74,6 +74,8 @@ constructor TDHCPv4s.Create(ABaglanti: TObject);
 var
   i: TSayi4;
 begin
+
+  inherited Create;
 
   FBaglanti := ABaglanti;
 
