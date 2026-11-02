@@ -120,7 +120,7 @@ begin
 
   FUDP.Destroy;
 
-  inherited Destroy;
+  inherited;
 end;
 
 {==============================================================================
@@ -128,7 +128,7 @@ end;
  ==============================================================================}
 procedure TDHCPv4s.OVeriGeldi(AEthernetPaket: PEthernetPaket);
 var
-  IP4Paket: PIP4Paket;
+  IPPaket: PIP4Paket;
   UDPPaket: PUDPPaket;
   DHCP4Yapi: PDHCP4Yapi;
   DHCPMesaj: PDHCPMesaj;
@@ -140,9 +140,9 @@ var
   IstemciAdi, SaticiSTanitici: string;
 begin
 
-  IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
-  UDPPaket := PUDPPaket(@IP4Paket^.Veri);
-  DHCP4Yapi := PDHCP4Yapi(@UDPPaket^.Veri);
+  IPPaket := @AEthernetPaket^.Veri;
+  UDPPaket := @IPPaket^.Veri;
+  DHCP4Yapi := @UDPPaket^.Veri;
 
   IstenenIP4Adres.Sifirla;
   MACAdres.Sifirla;
@@ -331,7 +331,6 @@ end;
 procedure TDHCPv4s.DHCPTeklifMesajiGonder(AEthernetPaket: PEthernetPaket;
   AGonderenKimlik: TSayi4; ATeklifEdilenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdres);
 var
-  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IP4Adres: PIP4Adres;
   p1: PSayi1;
@@ -339,7 +338,7 @@ var
   DHCPYapiUzunlugu: TSayi4;
 begin
 
-  DHCPYapi := GetMem(4096);
+  DHCPYapi := TBaglanti(FBaglanti).FBellek;
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -459,13 +458,10 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  B := TBaglanti(FBaglanti);
-  B.FDHCPv4s.FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
-  B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := ATeklifEdilenIP4Adres.IP4Adres;
-  B.FDHCPv4s.FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
-  B.FDHCPv4s.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
-
-  FreeMem(DHCPYapi, 4096);
+  FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+  FUDP.FIP4.FKaynakIPAdres := ATeklifEdilenIP4Adres.IP4Adres;
+  FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
+  FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
 end;
 
 {==============================================================================
@@ -474,7 +470,6 @@ end;
 procedure TDHCPv4s.DHCPIstegeOnayMesajiGonder(AEthernetPaket: PEthernetPaket;
   AGonderenKimlik: TSayi4; AIstenenIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
 var
-  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IP4Adres: PIP4Adres;
   i: TSayi1;
@@ -484,7 +479,7 @@ var
   DHCPYapiUzunlugu: TSayi4;
 begin
 
-  DHCPYapi := GetMem(4096);
+  DHCPYapi := TBaglanti(FBaglanti).FBellek;
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -618,15 +613,12 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  B := TBaglanti(FBaglanti);
-  B.FDHCPv4s.FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
-  B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := AIstenenIP4Adres.IP4Adres;
-  B.FDHCPv4s.FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
-  B.FDHCPv4s.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
+  FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+  FUDP.FIP4.FKaynakIPAdres := AIstenenIP4Adres.IP4Adres;
+  FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
+  FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
 
   SISTEM_MESAJ_IP4(mtUyari, RENK_PEMBE, 'DHCPv4-Sunucu: Tahsis edilen IP: ', AIstenenIP4Adres.IP4Adres);
-
-  FreeMem(DHCPYapi, 4096);
 end;
 
 {==============================================================================
@@ -635,7 +627,6 @@ end;
 procedure TDHCPv4s.DHCPIstegeRetMesajiGonder(AEthernetPaket: PEthernetPaket;
   AGonderenKimlik: TSayi4; AMACAdres: TMACAdresIslev);
 var
-  B: TBaglanti;
   IP4Paket: PIP4Paket;
   DHCPYapi: PDHCP4Yapi;
   IP4Adres: PIP4Adres;
@@ -645,7 +636,7 @@ begin
 
   IP4Paket := PIP4Paket(@AEthernetPaket^.Veri);
 
-  DHCPYapi := GetMem(4096);
+  DHCPYapi := TBaglanti(FBaglanti).FBellek;
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -702,18 +693,15 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  B := TBaglanti(FBaglanti);
-  B.FDHCPv4s.FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+  FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
 
   // gönderen ip adresi 0.0.0.0 ise hedef adresi 255.255.255.255 olarak belirle
   if(IP4Karsilastir(IP4Paket^.KaynakIPAdres, IP4Adres0)) then
-    B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := IP4Adres255
-  else B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := IP4Paket^.KaynakIPAdres;
-  B.FDHCPv4s.FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
+    FUDP.FIP4.FKaynakIPAdres := IP4Adres255
+  else FUDP.FIP4.FKaynakIPAdres := IP4Paket^.KaynakIPAdres;
+  FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
 
-  B.FDHCPv4s.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
-
-  FreeMem(DHCPYapi, 4096);
+  FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
 end;
 
 {==============================================================================
@@ -722,14 +710,13 @@ end;
 procedure TDHCPv4s.DHCPBilgilendirmeyeOnayMesajiGonder(AEthernetPaket: PEthernetPaket;
   AGonderenKimlik: TSayi4; AIP4Adres: TIP4AdresIslev; AMACAdres: TMACAdresIslev);
 var
-  B: TBaglanti;
   DHCPYapi: PDHCP4Yapi;
   IP4Adres: PIP4Adres;
   p1: PSayi1;
   DHCPYapiUzunlugu: TSayi4;
 begin
 
-  DHCPYapi := GetMem(4096);
+  DHCPYapi := TBaglanti(FBaglanti).FBellek;
 
 	DHCPYapi^.Islem := DHCP_BOOT_MTIP_YANIT;
 	DHCPYapi^.DonanimTip := 1;		      // ethernet
@@ -828,13 +815,10 @@ begin
   p1^ := DHCP_SECIM_SON;
   DHCPYapiUzunlugu := DHCPYapiUzunlugu + 1;
 
-  B := TBaglanti(FBaglanti);
-  B.FDHCPv4s.FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
-  B.FDHCPv4s.FUDP.FIP4.FKaynakIPAdres := AIP4Adres.IP4Adres;
-  B.FDHCPv4s.FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
-  B.FDHCPv4s.FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
-
-  FreeMem(DHCPYapi, 4096);
+  FUDP.FIP4.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+  FUDP.FIP4.FKaynakIPAdres := AIP4Adres.IP4Adres;
+  FUDP.FIP4.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP4Adresim;
+  FUDP.PaketleVeGonder(@DHCPYapi[0], DHCPYapiUzunlugu);
 end;
 
 end.

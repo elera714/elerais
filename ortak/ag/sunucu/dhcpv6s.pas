@@ -3,18 +3,22 @@
   Kodlayan: Fatih KILIÇ
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
-  Dosya Adý: dhcp6.pas
-  Dosya Ýþlevi: DHCP v6 sunucu protokol iþlevlerini yönetir
+  Dosya Adý: dhcpv6s.pas
+  Dosya Ýþlevi: DHCP v6 sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 05/06/2026
+  Güncelleme Tarihi: 02/11/2026
 
  ==============================================================================}
 {$mode objfpc}
-unit dhcp6;
+unit dhcpv6s;
 
 interface
 
-uses ag, paylasim, udp;
+uses paylasim, udp, sunucular;
+
+const
+  DHCPv6_SUNUCU_PORT                      = 547;
+  DHCPv6_ISTEMCI_PORT                     = 546;
 
 type
   PDHCP6Mesaj = ^TDHCP6Mesaj;
@@ -75,23 +79,61 @@ var
     $FE, $80, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00);
 //    $2a, $00, $60, $20, $ad, $0b, $83, $53, $00, $00, $00, $00, $00, $00, $17, $62);
 
-procedure DHCPv6SorgulariniYanitla(AEthernetPaket: PEthernetPaket);
+type
+  TDHCPv6s = class(TUDPSunucu)
+  private
+    FBaglanti: TObject;
+    FUDP: TUDP;
+  public
+    constructor Create(ABaglanti: TObject);
+    destructor Destroy; override;
+    procedure OVeriGeldi(AEthernetPaket: PEthernetPaket); override;
+  end;
+
 function YeniIP6AdresiAl: TIP6Adres;
 
 implementation
 
 uses sistemmesaj, donusum, islevler, baglantilar;
 
-// dhcp v6 protokolü üzerinden gelen paketleri iþler
-procedure DHCPv6SorgulariniYanitla(AEthernetPaket: PEthernetPaket);
+{==============================================================================
+  dhcp sunucu nesnesi ana yükleme iþlevlerini içerir
+ ==============================================================================}
+constructor TDHCPv6s.Create(ABaglanti: TObject);
+begin
+
+  inherited Create;
+
+  FBaglanti := ABaglanti;
+
+  // iletiþim udp tutanaðý üzerinden gerçekleþeceði için 1 adet udp
+  // nesnesi oluþturuluyor
+  FUDP := TUDP.Create(nil, FBaglanti, itIP6, MACAdres0);
+end;
+
+{==============================================================================
+  dhcp sunucu nesnesi ana yok etme iþlevlerini içerir
+ ==============================================================================}
+destructor TDHCPv6s.Destroy;
+begin
+
+  FUDP.Destroy;
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  dhcp sunucusuna gelen paketleri iþler
+ ==============================================================================}
+procedure TDHCPv6s.OVeriGeldi(AEthernetPaket: PEthernetPaket);
 const
   Sunucu: string = 'elr';
   AlanAdi: string = 'com';
 var
   IPPaket: PIP6Paket;
   UDPPaket: PUDPPaket;
-  KaynakPaket, HedefPaket: PDHCP6Yapi;
-  KaynakPort, HedefPort, MT, i: TSayi2;
+  DHCP4Yapi, HedefPaket: PDHCP6Yapi;
+  MT, i: TSayi2;
   VeriU, DHCPYapiU: TSayi4;
   DHCPMesaj: PDHCP6Mesaj;
   p1, p2: PSayi1;
@@ -101,27 +143,25 @@ begin
 
   IPPaket := @AEthernetPaket^.Veri;
   UDPPaket := @IPPaket^.Veri;
-  KaynakPaket := @UDPPaket^.Veri;
+  DHCP4Yapi := @UDPPaket^.Veri;
 
-  KaynakPort := htons(UDPPaket^.KaynakPort);
-  HedefPort := htons(UDPPaket^.HedefPort);
   VeriU := htons(UDPPaket^.Uzunluk) - (8 + 4);
 
-  if(KaynakPaket^.MesajTipi = DHCP_MTIP_YALVARMA) then
+  if(DHCP4Yapi^.MesajTipi = DHCP_MTIP_YALVARMA) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'DHCP6->DHCP_MTIP_YALVARMA mesajý geldi, yanýt gönderiliyor...', []);
 
     DHCPYapiU := 0;
 
-    HedefPaket := GetMem(512);
+    HedefPaket := TBaglanti(FBaglanti).FBellek;
     HedefPaket^.MesajTipi := DHCP_MTIP_DUYURU;
-    HedefPaket^.GonderenKimlik := KaynakPaket^.GonderenKimlik;
+    HedefPaket^.GonderenKimlik := DHCP4Yapi^.GonderenKimlik;
     p2 := @HedefPaket^.DigerSecenekler;
     Inc(DHCPYapiU, 4);
 
     // seçenek olarak alýnan yapýyý döngü içerisinde irdele
-    DHCPMesaj := @KaynakPaket^.DigerSecenekler;
+    DHCPMesaj := @DHCP4Yapi^.DigerSecenekler;
 
     // seçeneðin sonuna gelinceye kadar tüm deðerleri oku
     while VeriU > 0 do
@@ -197,7 +237,7 @@ begin
     Secenek^.Kod := ntohs(TSayi2($0017));
     Secenek^.Uzunluk := ntohs(TSayi2(16));
     p2 := PByte(@Secenek^.Veri);
-    PIP6Adres(p2)^ := GAgBaglantilari.AktifBaglanti.IP6Adres;
+    PIP6Adres(p2)^ := GAgBaglantilari.AB.IP6Adresim;
     Inc(p2, 16);
     Inc(DHCPYapiU, 20);
 
@@ -213,26 +253,26 @@ begin
     Inc(p2, 1);
     Inc(DHCPYapiU, 13);
 
-    GUDP.PaketleVeGonder(itIP6, AEthernetPaket^.KaynakMACAdres, @GAgBaglantilari.AktifBaglanti.IP6Adres,
-      @IPPaket^.KaynakIP, HedefPort, KaynakPort, HedefPaket, DHCPYapiU);
-
-    FreeMem(HedefPaket, 512);
+    FUDP.FIP6.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+    FUDP.FIP6.FKaynakIPAdres := IPPaket^.KaynakIPAdres;
+    FUDP.FIP6.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP6Adresim;
+    FUDP.PaketleVeGonder(HedefPaket, DHCPYapiU);
   end
-  else if(KaynakPaket^.MesajTipi = DHCP_MTIP_ISTEK) then
+  else if(DHCP4Yapi^.MesajTipi = DHCP_MTIP_ISTEK) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'DHCP6->DHCP_MTIP_ISTEK mesajý geldi, yanýt gönderiliyor...', []);
 
     DHCPYapiU := 0;
 
-    HedefPaket := GetMem(512);
+    HedefPaket := TBaglanti(FBaglanti).FBellek;
     HedefPaket^.MesajTipi := DHCP_MTIP_YANIT;
-    HedefPaket^.GonderenKimlik := KaynakPaket^.GonderenKimlik;
+    HedefPaket^.GonderenKimlik := DHCP4Yapi^.GonderenKimlik;
     p2 := @HedefPaket^.DigerSecenekler;
     Inc(DHCPYapiU, 4);
 
     // seçenek olarak alýnan yapýyý döngü içerisinde irdele
-    DHCPMesaj := @KaynakPaket^.DigerSecenekler;
+    DHCPMesaj := @DHCP4Yapi^.DigerSecenekler;
 
     // seçeneðin sonuna gelinceye kadar tüm deðerleri oku
     while VeriU > 0 do
@@ -312,7 +352,7 @@ begin
     Secenek^.Kod := ntohs(TSayi2($0017));
     Secenek^.Uzunluk := ntohs(TSayi2(16));
     p2 := PByte(@Secenek^.Veri);
-    PIP6Adres(p2)^ := GAgBaglantilari.AktifBaglanti.IP6Adres;
+    PIP6Adres(p2)^ := GAgBaglantilari.AB.IP6Adresim;
     Inc(p2, 16);
     Inc(DHCPYapiU, 20);
 
@@ -328,26 +368,26 @@ begin
     Inc(p2, 1);
     Inc(DHCPYapiU, 13);
 
-    GUDP.PaketleVeGonder(itIP6, AEthernetPaket^.KaynakMACAdres, @GAgBaglantilari.AktifBaglanti.IP6Adres,
-      @IPPaket^.KaynakIP, HedefPort, KaynakPort, HedefPaket, DHCPYapiU);
-
-    FreeMem(HedefPaket, 512);
+    FUDP.FIP6.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+    FUDP.FIP6.FKaynakIPAdres := IPPaket^.KaynakIPAdres;
+    FUDP.FIP6.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP6Adresim;
+    FUDP.PaketleVeGonder(HedefPaket, DHCPYapiU);
   end
-  else if(KaynakPaket^.MesajTipi = DHCP_MTIP_RET) then
+  else if(DHCP4Yapi^.MesajTipi = DHCP_MTIP_RET) then
   begin
 
     SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'DHCP6->DHCP_MTIP_RET mesajý geldi, yanýt gönderiliyor...', []);
 
     DHCPYapiU := 0;
 
-    HedefPaket := GetMem(512);
+    HedefPaket := TBaglanti(FBaglanti).FBellek;
     HedefPaket^.MesajTipi := DHCP_MTIP_YANIT;
-    HedefPaket^.GonderenKimlik := KaynakPaket^.GonderenKimlik;
+    HedefPaket^.GonderenKimlik := DHCP4Yapi^.GonderenKimlik;
     p2 := @HedefPaket^.DigerSecenekler;
     Inc(DHCPYapiU, 4);
 
     // seçenek olarak alýnan yapýyý döngü içerisinde irdele
-    DHCPMesaj := @KaynakPaket^.DigerSecenekler;
+    DHCPMesaj := @DHCP4Yapi^.DigerSecenekler;
 
     // seçeneðin sonuna gelinceye kadar tüm deðerleri oku
     while VeriU > 0 do
@@ -413,15 +453,15 @@ begin
     Inc(p2, 1);
     Inc(DHCPYapiU, 17); }
 
-    GUDP.PaketleVeGonder(itIP6, AEthernetPaket^.KaynakMACAdres, @GAgBaglantilari.AktifBaglanti.IP6Adres,
-      @IPPaket^.KaynakIP, HedefPort, KaynakPort, HedefPaket, DHCPYapiU);
-
-    FreeMem(HedefPaket, 512);
+    FUDP.FIP6.FHedefMACAdres := AEthernetPaket^.KaynakMACAdres;
+    FUDP.FIP6.FKaynakIPAdres := IPPaket^.KaynakIPAdres;
+    FUDP.FIP6.FHedefIPAdres := TBaglanti(FBaglanti).FAB.IP6Adresim;
+    FUDP.PaketleVeGonder(HedefPaket, DHCPYapiU);
   end
   else
   begin
 
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'DHCP6 bilinmeyen mesaj tipi: %d', [KaynakPaket^.MesajTipi]);
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'DHCP6 bilinmeyen mesaj tipi: %d', [DHCP4Yapi^.MesajTipi]);
   end;
 end;
 

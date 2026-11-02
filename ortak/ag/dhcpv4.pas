@@ -6,7 +6,7 @@
   Dosya Adı: dhcpv4.pas
   Dosya İşlevi: DHCP v4 tutanak genel sabit / yapı ve işlevlerini içerir
 
-  Güncelleme Tarihi: 27/10/2026
+  Güncelleme Tarihi: 02/11/2026
 
   Bilgi: sadece kullanılan sabit, değişken ve işlevler türkçeye çevrilmiştir
 
@@ -45,8 +45,8 @@ type
   end;
 
 const
-  DHCP_SUNUCU_PORT                        = TSayi1(67);
-  DHCP_ISTEMCI_PORT                       = TSayi1(68);
+  DHCPv4_SUNUCU_PORT                      = TSayi1(67);
+  DHCPv4_ISTEMCI_PORT                     = TSayi1(68);
 
   // boot mesaj tipleri
 	DHCP_BOOT_MTIP_ISTEK                    = TSayi1(1);
