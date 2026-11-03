@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: http sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 18/10/2026
+  Güncelleme Tarihi: 03/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -66,7 +66,7 @@ type
   private
     FIstenenSayfa: string;
   public
-    constructor Create;
+    constructor Create(ABaglanti: TObject);
     procedure OIstemciBaglandi(ATCP: TTCP); override;
     procedure OVeriGeldi(ATCP: TTCP); override;
     procedure OVeriGonderildi(ATCP: TTCP); override;
@@ -84,7 +84,7 @@ uses sistemmesaj;
 {==============================================================================
   http sunucusu ana yükleme iþlevlerini içerir
  ==============================================================================}
-constructor THTTPSunucu.Create;
+constructor THTTPSunucu.Create(ABaglanti: TObject);
 begin
 
   FIstenenSayfa := '';
