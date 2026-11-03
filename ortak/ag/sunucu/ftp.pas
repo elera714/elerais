@@ -6,7 +6,7 @@
   Dosya Adý: ftp.pas
   Dosya Ýþlevi: FTP (dosya) sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 18/10/2026
+  Güncelleme Tarihi: 03/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -36,7 +36,7 @@ type
   TFTPSunucu = class(TTCPSunucu)
   private
   public
-    constructor Create;
+    constructor Create(ABaglanti: TObject);
     procedure OIstemciBaglandi(ATCP: TTCP); override;
     procedure OVeriGeldi(ATCP: TTCP); override;
     procedure OVeriGonderildi(ATCP: TTCP); override;
@@ -51,7 +51,7 @@ implementation
 {==============================================================================
   ftp sunucusu ana yükleme iþlevlerini içerir
  ==============================================================================}
-constructor TFTPSunucu.Create;
+constructor TFTPSunucu.Create(ABaglanti: TObject);
 begin
 
 end;
