@@ -6,7 +6,7 @@
   Dosya Adı: ip4.pas
   Dosya İşlevi: ip tutanak (protokol) v4 yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 05/09/2026
+  Güncelleme Tarihi: 04/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit ip4;
 
 interface
 
-uses paylasim, sistemmesaj, ip, ethernet;
+uses paylasim, ip, ethernet;
 
 const
   IP4_BASLIK_U = 20;
@@ -22,56 +22,114 @@ const
 type
   TIP4 = class(TIP)
   private
-    FIP4Tanimlayici: TSayi4;
-    FKaynakIP4Adres, FHedefIP4Adres: TIP4Adres;
+    FIP4Tanimlayici: TSayi2;
   public
-    constructor Create(ABaglanti: TObject); override;
-    procedure Ozellestir(AKaynakIP4Adres, AHedefIP4Adres: TIP4Adres);
-    procedure Gonder(AHedefMACAdres: TMACAdres; AVeri: Isaretci; AVeriU: TSayi4); override;
-    procedure PaketleVeGonder(AHedefMACAdres: TMACAdres; AProtokolTipi: TProtokolTipi;
-      AParcaSiraNo: TSayi4; AVeri: Isaretci; AVeriUzunlugu: TSayi4);
-    procedure VerileriIsle(AEthernetPaket: PEthernetPaket);
+    FKaynakIPAdres, FHedefIPAdres: TIP4Adres;
+    // ABagNesne nesnesi icmpv4, icmpv6 ve arp tutanağı için TAgBaglantisi nesnesini
+    // diğer tutanaklar için TBaglanti nesnesini temsil eder
+    constructor Create(ABagNesne: TObject; AHedefMACAdres: TMACAdres); override;
+    procedure PaketleVeGonder(ATutanakTipi: TTutanakTipi; AParcaSiraNo: TSayi2;
+      AVeri: Isaretci; AVeriUzunlugu: TSayi2);
+    procedure Gonder(AVeri: Isaretci; AVeriU: TSayi4); override;
   end;
+
+procedure IP4VerileriniIsle(AEthernetPaket: PEthernetPaket);
 
 implementation
 
-uses donusum, icmp4, udp, tcp, islevler, baglantilar, ag;
+uses donusum, icmp4, udp, tcp, islevler, baglantilar, sistemmesaj;
 
 {==============================================================================
   ip tutanak (protokol) ana yükleme işlevlerini içerir
  ==============================================================================}
-constructor TIP4.Create(ABaglanti: TObject);
+constructor TIP4.Create(ABagNesne: TObject; AHedefMACAdres: TMACAdres);
 begin
 
-  inherited Create(ABaglanti);
+  inherited Create(ABagNesne, AHedefMACAdres);
 
   FIP4Tanimlayici := $BABA;
 end;
 
 {==============================================================================
-  sınıf bilgilerini özelleştirir
+  tcp/ip tutanağının ip v4 katmanına gelen verileri işler
  ==============================================================================}
-procedure TIP4.Ozellestir(AKaynakIP4Adres, AHedefIP4Adres: TIP4Adres);
+procedure IP4VerileriniIsle(AEthernetPaket: PEthernetPaket);
+var
+  IPPaket: PIP4Paket;
 begin
 
-  FKaynakIP4Adres := AKaynakIP4Adres;
-  FHedefIP4Adres := AHedefIP4Adres;
-end;
+  IPPaket := @AEthernetPaket^.Veri;
 
-{==============================================================================
-  ip paket veri gönderme işlevi
- ==============================================================================}
-procedure TIP4.Gonder(AHedefMACAdres: TMACAdres; AVeri: Isaretci; AVeriU: TSayi4);
-begin
+  // 1. sistemin ip adresi yok ise...
+  // sistemin udp tutanağından ip adresi talebi olasılığına karşı udp verilerini işle
+  if(GAgBaglantilari.AB.IP4AdresiAlindi = False) then
+  begin
 
-  TAgBaglantisi(FBaglanti).FEthernet.Gonder(AHedefMACAdres, ptIP4, AVeri, AVeriU);
+    // udp tutanağı
+    if(IPPaket^.Tutanak = TUTANAK_UDP) then
+    begin
+
+      UDPVerileriniIsle(AEthernetPaket);
+      Inc(GAgBaglantilari.AB.FUDPPaketSayisi);
+    end;
+  end
+  // 2. sistemin ip adresi var ise...
+  // sadece aygıta gelen ve yayın olarak gelen ip adreslerini işle
+  else if(GAgBaglantilari.AB.IP4AdresiAlindi) then
+  begin
+
+    if((IP4Karsilastir(IPPaket^.HedefIPAdres, GAgBaglantilari.AB.IP4Adresim)) or
+      (IP4Karsilastir2(IPPaket^.HedefIPAdres, GAgBaglantilari.AB.IP4Adresim)) or
+      (IP4Karsilastir(IPPaket^.HedefIPAdres, IP4Adres255))) then
+    begin
+
+      // icmp tutanağı
+      if(IPPaket^.Tutanak = TUTANAK_ICMP4) then
+      begin
+
+        GAgBaglantilari.AB.FICMP4.VerileriIsle(AEthernetPaket);
+        Inc(GAgBaglantilari.AB.FICMPv4PaketSayisi);
+      end
+
+      // tcp tutanağı
+      else if(IPPaket^.Tutanak = TUTANAK_TCP) then
+      begin
+
+        TCPVerileriniIsle(AEthernetPaket);
+        Inc(GAgBaglantilari.AB.FTCP4PaketSayisi);
+      end
+
+      // udp tutanağı
+      else if(IPPaket^.Tutanak = TUTANAK_UDP) then
+      begin
+
+        UDPVerileriniIsle(AEthernetPaket);
+        Inc(GAgBaglantilari.AB.FUDPPaketSayisi);
+      end
+      else
+      begin
+
+        Inc(GAgBaglantilari.AB.FGAEPaketSayisi);
+        SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'IP4.PAS: bilinmeyen tutanak:', []);
+        SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Hedef tutanak: %d', [IPPaket^.Tutanak]);
+      end;
+    end
+    else
+    begin
+
+      Inc(GAgBaglantilari.AB.FGAEPaketSayisi);
+      SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'IP4.PAS: bilinmeyen hedef IP paketi:', []);
+      SISTEM_MESAJ_IP4(mtUyari, RENK_TURKUAZ, '  - Hedef IP4 adresi: ', IPPaket^.HedefIPAdres);
+      SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Hedef tutanak: %d', [IPPaket^.Tutanak]);
+    end;
+  end;
 end;
 
 {==============================================================================
   ip paket hazırlama ve gönderme işlevlerini gerçekleştirir
  ==============================================================================}
-procedure TIP4.PaketleVeGonder(AHedefMACAdres: TMACAdres; AProtokolTipi: TProtokolTipi;
-  AParcaSiraNo: TSayi4; AVeri: Isaretci; AVeriUzunlugu: TSayi4);
+procedure TIP4.PaketleVeGonder(ATutanakTipi: TTutanakTipi; AParcaSiraNo: TSayi2;
+  AVeri: Isaretci; AVeriUzunlugu: TSayi2);
 var
   IPPaket: PIP4Paket;
   SaglamaToplami: TSayi2;
@@ -82,21 +140,24 @@ begin
   IPPaket := GetMem(AVeriUzunlugu + IP4_BASLIK_U);
 
   // ip paketi hazırlanıyor
-  IPPaket^.SurumVeBaslikUzunlugu := $45;      // 4 = ip4; 5 * 4 = 20 = ip başlık uzunluğu
+
+  // $45 -> 4 = ip4; 5 * 4 = 20 = ip başlık uzunluğu
+  IPPaket^.SurumVeBaslikUzunlugu := $45;
   IPPaket^.ServisTipi := $00;
   IPPaket^.ToplamUzunluk := htons(TSayi2(AVeriUzunlugu + IP4_BASLIK_U));
-  IPPaket^.Tanimlayici := htons(TSayi2(FIP4Tanimlayici));
+  IPPaket^.Tanimlayici := htons(FIP4Tanimlayici);
   // ParcaSiraNo: $4000 = 16 bit -> 010 0000000000000
   // ilk 3 bit = 2 = parçalanma yok, diğer bitler parça no = 0
-  IPPaket^.ParcaSiraNo := htons(TSayi2(AParcaSiraNo));
-  IPPaket^.YasamSuresi := $40;
-  case AProtokolTipi of
-    ptICMP4 : IPPaket^.Protokol := PROTOKOL_ICMP4;
-    ptTCP   : IPPaket^.Protokol := PROTOKOL_TCP;
-    ptUDP   : IPPaket^.Protokol := PROTOKOL_UDP;
+  IPPaket^.ParcaSiraNo := htons(AParcaSiraNo);
+  IPPaket^.YasamSuresi := $80;    // $80 = 128;
+  case ATutanakTipi of
+    ttICMP4 : IPPaket^.Tutanak := TUTANAK_ICMP4;
+    ttTCP   : IPPaket^.Tutanak := TUTANAK_TCP;
+    ttUDP   : IPPaket^.Tutanak := TUTANAK_UDP;
   end;
-  IPPaket^.KaynakIP4Adres := FKaynakIP4Adres;
-  IPPaket^.HedefIP4Adres := FHedefIP4Adres;
+
+  IPPaket^.KaynakIPAdres := FKaynakIPAdres;
+  IPPaket^.HedefIPAdres := FHedefIPAdres;
 
   // sağlama öncesi SaglamaToplami değeri sıfırlanıyor
   IPPaket^.SaglamaToplami := 0;
@@ -109,77 +170,22 @@ begin
   Tasi2(AVeri, p, AVeriUzunlugu);
 
   // paketi ip katmanına gönder
-  Gonder(AHedefMACAdres, IPPaket, AVeriUzunlugu + IP4_BASLIK_U);
+  Gonder(IPPaket, AVeriUzunlugu + IP4_BASLIK_U);
 
   FreeMem(IPPaket, AVeriUzunlugu + IP4_BASLIK_U);
 end;
 
 {==============================================================================
-  tcp/ip tutanağının ip katmanına gelen verileri işler
+  ip paket veri gönderme işlevi
  ==============================================================================}
-procedure TIP4.VerileriIsle(AEthernetPaket: PEthernetPaket);
-var
-  IP4Paket: PIP4Paket;
+procedure TIP4.Gonder(AVeri: Isaretci; AVeriU: TSayi4);
 begin
 
-  IP4Paket := @AEthernetPaket^.Veri;
+  if(FBagNesne is TAgBaglantisi) then
 
-//  SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP1: ', AIPPaket^.HedefIP);
-//  SISTEM_MESAJ_IP(RENK_KIRMIZI, 'IP2: ', GAgBilgisi.IP4Adres);
+    TAgBaglantisi(FBagNesne).FEthernet.Gonder(ttIP4, FHedefMACAdres, AVeri, AVeriU)
 
-  // 1. sistemin ip adresi yok ise...
-  // ve udp protokolünden ip adresi talebi mevcut ise
-  if(GAgBaglantilari.AktifBaglanti.IP4AdresiAlindi = False) then
-  begin
-
-    // udp protokolü
-    if(IP4Paket^.Protokol = PROTOKOL_UDP) then
-    begin
-
-      GUDP.VerileriIsle(AEthernetPaket);
-      Inc(GAg.FUDPPaketSayisi);
-    end;
-  end
-  // 2. sistemin ip adresi var ise...
-  // sadece aygıta gelen ve yayın olarak gelen ip adreslerini işle
-  else if(GAgBaglantilari.AktifBaglanti.IP4AdresiAlindi) then
-  begin
-
-    if((IP4Karsilastir(IP4Paket^.HedefIP4Adres, GAgBaglantilari.AktifBaglanti.IP4Adres)) or
-      (IP4Karsilastir2(IP4Paket^.HedefIP4Adres, GAgBaglantilari.AktifBaglanti.IP4Adres)) or
-      (IP4Karsilastir(IP4Paket^.HedefIP4Adres, IPAdres255))) then
-    begin
-
-      // icmp protokolü
-      if(IP4Paket^.Protokol = PROTOKOL_ICMP4) then
-      begin
-
-        GAgBaglantilari.AktifBaglanti.FICMP4.VerileriIsle(AEthernetPaket);
-      end
-      // tcp protokolü
-      else if(IP4Paket^.Protokol = PROTOKOL_TCP) then
-      begin
-
-        GTCP.VerileriIsle(AEthernetPaket);
-        Inc(GAg.FTCP4PaketSayisi);
-      end
-      // udp protokolü
-      else if(IP4Paket^.Protokol = PROTOKOL_UDP) then
-      begin
-
-        GUDP.VerileriIsle(AEthernetPaket);
-        Inc(GAg.FUDPPaketSayisi);
-      end;
-    end
-    else
-    begin
-
-      Inc(GAg.FGAEPaketSayisi);
-      SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'IP4.PAS: bilinmeyen IP paketi:', []);
-      SISTEM_MESAJ_IP4(mtUyari, RENK_SIYAH, '  -> Hedef IP4 adresi: ', IP4Paket^.HedefIP4Adres);
-      SISTEM_MESAJ(mtUyari, RENK_SIYAH, '  -> Hedef protokol: %d', [IP4Paket^.Protokol]);
-    end;
-  end;
+  else TBaglanti(FBagNesne).FAB.FEthernet.Gonder(ttIP4, FHedefMACAdres, AVeri, AVeriU);
 end;
 
 end.

@@ -6,7 +6,7 @@
   Dosya Adı: ip.pas
   Dosya İşlevi: ip tutanak (protokol) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 28/10/2026
+  Güncelleme Tarihi: 04/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,7 +21,7 @@ type
   public
     FBagNesne: TObject;
     FHedefMACAdres: TMACAdres;
-    // ABagNesne nesnesi ICMPv4 tutanağı için TAgBaglantisi nesnesini
+    // ABagNesne nesnesi icmpv4, icmpv6 ve arp tutanağı için TAgBaglantisi nesnesini
     // diğer tutanaklar için TBaglanti nesnesini temsil eder
     constructor Create(ABagNesne: TObject; AHedefMACAdres: TMACAdres); virtual;
     procedure Gonder(AVeri: Isaretci; AVeriU: TSayi4); virtual; abstract;
