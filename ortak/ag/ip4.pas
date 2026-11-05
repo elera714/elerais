@@ -6,7 +6,7 @@
   Dosya Adı: ip4.pas
   Dosya İşlevi: ip tutanak (protokol) v4 yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 04/11/2026
+  Güncelleme Tarihi: 05/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -70,7 +70,7 @@ begin
     begin
 
       UDPVerileriniIsle(AEthernetPaket);
-      Inc(GAgBaglantilari.AB.FUDPPaketSayisi);
+      Inc(GAgBaglantilari.AB.FUDP4PaketSayisi);
     end;
   end
   // 2. sistemin ip adresi var ise...
@@ -104,7 +104,7 @@ begin
       begin
 
         UDPVerileriniIsle(AEthernetPaket);
-        Inc(GAgBaglantilari.AB.FUDPPaketSayisi);
+        Inc(GAgBaglantilari.AB.FUDP4PaketSayisi);
       end
       else
       begin
