@@ -419,16 +419,15 @@
       <Unit64>
         <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="99"/>
-        <CursorPos X="3" Y="101"/>
+        <CursorPos X="43" Y="14"/>
         <UsageCount Value="17"/>
         <Loaded Value="True"/>
       </Unit64>
       <Unit65>
         <Filename Value="../../rtl_uygulama/linux/elera.inc"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="74"/>
-        <CursorPos X="26" Y="24"/>
+        <TopLine Value="229"/>
+        <CursorPos X="39" Y="244"/>
         <UsageCount Value="17"/>
         <Loaded Value="True"/>
       </Unit65>
@@ -513,8 +512,8 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="118"/>
-        <CursorPos X="8" Y="127"/>
+        <TopLine Value="151"/>
+        <CursorPos X="38" Y="169"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit78>
@@ -522,123 +521,120 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="127" Column="11" TopLine="109"/>
+        <Caret Line="151" Column="20" TopLine="134"/>
       </Position1>
       <Position2>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="130" Column="10" TopLine="112"/>
+        <Caret Line="152" Column="13" TopLine="135"/>
       </Position2>
       <Position3>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="133" Column="26" TopLine="114"/>
+        <Caret Line="160" Column="15" TopLine="143"/>
       </Position3>
       <Position4>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="136" Column="28" TopLine="118"/>
+        <Caret Line="162" Column="12" TopLine="145"/>
       </Position4>
       <Position5>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="139" Column="12" TopLine="122"/>
+        <Caret Line="163" Column="15" TopLine="146"/>
       </Position5>
       <Position6>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="141" Column="17" TopLine="124"/>
+        <Caret Line="167" Column="10" TopLine="148"/>
       </Position6>
       <Position7>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="142" Column="15" TopLine="125"/>
+        <Caret Line="171" Column="37" TopLine="154"/>
       </Position7>
       <Position8>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="144" Column="52" TopLine="127"/>
+        <Caret Line="177" Column="35" TopLine="156"/>
       </Position8>
       <Position9>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="148" Column="9" TopLine="131"/>
+        <Caret Line="173" Column="58" TopLine="156"/>
       </Position9>
       <Position10>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="151" Column="20" TopLine="134"/>
+        <Caret Line="174" Column="41" TopLine="157"/>
       </Position10>
       <Position11>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="152" Column="13" TopLine="135"/>
+        <Caret Line="177" Column="9" TopLine="160"/>
       </Position11>
       <Position12>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="160" Column="15" TopLine="143"/>
+        <Caret Line="191" Column="10" TopLine="168"/>
       </Position12>
       <Position13>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="162" Column="12" TopLine="145"/>
+        <Caret Line="195" Column="6" TopLine="168"/>
       </Position13>
       <Position14>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="163" Column="15" TopLine="146"/>
+        <Caret Line="197" Column="6" TopLine="168"/>
       </Position14>
       <Position15>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="167" Column="10" TopLine="148"/>
+        <Caret Line="193" Column="49" TopLine="168"/>
       </Position15>
       <Position16>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="171" Column="37" TopLine="154"/>
+        <Filename Value="iletisim.lpr"/>
+        <Caret Line="9" Column="25"/>
       </Position16>
       <Position17>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="177" Column="35" TopLine="156"/>
+        <Caret Line="57" Column="63" TopLine="38"/>
       </Position17>
       <Position18>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="173" Column="58" TopLine="156"/>
+        <Caret Line="63" Column="60" TopLine="44"/>
       </Position18>
       <Position19>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="174" Column="41" TopLine="157"/>
+        <Caret Line="69" Column="62" TopLine="51"/>
       </Position19>
       <Position20>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="177" Column="9" TopLine="160"/>
+        <Caret Line="91" Column="60" TopLine="72"/>
       </Position20>
       <Position21>
         <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="191" Column="10" TopLine="168"/>
+        <Caret Line="31" Column="15" TopLine="10"/>
       </Position21>
       <Position22>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="195" Column="6" TopLine="168"/>
+        <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
+        <Caret Line="115" Column="39" TopLine="99"/>
       </Position22>
       <Position23>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="197" Column="6" TopLine="168"/>
+        <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
       </Position23>
       <Position24>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="193" Column="49" TopLine="168"/>
+        <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
+        <Caret Line="26" Column="50"/>
       </Position24>
       <Position25>
-        <Filename Value="iletisim.lpr"/>
-        <Caret Line="9" Column="25"/>
+        <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
+        <Caret Line="80" Column="32" TopLine="60"/>
       </Position25>
       <Position26>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="57" Column="63" TopLine="38"/>
+        <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
       </Position26>
       <Position27>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="63" Column="60" TopLine="44"/>
+        <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
+        <Caret Line="37" Column="47" TopLine="9"/>
       </Position27>
       <Position28>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="69" Column="62" TopLine="51"/>
+        <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
+        <Caret Line="112" Column="27" TopLine="107"/>
       </Position28>
       <Position29>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="91" Column="60" TopLine="72"/>
+        <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
       </Position29>
       <Position30>
-        <Filename Value="anasayfafrm.pas"/>
-        <Caret Line="31" Column="15" TopLine="10"/>
+        <Filename Value="../../rtl_uygulama/linux/n_iletisim.pas"/>
+        <Caret Line="14" Column="43"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>

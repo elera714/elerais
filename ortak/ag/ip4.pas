@@ -6,7 +6,7 @@
   Dosya Adı: ip4.pas
   Dosya İşlevi: ip tutanak (protokol) v4 yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 05/11/2026
+  Güncelleme Tarihi: 06/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -38,17 +38,6 @@ procedure IP4VerileriniIsle(AEthernetPaket: PEthernetPaket);
 implementation
 
 uses donusum, icmp4, udp, tcp, islevler, baglantilar, sistemmesaj;
-
-{==============================================================================
-  ip tutanak (protokol) ana yükleme işlevlerini içerir
- ==============================================================================}
-constructor TIP4.Create(ABagNesne: TObject; AHedefMACAdres: TMACAdres);
-begin
-
-  inherited Create(ABagNesne, AHedefMACAdres);
-
-  FIP4Tanimlayici := $BABA;
-end;
 
 {==============================================================================
   tcp/ip tutanağının ip v4 katmanına gelen verileri işler
@@ -123,6 +112,17 @@ begin
       SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Hedef tutanak: %d', [IPPaket^.Tutanak]);
     end;
   end;
+end;
+
+{==============================================================================
+  ip tutanak (protokol) ana yükleme işlevlerini içerir
+ ==============================================================================}
+constructor TIP4.Create(ABagNesne: TObject; AHedefMACAdres: TMACAdres);
+begin
+
+  inherited Create(ABagNesne, AHedefMACAdres);
+
+  FIP4Tanimlayici := $BABA;
 end;
 
 {==============================================================================

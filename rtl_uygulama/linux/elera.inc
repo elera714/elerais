@@ -242,8 +242,9 @@ const
   MACAdres255: TMACAdres = (255, 255, 255, 255, 255, 255);
 
 type
-  PProtokolTipi = ^TProtokolTipi;
-  TProtokolTipi = (ptBilinmiyor, ptIP, ptARP, ptTCP, ptUDP, ptICMP);
+  // tutanak tipleri
+  PTutanakTipi = ^TTutanakTipi;
+  TTutanakTipi = (ttBilinmiyor, ttIP4, ttIP6, ttARP, ttTCP, ttUDP, ttICMP4, ttICMP6);
   
 type
   TGorevDurum = (gdBos, gdOlusturuldu, gdCalisiyor, gdDurduruldu);

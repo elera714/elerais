@@ -6,7 +6,7 @@
   Dosya Adý: dhcpv6s.pas
   Dosya Ýþlevi: DHCP v6 sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 02/11/2026
+  Güncelleme Tarihi: 05/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -108,7 +108,7 @@ begin
 
   // iletiþim udp tutanaðý üzerinden gerçekleþeceði için 1 adet udp
   // nesnesi oluþturuluyor
-  FUDP := TUDP.Create(nil, FBaglanti, itIP6, MACAdres0);
+  FUDP := TUDP.Create(FBaglanti, itIP6, MACAdres0);
 end;
 
 {==============================================================================

@@ -6,7 +6,7 @@
   Dosya Adý: dhcpv4i.pas
   Dosya Ýþlevi: DHCP v4 istemci tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 01/11/2026
+  Güncelleme Tarihi: 05/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -57,7 +57,7 @@ begin
 
   // iletiþim udp tutanaðý üzerinden gerçekleþeceði için 1 adet udp
   // nesnesi oluþturuluyor
-  FUDP := TUDP.Create(nil, FBaglanti, itIP4, MACAdres0);
+  FUDP := TUDP.Create(FBaglanti, itIP4, MACAdres0);
 
   // öndeðerler
   FBilgiMesajiGonderildi := False;

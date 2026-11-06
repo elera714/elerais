@@ -165,8 +165,8 @@ begin
 
         s := FklBaglanti.SeciliYaziAl;
         if(s = 'TCP') then
-          FIletisim0.Olustur(ptTCP, IPAdresi, PortNo)
-        else FIletisim0.Olustur(ptUDP, IPAdresi, PortNo);
+          FIletisim0.Olustur(ttTCP, IPAdresi, PortNo)
+        else FIletisim0.Olustur(ttUDP, IPAdresi, PortNo);
 
         FIletisim0.Baglan;
 

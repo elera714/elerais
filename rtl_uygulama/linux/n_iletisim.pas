@@ -23,7 +23,7 @@ type
     { TODO - ileride "constructor Create; / "Destructor Destroy;" olacak }
     procedure Constructor0;
     procedure Destructor0;
-    function Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: string;
+    function Olustur(ATutanakTipi: TTutanakTipi; AHedefIPAdres: string;
       AHedefPort: TSayi4): TISayi4;
     function Baglan: TISayi4;
     function BagliMi: Boolean;
@@ -34,7 +34,7 @@ type
     property Kimlik: TKimlik read FKimlik;
   end;
 
-function _Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: string;
+function _Olustur(ATutanakTipi: TTutanakTipi; AHedefIPAdres: string;
   AHedefPort: TSayi4): TISayi4;
 function _Baglan(AKimlik: TKimlik): TISayi4;
 function _BagliMi(AKimlik: TKimlik): Boolean;
@@ -57,11 +57,11 @@ begin
   FKimlik := HATA_KIMLIK;
 end;
 
-function TIletisim.Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: string;
+function TIletisim.Olustur(ATutanakTipi: TTutanakTipi; AHedefIPAdres: string;
   AHedefPort: TSayi4): TISayi4;
 begin
 
-  FKimlik := _Olustur(AProtokolTipi, AHedefIPAdres, AHedefPort);
+  FKimlik := _Olustur(ATutanakTipi, AHedefIPAdres, AHedefPort);
 
   Result := FKimlik;
 end;
@@ -104,12 +104,12 @@ begin
   FKimlik := -1;
 end;
 
-function _Olustur(AProtokolTipi: TProtokolTipi; AHedefIPAdres: string;
+function _Olustur(ATutanakTipi: TTutanakTipi; AHedefIPAdres: string;
   AHedefPort: TSayi4): TISayi4; assembler;
 asm
   push  DWORD AHedefPort
   push  DWORD AHedefIPAdres
-  push  DWORD AProtokolTipi
+  push  DWORD ATutanakTipi
   mov   eax,ILETISIM_OLUSTUR
   int   $34
   add   esp,12

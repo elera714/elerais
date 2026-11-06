@@ -6,7 +6,7 @@
   Dosya Adı: dnsi.pas
   Dosya İşlevi: dns istemci tutanak işlevlerini yönetir
 
-  Güncelleme Tarihi: 04/11/2026
+  Güncelleme Tarihi: 05/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -168,7 +168,7 @@ begin
 
   // iletişim udp tutanağı üzerinden gerçekleşeceği için 1 adet udp
   // nesnesi oluşturuluyor
-  FUDP := TUDP.Create(nil, FBaglanti, itIP4, MACAdres0);
+  FUDP := TUDP.Create(FBaglanti, itIP4, MACAdres0);
 
   FDurum := ddOlusturuldu;
 end;
