@@ -6,7 +6,7 @@
   Dosya Adý: ftp.pas
   Dosya Ýþlevi: FTP (dosya) sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 03/11/2026
+  Güncelleme Tarihi: 07/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -35,6 +35,7 @@ const
 type
   TFTPSunucu = class(TTCPSunucu)
   private
+    FBaglanti: TObject;
   public
     constructor Create(ABaglanti: TObject);
     procedure OIstemciBaglandi(ATCP: TTCP); override;
@@ -48,12 +49,15 @@ var
 
 implementation
 
+uses baglantilar;
+
 {==============================================================================
   ftp sunucusu ana yükleme iþlevlerini içerir
  ==============================================================================}
 constructor TFTPSunucu.Create(ABaglanti: TObject);
 begin
 
+  FBaglanti := ABaglanti;
 end;
 
 {==============================================================================
@@ -77,7 +81,7 @@ begin
 
   Veri := GetMem(4 * 4096);
 
-  VeriU := ATCP.GelenVeriyiAl(Veri);
+  VeriU := TBaglanti(FBaglanti).Oku(Veri);
   if(VeriU = 0) then Exit;
 
   s := KomutDegeriniAl(Veri, VeriU);

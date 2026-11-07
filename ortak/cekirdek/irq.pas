@@ -6,7 +6,7 @@
   Dosya Adı: irq.pas
   Dosya İşlevi: donanım (irq) kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 07/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -234,7 +234,6 @@ end;
 procedure IRQ00Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -252,7 +251,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -267,7 +268,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -277,7 +277,6 @@ end;
 procedure IRQ01Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -295,7 +294,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -310,7 +311,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -320,7 +320,6 @@ end;
 procedure IRQ02Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -338,7 +337,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -353,7 +354,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -363,7 +363,6 @@ end;
 procedure IRQ03Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -381,7 +380,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -396,7 +397,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -406,7 +406,6 @@ end;
 procedure IRQ04Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -424,7 +423,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -439,7 +440,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -449,7 +449,6 @@ end;
 procedure IRQ05Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -467,7 +466,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -482,7 +483,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -492,7 +492,6 @@ end;
 procedure IRQ06Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -510,7 +509,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -525,7 +526,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -535,7 +535,6 @@ end;
 procedure IRQ07Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -553,7 +552,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -568,7 +569,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -578,7 +578,6 @@ end;
 procedure IRQ08Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -596,7 +595,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -612,7 +613,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -622,7 +622,6 @@ end;
 procedure IRQ09Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -640,7 +639,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -656,7 +657,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -666,7 +666,6 @@ end;
 procedure IRQ10Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -684,7 +683,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -700,7 +701,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -710,7 +710,6 @@ end;
 procedure IRQ11Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -728,7 +727,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -744,7 +745,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -754,7 +754,6 @@ end;
 procedure IRQ12Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -772,7 +771,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -788,7 +789,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -798,7 +798,6 @@ end;
 procedure IRQ13Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -816,7 +815,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -832,7 +833,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -842,7 +842,6 @@ end;
 procedure IRQ14Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -860,7 +859,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -876,7 +877,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 
@@ -886,7 +886,6 @@ end;
 procedure IRQ15Islevi; nostackframe; assembler;
 asm
 
-  cli
   pushad
   pushfd
   mov   ax,ds
@@ -904,7 +903,9 @@ asm
   cmp   eax,0
   jz    @@bir_sonraki
 
+  pushad
   call  eax
+  popad
 
 @@bir_sonraki:
   inc   ecx
@@ -920,7 +921,6 @@ asm
   mov   es,ax
   popfd
   popad
-  sti
   iretd
 end;
 

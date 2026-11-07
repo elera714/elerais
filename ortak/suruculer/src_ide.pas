@@ -6,7 +6,7 @@
   Dosya Adý: src_ide.pas
   Dosya Ýþlevi: ide aygýt sürücüsü
 
-  Güncelleme Tarihi: 16/10/2026
+  Güncelleme Tarihi: 07/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,7 +19,7 @@ interface
 uses paylasim, port, aygit;
 
 const
-  USTSINIR_IDE_AYGIT_SAYISI = 8;
+  USTSINIR_IDE_AYGIT_SAYISI         = 8;
 
 const
   ATAYAZMAC_VERI                    = $00;    // okunabilir / yazýlabilir
@@ -31,7 +31,6 @@ const
   ATAYAZMAC_AYGITSECIM              = $06;    // okunabilir / yazýlabilir
   ATAYAZMAC_DURUM                   = $07;    // okunabilir
   ATAYAZMAC_KOMUT                   = $07;    // yazýlabilir
-  ATAYAZMAC_ALTDURUM                = $0C;
 
   ATAKOMUT_SEKTOROKU                = $20;
   ATAKOMUT_SEKTORYAZ                = $30;
@@ -47,6 +46,8 @@ const
 
   ATA_KANAL0                        = 0;
   ATA_KANAL1                        = 1;
+
+  KOMUT_AYGITTANIMLA                = $EC;
 
 type
   PATA4 = ^TATA4;
@@ -65,7 +66,7 @@ type
     ModelNo: array[0..39] of Char;            // 27-46
     IslemAzamiSektorSayisi: Word;             // 47
     Ayrildi2: Word;                           // 48
-    Yetenek1: Word;                           // 49
+    Yetenek1: Word;                           // 49 - 8. bit dma desteði, 9. bit = lba desteði
     Yetenek2: Word;                           // 50
     PIOModu: Word;                            // 51
     Eskidi5: Word;                            // 52
@@ -75,7 +76,7 @@ type
     IzBasinaSektor2: Word;                    // 56
     SektorOlarakKapasite: LongWord;           // 57-58
     CokluSektor: Word;                        // 59
-    ToplamSektor: LongWord;                   // 60-61
+    ToplamSektor: LongWord;                   // 60-61 - (lba modunda)
     Diger1: array[0..17] of Word;             // 62-79
     SurumNo: Word;                            // 80
     Diger2: array[81..255] of Word;           // diðer veri alanlarý
@@ -147,11 +148,13 @@ procedure IRQ15KesmeIslevi;
 
 var
   GIDEAygitListesi: TIDEAygitListesi;
+  IRQ14Tetiklendi,
+  IRQ15Tetiklendi: Boolean;
   SektorOkuYazKilit: TSayi4 = 0;
 
 implementation
 
-uses irq, sistemmesaj, fdepolama;
+uses irq, sistemmesaj, fdepolama, zamanlayici;
 
 type
   TIDEKayit = record
@@ -194,13 +197,11 @@ var
   OkunacakSektorSayisi: TSayi4;
 begin
 
-  asm pushad; pushfd; end;
-
   BellekAdresi := ABellekAdresi;
   OkunacakSektorNo := AIlkSektor;
   OkunacakSektorSayisi := ASektorSayisi;
 
-  //while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
+  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
 
   // okuma iþlevini gerçekleþtir
   repeat
@@ -216,9 +217,7 @@ begin
 
   until (Result <> HATA_YOK) or (OkunacakSektorSayisi = 0);
 
-  //KritikBolgedenCik(SektorOkuYazKilit);
-
-  asm popfd; popad; end;
+  KritikBolgedenCik(SektorOkuYazKilit);
 end;
 
 {==============================================================================
@@ -230,18 +229,19 @@ var
   i, TekrarSayisi: TSayi4;
 begin
 
-  // hata kodunu sýfýrla
-  PortYaz1(FAnaPort + ATAYAZMAC_DURUM_HATA, 0);
-
   // 0..3 bit - lba 27..24
   i := ((ASektorNo shr 24) and $0F);
-  // 4. bit - aygýt seçimi
+  // 4. bit - aygýt seçimi -> 0 = 0. aygýt, 1 = 1. aygýt
   i := i or (FKanal shl 4);
   // 7. bit - 1, 6. bit - LBA ise 1, 5. bit = 1
   i := i or %11100000;
   PortYaz1(FAnaPort + ATAYAZMAC_AYGITSECIM, i);
 
-  //okunacak sektör sayýsý
+  Bekle;
+
+  IRQ14Tetiklendi := False;
+
+  // okunacak sektör sayýsý
   PortYaz1(FAnaPort + ATAYAZMAC_SEKTORSAYISI, 1);
 
   // okunacak sektör numarasý (28 bit)
@@ -251,6 +251,8 @@ begin
   PortYaz1(FAnaPort + ATAYAZMAC_SEKTOR_O8, ((ASektorNo shr 8) and $FF));
   // LBA 23..16
   PortYaz1(FAnaPort + ATAYAZMAC_SEKTOR_U8, ((ASektorNo shr 16) and $FF));
+
+  sti;
 
   // sektör oku komutu gönder
   PortYaz1(FAnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTOROKU);
@@ -265,12 +267,11 @@ begin
     begin
 
       asm
-        cli
-        cld
-        mov edi,ABellekAdresi
-        mov ecx,512 / 4
         mov dx,PortNo
-        rep insd
+        mov ecx,512 / 2
+        mov edi,ABellekAdresi
+        cld
+        rep insw
       end;
 
       Result := HATA_YOK;
@@ -295,20 +296,11 @@ var
   YazilacakSektorSayisi: TSayi4;
 begin
 
-  asm pushad; pushfd; end;
-
-{  if(AIlkSektor < 256) then
-  begin
-
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Hatalý sektör numarasý: %d', [AIlkSektor]);
-    Exit(HATA_AYGITMESGUL);
-  end;}
-
   BellekAdresi := ABellekAdresi;
   YazilacakSektorNo := AIlkSektor;
   YazilacakSektorSayisi := ASektorSayisi;
 
-  //while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
+  while KritikBolgeyeGir(SektorOkuYazKilit) = False do;
 
   // yazma iþlevini gerçekleþtir
   repeat
@@ -324,9 +316,7 @@ begin
 
   until (Result <> HATA_YOK) or (YazilacakSektorSayisi = 0);
 
-  //KritikBolgedenCik(SektorOkuYazKilit);
-
-  asm popfd; popad; end;
+  KritikBolgedenCik(SektorOkuYazKilit);
 end;
 
 {==============================================================================
@@ -338,9 +328,6 @@ var
   i, TekrarSayisi: TSayi4;
 begin
 
-  // hata kodunu sýfýrla
-  PortYaz1(FAnaPort + ATAYAZMAC_DURUM_HATA, 0);
-
   // 0..3 bit - lba 27..24
   i := ((ASektorNo shr 24) and $0F);
   // 4. bit - aygýt seçimi
@@ -348,6 +335,10 @@ begin
   // 7. bit - 1, 6. bit - LBA ise 1, 5. bit = 1
   i := i or %11100000;
   PortYaz1(FAnaPort + ATAYAZMAC_AYGITSECIM, i);
+
+  Bekle;
+
+  IRQ14Tetiklendi := False;
 
   // yazýlacak sektör sayýsý
   PortYaz1(FAnaPort + ATAYAZMAC_SEKTORSAYISI, 1);
@@ -359,6 +350,8 @@ begin
   PortYaz1(FAnaPort + ATAYAZMAC_SEKTOR_O8, ((ASektorNo shr 8) and $FF));
   // LBA 23..16
   PortYaz1(FAnaPort + ATAYAZMAC_SEKTOR_U8, ((ASektorNo shr 16) and $FF));
+
+  sti;
 
   // sektör yaz komutu gönder
   PortYaz1(FAnaPort + ATAYAZMAC_KOMUT, ATAKOMUT_SEKTORYAZ);
@@ -373,12 +366,11 @@ begin
     begin
 
       asm
-        cli
-        cld
-        mov esi,ABellekAdresi
-        mov ecx,512 / 4
         mov dx,PortNo
-        rep outsd
+        mov ecx,512 / 2
+        mov esi,ABellekAdresi
+        cld
+        rep outsw
       end;
 
       Result := HATA_YOK;
@@ -402,16 +394,44 @@ var
   j: TSayi1;
 begin
 
-  Result := True;
+  // irq tetiklemesi için bekleme süresi = 3 saniye
+  i := GZamanlayicilar.FZamanlayiciSayaci + (3 * CALISMA_FREKANSI);
 
-  for i := 1 to 100 do
+  while i > GZamanlayicilar.FZamanlayiciSayaci do
   begin
 
-    j := PortAl1(FAnaPort + ATAYAZMAC_DURUM);
+    if(IRQ14Tetiklendi) then
+    begin
 
-    if((j and ATAYAZMAC_DURUM_VERIHAZIR) = 0) then Continue;
+      // irq tetiklendiyse dönen deðeri al
+      j := PortAl1(FAnaPort + ATAYAZMAC_DURUM);
+      Break;
+    end;
+  end;
 
-    if((j and ATAYAZMAC_DURUM_HATA) = 0) then Exit;
+  // eðer bu aþamada irq tetiklendiyse
+  if(IRQ14Tetiklendi) then
+  begin
+
+    // hata var mý?
+    if((j and 1) = 1) then
+    begin
+
+      j := PortAl1(FAnaPort + ATAYAZMAC_HATA);
+      Exit(False);
+    end;
+
+    // hata olmamasý durumunda
+    // 3 saniye boyunca aygýtýn iþlemini bitirdiðini ve veri iþlemine hazýr olmasý için bekle
+    i := GZamanlayicilar.FZamanlayiciSayaci + (3 * CALISMA_FREKANSI);
+
+    while i > GZamanlayicilar.FZamanlayiciSayaci do
+    begin
+
+      if((j and ATAYAZMAC_DURUM_MESGUL) = ATAYAZMAC_DURUM_MESGUL) then Continue;
+
+      if((j and ATAYAZMAC_DURUM_VERIHAZIR) = ATAYAZMAC_DURUM_VERIHAZIR) then Exit(True);
+    end;
   end;
 
   Result := False;
@@ -423,10 +443,10 @@ end;
 procedure TIDEAygiti.Bekle;
 begin
 
-  PortAl1(FAnaPort + ATAYAZMAC_ALTDURUM);
-  PortAl1(FAnaPort + ATAYAZMAC_ALTDURUM);
-  PortAl1(FAnaPort + ATAYAZMAC_ALTDURUM);
-  PortAl1(FAnaPort + ATAYAZMAC_ALTDURUM);
+  PortAl1(FKontrolPort);
+  PortAl1(FKontrolPort);
+  PortAl1(FKontrolPort);
+  PortAl1(FKontrolPort);
 end;
 
 {==============================================================================
@@ -528,6 +548,7 @@ begin
       begin
 
         FD.FAnaPort := IDEKayitListesi[i].AnaPort;
+        FD.FKontrolPort := IDEKayitListesi[i].KontrolPort;
         FD.FKanal := IDEKayitListesi[i].Kanal;
 
         TIDEAygiti(FD).FOzellikler := 0;
@@ -539,6 +560,9 @@ begin
         FD.FKafaSayisi := Bellek.KafaSayisi;
         FD.FIzBasinaSektorSayisi := Bellek.IzBasinaSektor;
         FD.FToplamSektorSayisi := Bellek.SilindirSayisi * Bellek.KafaSayisi * Bellek.IzBasinaSektor;
+
+        // kesmeyi aktifleþtir
+        PortYaz1(FD.FKontrolPort, 0);
       end;
     end;
   end;
@@ -555,13 +579,13 @@ begin
   // öndeðer geri dönüþ deðeri
   Result := False;
 
-  i := (AKanal shl 4) or $A0;
+  i := (AKanal shl 4) or %11100000;
   PortYaz1(AAnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   // aygýt meþgul mü ?
   if(IDEAygitiMesgulMu(AAnaPort)) then Exit;
 
-  i := (AKanal shl 4) or $A0;
+  i := (AKanal shl 4) or %11100000;
   PortYaz1(AAnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   if(PortAl1(AAnaPort + ATAYAZMAC_AYGITSECIM) <> i) then Exit;
@@ -588,26 +612,24 @@ begin
 
   Result := False;
 
-  i := (AKanal shl 4) or $A0;
+  i := (AKanal shl 4) or %11100000;
   PortYaz1(AAnaPort + ATAYAZMAC_AYGITSECIM, i);
 
   if(IDEAygitiMesgulMu(AAnaPort)) then Exit;
 
   PortYaz1(AAnaPort + $206, 2);
-  PortYaz1(AAnaPort + ATAYAZMAC_KOMUT, $EC);
+  PortYaz1(AAnaPort + ATAYAZMAC_KOMUT, KOMUT_AYGITTANIMLA);
 
   if(IDEAygitiMesgulMu(AAnaPort)) then Exit;
 
   PortNo := AAnaPort;
 
   asm
-    pushad
-    mov edi,AAygitBilgisi
-    mov ecx,256
     mov edx,PortNo
+    mov ecx,512 / 2
+    mov edi,AAygitBilgisi
     cld
     rep insw
-    popad
   end;
 
   Result := True;
@@ -639,7 +661,7 @@ end;
 procedure IRQ14KesmeIslevi;
 begin
 
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'IRQ14 tetiklendi', []);
+  IRQ14Tetiklendi := True;
 end;
 
 {==============================================================================
@@ -648,7 +670,7 @@ end;
 procedure IRQ15KesmeIslevi;
 begin
 
-  SISTEM_MESAJ(mtBilgi, RENK_SIYAH, 'IRQ15 tetiklendi', []);
+  IRQ15Tetiklendi := True;
 end;
 
 end.
