@@ -6,10 +6,11 @@
   Dosya Adı: arp.pas
   Dosya İşlevi: ARP tutanak yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 28/10/2026
+  Güncelleme Tarihi: 08/11/2026
 
  ==============================================================================}
 {$mode objfpc}
+{$asmmode intel}
 unit arp;
  
 interface
@@ -342,16 +343,24 @@ begin
   end;
 
   // istenen ip adresi yoksa, ip adresinin mac karşılığını almak için istekte bulun
-  for i := 1 to 10 do
+  for i := 1 to 5 do
   begin
 
     // ip adresinin mac adresi tabloda bulunamadığı için istek gönder
     PaketleVeGonder(arpIstek, nil, @AIP4Adres);
 
-    // 1 saniye bekle
-    GZamanlayicilar.BekleMS(1 * CALISMA_FREKANSI);
+    // diğer görevlerden (process) gelen bağlantı istekleri sonrasında bağlantı kurma
+    // üzerinden bu işleve gelen süreç kesme kapısının (interrupt gate) kesme isteklerini
+    // durdurmasıyla dolaylı olarak zamanlayıcının da durmasına sebebiyet vermektedir
+    // sonuç olarak kilitlenme ile karşılaşılan problemin çözümü şu aşamada budur
+    // not: bu işlev, ana görevden (process / thread) alınıp müstakil bir görev
+    // olarak çalıştırıldığında, problem gibi gözüken bu durum da çözümlenecektir
+    asm sti end;
 
-    ElleGorevDegistir;
+  // 1 saniye bekle
+    j := GZamanlayicilar.FZamanlayiciSayaci + 1000;
+    while (j > GZamanlayicilar.FZamanlayiciSayaci) do begin end;
+    //asm cli end;
 
     // yeniden tabloyu kontrol et
     if(ToplamKayit > 0) then

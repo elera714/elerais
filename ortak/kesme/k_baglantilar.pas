@@ -6,7 +6,7 @@
   Dosya Adı: k_baglantilar.pas
   Dosya İşlevi: ağ bağlantı (socket) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 15/08/2026
+  Güncelleme Tarihi: 08/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,16 +20,17 @@ function AgBaglantiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TIS
 
 implementation
 
-uses baglantilar, dns, gorev;
+uses baglantilar, dnsi, gorev, donusum;
 
 {==============================================================================
-  ağ bağlantı (soket) yönetim işlevlerini içerir
+  ağ bağlantı yönetim işlevlerini içerir
  ==============================================================================}
 function AgBaglantiCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
   B: TBaglanti;
-  ProtokolTipi: TProtokolTipi;
-  BaglantiKimlik: TKimlik;
+  TT: TTutanakTipi;
+  HedefIPAdres: TIP4Adres;
+  BagKimlik: TKimlik;
   AnaIslevNo, AltIslevNo,
   i, j: TSayi4;
   YerelPort, HedefPort: TSayi2;
@@ -42,6 +43,7 @@ begin
   AltIslevNo := ((AIslevNo shr 8) and $FFFF);
 
   // tcp / udp ham bağlantı işlevleri
+  { TODO - tüm işlevler ipv6'ya göre kontrol edilecek }
   if(AnaIslevNo = 1) then
   begin
 
@@ -49,40 +51,59 @@ begin
     if(AltIslevNo = 1) then
     begin
 
-      ProtokolTipi := PProtokolTipi(ADegiskenler + 00)^;
+      TT := PTutanakTipi(ADegiskenler + 00)^;
       s := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr)^;
+      HedefIPAdres := StrToIP4(s);
       HedefPort := PSayi4(ADegiskenler + 08)^;
+      YerelPort := GAgBaglantilari.AB.YerelPortOlustur;
 
-      //SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'IP Adresi: %s', [s]);
+      {if(AIletisimTipi = itIP6) then
+      begin
+        IP6Adr := StrToIP6(s);
+        //B.HedefIP6Adres := IP6Adr;
+      end
+      else
+      begin
 
-      { TODO - udp yerel port ve uzak port eşitlenerek porta gelen verilerin alınması sağlanmakta.
-        geçicidir, sunucu / istemci yapısı kurulduğunda bu yapının olması gerektiği gibi
-        yapılanması gerekmektedir }
-      if(ProtokolTipi = ptTCP) then
-        YerelPort := GAgBaglantilari.YerelPortAl
-      else YerelPort := HedefPort;
+        IP4Adr := StrToIP4(s);
+        //B.HedefIP4Adres := IP4Adr;
+      end;}
 
-      { TODO - ip v6'ya göre düzenlenecek }
-      if(ProtokolTipi = ptTCP) then
-        B := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ProtokolTipi, s, YerelPort, HedefPort)
-      else B := GAgBaglantisi.BaglantiOlustur(itIP4, btAktif, ProtokolTipi, s, YerelPort, HedefPort);
+      //SISTEM_MESAJ_IP4(mtBilgi, RENK_PEMBE, 'IP Adresi: ', HedefIPAdres);
+
+      if(TT = ttTCP) then
+      begin
+
+        B := GAgBaglantilari.AB.BaglantiOlustur(bnTCP, itIP4, btYAktif,
+          TT, YerelPort, HedefPort);
+
+        B.FTCP.FIP4.FKaynakIPAdres := GAgBaglantilari.AB.IP4Adresim;
+        B.FTCP.FIP4.FHedefIPAdres := HedefIPAdres;
+      end
+      else
+      begin
+
+        B := GAgBaglantilari.AB.BaglantiOlustur(bnUDP, itIP4, btYAktif,
+          TT, YerelPort, HedefPort);
+
+        B.FUDP.FIP4.FKaynakIPAdres := GAgBaglantilari.AB.IP4Adresim;
+        B.FUDP.FIP4.FHedefIPAdres := HedefIPAdres;
+      end;
 
       if not(B = nil) then
-
-        Result := B.Kimlik
-      else Result := HATA_KIMLIK
+        Result := B.FKimlik
+      else Result := HATA_KIMLIK;
     end
 
     // mevcut bağlantı ile hedef porta bağlan
     else if(AltIslevNo = 2) then
     begin
 
-      BaglantiKimlik := PISayi4(ADegiskenler + 00)^;
+      BagKimlik := PISayi4(ADegiskenler + 00)^;
 
-      B := GAgBaglantisi.Baglanti[BaglantiKimlik];
+      B := GAgBaglantilari.AB.Baglanti[BagKimlik];
       if not(B = nil) then
-
-        Result := B.Baglan(btIP)
+        Result := B.Baglan
       else Result := -1;
     end
 
@@ -90,11 +111,10 @@ begin
     else if(AltIslevNo = 3) then
     begin
 
-      BaglantiKimlik := PISayi4(ADegiskenler + 00)^;
+      BagKimlik := PISayi4(ADegiskenler + 00)^;
 
-      B := GAgBaglantisi.Baglanti[BaglantiKimlik];
+      B := GAgBaglantilari.AB.Baglanti[BagKimlik];
       if not(B = nil) then
-
         Result := TSayi4(B.BagliMi)
       else Result := TSayi4(False);
     end
@@ -103,12 +123,11 @@ begin
     else if(AltIslevNo = 4) then
     begin
 
-      BaglantiKimlik := PISayi4(ADegiskenler + 00)^;
+      BagKimlik := PISayi4(ADegiskenler + 00)^;
 
-      B := GAgBaglantisi.Baglanti[BaglantiKimlik];
+      B := GAgBaglantilari.AB.Baglanti[BagKimlik];
       if not(B = nil) then
-
-        Result := B.VeriUzunlugu
+        Result := B.VeriUzunlugunuAl
       else Result := 0;
     end
 
@@ -116,40 +135,42 @@ begin
     else if(AltIslevNo = 5) then
     begin
 
-      BaglantiKimlik := PISayi4(ADegiskenler + 00)^;
+      BagKimlik := PISayi4(ADegiskenler + 00)^;
       i := PSayi4(ADegiskenler + 04)^;
 
-      B := GAgBaglantisi.Baglanti[BaglantiKimlik];
+      B := GAgBaglantilari.AB.Baglanti[BagKimlik];
       if not(B = nil) then
-
         Result := B.Oku(Isaretci(i + GGorevler.FAktifGrvBelAdr))
       else Result := 0;
     end
 
-    // bağlantıya veri gönder
+    // bağlantı üzerinden veri gönder
     else if(AltIslevNo = 6) then
     begin
 
-      BaglantiKimlik := PISayi4(ADegiskenler + 00)^;
+      BagKimlik := PISayi4(ADegiskenler + 00)^;
       i := PSayi4(ADegiskenler + 04)^;
       j := PSayi4(ADegiskenler + 08)^;
 
-      B := GAgBaglantisi.Baglanti[BaglantiKimlik];
-      if not(B = nil) then B.Yaz(Isaretci(i + GGorevler.FAktifGrvBelAdr), j);
+      B := GAgBaglantilari.AB.Baglanti[BagKimlik];
+      if not(B = nil) then
+        B.Yaz(Isaretci(i + GGorevler.FAktifGrvBelAdr), j);
     end
 
     // bağlantıyı kapat
     else if(AltIslevNo = 7) then
     begin
 
-      { TODO : kaynakların yok edilmesi test edilecek }
-      BaglantiKimlik := PISayi4(ADegiskenler + 00)^;
+      BagKimlik := PISayi4(ADegiskenler + 00)^;
 
-      B := GAgBaglantisi.Baglanti[BaglantiKimlik];
+      B := GAgBaglantilari.AB.Baglanti[BagKimlik];
       if not(B = nil) then
+      begin
 
-        Result := B.BaglantiyiKes
-      else Result := -1;
+        Result := B.BaglantiyiKes;
+
+        GAgBaglantilari.AB.BaglantiyiYoket(B);
+      end;
     end;
   end
 

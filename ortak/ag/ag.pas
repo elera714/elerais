@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 05/11/2026
+  Güncelleme Tarihi: 08/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -134,16 +134,16 @@ begin
     {$ENDIF}
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ NetBios tutanaðý yükleniyor...', []);
-    B := GAgBaglantilari.AB.BaglantiOlustur(bnNetBios, itIP4, btPasif, ttUDP,
-      '', NETBIOS_PORTNO, NETBIOS_PORTNO);
+    B := GAgBaglantilari.AB.BaglantiOlustur(bnNetBios, itIP4, btPasif,
+      ttUDP, NETBIOS_PORTNO, NETBIOS_PORTNO);
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ HTTP sunucusu yükleniyor...', []);
-    B := GAgBaglantilari.AB.BaglantiOlustur(bnHTTPs, itIP4, btPasif, ttTCP,
-      '', HTTP_PORTNO, 0);
+    B := GAgBaglantilari.AB.BaglantiOlustur(bnHTTPs, itIP4, btPasif,
+      ttTCP, HTTP_PORTNO, 0);
 
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ FTP sunucusu yükleniyor...', []);
-    B := GAgBaglantilari.AB.BaglantiOlustur(bnFTPs, itIP4, btPasif, ttTCP,
-      '', FTP_PORTNO, 0);
+    B := GAgBaglantilari.AB.BaglantiOlustur(bnFTPs, itIP4, btPasif,
+      ttTCP, FTP_PORTNO, 0);
 
     {$IFDEF SISTEM_SUNUCU}
     // dhcp v6 suunucusu
@@ -162,8 +162,8 @@ begin
     begin
 
       GAgBaglantilari.AB.IP4AdresiAlindi := False;
-      B := GAgBaglantilari.AB.BaglantiOlustur(bnDHCPv4i, itIP4, btYAktif, ttUDP, '',
-        DHCPv4_ISTEMCI_PORT, DHCPv4_SUNUCU_PORT);
+      B := GAgBaglantilari.AB.BaglantiOlustur(bnDHCPv4i, itIP4, btYAktif,
+        ttUDP, DHCPv4_ISTEMCI_PORT, DHCPv4_SUNUCU_PORT);
       B.FDHCPv4i.OtomatikIpAdresiAl;
     end else GAgBaglantilari.AB.IP4AdresiAlindi := True;
     {$ENDIF}

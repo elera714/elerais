@@ -6,7 +6,7 @@
   Dosya Adı: dnsi.pas
   Dosya İşlevi: dns istemci tutanak işlevlerini yönetir
 
-  Güncelleme Tarihi: 05/11/2026
+  Güncelleme Tarihi: 08/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -150,8 +150,8 @@ begin
 
   PortNo := GAgBaglantilari.AB.YerelPortOlustur;
 
-  Result := GAgBaglantilari.AB.BaglantiOlustur(bnDNSi, itIP4, btYAktif, ttUDP,
-    '', PortNo, DNS_PORTNO);
+  Result := GAgBaglantilari.AB.BaglantiOlustur(bnDNSi, itIP4, btYAktif,
+    ttUDP, PortNo, DNS_PORTNO);
 
   if not(Result = nil) then TBaglanti(Result).FDNSi.FDurum := ddHazir;
 end;

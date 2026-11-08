@@ -6,7 +6,7 @@
   Dosya Adı: gn_giriskutusu.pas
   Dosya İşlevi: giriş kutusu (TEdit) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 17/08/2026
+  Güncelleme Tarihi: 07/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -92,6 +92,7 @@ begin
       GirisKutusu := TGirisKutusu(GGNesneler.NesneAl(PKimlik(ADegiskenler + 00)^));
       p1 := PKarakterKatari(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
       GirisKutusu.Baslik := p1^;
+      GirisKutusu.ImlecX := 0;
       GirisKutusu.Ciz;
     end;
 
