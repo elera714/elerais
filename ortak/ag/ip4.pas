@@ -6,7 +6,7 @@
   Dosya Adı: ip4.pas
   Dosya İşlevi: ip tutanak (protokol) v4 yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 06/11/2026
+  Güncelleme Tarihi: 11/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -133,7 +133,7 @@ procedure TIP4.PaketleVeGonder(ATutanakTipi: TTutanakTipi; AParcaSiraNo: TSayi2;
 var
   IPPaket: PIP4Paket;
   SaglamaToplami: TSayi2;
-  p: PByte;
+  v: PByte;
 begin
 
   // paket için bellek bölgesi oluştur
@@ -166,8 +166,8 @@ begin
 
   Inc(FIP4Tanimlayici);
 
-  p := @IPPaket^.Veri;
-  Tasi2(AVeri, p, AVeriUzunlugu);
+  v := @IPPaket^.Veri;
+  Tasi2(AVeri, v, AVeriUzunlugu);
 
   // paketi ip katmanına gönder
   Gonder(IPPaket, AVeriUzunlugu + IP4_BASLIK_U);

@@ -6,7 +6,7 @@
   Dosya Adý: tcp.pas
   Dosya Ýþlevi: tcp v4/v6 katmaný veri iletiþimini gerçekleþtirir
 
-  Güncelleme Tarihi: 11/11/2026
+  Güncelleme Tarihi: 12/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -232,7 +232,7 @@ begin
     begin
 
       if(IT = itIP6) then
-        VeriU := ntohs(IP6Paket^.TasinanVeriU)    { TODO - teyit et }
+        VeriU := ntohs(IP6Paket^.TasinanVeriU) - 20
       else VeriU := ntohs(IP4Paket^.ToplamUzunluk) - 40;
 
       // veri varsa gelen veriyi al
@@ -268,7 +268,15 @@ begin
     if((TCPPaket^.Bayrak and TCP_BAYRAK_SON) = TCP_BAYRAK_SON) then
     begin
 
-      B.FTCP.SonlandirmayiYanitla;
+      if(B.FBaglantiDurum = bdKapanisBekleniyor2) then
+      begin
+
+        // onay numarasýný artýr
+        Inc(B.FTCP.FOnayNo);
+
+        B.FTCP.SadeceOnayMesajiGonder;
+
+      end else B.FTCP.SonlandirmayiYanitla;
     end;
   end;
 end;
@@ -393,7 +401,7 @@ begin
 
   PaketleVeGonder(TCP_BAYRAK_ARZ, @TCP4SYNSonEk, 12, True);
 
-  // karþý bilgisayardan bir sonraki paketle gelemesi beklenen sýra numarasý
+  // karþý bilgisayardan bir sonraki paketle gelmesi beklenen sýra numarasý
   Inc(FSiraNo);
 
   TBaglanti(FBaglanti).FBaglantiDurum := bdBaglaniyor;
@@ -413,7 +421,7 @@ begin
 
   PaketleVeGonder(TCP_BAYRAK_ARZ or TCP_BAYRAK_KABUL, @TCP4SYNSonEk, 12, True);
 
-  // karþý bilgisayardan bir sonraki paketle gelemesi beklenen sýra numarasý
+  // karþý bilgisayardan bir sonraki paketle gelmesi beklenen sýra numarasý
   Inc(FSiraNo);
 
   TBaglanti(FBaglanti).FBaglantiDurum := bdBaglantiBekleniyor;
@@ -475,6 +483,15 @@ begin
   i := ntohs(ATCPPaket^.OnayNo);
   if(i = FSiraNo) then
   begin
+
+    // bdKapanisBekleniyor1 baðlantý aþamasýnda ACK gelmesi durumunda
+    // peþpeþe 2 ACK gelebilir (bdKapanisBekleniyor2 bu sebepten)
+    if(B.FBaglantiDurum = bdKapanisBekleniyor1) or (B.FBaglantiDurum = bdKapanisBekleniyor2) then
+    begin
+
+      B.FBaglantiDurum := bdKapanisBekleniyor2;
+      Exit;
+    end;
 
     // bu aþamada istemci olarak karþý bilgisayara SYN gönderilmiþ
     // karþý bilgisayar ise SYN + ACK yanýtýný göndermiþtir
