@@ -6,7 +6,7 @@
   Dosya Adý: http.pas
   Dosya Ýþlevi: http sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 07/11/2026
+  Güncelleme Tarihi: 11/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit http;
 
 interface
 
-uses paylasim, sunucular, tcp;
+uses paylasim, sunucular;
 
 const
   USTSINIR_HTTPISTEMCI = 10;
@@ -68,9 +68,9 @@ type
     FIstenenSayfa: string;
   public
     constructor Create(ABaglanti: TObject);
-    procedure OIstemciBaglandi(ATCP: TTCP); override;
-    procedure OVeriGeldi(ATCP: TTCP); override;
-    procedure OVeriGonderildi(ATCP: TTCP); override;
+    procedure OIstemciBaglandi(ABaglanti: TObject); override;
+    procedure OVeriGeldi(ABaglanti: TObject); override;
+    procedure OVeriGonderildi(ABaglanti: TObject); override;
     function IstenenSayfaDegeriniAl(ABellek: Isaretci; AVeriU: TSayi4): string;
   end;
 
@@ -98,7 +98,7 @@ end;
 {==============================================================================
   istemci baðlandýðýnda tetiklenen olay
  ==============================================================================}
-procedure THTTPSunucu.OIstemciBaglandi(ATCP: TTCP);
+procedure THTTPSunucu.OIstemciBaglandi(ABaglanti: TObject);
 begin
 
 end;
@@ -106,7 +106,7 @@ end;
 {==============================================================================
   istemcilerden veri geldiðinde tetiklenen olay
  ==============================================================================}
-procedure THTTPSunucu.OVeriGeldi(ATCP: TTCP);
+procedure THTTPSunucu.OVeriGeldi(ABaglanti: TObject);
 var
   Veri: Isaretci;
   VeriU: TSayi4;
@@ -114,15 +114,15 @@ begin
 
   Veri := GetMem(4 * 4096);
 
-  VeriU := TBaglanti(FBaglanti).Oku(Veri);
+  VeriU := TBaglanti(ABaglanti).Oku(Veri);
   if(VeriU = 0) then Exit;
 
   FIstenenSayfa := IstenenSayfaDegeriniAl(Veri, VeriU);
   //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Sayfa: [%s]', [FIstenenSayfa]);
 
   if(FIstenenSayfa = '/') then
-    ATCP.VeriGonder(WebSiteBaslik, Length(WebSiteBaslik))
-  else ATCP.VeriGonder(AnaSayfaHataBaslik, Length(AnaSayfaHataBaslik));
+    TBaglanti(ABaglanti).Yaz(WebSiteBaslik, Length(WebSiteBaslik))
+  else TBaglanti(ABaglanti).Yaz(AnaSayfaHataBaslik, Length(AnaSayfaHataBaslik));
 
   FreeMem(Veri, 4 * 4096);
 end;
@@ -130,7 +130,7 @@ end;
 {==============================================================================
   bu sunucu istemciye veri gönderdiðinde (ve onaylandýðýnda) tetiklenen olay
  ==============================================================================}
-procedure THTTPSunucu.OVeriGonderildi(ATCP: TTCP);
+procedure THTTPSunucu.OVeriGonderildi(ABaglanti: TObject);
 begin
 
   if(SayfaGonderildi) then
@@ -142,10 +142,10 @@ begin
   begin
 
     if(FIstenenSayfa = '/') then
-      ATCP.VeriGonder(WebSiteIcerik, Length(WebSiteIcerik))
-    else ATCP.VeriGonder(AnaSayfaHataIcerik, Length(AnaSayfaHataIcerik));
+      TBaglanti(ABaglanti).Yaz(WebSiteIcerik, Length(WebSiteIcerik))
+    else TBaglanti(ABaglanti).Yaz(AnaSayfaHataIcerik, Length(AnaSayfaHataIcerik));
 
-    ATCP.BaglantiKapatmaMesajiGonder;
+    TBaglanti(ABaglanti).BaglantiyiKapat;
 
     SayfaGonderildi := True;
   end;

@@ -6,7 +6,7 @@
   Dosya Adý: ftp.pas
   Dosya Ýþlevi: FTP (dosya) sunucu tutanak iþlevlerini yönetir
 
-  Güncelleme Tarihi: 07/11/2026
+  Güncelleme Tarihi: 11/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit ftp;
 
 interface
 
-uses paylasim, sunucular, tcp;
+uses paylasim, sunucular;
 
 const
   USTSINIR_FTPISTEMCI     = 10;
@@ -38,9 +38,9 @@ type
     FBaglanti: TObject;
   public
     constructor Create(ABaglanti: TObject);
-    procedure OIstemciBaglandi(ATCP: TTCP); override;
-    procedure OVeriGeldi(ATCP: TTCP); override;
-    procedure OVeriGonderildi(ATCP: TTCP); override;
+    procedure OIstemciBaglandi(ABaglanti: TObject); override;
+    procedure OVeriGeldi(ABaglanti: TObject); override;
+    procedure OVeriGonderildi(ABaglanti: TObject); override;
     function KomutDegeriniAl(ABellek: Isaretci; AVeriU: TSayi4): string;
   end;
 
@@ -63,16 +63,16 @@ end;
 {==============================================================================
   istemci baðlandýðýnda tetiklenen olay
  ==============================================================================}
-procedure TFTPSunucu.OIstemciBaglandi(ATCP: TTCP);
+procedure TFTPSunucu.OIstemciBaglandi(ABaglanti: TObject);
 begin
 
-  ATCP.VeriGonder(Tanitim, Length(Tanitim));
+  TBaglanti(ABaglanti).Yaz(Tanitim, Length(Tanitim));
 end;
 
 {==============================================================================
   istemcilerden veri geldiðinde tetiklenen olay
  ==============================================================================}
-procedure TFTPSunucu.OVeriGeldi(ATCP: TTCP);
+procedure TFTPSunucu.OVeriGeldi(ABaglanti: TObject);
 var
   Veri: Isaretci;
   VeriU: TSayi4;
@@ -81,7 +81,7 @@ begin
 
   Veri := GetMem(4 * 4096);
 
-  VeriU := TBaglanti(FBaglanti).Oku(Veri);
+  VeriU := TBaglanti(ABaglanti).Oku(Veri);
   if(VeriU = 0) then Exit;
 
   s := KomutDegeriniAl(Veri, VeriU);
@@ -91,20 +91,20 @@ begin
   if(Komut = 'USER') then
   begin
 
-    ATCP.VeriGonder(SifreGirisi, Length(SifreGirisi));
+    TBaglanti(ABaglanti).Yaz(SifreGirisi, Length(SifreGirisi));
   end
   else if(Komut = 'PASS') then
   begin
 
-    ATCP.VeriGonder(GirisBasarili, Length(GirisBasarili));
-    //ATCP.VeriGonder(GirisHatali, Length(GirisHatali));
+    TBaglanti(ABaglanti).Yaz(GirisBasarili, Length(GirisBasarili));
+    //TBaglanti(ABaglanti).Yaz(GirisHatali, Length(GirisHatali));
   end
   else if(Komut = 'QUIT') then
   begin
 
-    ATCP.VeriGonder(BaglantiKapatiliyor, Length(BaglantiKapatiliyor));
+    TBaglanti(ABaglanti).Yaz(BaglantiKapatiliyor, Length(BaglantiKapatiliyor));
 
-    ATCP.BaglantiKapatmaMesajiGonder;
+    TBaglanti(ABaglanti).BaglantiyiKapat;
   end;
 
   FreeMem(Veri, 4 * 4096);
@@ -115,7 +115,7 @@ end;
 {==============================================================================
   bu sunucu istemciye veri gönderdiðinde (ve onaylandýðýnda) tetiklenen olay
  ==============================================================================}
-procedure TFTPSunucu.OVeriGonderildi(ATCP: TTCP);
+procedure TFTPSunucu.OVeriGonderildi(ABaglanti: TObject);
 begin
 
 end;

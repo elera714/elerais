@@ -6,7 +6,7 @@
   Dosya Adı: sunucular.pas
   Dosya İşlevi: çekirdek içerisinde çalışan sunucuları yönetir
 
-  Güncelleme Tarihi: 02/11/2026
+  Güncelleme Tarihi: 11/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit sunucular;
 
 interface
 
-uses paylasim, tcp;
+uses paylasim;
 
 type
   TTemelSunucu = class
@@ -24,20 +24,25 @@ type
 type
   TTCPSunucu = class(TTemelSunucu)
   public
-    procedure OIstemciBaglandi(ATCP: TTCP); virtual; abstract;
-    procedure OVeriGeldi(ATCP: TTCP); virtual; abstract;
-    procedure OVeriGonderildi(ATCP: TTCP); virtual; abstract;
+    // sunucuya istemcinin bağlanmış olma durumu
+    procedure OIstemciBaglandi(ABaglanti: TObject); virtual; abstract;
+    // sunucuya verinin gelmiş olma durumu
+    procedure OVeriGeldi(ABaglanti: TObject); virtual; abstract;
+    // sunucudan verinin gönderilmiş, karşı taraftan onaylanmış olma durumu
+    procedure OVeriGonderildi(ABaglanti: TObject); virtual; abstract;
   end;
 
 type
   TUDPSunucu = class(TTemelSunucu)
   public
+    // sunucuya verinin gelmiş olma durumu
     procedure OVeriGeldi(AEthernetPaket: PEthernetPaket); virtual; abstract;
   end;
 
 type
   TUDPIstemci = class(TTemelSunucu)
   public
+    // istemciye verinin gelmiş olma durumu
     procedure OVeriGeldi(AEthernetPaket: PEthernetPaket); virtual; abstract;
   end;
 
