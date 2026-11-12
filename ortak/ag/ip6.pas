@@ -6,7 +6,7 @@
   Dosya Adý: ip6.pas
   Dosya Ýþlevi: ip tutanak (protokol) v6 yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 11/11/2026
+  Güncelleme Tarihi: 12/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,6 +32,7 @@ type
   end;
 
 procedure IP6VerileriniIsle(AEthernetPaket: PEthernetPaket);
+function IP6AdresiKabulEdilsinMi(AIPAdres: TIP6Adres): Boolean;
 
 implementation
 
@@ -43,13 +44,9 @@ uses donusum, icmp6, udp, tcp, islevler, ag, baglantilar;
 procedure IP6VerileriniIsle(AEthernetPaket: PEthernetPaket);
 var
   IPPaket: PIP6Paket;
-  i: TSayi2;
-  B: TBaglanti;
 begin
 
   IPPaket := @AEthernetPaket^.Veri;
-
-  i := ntohs(IPPaket^.TasinanVeriU);
 
   // 1. sistemin ip adresi yok ise...
   // sistemin udp tutanaðýndan ip adresi talebi olasýlýðýna karþý udp verilerini iþle
@@ -69,7 +66,11 @@ begin
   else if(GAgBaglantilari.AB.IP6AdresiAlindi) then
   begin
 
-    if(IP6Karsilastir(IPPaket^.HedefIPAdres, GAgBaglantilari.AB.IP6Adresim)) then
+    {$IFDEF SISTEM_SUNUCU}
+    if(1 = 1) then
+    {$ELSE}
+    if(IP6AdresiKabulEdilsinMi(IPPaket^.HedefIPAdres)) then
+    {$ENDIF}
     begin
 
       // icmp tutanaðý
@@ -112,6 +113,22 @@ begin
       SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Hedef tutanak: %d', [IPPaket^.TasinanVeriP]);
     end;
   end;
+end;
+
+{==============================================================================
+  belirtilen ip6 adresinin kabul edilip edilmeyeceðine karar verir
+ ==============================================================================}
+function IP6AdresiKabulEdilsinMi(AIPAdres: TIP6Adres): Boolean;
+begin
+
+  // gelen veri benim ip6 adresime ise, kabul et
+  if(IP6Karsilastir(AIPAdres, GAgBaglantilari.AB.IP6Adresim)) then Exit(True);
+
+  // gelen veri benim yayýn adresime ise, kabul et
+  if(IP6Karsilastir(AIPAdres, YayinIP6Adres)) then Exit(True);
+
+  // aksi durumda kabul etme
+  Result := False;
 end;
 
 {==============================================================================

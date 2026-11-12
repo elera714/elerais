@@ -6,7 +6,7 @@
   Dosya Adý: icmp6.pas
   Dosya Ýþlevi: ICMP v6 tutanak (protokol) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 01/11/2026
+  Güncelleme Tarihi: 12/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -304,7 +304,7 @@ begin
 
   // ip6 katman bilgileri
   FIP6.FKaynakIPAdres := GAgBaglantilari.AB.IP6Adresim;
-  FIP6.FHedefIPAdres := HedefIP6Adres;
+  FIP6.FHedefIPAdres := AIP6Adres;  { TODO - HedefIP6Adres idi; onaylanacak }
 
   // ip katmaný - ip adresini hazýrla
   HedefIP6Adres := TalepDugumIP6Adresi;

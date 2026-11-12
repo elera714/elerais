@@ -4,9 +4,10 @@
   Telif Bilgisi: haklar.txt dosyasýna bakýnýz
 
   Dosya Adý: baglanti.pas
-  Dosya Ýþlevi: baðlantý (soket) iletiþim yönetim iþlevlerini içerir
+  Dosya Ýþlevi: að baðlantýlarý ve ona baðlý baðlantý (soket) iletiþim
+    yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 24/06/2026
+  Güncelleme Tarihi: 12/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,13 +16,27 @@ unit baglantilar;
 
 interface
 
-uses paylasim, sistemmesaj, ethernet, arp, ip6, ip4, icmp4, lldp_i;
+uses paylasim, sistemmesaj, ethernet, arp, ip6, ip4, icmp6, icmp4, sunucular,
+  lldp_i, dhcpv6s, dhcpv4s, dhcpv4i, http, ftp, dnsi, netbios, tcp, udp;
+
+const
+  // 0800ABCDEF01 MAC adresi Modified EUI-64'e göre kodlanarak ipv6 adresi elde edilmiþtir
+  // bilgi: MAC adresinin ilk byte'ýnýn (08) saðdan 2. biti standarta göre xor'lanmýþtýr
+  // http://[fe80::a00:abff:fecd:ef01]/
+  SabitIP6Adresim: TIP6Adres = ($FE, $80, $00, $00, $00, $00, $00, $00,
+    $0A, $00, $AB, $FF, $FE, $CD, $EF, $01);
+
+type
+  TBaglantiNesnesi = (bnDHCPv6s, bnDHCPv4s, bnDHCPv4i, bnHTTPs, bnHTTPi,
+    bnFTPs, bnFTPi, bnDNSi, bnNetBios, bnTCP, bnUDP);
 
 const
   USTSINIR_AB_SAYISI  = 16;     // Að Baðlantý sayýsý
   USTSINIR_B_SAYISI   = 32;     // Baðlantý sayýsý
 
   TCP_PENCERE_UZUNLUK = 8192;
+
+  // tcp / udp için üretilecek yerel port numarasý
   ILK_YERELPORTNO     = $A00E;
 
   TCP_BAYRAK_SON      = $01;    // FIN
@@ -30,367 +45,217 @@ const
   TCP_BAYRAK_GONDER   = $08;    // PSH
   TCP_BAYRAK_KABUL    = $10;    // ACK
 
-var
-  YerelPortNo: TSayi2;
-  TCPIlkSiraNo: TSayi4;
-
-type
-{
-    bdYok = tcp/udp veri alanlarýnýn ilk yükleme ve tcp/bdKapaniyor2 (? teyit et) sonrasý aþamasý
-    bdKapali = tcp/udp yeni baðlantý oluþturma ve udp/baðlantý kapatma sonrasý aþamasý
-}
-
-  { TODO - açýklama yapýlmayan durumlar yeniden gözden geçirilecek }
-  TBaglantiDurum = (
-    bdYok,
-    bdKapali,
-    bdBaglaniyor,
-
-    // bdBaglantiBekleniyor (sunucu durumu - SYN-RECEIVED):
-    // istemciden SYN mesajý alýnmýþ, istemciye SYN + ACK mesajý gönderilmiþtir
-    bdBaglantiBekleniyor,
-    // bdBaglantiKuruldu (sunucu / istemci durumu - ESTABLISHED)
-    // sunucu istemci arasýndaki 3 yollu (SYN -> SYN + ACK -> ACK) anlaþma saðlanmýþtýr
-    bdBaglantiKuruldu,
-    // bdKapanmayiBekliyor (sunucu / istemci durumu - CLOSE-WAIT)
-    // baðlantýnýn 1. ucundaki istemci / sunucudan kapatma isteðinin gelmesi durumu (FIN + ACK)
-    bdKapanmayiBekliyor,
-    // bdSonOnay (sunucu / istemci durumu - LAST-ACK)
-    // baðlantýnýn 2. ucundaki istemci / sunucunun kapatma isteðine (FIN + ACK) onay bekleme durumu
-    bdSonOnay,
-    // bdKapanisBekleniyor1 (sunucu / istemci durumu - FIN-WAIT-1)
-    // baðlantýnýn 1. ucundaki istemci / sunucunun kapatma isteði (FIN + ACK) gönderme durumu
-    bdKapanisBekleniyor1);
-
-  // aktif baðlantý: istemcinin sunucuya baðlantýsý
-  // pasif baðlantý: sunucunun kendisine gelen istekleri kabul etmek için oluþturduðu baðlantý
-  TBaglantiTuru = (btAktif, btPasif);
-
-{ =================================================================================================
-  tüm að iletiþimi TBaglanti üzerinden gerçekleþecek. diðer yüm nesneler bu nesnenin altýnda olacak
-
-                                      TAgBaglantilari
-                                             |
-                         TAgBaglantisi1 ------------ TAgBaglantisi2
-                              |
-                        TBaglanti1 ----- TBaglanti2 ----- TBaglanti3
-                                             |
-                       TTcpBaglanti ---------+---------- TUdpBaglanti
-                                             |
-                                             +-----------> protokoller
-                                             |
-                                          TAygit0 - TAygit olacak
-                                             |
-                                         TEthernet0 - TEthernet olacak
-                                             |
-                                           TPCI
-                                             |
-                                         TDonanim
-================================================================================================= }
 type
   TBaglanti = class;
 
 type
-  PTemelAgBaglanti = ^TTemelAgBaglanti;
-  TTemelAgBaglanti = class
+  // tüm að baðlantýlarýnýn atasý olan nesne
+  PTemelAgBaglantisi = ^TTemelAgBaglantisi;
+  TTemelAgBaglantisi = class
   public
-    Ad: string;
-    FSiraNo: TSayi4;
+    // að baðlantýsý kimliði = ayný zamanda baðlantý sýra numarasý
     FKimlik: TKimlik;
+    FBaglantiAdi: string;
     constructor Create; virtual;
   end;
 
-// her bir baðlantý içerisine MUTLAKA bir adet að aygýtý
-// ve bu aygýtýn kullanacaðý tüm iletiþim protokollerini içerir
-// tüm að iletiþimi TBaglanti yapýsý üzerinden gerçekleþecek
 type
+  // sistemde mevcut her bir að aygýtý veya sanal baðlantý bu nesne
+  // tarafýndan yönetilir. TAgBaglantilari nesnesinin alt nesnesidir
   PAgBaglantisi = ^TAgBaglantisi;
-  TAgBaglantisi = class(TTemelAgBaglanti)
+  TAgBaglantisi = class(TTemelAgBaglantisi)
   private
-    FAktif: Boolean;
-    FIP6Adres: TIP6Adres;
-    FIP4Adres, FAltAgMaskesi, FAgGecitAdresi,
+    // að baðlantýsý içinde oluþturulan toplam baðlantý sayýsý
+    FBaglantiSayisi,
+    // tcp için üretilen ilk sýra numarasý
+    FTCPIlkSiraNo,
+    // tcp / udp için üretilecek yerel port numarasý
+    FYerelPortNo: TSayi4;
+    // að baðlantýsýnýn að kimlik deðerleri ->
+    // bilgi: bu deðerler ag.pas biriminde iþlenmektedir
+    FIP6Adresim: TIP6Adres;
+    FIP4Adresim, FAltAgMaskesi, FAgGecitAdresi,
     FDHCPSunucusu, FDNSSunucusu: TIP4Adres;
-    FIPKiraSuresi: TSayi4;     // saniye cinsinden
+    FIPKiraSuresi: TSayi4;          // saniye cinsinden
+    FIP6AdresiAlindi,
     FIP4AdresiAlindi: Boolean;
-
+    // <- að baðlantýsýnýn að kimlik deðerleri
+    // að baðlantýsýnýn aktif / pasif olma durumu
+    FAktif: Boolean;
     FBaglantilar: array[0..USTSINIR_B_SAYISI - 1] of TBaglanti;
     function Al(ASiraNo: TISayi4): TBaglanti;
     procedure Yaz(ASiraNo: TISayi4; ABaglanti: TBaglanti);
   public
+    // að baðlantýsýnýn kullanacaðý ethernet aygýtý
     FEthernet: TEthernet;
+    // að baðlantýsý tarafýndan direkt olarak kullanýlacak tutanaklar
+    // bilgi: bu tutanaklar tüm nesne ve iþlevlere açýk tutanaklardýr
     FARP: TARP;
-    FIP6: TIP6;
-    FIP4: TIP4;
+    FICMP6: TICMP6;
     FICMP4: TICMP4;
     FLLDP: TLLDP;
+    // að - gelen paket sayýlarý
+    FICMPv6PaketSayisi,
+    FICMPv4PaketSayisi,
+    FTCP6PaketSayisi,
+    FTCP4PaketSayisi,
+    FUDP6PaketSayisi,
+    FUDP4PaketSayisi,
+    FGAEPaketSayisi: TSayi4;     // GözArdýEdilen paket sayýsý
     constructor Create; override;
+    procedure VerileriIsle;
+    function BKimlikNoAl: TISayi4;
+    function BaglantiOlustur(ABaglantiNesnesi: TBaglantiNesnesi;
+      AIletisimTipi: TIletisimTipi; ABaglantiTuru: TBaglantiTuru;
+      ATutanakTipi: TTutanakTipi; AYerelPort, AUzakPort: TSayi2): TBaglanti;
+    procedure BaglantiyiYoket(ABaglanti: TBaglanti);
+    function BaglantiBul(ATutanakTipi: TTutanakTipi;
+      AYerelPort, AUzakPort: TSayi2): TObject;
+    function TCPIlkSiraNoAl: TSayi4;
+    function YerelPortOlustur: TSayi4;
+    procedure OnayMesajlariniGonder;
+    procedure Listele;
+    property Baglanti[ASiraNo: TISayi4]: TBaglanti read Al write Yaz;
+    property BaglantiSayisi: TSayi4 read FBaglantiSayisi write FBaglantiSayisi;
     property Aktif: Boolean read FAktif write FAktif;
-    procedure VeriAlmaIslevi;
-    property IP6Adres: TIP6Adres read FIP6Adres write FIP6Adres;
-    property IP4Adres: TIP4Adres read FIP4Adres write FIP4Adres;
+    property IP6Adresim: TIP6Adres read FIP6Adresim write FIP6Adresim;
+    property IP4Adresim: TIP4Adres read FIP4Adresim write FIP4Adresim;
     property AltAgMaskesi: TIP4Adres read FAltAgMaskesi write FAltAgMaskesi;
     property AgGecitAdresi: TIP4Adres read FAgGecitAdresi write FAgGecitAdresi;
     property DHCPSunucusu: TIP4Adres read FDHCPSunucusu write FDHCPSunucusu;
     property DNSSunucusu: TIP4Adres read FDNSSunucusu write FDNSSunucusu;
     property IPKiraSuresi: TSayi4 read FIPKiraSuresi write FIPKiraSuresi;
+    property IP6AdresiAlindi: Boolean read FIP6AdresiAlindi write FIP6AdresiAlindi;
     property IP4AdresiAlindi: Boolean read FIP4AdresiAlindi write FIP4AdresiAlindi;
-
-    property Baglanti[ASiraNo: TISayi4]: TBaglanti read Al write Yaz;
-
-    function BaglantiYapisiOlustur(ABaglantiTuru: TBaglantiTuru): TBaglanti;
-    function BaglantiOlustur(AIletisimTipi: TIletisimTipi;
-      ABaglantiTuru: TBaglantiTuru; AProtokolTipi: TProtokolTipi; ABaglantiAdresi: string;
-      AYerelPort, AUzakPort: TSayi2): TBaglanti;
-    function TCPIlkSiraNoAl: TSayi4;
-    function KimlikNoAlG: TISayi4;
-    function TCPBaglantiAl(AKaynakPort, AHedefPort: TSayi2): TBaglanti;
-    procedure Listele;
-    function UDPBaglantiAl(AYerelPort: TSayi2): TBaglanti;
-  end;
-
-{type
-  PTcpBaglanti = ^TTcpBaglanti;
-  TTcpBaglanti = class(TBaglanti)
-  end;
-
-
-type
-  PUdpBaglanti = ^TUdpBaglanti;
-  TUdpBaglanti = class(TBaglanti)
-  end;}
-
-
-type
-  PBaglanti = ^TBaglanti;
-  TBaglanti = class(TAgBaglantisi)
-    //FTCP: TTCP;
-    Kimlik: TKimlik;
-    IletisimTipi: TIletisimTipi;  // ana protokol iletiþim tipleri (þu aþamada ipv4, ipv6)
-    ProtokolTipi: TProtokolTipi;
-    BaglantiTuru: TBaglantiTuru;
-    BaglantiDurum: TBaglantiDurum;
-    PencereU: TSayi2;
-    SiraNo,                       // TCP sýra no (sequence number)
-    OnayNo: TSayi4;               // TCP onay no (acknowledgment number)
-    HedefMACAdres: TMACAdres;
-
-    HedefIP6Adres: TIP6Adres;     // verinin gönderileceði ip6 adresi
-    HedefIP4Adres: TIP4Adres;     // verinin gönderileceði ip4 adresi
-
-    { TODO - önemli: baðlantý her 2 taraf için de oluþturulabilir, yerel / uzak karýþabilir
-      özellikle TCPBaglantiAl ve benzeri iþlevler hatalý davranabilir. tedbir alýnacak }
-    YerelPort, UzakPort: TSayi2;  // baðlantý kuran cihazým yerel / uzak portu
-
-    Bagli: Boolean;
-    FBellek: Isaretci;
-    FVeriUzunlugu: TSayi4;        // Bellek'te mevcut veri uzunluðu
-  public
-    constructor Create; override;
-    destructor Destroy; override;
-    function Baglan(ABaglantiTipi: TBaglantiTipi): TISayi4;
-    function BagliMi: Boolean;
-    procedure BellegeEkle(AKaynakBellek: Isaretci; AVeriUzunlugu: TSayi4);
-    function VeriUzunlugu: TSayi4;
-    function Oku(ABellek: Isaretci): TSayi4;
-    procedure Yaz(ABellek: Isaretci; AUzunluk: TISayi4);
-    function BaglantiyiKes: TISayi4;
   end;
 
 type
+  // sistemde her bir að aygýtý için oluþturulmuþ veya sanal baðlantýlarýn
+  // tümünü içerir. nesne tüm bu aygýtlarý TAgBaglantisi üzerinden yönetir
   PAgBaglantilari = ^TAgBaglantilari;
   TAgBaglantilari = class
   private
+    FAktifBaglanti: TAgBaglantisi;      // aktif baðlantý
     FAgBaglantiSayisi: TSayi4;
-    FBaglantiListesi0: array[0..USTSINIR_AB_SAYISI - 1] of TAgBaglantisi;
+    FBaglantilar: array[0..USTSINIR_AB_SAYISI - 1] of TAgBaglantisi;
     function Al(ASiraNo: TISayi4): TAgBaglantisi;
     procedure Yaz(ASiraNo: TISayi4; ABaglanti: TAgBaglantisi);
   public
-    FAktifBaglanti: TAgBaglantisi;
     constructor Create;
     procedure AgBaglantilariniOlustur;
-    function KimlikNoAl: TISayi4;
-    property Baglanti0[ASiraNo: TISayi4]: TAgBaglantisi read Al write Yaz;
-    function YerelPortAl: TSayi2;
+    function ABKimlikNoAl: TISayi4;
+    property AgBaglantisi[ASiraNo: TISayi4]: TAgBaglantisi read Al write Yaz;
     property AgBaglantiSayisi: TSayi4 read FAgBaglantiSayisi write FAgBaglantiSayisi;
-    property AktifBaglanti: TAgBaglantisi read FAktifBaglanti write FAktifBaglanti;
+    property AB: TAgBaglantisi read FAktifBaglanti write FAktifBaglanti;
+  end;
+
+type
+  // TAgBaglantisi üzerinde oluþturulan yazýlýmsal her bir baðlanyýtý içerir
+  // yazýlýmsal tüm iletiþimler bu nesne üzerinden yönetilir (tcp / ip, icmp, arp vb)
+  PBaglanti = ^TBaglanti;
+  TBaglanti = class
+  public
+    FKimlik: TKimlik;                     // baðlantý kimliði
+    // tutanak tipi (protokol)
+    // að baðlantýsý tarafýndan atamasý yapýlýyor
+    FTutanakTipi: TTutanakTipi;
+    FBaglantiNesnesi: TBaglantiNesnesi;   // baðlantýnýn kullanacaðý dahili nesne
+    FIletisimTipi: TIletisimTipi;         // ana tutanak iletiþim tipleri (ipv4, ipv6)
+    FBaglantiTuru: TBaglantiTuru;         // pasif / aktif baðlantý
+    FAB: TAgBaglantisi;                   // baðlantýnýn baðlý olduðu Að Baðlantýsý
+    FYerelPort, FUzakPort: TSayi2;        // baðlantýnýn kullandýðý yerel ve uzak port numaralarý
+    // çekirdek içinde çalýþan sunucu / istemci nesneleri ve tutanaklar
+    FDHCPv6s: TDHCPv6s;
+    FDHCPv4s: TDHCPv4s;
+    FDHCPv4i: TDHCPv4i;
+    // FSunucu = http sunucusu veya ftp sunucusu
+    // her sunucu için bir adet tcp baðlantýsý (þu anda)
+    FSunucu: TTCPSunucu;
+    FTCP: TTCP;
+    FUDP: TUDP;
+    FDNSi: TDNSi;
+    FNetBios: TNetBios;
+    FBellek: Isaretci;                    // tcp ve udp tutanaklarý için bellek
+    FVeriUzunlugu: TSayi4;                // FBellek'te depolanmýþ mevcut veri uzunluðu
+    FBaglantiDurum: TBaglantiDurum;
+    // bu sistemden karþý sisteme veri gönderildiði anda onay bekleniyor durumu aktifleþtirilir
+    // karþý sistemden ilk ACK bayraðýnýn gelmesiyle birlikte veriyi gönderen ilgili iþleve
+    // FSunucu (http, ftp sunucusuna) verinin karþý sisteme gönderildiði onay mesajý iletilir
+    FVeriOnayiBekleniyor: Boolean;
+  public
+    constructor Create(ABaglantiNesnesi: TBaglantiNesnesi;
+      AIletisimTipi: TIletisimTipi; ABaglantiTuru: TBaglantiTuru;
+      AAgBaglantisi: TAgBaglantisi; AYerelPort, AUzakPort: TSayi2);
+    destructor Destroy; override;
+    procedure Baglan;
+    function BagliMi: Boolean;
+    function Oku(ABellek: Isaretci): TSayi4;
+    procedure Yaz(ABellek: Isaretci; AUzunluk: TISayi4);
+    function VeriUzunlugunuAl: TSayi4;
+    procedure BellegeEkle(AKaynakBellek: Isaretci; AVeriUzunlugu: TSayi4);
+    procedure BaglantiyiKapat;
   end;
 
 var
   GAgBaglantilari: TAgBaglantilari;
-  GAgBaglantisi: TAgBaglantisi;
   BaglantilarKilit: TSayi4 = 0;
 
 implementation
 
-uses udp, islevler, donusum, ag, aygityonetimi, tcp;
+uses islevler, donusum, aygityonetimi, zamanlayici;
 
-constructor TTemelAgBaglanti.Create;
-var
-  i: TISayi4;
+{==============================================================================
+  temel að baðlantý nesnesi ana yükleme iþlevlerini içerir
+ ==============================================================================}
+constructor TTemelAgBaglantisi.Create;
 begin
 
-  i := GAgBaglantilari.KimlikNoAl;
+  // að baðlantýsý için kimlik numarasý al
+  FKimlik := GAgBaglantilari.ABKimlikNoAl;
 
-  FSiraNo := i;
-  FKimlik := i;
+  // að baðlantý adý
+  FBaglantiAdi := 'Að Baðlantýsý-' + IntToStr(FKimlik);
 end;
 
+{==============================================================================
+  að baðlantý nesnesi ana yükleme iþlevlerini içerir
+ ==============================================================================}
 constructor TAgBaglantisi.Create;
 var
   i: TSayi4;
 begin
 
+  // ata nesne ana yükleme iþlevini çalýþtýr
   inherited Create;
+
+  // að baðlantýsý üzerinden iletiþim amaçlý (tcp, udp) oluþturulan baðlantý sayýsý
+  FBaglantiSayisi := 0;
 
   // baðlantý yapýlarýný ilk deðerlerle yükle
   for i := 0 to USTSINIR_B_SAYISI - 1 do Baglanti[i] := nil;
 
-  FAktif := False;
+  // tcp için üretilen ilk sýra numarasý
+  FTCPIlkSiraNo := $10001000;
 
-  IP6Adres := IP6Adresi;
-  IPKiraSuresi := 0;
+  // tcp / udp için üretilecek yerel port numarasý
+  FYerelPortNo := ILK_YERELPORTNO;
 
-  FIP4AdresiAlindi := False;
-
-  FLLDP := TLLDP.Create(Self);
   FARP := TARP.Create(Self);
+  FICMP6 := TICMP6.Create(Self);
   FICMP4 := TICMP4.Create(Self);
-  FIP6 := TIP6.Create(Self);
-  FIP4 := TIP4.Create(Self);
-end;
+  FLLDP := TLLDP.Create(Self);
 
-procedure TAgBaglantisi.VeriAlmaIslevi;
-var
-  EthPaket: PEthernetPaket;
-  ARPPaket: PARPPaket;
-  Bellek: array[0..$FFF] of TSayi1;
-  i: TSayi4;
-  Protokol: TSayi2;
-begin
+  // veri sayaç deðiþkenleri
+  FICMPv6PaketSayisi := 0;
+  FICMPv4PaketSayisi := 0;
+  FTCP6PaketSayisi := 0;
+  FTCP4PaketSayisi := 0;
+  FUDP6PaketSayisi := 0;
+  FUDP4PaketSayisi := 0;
+  FGAEPaketSayisi := 0;
 
-  // að yüklendi ise ...                          { TODO - aktiflik test edilecek }
-  if not(GAgBaglantilari.AktifBaglanti = nil) then
-  begin
-
-    // að kartýna gelen ham bilgiyi al
-    i := GAgBaglantilari.AktifBaglanti.FEthernet.Al(@Bellek);
-    if(i > 0) then
-    begin
-
-      EthPaket := @Bellek[0];
-
-      {SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.KaynakMACAdres: ', EthPaket^.KaynakMACAdres);
-      SISTEM_MESAJ_MAC(mtBilgi, RENK_MAVI, 'EthernetPaket^.HedefMACAdres: ', EthPaket^.HedefMACAdres);
-      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'EthernetPaket^.PaketTipi: $%.4x', [EthPaket^.PaketTipi]);}
-
-      Protokol := htons(EthPaket^.PaketTipi);
-
-      // yönlendirici talebi - router solicitation
-      if(MACKarsilastir(EthPaket^.HedefMACAdres, MAC333300000002)) then
-      begin
-
-        if(Protokol = PROTOKOL_IP6) then FIP6.VerileriIsle(EthPaket, i - ETHERNET_BASLIKU)
-      end
-      //
-      else if(MACKarsilastir(EthPaket^.HedefMACAdres, MAC333300000102)) then
-      begin
-
-        if(Protokol = PROTOKOL_IP6) then FIP6.VerileriIsle(EthPaket, i - ETHERNET_BASLIKU)
-      end
-      else if(MACKarsilastir(EthPaket^.HedefMACAdres, YayinMAC6)) then
-      begin
-
-        { TODO - çalýþmýyor }
-        FIP6.VerileriIsle(EthPaket, i - ETHERNET_BASLIKU);
-        //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'Son asama1', []);
-      end    // bu test ethernet katmanýnda yapýlýyor
-      else //if(FEthernet.MACAdresiKabulEdilsinMi(EthPaket^.HedefMACAdres)) then
-      begin
-
-        // ******* protokollerin iþlenmesi *******
-
-        // ARP protokolü
-        if(Protokol = PROTOKOL_ARP) then
-        begin
-
-          ARPPaket := @EthPaket^.Veri;
-          if(IP4Karsilastir(ARPPaket^.HedefIP4Adres, IP4Adres)) then
-            FARP.VerileriIsle(EthPaket)
-        end
-
-        // IP V4 protokolü
-        else if(Protokol = PROTOKOL_IP4) then
-
-          FIP4.VerileriIsle(EthPaket)
-
-        // IP V6 protokolü
-        else if(Protokol = PROTOKOL_IP6) then
-
-          FIP6.VerileriIsle(EthPaket, i - ETHERNET_BASLIKU)
-
-        else if(Protokol = PROTOKOL_LLDP) then
-
-          FLLDP.VerileriIsle(EthPaket)
-
-        else
-        begin
-
-          // bilinmeyen protokol
-          SISTEM_MESAJ(mtUyari, RENK_MAVI, 'AG.PAS: bilinmeyen protokol: $%.4x', [Protokol]);
-          SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Kaynak MAC Adresi: ', EthPaket^.KaynakMACAdres);
-          SISTEM_MESAJ_MAC(mtUyari, RENK_SIYAH, '  -> Hedef MAC Adresi: ', EthPaket^.HedefMACAdres);
-        end;
-      end;
-    end;
-  end;
-end;
-
-{ TUdpBaglanti }
-
-
-{ TBaglanti0 }
-
-{==============================================================================
-  baðlantý nesnelerinin ana yükleme iþlevlerini içerir
- ==============================================================================}
-constructor TAgBaglantilari.Create;
-var
-  i: TSayi4;
-begin
-
-  FAktifBaglanti := nil;
-
-  FAgBaglantiSayisi := 0;
-
-  // baðlantý yapýlarýný ilk deðerlerle yükle
-  for i := 0 to USTSINIR_AB_SAYISI - 1 do Baglanti0[i] := nil;
-
-  TCPIlkSiraNo := $10001000;
-  YerelPortNo := ILK_YERELPORTNO;
-end;
-
-procedure TAgBaglantilari.AgBaglantilariniOlustur;
-var
-  B: TAgBaglantisi;
-  i: TSayi4;
-begin
-
-  if(GAygitlar.ToplamAgAygitSayisi = 0) then Exit;
-
-  for i := 0 to GAygitlar.ToplamAgAygitSayisi - 1 do
-  begin
-
-    B := TAgBaglantisi.Create;
-    B.Ad := 'Að Baðlantýsý-' + IntToStr(i + 1);
-    B.FEthernet := TEthernet(GAygitlar.AgAygitListesi[i]);
-
-    Baglanti0[B.FSiraNo] := B;
-
-    if(FAktifBaglanti = nil) then FAktifBaglanti := B;
-
-    Inc(FAgBaglantiSayisi);
-  end;
+  // að baðlantýsýný aktif olarak iþaretle
+  FAktif := True;
 end;
 
 function TAgBaglantisi.Al(ASiraNo: TISayi4): TBaglanti;
@@ -408,122 +273,122 @@ begin
     FBaglantilar[ASiraNo] := ABaglanti;
 end;
 
-function TAgBaglantilari.Al(ASiraNo: TISayi4): TAgBaglantisi;
+{==============================================================================
+  að katmanýna (ethernet) gelen verileri iþler
+ ==============================================================================}
+procedure TAgBaglantisi.VerileriIsle;
+var
+  EthPaket: PEthernetPaket;
+  ARPPaket: PARPPaket;
+  Bellek: array[0..$FFF] of TSayi1;
+  i: TSayi4;
+  Tutanak: TSayi2;
 begin
 
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_AB_SAYISI) then
-    Result := FBaglantiListesi0[ASiraNo]
-  else Result := nil;
-end;
+  // að baðlantý mevcut ve aktif ise ...
+  if not(GAgBaglantilari.AB = nil) and (GAgBaglantilari.AB.Aktif) then
+  begin
 
-procedure TAgBaglantilari.Yaz(ASiraNo: TISayi4; ABaglanti: TAgBaglantisi);
-begin
+    // að kartýna gelen ham veriyi al
+    i := FEthernet.Al(@Bellek);
+    if(i > 0) then
+    begin
 
-  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_AB_SAYISI) then
-    FBaglantiListesi0[ASiraNo] := ABaglanti;
+      EthPaket := @Bellek[0];
+
+      {SISTEM_MESAJ(mtBilgi, RENK_PEMBE, 'Ethernet Katmaný.............:', []);
+      SISTEM_MESAJ_MAC(mtBilgi, RENK_TURKUAZ, '  - KaynakMACAdres: ', EthPaket^.KaynakMACAdres);
+      SISTEM_MESAJ_MAC(mtBilgi, RENK_TURKUAZ, '  - HedefMACAdres: ', EthPaket^.HedefMACAdres);
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, '  - PaketTipi: $%.4x', [EthPaket^.PaketTipi]);}
+
+      Tutanak := htons(EthPaket^.PaketTipi);
+
+      // ******* tutanaklarýn iþlenmesi *******
+
+      // arp tutanaðý
+      if(Tutanak = TUTANAK_ARP) then
+      begin
+
+        ARPPaket := @EthPaket^.Veri;
+        if(IP4Karsilastir(ARPPaket^.HedefIP4Adres, IP4Adresim)) then
+          FARP.VerileriIsle(EthPaket);
+      end
+
+      // ip v6 tutanaðý
+      else if(Tutanak = TUTANAK_IP6) then
+
+        IP6VerileriniIsle(EthPaket)
+
+      // ip v4 tutanaðý
+      else if(Tutanak = TUTANAK_IP4) then
+
+        IP4VerileriniIsle(EthPaket)
+
+      // lldp tutanaðý
+      else if(Tutanak = TUTANAK_LLDP) then
+
+        FLLDP.VerileriIsle(EthPaket)
+
+      else
+      begin
+
+        // bilinmeyen protokol
+        SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'BAGLANTILAR.PAS: bilinmeyen tutanak: $%.4x', [Tutanak]);
+        SISTEM_MESAJ_MAC(mtUyari, RENK_TURKUAZ, '  - Kaynak MAC Adresi: ', EthPaket^.KaynakMACAdres);
+        SISTEM_MESAJ_MAC(mtUyari, RENK_TURKUAZ, '  - Hedef MAC Adresi: ', EthPaket^.HedefMACAdres);
+      end;
+    end;
+  end;
 end;
 
 {==============================================================================
-  að baðlantýsý için baðlantý oluþturur
+  baðlantý için kimlik numarasý oluþturur
  ==============================================================================}
-function TAgBaglantisi.BaglantiOlustur(AIletisimTipi: TIletisimTipi;
-  ABaglantiTuru: TBaglantiTuru; AProtokolTipi: TProtokolTipi; ABaglantiAdresi: string;
-  AYerelPort, AUzakPort: TSayi2): TBaglanti;
+function TAgBaglantisi.BKimlikNoAl: TISayi4;
 var
   B: TBaglanti;
-  s, SunucuAdi,
-  Sayfa: string;
-  i: TSayi4;
-  IP6Adr: TIP6Adres;
-  IP4Adr: TIP4Adres;
+  i: TISayi4;
+begin
+
+  Result := -1;
+
+  // tüm baðlantýlarý kontrol et
+  for i := 0 to USTSINIR_B_SAYISI - 1 do
+  begin
+
+    // kullanýlmayan baðlantý varsa sýra numarasýný geri döndür
+    B := Baglanti[i];
+    if(B = nil) then Exit(i);
+  end;
+end;
+
+{==============================================================================
+  að baðlantýsý için iletiþim baðlantýsý oluþturur
+ ==============================================================================}
+function TAgBaglantisi.BaglantiOlustur(ABaglantiNesnesi: TBaglantiNesnesi;
+  AIletisimTipi: TIletisimTipi; ABaglantiTuru: TBaglantiTuru; ATutanakTipi:
+  TTutanakTipi; AYerelPort, AUzakPort: TSayi2): TBaglanti;
+var
+  B: TBaglanti;
 begin
 
 //  while KritikBolgeyeGir(BaglantilarKilit) = False do;
 
-  B := BaglantiYapisiOlustur(ABaglantiTuru);
+  // iletiþim baðlantýsý oluþtur
+  B := TBaglanti.Create(ABaglantiNesnesi, AIletisimTipi, ABaglantiTuru, Self,
+    AYerelPort, AUzakPort);
+
+  // baðlantý oluþturma hatasý varsa çýk
   if(B = nil) then Exit(nil);
 
-  // ABaglantiAdresi içeriði aþaðýdaki biçimde gelmekte olup bu yapýnýn "/" sonrasý
-  // ne burada ne de çekirdeðin hiçbir yerinde kullanýlmamaktadýr.
-  { TODO - ileride http(s) protokolünde kullanýlma ihtimali mevcuttur }
-  // 192.168.1.1/search?q=elerais
-  i := Pos('/', ABaglantiAdresi);
-  if(i > 0) then
-  begin
+  // baðlantýyý dizi içerisine kaydet
+  Baglanti[B.FKimlik] := B;
 
-    SunucuAdi := Copy(ABaglantiAdresi, 1, i - 1);
-    Sayfa := Copy(ABaglantiAdresi, i, Length(ABaglantiAdresi) - i + 1);
-  end
-  else
-  begin
+  // diðer baðlantý nesne deðiþken atamalarýný gerçekleþtir
+  B.FTutanakTipi := ATutanakTipi;
 
-    SunucuAdi := ABaglantiAdresi;
-    Sayfa := '/';
-  end;
-
-  B.Bagli := False;
-  B.IletisimTipi := AIletisimTipi;
-
-  IP6Adr := IP6Adres0;
-  IP4Adr := IP4Adres0;
-
-  if(AIletisimTipi = itIP6) then
-  begin
-
-    IP6Adr := StrToIP6(SunucuAdi);
-    B.HedefIP6Adres := IP6Adr;
-  end
-  else
-  begin
-
-    IP4Adr := StrToIP4(SunucuAdi);
-    B.HedefIP4Adres := IP4Adr;
-  end;
-
-  B.ProtokolTipi := AProtokolTipi;
-
-  // aktif baðlantý: bu bilgisayarýn diðer bilgisayarýn sunucusuna baðlantýsý
-  // pasif baðlantý: diðer bilgisayarlarýn bu bilgisayarýn sunucusuna baðlantýsý
-  //if(ABaglantiTuru = btAktif) then
-  begin
-
-    B.YerelPort := AYerelPort;
-    B.UzakPort := AUzakPort;
-  {end
-  else if(ABaglantiTuru = btPasif) then
-  begin
-
-    B.YerelPort := AUzakPort;
-    B.UzakPort := AYerelPort;}
-  end;
-
-  if(AProtokolTipi = ptTCP) then
-  begin
-
-    B.PencereU := TCP_PENCERE_UZUNLUK;
-    B.SiraNo := TCPIlkSiraNoAl;
-    B.OnayNo := 0;
-  end
-  else if(AProtokolTipi = ptUDP) then
-  begin
-
-    {SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Protokol -> UDP', []);
-    SISTEM_MESAJ(mtBilgi, RENK_MOR, 'BAGLANTI.PAS: Kimlik %d', [B^.Kimlik]);
-    SISTEM_MESAJ_IP4(mtBilgi, RENK_LACIVERT, 'Hedef IP: ', IP4Adr);
-    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Kaynak Port: %d', [AYerelPort]);
-    SISTEM_MESAJ(mtBilgi, RENK_LACIVERT, 'Hedef Port: %d', [AUzakPort]);}
-  end
-  else
-  begin
-
-    s := ProtokolTipAdi(AProtokolTipi);
-    SISTEM_MESAJ(mtHata, RENK_PEMBE, 'BAGLANTI.PAS: TAgBaglantilari.BaglantiOlustur', []);
-    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - Bilinmeyen Protokol: %s ', [s]);
-    if(AIletisimTipi = itIP6) then
-      SISTEM_MESAJ_IP6(mtHata, RENK_TURKUAZ, '  - Hedef IP: ', IP6Adr)
-    else SISTEM_MESAJ_IP4(mtHata, RENK_TURKUAZ, '  - Hedef IP: ', IP4Adr);
-    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - Hedef Port: %d', [AUzakPort]);
-  end;
+  // baðlantý sayýsýný artýr
+  Inc(FBaglantiSayisi);
 
   Result := B;
 
@@ -531,38 +396,253 @@ begin
 end;
 
 {==============================================================================
-  yeni baðlantý için gerekli yapýlarý oluþturur
+  að baðlantýsý içerisinde oluþturulan iletiþim baðlantýsýný yok eder
  ==============================================================================}
-function TAgBaglantisi.BaglantiYapisiOlustur(ABaglantiTuru: TBaglantiTuru): TBaglanti;
-var
-  B: TBaglanti;
+procedure TAgBaglantisi.BaglantiyiYoket(ABaglanti: TBaglanti);
 begin
 
-  B := TBaglanti.Create;
-  if not(B = nil) then
-  begin
+  Baglanti[ABaglanti.FKimlik] := nil;
 
-    Baglanti[B.Kimlik] := B;
+  ABaglanti.Destroy;
 
-    B.BaglantiTuru := ABaglantiTuru;
-
-    Exit(B);
-  end;
-
-  Result := nil;
+  Dec(FBaglantiSayisi);
 end;
 
 {==============================================================================
-  TCP veri alýþveriþinin gerçekleþmesi için gereken ilk sýra numarasýný alýr
+  að baðlantýsý içerisinde iletiþim baðlantýsýný bulur
+ ==============================================================================}
+function TAgBaglantisi.BaglantiBul(ATutanakTipi: TTutanakTipi;
+  AYerelPort, AUzakPort: TSayi2): TObject;
+var
+  i: TSayi4;
+  B: TBaglanti;
+begin
+
+  Result := nil;
+
+  if(BaglantiSayisi > 0) then
+  begin
+
+    // tüm iletiþim baðlantýlarýný ara
+    for i := 0 to USTSINIR_B_SAYISI - 1 do
+    begin
+
+      B := Baglanti[i];
+
+      // baðlantý tanýmlý deðilse bir sonrakine geç
+      if(B = nil) then Continue;
+
+      {if(B.FTutanakTipi = ttUDP) then
+        SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'ttUDP', [])
+      else SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'ttTCP', []);
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'YP: %d', [B.FYerelPort]);
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'UP: %d', [B.FUzakPort]);}
+
+      // tutanak tiplerine ve baðlantý türlerine göre arama yap
+      if(B.FTutanakTipi = ATutanakTipi) then
+      begin
+
+        if(ATutanakTipi = ttTCP) then
+        begin
+
+          if(B.FBaglantiTuru = btYAktif) or (B.FBaglantiTuru = btUAktif) then
+          begin
+
+            if(B.FYerelPort = AUzakPort) and
+              (B.FUzakPort = AYerelPort) then Exit(B);
+          end
+          else
+          begin
+
+            if(B.FYerelPort = AYerelPort) and
+              (B.FUzakPort = AUzakPort) then Exit(B);
+          end;
+        end
+        else if(ATutanakTipi = ttUDP) then
+        begin
+
+          if(B.FBaglantiTuru = btYAktif) or (B.FBaglantiTuru = btUAktif) then
+          begin
+
+            if(B.FYerelPort = AUzakPort) and
+              (B.FUzakPort = AYerelPort) then Exit(B);
+          end
+          else
+          begin
+
+            if(B.FYerelPort = AUzakPort) and
+              (B.FUzakPort = AYerelPort) then Exit(B);
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+{==============================================================================
+  tcp veri alýþveriþinin takibi için gerekli ilk sýra numarasýný alýr
  ==============================================================================}
 function TAgBaglantisi.TCPIlkSiraNoAl: TSayi4;
 begin
 
-  Result := TCPIlkSiraNo;
-  Inc(TCPIlkSiraNo, 10);
+  Result := FTCPIlkSiraNo;
+  Inc(FTCPIlkSiraNo, 10);
 end;
 
-function TAgBaglantilari.KimlikNoAl: TISayi4;
+{==============================================================================
+  uzak baðlantý (istemci) için yerel port numarasý üretir
+ ==============================================================================}
+function TAgBaglantisi.YerelPortOlustur: TSayi4;
+begin
+
+  Inc(FYerelPortNo);
+  if(FYerelPortNo > $FDE8 {65000}) then FYerelPortNo := ILK_YERELPORTNO;
+  Result := FYerelPortNo;
+end;
+
+{==============================================================================
+  tcp için gönderilmesi gereken ve zamaný gelmiþ onay mesajlarýný gönderir
+  bilgi: çekirdek tarafýndan kullanýlacak (henüz aktifleþtirilmedi)
+ ==============================================================================}
+procedure TAgBaglantisi.OnayMesajlariniGonder;
+var
+  B: TBaglanti;
+  i, j: TSayi4;
+begin
+
+  // mevcut baðlantý var mý?
+  if(BaglantiSayisi > 0) then
+  begin
+
+    // zamanlayýcý deðerini al
+    j := GZamanlayicilar.FZamanlayiciSayaci;
+
+    // tüm baðlantýlarý kontrol et
+    for i := 0 to USTSINIR_B_SAYISI - 1 do
+    begin
+
+      // baðlantý nesnesi oluþturulmamýþsa sir sonrakine geç
+      B := Baglanti[i];
+      if(B = nil) then Continue;
+
+      // baðlantý için tcp tutanaðý oluþturulmuþ mu?
+      if not(B.FTCP = nil) then
+      begin
+
+        // onay mesaj bayraðý aktif mi?
+        if(B.FTCP.FOnayMesajiGonder) then
+        begin
+
+          // mesajýn gönderilme süresi gelmi mi?
+          if(B.FTCP.FOnayZamanAsimi < j) then
+          begin
+
+            // mesaj gönderme bayraðýný pasifleþtir ve onay mesajýný gönder
+            B.FTCP.FOnayMesajiGonder := False;
+            B.FTCP.SadeceOnayMesajiGonder;
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
+{==============================================================================
+  að baðlantýsý içerisindeki tüm iletiþim baðlantýlarýný listeler
+ ==============================================================================}
+procedure TAgBaglantisi.Listele;
+var
+  i: TSayi4;
+  B: TBaglanti;
+begin
+
+  if(BaglantiSayisi > 0) then
+  begin
+
+    for i := 0 to USTSINIR_B_SAYISI - 1 do
+    begin
+
+      B := Baglanti[i];
+      if(B = nil) then Continue;
+
+      if(B.FTutanakTipi = ttUDP) then
+        SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'ttUDP', [])
+      else SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'ttTCP', []);
+
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'YP: %d', [B.FYerelPort]);
+      SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'UP: %d', [B.FUzakPort]);
+    end;
+  end;
+end;
+
+{==============================================================================
+  að baðlantýlarý nesnesi ana yükleme iþlevlerini içerir
+ ==============================================================================}
+constructor TAgBaglantilari.Create;
+var
+  i: TSayi4;
+begin
+
+  // að baðlantý sayýsýný sýfýrla
+  FAgBaglantiSayisi := 0;
+
+  // baðlantý yapýlarýný ilk deðerlerle yükle
+  for i := 0 to USTSINIR_AB_SAYISI - 1 do AgBaglantisi[i] := nil;
+
+  // aktif baðlantý = yok
+  FAktifBaglanti := nil;
+end;
+
+function TAgBaglantilari.Al(ASiraNo: TISayi4): TAgBaglantisi;
+begin
+
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_AB_SAYISI) then
+    Result := FBaglantilar[ASiraNo]
+  else Result := nil;
+end;
+
+procedure TAgBaglantilari.Yaz(ASiraNo: TISayi4; ABaglanti: TAgBaglantisi);
+begin
+
+  if(ASiraNo >= 0) and (ASiraNo < USTSINIR_AB_SAYISI) then
+    FBaglantilar[ASiraNo] := ABaglanti;
+end;
+
+{==============================================================================
+  sistemde mevcut her bir að aygýtý için að baðlantýsý oluþturur
+ ==============================================================================}
+procedure TAgBaglantilari.AgBaglantilariniOlustur;
+var
+  B: TAgBaglantisi;
+  i: TSayi4;
+begin
+
+  // sistemde að aygýtý yoksa çýk
+  if(GAygitlar.ToplamAgAygitSayisi = 0) then Exit;
+
+  // her bir að aygýtý için að baðlantýsý oluþtur
+  for i := 0 to GAygitlar.ToplamAgAygitSayisi - 1 do
+  begin
+
+    B := TAgBaglantisi.Create;
+
+    // að baðlantýsý için að aygýtýný ata
+    B.FEthernet := TEthernet(GAygitlar.AgAygitListesi[i]);
+
+    // að baðlantýsýný listeye kaydet
+    AgBaglantisi[B.FKimlik] := B;
+
+    // aktif baðlantýyý belirle
+    if(FAktifBaglanti = nil) then FAktifBaglanti := B;
+
+    Inc(FAgBaglantiSayisi);
+  end;
+end;
+
+{==============================================================================
+  að baðlantýsý için baðlantý kimlik numarasý oluþturur
+ ==============================================================================}
+function TAgBaglantilari.ABKimlikNoAl: TISayi4;
 var
   B: TAgBaglantisi;
   i: TISayi4;
@@ -570,191 +650,162 @@ begin
 
   Result := -1;
 
+  // tüm að baðlantýlarýný kontrol et
   for i := 0 to USTSINIR_AB_SAYISI - 1 do
   begin
 
-    B := Baglanti0[i];
-
-    if(B = nil) then Exit(i);
-  end;
-end;
-
-function TAgBaglantisi.KimlikNoAlG: TISayi4;
-var
-  B: TBaglanti;
-  i: TISayi4;
-begin
-
-  Result := -1;
-
-  for i := 0 to USTSINIR_B_SAYISI - 1 do
-  begin
-
-    B := Baglanti[i];
-
+    // kullanýlmayan baðlantý varsa sýra numarasýný geri döndür
+    B := AgBaglantisi[i];
     if(B = nil) then Exit(i);
   end;
 end;
 
 {==============================================================================
-  tcp kaynak / hedef portun sahibi olan baðlantýyý alýr
+  baðlantý nesnesi ana yükleme iþlevlerini içerir
  ==============================================================================}
-function TAgBaglantisi.TCPBaglantiAl(AKaynakPort, AHedefPort: TSayi2): TBaglanti;
-var
-  B: TBaglanti;
-  i: TSayi4;
+constructor TBaglanti.Create(ABaglantiNesnesi: TBaglantiNesnesi;
+  AIletisimTipi: TIletisimTipi; ABaglantiTuru: TBaglantiTuru;
+  AAgBaglantisi: TAgBaglantisi; AYerelPort, AUzakPort: TSayi2);
 begin
 
-  Result := nil;
+  // baðlantý için kimlik al
+  FKimlik := AAgBaglantisi.BKimlikNoAl;
 
-  // tüm iþlem giriþlerini incele
-  for i := 0 to USTSINIR_B_SAYISI - 1 do
+  // deðer atamalarý
+  FBaglantiNesnesi := ABaglantiNesnesi;
+  FIletisimTipi := AIletisimTipi;
+  FBaglantiTuru := ABaglantiTuru;
+
+  // baðlantýnýn baðlý olduðu að baðlantýsý
+  FAB := AAgBaglantisi;
+
+  // baðlantý türüne göre port deðer atamalarý
+  if(ABaglantiTuru = btUAktif) then
   begin
+    FYerelPort := AUzakPort;
+    FUzakPort := AYerelPort; end
+  else
+  begin
+    FYerelPort := AYerelPort;
+    FUzakPort := AUzakPort;
+  end;
 
-    B := Baglanti[i];
-    if not(B = nil) then
+  // baðlantý nesnesinin deðerine göre ilgili alt nesneleri oluþtur
+  // bilgi: buraya eklenen her bir nesne destroy kýsmýna eklenerek yok edilmelidir
+  case FBaglantiNesnesi of
+    bnDHCPv6s : FDHCPv6s := TDHCPv6s.Create(Self);
+    bnDHCPv4s : FDHCPv4s := TDHCPv4s.Create(Self);
+    bnDHCPv4i : FDHCPv4i := TDHCPv4i.Create(Self);
+    bnHTTPs   :
     begin
-
-      if(B.BaglantiTuru = btAktif) then
-      begin
-
-        if{not(B.BaglantiDurum = bdYok) and} (AKaynakPort = B.UzakPort) and
-          (AHedefPort = B.YerelPort) then Exit(B);
-      end
-      else if(B.BaglantiTuru = btPasif) then
-      begin
-
-        if{not(B.BaglantiDurum = bdYok) and} (AKaynakPort = B.YerelPort) and
-          (AHedefPort = B.UzakPort) then Exit(B);
-      end;
+      FSunucu := THTTPSunucu.Create(Self);
+      FTCP := TTCP.Create(Self, FIletisimTipi, MACAdres0);
     end;
-  end;
-end;
-
-procedure TAgBaglantisi.Listele;
-var
-  B: TBaglanti;
-  i: TSayi4;
-begin
-
-  // tüm iþlem giriþlerini incele
-  for i := 0 to USTSINIR_B_SAYISI - 1 do
-  begin
-
-    B := Baglanti[i];
-    if not(B = nil) then
-      SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Kaynak: %d, Hedef: %d', [B.YerelPort, B.UzakPort]);
-  end;
-end;
-
-{==============================================================================
-  udp yerel portun sahibi olan baðlantýyý alýr
- ==============================================================================}
-function TAgBaglantisi.UDPBaglantiAl(AYerelPort: TSayi2): TBaglanti;
-var
-  B: TBaglanti;
-  i: TSayi4;
-begin
-
-  // tüm iþlem giriþlerini incele
-  for i := 0 to USTSINIR_B_SAYISI - 1 do
-  begin
-
-    B := Baglanti[i];
-    if not(B.BaglantiDurum = bdYok) and (B.YerelPort = AYerelPort) then
-      Exit(B);
+    bnFTPs    :
+    begin
+      FSunucu := TFTPSunucu.Create(Self);
+      FTCP := TTCP.Create(Self, FIletisimTipi, MACAdres0);
+    end;
+    bnTCP     : FTCP := TTCP.Create(Self, FIletisimTipi, MACAdres0);
+    bnUDP     : FUDP := TUDP.Create(Self, FIletisimTipi, MACAdres0);
+    bnDNSi    : FDNSi := TDNSi.Create(Self);
+    bnNetBios : FNetBios := TNetBios.Create(Self);
   end;
 
-  Result := nil;
-end;
-
-{==============================================================================
-  yerel port numarasý üretir
- ==============================================================================}
-function TAgBaglantilari.YerelPortAl: TSayi2;
-begin
-
-  Inc(YerelPortNo);
-  if(YerelPortNo > $FDE8 {65000}) then YerelPortNo := ILK_YERELPORTNO;
-  Result := YerelPortNo;
-end;
-
-constructor TBaglanti.Create;
-begin
-
-  inherited Create;
-
-  Kimlik := GAgBaglantisi.KimlikNoAlG;
-
-  BaglantiDurum := bdKapali;
-
-  Bagli := False;
-
-  FVeriUzunlugu := 0;
+  // tcp ve udp tutanaklarý için bellek ayýr
   FBellek := GetMem(4 * 4096); //Bag^.FPencereU);
-  if(FBellek = nil) then SISTEM_MESAJ(mtHata, RENK_SIYAH, 'BAGLANTI.PAS: Bellek yok', []);
+  if(FBellek = nil) then SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'BAGLANTI.PAS: Bellek yok', []);
+
+  // FBellek'te depolanan veri uzunluðu
+  FVeriUzunlugu := 0;
+
+  // baðlantý durumu
+  FBaglantiDurum := bdKapali;
+
+  // bu sistemden karþý sisteme gönderilen verinin onaylandýðý bilgisi (ACK)
+  FVeriOnayiBekleniyor := False;
 end;
 
+{==============================================================================
+  baðlantý nesnesi ana yok etme iþlevlerini içerir
+ ==============================================================================}
 destructor TBaglanti.Destroy;
 begin
 
+  // baðlantý durumu
+  FBaglantiDurum := bdKapali;
+
+  case FBaglantiNesnesi of
+    bnDHCPv6s : FDHCPv6s.Destroy;
+    bnDHCPv4s : FDHCPv4s.Destroy;
+    bnDHCPv4i : FDHCPv4i.Destroy;
+    bnHTTPs   : begin FSunucu.Destroy; FTCP.Destroy; end;
+    bnFTPs    : begin FSunucu.Destroy; FTCP.Destroy; end;
+    bnTCP     : FTCP.Destroy;
+    bnUDP     : FUDP.Destroy;
+    bnDNSi    : FDNSi.Destroy;
+    bnNetBios : FNetBios.Destroy;
+  end;
+
+  // ayrýlmýþ bellek varsa yok et
   if not(FBellek = nil) then FreeMem(FBellek, 4 * 4096);
 
-  GAgBaglantisi.Baglanti[Self.Kimlik] := nil;
-
+  // nesnenin kendisini (bu nesneyi) yok et
   inherited Destroy;
 end;
 
 {==============================================================================
   oluþturulan baðlantý üzerinden uzaktaki sisteme baðlantý kurar
  ==============================================================================}
-function TBaglanti.Baglan(ABaglantiTipi: TBaglantiTipi): TISayi4;
+procedure TBaglanti.Baglan;
+var
+  HedefMACAdres: TMACAdres;
+  HedefIPAdres: TIP4Adres;
 begin
 
-  { TODO - dhcp üzerinden 255... ip adresine gönderilen paketlerin önlemleri alýnsýn }
-  if(ProtokolTipi = ptUDP) then
+  // baðlantý durumuna göre ip adresini al
+  if(FBaglantiNesnesi = bnTCP) then
+    HedefIPAdres := FTCP.FIP4.FHedefIPAdres
+  else if(FBaglantiNesnesi = bnUDP) then
+    HedefIPAdres := FUDP.FIP4.FHedefIPAdres;
+
+  // ip adresinin mac adres karþýlýðýný al
+  { TODO - ip v6'ya göre düzenlenecek }
+  if(IP4AdresiAyniAgdaMi(HedefIPAdres)) then
+    HedefMACAdres := GAgBaglantilari.AB.FARP.MACAdresAl(HedefIPAdres)
+  else HedefMACAdres := GAgBaglantilari.AB.FARP.MACAdresAl(GAgBaglantilari.AB.DNSSunucusu);
+
+  // mac adres alýnamadýysa çýk
+  if(MACKarsilastir(HedefMACAdres, MACAdres0)) then Exit;
+
+  // tcp baðlantý iþlemleri
+  if(FBaglantiNesnesi = bnTCP) then
   begin
 
-    if(ABaglantiTipi = btYayin) then
+    if(FBaglantiDurum = bdKapali) then
     begin
 
-      HedefMACAdres := MACAdres255;
-      Bagli := True;
-      Exit(Kimlik);
-    end
-    else
-    begin
+      // üç yollu el sýkýþma iþlemini baþlat
+      FTCP.FIP4.FHedefMACAdres := HedefMACAdres;
 
-      { TODO - ip v6'ya göre düzenlenecek }
-      if(IP4AdresiAyniAgdaMi(HedefIP4Adres)) then
-        HedefMACAdres := GARPTablosu.MACAdresAl(HedefIP4Adres)
-      else HedefMACAdres := GARPTablosu.MACAdresAl(GAgBaglantilari.AktifBaglanti.DNSSunucusu);
+      // SYN
+      FTCP.BaglantiTalebiGonder;
 
-      Bagli := True;
-      Exit(Kimlik);
+      FBaglantiDurum := bdBaglaniyor;
     end;
   end
-  else if(ProtokolTipi = ptTCP) then
+  // udp baðlantý iþlemleri
+  else if(FBaglantiNesnesi = bnUDP) then
   begin
 
-    if(BaglantiDurum = bdKapali) then
+    if(FBaglantiDurum = bdKapali) then
     begin
 
-      { TODO - ip v6'ya göre düzenlenecek }
-      if(IP4AdresiAyniAgdaMi(HedefIP4Adres)) then
-        HedefMACAdres := GARPTablosu.MACAdresAl(HedefIP4Adres)
-      else HedefMACAdres := GARPTablosu.MACAdresAl(GAgBaglantilari.AktifBaglanti.DNSSunucusu);
+      FUDP.FIP4.FHedefMACAdres := HedefMACAdres;
 
-      // ilk paket olan SYN (ARZ) paketi gönderiliyor
-      if(IletisimTipi = itIP6) then
-      begin end
-      else GTCP.PaketleVeGonder(Self, TCP_BAYRAK_ARZ, @TCP4SYNSonEk, 12, True);
-      BaglantiDurum := bdBaglaniyor;
-      Exit(Kimlik);
+      FBaglantiDurum := bdBaglantiKuruldu;
     end;
   end;
-
-  Result := -1;
 end;
 
 {==============================================================================
@@ -763,66 +814,28 @@ end;
 function TBaglanti.BagliMi: Boolean;
 begin
 
-  Result := False;
-
-  // baðlantýyý al
-  if(ProtokolTipi = ptUDP) then
-
-    Result := Bagli
-
-  else if(ProtokolTipi = ptTCP) then
-
-    if(BaglantiDurum = bdBaglantiKuruldu) then Result := True
-end;
-
-{==============================================================================
-  baðlantý kurulan bilgisayardan gelen verileri programýn kullanmasý için belleðe kaydeder
- ==============================================================================}
-procedure TBaglanti.BellegeEkle(AKaynakBellek: Isaretci; AVeriUzunlugu: TSayi4);
-var
-  p: PChar;
-  i: TSayi4;
-begin
-
-  if(AVeriUzunlugu = 0) then Exit;
-
-  if(VeriUzunlugu + AVeriUzunlugu < (4 * 4096)) then
-  begin
-
-    p := FBellek + VeriUzunlugu;
-
-    Tasi2(AKaynakBellek, p, AVeriUzunlugu);
-    i := VeriUzunlugu;
-    i := i + AVeriUzunlugu;
-    FVeriUzunlugu := i;
-  end;
-end;
-
-{==============================================================================
-  baðlantý kurulan cihazdan gelip iþlenmeyi bekleyen veri miktarýný alýr
- ==============================================================================}
-function TBaglanti.VeriUzunlugu: TSayi4;
-begin
-
-  Result := FVeriUzunlugu;
+  if(FBaglantiDurum = bdBaglantiKuruldu) then
+    Result := True
+  else Result := False;
 end;
 
 {==============================================================================
   baðlantý üzerinden gelen veriyi ilgili programa yönlendirir
  ==============================================================================}
 function TBaglanti.Oku(ABellek: Isaretci): TSayi4;
-var
-  i: TSayi4;
 begin
 
-  i := VeriUzunlugu;
-  if(i > 0) then
+  if(FBaglantiDurum = bdBaglantiKuruldu) then
   begin
 
-    Tasi2(FBellek, ABellek, i);
-    Result := VeriUzunlugu;
-    FVeriUzunlugu := 0;
-    Exit(i);
+    if(FVeriUzunlugu > 0) then
+    begin
+
+      Tasi2(FBellek, ABellek, FVeriUzunlugu);
+      Result := FVeriUzunlugu;
+      FVeriUzunlugu := 0;
+      Exit;
+    end;
   end;
 
   Result := 0;
@@ -834,63 +847,78 @@ end;
 procedure TBaglanti.Yaz(ABellek: Isaretci; AUzunluk: TISayi4);
 begin
 
-  if(ProtokolTipi = ptTCP) then
+  if(FBaglantiDurum = bdBaglantiKuruldu) then
   begin
 
-    if(BaglantiDurum = bdBaglantiKuruldu) then
+    if not(FTCP = nil)  then
     begin
 
-      // FPencereU := $100;
-      GTCP.PaketleVeGonder(Self, TCP_BAYRAK_KABUL or TCP_BAYRAK_GONDER, ABellek, AUzunluk);
-    end;
-  end
-  else if(ProtokolTipi = ptUDP) then
-  begin
+      // veriyi karþý bilgisayara gönder
+      FTCP.PaketleVeGonder(TCP_BAYRAK_GONDER or TCP_BAYRAK_KABUL, ABellek, AUzunluk);
 
-    { TODO - ip v6'ya göre düzenlenecek }
-    GUDP.PaketleVeGonder(Self.IletisimTipi, HedefMACAdres, @GAgBaglantilari.AktifBaglanti.IP4Adres, @HedefIP4Adres,
-      YerelPort, UzakPort, ABellek, AUzunluk);
-  end
+      // karþý bilgisayardan gelmesi beklenen bir sonraki onay numarasýný (ACK - sýra no) belirle
+      FTCP.FSiraNo := FTCP.FSiraNo + AUzunluk;
+
+      // bu verinin karþý bilgisayara gittiðine dair onay bekle
+      // bilgi: gelen ilk ACK bu verinin gittiðinin de onayýdýr
+      FVeriOnayiBekleniyor := True;
+    end
+    else
+    begin
+
+      // veriyi sadece gönder
+      FUDP.PaketleVeGonder(ABellek, AUzunluk);
+    end;
+  end;
 end;
 
 {==============================================================================
-  baðlantýyý kapatýr
+  baðlantý üzerinden gelerek uygulamaya iletilecek veri miktarýný döndürür
  ==============================================================================}
-function TBaglanti.BaglantiyiKes: TISayi4;
+function TBaglanti.VeriUzunlugunuAl: TSayi4;
 begin
 
-  Result := -1;
+  Result := FVeriUzunlugu;
+end;
 
-  { TODO - baðlantýnýn yok edilmesi baðlantý kesilmesi (burada) aþamasýnda gerçekleþtirilebilir }
+{==============================================================================
+  baðlantý kurulan bilgisayardan gelen verileri programýn kullanmasý için belleðe kaydeder
+ ==============================================================================}
+procedure TBaglanti.BellegeEkle(AKaynakBellek: Isaretci; AVeriUzunlugu: TSayi4);
+var
+  p: PChar;
+begin
 
-  if(ProtokolTipi = ptUDP) then
+  // veri yoksa çýk
+  if(AVeriUzunlugu = 0) then Exit;
+
+  // 4K'nýn üzerinde veriye izin verme
+  { TODO - karþý bilgisayardan gelecek tüm veriyi alabilecek esneklikle tasarlanacak }
+  if(AVeriUzunlugu + FVeriUzunlugu < (4 * 4096)) then
   begin
 
-    BaglantiDurum := bdKapali;
-    ProtokolTipi := ptBilinmiyor;
-    HedefIP6Adres := IP6Adres0;
-    HedefIP4Adres := IP4Adres0;
-    YerelPort := 0;
-    UzakPort := 0;
+    // veriyi kaydet ve veri uzunluðunu güncelle
+    p := FBellek + FVeriUzunlugu;
 
-    Bagli := False;
-
-    Result := 0;
-  end
-  else if(ProtokolTipi = ptTCP) then
-  begin
-
-    if(BaglantiDurum = bdBaglantiKuruldu) then
-    begin
-
-      { TODO - düzenle }
-      GTCP.PaketleVeGonder(Self, TCP_BAYRAK_SON + TCP_BAYRAK_KABUL, nil, 0);
-
-      BaglantiDurum := bdKapanisBekleniyor1;
-
-      Result := 0;
-    end;
+    Tasi2(AKaynakBellek, p, AVeriUzunlugu);
+    FVeriUzunlugu := FVeriUzunlugu + AVeriUzunlugu;
   end;
+end;
+
+{==============================================================================
+  aktif baðlantýyý kapatýr
+ ==============================================================================}
+procedure TBaglanti.BaglantiyiKapat;
+begin
+
+  FBaglantiDurum := bdKapanmayiBekliyor;
+
+  FTCP.PaketleVeGonder(TCP_BAYRAK_SON or TCP_BAYRAK_KABUL, nil, 0);
+
+  // karþý bilgisayardan bir sonraki paketle gelmesi beklenen sýra numarasý
+  Inc(FTCP.FSiraNo);
+
+  FBaglantiDurum := bdKapanisBekleniyor1;
 end;
 
 end.

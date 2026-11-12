@@ -6,7 +6,7 @@
   Dosya Adı: ip4.pas
   Dosya İşlevi: ip tutanak (protokol) v4 yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 11/11/2026
+  Güncelleme Tarihi: 12/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -67,9 +67,13 @@ begin
   else if(GAgBaglantilari.AB.IP4AdresiAlindi) then
   begin
 
+    {$IFDEF SISTEM_SUNUCU}
+    if(1 = 1) then
+    {$ELSE}
     if((IP4Karsilastir(IPPaket^.HedefIPAdres, GAgBaglantilari.AB.IP4Adresim)) or
       (IP4Karsilastir2(IPPaket^.HedefIPAdres, GAgBaglantilari.AB.IP4Adresim)) or
       (IP4Karsilastir(IPPaket^.HedefIPAdres, IP4Adres255))) then
+    {$ENDIF}
     begin
 
       // icmp tutanağı

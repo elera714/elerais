@@ -6,7 +6,7 @@
   Dosya Adı: k_baglantilar.pas
   Dosya İşlevi: ağ bağlantı (socket) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 08/11/2026
+  Güncelleme Tarihi: 12/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -102,9 +102,11 @@ begin
       BagKimlik := PISayi4(ADegiskenler + 00)^;
 
       B := GAgBaglantilari.AB.Baglanti[BagKimlik];
-      if not(B = nil) then
-        Result := B.Baglan
-      else Result := -1;
+      if not(B = nil) then B.Baglan;
+
+      // bu işlevden dönen değer önemsizdir
+      // bağlantının gerçekleşip gerçekleşmediği AltIslevNo = 3 ile kontrol edilmelidir
+      Result := HATA_YOK;
     end
 
     // bağlantının varlığını kontrol et
@@ -167,7 +169,7 @@ begin
       if not(B = nil) then
       begin
 
-        Result := B.BaglantiyiKes;
+        B.BaglantiyiKapat;
 
         GAgBaglantilari.AB.BaglantiyiYoket(B);
       end;

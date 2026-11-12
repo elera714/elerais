@@ -6,7 +6,7 @@
   Dosya Adý: ag.pas
   Dosya Ýþlevi: að (network) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 08/11/2026
+  Güncelleme Tarihi: 12/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -45,7 +45,7 @@ function GenelAgCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi
 
 implementation
 
-uses sistemmesaj, dhcpv4i, gorev, dhcpv4;
+uses sistemmesaj, dhcpv4i, gorev, dhcpv6s, dhcpv4;
 
 {==============================================================================
   að kesme çaðrýlarýný yönetir
@@ -105,7 +105,12 @@ begin
   if not(GAygitlar.AktifEthernet = nil) then
   begin
 
+    // öndeðer olarak ip6 adresi atanmýþ durumda
+    GAgBaglantilari.AB.IP6Adresim := SabitIP6Adresim;
+    GAgBaglantilari.AB.IP6AdresiAlindi := True;
+
     {$IFDEF SISTEM_SUNUCU}
+    GAgBaglantilari.AB.IP4AdresiAlindi := True;
     GAgBaglantilari.AB.IP4Adresim := SIP4Adres;
     GAgBaglantilari.AB.AltAgMaskesi := SAltAgMaskesi;
     GAgBaglantilari.AB.AgGecitAdresi := SAgGecidi;
@@ -116,20 +121,24 @@ begin
     if(FOtomatikIPAdresiAl) then
     begin
 
+      GAgBaglantilari.AB.IP4AdresiAlindi := False;
       GAgBaglantilari.AB.IP4Adresim := IP4Adres0;
       GAgBaglantilari.AB.AltAgMaskesi := IP4Adres0;
       GAgBaglantilari.AB.AgGecitAdresi := IP4Adres0;
       GAgBaglantilari.AB.DHCPSunucusu := IP4Adres0;
       GAgBaglantilari.AB.DNSSunucusu := IP4Adres0;
+      GAgBaglantilari.AB.IPKiraSuresi := 0;
     end
     else
     begin
 
+      GAgBaglantilari.AB.IP4AdresiAlindi := True;
       GAgBaglantilari.AB.IP4Adresim := IIP4Adres;
       GAgBaglantilari.AB.AltAgMaskesi := IAltAgMaskesi;
       GAgBaglantilari.AB.AgGecitAdresi := IAgGecidi;
       GAgBaglantilari.AB.DHCPSunucusu := IDHCPSunucusu;
       GAgBaglantilari.AB.DNSSunucusu := IDNSSunucusu;
+      GAgBaglantilari.AB.IPKiraSuresi := $FFFFFFFF;
     end;
     {$ENDIF}
 
@@ -148,12 +157,12 @@ begin
     {$IFDEF SISTEM_SUNUCU}
     // dhcp v6 suunucusu
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DHCPv6 sunucusu yükleniyor...', []);
-    B := GAgBaglantilari.AB.BaglantiOlustur(bnDHCPv6s, itIP6, btPasif, ttUDP, '',
+    B := GAgBaglantilari.AB.BaglantiOlustur(bnDHCPv6s, itIP6, btPasif, ttUDP,
       DHCPv6_SUNUCU_PORT, DHCPv6_ISTEMCI_PORT);
 
     // dhcp v4 suunucusu
     SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ DHCPv4 sunucusu yükleniyor...', []);
-    B := GAgBaglantilari.AB.BaglantiOlustur(bnDHCPv4s, itIP4, btPasif, ttUDP, '',
+    B := GAgBaglantilari.AB.BaglantiOlustur(bnDHCPv4s, itIP4, btPasif, ttUDP,
       DHCPv4_SUNUCU_PORT, DHCPv4_ISTEMCI_PORT);
     {$ELSE}
     // otomatik ip adresi alýnmasý için gerekli baðlantý oluþturularak
@@ -161,11 +170,10 @@ begin
     if(FOtomatikIPAdresiAl) then
     begin
 
-      GAgBaglantilari.AB.IP4AdresiAlindi := False;
       B := GAgBaglantilari.AB.BaglantiOlustur(bnDHCPv4i, itIP4, btYAktif,
         ttUDP, DHCPv4_ISTEMCI_PORT, DHCPv4_SUNUCU_PORT);
       B.FDHCPv4i.OtomatikIpAdresiAl;
-    end else GAgBaglantilari.AB.IP4AdresiAlindi := True;
+    end;
     {$ENDIF}
   end;
 end;
