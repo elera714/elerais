@@ -6,7 +6,7 @@
   Dosya Adı: k_sistem.pas
   Dosya İşlevi: sistem kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 14/08/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

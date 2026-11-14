@@ -6,7 +6,7 @@
   Dosya Adý: k_depolama.pas
   Dosya Ýþlevi: depolama aygýt kesme çaðrýlarýný yönetir
 
-  Güncelleme Tarihi: 17/10/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

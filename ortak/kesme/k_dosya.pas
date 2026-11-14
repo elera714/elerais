@@ -6,7 +6,7 @@
   Dosya Adý: k_dosya.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 05/10/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

@@ -6,7 +6,7 @@
   Dosya Adı: gn_giriskutusu.pas
   Dosya İşlevi: giriş kutusu (TEdit) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 07/11/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

@@ -6,7 +6,7 @@
   Dosya Adı: dnsi.pas
   Dosya İşlevi: dns istemci tutanak işlevlerini yönetir
 
-  Güncelleme Tarihi: 08/11/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

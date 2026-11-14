@@ -6,7 +6,7 @@
   Dosya Adý: fat32.pas
   Dosya Ýþlevi: fat32 dosya sistem yönetim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 15/10/2026
+  Güncelleme Tarihi: 13/11/2026
 
   Bilgi: TFAT32 nesne içeriðindeki iþlevler dosyalar.pas dosyasýnýn içeriðindeki
     iþlevler ile kullanýlmalýdýr
@@ -137,7 +137,7 @@ function TFAT32.FileSize: TSayi4;
 begin
 
   // en son iþlem hatalý ise çýk
-  if(FGorev^.DosyaSonIslemDurum <> HATA_YOK) then Exit(0);
+  if(FGorev.FDosyaSonIslemDurum <> HATA_YOK) then Exit(0);
 
   Result := FUzunluk;
 end;
@@ -292,7 +292,7 @@ var
 begin
 
   // en son iþlem hatalý deðil ise
-  if(FGorev^.DosyaSonIslemDurum = HATA_YOK) then
+  if(FGorev.FDosyaSonIslemDurum = HATA_YOK) then
   begin
 
     OkunacakVeriU := FUzunluk;
@@ -338,7 +338,7 @@ begin
     // eðer 0x0FFFFFF8..0xFFFFFFFF aralýðýndaysa bu dosyanýn en son zinciridir
     until (FIslem.FSektorKumeNo >= $0FFFFFF8) or (Sonuc <> HATA_YOK) or (OkunacakVeriU = 0);
 
-    if(Sonuc <> HATA_YOK) then FGorev^.DosyaSonIslemDurum := HATA_AYGITOKUMA;
+    if(Sonuc <> HATA_YOK) then FGorev.FDosyaSonIslemDurum := HATA_AYGITOKUMA;
 
     // kullanýlan bellekleri serbest býrak
     FreeMem(Bellek, KBS * 512);
@@ -366,7 +366,7 @@ var
 begin
 
   // en son iþlem hatalý deðil ise
-  if(FGorev^.DosyaSonIslemDurum = HATA_YOK) then
+  if(FGorev.FDosyaSonIslemDurum = HATA_YOK) then
   begin
 
     // tam dosya arama yolunu oluþtur
@@ -392,7 +392,7 @@ begin
     end;
 
     // dosyanýn BULUNAMAMASI durumunda hata kodu atamasýný gerçekleþtir
-    FGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+    FGorev.FDosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
   end;
 end;
 

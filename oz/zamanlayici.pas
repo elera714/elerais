@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -221,7 +221,7 @@ end;
  ==============================================================================}
 procedure TZamanlayicilar.ZamanlayicilariKontrolEt;
 var
-  G: PGorev;
+  G: TGorev;
   Z: TZamanlayici;
   Olay: TOlay;
   GeriSayimSayaci, i: TISayi4;
@@ -265,8 +265,8 @@ begin
         else
         begin
 
-          G := GorevAl(Z.GrvKimlik);
-          GGorevler.OlayEkle(G^.Kimlik, Olay);
+          G := GGorevler.GorevAl(Z.GrvKimlik);
+          GGorevler.OlayEkle(G.FKimlik, Olay);
         end;
       end;
     end;
@@ -376,12 +376,13 @@ asm
 
   // zamanlayýcý sayacýný artýr.
   mov   esi,[GZamanlayicilar]
-  mov   ecx,[esi + TZamanlayicilar.FZamanlayiciSayaci]
-  inc   ecx
-  mov   [esi + TZamanlayicilar.FZamanlayiciSayaci],ecx
+  mov   eax,[esi + TZamanlayicilar.FZamanlayiciSayaci]
+  inc   eax
+  mov   [esi + TZamanlayicilar.FZamanlayiciSayaci],eax
 
   // görev deðiþimi yapýlsýn mý?
-  mov   eax,GGorevler.FGorevDegisimBayragi
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FGorevDegisimBayragi]
   cmp   eax,1
   je    @@kontrol1
 
@@ -416,52 +417,65 @@ asm
 @@yenigorev:
 
   // tek bir görev çalýþýyorsa görev deðiþikliði yapma, çýk
-  mov   ecx,GGorevler.FCalisanGorevSayisi
-  cmp   ecx,1
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FCalisanGorevSayisi]
+  cmp   eax,1
   je    @@cik
 
   // görevin belirlenen süre kadar çalýþmasýný saðla
-  mov   eax,GGorevler.FAktifGrv
-  mov   esi,GGorevler.Gorev[eax * 4]
-  mov   eax,[esi + TGorev.CalismaSureSayac]
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax, SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,[esi + TGorev.FCalismaSureSayac]
   dec   eax
-  mov   [esi + TGorev.CalismaSureSayac],eax
+  mov   [esi + TGorev.FCalismaSureSayac],eax
   jz    @@bir_sonraki_gorev
   jmp   @@cik
 
 @@bir_sonraki_gorev:
 
   // mevcut görevin sayacý sýfýrlandýðý için görevin sayacýný güncelle
-  mov   eax,[esi + TGorev.CalismaSureMS]
-  mov   [esi + TGorev.CalismaSureSayac],eax
+  mov   eax,[esi + TGorev.FCalismaSureMS]
+  mov   [esi + TGorev.FCalismaSureSayac],eax
 
   // geçiþ yapýlacak bir sonraki görevi bul
-  call  CalistirilacakBirSonrakiGoreviBul
-  mov   GGorevler.FAktifGrv,eax
+  mov   eax,GGorevler
+  call  TGorevler.CalisacakYeniGoreviBul
+
+  mov   esi,[GGorevler]
+  mov   [esi + TGorevler.FAktifGrv],eax
 
   // aktif görevin bellek baþlangýç adresini al
-  mov   eax,GGorevler.FAktifGrv
-  mov   esi,GGorevler.Gorev[eax * 4]
-  mov   eax,[esi + TGorev.BellekBasAdr]
-  mov   GGorevler.FAktifGrvBelAdr,eax
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,[esi + TGorev.FBellekBaslAdr]
+
+  mov   esi,[GGorevler]
+  mov   [esi + TGorevler.FAktifGrvBelAdr],eax
 
   // görev deðiþiklik sayacýný bir artýr
-  mov   eax,GGorevler.FAktifGrv
-  mov   esi,GGorevler.Gorev[eax * 4]
-  mov   eax,[esi + TGorev.GrvSayac]
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,[esi + TGorev.FGrvSayac]
   inc   eax
-  mov   [esi + TGorev.GrvSayac],eax
+  mov   [esi + TGorev.FGrvSayac],eax
 
   // GorevDegisimSayisi = kilitlenmeleri denetleyebilmek için eklenen deðiþken
-  mov   eax,GGorevler.FGorevDegisimSayisi
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FGorevDegisimSayisi]
   inc   eax
-  mov   GGorevler.FGorevDegisimSayisi,eax
+  mov   [esi + TGorevler.FGorevDegisimSayisi],eax
 
   // görevin öncelik seviyesine göre görev geçiþini gerçekleþtir
-  mov   ecx,GGorevler.FAktifGrv
+  mov   esi,[GGorevler]
+  mov   ecx,[esi + TGorevler.FAktifGrv]
   mov   eax,ecx
-  mov   esi,GGorevler.Gorev[eax * 4]
-  mov   eax,[esi + TGorev.SeviyeNo]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,[esi + TGorev.FSeviyeNo]
   cmp   eax,CALISMA_SEVIYE0
   jz    @@TSS_SEVIYE0
 
@@ -495,8 +509,6 @@ asm
   popfd
   popad
 
-//  sti
-
 // iþlemi belirtilen göreve devret
 @@JMPKOD:
   db  $EA
@@ -520,8 +532,9 @@ asm
   pushad
   pushfd
 
-  mov   ecx,GGorevler.FCalisanGorevSayisi
-  cmp   ecx,1
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FCalisanGorevSayisi]
+  cmp   eax,1
   jg    @@yenigorev
 
   popfd
@@ -531,27 +544,34 @@ asm
 
 @@yenigorev:
 
-  call  CalistirilacakBirSonrakiGoreviBul
-  mov   GGorevler.FAktifGrv,eax
+  mov   eax,GGorevler
+  call  TGorevler.CalisacakYeniGoreviBul
+  mov   esi,[GGorevler]
+  mov   [esi + TGorevler.FAktifGrv],eax
 
   // aktif görevin bellek baþlangýç adresini al
-  mov   eax,GGorevler.FAktifGrv
-  mov   esi,GGorevler.Gorev[eax * 4]
-  mov   eax,[esi + TGorev.BellekBasAdr]
-  mov   GGorevler.FAktifGrvBelAdr,eax
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,[esi + TGorev.FBellekBaslAdr]
+
+  mov   esi,[GGorevler]
+  mov   [esi + TGorevler.FAktifGrvBelAdr],eax
 
   // görev deðiþiklik sayacýný bir artýr
-  mov   eax,GGorevler.FAktifGrv
-  mov   esi,GGorevler.Gorev[eax * 4]
-  mov   eax,[esi + TGorev.GrvSayac]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax, SizeOf(TGorev)
+  mov   esi, [esi + TGorevler.FGorevListesi + eax]
+  mov   eax, [esi + TGorev.FGrvSayac]
   inc   eax
-  mov   [esi + TGorev.GrvSayac],eax
+  mov   [esi + TGorev.FGrvSayac],eax
 
   // görevin öncelik seviyesine göre görev geçiþini gerçekleþtir
-  mov   ecx,GGorevler.FAktifGrv
+  mov   esi,[GGorevler]
+  mov   ecx,[esi + TGorevler.FAktifGrv]
   mov   eax,ecx
-  mov   esi,GGorevler.Gorev[eax * 4]
-  mov   eax,[esi + TGorev.SeviyeNo]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,[esi + TGorev.FSeviyeNo]
   cmp   eax,CALISMA_SEVIYE0
   jz    @@TSS_SEVIYE0
 

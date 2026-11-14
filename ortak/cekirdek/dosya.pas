@@ -6,7 +6,7 @@
   Dosya Adı: dosya.pas
   Dosya İşlevi: dosya sistemleri ana yapısını içerir
 
-  Güncelleme Tarihi: 15/10/2026
+  Güncelleme Tarihi: 13/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -53,7 +53,7 @@ type
     FSHTSektorSayisi: TSayi4;       // FSHTBellek bellek bölgesine yüklenen sektör sayısı
     FSHTBellek: Isaretci;           // sektör harita tablosunu (fat) yüklemek için kullanılacak
 
-    FGorev: PGorev;                 // dosya işlemini gerçekleştiren görev
+    FGorev: TGorev;                 // dosya işlemini gerçekleştiren görev
 
     // dizin / dosya girişinin Tek Sektörlük Içeriği. (işlevler arası veri alışverişi için)
     FTSI: Isaretci;

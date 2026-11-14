@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 14/10/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -353,13 +353,13 @@ end;
  ==============================================================================}
 procedure TOlayYonetim.OlaylariYonlendir(AGorselNesne: TGorselNesne; AOlay: TOlay);
 var
-  Gorev: PGorev;
+  Gorev: TGorev;
 begin
 
-  Gorev := GorevAl(AGorselNesne.GrvKimlik);
+  Gorev := GGorevler.GorevAl(AGorselNesne.GrvKimlik);
 
   // görev çalýþmýyorsa nesneye olay gönderme
-  if(Gorev = nil) or (Gorev^.Durum <> gdCalisiyor) then Exit;
+  if(Gorev = nil) or (Gorev.FDurum <> gdCalisiyor) then Exit;
 
   // bu iþleve yönlendirilen olayý görsel nesneye yönlendir
   if not(AGorselNesne.OlayCagriAdr = nil) then

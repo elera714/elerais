@@ -6,7 +6,7 @@
   Dosya Adý: k_olay.pas
   Dosya Ýþlevi: olay (event) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 22/09/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,7 +27,7 @@ uses gorev, zamanlayici;
  ==============================================================================}
 function OlayCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 var
-  G: PGorev;
+  G: TGorev;
   O: TOlay;
   O2: POlay;
   IslevNo: TSayi4;
@@ -42,7 +42,7 @@ begin
   if(IslevNo = 1) then
   begin
 
-    G := GorevAl;
+    G := GGorevler.GorevAl;
     if(G = nil) then
     begin
 
@@ -51,7 +51,7 @@ begin
     end;
 
     // çalýþan iþleme ait olay var mý ?
-    if(GGorevler.OlayAl(G^.Kimlik, O)) then
+    if(GGorevler.OlayAl(G.FKimlik, O)) then
       OlayMevcut := True
     else OlayMevcut := False;
 
@@ -65,7 +65,7 @@ begin
       O2^.Deger1 := O.Deger1;
       O2^.Deger2 := O.Deger2;
 
-      Result := G^.OlaySayisi;
+      Result := G.FOlaySayisi;
     end
     // olay yok ise tek bir görev deðiþikliði yap ve görevi istekte bulunan göreve devret.
     else
@@ -80,7 +80,7 @@ begin
   else if(IslevNo = 2) then
   begin
 
-    G := GorevAl;
+    G := GGorevler.GorevAl;
 
     { TODO - tanýmsýz olay ile geri dön
       buradaki kodlar hiç bir zaman çalýþmayacaktýr, bir durumun testi için eklenmiþtir (kaldýrýlabilir)  }
@@ -102,7 +102,7 @@ begin
     // ta ki ilgili görev için olay mevcut oluncaya kadar
     repeat
 
-      if(GGorevler.OlayAl(G^.Kimlik, O)) then
+      if(GGorevler.OlayAl(G.FKimlik, O)) then
 
         OlayMevcut := True
       else OlayMevcut := False;
@@ -117,7 +117,7 @@ begin
     O2^.Deger1 := O.Deger1;
     O2^.Deger2 := O.Deger2;
 
-    Result := G^.OlaySayisi;
+    Result := G.FOlaySayisi;
   end;
 end;
 

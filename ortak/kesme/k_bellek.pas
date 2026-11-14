@@ -6,7 +6,7 @@
   Dosya Adı: k_bellek.pas
   Dosya İşlevi: bellek kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 23/09/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

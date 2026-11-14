@@ -6,7 +6,7 @@
   Dosya Adı: k_fare.pas
   Dosya İşlevi: fare (mouse) kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 14/08/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

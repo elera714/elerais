@@ -6,7 +6,7 @@
   Dosya Adý: idt.pas
   Dosya Ýþlevi: kesme servis rutinlerini (isr) içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -223,21 +223,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$00
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$00
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -256,21 +257,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$01
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$01
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -289,21 +291,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$02
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$02
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -322,21 +325,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$03
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$03
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -355,21 +359,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$04
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$04
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -388,21 +393,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$05
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$05
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -421,21 +427,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$06
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$06
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -487,21 +494,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$08
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$08
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -520,21 +528,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$09
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$09
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -553,21 +562,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$0A
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$0A
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -586,21 +596,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$0B
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$0B
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -619,21 +630,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$0C
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$0C
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -652,34 +664,35 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
 
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
 
-  mov eax,$0D
-  mov [esi + TGorev.HataKodu],eax
+  mov   eax,$0D
+  mov   [esi + TGorev.FHataKodu],eax
 
-  mov eax,[esp + 04]
-  mov [esi + TGorev.HataEIP],eax
+  mov   eax,[esp + 04]
+  mov   [esi + TGorev.FHataEIP],eax
 
-  mov eax,[esp + 08]
-  mov [esi + TGorev.HataCS],eax
+  mov   eax,[esp + 08]
+  mov   [esi + TGorev.FHataCS],eax
 
-  mov eax,[esp + 12]
-  mov [esi + TGorev.HataBayrak],eax
+  mov   eax,[esp + 12]
+  mov   [esi + TGorev.FHataBayrak],eax
 
-  mov eax,[esp + 16]
-  mov [esi + TGorev.HataESP],eax
+  mov   eax,[esp + 16]
+  mov   [esi + TGorev.FHataESP],eax
 
 //  add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -698,21 +711,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$0E
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$0E
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -731,21 +745,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$0F
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$0F
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -764,21 +779,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$10
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$10
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -797,21 +813,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$11
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$11
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -830,21 +847,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$12
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$12
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -863,22 +881,23 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$13
-  mov [esi + TGorev.HataKodu],eax
-  mov eax,esp
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$13
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   eax,esp
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -897,21 +916,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$14
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$14
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -930,21 +950,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$15
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$15
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -963,21 +984,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$16
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$16
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -996,21 +1018,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$17
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$17
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1029,21 +1052,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$18
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$18
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1062,21 +1086,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$19
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$19
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1095,21 +1120,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$1A
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$1A
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1128,21 +1154,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$1B
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$1B
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1161,21 +1188,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$1C
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$1C
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1194,21 +1222,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$1D
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$1D
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1227,21 +1256,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$1E
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$1E
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1260,21 +1290,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$1F
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$1F
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1297,21 +1328,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$30
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$30
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1330,21 +1362,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$31
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$31
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1363,21 +1396,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$32
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$32
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;
@@ -1396,21 +1430,22 @@ asm
   mov   ds,ax
 
   // programý ilgili deðerlerle iþaretle
-  mov eax,GGorevler.FAktifGrv
-  shl eax,2
-  mov esi,GGorevler.Gorev[eax]
-  mov eax,TGorevDurum(gdSonlandiriliyor)
-  mov [esi + TGorev.Durum],eax
-  mov eax,$33
-  mov [esi + TGorev.HataKodu],eax
-  mov [esi + TGorev.HataESP],esp
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,TGorevDurum(gdSonlandiriliyor)
+  mov   [esi + TGorev.FDurum],eax
+  mov   eax,$33
+  mov   [esi + TGorev.FHataKodu],eax
+  mov   [esi + TGorev.FHataESP],esp
 
   add   esp,4
 
   mov   al,$20
   out   PIC1_KOMUT,al
 
-  int $20
+  int   $20
 
 @@son: jmp @@son
 end;

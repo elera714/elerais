@@ -6,7 +6,7 @@
   Dosya Adı: gn_dugme.pas
   Dosya İşlevi: düğme (TButton) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 17/08/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

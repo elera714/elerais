@@ -6,7 +6,7 @@
   Dosya Adý: sistem.pas
   Dosya Ýþlevi: sistem yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -119,12 +119,12 @@ begin
   if(Sonuc = HATA_YOK) then
   begin
 
-    CalisanPSayisi := CalisanProgramSayisiniAl(GGNesneler.AktifMasaustu.Kimlik);
+    CalisanPSayisi := GGorevler.PencereSahipGorevSayisiniAl(GGNesneler.AktifMasaustu.Kimlik);
 
     for i := 0 to CalisanPSayisi - 1 do
     begin
 
-      P := CalisanProgramBilgisiAl(i, GGNesneler.AktifMasaustu.Kimlik);
+      P := GGorevler.PencereSahipGorevBilgisiAl(i, GGNesneler.AktifMasaustu.Kimlik);
       j := Length(P.DosyaAdi);
       if(P.DosyaAdi[j] = 'c') then
       begin

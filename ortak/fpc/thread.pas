@@ -7,7 +7,7 @@
   Dosya İşlevi: çekirdek içerisinde ayrı olarak çalışarak işlem yapacak (process)
     iş birimini (thread) oluşturur
 
-  Güncelleme Tarihi: 17/08/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -21,13 +21,13 @@ type
   TThread = class
   private
     FYiginAdresi: Isaretci;
-    FGorev: PGorev;
+    FGorev: TGorev;
   public
     constructor Create(AIslemAdi: string; CreateSuspended: Boolean = True); virtual;
     procedure Start;
     procedure Execute; virtual; abstract;
     function Ozellestir(AGorevAdi: string; AIslev: TOIslev; AYiginDegeri: TSayi4;
-      ASeviyeNo: TSayi4; ACalistir: Boolean = False): PGorev;
+      ASeviyeNo: TSayi4; ACalistir: Boolean = False): TGorev;
   end;
 
 implementation
@@ -56,9 +56,9 @@ end;
   çalışma işlevini özelleştir
  ==============================================================================}
 function TThread.Ozellestir(AGorevAdi: string; AIslev: TOIslev; AYiginDegeri: TSayi4;
-  ASeviyeNo: TSayi4; ACalistir: Boolean = False): PGorev;
+  ASeviyeNo: TSayi4; ACalistir: Boolean = False): TGorev;
 var
-  G: PGorev;
+  G: TGorev;
   // yazmaçların girdi içerisindeki sıra numaraları
   SNYazmacCS, SNYazmacDS, SNYazmacTSS,
   i: TSayi4;
@@ -68,11 +68,11 @@ begin
 
   //while KritikBolgeyeGir(GorevKilit) = False do;
 
-  G := GGorevler.BosGorevBul;
+  G := GGorevler.GorevOlustur;
   if not(G = nil) then
   begin
 
-    i := G^.Kimlik;
+    i := G.FKimlik;
 
     // uygulamanın TSS, CS, DS seçicilerini belirle, her bir program 3 seçici içerir
     SNYazmacCS := (i * 3) + 1;
@@ -108,42 +108,42 @@ begin
     GorevTSSListesi[i]^.ESP0 := AYiginDegeri;
 
     // işlemin olay bellek bölgesini ata
-    G^.OlayBellekAdresi := nil;
+    G.FOlayBellekAdresi := nil;
 
     // görev olay sayacını sıfırla
-    G^.OlaySayisi := 0;
+    G.FOlaySayisi := 0;
 
     // görev çalışma seviye numarası - öncelik derecesi
-    G^.SeviyeNo := ASeviyeNo;
+    G.FSeviyeNo := ASeviyeNo;
 
     // görev değişim sayacını sıfırla
-    G^.GrvSayac := 0;
+    G.FGrvSayac := 0;
 
     // bellek başlangıç adresi
-    G^.BellekBasAdr := TSayi4(@AIslev);
+    G.FBellekBaslAdr := TSayi4(@AIslev);
 
     // görev çalışma süreleri
-    G^.CalismaSureMS := DPL0_SUREMS;
-    G^.CalismaSureSayac := DPL0_SUREMS;
+    G.FCalismaSureMS := DPL0_SUREMS;
+    G.FCalismaSureSayac := DPL0_SUREMS;
 
     // bellek miktarı
-    G^.BellekUz := $FFFFFFFF;
-    G^.YiginBellekUz := YIGIN_MIKTARI;
+    G.FBellekUz := $FFFFFFFF;
+    G.FYiginBellekUz := YIGIN_MIKTARI;
 
     // işlem başlangıç adresi
-    G^.KodBasAdresi := TSayi4(@AIslev);
+    G.FKodBasAdresi := TSayi4(@AIslev);
 
     // işlemin yığın adresi
-    G^.YiginBasAdresi := TSayi4(FYiginAdresi);
+    G.FYiginBasAdresi := TSayi4(FYiginAdresi);
 
-    G^.AktifMasaustu := nil;
-    G^.AktifPencere := nil;
+    G.FAktifMasaustu := nil;
+    G.FAktifPencere := nil;
 
     // işlemin adı
-    G^.DosyaAdi := '*' + AGorevAdi;
+    G.FDosyaAdi := '*' + AGorevAdi;
 
     // program öndeğer adı
-    G^.ProgramAdi := '*' + AGorevAdi;
+    G.FProgramAdi := '*' + AGorevAdi;
 
     // görevin durumunu belirle
     if(ACalistir) then
@@ -165,7 +165,7 @@ end;
 procedure TThread.Start;
 begin
 
-  FGorev^.Durum := gdCalisiyor;
+  FGorev.FDurum := gdCalisiyor;
 end;
 
 end.

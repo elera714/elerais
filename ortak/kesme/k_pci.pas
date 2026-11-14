@@ -6,7 +6,7 @@
   Dosya Adı: k_pci.pas
   Dosya İşlevi: pci kesme yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 21/08/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -30,7 +30,7 @@ var
   P: TPCI;
   P3: PPCI3;
   IslevNo: TSayi4;
-  SiraNo: TSayi4; { TISayi4 olması gerekiyor, değiştirildiğinde sistem kilitleniyor }
+  SiraNo: TISayi4;
 begin
 
   Result := HATA_ISLEV;

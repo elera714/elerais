@@ -6,7 +6,7 @@
   Dosya Adı: k_giysi.pas
   Dosya İşlevi: giysi (skin) kesme işlevlerini yönetir
 
-  Güncelleme Tarihi: 12/08/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

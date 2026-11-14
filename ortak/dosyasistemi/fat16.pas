@@ -6,7 +6,7 @@
   Dosya Adı: fat16.pas
   Dosya İşlevi: fat16 dosya sistem yönetim işlevlerini yönetir
 
-  Güncelleme Tarihi: 15/10/2026
+  Güncelleme Tarihi: 13/11/2026
 
   Bilgi: TFAT16 nesne içeriğindeki işlevler dosyalar.pas dosyasının içeriğindeki
     işlevler ile kullanılmalıdır
@@ -137,7 +137,7 @@ function TFAT16.FileSize: TSayi4;
 begin
 
   // en son işlem hatalı ise çık
-  if(FGorev^.DosyaSonIslemDurum <> HATA_YOK) then Exit(0);
+  if(FGorev.FDosyaSonIslemDurum <> HATA_YOK) then Exit(0);
 
   Result := FUzunluk;
 end;
@@ -291,7 +291,7 @@ var
 begin
 
   // en son işlem hatalı değil ise
-  if(FGorev^.DosyaSonIslemDurum = HATA_YOK) then
+  if(FGorev.FDosyaSonIslemDurum = HATA_YOK) then
   begin
 
     OkunacakVeriU := FUzunluk;
@@ -337,7 +337,7 @@ begin
     // eğer 0xFFF8..0xFFFF aralığındaysa bu dosyanın en son zinciridir
     until (FIslem.FSektorKumeNo >= $FFF8) or (Sonuc <> HATA_YOK) or (OkunacakVeriU = 0);
 
-    if(Sonuc <> HATA_YOK) then FGorev^.DosyaSonIslemDurum := HATA_AYGITOKUMA;
+    if(Sonuc <> HATA_YOK) then FGorev.FDosyaSonIslemDurum := HATA_AYGITOKUMA;
 
     // kullanılan bellekleri serbest bırak
     FreeMem(Bellek, KBS * 512);
@@ -365,7 +365,7 @@ var
 begin
 
   // en son işlem hatalı değil ise
-  if(FGorev^.DosyaSonIslemDurum = HATA_YOK) then
+  if(FGorev.FDosyaSonIslemDurum = HATA_YOK) then
   begin
 
     // tam dosya arama yolunu oluştur
@@ -391,7 +391,7 @@ begin
     end;
 
     // dosyanın BULUNAMAMASI durumunda hata kodu atamasını gerçekleştir
-    FGorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+    FGorev.FDosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
   end;
 end;
 

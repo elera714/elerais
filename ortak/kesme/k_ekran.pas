@@ -6,7 +6,7 @@
   Dosya Adı: k_ekran.pas
   Dosya İşlevi: ekran (screen) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 12/08/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}

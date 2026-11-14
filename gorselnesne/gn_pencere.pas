@@ -6,7 +6,7 @@
   Dosya Adı: gn_pencere.pas
   Dosya İşlevi: pencere (TForm) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 30/08/2026
+  Güncelleme Tarihi: 14/11/2026
 
   Önemli Bilgiler:
 
@@ -230,7 +230,7 @@ end;
 function TPencere.Ozellestir(AAtaNesne: TGorselNesne; ASol, AUst, AGenislik, AYukseklik: TISayi4;
   APencereTipi: TPencereTipi; ABaslik: string; AGovdeRenk: TRenk): TISayi4;
 var
-  Gorev: PGorev;
+  Gorev: TGorev;
   MasaUstu: TMasaustu;
   AktifGiysi: TGiysi;
   Genislik, Yukseklik,
@@ -252,7 +252,7 @@ begin
 
   // pencerenin ana pencere olup olmadığını tespit et
   Gorev := GGorevler.GorevBul(GGorevler.FAktifGrv);
-  if not(Gorev = nil) and (Gorev^.AktifPencere = nil) then
+  if not(Gorev = nil) and (Gorev.FAktifPencere = nil) then
     AnaPencere := True
   else AnaPencere := False;
 
@@ -301,11 +301,11 @@ begin
   Baslik := ABaslik;
 
   // ana pencerenin aktif penceresini belirle (alt penceresi olan ana pencere için)
-  FAtaPencere := TPencere(Gorev^.AktifPencere);
+  FAtaPencere := TPencere(Gorev.FAktifPencere);
 
   // görevin aktif masaüstü ve penceresini belirle
-  Gorev^.AktifMasaustu := MasaUstu;
-  Gorev^.AktifPencere := Self;
+  Gorev.FAktifMasaustu := MasaUstu;
+  Gorev.FAktifPencere := Self;
 
   Odaklanilabilir := False;
   Odaklanildi := False;

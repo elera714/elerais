@@ -7,7 +7,7 @@
   Dosya İşlevi: ağ bağlantıları ve ona bağlı bağlantı (soket) iletişim
     yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 12/11/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -414,8 +414,8 @@ end;
 function TAgBaglantisi.BaglantiBul(ATutanakTipi: TTutanakTipi;
   AYerelPort, AUzakPort: TSayi2): TObject;
 var
-  i: TSayi4;
   B: TBaglanti;
+  i: TSayi4;
 begin
 
   Result := nil;
@@ -552,8 +552,8 @@ end;
  ==============================================================================}
 procedure TAgBaglantisi.Listele;
 var
-  i: TSayi4;
   B: TBaglanti;
+  i: TSayi4;
 begin
 
   if(BaglantiSayisi > 0) then

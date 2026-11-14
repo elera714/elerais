@@ -6,7 +6,7 @@
   Dosya Adý: arge.pas
   Dosya Ýþlevi: sistem ar-ge çalýþmalarýný içerir
 
-  Güncelleme Tarihi: 06/09/2026
+  Güncelleme Tarihi: 14/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -452,7 +452,7 @@ procedure KaydedilenProgramlariYenidenYukle;
 var
   GN: TGorselNesne;
   s, DosyaAdi, s2: string;
-  MUGorev: PGorev;
+  MUGorev: TGorev;
   Konum: TKonum;
   Boyut: TBoyut;
   DosyaKimlik: TKimlik;
@@ -529,7 +529,7 @@ begin
 
           GZamanlayicilar.BekleMS(CALISMA_FREKANSI);
 
-          GN := GGNesneler.NesneAl(TPencere(MUGorev^.AktifPencere).Kimlik);
+          GN := GGNesneler.NesneAl(TPencere(MUGorev.FAktifPencere).Kimlik);
 
           TPencere(GN).FAtananAlan.Sol := Konum.Sol;
           TPencere(GN).FAtananAlan.Ust := Konum.Ust;
