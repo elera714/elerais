@@ -6,7 +6,7 @@
   Dosya Adı: k_bellek.pas
   Dosya İşlevi: bellek kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 15/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ function BellekCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4
 
 implementation
 
-uses islevler, gorev, gercekbellek;
+uses islevler, gorev, gercekbellek, sistem;
 
 {==============================================================================
   bellek kesme çağrılarını yönetir
@@ -41,11 +41,11 @@ begin
   begin
 
     p := PSayi4(PSayi4(ADegiskenler + 00)^ + GGorevler.FAktifGrvBelAdr);
-    p^ := CekirdekBaslangicAdresi;
+    p^ := GSistem.FCekirdekBaslangicAdresi;
     p := PSayi4(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
-    p^ := CekirdekBaslangicAdresi + CekirdekUzunlugu;
+    p^ := GSistem.FCekirdekBaslangicAdresi + GSistem.FCekirdekUzunlugu;
     p := PSayi4(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr);
-    p^ := CekirdekUzunlugu;
+    p^ := GSistem.FCekirdekUzunlugu;
 
     Result := HATA_YOK;
   end

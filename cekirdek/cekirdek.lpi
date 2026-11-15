@@ -41,8 +41,6 @@
       <Unit0>
         <Filename Value="cekirdek.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="13"/>
-        <CursorPos X="3" Y="30"/>
         <UsageCount Value="260"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -50,8 +48,8 @@
         <Filename Value="yonetim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="76"/>
-        <CursorPos X="25" Y="93"/>
+        <TopLine Value="242"/>
+        <CursorPos X="41" Y="258"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -59,16 +57,17 @@
         <Filename Value="yukleyici.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="61"/>
-        <CursorPos X="45" Y="80"/>
+        <TopLine Value="56"/>
+        <CursorPos X="3" Y="79"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\surumbil.txt"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="10"/>
-        <CursorPos X="41" Y="19"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="9"/>
+        <CursorPos Y="10"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -76,9 +75,8 @@
       <Unit4>
         <Filename Value="..\bellek.txt"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="9"/>
-        <CursorPos X="73" Y="18"/>
+        <EditorIndex Value="8"/>
+        <CursorPos X="40" Y="19"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -86,8 +84,7 @@
       <Unit5>
         <Filename Value="planlama.txt"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="8"/>
-        <CursorPos X="66" Y="10"/>
+        <EditorIndex Value="7"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -151,6 +148,8 @@
         <Filename Value="..\ortak\cekirdek\sistemmesaj.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="305"/>
+        <CursorPos X="38" Y="327"/>
         <UsageCount Value="224"/>
       </Unit14>
       <Unit15>
@@ -164,18 +163,13 @@
       <Unit16>
         <Filename Value="..\ortak\cekirdek\mdepolama.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="95"/>
-        <CursorPos Y="99"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="224"/>
-        <Loaded Value="True"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="816"/>
-        <CursorPos X="3" Y="833"/>
+        <EditorIndex Value="6"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit17>
@@ -190,8 +184,7 @@
         <Filename Value="..\ortak\cekirdek\gercekbellek.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="338"/>
-        <CursorPos X="31" Y="343"/>
+        <CursorPos X="53" Y="20"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit19>
@@ -199,7 +192,6 @@
         <Filename Value="..\ortak\cekirdek\fdepolama.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="112"/>
         <UsageCount Value="224"/>
       </Unit20>
       <Unit21>
@@ -213,8 +205,8 @@
         <Filename Value="..\ortak\cekirdek\donusum.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="10"/>
-        <CursorPos X="33" Y="31"/>
+        <TopLine Value="7"/>
+        <CursorPos X="54" Y="48"/>
         <UsageCount Value="224"/>
       </Unit22>
       <Unit23>
@@ -226,8 +218,9 @@
       <Unit24>
         <Filename Value="..\ortak\cekirdek\dosyalar.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
-        <CursorPos X="16" Y="423"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="446"/>
+        <CursorPos X="36" Y="462"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit24>
@@ -273,8 +266,8 @@
         <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="526"/>
-        <CursorPos X="9" Y="543"/>
+        <TopLine Value="59"/>
+        <CursorPos X="44" Y="79"/>
         <UsageCount Value="224"/>
       </Unit31>
       <Unit32>
@@ -314,8 +307,8 @@
         <Filename Value="..\ortak\dosyasistemi\fat16.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="378"/>
-        <CursorPos X="13" Y="394"/>
+        <TopLine Value="19"/>
+        <CursorPos X="14" Y="36"/>
         <UsageCount Value="224"/>
       </Unit37>
       <Unit38>
@@ -359,26 +352,26 @@
         <Filename Value="..\ortak\ag\baglantilar.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="10"/>
         <UsageCount Value="224"/>
       </Unit43>
       <Unit44>
         <Filename Value="..\ortak\ag\tcp.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="28"/>
         <UsageCount Value="224"/>
       </Unit44>
       <Unit45>
         <Filename Value="..\ortak\ag\udp.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="66" Y="206"/>
         <UsageCount Value="224"/>
       </Unit45>
       <Unit46>
         <Filename Value="..\ortak\ag\ag.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="69"/>
         <UsageCount Value="224"/>
       </Unit46>
       <Unit47>
@@ -659,6 +652,8 @@
         <Filename Value="..\gorselnesne\gn_masaustu.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="433"/>
+        <CursorPos X="3" Y="450"/>
         <UsageCount Value="224"/>
       </Unit91>
       <Unit92>
@@ -784,9 +779,9 @@
       <Unit111>
         <Filename Value="..\ortak\dosyasistemi\elr1.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="1541"/>
-        <CursorPos X="25" Y="1558"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="23"/>
+        <CursorPos X="23" Y="51"/>
         <UsageCount Value="246"/>
         <Loaded Value="True"/>
       </Unit111>
@@ -800,8 +795,7 @@
         <Filename Value="arge.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="515"/>
-        <CursorPos X="54" Y="532"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="205"/>
       </Unit113>
       <Unit114>
@@ -885,19 +879,22 @@
         <Filename Value="..\oz\gorev.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="574"/>
+        <CursorPos X="42" Y="595"/>
         <UsageCount Value="204"/>
       </Unit125>
       <Unit126>
         <Filename Value="..\oz\zamanlayici.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="399"/>
+        <CursorPos Y="408"/>
         <UsageCount Value="204"/>
       </Unit126>
       <Unit127>
         <Filename Value="..\ortak\servisler\srv_grafik.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="149"/>
         <CursorPos X="31" Y="178"/>
         <UsageCount Value="212"/>
       </Unit127>
@@ -953,7 +950,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="168"/>
         <CursorPos X="3" Y="59"/>
-        <UsageCount Value="166"/>
+        <UsageCount Value="161"/>
       </Unit135>
       <Unit136>
         <Filename Value="..\ortak\ag\dhcpv4.pas"/>
@@ -967,6 +964,8 @@
         <Filename Value="..\ortak\cekirdek\dosya.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="53"/>
+        <CursorPos X="14" Y="70"/>
         <UsageCount Value="216"/>
       </Unit137>
       <Unit138>
@@ -974,7 +973,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="179"/>
         <CursorPos X="22" Y="196"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="0"/>
       </Unit138>
     </Units>
     <OtherDefines Count="1">
@@ -982,8 +981,8 @@
     </OtherDefines>
     <JumpHistory Count="1">
       <Position1>
-        <Filename Value="planlama.txt"/>
-        <Caret Line="10" Column="75"/>
+        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
+        <Caret Line="400" Column="50" TopLine="384"/>
       </Position1>
     </JumpHistory>
   </ProjectOptions>

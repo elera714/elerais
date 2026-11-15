@@ -7,7 +7,7 @@
   Dosya Ýþlevi: að baðlantýlarý ve ona baðlý baðlantý (soket) iletiþim
     yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 15/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -18,6 +18,61 @@ interface
 
 uses paylasim, sistemmesaj, ethernet, arp, ip6, ip4, icmp6, icmp4, sunucular,
   lldp_i, dhcpv6s, dhcpv4s, dhcpv4i, http, ftp, dnsi, netbios, tcp, udp;
+
+type
+  TBaglantiDurum = (
+
+    // baðlantýnýn kapalý olmasý durumu
+    bdKapali,
+
+    // bdBaglaniyor - SYN_SENT durumu
+    // bu aþamada bu bilgisayarýn istemcisi baðlantý kurmak için karþý bilgisayara
+    // SYN mesajý göndermiþtir
+    bdBaglaniyor,
+
+    // bdBaglantiBekleniyor - SYN-RECEIVED durumu
+    // istemciden SYN mesajý alýnmýþ, SYN + ACK gönderilmiþ, ACK mesajý beklenmektedir
+    bdBaglantiBekleniyor,
+
+    // bdBaglantiKuruldu - ESTABLISHED durumu
+    // sunucu istemci arasýndaki 3 yollu (SYN -> SYN + ACK -> ACK) anlaþmasý saðlanmýþtýr
+    bdBaglantiKuruldu,
+
+    // bdKapanmayiBekliyor - CLOSE-WAIT durumu
+    // baðlantýnýn 1. ucundaki istemci / sunucudan kapatma isteðinin (FIN) gelmesi durumu
+    bdKapanmayiBekliyor,
+
+    // bdSonOnay - LAST-ACK durumu
+    // baðlantýnýn 1. ucundaki istemci / sunucunun kapatma (FIN) isteðine onay (ACK)
+    // yanýtý gönderildikten sonra kapatma (FIN) isteði gönderilmiþ ve ACK yanýtý beklenmektedir
+    bdSonOnay,
+
+    // bdKapanisBekleniyor1 - FIN-WAIT-1 durumu
+    // baðlantýnýn 1. ucundaki istemci / sunucunun kapatma (FIN) mesajý göndermesi durumu
+    bdKapanisBekleniyor1,
+
+    // bdKapanisBekleniyor2 - FIN-WAIT-2 durumu
+    // baðlantýnýn 2. ucundaki istemci / sunucunun kapatma (FIN) mesajý göndermesi durumu
+    bdKapanisBekleniyor2);
+
+  // btPasif  = Pasif baðlantý: btUAktif baðlantýlarý için oluþturulan baðlantý
+  // btYAktif = Yerel Aktif baðlantý: bu bilgisayarýn uzak sunucuya baðlantýsý
+  // btUAktif = Uzak Aktif baðlantý: diðer bilgisayarlarýn bu bilgisayarýn sunucusuna olan baðlantýsý
+  TBaglantiTuru = (btPasif, btYAktif, btUAktif);
+
+{ =================================================================================================
+  tüm að iletiþimi TBaglanti üzerinden gerçekleþecek. diðer yüm nesneler bu nesnenin altýnda olacak
+
+                                      TAgBaglantilari
+                                             |
+                         TAgBaglantisi ------+----- TAgBaglantisi..
+                              |
+                              |
+          Ethernet -- ARP -- ICMP -- TBaglanti -- Baglanti..
+                                         |
+                                         |
+                              TCP - UDP -+- DHCP - DNS
+================================================================================================= }
 
 const
   // 0800ABCDEF01 MAC adresi Modified EUI-64'e göre kodlanarak ipv6 adresi elde edilmiþtir

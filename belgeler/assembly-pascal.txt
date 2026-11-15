@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-1. assembly dilinden pascal diline parametre ile çağrı örneği:
+  1. assembly dilinden pascal diline parametre ile çağrı örneği:
 -----------------------------------------------------------------------------------
 
 begin
@@ -19,7 +19,7 @@ begin
 end;
 
 -----------------------------------------------------------------------------------
-2. yerel değişkene assembler ile değer atamak
+  2. yerel değişkene assembler ile değer atamak
 -----------------------------------------------------------------------------------
 var
   Deger8: TSayi8;
@@ -32,3 +32,72 @@ asm
 end;
 
 SISTEM_MESAJ2_S16(RENK_KIRMIZI, '64 bitlik değer: ', Deger8, 16);
+
+-----------------------------------------------------------------------------------
+  3. object nesnelerine erişmek
+-----------------------------------------------------------------------------------
+type
+  PGorev = ^TGorev	
+  TGorev = record
+    Deger1: TSayi4;   
+  end;
+
+type
+  TGorevler = object
+  private
+    FGorevListesi: array[0..USTSINIR_GOREVSAYISI - 1] of PGorev;
+    function GorevAl(ASiraNo: TISayi4): PGorev;
+    procedure GorevYaz(ASiraNo: TISayi4; AGorev: PGorev);
+  public
+    constructor Create;
+    property Gorev[ASiraNo: TISayi4]: PGorev read GorevAl write GorevYaz;
+  end;
+  
+var
+  GGorevler: TGorevler;
+  
+  // Değer1'in değerine erişmek
+  mov   eax,1  // 1. dizi değeri
+  shl   eax,2
+  mov   esi,GGorevler.Gorev[eax]
+  mov   eax,[esi + TGorev.Deger1]
+
+-----------------------------------------------------------------------------------
+  4. class nesnelerine erişmek
+-----------------------------------------------------------------------------------
+type
+  PGorev = ^TGorev	
+  TGorev = class
+    Deger2: TSayi4;   
+  end;
+
+type
+  TGorevler = class
+  private
+	Deger1: TSayi4;     
+    FGorevListesi: array[0..USTSINIR_GOREVSAYISI - 1] of PGorev;
+    function GorevAl(ASiraNo: TISayi4): PGorev;
+    procedure GorevYaz(ASiraNo: TISayi4; AGorev: PGorev);
+  public
+    constructor Create;
+    property Gorev[ASiraNo: TISayi4]: PGorev read GorevAl write GorevYaz;
+	procedure Calistir;
+  end;
+  
+var
+  GGorevler: TGorevler;
+  
+  // Değer1'in değerine erişmek
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.Deger1]
+
+  // Değer2'nin değerine erişmek
+  mov   esi,[GGorevler]
+  mov   eax,1  // 1. dizi değeri
+  imul  eax, SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   eax,[esi + TGorev.Deger2]
+
+  // işlev çalıştırmak
+  mov   eax,GZamanlayicilar
+  call  TGorevler.Calistir

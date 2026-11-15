@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2026-11-14T07:34:29Z">
+  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2026-11-15T07:24:41Z">
     <MediaRegistry>
       <HardDisks>
         <HardDisk uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}" location="320mb.vhd" format="VHD" type="Normal"/>
@@ -16,7 +16,7 @@
     </MediaRegistry>
     <ExtraData>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="848,124,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="844,95,1024,808"/>
     </ExtraData>
     <Hardware>
       <CPU>
@@ -24,7 +24,7 @@
         <LongMode enabled="false"/>
         <HardwareVirtExLargePages enabled="true"/>
       </CPU>
-      <Memory RAMSize="64"/>
+      <Memory RAMSize="256"/>
       <Boot>
         <Order position="1" device="Floppy"/>
         <Order position="2" device="None"/>
@@ -59,7 +59,7 @@
       <Clipboard/>
       <DragAndDrop mode="Bidirectional"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1794641661956124000" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1794726916926533100" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
         <StorageController name="IDE" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">

@@ -1,12 +1,13 @@
 *******************************************************************************
   Sürüm: 0.4.2 (sunucu / istemci) - 00.00.0000 (R38) - Beta
 *******************************************************************************
-  + görsel nesne object yapıları class yapılarına dönüştürüldü
+  + tüm object yapıları class yapılarına dönüştürüldü
   + thread nesnesi oluşturuldu. çekirdek içerisindeki modüler yapılar thread nesnesine dönüştürüldü
-  + çekirdek frekansı 100mhz'de çalışacak şekilde yeniden tasarlandı
-
-  - ağ protokolleri sınıf (class) çalışmaları kapsamında yeniden tasarlanıyor
-  - çoklu ethernet kart desteği çalışmaları başladı
+  + çekirdek frekansı 1000mhz'de çalışacak şekilde yeniden tasarlandı
+  + ağ tutanakları sınıf (class) çalışmaları kapsamında yeniden tasarlandı
+  + virtualbox sanal sürücü fare desteği eklendi
+  + disk / disket sürücülerine irq desteği eklendi
+  + 64MB bellek desteği 256MB olarak güncellendi
 
 *******************************************************************************
   Sürüm: 0.4.1 (sunucu / istemci) - 24.07.2026 (R37) - Beta

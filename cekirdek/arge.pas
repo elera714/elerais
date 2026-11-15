@@ -6,7 +6,7 @@
   Dosya Adý: arge.pas
   Dosya Ýþlevi: sistem ar-ge çalýþmalarýný içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 15/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -76,7 +76,6 @@ procedure Program1;
 procedure Program2;
 procedure CekirdekDosyaTSDegeriniKaydet;
 procedure KaydedilenProgramlariYenidenYukle;
-procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
 
 implementation
 
@@ -546,12 +545,6 @@ begin
   end;
 
   CloseFile(DosyaKimlik);
-end;
-
-procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
-begin
-
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Assert: %s', [msg]);
 end;
 
 end.

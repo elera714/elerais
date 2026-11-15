@@ -6,7 +6,7 @@
   Dosya Adý: tcp.pas
   Dosya Ýþlevi: tcp v4/v6 katmaný veri iletiþimini gerçekleþtirir
 
-  Güncelleme Tarihi: 12/11/2026
+  Güncelleme Tarihi: 15/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -204,6 +204,29 @@ begin
 
       // baðlantýnýn kapatýlmasýna dair onay deðerini gönder
       B.FTCP.PaketleVeGonder(TCP_BAYRAK_KABUL or TCP_BAYRAK_SIFIRLA, nil, 0);
+
+      // gözardý edilen paket sayýsýný güncelle
+      Inc(B.FAB.FGAEPaketSayisi);
+
+      // uyarý mesajlarýný sistem mesajlarýna ekle ------->
+      SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'TCP.PAS: eþleþen TCP portu bulunamadý!', []);
+
+      if(PT = TUTANAK_IP6) then
+      begin
+
+        SISTEM_MESAJ_IP6(mtUyari, RENK_TURKUAZ, '  - Kaynak IP6: ', IP6Paket^.KaynakIPAdres);
+        SISTEM_MESAJ_IP6(mtUyari, RENK_TURKUAZ, '  - Hedef IP6: ', IP6Paket^.HedefIPAdres);
+      end
+      else
+      begin
+
+        SISTEM_MESAJ_IP4(mtUyari, RENK_TURKUAZ, '  - Kaynak IP4: ', IP4Paket^.KaynakIPAdres);
+        SISTEM_MESAJ_IP4(mtUyari, RENK_TURKUAZ, '  - Hedef IP4: ', IP4Paket^.HedefIPAdres);
+      end;
+
+      SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Kaynak Port: %d', [YerelPort]);
+      SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Hedef Port: %d', [UzakPort]);
+      // <------- uyarý mesajlarýný sistem mesajlarýna ekle
     end;
   end
   else

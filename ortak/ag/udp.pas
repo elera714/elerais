@@ -6,7 +6,7 @@
   Dosya Adý: udp.pas
   Dosya Ýþlevi: udp protokol yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 12/11/2026
+  Güncelleme Tarihi: 15/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -104,6 +104,10 @@ begin
   else
   begin
 
+    // gözardý edilen paket sayýsýný güncelle
+    Inc(B.FAB.FGAEPaketSayisi);
+
+    // uyarý mesajlarýný sistem mesajlarýna ekle ------->
     SISTEM_MESAJ(mtUyari, RENK_PEMBE, 'UDP.PAS: eþleþen UDP portu bulunamadý!', []);
 
     if(PaketTipi = TUTANAK_IP6) then
@@ -121,6 +125,7 @@ begin
 
     SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Kaynak Port: %d', [YerelPort]);
     SISTEM_MESAJ(mtUyari, RENK_TURKUAZ, '  - Hedef Port: %d', [UzakPort]);
+    // <------- uyarý mesajlarýný sistem mesajlarýna ekle
   end;
 end;
 

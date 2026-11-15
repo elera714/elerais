@@ -6,7 +6,7 @@
   Dosya Adý: sistem.pas
   Dosya Ýþlevi: sistem yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 15/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,6 +20,8 @@ uses paylasim;
 type
   TSistem = class
   public
+    FCekirdekBaslangicAdresi,
+    FCekirdekUzunlugu,
     FSistemSayaci, FCagriSayaci,
     FGrafikSayaci: TSayi4;
     // 24 x 24 sistemler. yukleyici.pas dosyasýndan yükleme iþlemi yapýlýr

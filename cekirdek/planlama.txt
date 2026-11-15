@@ -5,11 +5,10 @@
   gerekli çalýþmalar yapýlarak rtl_cekirdek\inc\system_orjinal.inc dosyasýyla orjinalleþtirilecektir
   (diðer tüm dosyalar fpc sürüm 3.0.4 olup orjinalleþtirilmiþ kod dosyalarýdýr)
 - rtl_uygulama klasörü altýndaki dosyalar orjinalleþtirilecektir
-- listegorunum nesnesine eleman sayýsý, seçili eleman oku / yaz iþlevi eklenecek (görev yöneticisi için)
 - usb uhci kod çalýþmalarý (usb / uhci)
 - çekirdek sürücü model çalýþmalarý (görev)
 - ses kartý ile ilgili iþlevler aktif ve çalýþýr hale getirilecek
-- program geliþtirmek için tasarlanan widget'in grafiksel arabirimi tasarlanacak
+- program geliþtirmek için tasarlanan widget'in grafiksel arabirimi geliþtirilecek
 - servis iþlemleri için ayrý görevler tanýmlanacak
 - donanýmsal çokgörevlilik, yazýlýmsal çokgörevlilik (software multitasking) olarak deðiþtirilecek
 - sayfalama (paging) özelliði çekirdeðe eklenecek
