@@ -9,20 +9,23 @@
 
    Teknik Bilgiler
    ----------------------------------------------------------------------------
-   + Zaman Paylaþýmlý Çokgörevlilik (Pre-emptive multitasking)
-   + Statik / Dinamik Bellek Yönetimi
-   + 1024 x 768'a kadar 16 / 24 / 32 bit Vesa 2.0+ Grafik Desteði
+   + zaman paylaþýmlý çokgörevlilik (pre-emptive multitasking)
+   + statik / dinamik bellek yönetimi
+   + að yönetim arabirimleri (donanýmsal / yazýlýmsal)
+   + 1024 x 768'a kadar 16 / 24 / 32 bit vesa 2.0+ grafik desteði
+   + 1000mhz çalýþma frekansý
+   + 256MB bellekte çalýþabilme yeteneði
 
    Sistem Gereklilikleri
    ----------------------------------------------------------------------------
    Ýþlemci: 386+
-   RAM    : 64 MB+
+   RAM    : 256 MB+
    Video  : Vesa 2.0+
 
    Sürüm Bilgileri
    ----------------------------------------------------------------------------
    Telif Bilgisi: haklar.txt dosyasýna bakýnýz
-   Güncelleme Tarihi: (06.09.2026 - pazar)
+   Güncelleme Tarihi: (16.11.2026 - pazartesi)
 
 ==============================================================================}
 program cekirdek;
@@ -30,7 +33,7 @@ program cekirdek;
 {$asmmode intel}
 {$WARNINGS ON}
 
-uses paylasim, yukleyici, gorev, yonetim, sistemmesaj, bmp, sanalbellek;
+uses paylasim, yukleyici, gorev, yonetim, sistemmesaj, bmp, sanalbellek, gercekbellek;
 
 type
   TCekirdek = object
@@ -39,9 +42,11 @@ type
   end;
 
 var
-  GCekirdek0: TCekirdek;
+  GCekirdek: TCekirdek;
 
 procedure TCekirdek.Yukle;
+var
+  Yukleyici: TYukleyici;
 begin
 
   // belleði sayfalama iþlevine hazýrla
@@ -49,7 +54,6 @@ begin
 
   asm
     //cli
-
     mov eax,SISTEM_ESP
     mov esp,eax
 
@@ -67,26 +71,24 @@ begin
     mov cr0,eax}
   end;
 
-  // ServisCalisiyor = False olmasý durumunda sistem mesajlarý ekrana yansýtýlýr
-  // ServisCalisiyor = True olmasý durumunda sistem mesajlarý dahili olarak
-  //  iþlenerek daha sonra sistem mesaj görüntüleme programlarý tarafýndan görüntülenir
-  // NOT: bu deðiþkeni aktifleþtiren GSistemMesaj.pas Yukle iþlevidir
-  { TODO - ilgili yere konumlandýr }
-  //GSistemMesaj.ServisCalisiyor := False;
+  // belleði ilk kullaným için hazýrla
+  // Önemli: GGercekBellek.Yukle iþlevinin diðer iþlevlere zemin hazýrlamasý için
+  // öncelikle yüklenmesi gerekmektedir. (özellikle class yapýlarý için)
+  GGercekBellek.Yukle;
 
-  // çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
-  GYukleyici0.Yukle;
+  // çekirdeðin çalýþmasý için gerekli ihtiyaç duyulacak önyüklemeleri gerçekleþtir,
+  // nesneleri / donanýmlarý yükle, ana iþlevleri çalýþtýr
+  Yukleyici := TYukleyici.Create;
 
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Masaüstü yönetim programý yükleniyor...', []);
-  GGorevler.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + OnDegerMasaustuProgram, CALISMA_SEVIYE3);
+  // çekirdek yükleme sonrasýnda çalýþtýrýlacak masaüstü uygulamasý / servisler
+  // dahili uygulamalarý yükle
+  Yukleyici.UygulamalariYukle;
 
   // sistem ana kontrol kýsmýna geçiþ yap
-  GYonetim0.SistemAnaKontrol;
-
-  while True do begin end;
+  GYonetim.SistemAnaKontrol;
 end;
 
 begin
 
-  GCekirdek0.Yukle;
+  GCekirdek.Yukle;
 end.
