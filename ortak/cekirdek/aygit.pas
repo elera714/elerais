@@ -6,7 +6,7 @@
   Dosya Adı: aygit.pas
   Dosya İşlevi: sistemde mevcut tüm aygıtların temel sınıflarını içerir
 
-  Güncelleme Tarihi: 31/10/2026
+  Güncelleme Tarihi: 17/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -51,7 +51,8 @@ type
   public
     FAnaPort: TSayi4;
     FKontrolPort: TSayi4;
-    FKanal: TSayi4;
+    FAnaKanal: TSayi4;        // ide için - master / slave kanalı
+    FIRQKanal: TSayi4;        // ide için - porta bağlı irq kanalı
 
     FKafaSayisi: TSayi4;
     FSilindirSayisi: TSayi4;

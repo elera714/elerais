@@ -6,7 +6,7 @@
   Dosya Adý: mdepolama.pas
   Dosya Ýþlevi: mantýksal depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 15/11/2026
+  Güncelleme Tarihi: 17/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -366,7 +366,7 @@ begin
 
                         // dosya + dizin giriþ bilgilerini ata
                         DizinGirisi := @MD.Acilis.DizinGirisi;
-                        DizinGirisi^.IlkSektor := 6144 div 4;
+                        DizinGirisi^.IlkSektor := 1536 div 4;
                         DizinGirisi^.ToplamSektor := 30 * 1024 * 1024;
                         MD.Acilis.IlkVeriSektorNo := DizinGirisi^.IlkSektor;
                       end

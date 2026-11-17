@@ -6,7 +6,7 @@
   Dosya Adý: src_disket.pas
   Dosya Ýþlevi: disket aygýt sürücüsü
 
-  Güncelleme Tarihi: 18/10/2026
+  Güncelleme Tarihi: 17/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -251,7 +251,7 @@ begin
 
   // MFS sektör oku
   VeriYaz($E6);
-  VeriYaz((Kafa shl 2) or FKanal);
+  VeriYaz((Kafa shl 2) or FAnaKanal);
   VeriYaz(Iz);
   VeriYaz(Kafa);
   VeriYaz(Sektor);
@@ -377,7 +377,7 @@ begin
 
   // MFS sektör yaz
   VeriYaz($45);
-  VeriYaz((Kafa shl 2) or FKanal);
+  VeriYaz((Kafa shl 2) or FAnaKanal);
   VeriYaz(Iz);
   VeriYaz(Kafa);
   VeriYaz(Sektor);
@@ -485,7 +485,7 @@ begin
   PortYaz1(DISKET_DJTL_CIKISYZMC, %00000000);
 
   // motor'u aç
-  if(FKanal = 0) then
+  if(FAnaKanal = 0) then
   begin
 
     PortYaz1(DISKET_DJTL_CIKISYZMC, %00011100);
@@ -513,7 +513,7 @@ procedure TDisket.MotorKapat;
 begin
 
   // motor'u kapat
-  if(FKanal = 0) then
+  if(FAnaKanal = 0) then
   begin
 
     PortYaz1(DISKET_DJTL_CIKISYZMC, %00001100);
@@ -589,7 +589,7 @@ begin
   IRQ6Tetiklendi := False;
 
   VeriYaz(KOMUT_YENIDEN_KALIBREET);       // 0. sektöre konumlan
-  VeriYaz(FKanal);                        // kafa no (0) + sürücü
+  VeriYaz(FAnaKanal);                     // kafa no (0) + sürücü
 
   // iþlemin bitmesini bekle
   if(KesmeGeldiMi) then
@@ -621,7 +621,7 @@ begin
   IRQ6Tetiklendi := False;
 
   VeriYaz(KOMUT_KONUMLAN);                // sektöre Konumlan
-  VeriYaz((AKafa shl 2) or FKanal);       // kafa no + sürücü
+  VeriYaz((AKafa shl 2) or FAnaKanal);    // kafa no + sürücü
   VeriYaz(AIz);
 
   // iþlemin bitmesini bekle
@@ -718,7 +718,7 @@ begin
       begin
 
         FD.FAnaPort := $3F0;
-        FD.FKanal := 0;
+        FD.FAnaKanal := 0;
         FD.FOku := @TDisket(FD).Oku;
         FD.FYaz := @TDisket(FD).Yaz;
 
@@ -744,7 +744,7 @@ begin
       begin
 
         FD.FAnaPort := $3F0;
-        FD.FKanal := 1;
+        FD.FAnaKanal := 1;
         FD.FOku := @TDisket(FD).Oku;
         FD.FYaz := @TDisket(FD).Yaz;
 

@@ -6,7 +6,7 @@
   Dosya Adý: srv_grafik.pas
   Dosya Ýþlevi: dahili servis: çekirdek içi grafiksel bilgilendirme
 
-  Güncelleme Tarihi: 09/10/2026
+  Güncelleme Tarihi: 17/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -14,7 +14,7 @@ unit srv_grafik;
 
 interface
 
-uses paylasim, gn_pencere, gn_islemgostergesi, thread;
+uses paylasim, gn_pencere, gn_islemgostergesi, thread, elr1;
 
 const
   P_BASLIK_YUKSEKLIK = 24;
@@ -22,6 +22,8 @@ const
 
 type
   TServisGrafik = class(TThread)
+  private
+    FElr1: TELR1;
   public
     constructor Create(AIslemAdi: string; CreateSuspended: Boolean = True); override;
     procedure Execute; override;
@@ -31,7 +33,7 @@ type
 
 implementation
 
-uses gn_etiket, mdepolama, elr1, sistemmesaj, gorselnesne, gercekbellek, sistem,
+uses gn_etiket, mdepolama, sistemmesaj, gorselnesne, gercekbellek, sistem,
   src_vesa20, gn_islevler, zamanlayici, dosyalar;
 
 var
@@ -49,6 +51,7 @@ begin
 
   inherited Create(AIslemAdi, CreateSuspended);
 
+  FElr1 := nil;
   BellekSayac := 0;
   DiskSayac := 0;
 end;
@@ -150,7 +153,8 @@ begin
 
       SektorSayisi := 0;
 
-      Sonuc := SHTToplamKullanim(MD, SektorSayisi);
+      if(FElr1 = nil) then FElr1 := TELR1(GDosyalar.Yeni(MD));
+      Sonuc := FElr1.ToplamKullanim(SektorSayisi);
       if(Sonuc = HATA_YOK) then
 
         igDisk.MevcutDegerYaz(SektorSayisi)

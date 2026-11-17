@@ -6,7 +6,7 @@
   Dosya Adý: gercekbellek.pas
   Dosya Ýþlevi: gerçek (fiziksel) bellek yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 22/07/2026
+  Güncelleme Tarihi: 17/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -54,7 +54,7 @@ type
   end;
 
 var
-  GercekBellek0: TGercekBellek;
+  GGercekBellek: TGercekBellek;
   BellekYonetimFPC: TMemoryManager;
   GercekBellekKilit: TSayi4 = 0;
 
@@ -128,6 +128,9 @@ begin
   SetMemoryManager(BellekYonetimFPC);
 end;
 
+{==============================================================================
+  toplam bellek miktarýný hesaplar
+ ==============================================================================}
 {$asmmode intel}
 function TGercekBellek.ToplamBellekMiktariniAl: TSayi4;
 var
@@ -165,7 +168,7 @@ end;
 end;
 
 {==============================================================================
-  boþ bellek alanýný rezerv eder ve bellek bölgesini sýfýrlar
+  boþ bellek alanýný ayýrýr ve bellek bölgesini sýfýrlar
   bilgi: istenen bellek miktarý 4096 byte ve katlarý olarak tahsis edilir
   1    byte..4096 byte arasý 1 blok
   4097 byte..8192 byte arasý 2 blok tahsis edilir
@@ -331,18 +334,22 @@ begin
   Result := HATA_TUMBELLEKKULLANIMDA;
 end;
 
-// istenen miktarda bellek ayýr - fpc + çekirdek iþlevleri için
+{==============================================================================
+  istenen miktarda bellek ayýr - fpc + çekirdek iþlevleri için
+ ==============================================================================}
 function ELRGetMem(AUzunluk: TSayi4): Isaretci;
 begin
 
-  Result := GercekBellek0.Ayir(AUzunluk);
+  Result := GGercekBellek.Ayir(AUzunluk);
 
   {if(BellekDegeriniGoster) then begin
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem.Result: $%x', [Result]);
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRGetMem.AUzunluk: %d', [AUzunluk]); end;}
 end;
 
-// sistemden alýnan belleði serbest býrak - fpc + çekirdek iþlevleri için
+{==============================================================================
+  sistemden alýnan belleði serbest býrak - fpc + çekirdek iþlevleri için
+ ==============================================================================}
 function ELRFreeMemSize(ABellek: Isaretci; AUzunluk: TSayi4): TSayi4;
 begin
 
@@ -350,10 +357,13 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize.ABellek: $%x', [ABellek]);
   SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELRFreeMemSize.AUzunluk: %d', [AUzunluk]); end;}
 
-  GercekBellek0.YokEt(ABellek, AUzunluk);
+  GGercekBellek.YokEt(ABellek, AUzunluk);
   Result := 0;
 end;
 
+{==============================================================================
+  sistemden alýnan belleði serbest býrak - fpc + çekirdek iþlevleri için
+ ==============================================================================}
 function ELRFreeMem(ABellek: Isaretci): TSayi4;
 begin
 
@@ -361,6 +371,9 @@ begin
   Result := 0;
 end;
 
+{==============================================================================
+  tahsis edilen belleðin ayrýlan uzunluðunu al - fpc + çekirdek iþlevleri için
+ ==============================================================================}
 function ELRMemSize(ABellekAdresi: Isaretci): TSayi4;
 var
   BlokNo: TSayi4;
@@ -376,24 +389,55 @@ begin
   Result := PSayi4(BellekAdresi)^;
 end;
 
+{==============================================================================
+  istenen miktarda bellek ayýr - fpc + çekirdek iþlevleri için
+ ==============================================================================}
 function ELRAllocMem(AUzunluk: TSayi4): Isaretci;
 begin
 
   Result := ELRGetMem(AUzunluk);
 end;
 
+{==============================================================================
+  mevcut belleði yeniden boyutlandýr - fpc + çekirdek iþlevleri için
+ ==============================================================================}
 function ELRReAllocMem(var ABellek: Isaretci; AUzunluk: TSayi4): Isaretci;
+var
+  Bellek: Isaretci;
+  EskiBellekU: TSayi4;
+  VeriU: TSayi4;
 begin
 
-  if(ABellek = nil) then
+  // bellek deðeri belirtilmediyse yeni bellek ayýr
+  if(ABellek = nil) then Exit(ELRGetMem(AUzunluk));
 
-    Result := ELRGetMem(AUzunluk)
-  else
+  // uzunluðun sýfýr olmasý belleðin serbest býrakýlmasý anlamýna gelir
+  if(AUzunluk = 0) then
   begin
 
-    ELRFreeMemSize(ABellek, AUzunluk);
-    Result := ELRGetMem(AUzunluk);
+    ELRFreeMem(ABellek);
+    ABellek := nil;
+    Exit(nil);
   end;
+
+  // mevcut bellek uzunluðu
+  EskiBellekU := ELRMemSize(ABellek);
+
+  // istenen yeni belleði tahsis et
+  Bellek := ELRGetMem(AUzunluk);
+  if(Bellek = nil) then Exit(nil);
+
+  // mevcut veriyi yeni yerine kopyala
+  if(EskiBellekU < AUzunluk) then
+    VeriU := EskiBellekU
+  else VeriU := AUzunluk;
+
+  Move(ABellek^, Bellek^, VeriU);
+
+  ELRFreeMem(ABellek);
+  ABellek := Bellek;
+
+  Result := Bellek;
 end;
 
 {==============================================================================
