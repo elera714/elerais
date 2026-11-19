@@ -6,7 +6,7 @@
   Dosya Adý: yukleyici.pas
   Dosya Ýþlevi: sistem ilk açýlýþ yükleme iþlevleri gerçekleþtirir
 
-  Güncelleme Tarihi: 07/01/2025
+  Güncelleme Tarihi: 19/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,28 +19,26 @@ unit yukleyici;
 interface
 
 type
-  TYukleyici = object
+  TYukleyici = class
   public
-    procedure Yukle;
+    constructor Create;
+    procedure UygulamalariYukle;
   end;
 
 procedure YukleIslevindenOnceCalistir;
 procedure YukleIslevindenSonraCalistir;
 
-var
-  GYukleyici0: TYukleyici;
-
 implementation
 
-uses yonetim, gdt, idt, irq, pic, pci, src_klavye, gorev, fdepolama, gercekbellek,
+uses yonetim, gdt, idt, irq, pic, pci, src_klavye, gorev, fdepolama, aygityonetimi,
   dosyalar, sistemmesaj, mdepolama, islemci, paylasim, usb, zamanlayici, src_vesa20,
-  bmp, acpi, olayyonetim, giysi, src_ps2, sistem, gn_islevler, aygityonetimi, ag,
-  baglantilar;
+  bmp, acpi, olayyonetim, giysi, src_ps2, sistem, gn_islevler, ag, baglantilar,
+  srv_grafik, srv_kontrol, thread, srv_arp, srv_test;
 
 {==============================================================================
   çekirdek çevre donaným yükleme iþlevlerini gerçekleþtir
  ==============================================================================}
-procedure TYukleyici.Yukle;
+constructor TYukleyici.Create;
 begin
 
   // çekirdek yükleme öncesi iþlevleri gerçekleþtir
@@ -64,21 +62,18 @@ begin
   // iþlevleri belirtilen irq isteklerini devreye sokacaktýr
   irq.Yukle;
 
-  // belleði ilk kullaným için hazýrla
-  // Önemli: GGercekBellek.Yukle iþlevinin diðer iþlevlere zemin hazýrlamasý için
-  // öncelikle yüklenmesi gerekmektedir.
-  GercekBellek0.Yukle;
-
   // NOT: SISTEM_MESAJ_'ler buradan itibaren sistem içerisine yönlendiriliyor
 
   //SISTEM_MESAJ(RENK_LACIVERT, '+ Sistem mesaj servisi baþlatýlýyor...', []);
   GSistemMesaj := TSistemMesaj.Create;
 
   // uygulama deðiþkenlerini ilk deðerlerle yükle
-  GGorevler.Yukle;
+  GGorevler := TGorevler.Create;
+
+  GSistem := TSistem.Create;
 
   // çekirdek deðiþken / iþlevlerini ilk deðerlerle yükle
-  GYonetim0.Yukle;
+  GYonetim.Yukle;
 
   // vesa 2.0 grafik sürücüsünü yükle
   GEkranKartSurucusu := TEkranKartSurucusu.Create;
@@ -95,15 +90,14 @@ begin
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Baðlantý yapýlarý ilk deðerlerle yükleniyor...', []);
   GAgBaglantilari := TAgBaglantilari.Create;
-  GAgBaglantisi := TAgBaglantisi.Create;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ PCI aygýtlarý listeleniyor...', []);
   GPCIAygitlar := TPCIAygitlar.Create;
   GPCIAygitlar.AygitlariSorgula;
 
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Aygýt veritabaný oluþturuluyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Að aygýtlarý yükleniyor...', []);
   GAygitlar := TAygitlar.Create;
-  GAygitlar.VeritabaniOlustur;
+  GAygitlar.Yukle;
   GAygitlar.AgAygitlariniYukle;
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ ACPI donanýmý yükleniyor...', []);
@@ -118,12 +112,13 @@ begin
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ USB aygýtlarý yükleniyor...', []);
   GUSB := TUSB.Create;
 
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Depolama aygýtlarý yükleniyor...', []);
-  GFizikselDepolama.Create;
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Fiziksel depolama aygýtlarý yükleniyor...', []);
+  GFizikselDepolama := TFizikselDepolama.Create;
+  GFizikselDepolama.Yukle;
 
-  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Mantýksal sürücü atamalarý gerçekleþtiriliyor...', []);
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Mantýksal depolama aygýtlarý oluþturuluyor...', []);
   GMantiksalDepolama := TMantiksalDepolama.Create;
-  GMantiksalDepolama.AygitVeritabaniOlustur;
+  GMantiksalDepolama.Yukle;
 
   {$IFDEF SRC_COM}
   SISTEM_MESAJ(RENK_MAVI, '+ Ýletiþim (COM) portu yükleniyor...', []);
@@ -138,7 +133,7 @@ begin
 
   // að bileþenlerini yükle
   {$IFDEF AG_YUKLE}
-  GAg := TAg.Create;
+  TAg.Create;
   {$ENDIF}
 
   // olay nesnesini ilk deðerlerini yükle
@@ -146,8 +141,6 @@ begin
 
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Görsel nesne için bellek iþlemleri yapýlýyor.', []);
   GGNesneler := TGorselNesneler.Create;
-
-  GSistem := TSistem.Create;
 
   // çekirdek yükleme sonrasý iþlevleri gerçekleþtir
   YukleIslevindenSonraCalistir;
@@ -157,6 +150,44 @@ begin
 
   // sistem mesajlarýný görmek için bekleme süresi.
   GZamanlayicilar.BekleMS(CALISMA_FREKANSI);
+end;
+
+{==============================================================================
+  çekirdek tarafýndan yüklenecek uygulama ve servisleri yükler
+ ==============================================================================}
+procedure TYukleyici.UygulamalariYukle;
+var
+  ServisKontrol: TServisKontrol;
+  ServisGrafik: TServisGrafik;
+  PrgTest: TPrgTest;
+  ServisARP: TServisARP;
+begin
+
+  SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Masaüstü yönetim programý yükleniyor...', []);
+  GGorevler.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + OnDegerMasaustuProgram, CALISMA_SEVIYE3);
+
+  // grafik iþlevlerini yönetecek görevi oluþtur
+  ServisGrafik := TServisGrafik.Create('SGrafik');
+  ServisGrafik.Start;
+
+  // sistem kontrol görevi oluþtur
+  PrgTest := TPrgTest.Create('STest');
+  PrgTest.Start;
+
+  ServisKontrol := TServisKontrol.Create('SKontrol');
+  ServisKontrol.Start;
+
+  PrgTest := TPrgTest.Create('SPrgTest');
+  PrgTest.Start;
+
+  // ohci kontrol görevi oluþtur
+  {GPrgOHCI := TPrgOHCI.Create;
+  GetMem(OHCIESP, 4096);
+  Memur('ohci', @GPrgOHCI.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0, True);}
+
+  // arp tablosu güncelleme görevi oluþtur
+  ServisARP := TServisARP.Create('SARPGüncelleme');
+  ServisARP.Start;
 end;
 
 {==============================================================================

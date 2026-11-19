@@ -6,7 +6,7 @@
   Dosya Adý: src_pcnet32.pas
   Dosya Ýþlevi: PCNET32 að (network) kartý sürücüsü
 
-  Güncelleme Tarihi: 17/09/2026
+  Güncelleme Tarihi: 19/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -485,34 +485,70 @@ end;
 function IslevVeriAl(ABellek: Isaretci): TSayi4;
 var
   Durum: TSayi2;
-  i: TSayi4;
+  Uzunluk: TSayi4;
+  SiraNo: TSayi4;
 begin
 
   Result := 0;
 
-  // belirtilen halkaya veri gelip gelmediðini kontrol et
-  Durum := GelisHalka[BirSonrakiGelisSiraNo].Durum;
+  SiraNo := BirSonrakiGelisSiraNo;
 
-  if((Durum and RMD_OWN) = 0) then
+  // tanýmlayýcý durumunu oku
+  Durum := GelisHalka[SiraNo].Durum;
+
+  // tanýmlayýcý halen að kartýna ait
+  if((Durum and RMD_OWN) <> 0) then Exit;
+
+  // Paketin baþlangýç ve bitiþ kontrolü
+  if((Durum and (RMD_STP or RMD_ENP)) <> (RMD_STP or RMD_ENP)) then
   begin
 
-    if(((Durum shr 8) and $FF) = 3) then
-    begin
+    // tanýmlayýcýyý yeniden að kartýna ver
+    GelisHalka[SiraNo].Uzunluk := -(ETH_CERCEVE_U);
+    GelisHalka[SiraNo].Durum := RMD_OWN;
 
-      i := GelisHalka[BirSonrakiGelisSiraNo].MesajUz;
-      i := i and $FFF;
-      i := i - 4;
-
-      Tasi2(GelisHalka[BirSonrakiGelisSiraNo].Bellek, ABellek, i);
-      Result := i;
-
-      // halkayý veri alacak þekilde yeniden ayarla
-      GelisHalka[BirSonrakiGelisSiraNo].Uzunluk := -(ETH_CERCEVE_U);
-      GelisHalka[BirSonrakiGelisSiraNo].Durum := RMD_OWN;
-
-      BirSonrakiGelisSiraNo := (BirSonrakiGelisSiraNo + 1) and GELIS_HALKA_MOD_MASKE;
-    end;
+    BirSonrakiGelisSiraNo := (SiraNo + 1) and GELIS_HALKA_MOD_MASKE;
+    Exit;
   end;
+
+  // hata kontrolü
+  if((Durum and RMD_ERR) <> 0) then
+  begin
+
+    GelisHalka[SiraNo].Uzunluk := -(ETH_CERCEVE_U);
+    GelisHalka[SiraNo].Durum := RMD_OWN;
+
+    BirSonrakiGelisSiraNo := (SiraNo + 1) and GELIS_HALKA_MOD_MASKE;
+    Exit;
+  end;
+
+  // paket uzunluðunu al (FCS dahil)
+  Uzunluk := GelisHalka[SiraNo].MesajUz and $FFF;
+
+  // FCS uzunluðunu çýkar
+  if(Uzunluk < 4) or (Uzunluk > ETH_CERCEVE_U) then
+  begin
+
+    GelisHalka[SiraNo].Uzunluk := -(ETH_CERCEVE_U);
+    GelisHalka[SiraNo].Durum := RMD_OWN;
+
+    BirSonrakiGelisSiraNo := (SiraNo + 1) and GELIS_HALKA_MOD_MASKE;
+    Exit;
+  end;
+
+  Dec(Uzunluk, 4);
+
+  // gelen veriyi hedef belleðe kopyala
+  Move(GelisHalka[SiraNo].Bellek^, ABellek^, Uzunluk);
+
+  Result := Uzunluk;
+
+  // Tanýmlayýcýyý yeniden að kartýna ver
+  GelisHalka[SiraNo].Uzunluk := -(ETH_CERCEVE_U);
+  GelisHalka[SiraNo].Durum := RMD_OWN;
+
+  // Sonraki tanýmlayýcýya geç
+  BirSonrakiGelisSiraNo := (SiraNo + 1) and GELIS_HALKA_MOD_MASKE;
 end;
 
 {==============================================================================
@@ -567,7 +603,7 @@ begin
   p := GidisHalka[BirSonrakiGidisSiraNo].Bellek;
 
   // ethernet paketini belleðe yerleþtir
-  Tasi2(AEthernetPaket, p, AVeriUzunlugu);
+  Move(AEthernetPaket^, p^, AVeriUzunlugu);
 
   // gönderilecek bilgi'nin sahip olduðu ring deðerlerini belirle
   GidisHalka[BirSonrakiGidisSiraNo].Uzunluk := -(TSayi2(AVeriUzunlugu));

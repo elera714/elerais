@@ -6,7 +6,7 @@
   Dosya Adı: kesme34.pas
   Dosya İşlevi: uygulamaların kesme ($34) isteklerini yönlendirir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 19/11/2026
 
  ==============================================================================}
 {$mode objfpc}

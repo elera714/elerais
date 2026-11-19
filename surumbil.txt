@@ -1,5 +1,5 @@
 *******************************************************************************
-  Sürüm: 0.4.2 (sunucu / istemci) - 00.00.0000 (R38) - Beta
+  Sürüm: 0.4.2 (sunucu / istemci) - 19.11.2026 (R38) - Beta
 *******************************************************************************
   + tüm object yapıları class yapılarına dönüştürüldü
   + thread nesnesi oluşturuldu. çekirdek içerisindeki modüler yapılar thread nesnesine dönüştürüldü

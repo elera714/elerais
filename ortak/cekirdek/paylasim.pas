@@ -6,7 +6,7 @@
   Dosya Adý: paylasim.pas
   Dosya Ýþlevi: tüm birimler için ortak paylaþýlan iþlevleri içerir
 
-  Güncelleme Tarihi: 25/06/2026
+  Güncelleme Tarihi: 19/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -27,10 +27,10 @@ const
   ProjeBaslangicTarihi: string = '30.07.2005';
   {$IFDEF SISTEM_SUNUCU}
   SistemTipi: TSayi4 = SISTEM_TIPI_SUNUCU;
-  SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.4.1 - R37';
+  SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.4.2 - R38';
   {$ELSE}
   SistemTipi: TSayi4 = SISTEM_TIPI_ISTEMCI;
-  SistemAdi: string = 'ELERA ÝS (Ýstemci) - 0.4.1 - R37';
+  SistemAdi: string = 'ELERA ÝS (Ýstemci) - 0.4.2 - R38';
   {$ENDIF}
   DerlemeTarihi: string = {$i %DATE%};
   FPCMimari: string = {$i %FPCTARGET%};
@@ -40,29 +40,39 @@ var
   AcilisSurucuAygiti: string = 'disk1';           // disk1:\dizin1
   KLASOR_PROGRAM: string = 'progrmlr';            // programlarýn bulunduðu dizin
   OnDegerMasaustuProgram: string = 'muyntcs.c';
-  GeciciDeger: string = '';
 
   GorevDegistirme: TSayi4 = 0;
-
-type
-  PObject = ^TObject;
 
 const
   // uygulamalarýn tick çalýþma süreleri
   DPL0_SUREMS = 2;
   DPL3_SUREMS = 1;
 
+const
+  NETBIOS_PORTNO  = 137;
+  HTTP_PORTNO     = 80;
+  FTP_PORTNO      = 21;
+
 type
   { TODO - TIletisimTipi deðerleri ana tiplerdir. TProtokolTipi buna göre düzenlenecek }
   PIletisimTipi = ^TIletisimTipi;
   TIletisimTipi = (itIP4, itIP6);
 
-  PProtokolTipi = ^TProtokolTipi;
-  TProtokolTipi = (ptBilinmiyor, ptIP4, ptARP, ptTCP, ptUDP, ptICMP4, ptICMP6, ptIP6);
+  // tutanak tipleri
+  PTutanakTipi = ^TTutanakTipi;
+  TTutanakTipi = (ttBilinmiyor, ttIP4, ttIP6, ttARP, ttTCP, ttUDP, ttICMP4, ttICMP6);
 
   // baðlantýyý IP'ýn tanýmlayýcýsý olan MAC veya yayin (broadcast) olarak gerçekleþtir
   PBaglantiTipi = ^TBaglantiTipi;
   TBaglantiTipi = (btIP, btYayin);
+
+{==============================================================================
+  big endian > little endian çevrimi
+
+  Bellek Yerleþimleri: (Örnek Sayý: $12345678)
+    Big Endian:   78 56 34 12
+    Litle Endian: 12 34 56 78
+ ==============================================================================}
 
 type
   // gerçek moddan gelen veri yapýsý
@@ -81,14 +91,11 @@ type
 
 const
   // sistemde çalýþacak görev (program) sabitleri
-  USTSINIR_GOREVSAYISI = 32;
-
-  // bu deðer genel video belleði olacak
-  VIDEO_BELLEK_ADRESI = $A0000000;
+  USTSINIR_GOREVSAYISI  = 32;
 
   // sayfalama sabitleri
-  SAYFA_MEVCUT      = 1;
-  SAYFA_YAZILABILIR = 2;
+  SAYFA_MEVCUT          = 1;
+  SAYFA_YAZILABILIR     = 2;
 
   GERCEKBELLEK_DIZINADRESI = $600000;
   GERCEKBELLEK_TABLOADRESI = $610000;
@@ -134,19 +141,19 @@ const
   BILDEN_VERIADRESI = $10008;
 
 const
-  // að protokolleri - deðerler network sýralý
-  PROTOKOL_ARP    = TSayi2($0806);
+  // að tutanaklarý (protokolleri) - deðerler að (network) sýralý
+  TUTANAK_ARP     = TSayi2($0806);
 
-  PROTOKOL_IP4    = TSayi2($0800);
-  PROTOKOL_IP6    = TSayi2($86DD);
+  TUTANAK_IP6     = TSayi2($86DD);
+  TUTANAK_IP4     = TSayi2($0800);
 
-  PROTOKOL_LLDP   = TSayi2($88CC);    // link layer discovery protocol
+  TUTANAK_LLDP    = TSayi2($88CC);    // link layer discovery protocol
 
-  PROTOKOL_TCP    = TSayi1($06);
-  PROTOKOL_UDP    = TSayi1($11);
+  TUTANAK_TCP     = TSayi1($06);
+  TUTANAK_UDP     = TSayi1($11);
 
-  PROTOKOL_ICMP4  = TSayi1($01);
-  PROTOKOL_ICMP6  = TSayi1($3A);
+  TUTANAK_ICMP6   = TSayi1($3A);
+  TUTANAK_ICMP4   = TSayi1($01);
 
 const
   // genel hata kodlarý
@@ -171,25 +178,49 @@ const
   HATA_BILINMEYENUZANTI       = TISayi4(-17);
   HATA_NESNEOLUSTURMA         = TISayi4(-18);
 
-  HATA_AYGITMESGUL            = TISayi4(-19);
-  HATA_AYGITSEKTOROKUMA       = TISayi4(-20);
-  HATA_AYGITSEKTORYAZMA       = TISayi4(-21);
-  HATA_TUMSEKTORLERDOLU       = TISayi4(-22);
-  HATA_AYGITHAZIRDEGIL        = TISayi4(-23);
-
-  HATA_KLASORZATENMEVCUT      = TISayi4(-24);
-  HATA_DOSYAZATENMEVCUT       = TISayi4(-25);
-  HATA_AYGITOKUMA             = TISayi4(-26);
-  HATA_AYGITAYAZMA            = TISayi4(-27);
-  HATA_BILINMIYOR             = TISayi4(-28);
-  HATA_BELLEKYOK              = TISayi4(-29);
-
   // dosya hata kodlarý
-  HATA_DOSYA_ISLEM_BASARILI   = 0;
+  //HATA_YOK;                 = 0;      // yukarýda tanýmlý
+  HATA_DK_ADRES_YOLU          = 1;
   HATA_DOSYA_MEVCUTDEGIL      = 2;
+  HATA_KLASOR_MEVCUTDEGIL     = 3;
+  HATA_DK_MEVCUTDEGIL         = 4;
   HATA_DOSYA_KULLANIMDA       = 5;
+  HATA_DOSYA_YAZILAMIYOR      = 6;
+  HATA_SURUCU_YOK             = 7;
+  HATA_ARAMA_KIMLIK           = 8;
+  HATA_NESNE_OLUSTURMA        = 9;
+  HATA_DOSYA_ACIKDEGIL        = 10;
 
-  HATA_DOSYA_YAZILAMIYOR      = 40;     // dosya yazým iþlevi için açýk deðil
+  HATA_SEKTOR_KONUM           = TSayi4(18);
+
+  HATA_AYGITMESGUL            = TSayi4(19);
+  HATA_AYGITSEKTOROKUMA       = TSayi4(20);
+  HATA_AYGITSEKTORYAZMA       = TSayi4(21);
+  HATA_TUMSEKTORLERDOLU       = TSayi4(22);
+  HATA_AYGITHAZIRDEGIL        = TSayi4(23);
+
+  HATA_KLASORZATENMEVCUT      = TSayi4(24);
+  HATA_DOSYAZATENMEVCUT       = TSayi4(25);
+  HATA_AYGITOKUMA             = TSayi4(26);
+  HATA_AYGITAYAZMA            = TSayi4(27);
+  HATA_BILINMIYOR             = TSayi4(28);
+  HATA_BELLEKYOK              = TSayi4(29);
+
+type
+  TBilgi = record
+    Kod: TSayi4;
+    Deger: string;
+  end;
+
+const
+  Mesajlar: array[0..6] of TBilgi = (
+    (Kod: HATA_YOK;                 Deger: 'iþlem baþarýlý.'),
+    (Kod: HATA_DK_ADRES_YOLU;       Deger: 'dosya/klasör yolu hatalý!'),
+    (Kod: HATA_DOSYA_MEVCUTDEGIL;   Deger: 'dosya mevcut deðil!'),
+    (Kod: HATA_KLASOR_MEVCUTDEGIL;  Deger: 'klasör mevcut deðil!'),
+    (Kod: HATA_DK_MEVCUTDEGIL;      Deger: 'klasör/dosya mevcut deðil!'),
+    (Kod: HATA_DOSYA_KULLANIMDA;    Deger: 'dosya baþka bir iþlem tarafýndan kullanýmda!'),
+    (Kod: HATA_DOSYA_YAZILAMIYOR;   Deger: 'dosyaya yazýlamýyor'));
 
 type
   TTarihSaat = packed record
@@ -234,9 +265,6 @@ type
     function MACAdres255Mi: Boolean;
     class operator = (const MAC1, MAC2: TMACAdresIslev): Boolean;
   end;
-
-var
-  CekirdekBaslangicAdresi, CekirdekUzunlugu: TSayi4;
 
 type
   PAygitSurucusu = ^TAygitSurucusu;
@@ -286,10 +314,25 @@ type
     Veri: Isaretci;
   end;
 
+type
+  PIP6Paket = ^TIP6Paket;
+  TIP6Paket = packed record
+    { Baslik -> 0..3: sürüm, 4..11: trafik sýnýfý, 12..31: akýþ etiketi }
+    Baslik: TSayi4;
+    // paketin kendisi haricinde taþýdýðý verinin uzunluðu
+    TasinanVeriU: TSayi2;
+    // ip paketinin taþýdýðý paket protokol tipi
+    TasinanVeriP: TSayi1;
+    HopLimit: TSayi1;
+    KaynakIPAdres,
+    HedefIPAdres: TIP6Adres;
+    Veri: Isaretci;
+  end;
+
 {Not1: [0..3] bit = versiyon Ipv4 = 4
        [4..7] baþlýk uzunluðu = baþlýk uzunluðu * 4 (kaç tane 4 byte olduðu)
 
- Not2: Toplam Uzunluk: Ip uzunluðu + kendisine eklenen diðer data uzunluðu }
+ Not2: Toplam Uzunluk: ip uzunluðu + kendisine eklenen diðer data uzunluðu }
 type
   PIP4Paket = ^TIP4Paket;
   TIP4Paket = packed record
@@ -299,25 +342,10 @@ type
     Tanimlayici,                      // tanýmlayýcý
     ParcaSiraNo: TSayi2;              // üst 3 bit parçanýn olup olmadýðý, diðer bitler parça numarasý
     YasamSuresi,
-    Protokol: TSayi1;
+    Tutanak: TSayi1;                  // protokol
     SaglamaToplami: TSayi2;
-    KaynakIP4Adres,
-    HedefIP4Adres: TIP4Adres;
-    Veri: Isaretci;
-  end;
-
-type
-  PIP6Paket = ^TIP6Paket;
-  TIP6Paket = packed record
-    { Baslik -> 0..3: sürüm, 4..11: Trafik Sýnýfý, 12..31: Akýþ Etiketi }
-    Baslik: TSayi4;
-    // paketin kendisi haricinde taþýdýðý verinin uzunluðu
-    TasinanVeriU: TSayi2;
-    // ip paketinin taþýdýðý paket protoko tipi
-    TasinanVeriP: TSayi1;
-    HopLimit: TSayi1;
-    KaynakIP,
-    HedefIP6: TIP6Adres;
+    KaynakIPAdres,
+    HedefIPAdres: TIP4Adres;
     Veri: Isaretci;
   end;
 
@@ -332,6 +360,7 @@ type
     Protokol: TSayi1;
   end;
 
+type
   // tcp ve udp v4 kontrol toplamý için ek baþlýk yapýsý
   PEk4Baslik = ^TEk4Baslik;
   TEk4Baslik = packed record         // pseudo header
@@ -349,73 +378,11 @@ const
 const   // DST = dosya sistem tipi (FAT)
   DST_BELIRSIZ      = TSayi1($00);
   DST_FAT12         = TSayi1($01);
-  DST_FAT16         = TSayi1($04);
+  DST_FAT16_1       = TSayi1($04);    // < 16MB
+  DST_FAT16_2       = TSayi1($06);    // > 16MB
   DST_FAT32         = TSayi1($0B);
   DST_FAT32LBA      = TSayi1($0C);
   DST_ELR1          = TSayi1($40);
-
-type
-  // 12 & 16 bitlik boot kayýt yapýsý
-  PAcilisKayit1x = ^TAcilisKayit1x;
-  TAcilisKayit1x = packed record
-    AYRLDI1: array[0..2] of TSayi1;           // 00..02
-    OEMAdi: array[0..7] of Char;              // 03..10
-    SektorBasinaByte: Word;                   // 11..12
-    KBS: TSayi1;                              // 13..13 - Küme Baþýna Sektör
-    AyrilmisSektor1: Word;                    // 14..15
-    DATSayisi: TSayi1;                        // 16..16
-    AzamiDizinGirisi: Word;                   // 17..18
-    ToplamSektorSayisi1x: Word;               // 19..20
-    MedyaTip: TSayi1;                         // 21..21
-    DATBasinaSektor: Word;                    // 22..23 - SADECE FAT12 / FAT16 için
-    IzBasinaSektor: Word;                     // 24..25
-    KafaSayisi: Word;                         // 26..27
-    BolumOncesiSektorSayisi: TSayi4;          // 28..31
-    ToplamSektorSayisi32: TSayi4;             // 32..35
-
-    AygitNo: TSayi1;                          // 36..36
-    AYRLDI2: TSayi1;                          // 37..37
-    GenisletilmisAcilisImzasi: TSayi1;        // 38..38
-    SeriNo: TSayi4;                           // 39..42
-    Etiket: array[0..10] of Char;             // 43..53
-    DosyaSistemEtiket: array[0..7] of Char;   // 54..61
-    // açýlýþ kodu ve $AA55
-  end;
-
-type
-  // 32 bitlik boot kayýt yapýsý
-  PAcilisKayit32 = ^TAcilisKayit32;
-  TAcilisKayit32 = packed record
-    AYRLDI1: array[0..2] of TSayi1;           // 00..02
-    OEMAdi: array[0..7] of Char;              // 03..10
-    SektorBasinaByte: Word;                   // 11..12
-    KBS: TSayi1;                              // 13..13  - Küme Baþýna Sektör
-    AyrilmisSektor1: Word;                    // 14..15
-    DATSayisi: TSayi1;                        // 16..16
-    AzamiDizinGirisi: Word;                   // 17..18
-    ToplamSektorSayisi1x: Word;               // 19..20
-    MedyaTip: TSayi1;                         // 21..21
-    DAT1xBasinaSektor: Word;                  // 22..23   - SADECE FAT12 / FAT16 için
-    IzBasinaSektor: Word;                     // 24..25
-    KafaSayisi: Word;                         // 26..27
-    BolumOncesiSektorSayisi: TSayi4;          // 28..31
-    ToplamSektorSayisi32: TSayi4;             // 32..35
-
-    DATBasinaSektor: TSayi4;                  // 36..39
-    Bayraklar: Word;                          // 40..41
-    DATSurum: Word;                           // 42..43
-    DizinGirisindekiZincirSayisi: TSayi4;     // 44..47
-    DosyaSistemSektorNoBilgi: Word;           // 48..49
-    AcilisSektorNo: Word;                     // 50..51
-    AyrilmisSektor2: array[0..11] of TSayi1;  // 52..63
-    AygitNo: TSayi1;                          // 64..64
-    Bayraklar2: TSayi1;                       // 65..65
-    Imza: TSayi1;                             // 66..66
-    EtiketKimlik: array[0..3] of Char;        // 67..70
-    Etiket: array[0..10] of Char;             // 71..81
-    DosyaSistemEtiket: array[0..7] of Char;   // 82..89
-    // açýlýþ kodu ve $AA55
-  end;
 
 type
   PDiskBolum = ^TDiskBolum;
@@ -437,43 +404,8 @@ type
 type
   PDizinGirisi = ^TDizinGirisi;
   TDizinGirisi = record
-    IlkSektor: TSayi4;
-    ToplamSektor,
-    ToplamKokSektor,          // fat12 / fat16 için kök dizine tahsis edilen sektör sayýsý
-    IlkKumeNo: TSayi4;        // þu aþamada SADECE fat32'ye eklendi. gerekliliði araþtýrýlacak
-    GirdiUzunlugu: TSayi4;    // her bir klasör / dosyanýn sektördeki girdi uzunluðu
-  end;
-
-const
-  ELR_DG_U        = 64;       // her bir dosya / klasörün dizin girdisindeki uzunluðu
-  ELR_DOSYA_U     = 38;
-
-  // girdi tipleri
-  ELR_GT_DOSYA    = 1;
-  ELR_GT_KLASOR   = 2;
-
-  // girdi özellikleri
-  ELR_O_SILINMIS  = 1;
-  ELR_O_NORMAL    = 2;
-  ELR_O_GIZLI     = 3;
-
-  // dosya giriþi zincir (küme) durumlarý
-  ELR_ZD_SON      = TSayi4($FFFFFFFF);    // zincir sonu - baþka veri yok
-
-type
-  PDizinGirdisiELR = ^TDizinGirdisiELR;
-  TDizinGirdisiELR = packed record
-    DosyaAdi: array[0..ELR_DOSYA_U - 1] of Char;
-    GirdiTipi: TSayi1;      // dosya / klasör vb
-    Ozellikler: TSayi1;     // silinmiþ, gizli vb
-
-    OlusturmaTarihi,
-    OlusturmaSaati,
-    DegisimTarihi,
-    DegisimSaati,
-
-    BaslangicKumeNo,
-    DosyaUzunlugu: TSayi4;
+    IlkSektor,
+    ToplamSektor: TSayi4;
   end;
 
 type
@@ -492,19 +424,6 @@ type
     BaslangicKumeNo: TSayi2;
     DosyaUzunlugu: TSayi4;
   end;
-
-type
-  // dosya ayýrma tablosu (file allocation table = FAT)
-  PDosyaAyirmaTablosu = ^TDosyaAyirmaTablosu;
-  TDosyaAyirmaTablosu = record
-    IlkSektor: TSayi2;
-    ToplamSektor: TSayi2;
-    KBS: TSayi1;                // Küme Baþýma Sektör
-  end;
-
-type
-  TSektorIslev = function(AFizikselDepolama: Isaretci; AIlkSektor,
-    ASektorSayisi: TSayi4; ABellek: Isaretci): TISayi4 of object;
 
 // sistem dosya arama yapýsý
 type
@@ -560,12 +479,14 @@ type
   // ktBilesen    = nesnenin alt nesnesi olan ktNesne özelliðindeki nesnedir
   TKullanimTipi = (ktTuvalNesne, ktNesne, ktBilesen);
 
-type { Görsel Nesne Tipi }
-  TGNTip = (gntTanimsiz, gntMasaustu, gntPencere, gntDugme, gntGucDugmesi, gntListeKutusu,
-    gntMenu, gntDefter, gntIslemGostergesi, gntOnayKutusu, gntGirisKutusu, gntDegerDugmesi,
-    gntEtiket, gntDurumCubugu, gntSecimDugmesi, gntBaglanti, gntResim, gntListeGorunum,
-    gntPanel, gntResimDugmesi, gntKaydirmaCubugu, gntKarmaListe, gntAcilirMenu,
-    gntDegerListesi, gntIzgara, gntAracCubugu, gntRenkSecici, gntSayfaKontrol);
+type
+  { Görsel Nesne Tipleri }
+  TGNTip = (gntTanimsiz, gntMasaustu, gntPencere, gntDugme, gntGucDugmesi,
+    gntListeKutusu, gntMenu, gntDefter, gntIslemGostergesi, gntOnayKutusu,
+    gntGirisKutusu, gntDegerDugmesi, gntEtiket, gntDurumCubugu, gntSecimDugmesi,
+    gntBaglanti, gntResim, gntListeGorunum, gntPanel, gntResimDugmesi,
+    gntKaydirmaCubugu, gntKarmaListe, gntAcilirMenu, gntDegerListesi, gntIzgara,
+    gntAracCubugu, gntRenkSecici, gntSayfaKontrol);
 
 const
   ISLEV_OLUSTUR     = $0001;
@@ -691,17 +612,20 @@ var
   MAC333300000002: TMACAdres = ($33, $33, $00, $00, $00, $02);
   MAC333300000102: TMACAdres = ($33, $33, $00, $01, $00, $02);
 
-  YayinMAC6: TMACAdres = ($33, $33, $ff, $cd, $ef, $01);
+  YayinMAC6: TMACAdres = ($33, $33, $FF, $CD, $EF, $01);
 
 const
+  IP6AdresFF02_0001: TIP6Adres = (
+    $FF, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01);
+
   IP6AdresFF02_0002: TIP6Adres = (
-    $ff, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $02);
+    $FF, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $02);
 
   IP6AdresFF02_0102: TIP6Adres = (
-    $ff, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $02);
+    $FF, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $02);
 
   YayinIP6Adres: TIP6Adres = (
-    $ff, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $ff, $cd, $ef, $01);
+    $FF, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $FF, $CD, $EF, $01);
 
 var
   UzunDosyaAdi: array[0..511] of Char;
@@ -779,21 +703,15 @@ type
   end;
 
 var
-  // çekirdek genelinde kullanýlan ortak yapýlar / deðiþkenler
-
-  // ethernet kart mac adresi
-  { TODO - buradan ilgili yere taþýnacak }
-  //GMacAdres: TMACAdres = ($00, $00, $00, $00, $00, $00);
-
   // sistemin çalýþtýðý bilgisayarýn adý - bu bilgisayarýn adý
-  GBilgisayarAdi: string = 'elera';         // netbios için GBilgisayarAdi + GAlanAdi uzunluðu 15 byte'ý geçmemeli
+  GBilgisayarAdi: string = 'elera-bil';     // netbios için GBilgisayarAdi + GAlanAdi uzunluðu 15 byte'ý geçmemeli
   GAlanAdi: string = 'elr.com';
   GTamBilgisayarAdi: string;                // ag.Yukle tarafýndan atanmaktadýr
   GGrupAdi: string = 'programlama';         // sistemin grup olarak çalýþtýðý að adý
 
   IP6Adres0: TIP6Adres = ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00);
   IP4Adres0: TIP4Adres = (0, 0, 0, 0);
-  IPAdres255: TIP4Adres = (255, 255, 255, 255);
+  IP4Adres255: TIP4Adres = (255, 255, 255, 255);
   MACAdres0: TMACAdres = (0, 0, 0, 0, 0, 0);
   MACAdres255: TMACAdres = (255, 255, 255, 255, 255, 255);
 
@@ -804,7 +722,7 @@ var
 
 function SaglamaToplamiOlustur(AVeriAdresi: Isaretci; AVeriUzunlugu: TSayi2;
   ASahteBaslikAdresi: Isaretci; ASahteBaslikUzunlugu: TSayi2): TSayi2;
-function ProtokolTipAdi(AProtokolTipi: TProtokolTipi): string;
+function TutanakTipAdi(ATutanakTipi: TTutanakTipi): string;
 function KritikBolgeyeGir(var ABellek: TSayi4): Boolean;
 procedure KritikBolgedenCik(var ABellek: TSayi4);
 function TarihSaatBilgisiAl: string;
@@ -917,15 +835,15 @@ begin
   Result := not SaglamaToplami;
 end;
 
-function ProtokolTipAdi(AProtokolTipi: TProtokolTipi): string;
+function TutanakTipAdi(ATutanakTipi: TTutanakTipi): string;
 begin
 
-  case AProtokolTipi of
-    ptIP4   : Result := 'IP4';
-    ptARP   : Result := 'ARP';
-    ptTCP   : Result := 'TCP';
-    ptUDP   : Result := 'UDP';
-    ptICMP4 : Result := 'ICMP4';
+  case ATutanakTipi of
+    ttIP4   : Result := 'IP4';
+    ttARP   : Result := 'ARP';
+    ttTCP   : Result := 'TCP';
+    ttUDP   : Result := 'UDP';
+    ttICMP4 : Result := 'ICMP4';
     else {ptBilinmiyor:} Result := 'Bilinmiyor';
   end;
 end;

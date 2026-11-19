@@ -1,4 +1,4 @@
-# ELERA İşletim Sistemi (elerais - sunucu / istemci) - 0.4.1 [R37]
+# ELERA İşletim Sistemi (elerais - sunucu / istemci) - 0.4.2 [R38]
 
 Türkçe:
 
@@ -27,22 +27,22 @@ English:
 - **İşlemci:**
   - 32 bit Intel / AMD
 - **Bellek:**
-  - 64 MB Bellek
+  - 256 MB Bellek
   - Dinamik Bellek Yönetimi
   - FPC Uyumlu Bellek Tahsis / İmha Yönetimi
 - **Grafik:**
   - 16, 24, 32 bit VESA 2.0 grafik yönetimi
   - 27 Adet Hiyerarşik Yapıya Sahip Görsel Nesne Desteği
-  - 2 Adet Pencere Giysi (skin) Desteği
+  - 3 Adet Pencere Giysi (skin) Desteği
 - **Donanım:**
   - Floppy
   - IDE Disk
   - PCNet32 Ağ Aygıtı
 - **Ağ Protokolleri:**
-  - TCP-IP4/6
+  - TCP-IP6/4
   - UDP
   - ARP
-  - ICMP4/6
+  - ICMP6/4
   - NETBIOS
   - HTTP Sunucusu
   - FTP Sunucusu
@@ -62,7 +62,7 @@ English:
 * Windows 7 Professional - 64 / 32 bit
 * Lazarus 2.0.8 - FPC 3.0.4
 * binutils 2.36.1 (05.07.2026)
-* ImDisk
+* ImDisk-20250206
 * Virtualbox 7.0.10
 
 ## Telif Hakkı (Copyright)

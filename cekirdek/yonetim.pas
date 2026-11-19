@@ -6,7 +6,7 @@
   Dosya Adý: yonetim.pas
   Dosya Ýþlevi: sistem ana yönetim / kontrol kýsmý
 
-  Güncelleme Tarihi: 21/05/2025
+  Güncelleme Tarihi: 19/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -24,40 +24,37 @@ type
     procedure SistemAnaKontrol;
     procedure CekirdekDosyaTSDegeriniKaydet;
     procedure KaydedilenProgramlariYenidenYukle;
-    procedure AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
+    procedure AssertIslevi(const FMesaj, FAd: shortstring; FSiraNo: TISayi4;
+      FHataAdresi: Isaretci);
   end;
 
 var
+  GYonetim: TYonetim;
   GArge: TArGe;
-  GYonetim0: TYonetim;
 
 implementation
 
 uses gdt, gorev, src_klavye, dhcpv4i, sistemmesaj, dosyalar, gn_masaustu, src_disket,
-  srv_grafik, srv_kontrol, srv_test, fdepolama, mdepolama, baglantilar, olayyonetim,
-  gn_islevler, src_ps2, thread, srv_arp, aygityonetimi, sistem, aygit;
+  mdepolama, baglantilar, olayyonetim, sistem, gn_islevler, src_ps2, aygityonetimi,
+  vbox, elr1, dhcpv4;
 
 {==============================================================================
-  sistem ilk yükleme iþlevlerini gerçekleþtirir
+  yönetim ilk yükleme iþlevlerini gerçekleþtirir
  ==============================================================================}
 procedure TYonetim.Yukle;
 var
-  G: PGorev;
+  G: TGorev;
   GMBilgi: PGMBilgi;
   Olay: POlay;
   OHCIESP, ARPESP1,
   Prg1ESP, Prg2ESP: Isaretci;
-  PrgTest: TPrgTest;
-  ServisKontrol: TServisKontrol;
-  ServisGrafik: TServisGrafik;
-  ServisARP: TServisARP;
 begin
 
   GMBilgi := PGMBilgi(BILDEN_VERIADRESI);
 
   // çekirdek bilgilerini al
-  CekirdekBaslangicAdresi := GMBilgi^.CekirdekBaslangicAdresi;
-  CekirdekUzunlugu := GMBilgi^.CekirdekKodUzunluk;
+  GSistem.FCekirdekBaslangicAdresi := GMBilgi^.CekirdekBaslangicAdresi;
+  GSistem.FCekirdekUzunlugu := GMBilgi^.CekirdekKodUzunluk;
 
   // öndeðer fare göstergesini belirle
   GFareSurucusu.AktifFareImlec := fitBekle;
@@ -88,70 +85,35 @@ begin
     %10001001, %00010000);
 
   // sistem görev deðerlerini belirle
-  G := GetMem(SizeOf(TGorev));
+  G := TGorev.Create(0);
   GGorevler.Gorev[0] := G;
-  G^.SeviyeNo := CALISMA_SEVIYE0;
-  G^.GrvSayac := 0;
-  G^.BellekBasAdr := CekirdekBaslangicAdresi;
-  G^.CalismaSureMS := DPL0_SUREMS;
-  G^.CalismaSureSayac := DPL0_SUREMS;
+  G.FSeviyeNo := CALISMA_SEVIYE0;
+  G.FGrvSayac := 0;
+  G.FBellekBaslAdr := GSistem.FCekirdekBaslangicAdresi;
+  G.FCalismaSureMS := DPL0_SUREMS;
+  G.FCalismaSureSayac := DPL0_SUREMS;
 
   { TODO - CekirdekUzunlugu -> *4K olarak hesaplanacak }
-  G^.BellekUz := CekirdekUzunlugu;
+  G.FBellekUz := GSistem.FCekirdekUzunlugu;
 
   // çekirdek için olay iþlemleri gerçekleþmeyecek
-  G^.OlaySayisi := 0;
-  G^.OlayBellekAdresi := nil;
+  G.FOlaySayisi := 0;
+  G.FOlayBellekAdresi := nil;
 
-  G^.AktifMasaustu := nil;
-  G^.AktifPencere := nil;
+  G.FAktifMasaustu := nil;
+  G.FAktifPencere := nil;
 
-  G^.DosyaAdi := 'cekirdek.bin';
-  G^.ProgramAdi := 'Sistem Çekirdeði';
+  G.FDosyaAdi := 'cekirdek.bin';
+  G.FProgramAdi := 'Sistem Çekirdeði';
 
   // görev olay sayýsý
-  G^.OlaySayisi := 0;
+  G.FOlaySayisi := 0;
 
   GGorevler.DurumDegistir(0, gdCalisiyor);
 
   // çalýþan ve oluþturulan görev deðerlerini belirle
   GGorevler.FCalisanGorevSayisi := 1;
   GGorevler.FAktifGrv := 0;
-
-  // grafik iþlevlerini yönetecek görevi oluþtur
-  ServisGrafik := TServisGrafik.Create('SGrafik');
-  ServisGrafik.Start;
-
-  // sistem kontrol görevi oluþtur
-  PrgTest := TPrgTest.Create('STest');
-  PrgTest.Start;
-
-  ServisKontrol := TServisKontrol.Create('SKontrol');
-  ServisKontrol.Start;
-
-  PrgTest := TPrgTest.Create('SPrgTest');
-  PrgTest.Start;
-
-  // ohci kontrol görevi oluþtur
-  {GPrgOHCI := TPrgOHCI.Create;
-  GetMem(OHCIESP, 4096);
-  Memur('ohci', @GPrgOHCI.Kontrol1, TSayi4(OHCIESP), CALISMA_SEVIYE0, True);}
-
-
-  // arp tablosu güncelleme görevi oluþtur
-  { TODO - aþaðýdaki 2 iþlev Create iþlevinden sonraki bir yere eklenecek }
-  ServisARP := TServisARP.Create('SARPGüncelleme');
-  ServisARP.Start;
-
-  {ARPESP1 := GetMem(4096);
-  Memur('arp_dolaþým', @GARP.CihazlaraARPMesajiGonder, TSayi4(ARPESP1),
-    CALISMA_SEVIYE0, True);}
-
-  {GetMem(Prg1ESP, 4096);
-  Memur('prg1', @Program1, TSayi4(Prg1ESP), CALISMA_SEVIYE0, True);
-
-  GetMem(Prg2ESP, 4096);
-  Memur('prg2', @Program2, TSayi4(Prg2ESP), CALISMA_SEVIYE0, True);}
 
   // ilk TSS'yi yükle
   // not : tss'nin yükleme iþlevi görev geçiþini gerçekleþtirmez. sadece
@@ -162,14 +124,18 @@ begin
   end;
 end;
 
+const
+  ICMPv6TestIP6Adres: TIP6Adres = (
+    $FE, $80, $00, $00, $00, $00, $00, $00,
+    $54, $A7, $B5, $12, $96, $04, $A5, $1D);
+  ICMPv6TestMACAdres: TMACAdres = ($08, $00, $AB, $CD, $EF, $02);
+
 {==============================================================================
   sistem ana kontrol kýsmý
  ==============================================================================}
 procedure TYonetim.SistemAnaKontrol;
 const
-  PingHedefIP6Adres: TIP6Adres = (
-    $fe, $80, $00, $00, $00, $00, $00, $00, $41, $02, $05, $a3, $ba, $0a, $ed, $02);
-  PingHedefMACAdres: TMACAdres = ($02, $00, $4c, $4f, $4f, $50);
+  PingVeri: string = 'abcdefghijklmnopqrstuvwabcdefghi';
 var
   TusDegeri: TSayi2;
   TusKontrolDegeri: TSayi1;
@@ -180,27 +146,18 @@ var
   GN: PGorselNesne;
   Olay: TOlay;
   MD: TMDNesne;
-  G: PGorev;
-  DosyaKimlik: TKimlik;
-  Durum: Boolean;
-  FD: TFDAygiti;
-  //T: TMyThread;
-  //T2: TMyThread2;
-  PingSiraNo: TSayi4 = 111;
-  p: PChar;
-  B, B2: TBaglanti;
-  Bag: TAgBaglantisi;
+  B: TBaglanti;
+  DSELR: TELR1;
 begin
-
-  i := 100;
 
   // masaüstü aktif olana kadar bekle
   while GGNesneler.AktifMasaustu = nil do;
 
-  // çekirdek deðiþim kontrol için cekirdek.bin dosyasýnýn yüklenme aþamasýndaki
-  // tarih + saat deðerlerini kaydet
+  // çekirdek dosyasýnýn deðiþim kontrolü için cekirdek.bin dosyasýnýn
+  // yüklenme aþamasýndaki tarih + saat deðerlerini kaydet
   CekirdekDosyaTSDegeriniKaydet;
 
+  // sistem kapanýþ aþamasýnda "çalýþýr olarak" kaydedilen çalýþan uygulamalarý yükle
   KaydedilenProgramlariYenidenYukle;
 
   GKlavye.FSistemTusDurumuKontrolSol := tdYok;
@@ -258,8 +215,10 @@ begin
             if(GAygitlar.ToplamAgAygitSayisi > 0) then
             begin
 
-              GAgBaglantilari.AktifBaglanti.IP4AdresiAlindi := False;
-              GDHCPv4i.IpAdresiAl;
+              GAgBaglantilari.AB.IP4AdresiAlindi := False;
+              B := GAgBaglantilari.AB.BaglantiOlustur(bnDHCPv4i, itIP4, btYAktif,
+                ttUDP, DHCPv4_ISTEMCI_PORT, DHCPv4_SUNUCU_PORT);
+              B.FDHCPv4i.OtomatikIpAdresiAl;
             end
             else
             begin
@@ -272,74 +231,46 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            //DosyalariKopyala;
+            //DosyaKopyala('disk3:\haklar.txt', 'disk2:\haklar.txt');
 
-            DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
+            {MD := GMantiksalDepolama.SurucuAl('disk2');
+            DSELR := TELR1(GDosyalar.Yeni(MD));
+            DSELR.SistemKlasorleriniOlustur;}
 
-            {if(GBaglantilar.BaglantiSayisi > 0) then
-            begin
-
-              for i := 0 to GBaglantilar.BaglantiSayisi - 1 do
-              begin
-
-                Bag := GBaglantilar.Baglanti0[i];
-
-                SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Bað: %d', [i + 1]);
-                SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ad: %s', [Bag.Ad]);
-                SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Ad: %d', [Bag.FSiraNo]);
-              end;
-            end;}
-
-            //GAygitlar.Aygit[0].FVeriGonder(nil, i);
-            {asm int 2; end;}
-
-            {GAg.IPAdresiAlindi := False;
-            DHCPIpAdresiAl;}
-
-
-
-            //SistemKlasorleriniOlustur;
-            //vbox.Listele;
-            //KomsuIstegiGonder(PingHedefIP6Adres);
-
-            //GGorevler.Calistir('disket1:\mustudk.c', CALISMA_SEVIYE3)
-
-            //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
+            // icmp v6 komþu isteði mesajý - tutanaðý test etme amacýyla eklendi
+            //GAgBaglantilari.AB.FICMP6.KomsuIstegiGonder(ICMPv6TestIP6Adres);
 
             //AssertErrorProc := @AssertIslev;
             //Assert(1 > 2, 'Merhaba');
-
-            //for i := 1 to 100 do CreateDir('disk2:\merhaba\mer' + IntToStr(i));
-            //DosyalariKopyala;
-            //DosyaKopyala('disk1:\progrmlr\dskbolum.c', 'disk2:\dskbolum.c');
-
-            //vbox.Listele;
           end
           // test iþlev tuþu-1
           else if(TusKarakterDegeri = '4') then
           begin
 
-            //SistemKlasorleriniSil;
-            //IstekMesajiGonder6;
+            //dosyalar.DeleteFile('disk2:\haklar.txt');
 
-            {PingMesajiGonder(ICMP6_PING_ISTEK, PingHedefIP6Adres, PingHedefMACAdres,
-              PingSiraNo, @PingVeri[1], 32);
+            GVirtualBox.FareDurumDegistir(False);
+            //GAgBaglantilari.AB.FARP.PaketleVeGonder(arpIstek, nil, @IP4Adres);
+
+            // icmp v6 ping mesajý - tutanaðý test etme amacýyla eklendi
+            {GAgBaglantilari.AB.FICMP6.PingMesajiGonder(ICMP6_PING_ISTEK,
+              ICMPv6TestIP6Adres, ICMPv6TestMACAdres, PingSiraNo, @PingVeri[1], 32);
             Inc(PingSiraNo);}
-
-            //GGorevler.Calistir('disk1:\dskgor.c', CALISMA_SEVIYE3)
-            //elr1.SistemKlasorleriniSil;
 
             //iiiii := Align(SizeOf(TIzgara) + 64, 16);
             //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'U: %d', [iiiii]);
-
-            //vbox.IcerigiGoruntule;
           end
           // test iþlev tuþu-2
           else if(TusKarakterDegeri = '5') then
           begin
 
             MD := GMantiksalDepolama.SurucuAl('disk2');
-            if not(MD = nil) then ELR1DiskBicimle(MD);
+            if not(MD = nil) then
+            begin
+
+              DSELR := TELR1(GDosyalar.Yeni(MD));
+              DSELR.DiskiBicimle;
+            end;
           end
           // program çalýþtýrma programýný çalýþtýr
           else if(TusKarakterDegeri = 'c') then
@@ -439,7 +370,7 @@ begin
         else
         begin
 
-          //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Basýlan Tuþ: %d', [TusDegeri]);
+          //SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Basýlan Tuþ Deðeri: %x', [TusDegeri]);
 
           // klavye olaylarýný iþle
           // kontrol tuþu haricinde basýlan tüm tuþlarý ilgili uygulamaya yönlendir
@@ -469,29 +400,35 @@ begin
     end;
 
     if(GAgBaglantilari <> nil) and (GAgBaglantilari.AgBaglantiSayisi > 0) then
-      GAgBaglantilari.AktifBaglanti.VeriAlmaIslevi;
+      GAgBaglantilari.AB.VerileriIsle;
+
+    if not(GVirtualBox = nil) then GVirtualBox.FareKonumDegerleriniAl;
 
     // fare olaylarýný iþle
     GOlayYonetim.FareOlaylariniIsle;
 
     // disket sürücü motorunun aktifliðini kontrol eder, gerekirse motoru kapatýr
-    DisketSurucuMotorunuKontrolEt;
+    if not(GDisketAygitlari = nil) then GDisketAygitlari.DisketSurucuMotorunuKontrolEt;
 
     // sonlandýrýlmýþ olarak iþaretlenen görevleri sonlandýr
-    IsaretlenenGorevleriSonlandir;
+    GGorevler.IsaretlenenGorevleriSonlandir;
+
+    //if not(GAgBaglantilari.AB = nil) then GAgBaglantilari.AB.OnayMesajlariniGonder;
   end;
 end;
 
-// sistemin yüklenme esnasýnda çekirdeðin tarih + saat deðerini kaydeder
+{==============================================================================
+  sistemin yüklenme esnasýnda çekirdeðin tarih + saat deðerini kaydeder
+ ==============================================================================}
 procedure TYonetim.CekirdekDosyaTSDegeriniKaydet;
 var
-  i: TISayi4;
   AramaKaydi: TDosyaArama;
+  i: TISayi4;
   j: TSayi2;
 begin
 
   i := FindFirst('disket1:\*.*', 0, AramaKaydi);
-  while i = 0 do
+  while (i = HATA_YOK) do
   begin
 
     if(AramaKaydi.DosyaAdi = 'cekirdek.bin') then
@@ -516,16 +453,19 @@ begin
   FindClose(AramaKaydi);
 end;
 
+{==============================================================================
+  sistem kapanýþ aþamasýnda "çalýþýr olarak" kaydedilen uygulamalarý yükler
+ ==============================================================================}
 procedure TYonetim.KaydedilenProgramlariYenidenYukle;
 var
   GN: TGorselNesne;
-  s, DosyaAdi, s2: string;
-  MUGorev: PGorev;
+  MUGorev: TGorev;
   Konum: TKonum;
   Boyut: TBoyut;
+  Bellek: Isaretci;
   DosyaKimlik: TKimlik;
+  DosyaAdi, s, s2: string;
   U: TISayi8;
-  Bellek0: Isaretci;
   SiraNo, Kod,
   i, j, k: TSayi4;
 begin
@@ -536,21 +476,21 @@ begin
   begin
 
     U := FileSize(DosyaKimlik);
-    Bellek0 := GetMem(U);
+    Bellek := GetMem(U);
 
-    Read(DosyaKimlik, Bellek0);
+    Read(DosyaKimlik, Bellek);
 
     j := 0;
     i := 0;
     repeat
 
-      i := Pos(#10, PChar(Bellek0));
+      i := Pos(#10, PChar(Bellek));
       if(i > 0) then
       begin
 
         Dec(i);
-        s := Copy(PChar(Bellek0 + j), 0, (i - j) - 1);
-        PChar(Bellek0 + i)^ := ' ';
+        s := Copy(PChar(Bellek + j), 0, (i - j) - 1);
+        PChar(Bellek + i)^ := ' ';
         j := i + 1;
 
         if(Length(s) > 0) then
@@ -597,7 +537,7 @@ begin
 
           GZamanlayicilar.BekleMS(CALISMA_FREKANSI div 2);
 
-          GN := GGNesneler.NesneAl(TPencere(MUGorev^.AktifPencere).Kimlik);
+          GN := GGNesneler.NesneAl(TPencere(MUGorev.FAktifPencere).Kimlik);
 
           TPencere(GN).FAtananAlan.Sol := Konum.Sol;
           TPencere(GN).FAtananAlan.Ust := Konum.Ust;
@@ -610,16 +550,17 @@ begin
       end;
     until i = 0;
 
-    FreeMem(Bellek0, U);
+    FreeMem(Bellek, U);
   end;
 
   CloseFile(DosyaKimlik);
 end;
 
-procedure TYonetim.AssertIslev(const msg,fname:ShortString;lineno:longint;erroraddr:pointer);
+procedure TYonetim.AssertIslevi(const FMesaj, FAd: shortstring; FSiraNo: TISayi4;
+  FHataAdresi: Isaretci);
 begin
 
-  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Assert: %s', [msg]);
+  SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Assert: %s', [FMesaj]);
 end;
 
 end.

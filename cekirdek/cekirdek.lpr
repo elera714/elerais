@@ -11,7 +11,7 @@
    ----------------------------------------------------------------------------
    + zaman paylaþýmlý çokgörevlilik (pre-emptive multitasking)
    + statik / dinamik bellek yönetimi
-   + að yönetim arabirimleri (donanýmsal / yazýlýmsal)
+   + að yönetim arabirimleri (donaným / yazýlým)
    + 1024 x 768'a kadar 16 / 24 / 32 bit vesa 2.0+ grafik desteði
    + 1000mhz çalýþma frekansý
    + 256MB bellekte çalýþabilme yeteneði
@@ -25,7 +25,7 @@
    Sürüm Bilgileri
    ----------------------------------------------------------------------------
    Telif Bilgisi: haklar.txt dosyasýna bakýnýz
-   Güncelleme Tarihi: (16.11.2026 - pazartesi)
+   Güncelleme Tarihi: (19.11.2026 - perþembe)
 
 ==============================================================================}
 program cekirdek;

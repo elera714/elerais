@@ -1,4 +1,4 @@
-Sistem Bellek Adresleri - 64 MB'lik ($4000000) adresleme
+Sistem Bellek Adresleri - 128 MB'lik ($8000000) adresleme
 --------------------------------------------------------------------------------
 $0007C00..$0007E00 - boot yazılımı
 $0007E00..$0010000 - kullanılmayı bekliyor
@@ -17,4 +17,4 @@ $0560D00..$0600000 - BELLEK_HARITA_ADRESI ($9F300 = 652032 byte / 4 byte'lık gi
   (şu an sistem için gerekli bellek 256MB olarak belirlendi)
 $0600000..$0610000 - sayfa dizini (page directory), 4GB adreslemek için
 $0610000..$0A00000 - sayfa tablosu (page table), 4GB adreslemek için
-$0A00000..$4000000 - genel sistem / program kullanımı
+$0A00000..$8000000 - genel sistem / program kullanımı

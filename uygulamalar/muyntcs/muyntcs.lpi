@@ -38,7 +38,6 @@
       <Unit0>
         <Filename Value="muyntcs.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="25" Y="14"/>
         <UsageCount Value="109"/>
         <Loaded Value="True"/>
@@ -698,7 +697,10 @@
       <Unit120>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
+        <TopLine Value="116"/>
+        <CursorPos X="27" Y="146"/>
         <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit120>

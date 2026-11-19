@@ -6,27 +6,61 @@
   Dosya Adý: elr1.pas
   Dosya Ýþlevi: ELERA Ýþletim Sistemi'nin dosya sistemi
 
-  Güncelleme Tarihi: 09/07/2026
+  Güncelleme Tarihi: 19/11/2026
 
   Kaynaklar: https://wiki.freepascal.org/File_Handling_In_Pascal
 
   Disk Kapasitesi: 320MB -> 320 * 1024 * 1024 = 335.544.320 byte
-                                                335.544.320 / 512 = 655.360 sektör
+                                                335.544.320 / 512 = 655.360 = 0..655.359 sektör
+                                                655.360 / 4 = 163.840 küme / zincir
 
   ELR-1 dosya sistem sektör daðýlýmý
-    0000..0256: 256 sektör - boþ sektör
-    0256..5376: 5120 sektör - sektör harita tablosu (fat) (5120 * 128) = 655.360 sektörü adresleyebilir
-    5376..5632: boþ
-          5632: 649728 sektör - her türlü veri (dosya adlarý ve içeriði)
+    0000..0255  : 256 sektör - boþ sektör
+    0256..1535  : 1280 sektör - sektör harita tablosu (fat) (1280 * 128) = 163.840 kümeyi adresleyebilir
+    1536..655360: 653825 sektör - her türlü veri (dosya adlarý ve içeriði)
+
+    Bilgi: TELR1 nesne içeriðindeki iþlevler dosyalar.pas dosyasýnýn içeriðindeki
+      iþlevler ile kullanýlmalýdýr
 
  ==============================================================================}
 {$mode objfpc}
-{$asmmode intel}
 unit elr1;
 
 interface
 
 uses paylasim, islevler, gorev, mdepolama, dosyalar, dosya;
+
+const
+  ELR_DG_U        = 64;       // her bir dosya / klasörün dizin girdisindeki uzunluðu
+  ELR_DOSYA_U     = 38;
+
+  // girdi tipleri
+  ELR_GT_DOSYA    = 1;
+  ELR_GT_KLASOR   = 2;
+
+  // girdi özellikleri
+  ELR_O_SILINMIS  = 1;
+  ELR_O_NORMAL    = 2;
+  ELR_O_GIZLI     = 3;
+
+  // dosya giriþi zincir (küme) durumlarý
+  ELR_ZD_SON      = TSayi4($FFFFFFFF);    // zincir sonu - baþka veri yok
+
+type
+  PDizinGirdisiELR = ^TDizinGirdisiELR;
+  TDizinGirdisiELR = packed record
+    DosyaAdi: array[0..ELR_DOSYA_U - 1] of Char;
+    GirdiTipi: TSayi1;      // dosya / klasör vb
+    Ozellikler: TSayi1;     // silinmiþ, gizli vb
+
+    OlusturmaTarihi,
+    OlusturmaSaati,
+    DegisimTarihi,
+    DegisimSaati,
+
+    BaslangicKumeNo,
+    DosyaUzunlugu: TSayi4;
+  end;
 
 const
   DIZIN_GIRDI_SAYISI        = TSayi4(8);
@@ -35,364 +69,949 @@ const
   { bilgi: aþaðýdaki aralýklarýn sýnýrlarý, bir önceki deðerin bir sonrakine kadar olanýný içerir }
   SEKTORNO_BOOT             = TSayi4(0);
   SEKTORNO_SHT_BAS          = TSayi4(256);      // sektör harita tablosu (fat) baþlangýcý
-  SEKTORNO_SHT_SON          = TSayi4(5376);     // sektör harita tablosu (fat) sonu
-  SEKTORNO_VERI             = TSayi4(5632);     // dosya adlarý ve verilerini içerir
+  SEKTORNO_SHT_SON          = TSayi4(1535);     // sektör harita tablosu (fat) sonu
+  SEKTORNO_VERI             = TSayi4(1536);     // dosya adlarý ve verilerini içerir
 
 type
   TELR1 = class(TDosya)
   public
-    constructor Create(AKimlikNo: TISayi4; FDST: TSayi4); override;
+    constructor Create(AKimlik: TKimlik; AMDNesne: TMDNesne); override;
+    destructor Destroy; override;
 
     procedure Append; override;
+    procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string); override;
+    procedure CloseFile; override;
     function CreateDir: Boolean; override;
+    function DeleteFile: Boolean; override;
+    function EOF: Boolean; override;
+    function FileSize: TSayi4; override;
+
+    function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
+      var ADosyaArama: TDosyaArama): TSayi4; override;
+    function FindNext(var ADosyaArama: TDosyaArama): TSayi4; override;
+    function FindClose(var ADosyaArama: TDosyaArama): TSayi4; override;
+
+    function IOResult: TSayi4; override;
     procedure Read(AHedefBellek: Isaretci); override;
+    function RemoveDir: Boolean; override;
+    procedure Reset; override;
     procedure ReWrite; override;
+    procedure Write(AVeri: string); override;
+    procedure Write(ABellekAdresi: Isaretci; AUzunluk: TSayi4);
+    procedure WriteLn(AVeri: string); override;
+    procedure Write0(ABellek: Isaretci; AUzunluk: TSayi4);
+
+    function DizinGirisindeAraELR1(AAranacakDeger: string): TSayi4;
+    function DizinGirdisiListeleELR1(var ADosyaArama: TDosyaArama): TSayi4;
+
+    procedure DosyaAdiniKopyala(ADosyaAdi: string; AHedef: PChar);
+
+    function BosKumeTahsisEt: TSayi4;
+    function KumeSerbestBirak(AKumeNo: TSayi4): TISayi4;
+    function KumeyiBirOncekiKumeyeBagla(ABirOncekiKumeNo, AKumeNo: TSayi4): TSayi4;
+    function BirSonrakiKumeyiAl(var AKumeNo: TSayi4): Boolean;
+    function KumeZinciriniSerbestBirak(AIlkKumeNo: TSayi4): TSayi4;
+
+    function SistemKlasorleriniOlustur: Boolean;
+    function SistemKlasorleriniSil: Boolean;
+    function DosyaAdiniAl(ADizinGirdisi: PDizinGirdisiELR): string;
+
+    procedure DiskiBicimle;
+    function VeriAlaniniSil: TISayi4;
+    function SHTOlustur(AIlkSektor, ASonSektor, AAyrilanSektor: TSayi4): TISayi4;
+    function ToplamKullanim(var AKullanilanSektorSayisi: TSayi4): TSayi4;
   end;
-
-function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
-  var ADosyaArama: TDosyaArama): TISayi4;   { onaylanacak }
-function FindNext(var ADosyaArama: TDosyaArama): TISayi4;   { onaylanacak }
-function FindClose(var ADosyaArama: TDosyaArama): TISayi4;   { onaylanacak }
-procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);   { onaylanacak }
-procedure Reset(ADosyaKimlik: TKimlik);   { onaylanacak }
-procedure Write(ADosyaKimlik: TKimlik; AVeri: string);   { onaylanacak }
-procedure Write0(ADosyaKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TSayi4);   { onaylanacak }
-procedure WriteLn(ADosyaKimlik: TKimlik; AVeri: string);   { onaylanacak }
-procedure Write(ADosyaKimlik: TKimlik; ABellekAdresi: Isaretci; AUzunluk: TSayi4);   { onaylanacak }
-function IOResult: TISayi4;   { onaylanacak }
-function FileSize(ADosyaKimlik: TKimlik): TISayi8;   { onaylanacak }
-function EOF(ADosyaKimlik: TKimlik): Boolean;   { onaylanacak }
-procedure CloseFile(ADosyaKimlik: TKimlik);   { onaylanacak }
-function RemoveDir(const ADosyaKimlik: TKimlik): Boolean;   { onaylanacak }
-function DeleteFile(const ADosyaKimlik: TKimlik): Boolean;   { onaylanacak }
-
-function DizinGirdisiListeleELR1(AAranacakDeger: string;
-  var ADosyaArama: TDosyaArama): TSayi4;   { onaylanacak }
-function DizinGirisindeAraELR1(ADosyaKimlik: TKimlik; AAranacakDeger: string): TSayi4;
-
-procedure DosyaAdiniKopyala(ADosyaAdi: string; AHedef: PChar);
-procedure ELR1DiskBicimle(AMDNesne: TMDNesne);
-function ELR1VeriAlaniniSil(AMDNesne: TMDNesne): TISayi4;
-function ELR1SHTOlustur(AMDNesne: TMDNesne; AIlkSektor, ASonSektor,
-  AAyrilanSektor: TSayi4): TISayi4;
-
-function SHTBosKumeTahsisEt(AMDNesne: TMDNesne): TISayi4;
-function SHTKumeSerbestBirak(AMDNesne: TMDNesne; AKumeNo: TSayi4): TISayi4;
-function SHTKumeyiBirOncekiKumeyeBagla(AMDNesne: TMDNesne; ABirOncekiKumeNo,
- AKumeNo: TSayi4): TISayi4;
-function SHTBirSonrakiKumeyiAl(AMDNesne: TMDNesne; var AKumeNo: TSayi4): Boolean;
-function SHTKumeZinciriniSerbestBirak(AMDNesne: TMDNesne; AIlkKumeNo: TSayi4): TISayi4;
-
-function SHTToplamKullanim(AMDNesne: TMDNesne; var AKullanilanSektorSayisi: TSayi4): TISayi4;
-procedure SistemKlasorleriniOlustur;   { onaylanacak }
-procedure SistemKlasorleriniSil;   { onaylanacak }
-function ELRDosyaAdiniAl(ADizinGirdisi: PDizinGirdisiELR): string;   { onaylanacak }
 
 implementation
 
 uses cmos, sistemmesaj, aygit;
 
 {==============================================================================
-  dosya arama iþlevini baþlatýr
-  uyarý: iþlev SADECE dosya.pas tarafýndan çaðrýlmalýdýr!
+  dosya sistemi ilk yükleme iþlevlerini içerir
  ==============================================================================}
-function FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
- var ADosyaArama: TDosyaArama): TISayi4;
-var
-  D: TDosya;
+constructor TELR1.Create(AKimlik: TKimlik; AMDNesne: TMDNesne);
 begin
 
-  D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
-  D.Aranan := AAramaSuzgec;
-  Result := DizinGirdisiListeleELR1(AAramaSuzgec, ADosyaArama);
+  inherited Create(AKimlik, AMDNesne);
+end;
+
+{==============================================================================
+  dosya sistemi nesne yok etme iþlevlerini içerir
+ ==============================================================================}
+destructor TELR1.Destroy;
+begin
+
+  inherited Destroy;
+end;
+
+{==============================================================================
+  dosyaya veri eklemek için dosya açma iþlevini gerçekleþtirir
+ ==============================================================================}
+procedure TELR1.Append;
+var
+  AramaKaydi: TDosyaArama;
+  DosyaBulundu: Boolean;
+  i: TSayi4;
+begin
+
+  // ilk deðer atamalarý
+  DosyaBulundu := False;
+
+  AramaKaydi.Kimlik := FKimlik;
+
+  i := FindFirst(FMD.FAygitAdi + ':\*.*', 0, AramaKaydi);
+  while (i = HATA_YOK) do
+  begin
+
+    if(AramaKaydi.DosyaAdi = FDosyaAdi) and (AramaKaydi.Ozellikler = 0) then
+    begin
+
+      FUzunluk := AramaKaydi.DosyaUzunlugu;
+
+      // arama kayýtlarýný islem deðikenlerine al
+      FIslem.FSektorKumeNo := FArama.FSektorKumeNo;
+      FIslem.FZincirNo := FArama.FZincirNo;
+      FIslem.FSIKonum := FArama.FSIKonum;
+
+      DosyaBulundu := True;
+      Break;
+    end;
+
+    i := FindNext(AramaKaydi);
+  end;
+
+  // dosyanýn bulunmasý halinde dosyanýn durumunu yazma için açýk olarak iþaretle
+  if(DosyaBulundu) then
+
+    FDosyaDurumu := ddYazmaIcinAcik
+
+  // aksi halde ilgili hata kodunu deðiþkene ata
+  else FGorev.FDosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+end;
+
+{==============================================================================
+  dosya ile ilgili iþlem yapmadan önce taným iþlevlerini gerçekleþtirir
+  bilgi: iþlev ana birim olan dosyalar birimi tarafýndan gerçekleþtirilmekte
+ ==============================================================================}
+procedure TELR1.AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+begin
+end;
+
+{==============================================================================
+  dosya üzerinde yapýlan iþlemi sonlandýrýr
+  bilgi: iþlev ana birim olan dosyalar birimi tarafýndan gerçekleþtirilmekte
+ ==============================================================================}
+procedure TELR1.CloseFile;
+begin
+end;
+
+{==============================================================================
+  klasör oluþturma iþlevini gerçekleþtirir
+ ==============================================================================}
+function TELR1.CreateDir: Boolean;
+var
+  DG: PDizinGirdisiELR;
+  AramaKaydi: TDosyaArama;
+  BosKume, Sonuc, KBS,
+  SektorNo, i: TSayi4;
+  Gun, Ay, Yil, HG: TSayi2;
+  Saat, Dakika, Saniye: TSayi1;
+begin
+
+  // ilk deðer atamalarý
+  Result := False;
+
+  AramaKaydi.Kimlik := FKimlik;
+
+  i := FindFirst(FMD.FAygitAdi + ':\*.*', 0, AramaKaydi);
+  while (i = HATA_YOK) do
+  begin
+
+    if(AramaKaydi.DosyaAdi = FDosyaAdi) and (AramaKaydi.Ozellikler = $10) then
+    begin
+
+      FGorev.FDosyaSonIslemDurum := HATA_KLASORZATENMEVCUT;
+      Exit;
+    end;
+
+    i := FindNext(AramaKaydi);
+  end;
+
+  KBS := FMD.Acilis.DosyaAyirmaTablosu.KBS;
+
+  // silinen kayýt varsa silinen kaydýn yerine yeni klasör kaydý oluþtur
+  // aksi durumda bulunan boþ alana yeni klasör kaydý oluþtur
+  // bilgi: bulunan boþ alan, arama aþamasýnda FIslem. alanýna atanan deðerlerdir
+  if(FSilinen.FSektorKumeNo <> $FFFFFFFF) then
+  begin
+
+    FIslem.FSektorKumeNo := FSilinen.FSektorKumeNo;
+    FIslem.FZincirNo := FSilinen.FZincirNo;
+    FIslem.FSIKonum := FSilinen.FSIKonum;
+  end;
+
+  SektorNo := (FIslem.FSektorKumeNo * KBS) + FIslem.FZincirNo;
+
+  // dizin giriþ sektörünü oku
+  Sonuc := FMD.FD.FOku(SektorNo, 1, FTSI);
+  if(Sonuc > HATA_YOK) then
+  begin
+
+    FGorev.FDosyaSonIslemDurum := Sonuc;
+    Exit;
+  end;
+
+  // dizin giriþ tablosuna konumlan
+  DG := PDizinGirdisiELR(FTSI + FIslem.FSIKonum);
+
+  if(FIslem.FSIKonum < 512) then
+  begin
+
+    BosKume := BosKumeTahsisEt;
+    if(BosKume = $FFFFFFFF) then
+    begin
+
+      FGorev.FDosyaSonIslemDurum := HATA_TUMSEKTORLERDOLU;
+      Exit;
+    end;
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'Küme1: %d', [BosKume]);
+
+    // aktif tarih / saat bilgilerini al
+    TarihAl(Gun, Ay, Yil, HG);
+    SaatAl(Saat, Dakika, Saniye);
+
+    // dosya adýný hedef bölgeye kopyala
+    DosyaAdiniKopyala(FDosyaAdi, PChar(DG));
+
+    DG^.GirdiTipi := ELR_GT_KLASOR;
+    DG^.Ozellikler := ELR_O_NORMAL;
+    DG^.OlusturmaTarihi := ELRTarih(Gun, Ay, Yil);
+    DG^.OlusturmaSaati := ELRSaat(Saat, Dakika, Saniye);
+    DG^.DegisimTarihi := ELRTarih(Gun, Ay, Yil);
+    DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
+    DG^.BaslangicKumeNo := BosKume;
+    DG^.DosyaUzunlugu := 0;
+
+    SektorNo := (FIslem.FSektorKumeNo * KBS) + FIslem.FZincirNo;
+
+    // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
+    Sonuc := FMD.FD.FYaz(SektorNo, 1, FTSI);
+    if(Sonuc > HATA_YOK) then
+    begin
+
+      FGorev.FDosyaSonIslemDurum := Sonuc;
+      Exit;
+    end;
+
+    Result := True;
+  end;
+end;
+
+{==============================================================================
+  dosya silme iþlevini gerçekleþtirir
+ ==============================================================================}
+function TELR1.DeleteFile: Boolean;
+var
+  DG: PDizinGirdisiELR;
+  AramaKaydi: TDosyaArama;
+  SektorNo, Sonuc,
+  KBS, i: TSayi4;
+begin
+
+  // ilk deðer atamalarý
+  Result := False;
+
+  AramaKaydi.Kimlik := FKimlik;
+
+  i := FindFirst(FMD.FAygitAdi + ':\*.*', 0, AramaKaydi);
+  while (i = HATA_YOK) do
+  begin
+
+    // dosya bulundu
+    if(AramaKaydi.DosyaAdi = FDosyaAdi) and (AramaKaydi.Ozellikler = 0) then
+    begin
+
+      // bulunan kaydýn arama deðerlerini iþlem deðiþkenlerine aktar
+      FIslem.FSektorKumeNo := FArama.FSektorKumeNo;
+      FIslem.FZincirNo := FArama.FZincirNo;
+      FIslem.FSIKonum := FArama.FSIKonum;
+
+      // dizin giriþ tablosuna konumlan
+      DG := PDizinGirdisiELR(FTSI + FIslem.FSIKonum);
+
+      // dosyaya ait tüm küme tahsislerini serbest býrak
+      Sonuc := KumeZinciriniSerbestBirak(DG^.BaslangicKumeNo);
+      if(Sonuc = $FFFFFFFF) then
+      begin
+
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.DeleteFile->Hata Kodu1: %d', [Sonuc]);
+        FGorev.FDosyaSonIslemDurum := HATA_AYGITAYAZMA;
+        Exit;
+      end;
+
+      // dosyayý silindi olarak iþaretle
+      DG^.Ozellikler := ELR_O_SILINMIS;
+
+      KBS := FMD.Acilis.DosyaAyirmaTablosu.KBS;
+
+      SektorNo := (FIslem.FSektorKumeNo * KBS) + FIslem.FZincirNo;
+
+      // dosya giriþinin bulunduðu sektörü güncelle (üzerine yaz)
+      Sonuc := FMD.FD.FYaz(SektorNo, 1, FTSI);
+      if(Sonuc > HATA_YOK) then
+      begin
+
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.DeleteFile->Hata Kodu2: %d', [Sonuc]);
+        FGorev.FDosyaSonIslemDurum := HATA_AYGITAYAZMA;
+        Exit;
+      end;
+
+      Exit(True);
+    end;
+
+    i := FindNext(AramaKaydi);
+  end;
+end;
+
+{==============================================================================
+  dosya okuma iþleminde dosyanýn sonuna gelinip gelinmediðini belirtir
+ ==============================================================================}
+function TELR1.EOF: Boolean;
+begin
+
+  Result := True;
+end;
+
+{==============================================================================
+  dosya uzunluðunu geri döndürür
+ ==============================================================================}
+function TELR1.FileSize: TSayi4;
+begin
+
+  // en son iþlem hatalý ise çýk
+  if(FGorev.FDosyaSonIslemDurum <> HATA_YOK) then Exit(0);
+
+  Result := FUzunluk;
+end;
+
+{==============================================================================
+  dosya arama iþlevini baþlatýr
+  dönüþ deðeri:  = 0 dosya - dizin girdisi okundu,
+                <> 0 dosya - dizin girdisi okunamadý, mevcut deðil, tamamlandý
+ ==============================================================================}
+function TELR1.FindFirst(const AAramaSuzgec: string; ADosyaOzellik: TSayi4;
+ var ADosyaArama: TDosyaArama): TSayi4;
+var
+  AranacakKlasor, s,
+  AramaSuzgeci: string;
+  i: TSayi4;
+begin
+
+  Result := HATA_YOK;
+
+  // AAramaSuzgec -> örnek: disk2:\klasör1\*.*
+
+  s := '';
+  i := Pos(':', AAramaSuzgec);
+  if(i > 0) then s := Copy(AAramaSuzgec, i + 1, Length(AAramaSuzgec) - i);
+
+  // s = \klasör1\*.*
+
+  if not(s[1] = '\') then
+  begin
+
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.PAS: ' + Mesajlar[HATA_DK_ADRES_YOLU].Deger, []);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '->AAramaSuzgec: %s', [AAramaSuzgec]);
+    Exit(HATA_DK_ADRES_YOLU);
+  end;
+  s := Copy(s, 2, Length(s) - 1);           // s = klasör1\*.*
+
+  // bu aþamada s = klasör1\*.*
+
+  FArama.FSektorKumeNo := FMD.Acilis.DizinGirisi.IlkSektor;
+
+  // önce kök dizini ara
+  FKlasorDerinlik := 0;
+
+  // arama yolundaki tüm klasörlerin varlýðýný doðrula (dizin tablosunda ara)
+  repeat
+
+    // arama süzgecinden sýradaki klasörün alýnmasý
+    i := Pos('\', s);
+    if(i > 0) then
+    begin
+
+      AranacakKlasor := Copy(s, 1, i - 1);
+      AramaSuzgeci := '';
+      s := Copy(s, i + 1, Length(s) - i);
+    end
+    else
+    begin
+
+      AranacakKlasor := '';
+      AramaSuzgeci := s;
+    end;
+
+    // her bir alt klasör aranmadan bu deðiþkenler sýfýrlanmalýdýr
+    FArama.FZincirNo := 0;
+    FArama.FSIKonum := 0;
+    FArama.FSonrakiSIKonum := 0;
+
+    // klasörün dizin giriþinde aranmasý
+    if(Length(AranacakKlasor) > 0) then
+    begin
+
+      //SISTEM_MESAJ(mtBilgi, RENK_MAVI, 'AranacakKlasor: ''%s''', [AranacakKlasor]);
+
+      FArama.FSektorKumeNo := DizinGirisindeAraELR1(AranacakKlasor);
+
+      if(FArama.FSektorKumeNo = 0) then
+      begin
+
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DOSYA.PAS: %s dizini dosya tablosunda mevcut deðil!', [AranacakKlasor]);
+        Exit(HATA_KLASOR_MEVCUTDEGIL);
+      end else Inc(FKlasorDerinlik);
+    end;
+  until Length(AranacakKlasor) = 0;
+
+  // belirtilen klasörün altýndaki ilk dosyayý geri döndür
+  // bilgi: bu aþamada arama yolundaki tüm klasörlerin varlýðý teyit edilmiþtir
+  FArama.FZincirNo := 0;
+  FArama.FSIKonum := 0;
+  FArama.FSonrakiSIKonum := 0;
+
+  if(AramaSuzgeci = '*.*') then
+  begin
+
+    FAramaSuzgec := AAramaSuzgec;
+    Result := DizinGirdisiListeleELR1(ADosyaArama);
+  end;
 end;
 
 {==============================================================================
   dosya arama iþlemine devam eder
-  uyarý: iþlev SADECE dosya.pas tarafýndan çaðrýlmalýdýr!
+  dönüþ deðeri:  = 0 dosya - dizin girdisi okundu,
+                <> 0 dosya - dizin girdisi okunamadý, mevcut deðil, tamamlandý
  ==============================================================================}
-function FindNext(var ADosyaArama: TDosyaArama): TISayi4;
-var
-  D: TDosya;
-  Aranan: string;
+function TELR1.FindNext(var ADosyaArama: TDosyaArama): TSayi4;
 begin
 
-  D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
-  Aranan := D.Aranan;
-  Result := DizinGirdisiListeleELR1(Aranan, ADosyaArama);
+  Result := DizinGirdisiListeleELR1(ADosyaArama);
 end;
 
 {==============================================================================
   dosya arama iþlemini sonlandýrýr
-  uyarý: iþlev SADECE dosya.pas tarafýndan çaðrýlmalýdýr!
+  bilgi: iþlev ana birim olan dosyalar birimi tarafýndan gerçekleþtirilmekte
  ==============================================================================}
-function FindClose(var ADosyaArama: TDosyaArama): TISayi4;
+function TELR1.FindClose(var ADosyaArama: TDosyaArama): TSayi4;
 begin
 
-  Result := 0;
+  Result := HATA_YOK;
 end;
 
 {==============================================================================
-  dosyalar ile ilgili iþlem yapmadan önce taným iþlevlerini gerçekleþtirir
-  bilgi: iþlev dosya.pas tarafýndan yönetilmektedir
+  dosya ile yapýlmýþ en son iþlemin sonucunu döndürür
+  bilgi: iþlev ana birim olan dosyalar birimi tarafýndan gerçekleþtirilmekte
  ==============================================================================}
-procedure AssignFile(var ADosyaKimlik: TKimlik; const ADosyaAdi: string);
+function TELR1.IOResult: TSayi4;
 begin
+
+  Result := HATA_YOK;
+end;
+
+{==============================================================================
+  dosya okuma iþlemini gerçekleþtirir
+==============================================================================}
+procedure TELR1.Read(AHedefBellek: Isaretci);
+var
+  Bellek: Isaretci;
+  KopyalanacakVeriU,
+  KBS, OkunacakVeriU,
+  Sonuc, i: TSayi4;
+begin
+
+  // en son iþlem hatalý deðil ise
+  if(FGorev.FDosyaSonIslemDurum = HATA_YOK) then
+  begin
+
+    OkunacakVeriU := FUzunluk;
+    if(OkunacakVeriU = 0) then Exit;
+
+    KBS := FMD.Acilis.DosyaAyirmaTablosu.KBS;
+
+    // okunacak sektör için bellek ayýr
+    GetMem(Bellek, KBS * 512);
+
+    repeat
+
+      // okunacak veri miktarý
+      if(OkunacakVeriU >= (KBS * 512)) then
+      begin
+
+        KopyalanacakVeriU := KBS * 512;
+        OkunacakVeriU := OkunacakVeriU - KopyalanacakVeriU;
+      end
+      else
+      begin
+
+        KopyalanacakVeriU := OkunacakVeriU;
+        OkunacakVeriU := 0;
+      end;
+
+      // sektörü belleðe oku
+      Sonuc := FMD.FD.FOku(FIslem.FSektorKumeNo * KBS, KBS, Bellek);
+      if(Sonuc > HATA_YOK) then
+      begin
+
+        FGorev.FDosyaSonIslemDurum := Sonuc;
+        FreeMem(Bellek, KBS * 512);
+        Exit;
+      end;
+
+      Move(Bellek^, AHedefBellek^, KopyalanacakVeriU);
+      AHedefBellek := AHedefBellek + KopyalanacakVeriU;
+
+      if(OkunacakVeriU > 0) then
+      begin
+
+        i := FIslem.FSektorKumeNo;
+        if not(BirSonrakiKumeyiAl(i)) then
+        begin
+
+          SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.Read: bir sonraki küme alýnamýyor!', []);
+          FGorev.FDosyaSonIslemDurum := HATA_AYGITSEKTOROKUMA;
+          Exit;
+        end;
+
+        FIslem.FSektorKumeNo := i;
+      end;
+
+    // küme deðerinin 0xFFFFFFFF olmasý durumunda tüm veri okunmuþ demektir
+    until (FIslem.FSektorKumeNo = ELR_ZD_SON) or (OkunacakVeriU = 0);
+
+    FreeMem(Bellek, KBS * 512);
+  end;
+end;
+
+{==============================================================================
+  klasör silme iþlevini gerçekleþtirir
+ ==============================================================================}
+function TELR1.RemoveDir: Boolean;
+var
+  DG: PDizinGirdisiELR;
+  AramaKaydi: TDosyaArama;
+  Sonuc, i, KBS: TSayi4;
+  SektorNo: TISayi4;
+begin
+
+  // ilk deðer atamalarý
+  Result := False;
+
+  AramaKaydi.Kimlik := FKimlik;
+
+  i := FindFirst(FMD.FAygitAdi + ':\*.*', 0, AramaKaydi);
+  while (i = HATA_YOK) do
+  begin
+
+    if(AramaKaydi.DosyaAdi = FDosyaAdi) and (AramaKaydi.Ozellikler = $10) then
+    begin
+
+      // bulunan kaydýn arama deðerlerini iþlem deðiþkenlerine aktar
+      FIslem.FSektorKumeNo := FArama.FSektorKumeNo;
+      FIslem.FZincirNo := FArama.FZincirNo;
+      FIslem.FSIKonum := FArama.FSIKonum;
+
+      // dizin giriþ tablosuna konumlan
+      DG := PDizinGirdisiELR(FTSI + FIslem.FSIKonum);
+
+      // klasörü silindi olarak iþaretle
+      DG^.Ozellikler := ELR_O_SILINMIS;
+
+      // klasöre tahsis edilen kümeyi serbest býrak
+      { TODO - þu aþamada tek bir küme yok edilmektedir, tüm zincirler yok edilecek }
+      SektorNo := KumeSerbestBirak(DG^.BaslangicKumeNo);
+      if(SektorNo < HATA_YOK) then
+      begin
+
+        FGorev.FDosyaSonIslemDurum := SektorNo;
+        Exit;
+      end;
+
+      KBS := FMD.Acilis.DosyaAyirmaTablosu.KBS;
+
+      SektorNo := (FIslem.FSektorKumeNo * KBS) + FIslem.FZincirNo;
+
+      // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
+      Sonuc := FMD.FD.FYaz(SektorNo, 1, FTSI);
+      if(Sonuc > HATA_YOK) then
+      begin
+
+        FGorev.FDosyaSonIslemDurum := Sonuc;
+        Exit;
+      end;
+
+      Exit(True);
+    end;
+
+    i := FindNext(AramaKaydi);
+  end;
+
+  FGorev.FDosyaSonIslemDurum := HATA_KLASOR_MEVCUTDEGIL;
+
+  Result := False;
 end;
 
 {==============================================================================
   dosyayý okumadan önce ön hazýrlýk iþlevlerini gerçekleþtirir
  ==============================================================================}
-procedure Reset(ADosyaKimlik: TKimlik);
+procedure TELR1.Reset;
 var
-  D: TDosya;
-  AramaKaydi: TDosyaArama;
+  DosyaArama: TDosyaArama;
   TamAramaYolu: string;
-  Bulundu: Boolean;
   i: TISayi4;
 begin
 
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  D := GDosyalar.DosyaListesi[ADosyaKimlik];
-  if(D = nil) then Exit;
-
-  // en son iþlem hatalý ise çýk
-  if(D.Gorev^.DosyaSonIslemDurum <> HATA_DOSYA_ISLEM_BASARILI) then Exit;
-
-  // tam dosya adýný al
-  TamAramaYolu := D.MD.FAygitAdi + ':' + D.Klasor + '*.*';
-
-  // dosyayý dosya tablosunda bul
-  Bulundu := False;
-
-  // arama iþleminin daha önce oluþturulan dosya kimlik üzerinden devam etmesi için
-  // kimlik deðeri arama kaydýna iliþkilendiriliyor
-  AramaKaydi.Kimlik := D.Kimlik;
-
-  i := dosyalar.FindFirst(D.MD.FAygitAdi + ':\*.*', 0, AramaKaydi, False);
-  while i = 0 do
+  // en son iþlem hatalý deðil ise
+  if(FGorev.FDosyaSonIslemDurum = HATA_YOK) then
   begin
 
-    {SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'dosya adý1: %s', [AramaKaydi.DosyaAdi]);
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'dosya adý2: %s', [DI^.DosyaAdi]);}
+    // tam dosya arama yolunu oluþtur
+    TamAramaYolu := FMD.FAygitAdi + ':' + FKlasor + '*.*';
 
-    if(AramaKaydi.DosyaAdi = D.DosyaAdi) and (AramaKaydi.Ozellikler = 0) then
+    i := FindFirst(TamAramaYolu, 0, DosyaArama);
+    while (i = HATA_YOK) do
     begin
 
-      //dosya.FindClose(AramaKaydi);
-      //Exit;
-      Bulundu := True;
+      if(DosyaArama.DosyaAdi = FDosyaAdi) and (DosyaArama.Ozellikler = 0) then
+      begin
+
+        FIslem.FSektorKumeNo := DosyaArama.BaslangicKumeNo;
+        FUzunluk := DosyaArama.DosyaUzunlugu;
+
+        // dosya durumunu güncelle
+        FDosyaDurumu := ddOkumaIcinAcik;
+
+        Exit;
+      end;
+
+      i := FindNext(DosyaArama);
+    end;
+
+    // dosyanýn BULUNAMAMASI durumunda hata kodu atamasýný gerçekleþtir
+    FGorev.FDosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+  end;
+end;
+
+{==============================================================================
+  dosya oluþturma iþlevini gerçekleþtirir
+ ==============================================================================}
+procedure TELR1.ReWrite;
+var
+  DG: PDizinGirdisiELR;
+  AramaKaydi: TDosyaArama;
+  Sonuc, SektorNo: TSayi4;
+  KBS, i: TISayi4;
+  Gun, Ay, Yil, HG: TSayi2;
+  Saat, Dakika, Saniye: TSayi1;
+  DosyaBulundu: Boolean;
+begin
+
+  // ilk deðer atamalarý
+  DosyaBulundu := False;
+
+  AramaKaydi.Kimlik := FKimlik;
+
+  i := FindFirst(FMD.FAygitAdi + ':\*.*', 0, AramaKaydi);
+  while (i = HATA_YOK) do
+  begin
+
+    if(AramaKaydi.DosyaAdi = FDosyaAdi) and (AramaKaydi.Ozellikler = 0) then
+    begin
+
+      FUzunluk := AramaKaydi.DosyaUzunlugu;
+
+      // arama kayýtlarýný islem deðikenlerine al
+      FIslem.FSektorKumeNo := FArama.FSektorKumeNo;
+      FIslem.FZincirNo := FArama.FZincirNo;
+      FIslem.FSIKonum := FArama.FSIKonum;
+
+      DosyaBulundu := True;
       Break;
     end;
 
-    i := dosyalar.FindNext(AramaKaydi);
+    i := FindNext(AramaKaydi);
   end;
 
-  // dosyanýn tabloda bulunmasý halinde
-  // dosyanýn ilk dizi ve uzunluðunu al
-  if(Bulundu) then
+  KBS := FMD.Acilis.DosyaAyirmaTablosu.KBS;
+
+  SektorNo := (FIslem.FSektorKumeNo * KBS) + FIslem.FZincirNo;
+
+  // kayýt alanýna konumlan
+  DG := PDizinGirdisiELR(FTSI + FIslem.FSIKonum);
+
+  // dosya oluþturma iþlemi
+
+  // 1. dosyanýn mevcut olmasý durumunda
+  if(DosyaBulundu) then
   begin
 
-    { TODO - bu deðerler iptal edildi. yok edilmeden önce kontrol edilecek - baþla }
-    //DI^.IlkZincirSektor := AramaKaydi.BaslangicKumeNo;
-    //DI^.Uzunluk := AramaKaydi.DosyaUzunlugu;
+    // dosyaya tahsis edilmiþ küme varsa tüm kümeleri serbest býrak
+    if not(DG^.BaslangicKumeNo = ELR_ZD_SON) then
+    begin
 
-    {SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'IlkZincirSektor: %d', [DosyaIslem^.IlkZincirSektor]);
-    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'DosyaUzunlugu: %d', [DosyaIslem^.Uzunluk]);}
+      Sonuc := KumeZinciriniSerbestBirak(DG^.BaslangicKumeNo);
+      if(Sonuc = $FFFFFFFF) then
+      begin
 
-    { TODO - bu deðerler iptal edildi. yok edilmeden önce kontrol edilecek - son }
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.SHTKumeZinciriniSerbestBirak->Hata Kodu: %d', [Sonuc]);
+        Exit;
+      end;
+    end;
 
-    // dosya durumunu, "dosya okuma için açýldý" olarak güncelle
-    D.DosyaDurumu := ddOkumaIcinAcik;
+    // aktif tarih / saat bilgilerini al
+    TarihAl(Gun, Ay, Yil, HG);
+    SaatAl(Saat, Dakika, Saniye);
 
-  end else D.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
+    // güncel veriler aktif dizin / dosya giriþine aktarýlýyor
+    DG^.GirdiTipi := ELR_GT_DOSYA;
+    DG^.Ozellikler := ELR_O_NORMAL;
+    DG^.OlusturmaTarihi := ELRTarih(Gun, Ay, Yil);
+    DG^.OlusturmaSaati := ELRSaat(Saat, Dakika, Saniye);
+    DG^.DegisimTarihi := ELRTarih(Gun, Ay, Yil);
+    DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
+    DG^.BaslangicKumeNo := ELR_ZD_SON;
+    DG^.DosyaUzunlugu := 0;
+
+    // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
+    Sonuc := FMD.FD.FYaz(SektorNo, 1, FTSI);
+    if(Sonuc > HATA_YOK) then
+    begin
+
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.ReWrite->Hata Kodu: %d', [Sonuc]);
+      Exit;
+    end;
+
+    // dosya durumunu, "dosya yazým için açýldý" olarak güncelle
+    FDosyaDurumu := ddYazmaIcinAcik;
+  end
+  else
+  // 2. dosyanýn mevcut OLMAMASI durumunda
+  begin
+
+    if(FIslem.FSIKonum < 512) then
+    begin
+
+      // dosya adýný hedef bölgeye kopyala
+      DosyaAdiniKopyala(FDosyaAdi, PChar(DG));
+
+      // aktif tarih / saat bilgilerini al
+      TarihAl(Gun, Ay, Yil, HG);
+      SaatAl(Saat, Dakika, Saniye);
+
+      // güncel veriler aktif dizin / dosya giriþine aktarýlýyor
+      DG^.GirdiTipi := ELR_GT_DOSYA;
+      DG^.Ozellikler := ELR_O_NORMAL;
+      DG^.OlusturmaTarihi := ELRTarih(Gun, Ay, Yil);
+      DG^.OlusturmaSaati := ELRSaat(Saat, Dakika, Saniye);
+      DG^.DegisimTarihi := ELRTarih(Gun, Ay, Yil);
+      DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
+      DG^.BaslangicKumeNo := ELR_ZD_SON;
+      DG^.DosyaUzunlugu := 0;
+
+      // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
+      Sonuc := FMD.FD.FYaz(SektorNo, 1, FTSI);
+      if(Sonuc > HATA_YOK) then
+      begin
+
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.ReWrite->Hata Kodu: %d', [Sonuc]);
+        Exit;
+      end;
+
+      // dosya durumunu, "dosya yazým için açýldý" olarak güncelle
+      FDosyaDurumu := ddYazmaIcinAcik;
+    end;
+  end;
 end;
 
 {==============================================================================
   dosyaya veri yazma iþlemini gerçekleþtirir
-  uyarý: iþlev SADECE dosya.pas tarafýndan çaðrýlmalýdýr!
  ==============================================================================}
-procedure Write(ADosyaKimlik: TKimlik; AVeri: string);
+procedure TELR1.Write(AVeri: string);
 var
   VeriU: TSayi4;
 begin
 
   VeriU := Length(AVeri);
-  Write0(ADosyaKimlik, @AVeri[1], VeriU);
+  Write0(@AVeri[1], VeriU);
+end;
+
+{==============================================================================
+  dosyaya veri yazma iþlemini gerçekleþtirir
+ ==============================================================================}
+procedure TELR1.Write(ABellekAdresi: Isaretci; AUzunluk: TSayi4);
+begin
+
+  Write0(ABellekAdresi, AUzunluk);
+end;
+
+{==============================================================================
+  verinin sonuna #13#10 ekleyerek dosyaya veri yazma iþlemini gerçekleþtirir
+ ==============================================================================}
+procedure TELR1.WriteLn(AVeri: string);
+begin
+
+  Write(AVeri + #13#10);
 end;
 
 {==============================================================================
   dosyaya veri yazma iþlemini gerçekleþtirir
   uyarý: iþlev SADECE elr1.pas.Write iþlevi tarafýndan çaðrýlmalýdýr!
  ==============================================================================}
-procedure Write0(ADosyaKimlik: TKimlik; ABellek: Isaretci; AUzunluk: TSayi4);
+procedure TELR1.Write0(ABellek: Isaretci; AUzunluk: TSayi4);
 var
-  D: TDosya;
-  SHTyeYazilacakKumeNo, YeniKumeNo: TISayi4;
-  OncedenYazilanKumeSayisi,
-  YazilacakKumeNo: TSayi4;
-  SektorNo, i,
-  OkumaKonum,
-  ToplamYazilacakVeriU,            // toplam yazýlacak veri uzunluðu
-  j, SektorVeriU: TSayi4;
   DG: PDizinGirdisiELR;
+  Bellek: Isaretci;
+  YazilacakKumeNo, YeniKumeNo,
+  OkumaKonum, YazilacakVeriU,
+  Sonuc, SektorNo, i, j,
+  SektorVeriU: TSayi4;
   Gun, Ay, Yil, HG: TSayi2;
   Saat, Dakika, Saniye, KBS: TSayi1;
-  Bellek: Isaretci;
-  Sonuc: TISayi4;
 begin
 
-  D := GDosyalar.DosyaListesi[ADosyaKimlik];
+  DG := PDizinGirdisiELR(FTSI + FIslem.FSIKonum);
 
-  // dosya yazma için açýk mý?
-  if not(D.DosyaDurumu = ddYazmaIcinAcik) then
-  begin
+  KBS := FMD.Acilis.DosyaAyirmaTablosu.KBS;
 
-    D.Gorev^.DosyaSonIslemDurum := HATA_DOSYA_YAZILAMIYOR;
-    Exit;
-  end;
-
-  KBS := D.MD.Acilis.DosyaAyirmaTablosu.KBS;
-
-  DG := PDizinGirdisiELR(D.TSI + D.SektorIciKonum);
-
-  SHTyeYazilacakKumeNo := 0;
-
-  // dosyanýn baþlangýç küeme numarasýný al, olmamasý durumunda yeni bir tane oluþtur
+  // dosyanýn baþlangýç küme numarasýný var mý?
+  // olmamasý durumunda yeni bir tane oluþtur
   if(DG^.BaslangicKumeNo = ELR_ZD_SON) then
   begin
 
-    SHTyeYazilacakKumeNo := SHTBosKumeTahsisEt(D.MD);
-    if(SHTyeYazilacakKumeNo < HATA_YOK) then
+    YazilacakKumeNo := BosKumeTahsisEt;
+    if(YazilacakKumeNo = $FFFFFFFF) then
     begin
 
-      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTBosKumeTahsisEt.HataKodu: %d', [SHTyeYazilacakKumeNo]);
-      D.Gorev^.DosyaSonIslemDurum := SHTyeYazilacakKumeNo;
+      SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1.BosKumeTahsisEt.Hata: %d', [YazilacakKumeNo]);
+      FGorev.FDosyaSonIslemDurum := HATA_TUMSEKTORLERDOLU;
       Exit;
     end;
 
-    YazilacakKumeNo := SHTyeYazilacakKumeNo;
+    // baþlangýç küme numarasýný kaydet
+    DG^.BaslangicKumeNo := YazilacakKumeNo;
+
   end else YazilacakKumeNo := DG^.BaslangicKumeNo;
 
-  ToplamYazilacakVeriU := AUzunluk;
+  // dosyaya yazýlacak veri uzunluðu
+  YazilacakVeriU := AUzunluk;
 
+  // yazýlacak küme boyutu kadar bellekte yer ayýr
   GetMem(Bellek, 512 * KBS);
+  FillByte(Bellek^, 512 * KBS, 0);
 
+  // okunarak dosyaya yazýlacak verinin pozisyonu
   OkumaKonum := 0;
 
-  OncedenYazilanKumeSayisi := (DG^.DosyaUzunlugu div (512 * KBS));
-
-  // dosyaya ekleme yapýlacaksa (önceden veri yazýlmýþsa) en son kümeye konumlan
-  if(OncedenYazilanKumeSayisi > 0) then
+  // dosya verisi tek bir kümeden fazla ise en son kümeye konumlan
+  j := (512 * KBS);
+  if(DG^.DosyaUzunlugu > j) then
   begin
 
-    for i := 1 to OncedenYazilanKumeSayisi do
+    // toplam küme sayýsý - 1
+    j := (DG^.DosyaUzunlugu div (512 * KBS));
+
+    for i := 1 to j do
     begin
 
-      if not(SHTBirSonrakiKumeyiAl(D.MD, YazilacakKumeNo)) then
+      if not(BirSonrakiKumeyiAl(YazilacakKumeNo)) then
       begin
 
-        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'Write0: Bir sonraki kümeyi ayýrma hatasý', []);
-        D.Gorev^.DosyaSonIslemDurum := HATA_AYGITAYAZMA;
+        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.BirSonrakiKumeyiAl hatasý', []);
+        FGorev.FDosyaSonIslemDurum := HATA_AYGITOKUMA;
+        FreeMem(Bellek, 512 * KBS);
         Exit;
       end;
     end;
   end;
 
+  // öncelikle (varsa) yarým kalan kümeye veri yaz
+  SektorVeriU := (DG^.DosyaUzunlugu mod (512 * KBS));
+  if(SektorVeriU > 0) then
+  begin
+
+    FillChar(Bellek^, (512 * KBS), 0);
+    if(FMD.FD.FOku(YazilacakKumeNo * KBS, KBS, Bellek) = HATA_YOK) then
+    begin
+
+      j := (512 * KBS) - SektorVeriU;
+      if(j > YazilacakVeriU) then j := YazilacakVeriU;
+      Tasi2(ABellek + OkumaKonum, Bellek + SektorVeriU, j);
+      Sonuc := FMD.FD.FYaz(YazilacakKumeNo * KBS, KBS, Bellek);
+      if(Sonuc > HATA_YOK) then
+      begin
+
+        SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1.Yazma.Hatasý1: %d', [Sonuc]);
+        FGorev.FDosyaSonIslemDurum := HATA_AYGITAYAZMA;
+        FreeMem(Bellek, 512 * KBS);
+        Exit;
+      end;
+
+      // sayaçlarý güncelle
+      OkumaKonum := OkumaKonum + j;
+      YazilacakVeriU := YazilacakVeriU - j;
+      DG^.DosyaUzunlugu := DG^.DosyaUzunlugu + j;
+    end;
+  end;
+
+  // bu aþamada kümenin yarý dolu olmasý mevzu bahis deðildir (tam doludur)
+  // kümeler baþtan sona doðru yazýlacaktýr
   repeat
 
-    SektorNo := (DG^.DosyaUzunlugu div 512) mod 4;
-    SektorVeriU := (DG^.DosyaUzunlugu mod 512);
-
-    // sektörün bir kýsmýna yazým yapýlmýþsa (ekleme yapýlacaksa), veriyi mevcut
-    // veriye ekle ve aygýt sektörüne yaz
-    if(SektorVeriU > 0) then
+    if(YazilacakVeriU > 0) then
     begin
 
-      FillChar(Bellek^, 512 * KBS, $00);
-      if(D.MD.FD.FOku((YazilacakKumeNo * KBS) + SektorNo, 1, Bellek) = HATA_YOK) then
+      FillChar(Bellek^, (512 * KBS), 0);
+
+      // hedef bölgeye kaç byte kopyalanacak
+      j := (512 * KBS);
+      if(j > YazilacakVeriU) then j := YazilacakVeriU;
+      Tasi2(ABellek + OkumaKonum, Bellek, j);
+      Sonuc := FMD.FD.FYaz(YazilacakKumeNo * KBS, KBS, Bellek);
+      if(Sonuc > HATA_YOK) then
       begin
 
-        j := 512 - SektorVeriU;
-        if(j > ToplamYazilacakVeriU) then j := ToplamYazilacakVeriU;
-        Tasi2(ABellek + OkumaKonum, Bellek + SektorVeriU, j);
-        if(D.MD.FD.FYaz((YazilacakKumeNo * KBS) + SektorNo, 1, Bellek) <> HATA_YOK) then
-          SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý3', []);
-
-        OkumaKonum := OkumaKonum + j;
-        ToplamYazilacakVeriU := ToplamYazilacakVeriU - j;
-        DG^.DosyaUzunlugu := DG^.DosyaUzunlugu + j;
-
-        if((SektorVeriU + j) = 512) then
-        begin
-
-          Inc(SektorNo);
-          SektorNo := SektorNo mod 4;
-          if(SektorNo = 0) then
-          begin
-
-            YeniKumeNo := SHTBosKumeTahsisEt(D.MD);
-            if(YeniKumeNo < HATA_YOK) then
-            begin
-
-              SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTBosKumeTahsisEt.HataKodu1: %d', [YeniKumeNo]);
-              FreeMem(Bellek, 512 * KBS);
-              D.Gorev^.DosyaSonIslemDurum := YeniKumeNo;
-              Exit;
-            end;
-
-            Sonuc := SHTKumeyiBirOncekiKumeyeBagla(D.MD, YazilacakKumeNo, YeniKumeNo);
-            if(Sonuc < HATA_YOK) then
-            begin
-
-              SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTKumeyiBirOncekiKumeyeBagla.HataKodu: %d', [Sonuc]);
-              FreeMem(Bellek, 512 * KBS);
-              Exit;
-            end;
-
-            YazilacakKumeNo := YeniKumeNo;
-          end;
-        end;
+        SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1.Yazma.Hatasý2: %d', [Sonuc]);
+        FGorev.FDosyaSonIslemDurum := HATA_AYGITAYAZMA;
+        FreeMem(Bellek, 512 * KBS);
+        Exit;
       end;
-    end;
 
-    // bu aþamada sektörün yarým dolu olmasý mevzu bahis deðildir
-    // sektörler baþý itibariyle (sonu deðil) 0'a odaklý olarak yazýlacaktýr
-    if(ToplamYazilacakVeriU > 0) then
-    begin
-
-      FillChar(Bellek^, 512 * KBS, $00);
-      // kaç sektör yazýlacak
-      i := 4 - SektorNo;
-      // hedef bölgeye kaç byte kopyalanacak
-      j := (4 - SektorNo) * 512;
-      if(j > ToplamYazilacakVeriU) then j := ToplamYazilacakVeriU;
-      Tasi2(ABellek + OkumaKonum, Bellek, j);
-      if(D.MD.FD.FYaz((YazilacakKumeNo * KBS) + SektorNo, i, Bellek) <> HATA_YOK) then
-        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý4', []);
-
+      // sayaçlarý güncelle
       OkumaKonum := OkumaKonum + j;
-      ToplamYazilacakVeriU := ToplamYazilacakVeriU - j;
+      YazilacakVeriU := YazilacakVeriU - j;
       DG^.DosyaUzunlugu := DG^.DosyaUzunlugu + j;
 
-      if(ToplamYazilacakVeriU > 0) then
+      // yazýlacak veri kaldýysa yeni bir küme oluþtur
+      if(YazilacakVeriU > 0) then
       begin
 
-        YeniKumeNo := SHTBosKumeTahsisEt(D.MD);
-        if(YeniKumeNo < HATA_YOK) then
+        YeniKumeNo := BosKumeTahsisEt;
+        if(YeniKumeNo = $FFFFFFFF) then
         begin
 
-          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTBosKumeTahsisEt.HataKodu2: %d', [YeniKumeNo]);
+          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1.BosKumeTahsisEt.HataKodu: %d', [YeniKumeNo]);
+          FGorev.FDosyaSonIslemDurum := HATA_TUMSEKTORLERDOLU;
           FreeMem(Bellek, 512 * KBS);
-          D.Gorev^.DosyaSonIslemDurum := YeniKumeNo;
           Exit;
         end;
 
-        Sonuc := SHTKumeyiBirOncekiKumeyeBagla(D.MD, YazilacakKumeNo, YeniKumeNo);
-        if(Sonuc < HATA_YOK) then
+        // oluþturulan kümeyi bir önceki kümeye baðla
+        Sonuc := KumeyiBirOncekiKumeyeBagla(YazilacakKumeNo, YeniKumeNo);
+        if(Sonuc = $FFFFFFFF) then
         begin
 
-          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTKumeyiBirOncekiKumeyeBagla.HataKodu: %d', [Sonuc]);
+          SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1.KumeyiBirOncekiKumeyeBagla.HataKodu: %d', [Sonuc]);
+          FGorev.FDosyaSonIslemDurum := HATA_TUMSEKTORLERDOLU;
           FreeMem(Bellek, 512 * KBS);
           Exit;
         end;
@@ -401,11 +1020,10 @@ begin
       end;
     end;
 
-  until ToplamYazilacakVeriU = 0;
+  until YazilacakVeriU = 0;
 
+  // kullanýlan belleði serbest býrak
   FreeMem(Bellek, 512 * KBS);
-
-  if(SHTyeYazilacakKumeNo > 0) then DG^.BaslangicKumeNo := SHTyeYazilacakKumeNo;
 
   // aktif tarih / saat bilgilerini al
   TarihAl(Gun, Ay, Yil, HG);
@@ -415,352 +1033,107 @@ begin
   DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
 
   // dosyanýn güncel deðerlerini ilgili sektöre yaz
-  // alt satýr SektorNo deðiþken içeriði ve vir alt satýr teyit edildin
-  SektorNo := (D.SektorKumeNo * KBS) + D.ZincirNo;
+  SektorNo := (FIslem.FSektorKumeNo * KBS) + FIslem.FZincirNo;
 
-  if(D.MD.FD.FYaz(SektorNo, 1, D.TSI) <> HATA_YOK) then
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý5', []);
-end;
-
-{==============================================================================
-  verinin sonuna #13#10 ekleyerek dosyaya veri yazma iþlemini gerçekleþtirir
- ==============================================================================}
-procedure WriteLn(ADosyaKimlik: TKimlik; AVeri: string);
-begin
-
-  Write(ADosyaKimlik, AVeri + #13#10);
-end;
-
-{==============================================================================
-  dosyaya veri yazma iþlemini gerçekleþtirir
- ==============================================================================}
-procedure Write(ADosyaKimlik: TKimlik; ABellekAdresi: Isaretci; AUzunluk: TSayi4);
-begin
-
-  Write0(ADosyaKimlik, ABellekAdresi, AUzunluk);
-end;
-
-{==============================================================================
-  dosya ile yapýlmýþ en son iþlemin sonucunu döndürür
- ==============================================================================}
-function IOResult: TISayi4;
-begin
-
-  Result := 0;
-  // bilgi: iþlev dosya.pas tarafýndan yönetilmektedir
-end;
-
-{==============================================================================
-  dosya uzunluðunu geri döndürür
- ==============================================================================}
-function FileSize(ADosyaKimlik: TKimlik): TISayi8;
-var
-  D: TDosya;
-  DG: PDizinGirdisiELR;
-begin
-
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  D := GDosyalar.DosyaListesi[ADosyaKimlik];
-
-  DG := PDizinGirdisiELR(D.TSI + D.SektorIciKonum);
-
-  Result := DG^.DosyaUzunlugu;
-end;
-
-{==============================================================================
-  dosya okuma iþleminde dosyanýn sonuna gelinip gelinmediðini belirtir
- ==============================================================================}
-function EOF(ADosyaKimlik: TKimlik): Boolean;
-begin
-
-  Result := True;
-end;
-
-{==============================================================================
-  dosya üzerinde yapýlan iþlemi sonlandýrýr
- ==============================================================================}
-procedure CloseFile(ADosyaKimlik: TKimlik);
-begin
-
-  GDosyalar.DosyaIsleminiSonlandir(ADosyaKimlik);
-end;
-
-{==============================================================================
-  klasör silme iþlevini gerçekleþtirir
- ==============================================================================}
-function RemoveDir(const ADosyaKimlik: TKimlik): Boolean;
-var
-  DG: PDizinGirdisiELR;
-  D: TDosya;
-  i, KBS: TSayi4;
-  AramaKaydi: TDosyaArama;
-  SektorNo: TISayi4;
-begin
-
-  // ilk deðer atamalarý
-  Result := False;
-
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  D := GDosyalar.DosyaListesi[ADosyaKimlik];
-
-  // arama iþleminin daha önce oluþturulan dosya kimlik üzerinden devam etmesi için
-  // kimlik deðeri arama kaydýna iliþkilendiriliyor
-  AramaKaydi.Kimlik := ADosyaKimlik;
-
-  i := dosyalar.FindFirst(D.MD.FAygitAdi + ':\*.*', 0, AramaKaydi, False);
-  while i = 0 do
+  Sonuc := FMD.FD.FYaz(SektorNo, 1, FTSI);
+  if(Sonuc > HATA_YOK) then
   begin
 
-    if(AramaKaydi.DosyaAdi = D.DosyaAdi) and (AramaKaydi.Ozellikler = $10) then
-    begin
-
-      //DosyaIslem := Dosyalar0.DosyaIslem[AramaKaydi.Kimlik];
-
-      // dizin giriþ tablosuna konumlan
-      DG := PDizinGirdisiELR(D.TSI + D.SektorIciKonum);
-
-      // klasörü silindi olarak iþaretle
-      DG^.Ozellikler := ELR_O_SILINMIS;
-
-      KBS := D.MD.Acilis.DosyaAyirmaTablosu.KBS;
-
-      SektorNo := (D.SektorKumeNo * KBS) + D.ZincirNo;
-
-      // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-      if(D.MD.FD.FYaz(SektorNo, 1, D.TSI) <> HATA_YOK) then
-        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý21', []);
-
-      dosyalar.FindClose(AramaKaydi);
-
-      Exit(True);
-    end;
-
-    i := dosyalar.FindNext(AramaKaydi);
+    SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1.Yazma.Hatasý3: %d', [Sonuc]);
+    FGorev.FDosyaSonIslemDurum := HATA_AYGITAYAZMA;
   end;
-
-  dosyalar.FindClose(AramaKaydi);
-
-  Result := False;
 end;
 
 {==============================================================================
-  dosya silme iþlevini gerçekleþtirir
+  dizin giriþinde dosya / klasör arar, bulunmasý durumunda geriye
+  ilgili giriþin küme numarasýný döndürür
  ==============================================================================}
-function DeleteFile(const ADosyaKimlik: TKimlik): Boolean;
+function TELR1.DizinGirisindeAraELR1(AAranacakDeger: string): TSayi4;
 var
-  DG: PDizinGirdisiELR;
-  D: TDosya;
-  DosyaAdi: string;
-  KumeNo, i, ZincirNo,
-  KBS: TSayi4;
-  TumGirislerOkundu,
-  DosyaBulundu: Boolean;
-  SektorNo: TSayi4;
+  DA: TDosyaArama;
+  Sonuc: TSayi4;
 begin
 
-  // ilk deðer atamalarý
-  Result := False;
-
-  DosyaBulundu := False;
-
-  TumGirislerOkundu := False;
-
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  D := GDosyalar.DosyaListesi[ADosyaKimlik];
-
-  KBS := D.MD.Acilis.DosyaAyirmaTablosu.KBS;
-  KumeNo := D.MD.Acilis.DizinGirisi.IlkSektor div KBS;
-
-  SektorNo := -1;
-  D.SektorIciKonum := -1;
-  ZincirNo := 0;
-
+  // aramaya baþla
   repeat
 
-    if(D.SektorIciKonum = -1) then
+    Sonuc := DizinGirdisiListeleELR1(DA);
+    if(Sonuc = HATA_YOK) then
     begin
 
-      SektorNo := (KumeNo * KBS) + ZincirNo;
+      // dosya / klasör bulunduysa küme baþlangýç deðerini geri döndür
+      if(DA.DosyaAdi = AAranacakDeger) then Exit(DA.BaslangicKumeNo);
 
-      // dizin giriþ sektörünü oku
-      if(D.MD.FD.FOku(SektorNo, 1, D.TSI) = HATA_YOK) then
-        D.SektorIciKonum := 0
-      else SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1: dosya okuma hatasý', []);
-    end;
+    end else Exit(0);
 
-    // dizin giriþ tablosuna konumlan
-    DG := PDizinGirdisiELR(D.TSI + D.SektorIciKonum);
-
-    // dosya giriþinin ilk karakteri #0 ise tüm giriþler okunmuþ demektir
-    if(DG^.DosyaAdi[0] = #00) then
-    begin
-
-      TumGirislerOkundu := True;
-    end
-    else
-    begin
-
-      DosyaAdi := ELRDosyaAdiniAl(DG);
-
-      // dosya ad kontrolü
-      if(DG^.GirdiTipi = ELR_GT_DOSYA) and (DosyaAdi = D.DosyaAdi) then
-      begin
-
-        DosyaBulundu := True;
-        TumGirislerOkundu := True;
-      end;
-    end;
-
-    if not(TumGirislerOkundu) then
-    begin
-
-      // bir sonraki girdiye konumlan
-      Inc(D.SektorIciKonum, 64);
-      if(D.SektorIciKonum >= 512) then //DIZIN_GIRDI_SAYISI) then
-      begin
-
-        // yeni sektörün okunmasý için SektorIciKonum deðiþkenini -1 olarak ayarla
-        D.SektorIciKonum := -1;
-
-        Inc(ZincirNo);
-        if(ZincirNo = KBS) then
-        begin
-
-          if not(SHTBirSonrakiKumeyiAl(D.MD, KumeNo)) then
-          begin
-
-            SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DeleteFile: Bir sonraki kümeyi ayýrma hatasý', []);
-            D.Gorev^.DosyaSonIslemDurum := HATA_AYGITAYAZMA;
-            Exit(False);
-          end;
-
-          if(KumeNo = ELR_ZD_SON) then Exit(False);
-
-          //KumeNo := i;
-          ZincirNo := 0;
-        end;
-      end else Inc(DG);
-    end;
-
-  until TumGirislerOkundu;
-
-  // dosyanýn bulunmasý halinde...
-  if(DosyaBulundu) then
-  begin
-
-    // dosyayý silindi olarak iþaretle
-    DG^.Ozellikler := ELR_O_SILINMIS;
-
-    // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-    if(D.MD.FD.FYaz(SektorNo, 1, D.TSI) <> HATA_YOK) then
-      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1: yazma hatasý7', []);
-
-    Result := True;
-
-  end else Result := False;
+  until True = False;
 end;
 
 {==============================================================================
   dizin giriþinden ilgili bilgileri alýr
  ==============================================================================}
-function DizinGirdisiListeleELR1(AAranacakDeger: string;
-  var ADosyaArama: TDosyaArama): TSayi4;
+function TELR1.DizinGirdisiListeleELR1(var ADosyaArama: TDosyaArama): TSayi4;
 var
   DG: PDizinGirdisiELR;
   TumGirislerOkundu: Boolean;
-  D: TDosya;
-  KBS: TSayi1;
-  i: TSayi4;
-  SektorNo: TISayi4;
+  Sonuc, i, KBS: TSayi4;
 begin
 
-  // 0 = bir sonraki girdi mevcut, 1 = tüm girdiler okundu
-  Result := 1;
+  Result := HATA_YOK;
 
   ADosyaArama.DosyaAdi := '';
 
   // ilk deðer atamalarý
   TumGirislerOkundu := False;
 
-  // dosya iþlem yapýsý bellek bölgesine konumlan
-  D := GDosyalar.DosyaListesi[ADosyaArama.Kimlik];
+  KBS := FMD.Acilis.DosyaAyirmaTablosu.KBS;
 
-  KBS := D.MD.Acilis.DosyaAyirmaTablosu.KBS;
-
+  // aramaya baþla
   repeat
 
     // bir sonraki girdiye konumlan
-    Inc(D.SektorIciKonum, 64);
-    if(D.SektorIciKonum >= 512) then //DIZIN_GIRDI_SAYISI) then
+    Inc(FArama.FSIKonum, FArama.FSonrakiSIKonum);
+
+    if(FArama.FSIKonum >= 512) then
     begin
 
       // yeni sektörün okunmasý için KayitSN deðiþkenini 0 olarak ayarla
-      D.SektorIciKonum := 0;
+      FArama.FSIKonum := 0;
+      FArama.FSonrakiSIKonum := 0;
 
-      Inc(D.ZincirNo);
-      if(D.ZincirNo >= KBS) then
+      Inc(FArama.FZincirNo);
+      if(FArama.FZincirNo >= KBS) then
       begin
 
-        D.ZincirNo := 0;
+        FArama.FZincirNo := 0;
 
-        i := D.SektorKumeNo;
-        if not(SHTBirSonrakiKumeyiAl(D.MD, i)) then
-        begin
-
-          SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'DizinGirdisiOku: Bir sonraki kümeyi ayýrma hatasý', []);
-          D.Gorev^.DosyaSonIslemDurum := HATA_AYGITAYAZMA;
-          Exit(1);
-        {end;
-
-        //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'SHTBirSonrakiKume: %x', [i]);
-
-        if(i = ELR_ZD_SON) then
-        begin
-
-          YeniKumeNo := SHTBosKumeTahsisEt(@DI^.MD);
-          if(YeniKumeNo < HATA_YOK) then
-          begin
-
-            //SISTEM_MESAJ(mtUyari, RENK_KIRMIZI, 'Boþ Küme->Sektör No: %x', [YeniKumeNo*4]);
-
-            TumGirislerOkundu := True;
-            Result := 1;
-            Exit;
-          end;
-
-          Sonuc := SHTKumeyiBirOncekiKumeyeBagla(@DI^.MD, DI^.SektorKumeNo, YeniKumeNo);
-          if(Sonuc < HATA_YOK) then
-          begin
-
-            SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'SHTKumeyiBirOncekiKumeyeBagla.HataKodu: %d', [Sonuc]);
-            Exit;
-          end;
-
-          DI^.SektorKumeNo := YeniKumeNo;
-            }
-        end else D.SektorKumeNo := i;
-
+        if not(BirSonrakiKumeyiAl(FArama.FSektorKumeNo)) then Exit(HATA_DK_MEVCUTDEGIL);
       end;
-    end; // else Inc(DG);
+    end;
 
-    if(D.SektorIciKonum = 0) then
+    // FArama.FSIKonum deðeri her 0 olduðunda zincirin belirlenen sektörünü oku
+    if(FArama.FSIKonum = 0) then
     begin
 
-      SektorNo := (D.SektorKumeNo * KBS) + D.ZincirNo;
+      i := (FArama.FSektorKumeNo * KBS) + FArama.FZincirNo;
 
-      // dizin giriþ sektörünü oku
-      if(D.MD.FD.FOku(SektorNo, 1, D.TSI) <> HATA_YOK) then
-        SISTEM_MESAJ(mtBilgi, RENK_KIRMIZI, 'ELR1: dosya okuma hatasý2', []);
+      Sonuc := FMD.FD.FOku(i, 1, FTSI);
+      if(Sonuc > HATA_YOK) then Exit(Sonuc);
     end;
 
     // dosya giriþ tablosuna konumlan
-    DG := PDizinGirdisiELR(D.TSI + D.SektorIciKonum);
+    DG := PDizinGirdisiELR(FTSI + FArama.FSIKonum);
 
-    // dosya giriþinin ilk karakteri #0 ise giriþler okunmuþ demektir
+    // dosya giriþinin ilk karakteri #0 ise tüm giriþler okunmuþ demektir
     if(DG^.DosyaAdi[0] = #00) then
     begin
 
-      Result := 1;
+      // diðer iþlevlerin kullanabilmesi için deðerleri sakla
+      FIslem.FSektorKumeNo := FArama.FSektorKumeNo;
+      FIslem.FZincirNo := FArama.FZincirNo;
+      FIslem.FSIKonum := FArama.FSIKonum;
+
+      Result := HATA_DK_MEVCUTDEGIL;;
       TumGirislerOkundu := True;
     end
     // silinmiþ dosya / klasör
@@ -769,20 +1142,25 @@ begin
 
       // listeleme aþamasýnda silinen ilk kayýt bilgileri klasör oluþturma
       // iþlemi için kaydediliyor
-      if(D.SilinenKumeNo = -1) then
+      if(FSilinen.FSektorKumeNo = $FFFFFFFF) then
       begin
 
-        D.SilinenKumeNo := D.SektorKumeNo;
-        D.SilinenZincirNo := D.ZincirNo;
-        D.SilinenKayitSN := D.SektorIciKonum;
+        FSilinen.FSektorKumeNo := FArama.FSektorKumeNo;
+        FSilinen.FZincirNo := FArama.FZincirNo;
+        FSilinen.FSIKonum := FArama.FSIKonum;
       end;
+      FArama.FSonrakiSIKonum := 64;
 
       // bir sonraki giriþle devam et
     end
     else if(DG^.GirdiTipi = ELR_GT_KLASOR) or (DG^.GirdiTipi = ELR_GT_DOSYA) then
     begin
 
-      ADosyaArama.DosyaAdi := ELRDosyaAdiniAl(DG);
+      // diðer iþlevlerin kullanabilmesi için deðerleri sakla
+      //FIslem.FSektorKumeNo := FArama.FSektorKumeNo;
+      //FIslem.FSIKonum := FArama.FSIKonum;
+
+      ADosyaArama.DosyaAdi := DosyaAdiniAl(DG);
       if(DG^.GirdiTipi = ELR_GT_KLASOR) then
         ADosyaArama.Ozellikler := $10     { TODO - çekirdek ve uygulama alanýnda yapýlandýr }
       else ADosyaArama.Ozellikler := 0;
@@ -795,47 +1173,368 @@ begin
       // dosya uzunluðu ve cluster baþlangýcýný geri dönüþ deðerine ekle
       ADosyaArama.DosyaUzunlugu := DG^.DosyaUzunlugu;
       ADosyaArama.BaslangicKumeNo := DG^.BaslangicKumeNo;
+      FArama.FSonrakiSIKonum := 64;
 
-      Result := 0;
       TumGirislerOkundu := True;
+
+      Result := HATA_YOK;
     end
-    else
-    begin
-
-      Result := 1;
-      TumGirislerOkundu := True;
-    end;
 
   until TumGirislerOkundu;
 end;
 
 {==============================================================================
-  dizin giriþinden ilgili bilgileri alýr
+  dosya adýný sektör kayýt alanýna yazar
  ==============================================================================}
-function DizinGirisindeAraELR1(ADosyaKimlik: TKimlik; AAranacakDeger: string): TSayi4;
+procedure TELR1.DosyaAdiniKopyala(ADosyaAdi: string; AHedef: PChar);
 var
-  DA: TDosyaArama;
+  i: TSayi4;
+begin
+
+  FillChar(AHedef^, ELR_DOSYA_U, #0);
+
+  AHedef[0] := Char(Length(ADosyaAdi));
+
+  for i := 1 to Length(ADosyaAdi) do AHedef[i] := ADosyaAdi[i];
+end;
+
+{==============================================================================
+  sektör harita tablosundan boþ küme numarasý alýr
+  baþarý = Result >= 0, hata = Result = $FFFFFFFF
+ ==============================================================================}
+function TELR1.BosKumeTahsisEt: TSayi4;
+var
+  Bellek: Isaretci;
+  KumeNo, i, j: TSayi4;
+  Deger: PSayi4;
   Sonuc: TSayi4;
 begin
 
-  DA.Kimlik := ADosyaKimlik;
-  //SISTEM_MESAJ(mtHata, RENK_MAVI, 'DizinGirisindeAra12: %s', [AAranacakDeger]);
+  GetMem(Bellek, 512);
 
-  // aramaya baþla
-  repeat
+  KumeNo := 0;
 
-    Sonuc := DizinGirdisiListeleELR1('', DA);
-    if(Sonuc = 0) then
+  for i := SEKTORNO_SHT_BAS to SEKTORNO_SHT_SON do
+  begin
+
+    Sonuc := FMD.FD.FOku(i, 1, Bellek);
+    if(Sonuc > HATA_YOK) then
     begin
 
-      // dosya uzunluðu ve cluster baþlangýcýný geri dönüþ deðerine ekle
-      if(DA.DosyaAdi = AAranacakDeger) then Exit(DA.BaslangicKumeNo);
-    end else Exit(0);
+      FreeMem(Bellek, 512);
+      Exit($FFFFFFFF);
+    end;
 
-  until True = False;
+    Deger := Bellek;
+    for j := 0 to 128 - 1 do
+    begin
+
+      if(Deger^ = $00000000) then
+      begin
+
+        // bir sonraki sektörü sonlanmýþ olarak iþaretle
+        Deger^ := ELR_ZD_SON;
+        Sonuc := FMD.FD.FYaz(i, 1, Bellek);
+        if(Sonuc > HATA_YOK) then
+        begin
+
+          FreeMem(Bellek, 512);
+          Exit($FFFFFFFF);
+        end;
+
+        FreeMem(Bellek, 512);
+        Exit(KumeNo);
+      end;
+
+      Inc(KumeNo);
+      Inc(Deger);
+    end;
+  end;
+
+  FreeMem(Bellek, 512);
 end;
 
-function ELRDosyaAdiniAl(ADizinGirdisi: PDizinGirdisiELR): string;
+{==============================================================================
+  sektör harita tablosundan alýnan sektör kümesini serbest býrakýr
+  baþarý = Result >= 0, hata = Result < 0
+ ==============================================================================}
+function TELR1.KumeSerbestBirak(AKumeNo: TSayi4): TISayi4;
+var
+  Bellek: Isaretci;
+  SektorNo, SiraNo: TSayi4;
+  Sonuc: TSayi4;
+  Deger: PSayi4;
+begin
+
+  Result := AKumeNo;
+
+  GetMem(Bellek, 512);
+
+  // konumlanýlacak sektör ve sýra numarasý
+  SektorNo := AKumeNo div 128;
+  SiraNo := AKumeNo mod 128;
+
+  Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  if(Sonuc > HATA_YOK) then
+  begin
+
+    FreeMem(Bellek, 512);
+    Exit(-1);
+  end;
+
+  Deger := Bellek;
+  Inc(Deger, SiraNo);
+  //if(Deger^ = ELR_ZD_SON) then
+  begin
+
+    Deger^ := $00000000;
+    Sonuc := FMD.FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+    if(Sonuc > HATA_YOK) then
+    begin
+
+      FreeMem(Bellek, 512);
+      Exit(-1);
+    end;
+
+    FreeMem(Bellek, 512);
+    Exit;
+  end;
+
+  FreeMem(Bellek, 512);
+end;
+
+{==============================================================================
+  kümeyi bir önceki kümeye baðlar
+  baþarý = Result = 0, hata = Result = $FFFFFFFF
+ ==============================================================================}
+function TELR1.KumeyiBirOncekiKumeyeBagla(ABirOncekiKumeNo, AKumeNo: TSayi4): TSayi4;
+var
+  Bellek: Isaretci;
+  SektorNo, SiraNo: TSayi4;
+  Sonuc: TSayi4;
+  Deger: PSayi4;
+begin
+
+  Result := HATA_YOK;
+
+  GetMem(Bellek, 512);
+
+  // konumlanýlacak sektör ve sýra numarasý
+  SektorNo := ABirOncekiKumeNo div 128;
+  SiraNo := ABirOncekiKumeNo mod 128;
+
+  Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  if(Sonuc > HATA_YOK) then
+  begin
+
+    FreeMem(Bellek, 512);
+    Exit($FFFFFFFF);
+  end;
+
+  Deger := Bellek;
+  Inc(Deger, SiraNo);
+  Deger^ := AKumeNo;
+
+  Sonuc := FMD.FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  if(Sonuc > HATA_YOK) then
+  begin
+
+    FreeMem(Bellek, 512);
+    Exit($FFFFFFFF);
+  end;
+
+  // sonlandýrma iþareti
+  // konumlanýlacak sektör ve sýra numarasý
+  SektorNo := AKumeNo div 128;
+  SiraNo := AKumeNo mod 128;
+
+  Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  if(Sonuc > HATA_YOK) then
+  begin
+
+    FreeMem(Bellek, 512);
+    Exit($FFFFFFFF);
+  end;
+
+  Deger := Bellek;
+  Inc(Deger, SiraNo);
+  Deger^ := ELR_ZD_SON;
+
+  Sonuc := FMD.FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  if(Sonuc > HATA_YOK) then
+  begin
+
+    FreeMem(Bellek, 512);
+    Exit($FFFFFFFF);
+  end;
+
+  FreeMem(Bellek, 512);
+end;
+
+{==============================================================================
+  kümeye baðlý bir sonraki kümeyi alýr
+  baþarý = Result = True, hata = Result = False
+ ==============================================================================}
+function TELR1.BirSonrakiKumeyiAl(var AKumeNo: TSayi4): Boolean;
+var
+  Bellek: Isaretci;
+  SektorNo, SiraNo,
+  Sonuc: TSayi4;
+  Deger: PSayi4;
+begin
+
+  Result := False;
+
+  Bellek := GetMem(512);
+
+  // konumlanýlacak sektör ve sýra numarasý
+  SektorNo := AKumeNo div 128;
+  SiraNo := AKumeNo mod 128;
+
+  Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  if(Sonuc = HATA_YOK) then
+  begin
+
+    Deger := Bellek;
+    Inc(Deger, SiraNo);
+    AKumeNo := Deger^;
+    Result := True;
+  end;
+
+  FreeMem(Bellek, 512);
+end;
+
+{==============================================================================
+  sektör harita tablosundan dosya için tahsis edilen küme numara zincirini serbest býrakýr
+  baþarý = Result = 0, hata = Result = $FFFFFFFF
+ ==============================================================================}
+function TELR1.KumeZinciriniSerbestBirak(AIlkKumeNo: TSayi4): TSayi4;
+var
+  Bellek: Isaretci;
+  SektorNo, SiraNo,
+  KumeNo: TSayi4;
+  Sonuc: TSayi4;
+  Deger: PSayi4;
+begin
+
+  Result := HATA_YOK;
+
+  KumeNo := AIlkKumeNo;
+
+  GetMem(Bellek, 512);
+
+  repeat
+
+    //SISTEM_MESAJ(mtBilgi, RENK_MAVI, '  -> %.8x', [KumeNo]);
+
+    // konumlanýlacak sektör ve sýra numarasý
+    SektorNo := KumeNo div 128;
+    SiraNo := KumeNo mod 128;
+
+    Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+    if(Sonuc > HATA_YOK) then
+    begin
+
+      FreeMem(Bellek, 512);
+      Exit($FFFFFFFF);
+    end;
+
+    Deger := Bellek;
+    Inc(Deger, SiraNo);
+
+    KumeNo := Deger^;
+
+    //if(Deger^ <> $00000000) then
+    begin
+
+      Deger^ := $00000000;
+      Sonuc := FMD.FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+      if(Sonuc > HATA_YOK) then
+      begin
+
+        FreeMem(Bellek, 512);
+        Exit($FFFFFFFF);
+      end;
+    end;
+
+  until KumeNo = ELR_ZD_SON;
+
+  FreeMem(Bellek, 512);
+end;
+
+{==============================================================================
+  sistem klasörlerini oluþturur
+ ==============================================================================}
+function TELR1.SistemKlasorleriniOlustur: Boolean;
+var
+  KlasorAdi: string;
+
+  function Olustur: Boolean;
+  var
+    G: TGorev;
+  begin
+
+    Result := dosyalar.CreateDir(KlasorAdi);
+    if not(Result) then
+    begin
+
+      G := GGorevler.GorevAl;
+      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%s klasörü oluþturulamýyor: %d',
+        [KlasorAdi, G.FDosyaSonIslemDurum]);
+    end;
+  end;
+begin
+
+  KlasorAdi := 'disk2:\progrmlr';
+  Result := Olustur;
+  if not(Result) then Exit;
+  KlasorAdi := 'disk2:\resimler';
+  Result := Olustur;
+  if not(Result) then Exit;
+  KlasorAdi := 'disk2:\belgeler';
+  Result := Olustur;
+  if not(Result) then Exit;
+  KlasorAdi := 'disk2:\kisiler';
+  Result := Olustur;
+  if not(Result) then Exit;
+  KlasorAdi := 'disk2:\suruculr';
+  Result := Olustur;
+  if not(Result) then Exit;
+  KlasorAdi := 'disk2:\kodlar';
+  Result := Olustur;
+  if not(Result) then Exit;
+  KlasorAdi := 'disk2:\kayitlar';
+  Result := Olustur;
+  if not(Result) then Exit;
+  KlasorAdi := 'disk2:\gecici';
+  Result := Olustur;
+  if not(Result) then Exit;
+end;
+
+function TELR1.SistemKlasorleriniSil: Boolean;
+begin
+
+  Result := dosyalar.RemoveDir('disk2:\progrmlr');
+  if not(Result) then Exit;
+  Result := dosyalar.RemoveDir('disk2:\resimler');
+  if not(Result) then Exit;
+  Result := dosyalar.RemoveDir('disk2:\belgeler');
+  if not(Result) then Exit;
+  Result := dosyalar.RemoveDir('disk2:\kisiler');
+  if not(Result) then Exit;
+  Result := dosyalar.RemoveDir('disk2:\suruculr');
+  if not(Result) then Exit;
+  Result := dosyalar.RemoveDir('disk2:\kodlar');
+  if not(Result) then Exit;
+  Result := dosyalar.RemoveDir('disk2:\kayitlar');
+  if not(Result) then Exit;
+  Result := dosyalar.RemoveDir('disk2:\gecici');
+end;
+
+{==============================================================================
+  dizin girdisinden dosya adýný alýr
+ ==============================================================================}
+function TELR1.DosyaAdiniAl(ADizinGirdisi: PDizinGirdisiELR): string;
 var
   i: TSayi4;
 begin
@@ -855,36 +1554,36 @@ end;
 {==============================================================================
   diski elr-1 dosya sistemi için hazýrlar
  ==============================================================================}
-procedure ELR1DiskBicimle(AMDNesne: TMDNesne);
+procedure TELR1.DiskiBicimle;
 var
   Sonuc: TISayi4;
 begin
 
   // dosya sisteminin veri alanýný sil
-  Sonuc := ELR1VeriAlaniniSil(AMDNesne);
+  Sonuc := VeriAlaniniSil;
   if(Sonuc <> HATA_YOK) then
   begin
 
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1VeriAlaniniSil hata kodu: %d', [Sonuc]);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'VeriAlaniniSil hata kodu: %d', [Sonuc]);
     Exit;
   end;
 
   // dosya içerik tablosunu oluþtur
-  Sonuc := ELR1SHTOlustur(AMDNesne, SEKTORNO_SHT_BAS, SEKTORNO_SHT_SON, SEKTORNO_VERI);
+  Sonuc := SHTOlustur(SEKTORNO_SHT_BAS, SEKTORNO_SHT_SON, SEKTORNO_VERI);
   if(Sonuc <> HATA_YOK) then
   begin
 
-    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1SHTOlustur hata kodu: %d', [Sonuc]);
+    SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'SHTOlustur hata kodu: %d', [Sonuc]);
     Exit;
   end;
 end;
 
 {==============================================================================
   dosya sisteminin veri alanýndaki mevcut verilerini siler
+  { TODO - þu aþamada sadece 10 küme silindi, diðer alanlar da silinecek }
  ==============================================================================}
-function ELR1VeriAlaniniSil(AMDNesne: TMDNesne): TISayi4;
+function TELR1.VeriAlaniniSil: TISayi4;
 var
-  FD: TFDAygiti;
   Bellek: Isaretci;
   KumeNo, i: TSayi4;
   Sonuc: TISayi4;
@@ -897,8 +1596,6 @@ begin
   // bellek içeriðini sýfýrla
   FillChar(Bellek^, 4 * 512, $00);
 
-  FD := AMDNesne.FD;
-
   // sektör numarasý küme numarasýna çevriliyor
   // bilgi: þu aþamada her bir küme 4 sektörden oluþmakta
   KumeNo := SEKTORNO_VERI div 4;
@@ -907,7 +1604,7 @@ begin
   for i := 0 to 9 do
   begin
 
-    Sonuc := FD.FYaz((KumeNo + i) * 4, 4, Bellek);
+    Sonuc := FMD.FD.FYaz((KumeNo + i) * 4, 4, Bellek);
     if(Sonuc <> HATA_YOK) then
     begin
 
@@ -922,10 +1619,8 @@ end;
 {==============================================================================
   dosya sistemi sektör harita tablosunu oluþturur
  ==============================================================================}
-function ELR1SHTOlustur(AMDNesne: TMDNesne; AIlkSektor, ASonSektor,
-  AAyrilanSektor: TSayi4): TISayi4;
+function TELR1.SHTOlustur(AIlkSektor, ASonSektor, AAyrilanSektor: TSayi4): TISayi4;
 var
-  FD: TFDAygiti;
   Bellek: Isaretci;
   i, j: TSayi4;
   Sonuc: TISayi4;
@@ -937,12 +1632,11 @@ begin
 
   // sht için ayrýlan sektörleri sýfýrla
   FillChar(Bellek^, 512, $00);
-  FD := AMDNesne.FD;
 
   for i := AIlkSektor to ASonSektor - 1 do
   begin
 
-    Sonuc := FD.FYaz(i, 1, Bellek);
+    Sonuc := FMD.FD.FYaz(i, 1, Bellek);
     if(Sonuc <> HATA_YOK) then
     begin
 
@@ -962,10 +1656,11 @@ begin
 
   FillChar(Bellek^, 512, $FF);
 
+  // ilgili sektörleri kullanýlmýþ olarak iþaretle
   for i := AIlkSektor to (AIlkSektor + j) - 1 do
   begin
 
-    Sonuc := FD.FYaz(i, 1, Bellek);
+    Sonuc := FMD.FD.FYaz(i, 1, Bellek);
     if(Sonuc <> HATA_YOK) then
     begin
 
@@ -978,273 +1673,13 @@ begin
   FillChar(Bellek^, 512, $00);
   PSayi4(Bellek)^ := $FFFFFFFF;
 
-  Sonuc := FD.FYaz(AIlkSektor + j, 1, Bellek);
+  Sonuc := FMD.FD.FYaz(AIlkSektor + j, 1, Bellek);
   if(Sonuc <> HATA_YOK) then
   begin
 
     FreeMem(Bellek, 512);
     Exit(Sonuc);
   end;
-
-  FreeMem(Bellek, 512);
-end;
-
-{==============================================================================
-  sektör harita tablosundan boþ küme numarasý alýr
-  baþarý = Result >= 0, hata = Result < 0
- ==============================================================================}
-function SHTBosKumeTahsisEt(AMDNesne: TMDNesne): TISayi4;
-var
-  FD: TFDAygiti;
-  Bellek: Isaretci;
-  KumeNo, i, j: TSayi4;
-  Deger: PSayi4;
-  Sonuc: TISayi4;
-begin
-
-  Result := HATA_TUMSEKTORLERDOLU;
-
-  GetMem(Bellek, 512);
-
-  KumeNo := 0;
-
-  FD := AMDNesne.FD;
-
-  for i := SEKTORNO_SHT_BAS to SEKTORNO_SHT_SON - 1 do
-  begin
-
-    Sonuc := FD.FOku(i, 1, Bellek);
-    if(Sonuc <> HATA_YOK) then
-    begin
-
-      FreeMem(Bellek, 512);
-      Exit(Sonuc);
-    end;
-
-    Deger := Bellek;
-    for j := 0 to 128 - 1 do
-    begin
-
-      if(Deger^ = $00000000) then
-      begin
-
-        // bir sonraki sektörü sonlanmýþ olarak iþaretle
-        Deger^ := ELR_ZD_SON;
-        Sonuc := FD.FYaz(i, 1, Bellek);
-        if(Sonuc <> HATA_YOK) then
-        begin
-
-          FreeMem(Bellek, 512);
-          Exit(Sonuc);
-        end;
-
-        FreeMem(Bellek, 512);
-        Exit(KumeNo);
-      end;
-
-      Inc(KumeNo);
-      Inc(Deger);
-    end;
-  end;
-
-  FreeMem(Bellek, 512);
-end;
-
-{==============================================================================
-  sektör harita tablosundan alýnan sektör kümesini serbest býrakýr
-  baþarý = Result >= 0, hata = Result < 0
- ==============================================================================}
-function SHTKumeSerbestBirak(AMDNesne: TMDNesne; AKumeNo: TSayi4): TISayi4;
-var
-  FD: TFDAygiti;
-  Bellek: Isaretci;
-  SektorNo, SiraNo: TSayi4;
-  Sonuc: TISayi4;
-  Deger: PSayi4;
-begin
-
-  Result := AKumeNo;
-
-  GetMem(Bellek, 512);
-
-  // konumlanýlacak sektör ve sýra numarasý
-  SektorNo := AKumeNo div 128;
-  SiraNo := AKumeNo mod 128;
-
-  FD := AMDNesne.FD;
-
-  Sonuc := FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
-  if(Sonuc <> HATA_YOK) then
-  begin
-
-    FreeMem(Bellek, 512);
-    Exit(Sonuc);
-  end;
-
-  Deger := Bellek;
-  Inc(Deger, SiraNo);
-  if(Deger^ = ELR_ZD_SON) then
-  begin
-
-    Deger^ := $00000000;
-    Sonuc := FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
-    if(Sonuc <> HATA_YOK) then
-    begin
-
-      FreeMem(Bellek, 512);
-      Exit(Sonuc);
-    end;
-
-    FreeMem(Bellek, 512);
-    Exit;
-  end;
-
-  FreeMem(Bellek, 512);
-
-  Result := HATA_BILINMIYOR;
-end;
-
-{==============================================================================
-  kümeyi bir önceki kümeye baðlar
-  baþarý = Result = 0, hata = Result < 0
- ==============================================================================}
-function SHTKumeyiBirOncekiKumeyeBagla(AMDNesne: TMDNesne; ABirOncekiKumeNo,
- AKumeNo: TSayi4): TISayi4;
-var
-  FD: TFDAygiti;
-  Bellek: Isaretci;
-  SektorNo, SiraNo: TSayi4;
-  Sonuc: TISayi4;
-  Deger: PSayi4;
-begin
-
-  Result := HATA_YOK;
-
-  GetMem(Bellek, 512);
-
-  // konumlanýlacak sektör ve sýra numarasý
-  SektorNo := ABirOncekiKumeNo div 128;
-  SiraNo := ABirOncekiKumeNo mod 128;
-
-  FD := AMDNesne.FD;
-
-  Sonuc := FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
-  if(Sonuc <> HATA_YOK) then
-  begin
-
-    FreeMem(Bellek, 512);
-    Exit(Sonuc);
-  end;
-
-  Deger := Bellek;
-  Inc(Deger, SiraNo);
-  Deger^ := AKumeNo;
-
-  Sonuc := FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
-  if(Sonuc <> HATA_YOK) then
-  begin
-
-    FreeMem(Bellek, 512);
-    Exit(Sonuc);
-  end;
-
-  FreeMem(Bellek, 512);
-end;
-
-{==============================================================================
-  kümeye baðlý bir sonraki kümeyi alýr
-  baþarý = Result = True, hata = Result = False
- ==============================================================================}
-function SHTBirSonrakiKumeyiAl(AMDNesne: TMDNesne; var AKumeNo: TSayi4): Boolean;
-var
-  Bellek: Isaretci;
-  FD: TFDAygiti;
-  SektorNo, SiraNo: TSayi4;
-  Sonuc: TISayi4;
-  Deger: PSayi4;
-begin
-
-  Result := True;
-
-  Bellek := GetMem(512);
-
-  // konumlanýlacak sektör ve sýra numarasý
-  SektorNo := AKumeNo div 128;
-  SiraNo := AKumeNo mod 128;
-
-  FD := AMDNesne.FD;
-
-  Sonuc := FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
-  if(Sonuc = HATA_YOK) then
-  begin
-
-    Deger := Bellek;
-    Inc(Deger, SiraNo);
-    AKumeNo := Deger^;
-  end
-  else
-  begin
-
-    AKumeNo := 0;
-    Result := False;
-  end;
-
-  FreeMem(Bellek, 512);
-end;
-
-{==============================================================================
-  sektör harita tablosundan dosya için tahsis edilen küme numara zincirini serbest býrakýr
-  baþarý = Result = 0, hata = Result <> 0
- ==============================================================================}
-function SHTKumeZinciriniSerbestBirak(AMDNesne: TMDNesne; AIlkKumeNo: TSayi4): TISayi4;
-var
-  FD: TFDAygiti;
-  Bellek: Isaretci;
-  SektorNo, SiraNo,
-  KumeNo: TSayi4;
-  Sonuc: TISayi4;
-  Deger: PSayi4;
-begin
-
-  Result := HATA_YOK;
-
-  KumeNo := AIlkKumeNo;
-
-  FD := AMDNesne.FD;
-
-  GetMem(Bellek, 512);
-
-  repeat
-
-    // konumlanýlacak sektör ve sýra numarasý
-    SektorNo := KumeNo div 128;
-    SiraNo := KumeNo mod 128;
-
-    Sonuc := FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
-    if(Sonuc <> HATA_YOK) then
-    begin
-
-      FreeMem(Bellek, 512);
-      Exit(Sonuc);
-    end;
-
-    Deger := Bellek;
-    Inc(Deger, SiraNo);
-    KumeNo := Deger^;
-    if(Deger^ <> $00000000) then
-    begin
-
-      Deger^ := $00000000;
-      Sonuc := FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
-      if(Sonuc <> HATA_YOK) then
-      begin
-
-        FreeMem(Bellek, 512);
-        Exit(Sonuc);
-      end;
-    end;
-
-  until KumeNo = $FFFFFFFF;
 
   FreeMem(Bellek, 512);
 end;
@@ -1252,13 +1687,12 @@ end;
 {==============================================================================
   sektör olarak depolama aygýtý kullanýlan toplam kapasiteyi hesaplar
  ==============================================================================}
-function SHTToplamKullanim(AMDNesne: TMDNesne; var AKullanilanSektorSayisi: TSayi4): TISayi4;
+function TELR1.ToplamKullanim(var AKullanilanSektorSayisi: TSayi4): TSayi4;
 var
-  FD: TFDAygiti;
   Bellek: Isaretci;
   i, j: TSayi4;
   Deger: PSayi4;
-begin
+begin                                     Exit(0);  {geçici iptal}
 
   Result := HATA_YOK;
 
@@ -1267,12 +1701,10 @@ begin
   Bellek := GetMem(512);
   if(Bellek = nil) then Exit(HATA_BELLEKYOK);
 
-  FD := AMDNesne.FD;
-
-  for i := SEKTORNO_SHT_BAS to SEKTORNO_SHT_SON - 1 do
+  for i := SEKTORNO_SHT_BAS to SEKTORNO_SHT_SON do
   begin
 
-    Result := FD.FOku(i, 1, Bellek);
+    Result := FMD.FD.FOku(i, 1, Bellek);
     if(Result <> HATA_YOK) then Break;
 
     Deger := Bellek;
@@ -1291,441 +1723,6 @@ begin
   if(Result = HATA_YOK) then
     AKullanilanSektorSayisi := AKullanilanSektorSayisi * ZINCIRDEKI_SEKTOR_SAYISI
   else AKullanilanSektorSayisi := 0;
-end;
-
-procedure DosyaAdiniKopyala(ADosyaAdi: string; AHedef: PChar);
-var
-  i: TSayi4;
-begin
-
-  FillChar(AHedef^, ELR_DOSYA_U, #0);
-
-  AHedef[0] := Char(Length(ADosyaAdi));
-
-  for i := 1 to Length(ADosyaAdi) do AHedef[i] := ADosyaAdi[i];
-end;
-
-procedure SistemKlasorleriniOlustur;
-var
-  KlasorAdi: string;
-  Durum: Boolean;
-
-  procedure Olustur;
-  var
-    AG: PGorev;
-  begin
-
-    Durum := dosyalar.CreateDir(KlasorAdi);
-    if not(Durum) then
-    begin
-
-      AG := GorevAl;
-      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, '%s klasörü oluþturulamýyor: %d',
-        [KlasorAdi, AG^.DosyaSonIslemDurum]);
-    end;
-  end;
-begin
-
-  KlasorAdi := 'disk2:\progrmlr';
-  Olustur;
-  KlasorAdi := 'disk2:\resimler';
-  Olustur;
-  KlasorAdi := 'disk2:\belgeler';
-  Olustur;
-  KlasorAdi := 'disk2:\kisiler';
-  Olustur;
-  KlasorAdi := 'disk2:\suruculr';
-  Olustur;
-  KlasorAdi := 'disk2:\kodlar';
-  Olustur;
-  KlasorAdi := 'disk2:\kayitlar';
-  Olustur;
-  KlasorAdi := 'disk2:\gecici';
-  Olustur;
-end;
-
-procedure SistemKlasorleriniSil;
-var
-  Durum: Boolean;
-begin
-
-  Durum := dosyalar.RemoveDir('disk2:\progrmlr');
-  Durum := dosyalar.RemoveDir('disk2:\resimler');
-  Durum := dosyalar.RemoveDir('disk2:\belgeler');
-  Durum := dosyalar.RemoveDir('disk2:\kisiler');
-  Durum := dosyalar.RemoveDir('disk2:\suruculr');
-  Durum := dosyalar.RemoveDir('disk2:\kodlar');
-  Durum := dosyalar.RemoveDir('disk2:\kayitlar');
-  Durum := dosyalar.RemoveDir('disk2:\gecici');
-end;
-
-constructor TELR1.Create(AKimlikNo: TISayi4; FDST: TSayi4);
-begin
-
-  inherited Create(AKimlikNo, FDST);
-end;
-
-{==============================================================================
-  dosyaya veri eklemek için dosya açma iþlevini gerçekleþtirir
- ==============================================================================}
-procedure TELR1.Append;
-var
-  AramaKaydi: TDosyaArama;
-  DosyaBulundu: Boolean;
-  i: TSayi4;
-begin
-
-  // dosya açýk mý? (kapalý olmalý)
-  if(DosyaDurumu <> ddKapali) then
-  begin
-
-    Gorev^.DosyaSonIslemDurum := HATA_DOSYA_KULLANIMDA;
-    Exit;
-  end;
-
-  // ilk deðer atamalarý
-  DosyaBulundu := False;
-
-  // arama iþleminin daha önce oluþturulan dosya kimlik üzerinden devam etmesi için
-  // kimlik deðeri arama kaydý kimlik deðeriyle iliþkilendiriliyor
-  AramaKaydi.Kimlik := Kimlik;
-
-  i := dosyalar.FindFirst(MD.FAygitAdi + ':\*.*', 0, AramaKaydi, False);
-  while i = 0 do
-  begin
-
-    if(AramaKaydi.DosyaAdi = DosyaAdi) and (AramaKaydi.Ozellikler = 0) then
-    begin
-
-      DosyaBulundu := True;
-      Break;
-    end;
-
-    i := dosyalar.FindNext(AramaKaydi);
-  end;
-  // bilgi: dosya.FindClose iþlemi FileClose iþlemi ile gerçekleþtiriliyor
-
-  // dosyanýn bulunmasý halinde dosyanýn durumunu yazma için açýk olarak belirt
-  if(DosyaBulundu) then
-
-    DosyaDurumu := ddYazmaIcinAcik
-
-  // aksi halde ilgili hata kodunu deðiþkene ata
-  else Gorev^.DosyaSonIslemDurum := HATA_DOSYA_MEVCUTDEGIL;
-end;
-
-{==============================================================================
-  klasör oluþturma iþlevini gerçekleþtirir
- ==============================================================================}
-function TELR1.CreateDir: Boolean;
-var
-  DG: PDizinGirdisiELR;
-  i, KBS: TSayi4;
-  Gun, Ay, Yil, HG: TSayi2;
-  Saat, Dakika, Saniye: TSayi1;
-  AramaKaydi: TDosyaArama;
-  SektorNo,
-  Sonuc, BosKume: TISayi4;    // sektör iþlem sonucu
-begin
-
-  // ilk deðer atamalarý
-  Result := False;
-
-  // arama iþleminin daha önce oluþturulan dosya kimlik üzerinden devam etmesi için
-  // kimlik deðeri arama kaydýna iliþkilendiriliyor
-  AramaKaydi.Kimlik := Kimlik;
-
-  i := dosyalar.FindFirst(MD.FAygitAdi + ':\*.*', 0, AramaKaydi, False);
-  while i = 0 do
-  begin
-
-    if(AramaKaydi.DosyaAdi = DosyaAdi) {TODO: tip deðerini ekle} then
-    begin
-
-      Gorev^.DosyaSonIslemDurum := HATA_KLASORZATENMEVCUT;
-      //dosya.FindClose(AramaKaydi);
-      Exit;
-    end;
-
-    i := dosyalar.FindNext(AramaKaydi);
-  end;
-
-  KBS := MD.Acilis.DosyaAyirmaTablosu.KBS;
-
-  // silinen kayýt varsa silinen kaydýn yerine yeni klasör kaydý oluþtur
-  if(SilinenKayitSN > -1) then
-  begin
-
-    SektorKumeNo := SilinenKumeNo;
-    ZincirNo := SilinenZincirNo;
-    SektorIciKonum := SilinenKayitSN;
-
-    SektorNo := (SektorKumeNo * KBS) + ZincirNo;
-
-    // dizin giriþ sektörünü oku
-    Sonuc := MD.FD.FOku(SektorNo, 1, TSI);
-    if(Sonuc < HATA_YOK) then
-    begin
-
-      Gorev^.DosyaSonIslemDurum := Sonuc;
-      //dosya.FindClose(AramaKaydi);
-      Exit;
-    end;
-  end;
-
-  // dizin giriþ tablosuna konumlan
-  DG := PDizinGirdisiELR(TSI + SektorIciKonum);
-
-  if(SektorIciKonum >= 0) and (SektorIciKonum < 512) then //DIZIN_GIRDI_SAYISI) then
-  begin
-
-    BosKume := SHTBosKumeTahsisEt(MD);
-    if(BosKume < 0) then
-    begin
-
-      Gorev^.DosyaSonIslemDurum := HATA_TUMSEKTORLERDOLU;
-      //dosya.FindClose(AramaKaydi);
-      Exit;
-    end;
-
-    // aktif tarih / saat bilgilerini al
-    TarihAl(Gun, Ay, Yil, HG);
-    SaatAl(Saat, Dakika, Saniye);
-
-    // dosya adýný hedef bölgeye kopyala
-    DosyaAdiniKopyala(DosyaAdi, PChar(DG));
-
-    DG^.GirdiTipi := ELR_GT_KLASOR;
-    DG^.Ozellikler := ELR_O_NORMAL;
-    DG^.OlusturmaTarihi := ELRTarih(Gun, Ay, Yil);
-    DG^.OlusturmaSaati := ELRSaat(Saat, Dakika, Saniye);
-    DG^.DegisimTarihi := ELRTarih(Gun, Ay, Yil);
-    DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
-    DG^.BaslangicKumeNo := BosKume;
-    DG^.DosyaUzunlugu := 0;
-
-    SektorNo := (SektorKumeNo * KBS) + ZincirNo;
-
-    // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-    Sonuc := MD.FD.FYaz(SektorNo, 1, TSI);
-    if(Sonuc < HATA_YOK) then
-    begin
-
-      Gorev^.DosyaSonIslemDurum := Sonuc;
-      //dosya.FindClose(AramaKaydi);
-      Exit;
-    end;
-
-    Result := True;
-  end;
-
-  //dosya.FindClose(AramaKaydi);
-end;
-
-{==============================================================================
-  dosya okuma iþlemini gerçekleþtirir
-==============================================================================}
-procedure TELR1.Read(AHedefBellek: Isaretci);
-var
-  DG: PDizinGirdisiELR;
-  Bellek: Isaretci;
-  OkunacakSektorSayisi,
-  KBS,
-  KopyalanacakVeriUzunlugu,
-  KumeNo, VeriU: TSayi4;
-  Sonuc: TISayi4;
-begin
-
-  DG := PDizinGirdisiELR(TSI + SektorIciKonum);
-
-  VeriU := DG^.DosyaUzunlugu;
-  if(VeriU = 0) then Exit;
-
-  KumeNo := DG^.BaslangicKumeNo;
-
-  KBS := MD.Acilis.DosyaAyirmaTablosu.KBS;
-
-  GetMem(Bellek, KBS * 512);
-
-  repeat
-
-    // okunacak byte'ý sektör sayýsýna çevir
-    OkunacakSektorSayisi := KBS;
-    if(VeriU >= (KBS * 512)) then
-    begin
-
-      KopyalanacakVeriUzunlugu := KBS * 512;
-      VeriU := VeriU - KopyalanacakVeriUzunlugu;
-    end
-    else
-    begin
-
-      KopyalanacakVeriUzunlugu := VeriU;
-      VeriU := 0;
-    end;
-
-    // sektörü belleðe oku
-    Sonuc := MD.FD.FOku(KumeNo * KBS, OkunacakSektorSayisi, Bellek);
-    if(Sonuc <> HATA_YOK) then
-    begin
-
-      Gorev^.DosyaSonIslemDurum := Sonuc;
-      FreeMem(Bellek, KBS * 512);
-      Exit;
-    end;
-
-    Tasi2(Bellek, AHedefBellek, KopyalanacakVeriUzunlugu);
-    AHedefBellek := AHedefBellek + KopyalanacakVeriUzunlugu;
-
-    if(VeriU > 0) then
-    begin
-
-      if not(SHTBirSonrakiKumeyiAl(MD, KumeNo)) then
-      begin
-
-        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.Read: bir sonraki küme alýnamýyor!', []);
-        Gorev^.DosyaSonIslemDurum := HATA_AYGITSEKTOROKUMA;
-        Exit;
-      end;
-    end;
-
-  // küme deðerinin 0xFFFFFFFF olmasý durumunda tüm veri okunmuþ demektir
-  until (KumeNo = ELR_ZD_SON) or (VeriU = 0);
-
-  FreeMem(Bellek, KBS * 512);
-end;
-
-{==============================================================================
-  dosya oluþturma iþlevini gerçekleþtirir
-  uyarý: iþlev SADECE dosya.pas tarafýndan çaðrýlmalýdýr!
- ==============================================================================}
-procedure TELR1.ReWrite;
-var
-  DG: PDizinGirdisiELR;
-  KBS, i: TSayi4;
-  Gun, Ay, Yil, HG: TSayi2;
-  Saat, Dakika, Saniye: TSayi1;
-  AramaKaydi: TDosyaArama;
-  SektorNo, Sonuc: TISayi4;
-  DosyaBulundu: Boolean;
-begin
-
-  // dosya açýk mý? (kapalý olmalý)
-  if(DosyaDurumu <> ddKapali) then
-  begin
-
-    Gorev^.DosyaSonIslemDurum := HATA_DOSYA_KULLANIMDA;
-    Exit;
-  end;
-
-  // ilk deðer atamalarý
-  DosyaBulundu := False;
-
-  // arama iþleminin daha önce oluþturulan dosya kimlik üzerinden devam etmesi için
-  // kimlik deðeri arama kaydý kimlik deðeriyle iliþkilendiriliyor
-  AramaKaydi.Kimlik := Kimlik;
-
-  i := dosyalar.FindFirst(MD.FAygitAdi + ':\*.*', 0, AramaKaydi, False);
-  while i = 0 do
-  begin
-
-    if(AramaKaydi.DosyaAdi = DosyaAdi) and (AramaKaydi.Ozellikler = 0) then
-    begin
-
-      DosyaBulundu := True;
-      Break;
-    end;
-
-    i := dosyalar.FindNext(AramaKaydi);
-  end;
-  // bilgi: dosya.FindClose iþlemi FileClose iþlemi ile gerçekleþtiriliyor
-
-  KBS := MD.Acilis.DosyaAyirmaTablosu.KBS;
-
-  SektorNo := (SektorKumeNo * KBS) + ZincirNo;
-
-  // dosya oluþturma iþlemi
-
-  // 1. dosyanýn mevcut olmasý durumunda
-  if(DosyaBulundu) then
-  begin
-
-    DG := PDizinGirdisiELR(TSI + SektorIciKonum);
-
-    // dosyaya tahsis edilmiþ tüm kümeleri serbest býrak
-    Sonuc := SHTKumeZinciriniSerbestBirak(MD, DG^.BaslangicKumeNo);
-    if(Sonuc <> HATA_YOK) then
-    begin
-
-      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.SHTKumeZinciriniSerbestBirak->Hata Kodu: %d', [Sonuc]);
-      Exit;
-    end;
-
-    // aktif tarih / saat bilgilerini al
-    TarihAl(Gun, Ay, Yil, HG);
-    SaatAl(Saat, Dakika, Saniye);
-
-    // güncel veriler aktif dizin / dosya giriþine aktarýlýyor
-    DG^.GirdiTipi := ELR_GT_DOSYA;
-    DG^.Ozellikler := ELR_O_NORMAL;
-    DG^.OlusturmaTarihi := ELRTarih(Gun, Ay, Yil);
-    DG^.OlusturmaSaati := ELRSaat(Saat, Dakika, Saniye);
-    DG^.DegisimTarihi := ELRTarih(Gun, Ay, Yil);
-    DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
-    DG^.BaslangicKumeNo := ELR_ZD_SON;
-    DG^.DosyaUzunlugu := 0;
-
-    // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-    Sonuc := MD.FD.FYaz(SektorNo, 1, TSI);
-    if(Sonuc <> HATA_YOK) then
-    begin
-
-      SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.ReWrite->Hata Kodu: %d', [Sonuc]);
-      Exit;
-    end;
-
-    // dosya durumunu, "dosya yazým için açýldý" olarak güncelle
-    DosyaDurumu := ddYazmaIcinAcik;
-  end
-  else
-  // 2. dosyanýn mevcut OLMAMASI durumunda
-  begin
-
-    if(SektorIciKonum >= 0) and (SektorIciKonum < 512) then
-    begin
-
-      DG := PDizinGirdisiELR(TSI + SektorIciKonum);
-
-      // dosya adýný hedef bölgeye kopyala
-      DosyaAdiniKopyala(DosyaAdi, PChar(DG));
-
-      // aktif tarih / saat bilgilerini al
-      TarihAl(Gun, Ay, Yil, HG);
-      SaatAl(Saat, Dakika, Saniye);
-
-      // güncel veriler aktif dizin / dosya giriþine aktarýlýyor
-      DG^.GirdiTipi := ELR_GT_DOSYA;
-      DG^.Ozellikler := ELR_O_NORMAL;
-      DG^.OlusturmaTarihi := ELRTarih(Gun, Ay, Yil);
-      DG^.OlusturmaSaati := ELRSaat(Saat, Dakika, Saniye);
-      DG^.DegisimTarihi := ELRTarih(Gun, Ay, Yil);
-      DG^.DegisimSaati := ELRSaat(Saat, Dakika, Saniye);
-      DG^.BaslangicKumeNo := ELR_ZD_SON;
-      DG^.DosyaUzunlugu := 0;
-
-      // aktif dizin giriþinin bulunduðu sektörü güncelle (üzerine yaz)
-      Sonuc := MD.FD.FYaz(SektorNo, 1, TSI);
-      if(Sonuc <> HATA_YOK) then
-      begin
-
-        SISTEM_MESAJ(mtHata, RENK_KIRMIZI, 'ELR1.ReWrite->Hata Kodu: %d', [Sonuc]);
-        Exit;
-      end;
-
-      // dosya durumunu, "dosya yazým için açýldý" olarak güncelle
-      DosyaDurumu := ddYazmaIcinAcik;
-    end;
-  end;
 end;
 
 end.

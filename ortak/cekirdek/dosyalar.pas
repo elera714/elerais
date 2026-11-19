@@ -6,7 +6,7 @@
   Dosya Adý: dosyalar.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 18/11/2026
+  Güncelleme Tarihi: 19/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -66,7 +66,7 @@ procedure Write(ADosyaKimlik: TKimlik; ABellekAdresi: Isaretci; AUzunluk: TSayi4
 procedure WriteLn(ADosyaKimlik: TKimlik; AVeri: string);
 
 procedure IzKaydiOlustur(ADosyaAdi, AKayit: string; AYeniDosyaOlustur: Boolean = True);
-procedure DosyalariKopyala;// kontrol
+procedure DosyalariKopyala;
 function DosyaKopyala(AKaynakDosya, AHedefDosya: string): TISayi4;
 function DosyaOku(ADosyaTamYol: string; var ABellekAdresi: Isaretci): TDosyaYukleme;
 
