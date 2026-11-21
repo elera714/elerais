@@ -38,7 +38,6 @@
       <Unit0>
         <Filename Value="grafik2.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="26" Y="17"/>
         <UsageCount Value="74"/>
         <Loaded Value="True"/>
@@ -161,8 +160,9 @@
       <Unit21>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="41"/>
+        <TopLine Value="3"/>
         <CursorPos X="8" Y="64"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>

@@ -10,7 +10,6 @@
 - ses kartý ile ilgili iþlevler aktif ve çalýþýr hale getirilecek
 - program geliþtirmek için tasarlanan widget'in grafiksel arabirimi geliþtirilecek
 - servis iþlemleri için ayrý görevler tanýmlanacak
-- donanýmsal çokgörevlilik, yazýlýmsal çokgörevlilik (software multitasking) olarak deðiþtirilecek
 - sayfalama (paging) özelliði çekirdeðe eklenecek
 - tüm aygýt sürücülerinin (device driver) standartlaþmasý
 - ELF biçimindeki dosyalar hakkýnda bilgi veren bir program yazýlacak

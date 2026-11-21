@@ -6,7 +6,7 @@
   Program Adı: grafik5.lpr
   Program İşlevi: çoklu dikdörtgen / kare çizim programı - double değer testi
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}

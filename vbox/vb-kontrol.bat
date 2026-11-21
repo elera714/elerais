@@ -1,0 +1,1 @@
+"C:\Program Files\Oracle\VirtualBox\VirtualBoxVM.exe" --startvm "elera" --debug-command-line

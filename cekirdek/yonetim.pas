@@ -6,7 +6,7 @@
   Dosya Adý: yonetim.pas
   Dosya Ýþlevi: sistem ana yönetim / kontrol kýsmý
 
-  Güncelleme Tarihi: 19/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -74,6 +74,7 @@ begin
   GorevTSSListesi[0]^.FS := SECICI_SISTEM_VERI * 8;
   GorevTSSListesi[0]^.GS := SECICI_SISTEM_VERI * 8;
   GorevTSSListesi[0]^.SS0 := SECICI_SISTEM_VERI * 8;
+  GorevTSSListesi[0]^.ESP0 := {(G.FKimlik * GOREV3_ESP_U) +} GOREV3_ESP;
 
   // not: sistem için CS ve DS seçicileri bilden programý tarafýndan
   // oluþturuldu. tekrar oluþturmaya gerek yok
@@ -95,6 +96,10 @@ begin
 
   { TODO - CekirdekUzunlugu -> *4K olarak hesaplanacak }
   G.FBellekUz := GSistem.FCekirdekUzunlugu;
+
+  G.FCekirdekYiginUst := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
+
+  GGorevler.IlkCalismaYigininiOlustur0(G.FKimlik);
 
   // çekirdek için olay iþlemleri gerçekleþmeyecek
   G.FOlaySayisi := 0;

@@ -6,7 +6,7 @@
   Dosya Adý: yukleyici.pas
   Dosya Ýþlevi: sistem ilk açýlýþ yükleme iþlevleri gerçekleþtirir
 
-  Güncelleme Tarihi: 19/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -161,10 +161,13 @@ var
   ServisGrafik: TServisGrafik;
   PrgTest: TPrgTest;
   ServisARP: TServisARP;
+  i: TSayi4;
 begin
 
+  i := 0;
   SISTEM_MESAJ(mtBilgi, RENK_MAVI, '+ Masaüstü yönetim programý yükleniyor...', []);
-  GGorevler.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + OnDegerMasaustuProgram, CALISMA_SEVIYE3);
+  GGorevler.Calistir('disket1:\' + OnDegerMasaustuProgram, CALISMA_SEVIYE3);
+  //GGorevler.Calistir(AcilisSurucuAygiti + ':\progrmlr\' + OnDegerMasaustuProgram, CALISMA_SEVIYE3);
 
   // grafik iþlevlerini yönetecek görevi oluþtur
   ServisGrafik := TServisGrafik.Create('SGrafik');

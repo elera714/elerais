@@ -69,7 +69,7 @@ begin
     else Noktalar[i].DikeyDeger := -1;
   end;
 
-  FZamanlayici.Olustur(300);
+  FZamanlayici.Olustur(3 * 1000);
   FZamanlayici.Baslat;
 end;
 

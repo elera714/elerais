@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-windows">
-  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2026-11-19T03:58:30Z">
+  <Machine uuid="{afc85ee1-c0c8-40b2-913a-1f36dfc98dd7}" name="elera" OSType="Other" snapshotFolder="Snapshots" lastStateChange="2026-11-21T16:33:27Z">
     <MediaRegistry>
       <HardDisks>
         <HardDisk uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}" location="320mb.vhd" format="VHD" type="Normal"/>
@@ -16,7 +16,7 @@
     </MediaRegistry>
     <ExtraData>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="795,123,1024,808"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="748,103,1024,808"/>
     </ExtraData>
     <Hardware>
       <CPU>
@@ -59,10 +59,15 @@
       <Clipboard/>
       <DragAndDrop mode="Bidirectional"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1795060690474413600" flags="RDONLYGUEST"/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="tr_TR" timestamp="1795278796277916300" flags="RDONLYGUEST"/>
       </GuestProperties>
       <StorageControllers>
-        <StorageController name="IDE" type="PIIX4" PortCount="2" useHostIOCache="true" Bootable="true">
+        <StorageController name="Floppy" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">
+          <AttachedDevice type="Floppy" hotpluggable="false" port="0" device="0">
+            <HostDrive src="A:"/>
+          </AttachedDevice>
+        </StorageController>
+        <StorageController name="PIIX3" type="PIIX3" PortCount="2" useHostIOCache="true" Bootable="true">
           <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="0">
             <Image uuid="{600b2af4-a31e-4c88-9789-834d9c95178e}"/>
           </AttachedDevice>
@@ -71,11 +76,6 @@
           </AttachedDevice>
           <AttachedDevice type="HardDisk" hotpluggable="false" port="1" device="0">
             <Image uuid="{12abfd8e-5ae1-4b34-a58c-deb2872f76b1}"/>
-          </AttachedDevice>
-        </StorageController>
-        <StorageController name="Floppy" type="I82078" PortCount="1" useHostIOCache="true" Bootable="true">
-          <AttachedDevice type="Floppy" hotpluggable="false" port="0" device="0">
-            <HostDrive src="A:"/>
           </AttachedDevice>
         </StorageController>
       </StorageControllers>

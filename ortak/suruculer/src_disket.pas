@@ -6,7 +6,7 @@
   Dosya Adý: src_disket.pas
   Dosya Ýþlevi: disket aygýt sürücüsü
 
-  Güncelleme Tarihi: 17/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -457,7 +457,7 @@ begin
   begin
 
     if(IRQ6Tetiklendi) then Exit;
-    ElleGorevDegistir;
+    asm nop end;
   end;
 
   Result := False;

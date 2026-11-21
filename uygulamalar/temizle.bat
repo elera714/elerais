@@ -2,5 +2,6 @@ cd _
 cd _
 del *.* /Q
 cd..
-del *.* /Q
+del *.c /Q
+del *.s /Q
 cd..

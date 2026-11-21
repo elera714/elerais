@@ -6,7 +6,7 @@
   Dosya Adý: k_olay.pas
   Dosya Ýþlevi: olay (event) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -20,7 +20,7 @@ function OlayCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
 
 implementation
 
-uses gorev, zamanlayici;
+uses gorev;
 
 {==============================================================================
   olay kesme çaðrýlarýný yönetir
@@ -31,60 +31,44 @@ var
   O: TOlay;
   O2: POlay;
   IslevNo: TSayi4;
-  OlayMevcut: Boolean;
 begin
 
   Result := HATA_ISLEV;
 
   IslevNo := (AIslevNo and $FF);
 
-  // görev için olay olsun (olayla) veya olmasýn (olaysýz) göreve geri döner
+  // görev için bekleyen olay sayýsýný al
   if(IslevNo = 1) then
   begin
 
     G := GGorevler.GorevAl;
-    if(G = nil) then
-    begin
-
-      ElleGorevDegistir;
-      Exit(0);
-    end;
-
-    // çalýþan iþleme ait olay var mý ?
-    if(GGorevler.OlayAl(G.FKimlik, O)) then
-      OlayMevcut := True
-    else OlayMevcut := False;
-
-    // olay deðerlerini deðiþkenlere aktar
-    if(OlayMevcut) then
-    begin
-
-      O2 := POlay(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
-      O2^.Kimlik := O.Kimlik;
-      O2^.Olay := O.Olay;
-      O2^.Deger1 := O.Deger1;
-      O2^.Deger2 := O.Deger2;
-
-      Result := G.FOlaySayisi;
-    end
-    // olay yok ise tek bir görev deðiþikliði yap ve görevi istekte bulunan göreve devret.
-    else
-    begin
-
-      ElleGorevDegistir;
-      Result := 0;
-    end;
+    if not(G = nil) then
+      Result := G.FOlaySayisi
+    else Result := 0;
   end
 
-  // istekte bulunan görev için olay mevcut oluncaya kadar bekle ve olayý iþleme geri döndür
+  // görev için bekleyen sýradaki olayý al
   else if(IslevNo = 2) then
   begin
 
     G := GGorevler.GorevAl;
+    if not(G = nil) and (G.FOlaySayisi > 0) then
+    begin
 
-    { TODO - tanýmsýz olay ile geri dön
-      buradaki kodlar hiç bir zaman çalýþmayacaktýr, bir durumun testi için eklenmiþtir (kaldýrýlabilir)  }
-    if(G = nil) then
+      if(GGorevler.OlayAl(G.FKimlik, O)) then
+      begin
+
+        // olay deðiþkenlerini görevin yýðýn alanýna kopyala
+        O2 := POlay(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
+        O2^.Kimlik := O.Kimlik;
+        O2^.Olay := O.Olay;
+        O2^.Deger1 := O.Deger1;
+        O2^.Deger2 := O.Deger2;
+
+        Result := G.FOlaySayisi;
+      end;
+    end
+    else
     begin
 
       O2 := POlay(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
@@ -94,30 +78,7 @@ begin
       O2^.Deger2 := -1;
 
       Result := 0;
-      Exit;
     end;
-
-    // uygulama için olay üretilinceye kadar bekle
-    // olay olmamasý durumunda bir sonraki göreve geç (mevcut görev olay bekliyor)
-    // ta ki ilgili görev için olay mevcut oluncaya kadar
-    repeat
-
-      if(GGorevler.OlayAl(G.FKimlik, O)) then
-
-        OlayMevcut := True
-      else OlayMevcut := False;
-
-      if not(OlayMevcut) then ElleGorevDegistir;
-    until (OlayMevcut = True);
-
-    // olay deðiþkenlerini görevin yýðýn alanýna kopyala
-    O2 := POlay(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
-    O2^.Kimlik := O.Kimlik;
-    O2^.Olay := O.Olay;
-    O2^.Deger1 := O.Deger1;
-    O2^.Deger2 := O.Deger2;
-
-    Result := G.FOlaySayisi;
   end;
 end;
 

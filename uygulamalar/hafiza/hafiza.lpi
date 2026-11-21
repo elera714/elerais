@@ -36,7 +36,7 @@
         <Filename Value="hafiza.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <CursorPos X="25" Y="21"/>
+        <CursorPos X="27" Y="9"/>
         <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -61,8 +61,6 @@
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="7"/>
-        <CursorPos X="3" Y="28"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit3>

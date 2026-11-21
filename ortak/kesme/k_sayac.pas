@@ -6,7 +6,7 @@
   Dosya Adı: k_sayac.pas
   Dosya İşlevi: sayaç kesme işlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -79,7 +79,7 @@ begin
     Deger4 := PSayi4(ADegiskenler)^;
 
     Deger4 := GZamanlayicilar.FZamanlayiciSayaci + Deger4;
-    while (Deger4 > GZamanlayicilar.FZamanlayiciSayaci) do ElleGorevDegistir;
+    while (Deger4 > GZamanlayicilar.FZamanlayiciSayaci) do;
 
     Result := HATA_YOK;
   end;

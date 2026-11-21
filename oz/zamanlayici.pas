@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -64,7 +64,6 @@ var
   ZamanlayicilarKilit: TSayi4 = 0;
 
 procedure OtomatikGorevDegistir;
-procedure ElleGorevDegistir;
 
 implementation
 
@@ -354,11 +353,10 @@ end;
 procedure OtomatikGorevDegistir; nostackframe; assembler;
 asm
 
-//  cli
-
   // deðiþime uðrayacak yazmaçlarý sakla
   pushad
   pushfd
+  cld
 
   // çalýþan görevin DS yazmacýný sakla
   // not : ds = es = ss olduðu için tek yazmacýn saklanmasý yeterlidir.
@@ -369,6 +367,13 @@ asm
   mov   ax,SECICI_SISTEM_VERI * 8
   mov   ds,ax
   mov   es,ax
+
+  // çalýþan görevin çekirdek esp deðerini kaydet
+  mov   esi,[GGorevler]
+  mov   eax,[esi + TGorevler.FAktifGrv]
+  imul  eax,SizeOf(TGorev)
+  mov   esi,[esi + TGorevler.FGorevListesi + eax]
+  mov   [esi + TGorev.FKayitliESP],esp
 
   mov   eax,GorevDegistirme
   cmp   eax,1
@@ -397,7 +402,6 @@ asm
 
   popfd
   popad
-//  sti
   iretd
 
 @@kontrol1:
@@ -446,7 +450,7 @@ asm
   mov   esi,[GGorevler]
   mov   [esi + TGorevler.FAktifGrv],eax
 
-  // aktif görevin bellek baþlangýç adresini al
+  // geçilecek görevin bellek baþlangýç adresini al
   imul  eax,SizeOf(TGorev)
   mov   esi,[esi + TGorevler.FGorevListesi + eax]
   mov   eax,[esi + TGorev.FBellekBaslAdr]
@@ -454,7 +458,7 @@ asm
   mov   esi,[GGorevler]
   mov   [esi + TGorevler.FAktifGrvBelAdr],eax
 
-  // görev deðiþiklik sayacýný bir artýr
+  // geçilecek görevin deðiþiklik sayacýný bir artýr
   mov   esi,[GGorevler]
   mov   eax,[esi + TGorevler.FAktifGrv]
   imul  eax,SizeOf(TGorev)
@@ -469,143 +473,46 @@ asm
   inc   eax
   mov   [esi + TGorevler.FGorevDegisimSayisi],eax
 
-  // görevin öncelik seviyesine göre görev geçiþini gerçekleþtir
+  // geçilecek görevin öncelik seviyesine göre görev geçiþini gerçekleþtir
   mov   esi,[GGorevler]
   mov   ecx,[esi + TGorevler.FAktifGrv]
   mov   eax,ecx
   imul  eax,SizeOf(TGorev)
   mov   esi,[esi + TGorevler.FGorevListesi + eax]
-  mov   eax,[esi + TGorev.FSeviyeNo]
-  cmp   eax,CALISMA_SEVIYE0
-  jz    @@TSS_SEVIYE0
 
-// DPL3 - uygulama yazýlýmlarý için (ring3)
-@@TSS_SEVIYE3:
-  inc   ecx
-  imul  ecx,3
-  shl   ecx,3
-  add   ecx,3
-  mov   @@SECICI,cx
-  jmp   @@son
+  // yýðýn 3. seviye bir göreve aitse esp0 deðerini kaydet
+  cmp   DWORD[esi + TGorev.FSeviyeNo],CALISMA_SEVIYE3
+  jne   @@yigin_tamam
 
-// DPL0 - sistem yazýlýmlarý için (ring0)
-@@TSS_SEVIYE0:
-  inc   ecx
-  imul  ecx,3
-  shl   ecx,3
-  mov   @@SECICI,cx
+  mov   eax,[esi + TGorev.FCekirdekYiginUst]
+  mov   edi,[GorevTSSListesi]
+  mov   [edi + TTSS.ESP0],eax
+
+@@yigin_tamam:
+
+  // yeni görevin esp deðerini kayýtlý alandan al
+  mov   esp,[esi + TGorev.FKayitliESP]
+
+  // yeni görevin ds, es yazmacýný yükle
+  mov   eax,[esp]
+  mov   ds,ax
+  mov   es,ax
 
 @@son:
 
-  // yazmaçlarý geri yükle ve kesmeden çýk
-  pop   eax
-  mov   ds,ax
-  mov   es,ax
+  // yukarýdaki ds yazmacýnýn yýðýndaki deðerini ayarlar (pop iþlemi yapma!)
+  add   esp,4
 
   // EOI - kesme sonu
   mov   al,$20
   out   PIC1_KOMUT,al
 
+  // yýðýna atýlan deðerleri yýðýndan al
   popfd
   popad
 
-// iþlemi belirtilen göreve devret
-@@JMPKOD:
-  db  $EA
-// bilgi: donaným destekli görev deðiþimlerinde ADRES (offset) gözardý edilir
-@@ADRES:
-  dd  0
-@@SECICI:
-  dw  0
-
+  // iretd ile yýðýndan yazmaç deðerlerini alarak görev geçiþi gerçekleþtir
   iretd
-end;
-
-{==============================================================================
-  yazýlým tarafýndan görev deðiþtirme iþlevlerini yerine getirir.
- ==============================================================================}
-procedure ElleGorevDegistir; nostackframe; assembler;
-asm
-
-  cli
-
-  pushad
-  pushfd
-
-  mov   esi,[GGorevler]
-  mov   eax,[esi + TGorevler.FCalisanGorevSayisi]
-  cmp   eax,1
-  jg    @@yenigorev
-
-  popfd
-  popad
-  sti
-  ret
-
-@@yenigorev:
-
-  mov   eax,GGorevler
-  call  TGorevler.CalisacakYeniGoreviBul
-  mov   esi,[GGorevler]
-  mov   [esi + TGorevler.FAktifGrv],eax
-
-  // aktif görevin bellek baþlangýç adresini al
-  imul  eax,SizeOf(TGorev)
-  mov   esi,[esi + TGorevler.FGorevListesi + eax]
-  mov   eax,[esi + TGorev.FBellekBaslAdr]
-
-  mov   esi,[GGorevler]
-  mov   [esi + TGorevler.FAktifGrvBelAdr],eax
-
-  // görev deðiþiklik sayacýný bir artýr
-  mov   eax,[esi + TGorevler.FAktifGrv]
-  imul  eax, SizeOf(TGorev)
-  mov   esi, [esi + TGorevler.FGorevListesi + eax]
-  mov   eax, [esi + TGorev.FGrvSayac]
-  inc   eax
-  mov   [esi + TGorev.FGrvSayac],eax
-
-  // görevin öncelik seviyesine göre görev geçiþini gerçekleþtir
-  mov   esi,[GGorevler]
-  mov   ecx,[esi + TGorevler.FAktifGrv]
-  mov   eax,ecx
-  imul  eax,SizeOf(TGorev)
-  mov   esi,[esi + TGorevler.FGorevListesi + eax]
-  mov   eax,[esi + TGorev.FSeviyeNo]
-  cmp   eax,CALISMA_SEVIYE0
-  jz    @@TSS_SEVIYE0
-
-// DPL3 - uygulama yazýlýmlarý için (ring3)
-@@TSS_SEVIYE3:
-  inc   ecx
-  imul  ecx,3
-  shl   ecx,3
-  add   ecx,3
-  mov   @@SECICI,cx
-  jmp   @@son
-
-// DPL0 - sistem yazýlýmlarý için (ring0)
-@@TSS_SEVIYE0:
-  inc   ecx
-  imul  ecx,3
-  shl   ecx,3
-  mov   @@SECICI,cx
-
-@@son:
-  popfd
-  popad
-
-// iþlemi belirtilen göreve devret
-@@JMPKOD:
-  db  $EA
-// bilgi: donaným destekli görev deðiþimlerinde ADRES (offset) gözardý edilir
-@@ADRES:
-  dd  0
-@@SECICI:
-  dw  0
-
-  sti
-  ret
 end;
 
 end.

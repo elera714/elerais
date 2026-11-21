@@ -9,7 +9,7 @@
 
    Teknik Bilgiler
    ----------------------------------------------------------------------------
-   + zaman paylaþýmlý çokgörevlilik (pre-emptive multitasking)
+   + yazýlýmsal zaman paylaþýmlý çokgörevlilik (pre-emptive multitasking)
    + statik / dinamik bellek yönetimi
    + að yönetim arabirimleri (donaným / yazýlým)
    + 1024 x 768'a kadar 16 / 24 / 32 bit vesa 2.0+ grafik desteði
@@ -25,7 +25,7 @@
    Sürüm Bilgileri
    ----------------------------------------------------------------------------
    Telif Bilgisi: haklar.txt dosyasýna bakýnýz
-   Güncelleme Tarihi: (19.11.2026 - perþembe)
+   Güncelleme Tarihi: (21.11.2026 - cumartesi)
 
 ==============================================================================}
 program cekirdek;

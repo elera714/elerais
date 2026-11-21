@@ -263,7 +263,7 @@ begin
 
     FDefter.Temizle;
 
-    FIletisim0.Olustur(ptTCP, IPAdresi + Sayfa, Port);
+    FIletisim0.Olustur(ttTCP, IPAdresi + Sayfa, Port);
     FIletisim0.Baglan;
   end;
 end;

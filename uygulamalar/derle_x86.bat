@@ -185,6 +185,11 @@ call derle.bat
 IF %ERRORLEVEL% NEQ 0 GOTO CIK
 cd..
 
+cd suyari
+call derle.bat
+IF %ERRORLEVEL% NEQ 0 GOTO CIK
+cd..
+
 cd takvim
 call derle.bat
 IF %ERRORLEVEL% NEQ 0 GOTO CIK

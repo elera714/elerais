@@ -6,7 +6,7 @@
   Dosya Adý: idt.pas
   Dosya Ýþlevi: kesme servis rutinlerini (isr) içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}

@@ -76,7 +76,7 @@ begin
 
   SeciliGorevNo := 0;
 
-  FZamanlayici.Olustur(5000);
+  FZamanlayici.Olustur(3 * 1000);
   FZamanlayici.Baslat;
 end;
 

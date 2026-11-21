@@ -27,10 +27,10 @@ const
   ProjeBaslangicTarihi: string = '30.07.2005';
   {$IFDEF SISTEM_SUNUCU}
   SistemTipi: TSayi4 = SISTEM_TIPI_SUNUCU;
-  SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.4.2 - R38';
+  SistemAdi: string = 'ELERA ÝS (Sunucu) - 0.4.3 - R39';
   {$ELSE}
   SistemTipi: TSayi4 = SISTEM_TIPI_ISTEMCI;
-  SistemAdi: string = 'ELERA ÝS (Ýstemci) - 0.4.2 - R38';
+  SistemAdi: string = 'ELERA ÝS (Ýstemci) - 0.4.3 - R39';
   {$ENDIF}
   DerlemeTarihi: string = {$i %DATE%};
   FPCMimari: string = {$i %FPCTARGET%};
@@ -42,11 +42,6 @@ var
   OnDegerMasaustuProgram: string = 'muyntcs.c';
 
   GorevDegistirme: TSayi4 = 0;
-
-const
-  // uygulamalarýn tick çalýþma süreleri
-  DPL0_SUREMS = 2;
-  DPL3_SUREMS = 1;
 
 const
   NETBIOS_PORTNO  = 137;
@@ -113,6 +108,11 @@ const
   // diðer seçiciler aþaðýdaki biçimde alt satýrlara eklenecek
   // SECICI_DIGER_OZEL     = SECICI_GRAFIK_LFB + 1;
 
+const
+  // uygulamalarýn tick çalýþma süreleri
+  DPL0_SUREMS = 2;
+  DPL3_SUREMS = 1;
+
 type
   PHiza = ^THiza;
   THiza = (hzYok, hzUst, hzSag, hzAlt, hzSol, hzTum);
@@ -135,7 +135,7 @@ const
   // program için ESP bellek adresi ve ESP uzunluðu
   // $2000 (GOREV3_ESP_U) * $20 (USTSINIR_GOREVSAYISI) = $40000
   // $400000..$440000 arasý program ESP belleði için ayrýlmýþtýr
-  GOREV3_ESP_U      = $2000;                    // her bir ESP bellek uzunluðu (8192 byte)
+  GOREV3_ESP_U      = $2000;                    // her bir ESP bellek uzunluðu (8K=8192 byte)
   GOREV3_ESP        = $400000 + GOREV3_ESP_U;   // ilk program ESP bellek adresi
 
   BILDEN_VERIADRESI = $10008;

@@ -78,6 +78,7 @@ end;
 procedure TApplication.Run;
 var
   Olay: TOlay;
+  i: TSayi4;
 begin
 
   FGoster;
@@ -85,8 +86,13 @@ begin
   while True do
   begin
 
-    Gorev.OlayBekle(Olay);
-    FOlay(Olay);
+    i := Gorev.OlaySayisiAl;
+    if(i > 0) then
+    begin
+
+      Gorev.OlayAl(Olay);
+      FOlay(Olay);
+    end;
   end;
 end;
 

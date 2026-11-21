@@ -6,7 +6,7 @@
   Program Adý: grvyntcs.lpr
   Program Ýþlevi: görev yöneticisi
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}

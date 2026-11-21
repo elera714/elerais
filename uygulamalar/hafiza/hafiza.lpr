@@ -6,7 +6,7 @@
   Program Adý: hafiza.lpr
   Program Ýþlevi: hafýza güçlendirmek için geliþtirilmiþ uygulama
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}

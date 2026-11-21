@@ -7,7 +7,7 @@
   Dosya İşlevi: çekirdek içerisinde ayrı olarak çalışarak işlem yapacak (process)
     iş birimini (thread) oluşturur
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -48,6 +48,7 @@ begin
   FYiginAdresi := GetMem(YIGIN_MIKTARI);
 
   // işlevi özelleştir
+  // çekirdek içerisinde çalışan tüm servisler 0 imtiyaz seviyesinde çalışırlar
   FGorev := Ozellestir(AIslemAdi, @Execute, TSayi4(FYiginAdresi + (YIGIN_MIKTARI - 32)),
     CALISMA_SEVIYE0, CreateSuspended);
 end;
@@ -82,14 +83,17 @@ begin
     // kod seçicisi (CS)
     // Erişim  : 1 = mevcut, 00 = DPL0, 11 = kod yazmaç, 0 = dallanılamaz, 1 = okunabilir, 0 = erişilmedi
     // Esneklik: 1 = gran = 4K çözünürlük, 1 = 32 bit, 0, 1 = bana tahsis edildi, 1111 = uzunluk 16..19 bit
+    //GDTRGirdisiEkle(SNYazmacCS, 0, $FFFFFFFF, %10011010, %11011111);
     GDTRGirdisiEkle(SNYazmacCS, 0, $FFFFFFFF, %10011010, %11011111);
     // veri seçicisi (DS)
     // Erişim  : 1 = mevcut, 00 = DPL0, 10 = veri yazmaç, 0 = artarak büyüyen, 1 = yazılabilir, 0 = erişilmedi
     // Esneklik: 1 = gran = 4K çözünürlük, 1 = 32 bit, 0, 1 = bana tahsis edildi, 1111 = uzunluk 16..19 bit
+    //GDTRGirdisiEkle(SNYazmacDS, 0, $FFFFFFFF, %10010010, %11011111);
     GDTRGirdisiEkle(SNYazmacDS, 0, $FFFFFFFF, %10010010, %11011111);
     // görev seçicisi (TSS)
     // Erişim  : 1 = mevcut, 00 = DPL0, 010 = 32 bit kullanılabilir TSS, 0 = meşgul biti (meşgul değil), 1
     // Esneklik: 1 = gran = 1Byte çözünürlük, 00, 1 = bana tahsis edildi, 0000 = uzunluk 16..19 bit
+    //GDTRGirdisiEkle(SNYazmacTSS, TSayi4(GorevTSSListesi[i]), 104, %10001001, %00010000);
     GDTRGirdisiEkle(SNYazmacTSS, TSayi4(GorevTSSListesi[i]), 104, %10001001, %00010000);
 
     // denetçinin kullanacağı TSS'nin içeriğini sıfırla
@@ -104,8 +108,8 @@ begin
     GorevTSSListesi[i]^.SS := SNYazmacDS * 8;
     GorevTSSListesi[i]^.FS := SNYazmacDS * 8;
     GorevTSSListesi[i]^.GS := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.SS0 := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.ESP0 := AYiginDegeri;
+    GorevTSSListesi[i]^.SS0 := SECICI_SISTEM_VERI * 8;
+    GorevTSSListesi[i]^.ESP0 := (i * GOREV3_ESP_U) + GOREV3_ESP;
 
     // işlemin olay bellek bölgesini ata
     G.FOlayBellekAdresi := nil;
@@ -135,6 +139,10 @@ begin
 
     // işlemin yığın adresi
     G.FYiginBasAdresi := TSayi4(FYiginAdresi);
+
+    G.FCekirdekYiginUst := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
+
+    GGorevler.IlkCalismaYigininiOlustur0(G.FKimlik);
 
     G.FAktifMasaustu := nil;
     G.FAktifPencere := nil;

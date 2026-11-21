@@ -6,7 +6,7 @@
   Dosya Adý: dosyalar.pas
   Dosya Ýþlevi: dosya (file) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 19/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -709,7 +709,7 @@ var
   DosyaAdi: string;
   HataKodu: TISayi4;
 begin
-
+  exit;
   //DosyaAdi := 'disk2:\klasor\' + ADosyaAdi;
   DosyaAdi := 'disk2:\' + ADosyaAdi;
 

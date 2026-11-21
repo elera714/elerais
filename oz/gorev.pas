@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -78,6 +78,9 @@ type
 
     FDosyaAdi,                          // görev dosya adý
     FProgramAdi: string;                // program adý
+
+    FKayitliESP: TSayi4;                // çekirdek yýðýn iþaretçisi - görev deðiþikliði için
+    FCekirdekYiginUst: TSayi4;          // TSS.ESP0 deðeri - görev deðiþikliði için
     constructor Create(AKimlik: TKimlik);
   end;
 
@@ -100,6 +103,8 @@ type
     function GorevKimligiAl(AGorevAdi: string): TKimlik;
     procedure SecicileriOlustur(AKimlik, AUzunluk, ABellekBas,
       AKodBas, AYiginBas: TSayi4);
+    procedure IlkCalismaYigininiOlustur0(AKimlik: TSayi4);
+    procedure IlkCalismaYigininiOlustur3(AKimlik: TSayi4);
     function Calistir(ATamDosyaYolu: string; ASeviyeNo: TSayi4): TGorev;
     procedure OlayEkle(AGorevKimlik: TKimlik; AOlay: TOlay);
     procedure OlaySayisiYaz(AGorevKimlik: TKimlik; AOlaySayisi: TSayi4);
@@ -209,6 +214,9 @@ begin
 
   FDosyaAdi := '';
   FProgramAdi := '';
+
+  FKayitliESP := 0;
+  FCekirdekYiginUst := 0;
 end;
 
 {==============================================================================
@@ -301,7 +309,7 @@ begin
 end;
 
 {==============================================================================
-  görev için TSS seçicilerini (selektör) oluþturur
+  3. seviye görev için (uygulama) TSS seçicilerini (selektör) oluþturur
  ==============================================================================}
 procedure TGorevler.SecicileriOlustur(AKimlik, AUzunluk, ABellekBas,
   AKodBas, AYiginBas: TSayi4);
@@ -353,7 +361,7 @@ begin
   // TSS içeriðini doldur
   //GorevTSSListesi[i].CR3 := GERCEKBELLEK_DIZINADRESI;
   GorevTSSListesi[i]^.EIP := AKodBas;
-  GorevTSSListesi[i]^.EFLAGS := $202;
+  GorevTSSListesi[i]^.EFLAGS := $202;   // bit 1 = 1, bit 9 = kesme aktif
   GorevTSSListesi[i]^.ESP := AYiginBas;
   GorevTSSListesi[i]^.CS := (SeciciCSSiraNo * 8) + 3;
   GorevTSSListesi[i]^.DS := (SeciciDSSiraNo * 8) + 3;
@@ -361,8 +369,102 @@ begin
   GorevTSSListesi[i]^.SS := (SeciciDSSiraNo * 8) + 3;
   GorevTSSListesi[i]^.FS := (SeciciDSSiraNo * 8) + 3;
   GorevTSSListesi[i]^.GS := (SeciciDSSiraNo * 8) + 3;
+
+  // aþaðýdaki deðerler ring3 için (int, irq için) ring0 deðerleri olacaktýr
   GorevTSSListesi[i]^.SS0 := SECICI_SISTEM_VERI * 8;
   GorevTSSListesi[i]^.ESP0 := (i * GOREV3_ESP_U) + GOREV3_ESP;
+end;
+
+{==============================================================================
+  0. seviyede çalýþacak görev için görev deðiþim yýðýnýný oluþturur
+ ==============================================================================}
+procedure TGorevler.IlkCalismaYigininiOlustur0(AKimlik: TSayi4);
+var
+  G: TGorev;
+  T: PTSS;
+  P: ^TSayi4;
+begin
+
+  // yýðýn oluþturulacak görev
+  G := Gorev[AKimlik];
+
+  // yýðýn bilgilerinin alýnacaðý tss
+  T := GorevTSSListesi[AKimlik];
+
+  // seviye0->seviye0 esp0 yaznaç deðerine konumlan
+  P := Isaretci(T^.ESP0);
+
+  // bilgi: aþaðýdaki tüm girdiler irq0'da 0. seviye görevin ilk çalýþtýðýnda
+  // yýðýndan alýnacak deðerleridir
+
+  // seviye0 dönüþ çerçevesi - (iretd ile alýnacak deðerler)
+  Dec(P); P^ := $202;
+  Dec(P); P^ := T^.CS;
+  Dec(P); P^ := T^.EIP;
+
+  // pushad deðerleri (yukarýdan aþaðýya)
+  Dec(P); P^ := 0;    // eax
+  Dec(P); P^ := 0;    // ecx
+  Dec(P); P^ := 0;    // edx
+  Dec(P); P^ := 0;    // ebx
+  Dec(P); P^ := 0;    // esp
+  Dec(P); P^ := 0;    // ebp
+  Dec(P); P^ := 0;    // esi
+  Dec(P); P^ := 0;    // edi
+
+  // irq0 kesme yodamýndaki komutlar
+  Dec(P); P^ := $202;                       // pushfd
+  Dec(P); P^ := SECICI_SISTEM_VERI * 8;     // push eax (eax ile ds saklanýyor)
+
+  // tüm bu deðerler FKayitliESP deðiþkeninin gösterdiði noktadan alýnacak
+  G.FKayitliESP := TSayi4(P);
+end;
+
+{==============================================================================
+  3. seviyede çalýþacak görev için görev deðiþim yýðýnýný oluþturur
+ ==============================================================================}
+procedure TGorevler.IlkCalismaYigininiOlustur3(AKimlik: TSayi4);
+var
+  G: TGorev;
+  T: PTSS;
+  P: ^TSayi4;
+begin
+
+  // yýðýn oluþturulacak görev
+  G := Gorev[AKimlik];
+
+  // yýðýn bilgilerinin alýnacaðý tss
+  T := GorevTSSListesi[AKimlik];
+
+  // seviye3->seviye0 esp0 yaznaç deðerine konumlan
+  P := Isaretci(T^.ESP0);
+
+  // bilgi: aþaðýdaki tüm girdiler irq0'da 3. seviye görevin ilk çalýþtýðýnda
+  // yýðýndan alýnacak deðerleridir
+
+  // seviye3 dönüþ çerçevesi - (iretd ile alýnacak deðerler)
+  Dec(P); P^ := T^.SS;       // ring3 kullanýcý ss
+  Dec(P); P^ := T^.ESP;      // ring3 kullanýcý esp
+  Dec(P); P^ := T^.EFLAGS;
+  Dec(P); P^ := T^.CS;
+  Dec(P); P^ := T^.EIP;
+
+  // pushad deðerleri (yukarýdan aþaðýya)
+  Dec(P); P^ := 0;    // eax
+  Dec(P); P^ := 0;    // ecx
+  Dec(P); P^ := 0;    // edx
+  Dec(P); P^ := 0;    // ebx
+  Dec(P); P^ := 0;    // esp
+  Dec(P); P^ := 0;    // ebp
+  Dec(P); P^ := 0;    // esi
+  Dec(P); P^ := 0;    // edi
+
+  // irq0 kesme yodamýndaki komutlar
+  Dec(P); P^ := T^.EFLAGS;      // pushfd
+  Dec(P); P^ := T^.DS;          // push eax (eax ile ds saklanýyor)
+
+  // tüm bu deðerler FKayitliESP deðiþkeninin gösterdiði noktadan alýnacak
+  G.FKayitliESP := TSayi4(P);
 end;
 
 {==============================================================================
@@ -539,9 +641,15 @@ begin
   // iþlemin yýðýn adresi
   G.FYiginBasAdresi := (G.FBellekUz + G.FYiginBellekUz) - 64;
 
+  G.FCekirdekYiginUst := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
+
   // dosyanýn çalýþtýrýlmasý için seçicileri oluþtur
   SecicileriOlustur(G.FKimlik, G.FBellekUz + G.FYiginBellekUz, G.FBellekBaslAdr,
     G.FKodBasAdresi, G.FYiginBasAdresi);
+
+  if(G.FSeviyeNo = CALISMA_SEVIYE0) then
+    GGorevler.IlkCalismaYigininiOlustur0(G.FKimlik)
+  else GGorevler.IlkCalismaYigininiOlustur3(G.FKimlik);
 
   // iþlemin adý
   G.FDosyaAdi := DosyaAdi;

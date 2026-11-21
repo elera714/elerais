@@ -1,4 +1,4 @@
-# ELERA İşletim Sistemi (elerais - sunucu / istemci) - 0.4.2 [R38]
+# ELERA İşletim Sistemi (elerais - sunucu / istemci) - 0.4.3 [R39]
 
 Türkçe:
 
@@ -22,7 +22,7 @@ English:
 
 ### Sistem Özellikleri
 - **İşletim Sistemi:**
-  - Zamanlayıcı destekli görev değişimi (preemptive multitasking)
+  - Yazılımsal zamanlayıcı destekli görev değişimi (preemptive multitasking)
   - Grafiksel arabirim
 - **İşlemci:**
   - 32 bit Intel / AMD

@@ -73,8 +73,8 @@ type
     procedure PCIYaz4(AYol, AAygit, AIslev, ASiraNo, ADeger: TSayi4); assembler;
 
     // olay işlevleri
-    function OlayAl(var AOlay: TOlay): TISayi4; assembler;
-    function OlayBekle(var AOlay: TOlay): TISayi4; assembler;
+    function OlaySayisiAl: TSayi4; assembler;
+    function OlayAl(var AOlay: TOlay): TSayi4; assembler;
 
     // sayaç işlevleri
     procedure SaatAl(ABellek: Isaretci); assembler;
@@ -413,18 +413,16 @@ asm
   add   esp,20
 end;
 
-function TGenel.OlayAl(var AOlay: TOlay): TISayi4; assembler;
+function TGenel.OlaySayisiAl: TSayi4; assembler;
+asm
+  mov   eax,OLAY_SAYISI_AL
+  int   $34
+end;
+
+function TGenel.OlayAl(var AOlay: TOlay): TSayi4; assembler;
 asm
   push  DWORD AOlay
   mov   eax,OLAY_AL
-  int   $34
-  add   esp,4
-end;
-
-function TGenel.OlayBekle(var AOlay: TOlay): TISayi4; assembler;
-asm
-  push  DWORD AOlay
-  mov   eax,OLAY_BEKLE
   int   $34
   add   esp,4
 end;

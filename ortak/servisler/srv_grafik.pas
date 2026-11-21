@@ -6,10 +6,11 @@
   Dosya Adý: srv_grafik.pas
   Dosya Ýþlevi: dahili servis: çekirdek içi grafiksel bilgilendirme
 
-  Güncelleme Tarihi: 19/11/2026
+  Güncelleme Tarihi: 21/11/2026
 
  ==============================================================================}
 {$mode objfpc}
+{$asmmode intel}
 unit srv_grafik;
 
 interface
