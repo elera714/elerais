@@ -4,7 +4,7 @@ unit anasayfafrm;
 interface
 
 uses n_gorev, gn_pencere, n_zamanlayici, n_genel, _forms, n_ekran, gn_masaustu,
-  gn_gucdugmesi, gn_menu, gn_etiket, gn_acilirmenu, gn_panel;
+  gn_gucdugmesi, gn_menu, gn_etiket, gn_acilirmenu, gn_panel, n_giysi;
 
 const
   // görev çubuðunda gösterilecek program sayýsý
@@ -29,6 +29,7 @@ type
 type
   TfrmAnaSayfa = object(TForm)
   private
+    FGiysi: TGiysi;
     procedure TarihSaatBilgileriniGuncelle;
     procedure CalisanProgramListesineEkle(AProgramKayit: TProgramKayit);
     procedure GorevCubugunuGuncelle;
@@ -113,7 +114,13 @@ var
   PencereKimlik: TKimlik;
   GCdeMevcutDugmeSayisi: TSayi4;        // görev çubuðunda mevcut / çalýþan düðme sayýsý
   GBD, OncekiGBD: TSayi4;               // görev bayrak deðerleri
-  DuvarKagidiDosyaAdi, s: string;
+  s: string;
+  Sonuc: TISayi4;
+
+  ArkaPlan: TSayi4;             // arka plan: 1 = arka plan rengi, 2 = duvar kaðýdý
+  DuvarKagidi: string;          // duvar kaðýdý dosya adý
+  ArkaPlanRengi: TRenk;         // masaüstü arka planrengi
+  AktifGiysi: TSayi4;           // aktif giysi sýra no
 
 procedure TfrmAnaSayfa.Olustur;
 var
@@ -142,8 +149,13 @@ begin
 
   AyarDosyasiniOku;
 
-  // yeni masaüstünün duvar kaðýdý
-  FMasaustu.MasaustuResminiDegistir(DuvarKagidiDosyaAdi);
+  // kaydedilmiþ ayarlara göre arka planý yükle
+  if(ArkaPlan = 1) then
+    FMasaustu.MasaustuRenginiDegistir(ArkaPlanRengi)
+  else FMasaustu.MasaustuResminiDegistir(DuvarKagidi);
+
+  // kaydedilmiþ ayarlara göre giysi tasarýmýný yükle
+  FGiysi.Aktiflestir(AktifGiysi);
 
   // görev yönetim ana paneli
   FGorevPenceresi.Olustur(FMasaustu.Kimlik, FEkran.A0, FEkran.Yukseklik0 - 40, FEkran.Genislik0,
@@ -652,13 +664,15 @@ begin
   Result.PencereKimlik := -1;
 end;
 
-// programýn ayarlarýnýn yazýldýðý dosyayý okur
+// program ayarlarýný dosyadan okur
 procedure TfrmAnaSayfa.AyarDosyasiniOku;
 var
   DosyaKimlik: TKimlik;
   DosyaBellek: array[0..511] of Char;
-  s: string;
+  DosyaIcerik, s,
+  Ozellik, Deger: string;
   i: TSayi4;
+  Devam: Boolean;
 begin
 
   FGenel._AssignFile(DosyaKimlik, 'disk2:\muyntcs.ini');
@@ -669,15 +683,54 @@ begin
 
     FGenel._Read(DosyaKimlik, @DosyaBellek);
 
-    s := PChar(@DosyaBellek[0]);
+    DosyaIcerik := PChar(@DosyaBellek[0]);
 
-    DuvarKagidiDosyaAdi := s;
+    Devam := True;
+    while Devam do
+    begin
+
+      i := Pos(#10, DosyaIcerik);
+      if(i > 0) then
+      begin
+
+        s := Copy(DosyaIcerik, 1, i - 2);
+        Delete(DosyaIcerik, 1, i);
+      end
+      else
+      begin
+
+        s := DosyaIcerik;
+        Devam := False;
+      end;
+
+      if(Length(s) > 0) then
+      begin
+
+        i := Pos('=', s);
+        if(i > 0) then
+        begin
+
+          Ozellik := Copy(s, 1, i - 1);
+          Deger := Copy(s, i + 1, Length(s) - i);
+
+          case Ozellik of
+            'arkaplan'      : ArkaPlan := StrToInt(Deger);
+            'duvarkagidi'   : DuvarKagidi := Deger;
+            'arkaplanrengi' : ArkaPlanRengi := StrToInt(Deger);
+            'aktifgiysi'    : AktifGiysi := StrToInt(Deger);
+          end;
+        end;
+      end;
+    end;
   end
   else
   begin
 
     // sistemin kurulu olduðu sürücüyü al
-    DuvarKagidiDosyaAdi := 'disk1:\resimler\1.bmp';
+    ArkaPlan := 1;
+    DuvarKagidi := '';
+    ArkaPlanRengi := RENK_TURKUAZ;
+    AktifGiysi := 0;
   end;
 
   FGenel._CloseFile(DosyaKimlik);

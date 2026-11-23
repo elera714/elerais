@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 21/11/2026
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -65,6 +65,10 @@ type
 
     FOlayBellekAdresi: POlay;           // göreve ait olaylarýn yerleþtirileceði bellek bölgesi
     FOlaySayisi: TSayi4;                // görev olay sayýsý
+
+    // göreve baðlý pencere için toplam 32 olay için bayrak deðerleri
+    // 0. bit CO_CIZIM bayraðý -> göreve baðlý pencere çizildiðinde aktifleþtirilen bayrak
+    FOlayBayraklari: TSayi4;            // CO_CIZIM vb olaylarýn aktifleþtirdiði bayraklar
 
     FDosyaSonIslemDurum: TISayi4;       // göreve ait son dosya iþlem sonuç deðeri
 
@@ -203,6 +207,7 @@ begin
 
   FOlayBellekAdresi := nil;
   FOlaySayisi := 0;
+  FOlayBayraklari := 0;
 
   FDosyaSonIslemDurum := HATA_YOK;
 
@@ -728,8 +733,15 @@ begin
   if(G.FDurum = gdCalisiyor) and not(G.FOlayBellekAdresi = nil) then
   begin
 
+    // çizim olayý sadece deðiþkende ilgili bayraðý aktifleþtirir
+    if(AOlay.Olay = CO_CIZIM) then
+    begin
+
+      G.FOlayBayraklari := G.FOlayBayraklari or 1;
+    end
+
     // olay belleði dolu deðilse olayý kaydet
-    if(G.FOlaySayisi < USTSINIR_OLAY) then
+    else if(G.FOlaySayisi < USTSINIR_OLAY) then
     begin
 
       // iþlemin olay belleðine konumlan
@@ -766,6 +778,7 @@ end;
 
 {==============================================================================
   görev için (çekirdek tarafýndan) oluþturulan olayý alýr
+  bilgi: iþlev k_olay (uygulama çaðrýlarý) tarafýndan kullanýlmaktadýr
  ==============================================================================}
 function TGorevler.OlayAl(AKimlik: TSayi4; var AOlay: TOlay): Boolean;
 var

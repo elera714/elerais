@@ -6,7 +6,7 @@
   Dosya Adı: k_sistemmesaj.pas
   Dosya İşlevi: hata ayıklama (debug) amaçlı mesaj yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -29,6 +29,7 @@ function SistemMesajCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TI
 var
   p: PMesajKayit3;
   IslevNo: TSayi4;
+  p2: TSayi4;
 begin
 
   Result := HATA_ISLEV;
@@ -42,6 +43,7 @@ begin
 
     Result := GSistemMesaj.ToplamMesaj;
   end
+
   // sistem mesaj bilgisini program hedef bellek bölgesine kopyala
   else if(IslevNo = 2) then
   begin
@@ -50,6 +52,7 @@ begin
     GSistemMesaj.MesajAl(PISayi4(ADegiskenler + 00)^, p);
     Result := GSistemMesaj.ToplamMesaj;
   end
+
   // programdan karakter katarı türünde gelen mesajı sistem mesajlarına ekle
   else if(IslevNo = 3) then
   begin
@@ -57,15 +60,13 @@ begin
     SISTEM_MESAJ(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
       PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr))^, []);
   end
-  // programdan karakter katarı + sayısal değer türünde gelen mesajı sistem mesajlarına ekle
+
+  // IslevNo = 3'e adapte edildi, dolayısıyla iptal edildi
   else if(IslevNo = 4) then
   begin
 
-    SISTEM_MESAJ(PMesajTipi(ADegiskenler + 00)^, PRenk(ADegiskenler + 04)^,
-      PKarakterKatari(Isaretci(PSayi4(ADegiskenler + 08)^ + GGorevler.FAktifGrvBelAdr))^,
-      [PSayi4(ADegiskenler + 12)^]); //, PSayi4(ADegiskenler + 16)^);
-      { TODO - üstte iptal edilen ifadeyi api işlevinden çıkar }
   end
+
   // toplam sistem mesaj sayısını al
   else if(IslevNo = 5) then
   begin

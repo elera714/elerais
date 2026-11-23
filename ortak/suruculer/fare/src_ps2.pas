@@ -6,7 +6,7 @@
   Dosya Adı: src_ps2.pas
   Dosya İşlevi: ps/2 fare sürücüsü
 
-  Güncelleme Tarihi: 14/10/2026
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -31,15 +31,19 @@ type
 type
   TFareSurucusu = class
   private
+    // FCihazKimlik değerleri ve paket uzunlukları
+    // $00: FAygitPaketUzunlugu := 3;        // standart ps2
+    // $03: FAygitPaketUzunlugu := 4;        // akıllı (intelli) fare (tekerlek)
+    // $04: FAygitPaketUzunlugu := 4;        // akıllı (intelli) fare expplorer (5. düğme)
+    FCihazKimlik: TSayi4;
     // -> yazılımsal hızlandırma amaçlı değişkenler
-    FKonumDegisti: Boolean;
-    FYatayKonum, FDikeyKonum,
-    FYeniYatayKonum, FYeniDikeyKonum: TISayi4;
+    FYatayKonum, FDikeyKonum: TISayi4;
     FHiz: Double;
     FFareDugmeleri: TSayi1;
     FKaydirmaDegeri: TISayi4;
     FAygitPaketUzunlugu: TSayi4;
     FAktifFareImlec: TFareImlecTipi;
+    FKonumDegisti: Boolean;
     procedure KlavyeKontrolcuyeYaz(AKomut: TSayi1);
     function AygitCikisiDoluMu: Boolean;
     function AygitGirisiBosMu: Boolean;
@@ -48,7 +52,7 @@ type
     function KomutGonder(AKomut: TSayi1): Boolean;
   public
     constructor Create;
-    function OlaylariAl(AFareOlay: PFareOlay): Boolean;
+    function OlaylariAl(var AFareOlay: TFareOlay): Boolean;
     procedure KonumDegistir(AYatayKonum, ADikeyKonum: TISayi4);
   published
     property YatayKonum: TISayi4 read FYatayKonum;
@@ -76,11 +80,12 @@ const
 
 var
   // aygıttan alınarak belleğe aktarılan veri uzunluğu
-  ToplamVeriUzunlugu: TSayi4;
   FareVeriBellegi: array[0..FARE_BELLEK_UZUNLUGU - 1] of TISayi1;
+  FareOkumaImleci,
+  FareYazmaImleci: TSayi4;
 
 {==============================================================================
-  ps / 2 fare sürücü yükleme işlevlerini içerir
+  ps2 fare sürücü yükleme işlevlerini içerir
  ==============================================================================}
 constructor TFareSurucusu.Create;
 var
@@ -90,9 +95,14 @@ begin
   // kesmeleri durdur
   cli;
 
-  FKonumDegisti := False;
+  FCihazKimlik := $00;
 
   FAygitPaketUzunlugu := 3;
+
+  FareOkumaImleci := 0;
+  FareYazmaImleci := 0;
+
+  FKonumDegisti := False;
 
   // fare kursor pozisyonu
   FYatayKonum := GEkranKartSurucusu.KartBilgisi.YatayCozunurluk div 2;
@@ -108,6 +118,7 @@ begin
   KlavyeKontrolcuyeYaz($20);
 
   // komut byte içeriğini al
+  Komut := 0;
   if(VeriAl(Komut)) then
   begin
 
@@ -136,7 +147,12 @@ begin
         if(VeriAl(Komut)) then
         begin
 
-          if(Komut = 4) then FAygitPaketUzunlugu := 4;
+          case Komut of
+            $00: FAygitPaketUzunlugu := 3;        // standart ps2
+            $03: FAygitPaketUzunlugu := 4;        // akıllı (intelli) fare (tekerlek)
+            $04: FAygitPaketUzunlugu := 4;        // akıllı (intelli) fare expplorer (5. düğme)
+            else FAygitPaketUzunlugu := 3;
+          end;
         end;
       end;
 
@@ -145,8 +161,6 @@ begin
     end;
   end;
 
-  ToplamVeriUzunlugu := 0;
-
   // kesme çağrı işlevini ata ve kesmeyi (irq) aktifleştir
   IRQIsleviAta(12, @FareKesmeCagrisi);
 end;
@@ -154,15 +168,12 @@ end;
 {==============================================================================
   fare aygıtından gelen verileri işler ve geri dönüş değişkenlerini günceller
  ==============================================================================}
-function TFareSurucusu.OlaylariAl(AFareOlay: PFareOlay): Boolean;
+function TFareSurucusu.OlaylariAl(var AFareOlay: TFareOlay): Boolean;
 var
-  i1: TSayi1;
+  B1, B2, B3, B4: TSayi1;
   CarpanDegeri,
-  i4, i: TISayi4;
+  PU, i4: TISayi4;
 begin
-
-  // kesmeleri durdur
-  cli;
 
 {
                          fare bilgi kayıt yapısı
@@ -179,25 +190,30 @@ begin
   +------+-------+-------+-------+-------+-------+-------+-------+-------+
 }
 
-  if(ToplamVeriUzunlugu >= FAygitPaketUzunlugu) then
+  PU := (FareYazmaImleci - FareOkumaImleci) and (FARE_BELLEK_UZUNLUGU - 1);
+  if(PU >= FAygitPaketUzunlugu) then
   begin
 
     FKaydirmaDegeri := 0;
     FFareDugmeleri := 0;
 
-    i1 := FareVeriBellegi[0];
+    B1 := FareVeriBellegi[FareOkumaImleci + 0];
+    B2 := FareVeriBellegi[FareOkumaImleci + 1];
+    B3 := FareVeriBellegi[FareOkumaImleci + 2];
+    if(FAygitPaketUzunlugu = 4) then B4 := FareVeriBellegi[FareOkumaImleci + 3];
 
-    FFareDugmeleri := i1 and (4 + 2 + 1);
+    FareOkumaImleci := (FareOkumaImleci + FAygitPaketUzunlugu) and (FARE_BELLEK_UZUNLUGU - 1);
+
+    FFareDugmeleri := B1 and (4 + 2 + 1);
 
     // bilgi: fare x hareketi. X SGN + 8 bit = toplam 9 bit
     // eğer hareket sağ tarafa ise gelen değer pozitif
     // eğer hareket sol tarafa ise gelen değer negatif
 
     // fare x değeri
-    i1 := FareVeriBellegi[0];
-    if((i1 and 16) = 16) then
-      i4 := $FFFFFF00 or FareVeriBellegi[1]
-    else i4 := FareVeriBellegi[1];
+    if((B1 and 16) = 16) then
+      i4 := $FFFFFF00 or B2
+    else i4 := B2;
 
     // özelleştirilebilir yazılımsal hızlandırma
     FYatayKonum := FYatayKonum + Round(i4 * FHiz);
@@ -214,17 +230,16 @@ begin
 
     // fare y değeri
     // fare değerinin işareti ters yönde değiştiriliyor (üst satırdaki bilgiye bak)
-    i1 := FareVeriBellegi[0];
-    if((i1 and 32) = 32) then
+    if((B1 and 32) = 32) then
     begin
 
-      i4 := $FFFFFF00 or FareVeriBellegi[2];
+      i4 := $FFFFFF00 or B3;
       i4 := Abs(i4);
     end
     else
     begin
 
-      i4 := FareVeriBellegi[2];
+      i4 := B3;
       i4 := -i4;
     end;
 
@@ -238,59 +253,48 @@ begin
       FDikeyKonum := GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk - 1;
 
     // paket sayısı 3'ten fazla ise diğer değerleri de işle
-    if(FAygitPaketUzunlugu > 3) then
+    if(PU > 3) then
     begin
 
-      FFareDugmeleri := FFareDugmeleri + (FareVeriBellegi[3] and 16);
-      FFareDugmeleri := FFareDugmeleri + (FareVeriBellegi[3] and 32);
+      FFareDugmeleri := FFareDugmeleri + (B4 and 16);
+      FFareDugmeleri := FFareDugmeleri + (B4 and 32);
 
       // tekerlek çevirme çarpan değeri
       CarpanDegeri := 1;
       if(TusDurumSolDegisim = tdBasildi) then CarpanDegeri := TEKERLEK_CARPAN_DEGERI;
 
-      if((FareVeriBellegi[3] and 8) = 8) then
+      if((B4 and 8) = 8) then
         // 4 bitlik işaretli değeri 32 bitlik değere genişletilmesi
-        FKaydirmaDegeri := ($FFFFFFF0 or (FareVeriBellegi[3] and $0F))
-      else FKaydirmaDegeri := FareVeriBellegi[3];
+        FKaydirmaDegeri := ($FFFFFFF0 or (B4 and $0F))
+      else FKaydirmaDegeri := B4;
 
       FKaydirmaDegeri := FKaydirmaDegeri * CarpanDegeri;
     end;
 
-    // işlenen verileri fare belleğinden sil
-    if(ToplamVeriUzunlugu > FAygitPaketUzunlugu) then
-    begin
-
-      for i := FAygitPaketUzunlugu to ToplamVeriUzunlugu - 1 do
-      begin
-
-        FareVeriBellegi[i - FAygitPaketUzunlugu] := FareVeriBellegi[i];
-      end;
-    end;
-
-    // sayacı güncelle
-    Dec(ToplamVeriUzunlugu, FAygitPaketUzunlugu);
-
-    AFareOlay^.Yatay := FYatayKonum;
-    AFareOlay^.Dikey := FDikeyKonum;
-    AFareOlay^.Dugme := FFareDugmeleri;
-    AFareOlay^.Tekerlek := FKaydirmaDegeri;
+    AFareOlay.Yatay := FYatayKonum;
+    AFareOlay.Dikey := FDikeyKonum;
+    AFareOlay.Dugme := FFareDugmeleri;
+    AFareOlay.Tekerlek := FKaydirmaDegeri;
 
     Result := True;
-  end else Result := False;
-
-  if(FKonumDegisti) then
+  end
+  else
   begin
 
-    FYatayKonum := FYeniYatayKonum;
-    FDikeyKonum := FYeniDikeyKonum;
+    if(FKonumDegisti) then
+    begin
 
-    AFareOlay^.Yatay := FYatayKonum;
-    AFareOlay^.Dikey := FDikeyKonum;
-    FKonumDegisti := False;
+      AFareOlay.Yatay := FYatayKonum;
+      AFareOlay.Dikey := FDikeyKonum;
+      AFareOlay.Dugme := 0;
+      AFareOlay.Tekerlek := 0;
+
+      FKonumDegisti := False;
+
+      Result := True;
+
+    end else Result := False;
   end;
-
-  // kesmeleri aktifleştir & çık
-  sti;
 end;
 
 {==============================================================================
@@ -299,8 +303,8 @@ end;
 procedure TFareSurucusu.KonumDegistir(AYatayKonum, ADikeyKonum: TISayi4);
 begin
 
-  FYeniYatayKonum := AYatayKonum;
-  FYeniDikeyKonum := ADikeyKonum;
+  FYatayKonum := AYatayKonum;
+  FDikeyKonum := ADikeyKonum;
   FKonumDegisti := True;
 end;
 
@@ -411,10 +415,11 @@ begin
 end;
 
 {==============================================================================
-  ps / 2 fare irq kesme modülü
+  ps2 fare irq kesme modülü
  ==============================================================================}
 procedure FareKesmeCagrisi;
 var
+  YeniFYI: TSayi4;  // yeni fare yazma imleci
   B1: TSayi1;
 begin
 
@@ -425,12 +430,15 @@ begin
     // veriyi port'tan oku
     B1 := PortAl1(KLAVYE_VERI_PORT);
 
-    // veriyi belleğe kaydet
-    FareVeriBellegi[ToplamVeriUzunlugu] := B1;
+    YeniFYI := (FareYazmaImleci + 1) and (FARE_BELLEK_UZUNLUGU - 1);
 
-    // sayacı güncelleştir.
-    Inc(ToplamVeriUzunlugu);
-    ToplamVeriUzunlugu := (ToplamVeriUzunlugu and (FARE_BELLEK_UZUNLUGU - 1));
+    // veri belleği dolu değilse veriyi belleğe kaydet
+    if(YeniFYI <> FareOkumaImleci) then
+    begin
+
+      FareVeriBellegi[FareYazmaImleci] := B1;
+      FareYazmaImleci := YeniFYI;
+    end;
   end;
 end;
 

@@ -6,7 +6,7 @@
   Dosya Adı: _forms.pp
   Dosya İşlevi: lazarus uyumluluk birimi
 
-  Güncelleme Tarihi: 06/01/2025
+  Güncelleme Tarihi: 22/11/2026
 
   Bilgi: ELERA İşletim Sistemi uygulamaları Lazarus uyum paketi (forms.pp)
 

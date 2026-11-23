@@ -6,7 +6,7 @@
   Dosya Adý: src_disket.pas
   Dosya Ýþlevi: disket aygýt sürücüsü
 
-  Güncelleme Tarihi: 21/11/2026
+  Güncelleme Tarihi: 22/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -453,12 +453,14 @@ begin
   i := GZamanlayicilar.FZamanlayiciSayaci + (5 * CALISMA_FREKANSI);
 
   // þart true olduðu müddetçe devam et
+  sti;
   while (i > GZamanlayicilar.FZamanlayiciSayaci) do
   begin
 
-    if(IRQ6Tetiklendi) then Exit;
+    if(IRQ6Tetiklendi) then begin cli; Exit; end;
     asm nop end;
   end;
+  cli;
 
   Result := False;
 end;

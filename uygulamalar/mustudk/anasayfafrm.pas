@@ -19,7 +19,8 @@ type
     FGiysiListesi: TKarmaListe;
     FGiysi: TGiysi;
     procedure DosyalariListele;
-    procedure AyarlariDosyayaKaydet(ADuvarKagidiDosyaAdi: string);
+    procedure AyarlariDosyayaKaydet;
+    procedure AyarDosyasiniOku;
   public
     procedure Olustur;
     procedure Goster;
@@ -28,6 +29,10 @@ type
 
 var
   frmAnaSayfa: TfrmAnaSayfa;
+  ArkaPlan: TSayi4;             // arka plan: 1 = arka plan rengi, 2 = duvar kaðýdý
+  DuvarKagidi: string;          // duvar kaðýdý dosya adý
+  ArkaPlanRengi: TRenk;         // masaüstü arka planrengi
+  AktifGiysi: TSayi4;           // aktif giysi sýra no
 
 implementation
 
@@ -65,6 +70,8 @@ begin
 
   FGiysiListesi.Olustur(FPencere.Kimlik, 5, 210, 190, 25);
 
+  AyarDosyasiniOku;
+
   i := FGiysi.Toplam;
   if(i > 0) then
   begin
@@ -76,9 +83,9 @@ begin
       FGiysiListesi.ElemanEkle(GiysiAdi);
     end;
 
-    j := FGiysi.AktifSiraNoAl;
-    FGiysiListesi.BaslikSiraNo := j;
+    FGiysiListesi.BaslikSiraNo := AktifGiysi;
   end;
+
   FGiysiListesi.Goster;
 end;
 
@@ -107,23 +114,32 @@ begin
     if(AOlay.Kimlik = FlkDosyaListesi.Kimlik) then
     begin
 
+      ArkaPlan := 2;
       i := FlkDosyaListesi.SeciliSiraNoAl;
-      FmasELERA.MasaustuResminiDegistir('disk1:\resimler\' + DosyaAramaListesi[i].DosyaAdi);
+      DuvarKagidi := 'disk1:\resimler\' + DosyaAramaListesi[i].DosyaAdi;
+      FmasELERA.MasaustuResminiDegistir(DuvarKagidi);
       FmasELERA.Guncelle;
 
-      AyarlariDosyayaKaydet('disk1:\resimler\' + DosyaAramaListesi[i].DosyaAdi);
+      AyarlariDosyayaKaydet;
     end
     else if(AOlay.Kimlik = FRenkSecici.Kimlik) then
     begin
 
-      FmasELERA.MasaustuRenginiDegistir(AOlay.Deger1);
+      ArkaPlan := 1;
+      ArkaPlanRengi := AOlay.Deger1;
+      FmasELERA.MasaustuRenginiDegistir(ArkaPlanRengi);
       FmasELERA.Guncelle;
+
+      AyarlariDosyayaKaydet;
     end;
   end
   else if(AOlay.Olay = CO_SECIMDEGISTI) then
   begin
 
-    FGiysi.Aktiflestir(AOlay.Deger1);
+    AktifGiysi := AOlay.Deger1;
+    FGiysi.Aktiflestir(AktifGiysi);
+
+    AyarlariDosyayaKaydet;
   end;
 
   Result := 1;
@@ -162,8 +178,8 @@ begin
   FGenel._FindClose(DosyaArama);
 end;
 
-// programýn ayarlarýný dosyayý yazar
-procedure TfrmAnaSayfa.AyarlariDosyayaKaydet(ADuvarKagidiDosyaAdi: string);
+// program ayarlarýný dosyaya kaydeder
+procedure TfrmAnaSayfa.AyarlariDosyayaKaydet;
 var
   DosyaKimlik: TKimlik;
 begin
@@ -173,9 +189,82 @@ begin
   if(FGenel._IOResult = 0) then
   begin
 
-    //FGenel._Write(DosyaKimlik, 'arkaplantipi=2');     // 1 = renk, 2 = dosya adý
-    FGenel._Write(DosyaKimlik, {'dosyaadi=' +} ADuvarKagidiDosyaAdi);
-    //FGenel._Write(DosyaKimlik, 'renk=16711680');      // $FF0000 = kýrmýzý
+    FGenel._Write(DosyaKimlik, 'arkaplan=' + IntToStr(ArkaPlan) + #13#10);
+    FGenel._Write(DosyaKimlik, 'duvarkagidi=' + DuvarKagidi + #13#10);
+    FGenel._Write(DosyaKimlik, 'arkaplanrengi=' + IntToStr(ArkaPlanRengi) + #13#10);
+	  FGenel._Write(DosyaKimlik, 'aktifgiysi=' + IntToStr(AktifGiysi));
+  end;
+
+  FGenel._CloseFile(DosyaKimlik);
+end;
+
+// program ayarlarýný dosyadan okur
+procedure TfrmAnaSayfa.AyarDosyasiniOku;
+var
+  DosyaKimlik: TKimlik;
+  DosyaBellek: array[0..511] of Char;
+  DosyaIcerik, s,
+  Ozellik, Deger: string;
+  i: TSayi4;
+  Devam: Boolean;
+begin
+
+  FGenel._AssignFile(DosyaKimlik, 'disk2:\muyntcs.ini');
+  FGenel._Reset(DosyaKimlik);
+
+  if(FGenel._IOResult = 0) then
+  begin
+
+    FGenel._Read(DosyaKimlik, @DosyaBellek);
+
+    DosyaIcerik := PChar(@DosyaBellek[0]);
+
+    Devam := True;
+    while Devam do
+    begin
+
+      i := Pos(#10, DosyaIcerik);
+      if(i > 0) then
+      begin
+
+        s := Copy(DosyaIcerik, 1, i - 2);
+        Delete(DosyaIcerik, 1, i);
+      end
+      else
+      begin
+
+        s := DosyaIcerik;
+        Devam := False;
+      end;
+
+      if(Length(s) > 0) then
+      begin
+
+        i := Pos('=', s);
+        if(i > 0) then
+        begin
+
+          Ozellik := Copy(s, 1, i - 1);
+          Deger := Copy(s, i + 1, Length(s) - i);
+
+          case Ozellik of
+            'arkaplan'      : ArkaPlan := StrToInt(Deger);
+            'duvarkagidi'   : DuvarKagidi := Deger;
+            'arkaplanrengi' : ArkaPlanRengi := StrToInt(Deger);
+            'aktifgiysi'    : AktifGiysi := StrToInt(Deger);
+          end;
+        end;
+      end;
+    end;
+  end
+  else
+  begin
+
+    // sistemin kurulu olduðu sürücüyü al
+    ArkaPlan := 1;
+    DuvarKagidi := '';
+    ArkaPlanRengi := RENK_TURKUAZ;
+    AktifGiysi := 0;
   end;
 
   FGenel._CloseFile(DosyaKimlik);

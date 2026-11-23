@@ -40,6 +40,7 @@ property cmdline:Pchar read get_cmdline;
 
 function Trim(const S: string): string;
 function IntToStr(ADeger: TISayi4): string;
+function StrToInt(const s: string): TISayi4;
 function HexToStr(Val: LongInt; WritePrefix: LongBool; DivNum: LongInt): string;
 function TimeToStr(Buffer: array of Byte): string;
 function Saat2KK(ADeger: TSayi4): string;
@@ -163,6 +164,44 @@ begin
   // deðeri hedef bölgeye kopyala
   Tasi2(@_Bellek[11 - _HaneSayisi + 1], @Result[1], _HaneSayisi);
   SetLength(Result, _HaneSayisi);
+end;
+
+function StrToInt(const s: string): TISayi4;
+var
+  Basl, i: TISayi4;
+  Negatif: Boolean;
+begin
+
+  Result := 0;
+
+  if(Length(s) = 0) then Exit;
+
+  i := 1;
+  Negatif := False;
+
+  if(s[1] = '-') then
+  begin
+
+    Negatif := True;
+    Inc(i);
+  end
+  else if(s[1] = '+') then
+    Inc(i);
+
+  if(i > Length(s)) then Exit;
+
+  Basl := i;
+
+  while (i <= Length(s)) do
+  begin
+
+    if(S[i] < '0') or (s[i] > '9') then Exit;
+
+    Result := (Result * 10) + (Ord(s[i]) - Ord('0'));
+    Inc(i);
+  end;
+
+  if(Negatif) then Result := -Result;
 end;
 
 {==============================================================================

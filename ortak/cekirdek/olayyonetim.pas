@@ -6,7 +6,7 @@
   Dosya Adý: olayyonetim.pas
   Dosya Ýþlevi: olay yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -19,13 +19,15 @@ uses gorselnesne, paylasim, gn_menu, gn_acilirmenu, gn_pencere;
 type
   TOlayYonetim = class
   private
+    FSonOlay: TSayi4;
     FSonYatayFareDegeri, FSonDikeyFareDegeri: TISayi4;
-    FSonBasilanFareTusu: TSayi1;
+    FSonBasilanFareTuslari: TSayi4;
     FOncekiOlayAlanGN: PGorselNesne;     // bir önceki olay alan görsel nesne
   protected
     procedure OlaylariYonlendir(AGorselNesne: TGorselNesne; AOlay: TOlay);
   public
     constructor Create;
+    function Tek1FareOlayiAl: TOlay;
     function FareOlayiAl: TOlay;
     procedure FareOlaylariniIsle;
     procedure KlavyeOlaylariniIsle(ATusDegeri: TSayi2; ATusDurum: TTusDurum);
@@ -44,117 +46,182 @@ uses gn_islevler, src_ps2, gorev;
 constructor TOlayYonetim.Create;
 begin
 
-  FOncekiOlayAlanGN := nil;
+  FSonOlay := 0;
 
-  FSonBasilanFareTusu := 0;
+  FSonYatayFareDegeri := 0;
+  FSonDikeyFareDegeri := 0;
+
+  // hiçbir tuþ basýlmamýþ olarak belirle
+  FSonBasilanFareTuslari := 0;
+
+  FOncekiOlayAlanGN := nil;
 end;
 
 {==============================================================================
-  fare bilgilerini iþleyerek olaya çevirir
+  fare bilgilerini iþleyerek tek bir olay olarak geri döndürür
+ ==============================================================================}
+function TOlayYonetim.Tek1FareOlayiAl: TOlay;
+var
+  FO: TFareOlay;
+  i, j: TSayi4;
+begin
+
+  // ön tanýmlý geri dönüþ deðeri
+  Result.Olay := FO_OLAYYOK;
+
+  // fare sürücüsünden fare olayý (tek bir paket olarak) al
+  if(GFareSurucusu.OlaylariAl(FO)) then
+  begin
+
+    if(FSonBasilanFareTuslari <> FO.Dugme) then
+    begin
+
+      // son basýlan fare tuþlarýný kaydet
+      i := FSonBasilanFareTuslari;
+      j := FO.Dugme;
+      FSonBasilanFareTuslari := j;
+
+      // daha önce fare tuþuna basýlmamýþsa...
+      if((i and 1) = 0) and ((j and 1) = 1) then
+      begin
+
+        Result.Olay := FO_SOLTUS_BASILDI;
+        Exit;
+      end;
+
+      if((i and 2) = 0) and ((j and 2) = 2) then
+      begin
+
+        Result.Olay := FO_SAGTUS_BASILDI;
+        Exit;
+      end;
+
+      if((i and 4) = 0) and ((j and 4) = 4) then
+      begin
+
+        Result.Olay := FO_ORTATUS_BASILDI;
+        Exit;
+      end;
+
+      if((i and 16) = 0) and ((j and 16) = 16) then
+      begin
+
+        Result.Olay := FO_4NCUTUS_BASILDI;
+        Exit;
+      end;
+
+      if((i and 32) = 0) and ((j and 32) = 32) then
+      begin
+
+        Result.Olay := FO_5NCITUS_BASILDI;
+        Exit;
+      end;
+
+      if((i and 1) = 1) and ((j and 1) = 0) then
+      begin
+
+        Result.Olay := FO_SOLTUS_BIRAKILDI;
+        Exit;
+      end;
+
+      if((i and 2) = 2) and ((j and 2) = 0) then
+      begin
+
+        Result.Olay := FO_SAGTUS_BIRAKILDI;
+        Exit;
+      end;
+
+      if((i and 4) = 4) and ((j and 4) = 0) then
+      begin
+
+        Result.Olay := FO_ORTATUS_BIRAKILDI;
+        Exit;
+      end;
+
+      if((i and 16) = 16) and ((j and 16) = 0) then
+      begin
+
+        Result.Olay := FO_4NCUTUS_BIRAKILDI;
+        Exit;
+      end;
+
+      if((i and 32) = 32) and ((j and 32) = 0) then
+      begin
+
+        Result.Olay := FO_5NCITUS_BIRAKILDI;
+        Exit;
+      end;
+
+      Result.Olay := FO_OLAYYOK;
+      Exit;
+    end;
+
+    if(FO.Tekerlek <> 0) then
+    begin
+
+      Result.Deger1 := FO.Tekerlek;
+      Result.Olay := FO_KAYDIRMA;
+      Exit;
+    end;
+
+    if(FO.Yatay <> FSonYatayFareDegeri) or (FO.Dikey <> FSonDikeyFareDegeri) then
+    begin
+
+      // deðiþenleri bir sonraki durum için güncelle
+      FSonYatayFareDegeri := FO.Yatay;
+      FSonDikeyFareDegeri := FO.Dikey;
+      Result.Deger1 := FO.Yatay;
+      Result.Deger2 := FO.Dikey;
+      Result.Olay := FO_HAREKET;
+      Exit;
+    end;
+  end;
+end;
+
+{==============================================================================
+  (hareket, tekerlek hareketi gibi) tekrar eden fare olaylarýný birleþtirerek
+  fare olayýný daha iþlevsel olarak geri döndürür
  ==============================================================================}
 function TOlayYonetim.FareOlayiAl: TOlay;
 var
-  FareOlay: TFareOlay;
+  O: TOlay;
 begin
 
-  // fare sürücüsünden fare olaylarýný al
-  if(GFareSurucusu.OlaylariAl(@FareOlay)) then
+  O := Tek1FareOlayiAl;
+
+  // herhangi bir olay olmamasý durumunda bekletilmiþ hareket varsa geri döndür
+  if(O.Olay = FO_OLAYYOK) then
   begin
 
-    // daha önce fare tuþuna basýlmamýþsa...
-    if(FSonBasilanFareTusu = 0) then
+    if(FSonOlay <> 0) then
     begin
 
-      if((FareOlay.Dugme and 1) = 1) then
-      begin
-
-        FSonBasilanFareTusu := 1;
-        Result.Olay := FO_SOLTUS_BASILDI;
-      end
-      else if((FareOlay.Dugme and 2) = 2) then
-      begin
-
-        FSonBasilanFareTusu := 2;
-        Result.Olay := FO_SAGTUS_BASILDI;
-      end
-      else if((FareOlay.Dugme and 4) = 4) then
-      begin
-
-        FSonBasilanFareTusu := 4;
-        Result.Olay := FO_ORTATUS_BASILDI;
-      end
-      else if((FareOlay.Dugme and 16) = 16) then
-      begin
-
-        FSonBasilanFareTusu := 16;
-        Result.Olay := FO_4NCUTUS_BASILDI;
-      end
-      else if((FareOlay.Dugme and 32) = 32) then
-      begin
-
-        FSonBasilanFareTusu := 32;
-        Result.Olay := FO_5NCITUS_BASILDI;
-      end
-      else if(FareOlay.Tekerlek <> 0) then
-      begin
-
-        Result.Olay := FO_KAYDIRMA;
-        Result.Deger1 := FareOlay.Tekerlek;
-      end
-      else if(FareOlay.Yatay <> FSonYatayFareDegeri) or (FareOlay.Dikey <> FSonDikeyFareDegeri) then
-      begin
-
-        Result.Olay := FO_HAREKET;
-      end
-      else Result.Olay := FO_BILINMIYOR;
+      // son olayý geri döndür
+      // ve son olay deðerini sýfýrla
+      O.Olay := FSonOlay;
+      FSonOlay := 0;
+      Result := O;
+      Exit;
     end
     else
-    // daha önce fare tuþuna basýlmýþsa...
     begin
 
-      if(FSonBasilanFareTusu = 1) and ((FareOlay.Dugme and 1) = 0) then
-      begin
-
-        FSonBasilanFareTusu := 0;
-        Result.Olay := FO_SOLTUS_BIRAKILDI;
-      end
-      else if(FSonBasilanFareTusu = 2) and ((FareOlay.Dugme and 2) = 0) then
-      begin
-
-        FSonBasilanFareTusu := 0;
-        Result.Olay := FO_SAGTUS_BIRAKILDI;
-      end
-      else if(FSonBasilanFareTusu = 4) and ((FareOlay.Dugme and 4) = 0) then
-      begin
-
-        FSonBasilanFareTusu := 0;
-        Result.Olay := FO_ORTATUS_BIRAKILDI;
-      end
-      else if(FSonBasilanFareTusu = 16) and ((FareOlay.Dugme and 16) = 0) then
-      begin
-
-        FSonBasilanFareTusu := 0;
-        Result.Olay := FO_4NCUTUS_BIRAKILDI;
-      end
-      else if(FSonBasilanFareTusu = 32) and ((FareOlay.Dugme and 32) = 0) then
-      begin
-
-        FSonBasilanFareTusu := 0;
-        Result.Olay := FO_5NCITUS_BIRAKILDI;
-      end
-      else if(FareOlay.Yatay <> FSonYatayFareDegeri) or (FareOlay.Dikey <> FSonDikeyFareDegeri) then
-      begin
-
-        Result.Olay := FO_HAREKET;
-      end
-      else Result.Olay := FO_BILINMIYOR;
+      // bekleyen olay yoksa geri dön
+      Result.Olay := FO_OLAYYOK;
+      Exit;
     end;
+  end;
 
-    // deðiþenleri bir sonraki durum için güncelle
-    FSonYatayFareDegeri := FareOlay.Yatay;
-    FSonDikeyFareDegeri := FareOlay.Dikey;
+  if(O.Olay = FO_HAREKET) or (O.Olay = FO_KAYDIRMA) then
+  begin
 
-  end else Result.Olay := FO_BILINMIYOR;
+    FSonOlay := O.Olay;
+    Result.Olay := FO_OLAYYOK;
+    Exit;
+  end;
+
+  // aksi durumda gelen olayý geri döndür
+  Result := O;
 end;
 
 {==============================================================================
@@ -194,7 +261,7 @@ begin
   Olay := FareOlayiAl;
 
   // bilinen bir fare olayý var ise ...
-  if(Olay.Olay <> FO_BILINMIYOR) then
+  if(Olay.Olay <> FO_OLAYYOK) then
   begin
 
     Konum.Sol := GFareSurucusu.YatayKonum;

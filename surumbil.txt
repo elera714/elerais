@@ -1,4 +1,12 @@
 *******************************************************************************
+  Sürüm: 0.4.4 (sunucu / istemci) - 00.00.0000 (R40) - Beta
+*******************************************************************************
+  + masaüstü uygulamasının ayar dosyası geliştirildi, duvar kağıdı, arka plan rengi
+    ve pencere giysi tasarımlarının sistem açılış anında masaüstüne uyarlanabilmesi
+    sağlandı (muyntcs ve mustudk yeniden yapılandırıldı)
+  + ps2 fare sürücüsünde kod iyileştirmeleri yapıldı
+
+*******************************************************************************
   Sürüm: 0.4.3 (sunucu / istemci) - 21.11.2026 (R39) - Beta
 *******************************************************************************
   + sistem donanımsal görev değişikliği yazılımsal görev değişikliği olarak

@@ -6,7 +6,7 @@
   Program Adý: calistir.lpr
   Program Ýþlevi: komut satýrýndan çalýþtýrýlabilir programlarý çalýþtýrýr
 
-  Güncelleme Tarihi: 11/08/2026
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}

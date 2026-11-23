@@ -6,7 +6,7 @@
   Dosya Adı: k_gorev.pas
   Dosya İşlevi: görev (program) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -108,7 +108,11 @@ begin
         GKayit3^.GorevSayaci := G.FGrvSayac;
         GKayit3^.BellekBasAdresi := G.FBellekBaslAdr;
         GKayit3^.BellekUz := G.FBellekUz + G.FYiginBellekUz;
-        GKayit3^.OlaySayisi := G.FOlaySayisi;
+
+        i := 0;
+        if(G.FOlayBayraklari > 0) then i := 1;
+
+        GKayit3^.OlaySayisi := G.FOlaySayisi + i;
         GKayit3^.DosyaAdi := G.FDosyaAdi;
 
         Result := HATA_YOK;

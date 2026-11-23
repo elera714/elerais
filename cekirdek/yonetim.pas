@@ -6,7 +6,7 @@
   Dosya Adý: yonetim.pas
   Dosya Ýþlevi: sistem ana yönetim / kontrol kýsmý
 
-  Güncelleme Tarihi: 21/11/2026
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -110,9 +110,6 @@ begin
 
   G.FDosyaAdi := 'cekirdek.bin';
   G.FProgramAdi := 'Sistem Çekirdeði';
-
-  // görev olay sayýsý
-  G.FOlaySayisi := 0;
 
   GGorevler.DurumDegistir(0, gdCalisiyor);
 
@@ -254,7 +251,7 @@ begin
 
             //dosyalar.DeleteFile('disk2:\haklar.txt');
 
-            GVirtualBox.FareDurumDegistir(False);
+            GVirtualBox.FareDurumDegistir(True);
             //GAgBaglantilari.AB.FARP.PaketleVeGonder(arpIstek, nil, @IP4Adres);
 
             // icmp v6 ping mesajý - tutanaðý test etme amacýyla eklendi

@@ -6,7 +6,7 @@
   Program Adý: mustudk.lpr
   Program Ýþlevi: masaüstü duvar kaðýt yönetim programý
 
-  Güncelleme Tarihi: 10/01/2025
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}

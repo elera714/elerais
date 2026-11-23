@@ -18,6 +18,11 @@ interface
 
 {$i veritipleri.inc}
 
+type
+  TVarRecArray = array[0..0] of TVarRec;
+  PVarRecArray = ^TVarRecArray; // veya sabit/açýk dizi iþaretçisi: ^array[0..MaxInt div SizeOf(TVarRec) - 1] of TVarRec
+
+
 // ELERA Ýþletim Sistemi - çekirdek kod sistem tipleri
 const
   SISTEM_TIPI_SUNUCU    = 1;
@@ -525,7 +530,7 @@ const
 
   // fare aygýtýnýn ürettiði olaylar - fare olaylarý (FO)
   FO_ILKDEGER             = $200;
-  FO_BILINMIYOR           = FO_ILKDEGER;
+  FO_OLAYYOK              = FO_ILKDEGER;
   FO_SOLTUS_BASILDI       = FO_ILKDEGER + 2;
   FO_SOLTUS_BIRAKILDI     = FO_ILKDEGER + 2 + 1;
   FO_SAGTUS_BASILDI       = FO_ILKDEGER + 4;

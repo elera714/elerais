@@ -6,7 +6,7 @@
   Dosya Adı: donusum.pas
   Dosya İşlevi: değer dönüşüm (convert) işlevlerini içerir
 
-  Güncelleme Tarihi: 09/10/2026
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -24,6 +24,7 @@ function TimeToStr(ASaat: TSaat): string;
 function DateToStr(ATarih: TTarih): string;
 function StrToHex(ADeger: string): TSayi4;
 function IntToStr(ADeger: TISayi4): string;
+function StrToInt(const s: string): TISayi4;
 function MAC_KarakterKatari(AMACAdres: TMACAdres): string;
 function IP_KarakterKatari4(AIP4Adres: TIP4Adres): string;
 function IP_KarakterKatari6(AIP6Adres: TIP6Adres2): string;
@@ -217,6 +218,47 @@ begin
   // değeri hedef bölgeye kopyala
   Tasi2(@Bellek[11 - HaneSayisi + 1], @Result[1], HaneSayisi);
   SetLength(Result, HaneSayisi);
+end;
+
+{==============================================================================
+  karakter katarını 10lu sayı sistemine dönüştürür
+ ==============================================================================}
+function StrToInt(const s: string): TISayi4;
+var
+  Basl, i: TISayi4;
+  Negatif: Boolean;
+begin
+
+  Result := 0;
+
+  if(Length(s) = 0) then Exit;
+
+  i := 1;
+  Negatif := False;
+
+  if(s[1] = '-') then
+  begin
+
+    Negatif := True;
+    Inc(i);
+  end
+  else if(s[1] = '+') then
+    Inc(i);
+
+  if(i > Length(s)) then Exit;
+
+  Basl := i;
+
+  while (i <= Length(s)) do
+  begin
+
+    if(S[i] < '0') or (s[i] > '9') then Exit;
+
+    Result := (Result * 10) + (Ord(s[i]) - Ord('0'));
+    Inc(i);
+  end;
+
+  if(Negatif) then Result := -Result;
 end;
 
 {==============================================================================

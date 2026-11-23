@@ -19,7 +19,7 @@ uses paylasim, port, gorselnesne;
 
 const
   USTSINIR_ZAMANLAYICI  = 128;
-  CALISMA_FREKANSI      = 1000;
+  CALISMA_FREKANSI      = 1000;     // 1000mhz - saniyede 1000 vuruþ
 
 type
   //  TODO             zdIptal buradan ve api iþlevlerinden çýkarýlarak iptal edilecek
@@ -410,16 +410,6 @@ asm
   mov eax,GZamanlayicilar
   call  TZamanlayicilar.ZamanlayicilariKontrolEt
 
-  // her 1 saniyede kontrol edilecek dahili iþlevler - (þu aþamada gerekli deðil)
-{  mov edx,0
-  mov eax,ZamanlayiciSayaci
-  mov ecx,100
-  div ecx
-  cmp edx,0
-  jg  @@yenigorev }
-
-@@yenigorev:
-
   // tek bir görev çalýþýyorsa görev deðiþikliði yapma, çýk
   mov   esi,[GGorevler]
   mov   eax,[esi + TGorevler.FCalisanGorevSayisi]
@@ -436,6 +426,14 @@ asm
   mov   [esi + TGorev.FCalismaSureSayac],eax
   jz    @@bir_sonraki_gorev
   jmp   @@cik
+
+  // her 1 saniyede kontrol edilecek dahili iþlevler - (þu aþamada gerekli deðil)
+{  mov edx,0
+  mov eax,ZamanlayiciSayaci
+  mov ecx,100
+  div ecx
+  cmp edx,0
+  jg  @@yenigorev }
 
 @@bir_sonraki_gorev:
 

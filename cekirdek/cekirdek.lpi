@@ -37,17 +37,18 @@
         </Mode0>
       </Modes>
     </RunParams>
-    <Units Count="138">
+    <Units Count="139">
       <Unit0>
         <Filename Value="cekirdek.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
+        <CursorPos X="29" Y="10"/>
         <UsageCount Value="260"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="yonetim.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -56,6 +57,7 @@
         <Filename Value="yukleyici.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -63,6 +65,7 @@
         <Filename Value="..\surumbil.txt"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="6"/>
+        <CursorPos X="38" Y="24"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="None"/>
@@ -142,16 +145,13 @@
         <Filename Value="..\ortak\cekirdek\sistemmesaj.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="305"/>
-        <CursorPos X="38" Y="327"/>
+        <CursorPos Y="534"/>
         <UsageCount Value="224"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\ortak\cekirdek\olayyonetim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="7"/>
-        <CursorPos X="30" Y="362"/>
         <UsageCount Value="224"/>
       </Unit15>
       <Unit16>
@@ -166,6 +166,8 @@
         <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
+        <TopLine Value="514"/>
+        <CursorPos X="3" Y="533"/>
         <UsageCount Value="224"/>
         <Loaded Value="True"/>
       </Unit17>
@@ -201,8 +203,6 @@
         <Filename Value="..\ortak\cekirdek\donusum.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="7"/>
-        <CursorPos X="54" Y="48"/>
         <UsageCount Value="224"/>
       </Unit22>
       <Unit23>
@@ -256,14 +256,13 @@
         <Filename Value="..\ortak\suruculer\src_disket.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="224"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\ortak\suruculer\grafik\src_vesa20.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="59"/>
-        <CursorPos X="44" Y="79"/>
         <UsageCount Value="224"/>
       </Unit31>
       <Unit32>
@@ -537,8 +536,8 @@
         <Filename Value="..\gorselnesne\gn_pencere.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="291"/>
-        <CursorPos X="10" Y="308"/>
+        <TopLine Value="991"/>
+        <CursorPos X="68" Y="1004"/>
         <UsageCount Value="224"/>
       </Unit74>
       <Unit75>
@@ -558,6 +557,7 @@
         <Filename Value="..\gorselnesne\gorselnesne.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <CursorPos X="13" Y="44"/>
         <UsageCount Value="224"/>
       </Unit77>
       <Unit78>
@@ -782,13 +782,16 @@
         <Filename Value="arge.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="24" Y="9"/>
+        <TopLine Value="487"/>
+        <CursorPos X="54" Y="512"/>
         <UsageCount Value="205"/>
       </Unit113>
       <Unit114>
         <Filename Value="..\ortak\fpc\thread.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="100"/>
+        <CursorPos X="7" Y="118"/>
         <UsageCount Value="200"/>
       </Unit114>
       <Unit115>
@@ -864,14 +867,14 @@
         <Filename Value="..\oz\gorev.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="9"/>
         <UsageCount Value="204"/>
       </Unit125>
       <Unit126>
         <Filename Value="..\oz\zamanlayici.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="475"/>
-        <CursorPos X="27" Y="487"/>
+        <CursorPos X="39" Y="19"/>
         <UsageCount Value="204"/>
       </Unit126>
       <Unit127>
@@ -933,7 +936,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="168"/>
         <CursorPos X="3" Y="59"/>
-        <UsageCount Value="139"/>
+        <UsageCount Value="136"/>
       </Unit135>
       <Unit136>
         <Filename Value="..\ortak\ag\dhcpv4.pas"/>
@@ -951,63 +954,34 @@
         <CursorPos X="5" Y="39"/>
         <UsageCount Value="216"/>
       </Unit137>
+      <Unit138>
+        <Filename Value="..\rtl_cekirdek\inc\objpash.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="397"/>
+        <CursorPos X="7" Y="401"/>
+        <UsageCount Value="8"/>
+      </Unit138>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="SISTEM_SUNUCU}"/>
     </OtherDefines>
-    <JumpHistory Count="13" HistoryIndex="12">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="102" Column="31" TopLine="71"/>
+        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
+        <Caret Line="533" Column="3" TopLine="514"/>
       </Position1>
       <Position2>
         <Filename Value="yonetim.pas"/>
-        <Caret Line="102" Column="13" TopLine="71"/>
+        <Caret Line="41" Column="79" TopLine="19"/>
       </Position2>
       <Position3>
-        <Filename Value="cekirdek.lpr"/>
-        <Caret Line="80" Column="35" TopLine="56"/>
+        <Filename Value="yonetim.pas"/>
+        <Caret Line="568" Column="5" TopLine="530"/>
       </Position3>
       <Position4>
         <Filename Value="yonetim.pas"/>
-        <Caret Line="100" Column="5" TopLine="81"/>
+        <Caret Line="561" Column="71" TopLine="530"/>
       </Position4>
-      <Position5>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="100" Column="5" TopLine="81"/>
-      </Position5>
-      <Position6>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="100" Column="5" TopLine="66"/>
-      </Position6>
-      <Position7>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="100" Column="5" TopLine="69"/>
-      </Position7>
-      <Position8>
-        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
-        <Caret Line="45" TopLine="27"/>
-      </Position8>
-      <Position9>
-        <Filename Value="..\surumbil.txt"/>
-        <Caret Line="5" Column="19"/>
-      </Position9>
-      <Position10>
-        <Filename Value="..\ortak\cekirdek\paylasim.pas"/>
-        <Caret Line="1001" Column="75" TopLine="971"/>
-      </Position10>
-      <Position11>
-        <Filename Value="yonetim.pas"/>
-        <Caret Line="423" Column="79" TopLine="398"/>
-      </Position11>
-      <Position12>
-        <Filename Value="yukleyici.pas"/>
-        <Caret Line="205" Column="67" TopLine="174"/>
-      </Position12>
-      <Position13>
-        <Filename Value="cekirdek.lpr"/>
-        <Caret Line="12" Column="19"/>
-      </Position13>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

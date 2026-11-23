@@ -6,7 +6,7 @@
   Dosya Adý: k_olay.pas
   Dosya Ýþlevi: olay (event) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 21/11/2026
+  Güncelleme Tarihi: 23/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -41,21 +41,52 @@ begin
   if(IslevNo = 1) then
   begin
 
+    Result := 0;
+
     G := GGorevler.GorevAl;
     if not(G = nil) then
-      Result := G.FOlaySayisi
-    else Result := 0;
+    begin
+
+      // FOlayBayraklari'nda kaç olay olursa olsun tek bir olay olarak deðerlendiriliyor
+      if(G.FOlayBayraklari > 0) then Result := 1;
+      Result := Result + G.FOlaySayisi;
+    end;
   end
 
   // görev için bekleyen sýradaki olayý al
   else if(IslevNo = 2) then
   begin
 
+    Result := 0;
+
     G := GGorevler.GorevAl;
-    if not(G = nil) and (G.FOlaySayisi > 0) then
+    if not(G = nil) then
     begin
 
-      if(GGorevler.OlayAl(G.FKimlik, O)) then
+      // öncelikli görev FOlayBayraklari'nda bekleyen olaylardýr
+      if(G.FOlayBayraklari > 0) then
+      begin
+
+        // CO_CIZIM olay bayraðý
+        if((G.FOlayBayraklari and 1) = 1) then
+        begin
+
+          O2 := POlay(PSayi4(ADegiskenler)^ + GGorevler.FAktifGrvBelAdr);
+          O2^.Kimlik := G.FAktifPencere.Kimlik;
+          O2^.Olay := CO_CIZIM;
+          O2^.Deger1 := 0;
+          O2^.Deger2 := 0;
+
+          // CO_CIZIM olayýný olay bayraklarýndan sil
+          G.FOlayBayraklari := G.FOlayBayraklari and not(1);
+
+          // FOlayBayraklari'nda kaç olay olursa olsun tek bir olay olarak deðerlendiriliyor
+          if(G.FOlayBayraklari > 0) then Result := 1;
+
+          Result := Result + G.FOlaySayisi;
+        end;
+      end
+      else if(GGorevler.OlayAl(G.FKimlik, O)) then
       begin
 
         // olay deðiþkenlerini görevin yýðýn alanýna kopyala
@@ -76,8 +107,6 @@ begin
       O2^.Olay := -1;
       O2^.Deger1 := -1;
       O2^.Deger2 := -1;
-
-      Result := 0;
     end;
   end;
 end;

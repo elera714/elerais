@@ -69,7 +69,8 @@ begin
     else Noktalar[i].DikeyDeger := -1;
   end;
 
-  FZamanlayici.Olustur(3 * 1000);
+  // 0.5 saniye aralýklarla çizimi gerçekleþtir
+  FZamanlayici.Olustur(CALISMA_FREKANSI div 2);
   FZamanlayici.Baslat;
 end;
 

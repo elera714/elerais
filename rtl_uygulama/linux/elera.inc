@@ -43,6 +43,8 @@ type
   //PTime1 = ^TTime1;
 //  PBoolean = ^Boolean;
 
+const
+  CALISMA_FREKANSI      = 1000;     // 1000mhz - saniyede 1000 vuruþ
 
 type
   Sayi1 = Byte;
