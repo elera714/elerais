@@ -445,10 +445,20 @@ end;
 
 procedure TGenel.Bekle(AMiliSaniye: TSayi4); assembler;
 asm
-  push  DWORD AMiliSaniye
-  mov   eax,SAYAC_BEKLE
+  pushad
+  mov   eax,SAYAC_ZMLYC_DEGER_AL
   int   $34
-  add   esp,4
+
+  mov   ecx,eax
+  add   ecx,AMiliSaniye
+@@1:
+  cmp   ecx,eax
+  jb    @@2
+  mov   eax,SAYAC_ZMLYC_DEGER_AL
+  int   $34
+  jmp   @@1
+@@2:
+  popad
 end;
 
 procedure TGenel.SistemBilgisiAl(ABellekAdresi: Isaretci); assembler;

@@ -5,6 +5,7 @@
     ve pencere giysi tasarımlarının sistem açılış anında masaüstüne uyarlanabilmesi
     sağlandı (muyntcs ve mustudk yeniden yapılandırıldı)
   + ps2 fare sürücüsünde kod iyileştirmeleri yapıldı
+  + her görev için oluşturulan tss işlemleri tek tss'ye düşürüldü
 
 *******************************************************************************
   Sürüm: 0.4.3 (sunucu / istemci) - 21.11.2026 (R39) - Beta

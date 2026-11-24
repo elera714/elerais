@@ -36,15 +36,15 @@
         <Filename Value="hafiza.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <CursorPos X="27" Y="9"/>
-        <UsageCount Value="23"/>
+        <CursorPos X="24" Y="9"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="derle.bat"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <DefaultSyntaxHighlighter Value="Bat"/>
       </Unit1>
       <Unit2>
@@ -54,14 +54,16 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
         <DefaultSyntaxHighlighter Value="None"/>
       </Unit2>
       <Unit3>
         <Filename Value="anasayfafrm.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="109"/>
+        <CursorPos X="20" Y="103"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit3>
     </Units>

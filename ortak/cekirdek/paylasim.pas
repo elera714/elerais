@@ -6,7 +6,7 @@
   Dosya Adý: paylasim.pas
   Dosya Ýþlevi: tüm birimler için ortak paylaþýlan iþlevleri içerir
 
-  Güncelleme Tarihi: 19/11/2026
+  Güncelleme Tarihi: 24/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -17,11 +17,6 @@ unit paylasim;
 interface
 
 {$i veritipleri.inc}
-
-type
-  TVarRecArray = array[0..0] of TVarRec;
-  PVarRecArray = ^TVarRecArray; // veya sabit/açýk dizi iþaretçisi: ^array[0..MaxInt div SizeOf(TVarRec) - 1] of TVarRec
-
 
 // ELERA Ýþletim Sistemi - çekirdek kod sistem tipleri
 const
@@ -608,6 +603,9 @@ type
   end;
 
 var
+  GSistemTSS: PTSS;
+
+var
   // sistem açýlýþýnda çekirdeðin yüklendiði tarih + saat
   // bilgi: bu deðiþken yapýsý, çekirdek dosyasýnýn (cekirdek.bin) sistemin yükleme
   // sonrasýnda deðiþimini takip içindir
@@ -637,9 +635,6 @@ var
 
 const
   TSS_UZUNLUK = 104 + 8192;   // 104 byte TSS, 8192 byte giriþ / çýkýþ port izin haritasý
-
-var
-  GorevTSSListesi: array[0..USTSINIR_GOREVSAYISI - 1] of PTSS;
 
 type
   TGorevDurum = (gdIptal, gdOlusturuldu, gdCalisiyor, gdDurduruldu, gdSonlandiriliyor);

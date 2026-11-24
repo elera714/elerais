@@ -7,7 +7,7 @@
   Dosya İşlevi: çekirdek içerisinde ayrı olarak çalışarak işlem yapacak (process)
     iş birimini (thread) oluşturur
 
-  Güncelleme Tarihi: 21/11/2026
+  Güncelleme Tarihi: 24/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -61,8 +61,8 @@ function TThread.Ozellestir(AGorevAdi: string; AIslev: TOIslev; AYiginDegeri: TS
 var
   G: TGorev;
   // yazmaçların girdi içerisindeki sıra numaraları
-  SNYazmacCS, SNYazmacDS, SNYazmacTSS,
-  i: TSayi4;
+  SNYazmacCS,
+  SNYazmacDS: TSayi4;
 begin
 
   Result := nil;
@@ -73,12 +73,9 @@ begin
   if not(G = nil) then
   begin
 
-    i := G.FKimlik;
-
     // uygulamanın TSS, CS, DS seçicilerini belirle, her bir program 3 seçici içerir
-    SNYazmacCS := (i * 3) + 1;
+    SNYazmacCS := (G.FKimlik * 3) + 1;
     SNYazmacDS := SNYazmacCS + 1;
-    SNYazmacTSS := SNYazmacDS + 1;
 
     // kod seçicisi (CS)
     // Erişim  : 1 = mevcut, 00 = DPL0, 11 = kod yazmaç, 0 = dallanılamaz, 1 = okunabilir, 0 = erişilmedi
@@ -90,26 +87,8 @@ begin
     // Esneklik: 1 = gran = 4K çözünürlük, 1 = 32 bit, 0, 1 = bana tahsis edildi, 1111 = uzunluk 16..19 bit
     //GDTRGirdisiEkle(SNYazmacDS, 0, $FFFFFFFF, %10010010, %11011111);
     GDTRGirdisiEkle(SNYazmacDS, 0, $FFFFFFFF, %10010010, %11011111);
-    // görev seçicisi (TSS)
-    // Erişim  : 1 = mevcut, 00 = DPL0, 010 = 32 bit kullanılabilir TSS, 0 = meşgul biti (meşgul değil), 1
-    // Esneklik: 1 = gran = 1Byte çözünürlük, 00, 1 = bana tahsis edildi, 0000 = uzunluk 16..19 bit
-    //GDTRGirdisiEkle(SNYazmacTSS, TSayi4(GorevTSSListesi[i]), 104, %10001001, %00010000);
-    GDTRGirdisiEkle(SNYazmacTSS, TSayi4(GorevTSSListesi[i]), 104, %10001001, %00010000);
 
-    // denetçinin kullanacağı TSS'nin içeriğini sıfırla
-    FillByte(GorevTSSListesi[i]^, 104, $00);
-
-    GorevTSSListesi[i]^.EIP := TSayi4(AIslev);
-    GorevTSSListesi[i]^.EFLAGS := $202;
-    GorevTSSListesi[i]^.ESP := AYiginDegeri;
-    GorevTSSListesi[i]^.CS := SNYazmacCS * 8;
-    GorevTSSListesi[i]^.DS := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.ES := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.SS := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.FS := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.GS := SNYazmacDS * 8;
-    GorevTSSListesi[i]^.SS0 := SECICI_SISTEM_VERI * 8;
-    GorevTSSListesi[i]^.ESP0 := (i * GOREV3_ESP_U) + GOREV3_ESP;
+    GSistemTSS^.ESP0 := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
 
     // işlemin olay bellek bölgesini ata
     G.FOlayBellekAdresi := nil;
@@ -140,9 +119,15 @@ begin
     // işlemin yığın adresi
     G.FYiginBasAdresi := TSayi4(FYiginAdresi);
 
-    G.FCekirdekYiginUst := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
+    G.FRing0ESP := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
+    G.FCS := SNYazmacCS * 8;
+    G.FDS := SNYazmacDS * 8;
+    G.FSS := SNYazmacDS * 8;
+    G.FESP := AYiginDegeri;
+    G.FEFLAGS := $202;
+    G.FEIP := TSayi4(AIslev);
 
-    GGorevler.IlkCalismaYigininiOlustur0(G.FKimlik);
+    GGorevler.IlkCalismaYigininiOlustur(G.FKimlik);
 
     G.FAktifMasaustu := nil;
     G.FAktifPencere := nil;
@@ -155,8 +140,8 @@ begin
 
     // görevin durumunu belirle
     if(ACalistir) then
-      GGorevler.DurumDegistir(i, gdCalisiyor)
-    else GGorevler.DurumDegistir(i, gdDurduruldu);
+      GGorevler.DurumDegistir(G.FKimlik, gdCalisiyor)
+    else GGorevler.DurumDegistir(G.FKimlik, gdDurduruldu);
 
     // görev işlem sayısını bir artır
     Inc(GGorevler.FCalisanGorevSayisi);

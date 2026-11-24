@@ -6,7 +6,7 @@
   Dosya Adı: k_gorev.pas
   Dosya İşlevi: görev (program) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 23/11/2026
+  Güncelleme Tarihi: 24/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -32,7 +32,6 @@ var
   GKayit3: PGorevKayit3;
   PKayit: TProgramKayit;
   PKayit2: PProgramKayit;
-  TSS: PTSS;
   p4: Isaretci;
   s: string;
   p2: PSayi4;
@@ -132,9 +131,9 @@ begin
       if(GKimlik >= 0) then
       begin
 
+        { TODO - çoklu tss tekli tss'ye dönüştüğü için işlevini yitirdi }
         p4 := Isaretci(PSayi4(ADegiskenler + 04)^ + GGorevler.FAktifGrvBelAdr);
-        TSS := GorevTSSListesi[GKimlik];
-        Tasi2(TSS, p4, 104);
+        Tasi2(GSistemTSS, p4, 104);
 
         Result := HATA_YOK;
       end else Result := HATA_GOREVNO;

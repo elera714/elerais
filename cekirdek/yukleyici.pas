@@ -194,19 +194,9 @@ end;
   çekirdek yükleme öncesi iþlevleri çalýþtýrýr.
  ==============================================================================}
 procedure YukleIslevindenOnceCalistir;
-var
-  TSSBellekAdresi: Isaretci;
-  i: TSayi4;
 begin
 
-  // TSS giriþlerini bellek adresleriyle eþleþtir
-  TSSBellekAdresi := Isaretci($520000);
-  for i := 0 to USTSINIR_GOREVSAYISI - 1 do
-  begin
-
-    GorevTSSListesi[i] := TSSBellekAdresi;
-    TSSBellekAdresi := TSSBellekAdresi + TSS_UZUNLUK;
-  end;
+  // þu anda yapacak bir þey yok
 end;
 
 {==============================================================================

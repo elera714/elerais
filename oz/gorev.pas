@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 23/11/2026
+  Güncelleme Tarihi: 24/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -73,10 +73,7 @@ type
     FDosyaSonIslemDurum: TISayi4;       // göreve ait son dosya iþlem sonuç deðeri
 
     // hata ile ilgili deðerlerin yerleþtirileceði deðiþkenler
-    FHataKodu,                          // hata kodu
-    FHataCS, FHataEIP,                  // cs:eip
-    FHataESP,                           // esp
-    FHataBayrak: TISayi4;               // flags
+    FHataKodu: TISayi4;                 // hata kodu
 
 //  FKullanilanBellek: TSayi4;          // görevin byte olarak kullandýðý tüm kaynaklar toplamý (TODO - kodlanacak }
 
@@ -84,7 +81,12 @@ type
     FProgramAdi: string;                // program adý
 
     FKayitliESP: TSayi4;                // çekirdek yýðýn iþaretçisi - görev deðiþikliði için
-    FCekirdekYiginUst: TSayi4;          // TSS.ESP0 deðeri - görev deðiþikliði için
+
+    // her bir görevin (ring3) görev geçisinde kullanýlacak ring0 esp deðeri
+    // TSS.ESP0 deðeri - görev deðiþikliði için
+    FRing0ESP: TSayi4;
+    FCS, FDS, FSS, FESP,
+    FEFLAGS, FEIP: TSayi4;              // görev yazmaçlarý
     constructor Create(AKimlik: TKimlik);
   end;
 
@@ -107,8 +109,7 @@ type
     function GorevKimligiAl(AGorevAdi: string): TKimlik;
     procedure SecicileriOlustur(AKimlik, AUzunluk, ABellekBas,
       AKodBas, AYiginBas: TSayi4);
-    procedure IlkCalismaYigininiOlustur0(AKimlik: TSayi4);
-    procedure IlkCalismaYigininiOlustur3(AKimlik: TSayi4);
+    procedure IlkCalismaYigininiOlustur(AKimlik: TSayi4);
     function Calistir(ATamDosyaYolu: string; ASeviyeNo: TSayi4): TGorev;
     procedure OlayEkle(AGorevKimlik: TKimlik; AOlay: TOlay);
     procedure OlaySayisiYaz(AGorevKimlik: TKimlik; AOlaySayisi: TSayi4);
@@ -212,16 +213,18 @@ begin
   FDosyaSonIslemDurum := HATA_YOK;
 
   FHataKodu := 0;
-  FHataCS := 0;
-  FHataEIP := 0;
-  FHataESP := 0;
-  FHataBayrak := 0;
 
   FDosyaAdi := '';
   FProgramAdi := '';
 
   FKayitliESP := 0;
-  FCekirdekYiginUst := 0;
+  FRing0ESP := 0;
+  FCS := 0;
+  FDS := 0;
+  FSS := 0;
+  FESP := 0;
+  FEFLAGS := 0;
+  FEIP := 0;
 end;
 
 {==============================================================================
@@ -319,20 +322,19 @@ end;
 procedure TGorevler.SecicileriOlustur(AKimlik, AUzunluk, ABellekBas,
   AKodBas, AYiginBas: TSayi4);
 var
-  SeciciCSSiraNo, SeciciDSSiraNo,
-  SeciciTSSSiraNo: TKimlik;
-  Uzunluk, i: TSayi4;
+  G: TGorev;
+  SeciciCSSiraNo,
+  SeciciDSSiraNo,
+  Uzunluk: TSayi4;
 begin
 
-  // uygulamanýn ilk görev kimliði 3 (olan muyntcs.c)'tür
-  i := AKimlik;
+  G := Gorev[AKimlik];
 
   Uzunluk := AUzunluk shr 12;
 
   // uygulamanýn TSS, CS, DS seçicilerini belirle, her bir program 3 seçici içerir
-  SeciciCSSiraNo := (i * 3) + 1;
+  SeciciCSSiraNo := (G.FKimlik * 3) + 1;
   SeciciDSSiraNo := SeciciCSSiraNo + 1;
-  SeciciTSSSiraNo := SeciciDSSiraNo + 1;
 
   // uygulama için CS selektörünü oluþtur
   // kod seçicisi (CS)
@@ -344,69 +346,52 @@ begin
   // Eriþim  : 1 = mevcut, 11 = DPL3, 10 = veri yazmaç, 0 = artarak büyüyen, 1 = yazýlabilir, 0 = eriþilmedi
   // Esneklik: 1 = gran = 4K çözünürlük, 1 = 32 bit, 0, 1 = bana tahsis edildi, 1111 = uzunluk 16..19 bit
   GDTRGirdisiEkle(SeciciDSSiraNo, ABellekBas, Uzunluk, %11110010, %11010000);
-  // uygulama için TSS selektörünü oluþtur
-  // görev seçicisi (TSS)
-  // Eriþim  : 1 = mevcut, 11 = DPL0, 010 = 32 bit kullanýlabilir TSS, 0 = meþgul biti (meþgul deðil), 1
-  // Esneklik: 1 = gran = 1Byte çözünürlük, 00, 1 = bana tahsis edildi, 0000 = uzunluk 16..19 bit
-  GDTRGirdisiEkle(SeciciTSSSiraNo, TSayi4(GorevTSSListesi[i]), TSS_UZUNLUK - 1,
-    %11101001, %00010000);
 
-  // TSS'nin içeriðini sýfýrla
-  FillByte(GorevTSSListesi[i]^, 104, $00);
+  G.FCS := (SeciciCSSiraNo * 8) + 3;
+  G.FDS := (SeciciDSSiraNo * 8) + 3;
+  G.FSS := (SeciciDSSiraNo * 8) + 3;
+  G.FESP := AYiginBas;
+  G.FEFLAGS := $202;
+  G.FEIP := AKodBas;
+end;
 
-  // giriþ / çýkýþ haritasýný doldur
-  if(TSS_UZUNLUK > 104) then
+{==============================================================================
+  0. ve 3. seviyede çalýþacak görev için görev deðiþim yýðýnýný oluþturur
+ ==============================================================================}
+procedure TGorevler.IlkCalismaYigininiOlustur(AKimlik: TSayi4);
+var
+  G: TGorev;
+  P: ^TSayi4;
+begin
+
+  // yýðýn oluþturulacak görev
+  G := Gorev[AKimlik];
+
+  // ring esp yaznaç deðerine konumlan
+  P := Isaretci(G.FRing0ESP);
+
+  // bilgi: aþaðýdaki tüm girdiler irq0'da 0. ve 3. seviye görevin ilk çalýþtýðýnda
+  // yýðýndan alýnacak deðerleridir
+
+  if(G.FSeviyeNo = CALISMA_SEVIYE0) then
   begin
 
-    // her bit 1 porta karþýlýk gelir. deðerin 1 olmasý DPL3 görevi için port kullanýmýný yasaklar
-    FillByte(Isaretci(@GorevTSSListesi[i]^.IOHarita)^, TSS_UZUNLUK - 104, $FF);
-    GorevTSSListesi[i]^.IOHaritaGAdres := TSS_UZUNLUK;
+    // seviye0 dönüþ çerçevesi - (iretd ile alýnacak deðerler)
+    Dec(P); P^ := G.FEFLAGS;
+    Dec(P); P^ := G.FCS;
+    Dec(P); P^ := G.FEIP;
+  end
+  else
+  begin
+
+    // seviye3 dönüþ çerçevesi - (iretd ile alýnacak deðerler)
+    Dec(P); P^ := G.FSS;          // ring3 kullanýcý ss
+    Dec(P); P^ := G.FESP;         // ring3 kullanýcý esp
+    Dec(P); P^ := G.FEFLAGS;
+    Dec(P); P^ := G.FCS;
+    Dec(P); P^ := G.FEIP;
   end;
 
-  // TSS içeriðini doldur
-  //GorevTSSListesi[i].CR3 := GERCEKBELLEK_DIZINADRESI;
-  GorevTSSListesi[i]^.EIP := AKodBas;
-  GorevTSSListesi[i]^.EFLAGS := $202;   // bit 1 = 1, bit 9 = kesme aktif
-  GorevTSSListesi[i]^.ESP := AYiginBas;
-  GorevTSSListesi[i]^.CS := (SeciciCSSiraNo * 8) + 3;
-  GorevTSSListesi[i]^.DS := (SeciciDSSiraNo * 8) + 3;
-  GorevTSSListesi[i]^.ES := (SeciciDSSiraNo * 8) + 3;
-  GorevTSSListesi[i]^.SS := (SeciciDSSiraNo * 8) + 3;
-  GorevTSSListesi[i]^.FS := (SeciciDSSiraNo * 8) + 3;
-  GorevTSSListesi[i]^.GS := (SeciciDSSiraNo * 8) + 3;
-
-  // aþaðýdaki deðerler ring3 için (int, irq için) ring0 deðerleri olacaktýr
-  GorevTSSListesi[i]^.SS0 := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[i]^.ESP0 := (i * GOREV3_ESP_U) + GOREV3_ESP;
-end;
-
-{==============================================================================
-  0. seviyede çalýþacak görev için görev deðiþim yýðýnýný oluþturur
- ==============================================================================}
-procedure TGorevler.IlkCalismaYigininiOlustur0(AKimlik: TSayi4);
-var
-  G: TGorev;
-  T: PTSS;
-  P: ^TSayi4;
-begin
-
-  // yýðýn oluþturulacak görev
-  G := Gorev[AKimlik];
-
-  // yýðýn bilgilerinin alýnacaðý tss
-  T := GorevTSSListesi[AKimlik];
-
-  // seviye0->seviye0 esp0 yaznaç deðerine konumlan
-  P := Isaretci(T^.ESP0);
-
-  // bilgi: aþaðýdaki tüm girdiler irq0'da 0. seviye görevin ilk çalýþtýðýnda
-  // yýðýndan alýnacak deðerleridir
-
-  // seviye0 dönüþ çerçevesi - (iretd ile alýnacak deðerler)
-  Dec(P); P^ := $202;
-  Dec(P); P^ := T^.CS;
-  Dec(P); P^ := T^.EIP;
-
   // pushad deðerleri (yukarýdan aþaðýya)
   Dec(P); P^ := 0;    // eax
   Dec(P); P^ := 0;    // ecx
@@ -417,56 +402,20 @@ begin
   Dec(P); P^ := 0;    // esi
   Dec(P); P^ := 0;    // edi
 
-  // irq0 kesme yodamýndaki komutlar
-  Dec(P); P^ := $202;                       // pushfd
-  Dec(P); P^ := SECICI_SISTEM_VERI * 8;     // push eax (eax ile ds saklanýyor)
+  if(G.FSeviyeNo = CALISMA_SEVIYE0) then
+  begin
 
-  // tüm bu deðerler FKayitliESP deðiþkeninin gösterdiði noktadan alýnacak
-  G.FKayitliESP := TSayi4(P);
-end;
+    // irq0 kesme yordamýndaki komutlar
+    Dec(P); P^ := $202;                       // pushfd
+    Dec(P); P^ := SECICI_SISTEM_VERI * 8;     // push eax (eax ile ds saklanýyor)
+  end
+  else
+  begin
 
-{==============================================================================
-  3. seviyede çalýþacak görev için görev deðiþim yýðýnýný oluþturur
- ==============================================================================}
-procedure TGorevler.IlkCalismaYigininiOlustur3(AKimlik: TSayi4);
-var
-  G: TGorev;
-  T: PTSS;
-  P: ^TSayi4;
-begin
-
-  // yýðýn oluþturulacak görev
-  G := Gorev[AKimlik];
-
-  // yýðýn bilgilerinin alýnacaðý tss
-  T := GorevTSSListesi[AKimlik];
-
-  // seviye3->seviye0 esp0 yaznaç deðerine konumlan
-  P := Isaretci(T^.ESP0);
-
-  // bilgi: aþaðýdaki tüm girdiler irq0'da 3. seviye görevin ilk çalýþtýðýnda
-  // yýðýndan alýnacak deðerleridir
-
-  // seviye3 dönüþ çerçevesi - (iretd ile alýnacak deðerler)
-  Dec(P); P^ := T^.SS;       // ring3 kullanýcý ss
-  Dec(P); P^ := T^.ESP;      // ring3 kullanýcý esp
-  Dec(P); P^ := T^.EFLAGS;
-  Dec(P); P^ := T^.CS;
-  Dec(P); P^ := T^.EIP;
-
-  // pushad deðerleri (yukarýdan aþaðýya)
-  Dec(P); P^ := 0;    // eax
-  Dec(P); P^ := 0;    // ecx
-  Dec(P); P^ := 0;    // edx
-  Dec(P); P^ := 0;    // ebx
-  Dec(P); P^ := 0;    // esp
-  Dec(P); P^ := 0;    // ebp
-  Dec(P); P^ := 0;    // esi
-  Dec(P); P^ := 0;    // edi
-
-  // irq0 kesme yodamýndaki komutlar
-  Dec(P); P^ := T^.EFLAGS;      // pushfd
-  Dec(P); P^ := T^.DS;          // push eax (eax ile ds saklanýyor)
+    // irq0 kesme yordamýndaki komutlar
+    Dec(P); P^ := G.FEFLAGS;      // pushfd
+    Dec(P); P^ := G.FDS;          // push eax (eax ile ds saklanýyor)
+  end;
 
   // tüm bu deðerler FKayitliESP deðiþkeninin gösterdiði noktadan alýnacak
   G.FKayitliESP := TSayi4(P);
@@ -646,15 +595,13 @@ begin
   // iþlemin yýðýn adresi
   G.FYiginBasAdresi := (G.FBellekUz + G.FYiginBellekUz) - 64;
 
-  G.FCekirdekYiginUst := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
-
   // dosyanýn çalýþtýrýlmasý için seçicileri oluþtur
   SecicileriOlustur(G.FKimlik, G.FBellekUz + G.FYiginBellekUz, G.FBellekBaslAdr,
     G.FKodBasAdresi, G.FYiginBasAdresi);
 
-  if(G.FSeviyeNo = CALISMA_SEVIYE0) then
-    GGorevler.IlkCalismaYigininiOlustur0(G.FKimlik)
-  else GGorevler.IlkCalismaYigininiOlustur3(G.FKimlik);
+  G.FRing0ESP := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
+
+  GGorevler.IlkCalismaYigininiOlustur(G.FKimlik);
 
   // iþlemin adý
   G.FDosyaAdi := DosyaAdi;
@@ -923,7 +870,7 @@ begin
 
   G.FDurum := gdSonlandiriliyor;
   G.FHataKodu := -1;
-  G.FHataESP := -1;
+  G.FESP := -1;
 end;
 
 {==============================================================================
@@ -959,10 +906,10 @@ begin
       ' programý istenmeyen bir iþlem yaptýðýndan dolayý sonlandýrýldý', []);
     SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - Hata Kodu: ' + IntToStr(ASonlanmaSebebi) + ' - ' +
       IstisnaAciklamaListesi[ASonlanmaSebebi], []);
-    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - CS: $%.8x', [G.FHataCS]);
-    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - EIP: $%.8x', [G.FHataEIP]);
-    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - ESP: $%.8x', [G.FHataESP]);
-    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - EFLAGS: $%.8x', [G.FHataBayrak]);
+    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - CS: $%.8x', [G.FCS]);
+    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - EIP: $%.8x', [G.FEIP]);
+    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - ESP: $%.8x', [G.FESP]);
+    SISTEM_MESAJ(mtHata, RENK_TURKUAZ, '  - EFLAGS: $%.8x', [G.FEFLAGS]);
   end;
 
   // göreve ait zamanlayýcýlarý durdur

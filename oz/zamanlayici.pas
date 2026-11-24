@@ -6,7 +6,7 @@
   Dosya Adý: zamanlayici.pas
   Dosya Ýþlevi: zamanlayýcý yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 21/11/2026
+  Güncelleme Tarihi: 24/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -482,8 +482,8 @@ asm
   cmp   DWORD[esi + TGorev.FSeviyeNo],CALISMA_SEVIYE3
   jne   @@yigin_tamam
 
-  mov   eax,[esi + TGorev.FCekirdekYiginUst]
-  mov   edi,[GorevTSSListesi]
+  mov   eax,[esi + TGorev.FRing0ESP]
+  mov   edi,[GSistemTSS]
   mov   [edi + TTSS.ESP0],eax
 
 @@yigin_tamam:

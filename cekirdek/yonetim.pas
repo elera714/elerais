@@ -6,7 +6,7 @@
   Dosya Adý: yonetim.pas
   Dosya Ýþlevi: sistem ana yönetim / kontrol kýsmý
 
-  Güncelleme Tarihi: 23/11/2026
+  Güncelleme Tarihi: 24/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -59,31 +59,28 @@ begin
   // öndeðer fare göstergesini belirle
   GFareSurucusu.AktifFareImlec := fitBekle;
 
-  // çekirdeðin kullanacaðý TSS'nin içeriðini sýfýrla
-  FillByte(GorevTSSListesi[0]^, 104, $00);
+  GetMem(GSistemTSS, TSS_UZUNLUK);
 
-  // TSS içeriðini doldur
-  //GorevTSSListesi[0].CR3 := GERCEKBELLEK_DIZINADRESI;
-  GorevTSSListesi[0]^.EIP := TSayi4(@SistemAnaKontrol);
-  GorevTSSListesi[0]^.EFLAGS := $202;
-  GorevTSSListesi[0]^.ESP := SISTEM_ESP;
-  GorevTSSListesi[0]^.CS := SECICI_SISTEM_KOD * 8;
-  GorevTSSListesi[0]^.DS := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[0]^.ES := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[0]^.SS := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[0]^.FS := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[0]^.GS := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[0]^.SS0 := SECICI_SISTEM_VERI * 8;
-  GorevTSSListesi[0]^.ESP0 := {(G.FKimlik * GOREV3_ESP_U) +} GOREV3_ESP;
+  // çekirdeðin kullanacaðý TSS'nin içeriðini sýfýrla
+  FillByte(GSistemTSS^, 104, $00);
+
+  GSistemTSS^.IOHaritaGAdres := TSS_UZUNLUK;
+
+  // giriþ / çýkýþ haritasýný doldur
+  if(TSS_UZUNLUK > 104) then
+  begin
+
+    // her bit 1 porta karþýlýk gelir. deðerin 1 olmasý DPL3 görevi için port kullanýmýný yasaklar
+    FillByte(Isaretci(@GSistemTSS^.IOHarita)^, TSS_UZUNLUK - 104, $FF);
+  end;
 
   // not: sistem için CS ve DS seçicileri bilden programý tarafýndan
   // oluþturuldu. tekrar oluþturmaya gerek yok
 
-  // sistem için görev seçicisi (TSS)
+  // sistem için görev seçicisi (TSS) - görev geçiþi için kullanýlacak
   // Eriþim  : 1 = mevcut, 00 = DPL0, 010 = 32 bit kullanýlabilir TSS, 0 = meþgul biti (meþgul deðil), 1
   // Esneklik: 1 = gran = 1Byte çözünürlük, 00, 1 = bana tahsis edildi, 0000 = uzunluk 16..19 bit
-  GDTRGirdisiEkle(SECICI_SISTEM_TSS, TSayi4(GorevTSSListesi[0]), 104,
-    %10001001, %00010000);
+  GDTRGirdisiEkle(SECICI_SISTEM_TSS, TSayi4(GSistemTSS), 104, %10001001, %00010000);
 
   // sistem görev deðerlerini belirle
   G := TGorev.Create(0);
@@ -97,9 +94,18 @@ begin
   { TODO - CekirdekUzunlugu -> *4K olarak hesaplanacak }
   G.FBellekUz := GSistem.FCekirdekUzunlugu;
 
-  G.FCekirdekYiginUst := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
+  G.FRing0ESP := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
+  G.FCS := SECICI_SISTEM_KOD * 8;
+  G.FDS := SECICI_SISTEM_VERI * 8;
+  G.FSS := SECICI_SISTEM_VERI * 8;
+  G.FESP := SISTEM_ESP;
+  G.FEFLAGS := $202;
+  G.FEIP := TSayi4(@SistemAnaKontrol);
 
-  GGorevler.IlkCalismaYigininiOlustur0(G.FKimlik);
+  // tek bir kez yüklenmesi yeterlidir
+  GSistemTSS^.SS0 := SECICI_SISTEM_VERI * 8;
+
+  GGorevler.IlkCalismaYigininiOlustur(G.FKimlik);
 
   // çekirdek için olay iþlemleri gerçekleþmeyecek
   G.FOlaySayisi := 0;
@@ -233,7 +239,7 @@ begin
           else if(TusKarakterDegeri = '3') then
           begin
 
-            //DosyaKopyala('disk3:\haklar.txt', 'disk2:\haklar.txt');
+            DosyaKopyala('disk3:\surumbil.txt', 'disk2:\surumbil.txt');
 
             {MD := GMantiksalDepolama.SurucuAl('disk2');
             DSELR := TELR1(GDosyalar.Yeni(MD));
