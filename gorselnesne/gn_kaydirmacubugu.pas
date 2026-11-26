@@ -6,7 +6,7 @@
   Dosya Adı: gn_kaydirmacubugu.pas
   Dosya İşlevi: kaydırma çubuğu (TScrollBar) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -34,10 +34,12 @@ type
     procedure Hizala;
     procedure Ciz;
     procedure OlaylariIsle(AGonderici: TGorselNesne; AOlay: TOlay);
-    procedure DegerleriBelirle(AAltDeger, AUstDeger: TISayi4);
+    procedure DegerleriBelirle(AAltDeger, AUstDeger, AMevcutDeger: TISayi4;
+      AArtisDegeri: TSayi4);
     property MevcutDeger: TISayi4 read FIDeger1 write FIDeger1;
     property AltDeger: TISayi4 read FIDeger2 write FIDeger2;
     property UstDeger: TISayi4 read FIDeger3 write FIDeger3;
+    property ArtisDegeri: TSayi4 read FDeger1 write FDeger1;
   end;
 
 function KaydirmaCubuguCagriIslevleri(AIslevNo: TSayi4; ADegiskenler: Isaretci): TISayi4;
@@ -96,7 +98,7 @@ begin
       KaydirmaCubugu := TKaydirmaCubugu(GGNesneler.NesneTipiniKontrolEt(
         PKimlik(ADegiskenler + 00)^, gntKaydirmaCubugu));
       if(KaydirmaCubugu <> nil) then KaydirmaCubugu.DegerleriBelirle(
-        PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^);
+        PISayi4(ADegiskenler + 04)^, PISayi4(ADegiskenler + 08)^, 0, 1);
     end;
   end;
 end;
@@ -215,6 +217,7 @@ begin
   MevcutDeger := 0;
   AltDeger := 0;
   UstDeger := 100;
+  ArtisDegeri := 1;
 
   // geri dönüş değeri
   Result := HATA_YOK;
@@ -377,7 +380,7 @@ begin
     begin
 
       i := KaydirmaCubugu.MevcutDeger;
-      Dec(i);
+      Dec(i, ArtisDegeri);
       if(i < KaydirmaCubugu.AltDeger) then i := KaydirmaCubugu.AltDeger;
     end
     else
@@ -385,7 +388,7 @@ begin
     begin
 
       i := KaydirmaCubugu.MevcutDeger;
-      Inc(i);
+      Inc(i, ArtisDegeri);
       if(i > KaydirmaCubugu.UstDeger) then i := KaydirmaCubugu.UstDeger;
     end;
 
@@ -409,12 +412,14 @@ end;
 {==============================================================================
   kaydırma çubuğu alt, üst, mevcut değerlerini belirler
  ==============================================================================}
-procedure TKaydirmaCubugu.DegerleriBelirle(AAltDeger, AUstDeger: TISayi4);
+procedure TKaydirmaCubugu.DegerleriBelirle(AAltDeger, AUstDeger, AMevcutDeger: TISayi4;
+  AArtisDegeri: TSayi4);
 begin
 
   AltDeger := AAltDeger;
   UstDeger := AUstDeger;
-  MevcutDeger := AAltDeger;
+  MevcutDeger := AMevcutDeger;
+  ArtisDegeri := AArtisDegeri;
 end;
 
 end.

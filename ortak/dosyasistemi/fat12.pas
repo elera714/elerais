@@ -6,7 +6,7 @@
   Dosya Adý: fat12.pas
   Dosya Ýþlevi: fat12 dosya sistem yönetim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 13/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
   Bilgi: TFAT12 nesne içeriðindeki iþlevler dosyalar.pas dosyasýnýn içeriðindeki
     iþlevler ile kullanýlmalýdýr

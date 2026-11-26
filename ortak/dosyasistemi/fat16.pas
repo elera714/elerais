@@ -6,7 +6,7 @@
   Dosya Adı: fat16.pas
   Dosya İşlevi: fat16 dosya sistem yönetim işlevlerini yönetir
 
-  Güncelleme Tarihi: 13/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
   Bilgi: TFAT16 nesne içeriğindeki işlevler dosyalar.pas dosyasının içeriğindeki
     işlevler ile kullanılmalıdır

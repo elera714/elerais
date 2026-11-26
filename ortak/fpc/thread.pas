@@ -7,7 +7,7 @@
   Dosya İşlevi: çekirdek içerisinde ayrı olarak çalışarak işlem yapacak (process)
     iş birimini (thread) oluşturur
 
-  Güncelleme Tarihi: 24/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -28,6 +28,7 @@ type
     procedure Execute; virtual; abstract;
     function Ozellestir(AGorevAdi: string; AIslev: TOIslev; AYiginDegeri: TSayi4;
       ASeviyeNo: TSayi4; ACalistir: Boolean = False): TGorev;
+    property Gorev0: TGorev read FGorev;
   end;
 
 implementation
@@ -43,6 +44,8 @@ const
  ==============================================================================}
 constructor TThread.Create(AIslemAdi: string; CreateSuspended: Boolean = True);
 begin
+
+  FGorev := nil;
 
   // 4k miktarı yığın (stack) bellek ayır
   FYiginAdresi := GetMem(YIGIN_MIKTARI);
@@ -60,6 +63,7 @@ function TThread.Ozellestir(AGorevAdi: string; AIslev: TOIslev; AYiginDegeri: TS
   ASeviyeNo: TSayi4; ACalistir: Boolean = False): TGorev;
 var
   G: TGorev;
+  OBellekAdresi: POlay;
   // yazmaçların girdi içerisindeki sıra numaraları
   SNYazmacCS,
   SNYazmacDS: TSayi4;
@@ -91,7 +95,8 @@ begin
     GSistemTSS^.ESP0 := (G.FKimlik * GOREV3_ESP_U) + GOREV3_ESP;
 
     // işlemin olay bellek bölgesini ata
-    G.FOlayBellekAdresi := nil;
+    OBellekAdresi := GetMem(4096);
+    G.FOlayBellekAdresi := OBellekAdresi;
 
     // görev olay sayacını sıfırla
     G.FOlaySayisi := 0;

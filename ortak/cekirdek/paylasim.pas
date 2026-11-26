@@ -44,6 +44,23 @@ var
   GorevDegistirme: TSayi4 = 0;
 
 const
+  // bit 1: Monitor Coprocessor: WAIT ve FWAIT komutlarýnýn TS (Task Switched) biti
+  // ile nasýl etkileþime gireceðini belirler.
+  CR0_MP_BIT         = $00000002;
+  // bit 2: Emulation: 1 ise iþlemcide donanýmsal kayan nokta birimi (x87 FPU) olmadýðý
+  // varsayýlýr ve komutlar yazýlýmla öykünülür. emulation (SSE/x87 icin 0 olmali
+  CR0_EM_BIT         = $00000004;
+  // bit 3: Task Switched: Donanýmsal görev deðiþimi yapýldýðýnda iþlemci tarafýndan otomatik
+  // 1 yapýlýr; FPU/SSE baðlamýnýn (context) gecikmeli kaydedilmesini saðlar.
+  CR0_TS_BIT         = $00000008;
+
+  // bit 9: OSFXSR - Ýþletim sisteminin SSE (Streaming SIMD Extensions) komutlarýný ve
+  // FXSAVE/FXRSTOR yönergelerini desteklediðini iþlemciye bildirir. XMM destegi
+  CR4_OSFXSR_BIT     = $00000200;
+  // bit 10: Maskelenmemis SSE istisnalari (#XF)
+  CR4_OSXMMEXCPT_BIT = $00000400;
+
+const
   NETBIOS_PORTNO  = 137;
   HTTP_PORTNO     = 80;
   FTP_PORTNO      = 21;

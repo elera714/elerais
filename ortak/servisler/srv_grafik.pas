@@ -6,7 +6,7 @@
   Dosya Adý: srv_grafik.pas
   Dosya Ýþlevi: dahili servis: çekirdek içi grafiksel bilgilendirme
 
-  Güncelleme Tarihi: 21/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -15,7 +15,7 @@ unit srv_grafik;
 
 interface
 
-uses paylasim, gn_pencere, gn_islemgostergesi, thread, elr1;
+uses paylasim, gn_pencere, gn_islemgostergesi, thread, elr1, gorselnesne;
 
 const
   P_BASLIK_YUKSEKLIK = 24;
@@ -30,16 +30,18 @@ type
     procedure Execute; override;
     procedure Basla;
     procedure OlaylariIsle;
+    procedure ParlaklikOlaylari(AGonderici: TGorselNesne; AOlay: TOlay);
   end;
 
 implementation
 
-uses gn_etiket, mdepolama, sistemmesaj, gorselnesne, gercekbellek, sistem,
-  src_vesa20, gn_islevler, zamanlayici, dosyalar;
+uses gn_etiket, mdepolama, sistemmesaj, gercekbellek, sistem, src_vesa20, gn_islevler,
+  zamanlayici, dosyalar, gn_kaydirmacubugu;
 
 var
   SDPencere: TPencere;
   igBellek, igDisk: TIslemGostergesi;
+  kcParlaklik: TKaydirmaCubugu;
   etkBellek, etkDisk: TEtiket;
   BellekSayac: TSayi4;
   DiskSayac: TSayi4;
@@ -92,7 +94,7 @@ begin
     Sol := GGNesneler.AktifMasaustu.FAtananAlan.Genislik - 180;
 
     SDPencere := TPencere.Create;
-    SDPencere.Ozellestir(GGNesneler.AktifMasaustu, Sol, 22, 170, 105,
+    SDPencere.Ozellestir(GGNesneler.AktifMasaustu, Sol, 22, 170, 135,
       ptIletisim, 'Sistem Durumu', RENK_BEYAZ);
 
     etkBellek := TEtiket.Create;
@@ -114,6 +116,13 @@ begin
     igDisk.DegerleriBelirle(0, (320 * 1024 * 1024) div 512);
     igDisk.MevcutDegerYaz(0);
     igDisk.Goster;
+
+    // ekran parlaklýk deðer çubuðu
+    kcParlaklik := TKaydirmaCubugu.Create;
+    kcParlaklik.Ozellestir(ktNesne, SDPencere, 5, 110, 160, 20, yYatay);
+    kcParlaklik.DegerleriBelirle(0, 255, GEkranKartSurucusu.Parlaklik, 5);
+    kcParlaklik.OlayYonlAdr := @ParlaklikOlaylari;
+    kcParlaklik.Goster;
 
     SDPencere.Goster;
   end;
@@ -182,6 +191,14 @@ begin
   SDPencere.YaziYaz(SDPencere, 12, P_BASLIK_YUKSEKLIK + 40, 'Nesne:', RENK_KIRMIZI);
   SDPencere.SayiYaz10(SDPencere, 64, P_BASLIK_YUKSEKLIK + 40,
     GGNesneler.FToplamGorselNesne, RENK_KIRMIZI);
+end;
+
+// ekran parlaklýk deðer çubuðu
+procedure TServisGrafik.ParlaklikOlaylari(AGonderici: TGorselNesne; AOlay: TOlay);
+begin
+
+  if(AOlay.Olay = FO_TIKLAMA) then
+    GEkranKartSurucusu.Parlaklik := kcParlaklik.MevcutDeger;
 end;
 
 end.

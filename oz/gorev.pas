@@ -6,7 +6,7 @@
   Dosya Adý: gorev.pas
   Dosya Ýþlevi: görev (program) yönetim iþlevlerini içerir
 
-  Güncelleme Tarihi: 24/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
  ==============================================================================}
 {$mode objfpc}

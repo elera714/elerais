@@ -6,7 +6,7 @@
   Dosya Adý: elr1.pas
   Dosya Ýþlevi: ELERA Ýþletim Sistemi'nin dosya sistemi
 
-  Güncelleme Tarihi: 19/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
   Kaynaklar: https://wiki.freepascal.org/File_Handling_In_Pascal
 
@@ -66,11 +66,12 @@ const
   DIZIN_GIRDI_SAYISI        = TSayi4(8);
   ZINCIRDEKI_SEKTOR_SAYISI  = TSayi4(4);
 
-  { bilgi: aþaðýdaki aralýklarýn sýnýrlarý, bir önceki deðerin bir sonrakine kadar olanýný içerir }
-  SEKTORNO_BOOT             = TSayi4(0);
+  { bilgi-1: aþaðýdaki aralýklarýn sýnýrlarý, bir önceki deðerin bir sonrakine kadar olanýný içerir }
+  { bilgi-2: veriler boot sektörlerden alýndýðý için sabit deðerler iptal edilmiþtir
+  {SEKTORNO_BOOT             = TSayi4(0);
   SEKTORNO_SHT_BAS          = TSayi4(256);      // sektör harita tablosu (fat) baþlangýcý
   SEKTORNO_SHT_SON          = TSayi4(1535);     // sektör harita tablosu (fat) sonu
-  SEKTORNO_VERI             = TSayi4(1536);     // dosya adlarý ve verilerini içerir
+  SEKTORNO_VERI             = TSayi4(1536);     // dosya adlarý ve verilerini içerir}}
 
 type
   TELR1 = class(TDosya)
@@ -709,8 +710,9 @@ procedure TELR1.ReWrite;
 var
   DG: PDizinGirdisiELR;
   AramaKaydi: TDosyaArama;
-  Sonuc, SektorNo: TSayi4;
-  KBS, i: TISayi4;
+  Sonuc, SektorNo,
+  KBS: TSayi4;
+  i: TISayi4;
   Gun, Ay, Yil, HG: TSayi2;
   Saat, Dakika, Saniye: TSayi1;
   DosyaBulundu: Boolean;
@@ -874,9 +876,9 @@ var
   YazilacakKumeNo, YeniKumeNo,
   OkumaKonum, YazilacakVeriU,
   Sonuc, SektorNo, i, j,
-  SektorVeriU: TSayi4;
+  SektorVeriU, KBS: TSayi4;
   Gun, Ay, Yil, HG: TSayi2;
-  Saat, Dakika, Saniye, KBS: TSayi1;
+  Saat, Dakika, Saniye: TSayi1;
 begin
 
   DG := PDizinGirdisiELR(FTSI + FIslem.FSIKonum);
@@ -1205,16 +1207,19 @@ end;
 function TELR1.BosKumeTahsisEt: TSayi4;
 var
   Bellek: Isaretci;
-  KumeNo, i, j: TSayi4;
   Deger: PSayi4;
-  Sonuc: TSayi4;
+  SHTIlkSektor, SHTSonSektor,
+  KumeNo, i, j, Sonuc: TSayi4;
 begin
 
   GetMem(Bellek, 512);
 
   KumeNo := 0;
 
-  for i := SEKTORNO_SHT_BAS to SEKTORNO_SHT_SON do
+  SHTIlkSektor := FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
+  SHTSonSektor := FMD.Acilis.DosyaAyirmaTablosu.ToplamSektor + SHTIlkSektor;
+
+  for i := SHTIlkSektor to SHTSonSektor - 1 do
   begin
 
     Sonuc := FMD.FD.FOku(i, 1, Bellek);
@@ -1261,8 +1266,8 @@ end;
 function TELR1.KumeSerbestBirak(AKumeNo: TSayi4): TISayi4;
 var
   Bellek: Isaretci;
-  SektorNo, SiraNo: TSayi4;
-  Sonuc: TSayi4;
+  SektorNo, SiraNo,
+  Sonuc, SHTIlkSektor: TSayi4;
   Deger: PSayi4;
 begin
 
@@ -1274,7 +1279,9 @@ begin
   SektorNo := AKumeNo div 128;
   SiraNo := AKumeNo mod 128;
 
-  Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  SHTIlkSektor := FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
+
+  Sonuc := FMD.FD.FOku(SHTIlkSektor + SektorNo, 1, Bellek);
   if(Sonuc > HATA_YOK) then
   begin
 
@@ -1288,7 +1295,7 @@ begin
   begin
 
     Deger^ := $00000000;
-    Sonuc := FMD.FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+    Sonuc := FMD.FD.FYaz(SHTIlkSektor + SektorNo, 1, Bellek);
     if(Sonuc > HATA_YOK) then
     begin
 
@@ -1310,9 +1317,9 @@ end;
 function TELR1.KumeyiBirOncekiKumeyeBagla(ABirOncekiKumeNo, AKumeNo: TSayi4): TSayi4;
 var
   Bellek: Isaretci;
-  SektorNo, SiraNo: TSayi4;
-  Sonuc: TSayi4;
   Deger: PSayi4;
+  SektorNo, SiraNo,
+  Sonuc, SHTIlkSektor: TSayi4;
 begin
 
   Result := HATA_YOK;
@@ -1323,7 +1330,9 @@ begin
   SektorNo := ABirOncekiKumeNo div 128;
   SiraNo := ABirOncekiKumeNo mod 128;
 
-  Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  SHTIlkSektor := FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
+
+  Sonuc := FMD.FD.FOku(SHTIlkSektor + SektorNo, 1, Bellek);
   if(Sonuc > HATA_YOK) then
   begin
 
@@ -1335,7 +1344,7 @@ begin
   Inc(Deger, SiraNo);
   Deger^ := AKumeNo;
 
-  Sonuc := FMD.FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  Sonuc := FMD.FD.FYaz(SHTIlkSektor + SektorNo, 1, Bellek);
   if(Sonuc > HATA_YOK) then
   begin
 
@@ -1348,7 +1357,7 @@ begin
   SektorNo := AKumeNo div 128;
   SiraNo := AKumeNo mod 128;
 
-  Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  Sonuc := FMD.FD.FOku(SHTIlkSektor + SektorNo, 1, Bellek);
   if(Sonuc > HATA_YOK) then
   begin
 
@@ -1360,7 +1369,7 @@ begin
   Inc(Deger, SiraNo);
   Deger^ := ELR_ZD_SON;
 
-  Sonuc := FMD.FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  Sonuc := FMD.FD.FYaz(SHTIlkSektor + SektorNo, 1, Bellek);
   if(Sonuc > HATA_YOK) then
   begin
 
@@ -1378,9 +1387,9 @@ end;
 function TELR1.BirSonrakiKumeyiAl(var AKumeNo: TSayi4): Boolean;
 var
   Bellek: Isaretci;
-  SektorNo, SiraNo,
-  Sonuc: TSayi4;
   Deger: PSayi4;
+  SektorNo, SiraNo,
+  Sonuc, SHTIlkSektor: TSayi4;
 begin
 
   Result := False;
@@ -1391,7 +1400,9 @@ begin
   SektorNo := AKumeNo div 128;
   SiraNo := AKumeNo mod 128;
 
-  Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+  SHTIlkSektor := FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
+
+  Sonuc := FMD.FD.FOku(SHTIlkSektor + SektorNo, 1, Bellek);
   if(Sonuc = HATA_YOK) then
   begin
 
@@ -1411,10 +1422,10 @@ end;
 function TELR1.KumeZinciriniSerbestBirak(AIlkKumeNo: TSayi4): TSayi4;
 var
   Bellek: Isaretci;
-  SektorNo, SiraNo,
-  KumeNo: TSayi4;
-  Sonuc: TSayi4;
   Deger: PSayi4;
+  SektorNo, SiraNo,
+  KumeNo, Sonuc,
+  SHTIlkSektor: TSayi4;
 begin
 
   Result := HATA_YOK;
@@ -1422,6 +1433,8 @@ begin
   KumeNo := AIlkKumeNo;
 
   GetMem(Bellek, 512);
+
+  SHTIlkSektor := FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
 
   repeat
 
@@ -1431,7 +1444,7 @@ begin
     SektorNo := KumeNo div 128;
     SiraNo := KumeNo mod 128;
 
-    Sonuc := FMD.FD.FOku(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+    Sonuc := FMD.FD.FOku(SHTIlkSektor + SektorNo, 1, Bellek);
     if(Sonuc > HATA_YOK) then
     begin
 
@@ -1448,7 +1461,7 @@ begin
     begin
 
       Deger^ := $00000000;
-      Sonuc := FMD.FD.FYaz(SEKTORNO_SHT_BAS + SektorNo, 1, Bellek);
+      Sonuc := FMD.FD.FYaz(SHTIlkSektor + SektorNo, 1, Bellek);
       if(Sonuc > HATA_YOK) then
       begin
 
@@ -1557,6 +1570,8 @@ end;
 procedure TELR1.DiskiBicimle;
 var
   Sonuc: TISayi4;
+  SHTIlkSektor, SHTSonSektor,
+  KBS, IlkVeriSektor: TSayi4;
 begin
 
   // dosya sisteminin veri alanýný sil
@@ -1568,8 +1583,13 @@ begin
     Exit;
   end;
 
+  SHTIlkSektor := FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
+  SHTSonSektor := FMD.Acilis.DosyaAyirmaTablosu.ToplamSektor + SHTIlkSektor;
+  KBS := FMD.Acilis.DosyaAyirmaTablosu.KBS;
+  IlkVeriSektor := FMD.Acilis.DizinGirisi.IlkSektor * KBS;
+
   // dosya içerik tablosunu oluþtur
-  Sonuc := SHTOlustur(SEKTORNO_SHT_BAS, SEKTORNO_SHT_SON, SEKTORNO_VERI);
+  Sonuc := SHTOlustur(SHTIlkSektor, SHTSonSektor - 1, IlkVeriSektor);
   if(Sonuc <> HATA_YOK) then
   begin
 
@@ -1598,7 +1618,7 @@ begin
 
   // sektör numarasý küme numarasýna çevriliyor
   // bilgi: þu aþamada her bir küme 4 sektörden oluþmakta
-  KumeNo := SEKTORNO_VERI div 4;
+  KumeNo := FMD.Acilis.DizinGirisi.IlkSektor;
 
   // 10 küme * 4 sektör içeriðini sil
   for i := 0 to 9 do
@@ -1690,8 +1710,10 @@ end;
 function TELR1.ToplamKullanim(var AKullanilanSektorSayisi: TSayi4): TSayi4;
 var
   Bellek: Isaretci;
-  i, j: TSayi4;
   Deger: PSayi4;
+  SHTIlkSektor,
+  SHTSonSektor,
+  i, j: TSayi4;
 begin                                     Exit(0);  {geçici iptal}
 
   Result := HATA_YOK;
@@ -1701,7 +1723,10 @@ begin                                     Exit(0);  {geçici iptal}
   Bellek := GetMem(512);
   if(Bellek = nil) then Exit(HATA_BELLEKYOK);
 
-  for i := SEKTORNO_SHT_BAS to SEKTORNO_SHT_SON do
+  SHTIlkSektor := FMD.Acilis.DosyaAyirmaTablosu.IlkSektor;
+  SHTSonSektor := FMD.Acilis.DosyaAyirmaTablosu.ToplamSektor + SHTIlkSektor;
+
+  for i := SHTIlkSektor to SHTSonSektor - 1 do
   begin
 
     Result := FMD.FD.FOku(i, 1, Bellek);

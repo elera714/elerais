@@ -6,7 +6,7 @@
   Dosya Adý: fat32.pas
   Dosya Ýþlevi: fat32 dosya sistem yönetim iþlevlerini yönetir
 
-  Güncelleme Tarihi: 19/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
   Bilgi: TFAT32 nesne içeriðindeki iþlevler dosyalar.pas dosyasýnýn içeriðindeki
     iþlevler ile kullanýlmalýdýr

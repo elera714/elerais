@@ -25,7 +25,7 @@
    Sürüm Bilgileri
    ----------------------------------------------------------------------------
    Telif Bilgisi: haklar.txt dosyasýna bakýnýz
-   Güncelleme Tarihi: (21.11.2026 - cumartesi)
+   Güncelleme Tarihi: (26.11.2026 - perþembe)
 
 ==============================================================================}
 program cekirdek;
@@ -49,14 +49,22 @@ var
   Yukleyici: TYukleyici;
 begin
 
-  // belleði sayfalama iþlevine hazýrla
-  // vmm.Init;
-
   asm
-    //cli
     mov eax,SISTEM_ESP
     mov esp,eax
 
+    // cr0 yazmacýnýn EM ve TS bitlerini temizle
+    mov  eax,cr0
+    and  eax,not(CR0_EM_BIT + CR0_TS_BIT)
+    or   eax,CR0_MP_BIT
+    mov  cr0,eax
+
+    // sse / xmm desteði - maskelenmemis SSE istisnalari
+    mov  eax,cr4
+    or   eax,(CR4_OSFXSR_BIT + CR4_OSXMMEXCPT_BIT)
+    mov  cr4,eax
+
+    // x87 fpu / sse durumunu il durumuna getir
     fninit
 
   // sayfalamayý aktifleþtir

@@ -6,7 +6,7 @@
   Dosya Adı: gn_izgara.pas
   Dosya İşlevi: ızgara nesnesi (TStringGrid) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -251,13 +251,13 @@ begin
   // yatay kaydırma çubuğu
   FYatayKCubugu := TKaydirmaCubugu.Create;
   FYatayKCubugu.Ozellestir(ktBilesen, Self, 0, AYukseklik - 16, AGenislik - 16, 16, yYatay);
-  FYatayKCubugu.DegerleriBelirle(0, 10);
+  FYatayKCubugu.DegerleriBelirle(0, 10, 0, 1);
   FYatayKCubugu.OlayYonlAdr := @KaydirmaCubuguOlaylariniIsle;
 
   // dikey kaydırma çubuğu
   FDikeyKCubugu := TKaydirmaCubugu.Create;
   FDikeyKCubugu.Ozellestir(ktBilesen, Self, AGenislik - 16, 0, 16, AYukseklik - 16, yDikey);
-  FDikeyKCubugu.DegerleriBelirle(0, 10);
+  FDikeyKCubugu.DegerleriBelirle(0, 10, 0, 1);
   FDikeyKCubugu.OlayYonlAdr := @KaydirmaCubuguOlaylariniIsle;
 
   Odaklanilabilir := True;

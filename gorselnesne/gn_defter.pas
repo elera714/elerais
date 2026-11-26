@@ -6,7 +6,7 @@
   Dosya Adı: gn_defter.pas
   Dosya İşlevi: defter nesnesi (TMemo) yönetim işlevlerini içerir
 
-  Güncelleme Tarihi: 14/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
   Bilgi: bu görsel nesne 13.05.2020 tarih itibariyle nesnenin program bölümüne eklenen
     10K ve çekirdek bölümüne eklenen 10K bellek kullanmaktadır.
@@ -243,13 +243,13 @@ begin
   // yatay kaydırma çubuğu
   FYatayKCubugu := TKaydirmaCubugu.Create;
   FYatayKCubugu.Ozellestir(ktBilesen, Self, 0, AYukseklik - 20, AGenislik - 20, 20, yYatay);
-  FYatayKCubugu.DegerleriBelirle(0, 50);
+  FYatayKCubugu.DegerleriBelirle(0, 50, 0, 1);
   FYatayKCubugu.OlayYonlAdr := @KaydirmaCubuguOlaylariniIsle;
 
   // dikey kaydırma çubuğu
   FDikeyKCubugu := TKaydirmaCubugu.Create;
   FDikeyKCubugu.Ozellestir(ktBilesen, Self, AGenislik - 20, 0, 20, AYukseklik - 20, yDikey);
-  FDikeyKCubugu.DegerleriBelirle(0, 50);
+  FDikeyKCubugu.DegerleriBelirle(0, 50, 0, 1);
   FDikeyKCubugu.OlayYonlAdr := @KaydirmaCubuguOlaylariniIsle;
 
   // defter nesnesinin içeriği için bellek ayır

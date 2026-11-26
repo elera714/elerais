@@ -1,11 +1,17 @@
 *******************************************************************************
   Sürüm: 0.4.4 (sunucu / istemci) - 00.00.0000 (R40) - Beta
 *******************************************************************************
+
+  + masaüstü parlaklık ayarı eklendi
+  + TKaydirmaCubugu nesnesine artış değeri eklendi
+  + sisteme sse / xmm desteği eklendi, yapı ekran çift ekran belleğine uygulandı
+  + elr açılış sektör (boot) çalışmalarına başlandı, sektör tanım girişleri yapılarak
+    değerler elr dosya sistem birimine bağlandı (sabit değerler kaldırıldı)
+  + her görev için oluşturulan tss işlemleri tek tss'ye düşürüldü
+  + ps2 fare sürücüsünde kod iyileştirmeleri yapıldı
   + masaüstü uygulamasının ayar dosyası geliştirildi, duvar kağıdı, arka plan rengi
     ve pencere giysi tasarımlarının sistem açılış anında masaüstüne uyarlanabilmesi
     sağlandı (muyntcs ve mustudk yeniden yapılandırıldı)
-  + ps2 fare sürücüsünde kod iyileştirmeleri yapıldı
-  + her görev için oluşturulan tss işlemleri tek tss'ye düşürüldü
 
 *******************************************************************************
   Sürüm: 0.4.3 (sunucu / istemci) - 21.11.2026 (R39) - Beta

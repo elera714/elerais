@@ -6,7 +6,7 @@
   Dosya Adý: mdepolama.pas
   Dosya Ýþlevi: mantýksal depolama aygýt iþlevlerini yönetir
 
-  Güncelleme Tarihi: 17/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -16,6 +16,19 @@ unit mdepolama;
 interface
 
 uses paylasim, fdepolama, aygit;
+
+type
+  // elr boot sektör yapýsý
+  PAcilisKayitELR = ^TAcilisKayitELR;
+  TAcilisKayitELR = packed record
+    AYRLDI0: array[0..493] of TSayi1;         // ayrýldý
+    SHTSektorNo: TSayi4;                      // Sektör Harita Tablosu ilk sektör no = $00000100
+    SHTSektorU: TSayi4;                       // SHT sektör uzunluðu = $00000500
+    IlkVeriKumeNo: TSayi4;                    // verilerin depolandýðý ilk küme no = $00000180
+    KBS: TSayi1;                              // küme baþýna sektör = $04
+    SektorSayisi: TSayi4;                     // bölümün sektör sayýsý = $000AF000
+    Imza: TSayi1;                             // sektör imzasý = $44
+  end;
 
 type
   // 12 & 16 bitlik boot kayýt yapýsý
@@ -84,9 +97,9 @@ type
   // dosya ayýrma tablosu (file allocation table = FAT)
   PDosyaAyirmaTablosu = ^TDosyaAyirmaTablosu;
   TDosyaAyirmaTablosu = record
-    IlkSektor: TSayi2;
-    ToplamSektor: TSayi2;
-    KBS: TSayi1;                // Küme Baþýma Sektör
+    IlkSektor: TSayi4;
+    ToplamSektor: TSayi4;
+    KBS: TSayi4;                // Küme Baþýna Sektör
   end;
 
 const
@@ -208,6 +221,7 @@ var
   FD: TFDAygiti;
   MD: TMDNesne;
   DiskBolum: PDiskBolum;
+  AcilisKayitELR: PAcilisKayitELR;
   AcilisKayit1x: PAcilisKayit1x;
   AcilisKayit32: PAcilisKayit32;
   DosyaAyirmaTablosu: PDosyaAyirmaTablosu;
@@ -323,9 +337,6 @@ begin
                 if(FD.FOku(DiskBolum^.LBAIlkSektor, 1, Bellek2) = HATA_YOK) then
                 begin
 
-                  // okunan veri yapýsýna konumlan
-                  AcilisKayit1x := PAcilisKayit1x(Bellek2);
-
                   // mantýksal sürücü için sürücü numarasý al
                   SurucuNo := AygitNumarasiAl(SURUCUTIP_DISK);
                   if(SurucuNo > -1) then
@@ -355,20 +366,18 @@ begin
                       begin
 
                         // okunan veri yapýsýna konumlan
-                        AcilisKayit32 := PAcilisKayit32(Bellek2);
+                        AcilisKayitELR := PAcilisKayitELR(Bellek2);
 
                         // dosya ayýrma tablosu (fat) bilgilerini ata
                         DosyaAyirmaTablosu := @MD.Acilis.DosyaAyirmaTablosu;
-                        DosyaAyirmaTablosu^.IlkSektor := AcilisKayit32^.AyrilmisSektor1 +
-                          AcilisKayit32^.BolumOncesiSektorSayisi;
-                        DosyaAyirmaTablosu^.ToplamSektor := (30 * 1024 * 1024) div 512; //AcilisKayit32^.DATBasinaSektor;
-                        DosyaAyirmaTablosu^.KBS := 4; //AcilisKayit32^.KBS;
+                        DosyaAyirmaTablosu^.IlkSektor := AcilisKayitELR^.SHTSektorNo;
+                        DosyaAyirmaTablosu^.ToplamSektor := AcilisKayitELR^.SHTSektorU;
+                        DosyaAyirmaTablosu^.KBS := AcilisKayitELR^.KBS;
 
                         // dosya + dizin giriþ bilgilerini ata
                         DizinGirisi := @MD.Acilis.DizinGirisi;
-                        DizinGirisi^.IlkSektor := 1536 div 4;
-                        DizinGirisi^.ToplamSektor := 30 * 1024 * 1024;
-                        MD.Acilis.IlkVeriSektorNo := DizinGirisi^.IlkSektor;
+                        DizinGirisi^.IlkSektor := AcilisKayitELR^.IlkVeriKumeNo;
+                        DizinGirisi^.ToplamSektor := AcilisKayitELR^.SektorSayisi;
                       end
 
                       // dosya tipi fat32 dosya tipinde ise
@@ -400,6 +409,9 @@ begin
                       // dosya tipi diðer dosya tipinde ise
                       else
                       begin
+
+                        // okunan veri yapýsýna konumlan
+                        AcilisKayit1x := PAcilisKayit1x(Bellek2);
 
                         // dosya ayýrma tablosu (fat) bilgilerini ata
                         DosyaAyirmaTablosu := @MD.Acilis.DosyaAyirmaTablosu;

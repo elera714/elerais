@@ -6,7 +6,7 @@
   Dosya Adı: src_vesa20.pas
   Dosya İşlevi: genel vesa 2.0 grafik kartı sürücüsü
 
-  Güncelleme Tarihi: 21/08/2026
+  Güncelleme Tarihi: 26/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -22,7 +22,7 @@ type
   TEkranKartBilgisi = record
     BellekUzunlugu: TSayi2;
     EkranMod: TSayi2;
-    YatayCozunurluk, DikeyCozunurluk: TISayi4;
+    YatayCozunurluk, DikeyCozunurluk,
     BellekAdresi: TSayi4;
     PixelBasinaBitSayisi: TSayi1;
     NoktaBasinaByteSayisi: TSayi1;
@@ -39,6 +39,7 @@ type
   TEkranKartSurucusu = class
   private
     FArkaBellek: Isaretci;
+    FParlaklik: TSayi4;
     function NoktaOku16(AYatay, ADikey: TISayi4): TRenk;
     function NoktaOku24(AYatay, ADikey: TISayi4): TRenk;
     function NoktaOku32(AYatay, ADikey: TISayi4): TRenk;
@@ -50,6 +51,7 @@ type
       AKullanilmiyor: Boolean);
     procedure GorselAnaNesneleriGuncelle;
     procedure FareGostergesiCiz;
+    procedure AlaniGolgele24(AX, AY, AGenislik, AYukseklik: TSayi4);
   public
     KartBilgisi: TEkranKartBilgisi;
     NoktaOkuIslev: TNoktaOkuIslev;
@@ -60,10 +62,14 @@ type
       ARenkDonustur: Boolean);
     procedure EkranBelleginiGuncelle;
     property ArkaBellek: Isaretci read FArkaBellek write FArkaBellek;
+    property Parlaklik: TSayi4 read FParlaklik write FParlaklik;
   end;
 
 var
   GEkranKartSurucusu: TEkranKartSurucusu;
+
+procedure SatirGolgele24(AYatayX, AUzunluk, AParlaklik: TSayi4);
+  stdcall; assembler;
 
 implementation
 
@@ -97,6 +103,9 @@ begin
   // arka plan için bellek ayır
   ArkaBellek := GetMem(KartBilgisi.YatayCozunurluk *
     KartBilgisi.DikeyCozunurluk * (KartBilgisi.PixelBasinaBitSayisi div 8));
+
+  // ekran parlaklık değeri
+  FParlaklik := 255;
 
   case KartBilgisi.PixelBasinaBitSayisi of
     16: begin NoktaOkuIslev := @NoktaOku16; NoktaYazIslev := @NoktaYaz16; end;
@@ -281,7 +290,8 @@ end;
 procedure TEkranKartSurucusu.EkranBelleginiGuncelle;
 var
   p: Isaretci;
-  i: TSayi4;
+  EkranBU, BlokSayisi,
+  ByteSayisi: TSayi4;
 begin
 
   // ekran belleğine taşımadan önce yapılması gereken ön işlemler
@@ -292,37 +302,76 @@ begin
   // 2. fare göstergesini çiz
   FareGostergesiCiz;
 
-  // arka belleği ekran belleğine (grafik bellek) taşı
-  i := KartBilgisi.YatayCozunurluk * KartBilgisi.DikeyCozunurluk *
-    KartBilgisi.NoktaBasinaByteSayisi;
-
   p := GEkranKartSurucusu.ArkaBellek;
+  if(p = nil) then Exit;
+
+  // arka plan parlaklığını ayarla
+  if(KartBilgisi.PixelBasinaBitSayisi = 24) then
+    AlaniGolgele24(0, 0, GEkranKartSurucusu.KartBilgisi.YatayCozunurluk,
+      GEkranKartSurucusu.KartBilgisi.DikeyCozunurluk);
+
+  // ekran byte olarak uzunluk
+  EkranBU := (KartBilgisi.YatayCozunurluk * KartBilgisi.DikeyCozunurluk *
+    KartBilgisi.NoktaBasinaByteSayisi);
+
+  if(EkranBU = 0) then Exit;
+
+  // arka plan verilerinin ekran kartına taşınması
+  BlokSayisi := (EkranBU shr 6);    // tasıma 16 * 4 = 64 baytlık bloklarla taşınacak
+  ByteSayisi := (EkranBU and 63);   // kalan byte'ler normal taşıma ile gerçekleşecek
 
   asm
+    pushfd
     cli
-    pushad
-    push ds
+    push eax
+    push ecx
+    push esi
+    push edi
     push es
 
-    mov ax,SECICI_SISTEM_VERI * 8
-    mov ds,ax
+    mov  ax,SECICI_GRAFIK_LFB * 8
+    mov  es,ax
 
-    mov esi,p
-    mov ax,SECICI_GRAFIK_LFB * 8
-    mov es,ax
-    mov edi,0
+    mov  esi,p
+    xor  edi,edi
 
-    mov ecx,i
-    shr ecx,2
+    mov  ecx,BlokSayisi
+    test ecx,ecx
+    jz   @son_islem
+@@:
+
+    movdqu xmm0,[esi + 00]
+    movdqu xmm1,[esi + 16]
+    movdqu xmm2,[esi + 32]
+    movdqu xmm3,[esi + 48]
+
+    movdqu es:[edi + 00],xmm0
+    movdqu es:[edi + 16],xmm1
+    movdqu es:[edi + 32],xmm2
+    movdqu es:[edi + 48],xmm3
+
+    add  esi,64
+    add  edi,64
+    dec  ecx
+    jnz  @@
+
+@son_islem:
+    mov  ecx,ByteSayisi
+    test ecx,ecx
+    jz   @son
     cld
-    repnz movsd
+    rep  movsb
 
-    pop es
-    pop ds
-    popad
-    sti
+@son:
+    pop  es
+    pop  edi
+    pop  esi
+    pop  ecx
+    pop  eax
+    popfd
   end;
 end;
+
 
 // görsel ana nesne çizimlerini arka belleğe çizer
 // bilgi-1: bu ana nesneler: masaüstü, pencere ve menülerdir
@@ -610,6 +659,97 @@ begin
           RENK_BEYAZ, True);
     end;
   end;
+end;
+
+{==============================================================================
+  dikdörtgensel alanı belirtilen parlaklıkta gölgele
+ ==============================================================================}
+procedure TEkranKartSurucusu.AlaniGolgele24(AX, AY, AGenislik, AYukseklik: TSayi4);
+var
+  X, Y, X1, Y1, X2, Y2,
+  U: TSayi4;
+begin
+
+  if(ArkaBellek = nil) or (AGenislik = 0) or (AYukseklik = 0) then Exit;
+
+  if(AX >= KartBilgisi.YatayCozunurluk) or (AY >= KartBilgisi.DikeyCozunurluk) then Exit;
+
+  X1 := AX;
+  Y1 := AY;
+
+  if(AX + AGenislik > KartBilgisi.YatayCozunurluk) then
+    X2 := KartBilgisi.YatayCozunurluk
+  else X2 := AX + AGenislik;
+
+  if (AY + AYukseklik > KartBilgisi.DikeyCozunurluk) then
+    Y2 := KartBilgisi.DikeyCozunurluk
+  else Y2 := AY + AYukseklik;
+
+  if(X2 <= X1) or (Y2 <= Y1) then Exit;
+
+  U := X2 - X1;
+  X := TSayi4(ArkaBellek + ((Y1 * KartBilgisi.SatirdakiByteSayisi) + X1) *
+    KartBilgisi.NoktaBasinaByteSayisi);
+
+  for Y := Y1 to Y2 - 1 do
+  begin
+
+    SatirGolgele24(X, U, FParlaklik);
+    Inc(X, KartBilgisi.SatirdakiByteSayisi);
+  end;
+end;
+
+{==============================================================================
+  dikdörtgensel alanı belirtilen parlaklıkta gölgele
+ ==============================================================================}
+procedure SatirGolgele24(AYatayX, AUzunluk, AParlaklik: TSayi4);
+  stdcall; assembler; nostackframe;
+asm
+  // [esp + 0] = EIP
+  // [esp + 4] = AYatayX
+  mov  edi,[esp + 4]
+  test edi,edi
+  jz   @cik
+
+  // [esp + 8} = AUzunluk
+  mov  ecx,[esp + 8]
+  test ecx,ecx
+  jz   @cik
+
+  push ebx
+  // ? = push ebx sonrası AParlaklik +4 byte ilerlemiştir
+  // {esp + 12 + ?] = AParlaklik
+  movzx edx,byte ptr[esp + 16]
+@@:
+
+  // b kanal değişimi
+  movzx eax,byte ptr[edi + 0]
+  imul  eax,edx
+  add   eax,128
+  shr   eax,8
+  mov   byte ptr[edi + 0],al
+
+  // g kanal değişimi
+  movzx ebx,byte ptr[edi + 1]
+  imul  ebx,edx
+  add   ebx,128
+  shr   ebx,8
+  mov   byte ptr[edi + 1],bl
+
+  // r kanal değişimi
+  movzx eax,byte ptr[edi + 2]
+  imul  eax,edx
+  add   eax,128
+  shr   eax,8
+  mov   byte ptr[edi + 2],al
+
+  add   edi,3
+  dec   ecx
+  jnz   @@
+
+  pop  ebx
+@cik:
+  ret 12
 end;
 
 end.

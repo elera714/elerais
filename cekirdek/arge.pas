@@ -6,7 +6,7 @@
   Dosya Adý: arge.pas
   Dosya Ýþlevi: sistem ar-ge çalýþmalarýný içerir
 
-  Güncelleme Tarihi: 15/11/2026
+  Güncelleme Tarihi: 26/11/2026
 
  ==============================================================================}
 {$mode objfpc}
@@ -281,7 +281,7 @@ begin
 
       KaydirmaCubugu := TKaydirmaCubugu.Create;
       KaydirmaCubugu.Ozellestir(ktNesne, Pencere, SonKonumY, SonKonumD, 200, 24, yYatay);
-      KaydirmaCubugu.DegerleriBelirle(0, 100);
+      KaydirmaCubugu.DegerleriBelirle(0, 100, 0, 1);
       KaydirmaCubugu.MevcutDeger := 50;
       KaydirmaCubugu.Goster;
     end
